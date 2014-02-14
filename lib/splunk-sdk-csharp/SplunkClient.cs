@@ -23,6 +23,7 @@ namespace Splunk.Sdk
     using System.Linq;
     using System.Net.Http;
     using System.Runtime;
+    using System.Text;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
@@ -77,7 +78,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Gets the protocol used to communicate with the <see cref="Host"/> associated with this instance.
         /// </summary>
-        public Protocol Protocol 
+        public Protocol Protocol
         { get; private set; }
 
         /// <summary>
@@ -109,23 +110,9 @@ namespace Splunk.Sdk
 
             using (var content = new StringContent(string.Format("username={0}&password={1}", username, password)))
             {
-                HttpResponseMessage message = await this.client.PostAsync(this.CreateUri(new string[] { "auth", "login" }), content);
-                string messageBody = await message.Content.ReadAsStringAsync();
-                
-                if (!message.IsSuccessStatusCode)
-                {
-                    // TODO: Parse message body into a list of messages. The message body looks like this:
-                    // <?xml version="1.0' encoding="UTF-8"?>\n
-                    // <response>
-	                //    <messages>    
-		            //        <msg type="WARN">Login failed</msg>
-	                //    </messages>
-                    // </response>
-
-                    throw new SplunkRequestException(message.StatusCode, message.ReasonPhrase, details: messageBody);
-                }
-                var response = XDocument.Parse(messageBody);
-                this.SessionKey = response.Element("response").Element("sessionKey").Value;
+                HttpResponseMessage response = await this.client.PostAsync(this.CreateUri(new string[] { "auth", "login" }), content);
+                XDocument document = this.ReadDocument(response).Result;
+                this.SessionKey = document.Element("response").Element("sessionKey").Value;
             }
         }
 
@@ -136,38 +123,54 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocument(Namespace @namespace, string[] resource, Dictionary<string, object> parameters)
+        public async Task<XDocument> GetDocument(Namespace @namespace, string[] resource, IDictionary<string, object> parameters = null)
         {
+            // TODO: Use this.client.GetAsync to get the error handling behavior we want
+            // TODO: Encapsulate error handling logic
+
+            Contract.Requires(@namespace != null);
+            Contract.Requires(resource != null);
+
             string messageBody = await this.client.GetStringAsync(this.CreateUri(@namespace, resource, parameters));
+            
             return XDocument.Parse(messageBody);
         }
 
-        public async Task<XDocument> GetDocument(string[] resource, Dictionary<string, object> parameters)
+        public async Task<XDocument> GetDocument(string[] resource, IDictionary<string, object> parameters = null)
         {
+            // TODO: Use this.client.GetAsync to get the error handling behavior we want
+
+            Contract.Requires(resource != null);
             string messageBody = await this.client.GetStringAsync(this.CreateUri(resource, parameters));
             return XDocument.Parse(messageBody);
         }
 
-        public async Task<Stream> GetDocumentStream(Namespace @namespace, string[] resource, Dictionary<string, object> parameters)
+        public async Task<Stream> GetDocumentStream(Namespace @namespace, string[] resource, IDictionary<string, object> parameters)
         {
+            // TODO: Use this.client.GetAsync to get the error handling behavior we want
+
             Stream stream = await this.client.GetStreamAsync(this.CreateUri(@namespace, resource, parameters));
             return stream;
         }
 
-        public async Task<Stream> GetDocumentStream(string[] resource, Dictionary<string, object> parameters)
+        public async Task<Stream> GetDocumentStream(string[] resource, IDictionary<string, object> parameters)
         {
+            // TODO: Use this.client.GetAsync to get the error handling behavior we want
+
             Stream stream = await this.client.GetStreamAsync(this.CreateUri(resource, parameters));
             return stream;
         }
 
-        public XDocument Post(Namespace @namespace, params string[] resource)
+        public async Task<XDocument> Post(Namespace @namespace, string[] resource, IDictionary<string, object> parameters)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await this.client.PostAsync(this.CreateUri(@namespace, resource), this.CreateContent(parameters));
+            return this.ReadDocument(response).Result;
         }
 
-        public XDocument Post(params string[] resource)
+        public async Task<XDocument> Post(string[] resource, IDictionary<string, object> parameters)
         {
-            throw new NotImplementedException();
+            HttpResponseMessage response = await this.client.PostAsync(this.CreateUri(resource), this.CreateContent(parameters));
+            return ReadDocument(response).Result;
         }
 
         public override string ToString()
@@ -182,25 +185,39 @@ namespace Splunk.Sdk
         private static readonly string[] Scheme = { "http", "https" };
         private HttpClient client;
 
-        private Uri CreateUri(Namespace @namespace, string[] resource, Dictionary<string, object> parameters = null)
+        private StringContent CreateContent(IDictionary<string, object> parameters)
+        {
+            var body = string.Join("&",
+                from parameter in parameters
+                select string.Join("=",
+                    Uri.EscapeDataString(parameter.Key),
+                    Uri.EscapeDataString(parameter.Value.ToString())));
+            return new StringContent(body);
+        }
+
+        private Uri CreateUri(Namespace @namespace, string[] resource, IDictionary<string, object> parameters = null)
         {
             return this.CreateUri(new string[] { string.Empty, "servicesNS", @namespace.User, @namespace.App }.Concat(resource), parameters);
         }
 
-        private Uri CreateUri(string[] resource, Dictionary<string, object> parameters = null)
+        private Uri CreateUri(string[] resource, IDictionary<string, object> parameters = null)
         {
             return this.CreateUri(new string[] { string.Empty, "services" }.Concat(resource), parameters);
         }
 
-        private Uri CreateUri(IEnumerable<string> segments, Dictionary<string, object> parameters)
+        private Uri CreateUri(IEnumerable<string> segments, IDictionary<string, object> parameters)
         {
             var builder = new UriBuilder(Scheme[(int)this.Protocol], this.Host, this.Port);
 
-            builder.Path = string.Join("/", segments.Select(segment => Uri.EscapeUriString(segment)));
+            builder.Path = string.Join("/", from segment in segments select Uri.EscapeUriString(segment));
 
             if (parameters != null)
             {
-                builder.Query = string.Join("&", parameters.Select(parameter => string.Join("=", Uri.EscapeUriString(parameter.Key), Uri.EscapeUriString(parameter.Value.ToString()))));
+                builder.Query = string.Join("&", 
+                    from parameter in parameters 
+                    select string.Join("=", 
+                        Uri.EscapeUriString(parameter.Key), 
+                        Uri.EscapeUriString(parameter.Value.ToString())));
             }
 
             return builder.Uri;
@@ -212,6 +229,25 @@ namespace Splunk.Sdk
             this.Host = host;
             this.Port = port;
             this.client = this.client == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
+        }
+
+        private async Task<XDocument> ReadDocument(HttpResponseMessage response)
+        {
+            string body = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // TODO: Parse message body into a list of messages. The message body looks like this:
+                // <?xml version="1.0' encoding="UTF-8"?>\n
+                // <response>
+                //    <messages>    
+                //        <msg type="WARN">Login failed</msg>
+                //    </messages>
+                // </response>
+
+                throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: body);
+            }
+            return XDocument.Parse(body);
         }
 
         #endregion

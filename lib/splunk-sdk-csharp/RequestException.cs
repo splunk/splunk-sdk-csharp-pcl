@@ -16,8 +16,20 @@
 
 namespace Splunk.Sdk
 {
-    public enum MessageType
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Xml.Linq;
+
+    public class RequestException : HttpRequestException
     {
-        Debug, Information, Warning, Error
+        public RequestException(HttpStatusCode statusCode, string reasonPhrase, IEnumerable<Message> details)
+            : base(string.Format("{0}: {1}", (int)statusCode, reasonPhrase))
+        {
+            this.Details = new List<Message>(details);
+        }
+
+        public IReadOnlyList<Message> Details
+        { get; private set; }
     }
 }

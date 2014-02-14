@@ -16,20 +16,7 @@
 
 namespace Splunk.Sdk
 {
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Net.Http;
-    using System.Xml.Linq;
-
-    public class SplunkRequestException : HttpRequestException
+    class Service
     {
-        public SplunkRequestException(HttpStatusCode statusCode, string reasonPhrase, IEnumerable<Message> details)
-            : base(string.Format("{0}: {1}", (int)statusCode, reasonPhrase))
-        {
-            this.Details = new List<Message>(details);
-        }
-
-        public IReadOnlyList<Message> Details
-        { get; private set; }
     }
 }

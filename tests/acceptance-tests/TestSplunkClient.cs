@@ -22,7 +22,7 @@
         [TestMethod]
         public void Construct()
         {
-            SplunkClient client = new SplunkClient(Protocol.Https, "localhost", 8089);
+            Context client = new Context(Protocol.Https, "localhost", 8089);
 
             Assert.AreEqual(client.Protocol, Protocol.Https);
             Assert.AreEqual(client.Host, "localhost");
@@ -35,7 +35,7 @@
         [TestMethod]
         public void Login()
         {
-            SplunkClient client = new SplunkClient(Protocol.Https, "localhost", 8089);
+            Context client = new Context(Protocol.Https, "localhost", 8089);
             Task task;
 
             task = client.Login("admin", "changeme");
@@ -49,6 +49,8 @@
 
             Assert.AreEqual(task.Status, TaskStatus.Faulted);
             Assert.IsInstanceOfType(task.Exception, typeof(AggregateException));
+
+            // TODO: Add checks for content of AggregateException and verify SplunkRequestException, especially SplunkRequestException.Details.
         }
 
         #region Privates

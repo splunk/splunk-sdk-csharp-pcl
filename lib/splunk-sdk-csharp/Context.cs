@@ -31,12 +31,12 @@ namespace Splunk.Sdk
     /// Provides a class for sending HTTP requests and receiving HTTP responses 
     /// from a Splunk server.
     /// </summary>
-    public sealed class SplunkClient
+    public sealed class Context
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SplunkClient"/> class 
+        /// Initializes a new instance of the <see cref="Context"/> class 
         /// with a protocol, host, and port number.
         /// </summary>
         /// <param name="protocol">The <see cref="Protocol"/> used to communiate 
@@ -44,13 +44,13 @@ namespace Splunk.Sdk
         /// <param name="host">The DNS name of a Splunk server instance</param>
         /// <param name="port">The port number used to communicate with 
         /// <see cref="Host"/></param>
-        public SplunkClient(Protocol protocol, string host, int port)
+        public Context(Protocol protocol, string host, int port)
         {
             this.Initialize(protocol, host, port, null, false);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SplunkClient"/> class 
+        /// Initializes a new instance of the <see cref="Context"/> class 
         /// with a protocol, host, and port number.
         /// </summary>
         /// <param name="protocol">The <see cref="Protocol"/> used to communiate 
@@ -60,7 +60,7 @@ namespace Splunk.Sdk
         /// <see cref="Host"/></param>
         /// <param name="handler"></param>
         /// <param name="disposeHandler"></param>
-        public SplunkClient(Protocol protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
+        public Context(Protocol protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
         {
             Contract.Requires<ArgumentNullException>(handler != null);
             Initialize(protocol, host, port, handler, disposeHandler);
@@ -289,7 +289,7 @@ namespace Splunk.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: this.CreateMessages(document));
+                throw new RequestException(response.StatusCode, response.ReasonPhrase, details: this.CreateMessages(document));
             }
             return document;
         }
@@ -301,7 +301,7 @@ namespace Splunk.Sdk
             if (!response.IsSuccessStatusCode)
             {
                 var document = XDocument.Load(documentStream);
-                throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: this.CreateMessages(document));
+                throw new RequestException(response.StatusCode, response.ReasonPhrase, details: this.CreateMessages(document));
             }
 
             return documentStream;

@@ -229,7 +229,7 @@ namespace Splunk.Sdk
 
         private async Task<XDocument> ReadDocument(HttpResponseMessage response)
         {
-            string body = await response.Content.ReadAsStringAsync();
+            var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
 
             if (!response.IsSuccessStatusCode)
             {
@@ -240,10 +240,9 @@ namespace Splunk.Sdk
                 //        <msg type="WARN">Login failed</msg>
                 //    </messages>
                 // </response>
-
-                throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: body);
+                throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: document);
             }
-            return XDocument.Parse(body);
+            return document;
         }
 
         private async Task<Stream> ReadDocumentStream(HttpResponseMessage response)
@@ -259,9 +258,7 @@ namespace Splunk.Sdk
                 //        <msg type="WARN">Login failed</msg>
                 //    </messages>
                 // </response>
-
-                // TODO: Read details
-                throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: null);
+                throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: XDocument.Load(stream));
             }
 
             return stream;

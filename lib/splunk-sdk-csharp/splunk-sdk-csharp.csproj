@@ -36,6 +36,8 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Message.cs" />
+    <Compile Include="MessageType.cs" />
     <Compile Include="SplunkRequestException.cs" />
     <Compile Include="Protocol.cs" />
     <Compile Include="SharingMode.cs" />

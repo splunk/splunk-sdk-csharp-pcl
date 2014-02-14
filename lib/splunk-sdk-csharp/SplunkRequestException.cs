@@ -16,19 +16,20 @@
 
 namespace Splunk.Sdk
 {
+    using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Xml.Linq;
 
     public class SplunkRequestException : HttpRequestException
     {
-        public SplunkRequestException(HttpStatusCode statusCode, string reasonPhrase, XDocument details)
+        public SplunkRequestException(HttpStatusCode statusCode, string reasonPhrase, IEnumerable<Message> details)
             : base(string.Format("{0}: {1}", (int)statusCode, reasonPhrase))
         {
-            this.Details = details;
+            this.Details = new List<Message>(details);
         }
 
-        public XDocument Details
+        public IReadOnlyList<Message> Details
         { get; private set; }
     }
 }

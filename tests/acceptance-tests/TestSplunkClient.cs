@@ -22,29 +22,29 @@
         [TestMethod]
         public void Construct()
         {
-            this.client = new SplunkClient(Protocol.Https, "localhost", 8089);
+            SplunkClient client = new SplunkClient(Protocol.Https, "localhost", 8089);
 
-            Assert.AreEqual(this.client.Protocol, Protocol.Https);
-            Assert.AreEqual(this.client.Host, "localhost");
-            Assert.AreEqual(this.client.Port, 8089);
-            Assert.IsNull(this.client.SessionKey);
+            Assert.AreEqual(client.Protocol, Protocol.Https);
+            Assert.AreEqual(client.Host, "localhost");
+            Assert.AreEqual(client.Port, 8089);
+            Assert.IsNull(client.SessionKey);
 
-            Assert.AreEqual(this.client.ToString(), "https://localhost:8089");
+            Assert.AreEqual(client.ToString(), "https://localhost:8089");
         }
 
         [TestMethod]
         public void Login()
         {
+            SplunkClient client = new SplunkClient(Protocol.Https, "localhost", 8089);
             Task task;
 
-            this.client = new SplunkClient(Protocol.Https, "localhost", 8089);
-            task = this.client.Login("admin", "changeme");
+            task = client.Login("admin", "changeme");
             task.Wait();
 
             Assert.AreEqual(task.Status, TaskStatus.RanToCompletion);
-            Assert.IsNotNull(this.client.SessionKey);
+            Assert.IsNotNull(client.SessionKey);
 
-            task = this.client.Login("admin", "bad-password");
+            task = client.Login("admin", "bad-password");
             task.Wait();
 
             Assert.AreEqual(task.Status, TaskStatus.Faulted);
@@ -52,8 +52,6 @@
         }
 
         #region Privates
-
-        SplunkClient client = null;
 
         #endregion
     }

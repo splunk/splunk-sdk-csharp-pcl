@@ -107,17 +107,25 @@ namespace Splunk.Sdk
             Contract.Requires(username != null);
             Contract.Requires(password != null);
 
-            using (var content = new StringContent(string.Format("username={0}\npassword={1}", username, password)))
+            using (var content = new StringContent(string.Format("username={0}&password={1}", username, password)))
             {
                 HttpResponseMessage message = await this.client.PostAsync(this.CreateUri(new string[] { "auth", "login" }), content);
                 string messageBody = await message.Content.ReadAsStringAsync();
                 
                 if (!message.IsSuccessStatusCode)
                 {
+                    // TODO: Parse message body into a list of messages. The message body looks like this:
+                    // <?xml version="1.0' encoding="UTF-8"?>\n
+                    // <response>
+	                //    <messages>    
+		            //        <msg type="WARN">Login failed</msg>
+	                //    </messages>
+                    // </response>
+
                     throw new SplunkRequestException(message.StatusCode, message.ReasonPhrase, details: messageBody);
                 }
-
-                this.SessionKey = XDocument.Parse(messageBody).Element("sessionKey").Value;
+                var response = XDocument.Parse(messageBody);
+                this.SessionKey = response.Element("response").Element("sessionKey").Value;
             }
         }
 

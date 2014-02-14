@@ -125,40 +125,36 @@ namespace Splunk.Sdk
         /// <returns></returns>
         public async Task<XDocument> GetDocument(Namespace @namespace, string[] resource, IDictionary<string, object> parameters = null)
         {
-            // TODO: Use this.client.GetAsync to get the error handling behavior we want
-            // TODO: Encapsulate error handling logic
-
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
 
-            string messageBody = await this.client.GetStringAsync(this.CreateUri(@namespace, resource, parameters));
-            
-            return XDocument.Parse(messageBody);
+            HttpResponseMessage response = await this.client.GetAsync(this.CreateUri(@namespace, resource, parameters));
+            return this.ReadDocument(response).Result;
         }
 
         public async Task<XDocument> GetDocument(string[] resource, IDictionary<string, object> parameters = null)
         {
-            // TODO: Use this.client.GetAsync to get the error handling behavior we want
-
             Contract.Requires(resource != null);
-            string messageBody = await this.client.GetStringAsync(this.CreateUri(resource, parameters));
-            return XDocument.Parse(messageBody);
+
+            HttpResponseMessage response = await this.client.GetAsync(this.CreateUri(resource, parameters));
+            return this.ReadDocument(response).Result;
         }
 
         public async Task<Stream> GetDocumentStream(Namespace @namespace, string[] resource, IDictionary<string, object> parameters)
         {
-            // TODO: Use this.client.GetAsync to get the error handling behavior we want
+            Contract.Requires(@namespace != null);
+            Contract.Requires(resource != null);
 
-            Stream stream = await this.client.GetStreamAsync(this.CreateUri(@namespace, resource, parameters));
-            return stream;
+            HttpResponseMessage response = await this.client.GetAsync(this.CreateUri(@namespace, resource, parameters));
+            return this.ReadDocumentStream(response).Result;
         }
 
         public async Task<Stream> GetDocumentStream(string[] resource, IDictionary<string, object> parameters)
         {
-            // TODO: Use this.client.GetAsync to get the error handling behavior we want
+            Contract.Requires(resource != null);
 
-            Stream stream = await this.client.GetStreamAsync(this.CreateUri(resource, parameters));
-            return stream;
+            HttpResponseMessage response = await this.client.GetAsync(this.CreateUri(resource, parameters));
+            return this.ReadDocumentStream(response).Result;
         }
 
         public async Task<XDocument> Post(Namespace @namespace, string[] resource, IDictionary<string, object> parameters)
@@ -211,14 +207,14 @@ namespace Splunk.Sdk
 
             builder.Path = string.Join("/", from segment in segments select Uri.EscapeUriString(segment));
 
-            if (parameters != null)
-            {
-                builder.Query = string.Join("&", 
-                    from parameter in parameters 
-                    select string.Join("=", 
-                        Uri.EscapeUriString(parameter.Key), 
-                        Uri.EscapeUriString(parameter.Value.ToString())));
-            }
+            if (parameters == null)
+                return builder.Uri;
+
+            builder.Query = string.Join("&", 
+                from parameter in parameters 
+                select string.Join("=", 
+                    Uri.EscapeUriString(parameter.Key), 
+                    Uri.EscapeUriString(parameter.Value.ToString())));
 
             return builder.Uri;
         }
@@ -248,6 +244,27 @@ namespace Splunk.Sdk
                 throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: body);
             }
             return XDocument.Parse(body);
+        }
+
+        private async Task<Stream> ReadDocumentStream(HttpResponseMessage response)
+        {
+            Stream stream = await response.Content.ReadAsStreamAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // TODO: Parse message body into a list of messages. The message body looks like this:
+                // <?xml version="1.0' encoding="UTF-8"?>\n
+                // <response>
+                //    <messages>    
+                //        <msg type="WARN">Login failed</msg>
+                //    </messages>
+                // </response>
+
+                // TODO: Read details
+                throw new SplunkRequestException(response.StatusCode, response.ReasonPhrase, details: null);
+            }
+
+            return stream;
         }
 
         #endregion

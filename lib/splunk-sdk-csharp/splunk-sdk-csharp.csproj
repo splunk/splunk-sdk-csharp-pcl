@@ -36,13 +36,19 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App.cs" />
+    <Compile Include="AtomFeed.cs" />
+    <Compile Include="Entity.cs" />
+    <Compile Include="EntityCollection.cs" />
+    <Compile Include="Job.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageType.cs" />
-    <Compile Include="SplunkRequestException.cs" />
+    <Compile Include="RequestException.cs" />
     <Compile Include="Protocol.cs" />
+    <Compile Include="Service.cs" />
     <Compile Include="SharingMode.cs" />
     <Compile Include="Namespace.cs" />
-    <Compile Include="SplunkClient.cs" />
+    <Compile Include="Context.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

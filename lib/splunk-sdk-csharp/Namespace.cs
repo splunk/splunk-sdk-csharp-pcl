@@ -50,14 +50,19 @@ namespace Splunk.Sdk
 
         #region Properties
 
-        public bool IsSpecific
-        {
-            get { return this.User != AllUsers && this.App != AllApps; }
-        }
-
         public string App 
         { get; private set; }
-        
+
+        public bool IsSpecific
+        {
+            get { return !this.IsWildcard; }
+        }
+
+        public bool IsWildcard
+        {
+            get { return this.User == AllUsers || this.App == AllApps; }
+        }
+
         public string User
         { get; private set; }
 

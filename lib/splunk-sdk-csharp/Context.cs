@@ -111,12 +111,12 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocument(Namespace @namespace, string[] resource, IDictionary<string, object> parameters = null)
+        public async Task<XDocument> GetDocument(Namespace @namespace, IEnumerable<string> resource, IReadOnlyDictionary<string, object> parameters = null)
         {
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
 
-            HttpResponseMessage response = await this.client.GetAsync(this.CreateUri(@namespace, resource, parameters));
+            HttpResponseMessage response = await this.client.GetAsync(this.CreateServicesUri(@namespace, resource, parameters));
             return await this.ReadDocument(response);
         }
 
@@ -126,11 +126,11 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocument(string[] resource, IDictionary<string, object> parameters = null)
+        public async Task<XDocument> GetDocument(IEnumerable<string> resource, IReadOnlyDictionary<string, object> parameters = null)
         {
             Contract.Requires(resource != null);
 
-            HttpResponseMessage response = await this.client.GetAsync(this.CreateUri(resource, parameters));
+            HttpResponseMessage response = await this.client.GetAsync(this.CreateServicesUri(resource, parameters));
             return await this.ReadDocument(response);
         }
 
@@ -141,12 +141,12 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStream(Namespace @namespace, string[] resource, IDictionary<string, object> parameters)
+        public async Task<Stream> GetDocumentStream(Namespace @namespace, IEnumerable<string> resource, IReadOnlyDictionary<string, object> parameters)
         {
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
 
-            HttpResponseMessage response = await this.client.GetAsync(this.CreateUri(@namespace, resource, parameters));
+            HttpResponseMessage response = await this.client.GetAsync(this.CreateServicesUri(@namespace, resource, parameters));
             return await this.ReadDocumentStream(response);
         }
 
@@ -156,11 +156,11 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStream(string[] resource, IDictionary<string, object> parameters)
+        public async Task<Stream> GetDocumentStream(IEnumerable<string> resource, IReadOnlyDictionary<string, object> parameters)
         {
             Contract.Requires(resource != null);
 
-            HttpResponseMessage response = await this.client.GetAsync(this.CreateUri(resource, parameters));
+            HttpResponseMessage response = await this.client.GetAsync(this.CreateServicesUri(resource, parameters));
             return await this.ReadDocumentStream(response);
         }
 
@@ -182,7 +182,7 @@ namespace Splunk.Sdk
 
             using (var content = new StringContent(string.Format("username={0}&password={1}", username, password)))
             {
-                HttpResponseMessage response = await this.client.PostAsync(this.CreateUri(new string[] { "auth", "login" }), content);
+                HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(new string[] { "auth", "login" }, null), content);
                 XDocument document = await this.ReadDocument(response);
                 this.SessionKey = document.Element("response").Element("sessionKey").Value;
             }
@@ -195,9 +195,9 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> Post(Namespace @namespace, string[] resource, IDictionary<string, object> parameters)
+        public async Task<XDocument> Post(Namespace @namespace, IEnumerable<string> resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            HttpResponseMessage response = await this.client.PostAsync(this.CreateUri(@namespace, resource), this.CreateContent(parameters));
+            HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(@namespace, resource, null), this.CreateContent(parameters));
             return await this.ReadDocument(response);
         }
 
@@ -207,9 +207,9 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> Post(string[] resource, IDictionary<string, object> parameters)
+        public async Task<XDocument> Post(IEnumerable<string> resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            HttpResponseMessage response = await this.client.PostAsync(this.CreateUri(resource), this.CreateContent(parameters));
+            HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(resource, null), this.CreateContent(parameters));
             return await ReadDocument(response);
         }
 
@@ -222,10 +222,10 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        private static readonly string[] Scheme = { "http", "https" };
-        private HttpClient client;
+        static readonly string[] Scheme = { "http", "https" };
+        HttpClient client;
 
-        private StringContent CreateContent(IDictionary<string, object> parameters)
+        StringContent CreateContent(IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var body = string.Join("&",
                 from parameter in parameters
@@ -241,23 +241,23 @@ namespace Splunk.Sdk
             return stringContent;
         }
 
-        private IEnumerable<Message> CreateMessages(XDocument document)
+        IEnumerable<Message> CreateMessages(XDocument document)
         {
             var messages = from element in document.Element("response").Element("messages").Elements() select new Message(element);
             return messages;
         }
 
-        private Uri CreateUri(Namespace @namespace, string[] resource, IDictionary<string, object> parameters = null)
+        Uri CreateServicesUri(Namespace ns, IEnumerable<string> resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            return this.CreateUri(new string[] { string.Empty, "servicesNS", @namespace.User, @namespace.App }.Concat(resource), parameters);
+            return this.CreateUri(new string[] { "servicesNS", ns.User, ns.App }.Concat(resource), parameters);
         }
 
-        private Uri CreateUri(string[] resource, IDictionary<string, object> parameters = null)
+        Uri CreateServicesUri(IEnumerable<string> resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            return this.CreateUri(new string[] { string.Empty, "services" }.Concat(resource), parameters);
+            return CreateUri(new string[] { "services" }.Concat(resource), parameters);
         }
 
-        private Uri CreateUri(IEnumerable<string> segments, IDictionary<string, object> parameters)
+        Uri CreateUri(IEnumerable<string> segments, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var builder = new UriBuilder(Scheme[(int)this.Protocol], this.Host, this.Port);
 
@@ -275,7 +275,7 @@ namespace Splunk.Sdk
             return builder.Uri;
         }
 
-        private void Initialize(Protocol protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler)
+        void Initialize(Protocol protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler)
         {
             this.Protocol = protocol;
             this.Host = host;
@@ -283,7 +283,7 @@ namespace Splunk.Sdk
             this.client = this.client == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
         }
 
-        private async Task<XDocument> ReadDocument(HttpResponseMessage response)
+        async Task<XDocument> ReadDocument(HttpResponseMessage response)
         {
             var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
 
@@ -294,7 +294,7 @@ namespace Splunk.Sdk
             return document;
         }
 
-        private async Task<Stream> ReadDocumentStream(HttpResponseMessage response)
+        async Task<Stream> ReadDocumentStream(HttpResponseMessage response)
         {
             Stream documentStream = await response.Content.ReadAsStreamAsync();
 

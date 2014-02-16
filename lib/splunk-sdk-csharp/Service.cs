@@ -23,12 +23,28 @@ namespace Splunk.Sdk
 
     public class Service
     {
-        public Service(Context context, Namespace ns)
+        public Service(Context context, Namespace @namespace = null)
         {
             Contract.Requires(context != null);
-            this.context = context;
-            this.ns = ns; 
+            this.Context = context;
+            this.Namespace = @namespace;
         }
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the <see cref="Context"/> instance for this <see cref="Service"/>.
+        /// </summary>
+        public Context Context
+        { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="Namespace"/> used by this <see cref="Service"/> instance.
+        /// </summary>
+        public Namespace Namespace
+        { get; private set; }
+
+        #endregion
 
         /// <summary>
         /// Retrieves the collection of installed apps.
@@ -37,13 +53,15 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
         /// </remarks>
-        public EntityCollection<App> GetApps()
+        public async Task<EntityCollection<App>> GetApps(IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            return new EntityCollection<App>(this.context, this.ns, Resource.AppsLocal);
+            var apps = new EntityCollection<App>(this.Context, this.Namespace, ResourceName.AppsLocal, parameters);
+            await apps.Refresh();
+            return apps;
         }
 
         /// <summary>
-        /// Retrieves the list of all Splunk capabilities.
+        /// Retrieves the list of all Splunk system capabilities.
         /// </summary>
         /// <returns></returns>
         /// <remarks>
@@ -51,12 +69,12 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<IReadOnlyList<string>> GetCapabilities()
         {
-            XDocument document = await context.GetDocument(this.ns, Resource.Capabilities);
-            
+            XDocument document = await this.Context.GetDocument(this.Namespace, ResourceName.Capabilities);
+
             var feed = new AtomFeed(document);
             var content = (IReadOnlyDictionary<string, object>)feed.Entries[0]["content"];
             var capabilities = (IReadOnlyList<string>)content["capabilities"];
-            
+
             return capabilities;
         }
 
@@ -82,20 +100,29 @@ namespace Splunk.Sdk
       Configurations.new(self)
     end
 
-    ////
-    // Creates a blocking search.
-    //
-    // The +create_oneshot+ method starts a search _query_, and any optional 
-    // arguments specified in a hash (which are identical to those taken by 
-    // +create+). It then blocks until the job finished, and returns the 
-    // results, as transformed by any transforming search commands in _query_ 
-    // (equivalent to calling the +results+ method on a +Job+).
-    //
-    // Returns: a stream readable by +ResultsReader+.
-    //
-    public void Getcreate_oneshot(query, args={})
-      jobs.create_oneshot(query, args)
-    end
+#endif
+
+        /// <summary>
+        /// Creates a search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<Job> Search(string searchString, IEnumerable<KeyValuePair<string, object>> parameters = null)
+        {
+            XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, parameters);
+            
+            string searchId = document.Element("response").Element("sid").Value;
+            var job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
+            await job.Refresh();
+            
+            return job;
+        }
+
+#if false
 
     ////
     // Creates an asynchronous search job.
@@ -161,17 +188,22 @@ namespace Splunk.Sdk
       InputKinds.new(self, PATH_INPUTS)
     end
 
-    ////
-    // Returns a collection of all the search jobs running on Splunk.
-    //
-    // The +Jobs+ object returned is a subclass of +Collection+, but also has
-    // convenience methods for starting oneshot and streaming jobs as well as
-    // creating normal, asynchronous jobs.
-    //
-    // Returns: A +Jobs+ object.
-    public void Getjobs
-      Jobs.new(self)
-    end
+#endif
+
+        /// <summary>
+        /// Retrieves the collection of all running search jobs.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<EntityCollection<Job>> GetJobs(IEnumerable<KeyValuePair<string, object>> parameters)
+        {
+            var apps = new EntityCollection<Job>(this.Context, this.Namespace, ResourceName.Jobs, parameters);
+            await apps.Refresh();
+            return apps;
+        }
+
+#if false
 
     ////
     // Returns a collection of the loggers in Splunk.
@@ -300,22 +332,5 @@ namespace Splunk.Sdk
     end
 
 #endif
-
-        #region Privates
-
-        Context context;
-        Namespace ns;
-
-        #endregion
-
-        #region Types
-
-        static class Resource
-        {
-            public static readonly IReadOnlyList<string> AppsLocal = new string[] { "apps", "local" };
-            public static readonly IReadOnlyList<string> Capabilities = new string[] { "authorization", "capabilities" };
-        }
-
-        #endregion
     }
 }

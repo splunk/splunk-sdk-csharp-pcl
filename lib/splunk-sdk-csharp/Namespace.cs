@@ -27,7 +27,7 @@ namespace Splunk.Sdk
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the Namespace class with a user and app name.
+        /// Initializes a new instance of the <see cref="Namespace"/> class with a user and app name.
         /// </summary>
         /// <param name="user">The name of a user or Namespace.AllUsers</param>
         /// <param name="app">The name of an application or Namespace.AllApps</param>

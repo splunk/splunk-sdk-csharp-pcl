@@ -16,31 +16,83 @@
 
 namespace Splunk.Sdk
 {
+    using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Xml.Linq;
 
     public class EntityCollection<T> : IReadOnlyList<T> where T : Entity
     {
-        internal EntityCollection(Context context, Namespace ns, IEnumerable<string> resource)
-        { }
+        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<KeyValuePair<string, object>> parameters)
+        {
+            this.Context = context;
+            this.Namespace = @namespace;
+            this.Name = name;
+
+            if (parameters != null)
+            {
+                this.Parameters = parameters.ToDictionary(pair => pair.Key, pair => pair.Value);
+            }
+        }
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the <see cref="Context"/> instance for this <see cref="EntityCollection"/>.
+        /// </summary>
+        public Context Context
+        { get; private set; }
+
+        /// <summary>
+        /// Gets the number of entites in this <see cref="EntityCollection"/>.
+        /// </summary>
+        public int Count
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        /// <summary>
+        /// Gets the resource name of this <see cref="EntityCollection"/>.
+        /// </summary>
+        public ResourceName Name
+        { get; private set; }
+
+        /// <summary>
+        /// Gets the <see cref="Namespace"/> containing this <see cref="EntityCollection"/>.
+        /// </summary>
+        public Namespace Namespace
+        { get; private set; }
 
         public T this[int index]
         {
-            get { throw new System.NotImplementedException(); }
+            get { throw new NotImplementedException(); }
         }
 
-        public int Count
-        {
-            get { throw new System.NotImplementedException(); }
-        }
+        public IReadOnlyDictionary<string, object> Parameters
+        { get; private set; }
+
+        #endregion
+
+        #region Methods
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+       IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
+
+        public async Task Refresh()
+        {
+            XDocument document = await this.Context.GetDocument(this.Namespace, this.Name, this.Parameters);
+            // TODO: Convert to object model
+        }
+        
+        #endregion
     }
 }

@@ -19,30 +19,41 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Xml.Linq;
 
     public class Entity
     {
-        internal Entity(Context context, Namespace @namespace, IEnumerable<string> resource, string name, IDictionary<string, object> state = null)
+        #region Constructors
+
+        protected Entity(Context context, Namespace @namespace, ResourceName collection, string name, IEnumerable<KeyValuePair<string, object>> state = null)
         {
-            Contract.Requires(@namespace == null || @namespace.IsSpecific);
             Contract.Requires(context != null);
-            Contract.Requires(resource != null);
             Contract.Requires(!string.IsNullOrEmpty(name));
+            Contract.Requires(@namespace == null || @namespace.IsSpecific);
 
             this.Context = context;
             this.Namespace = @namespace;
-            this.Resource = (IReadOnlyList<string>)resource;
+            this.Collection = collection;
             this.Name = name;
-            this.State = (IReadOnlyDictionary<string, object>)state;
 
-            this.resourceName = resource.Concat(new string[] { name }).ToArray();
+            this.resourceName = new ResourceName(collection.Concat(new string[] { name }));
 
-            if (this.State == null)
-                this.Refresh();
+            if (state != null)
+            {
+                this.State = state.ToDictionary(pair => pair.Key, pair => pair.Value);
+            }
         }
 
+        #endregion
+
         #region Properties
+
+        /// <summary>
+        /// Gets the path to the collection containing this <see cref="Entity"/>.
+        /// </summary>
+        public ResourceName Collection
+        { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="Context"/> instance for this <see cref="Entity"/>.
@@ -63,12 +74,6 @@ namespace Splunk.Sdk
         { get; private set; }
 
         /// <summary>
-        /// Gets the path to the collection containing this <see cref="Entity"/>.
-        /// </summary>
-        public IReadOnlyList<string> Resource
-        { get; private set; }
-
-        /// <summary>
         /// Gets the state of this <see cref="Entity"/>.
         /// </summary>
         public IReadOnlyDictionary<string, object> State
@@ -81,10 +86,10 @@ namespace Splunk.Sdk
         /// <summary>
         /// Refreshes the cached state of this <see cref="Entity"/>.
         /// </summary>
-        public async void Refresh()
+        public async Task Refresh()
         {
             XDocument document = await this.Context.GetDocument(this.Namespace, this.resourceName);
-        
+
 #if false
             if response.code == 204 or response.body.nil?
             // This code is here primarily to handle the case of a job not yet being
@@ -92,16 +97,16 @@ namespace Splunk.Sdk
             raise EntityNotReady.new((@resource + [name]).join("/"))
           end
 #endif
-          // Gurantee: unique result because entities have specific namespaces
-          var feed = new AtomFeed(document);
-          this.State = feed.Entries[0];
+            // Gurantee: unique result because entities have specific namespaces
+            var feed = new AtomFeed(document);
+            this.State = feed.Entries[0];
         }
 
         #endregion
 
         #region privates
 
-        IReadOnlyList<string> resourceName;
+        ResourceName resourceName;
 
         #endregion
     }

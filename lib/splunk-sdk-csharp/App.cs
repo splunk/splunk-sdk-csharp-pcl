@@ -20,7 +20,7 @@ namespace Splunk.Sdk
 
     public class App : Entity
     {
-        internal App(Context context, Namespace ns, IEnumerable<string> resource, string name, IDictionary<string, object> state = null) : base(context, ns, resource, name, state)
+        internal App(Context context, Namespace @namespace, ResourceName collection, string name, IEnumerable<KeyValuePair<string, object>> state = null) : base(context, @namespace, collection, name, state)
         { }
     }
 }

@@ -20,7 +20,8 @@ namespace Splunk.Sdk
 
     public class Job : Entity
     {
-        internal Job(Context context, Namespace ns, IEnumerable<string> resource, string name, IDictionary<string, object> state = null) : base(context, ns, resource, name, state)
+        internal Job(Context context, Namespace @namespace, ResourceName collection, string name, IDictionary<string, object> state = null) 
+            : base(context, @namespace, collection, name, state)
         { }
     }
 }

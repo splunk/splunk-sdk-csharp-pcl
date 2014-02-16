@@ -195,7 +195,7 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> Post(Namespace @namespace, IEnumerable<string> resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<XDocument> Post(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(@namespace, resource, null), this.CreateContent(parameters));
             return await this.ReadDocument(response);

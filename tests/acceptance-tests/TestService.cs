@@ -16,13 +16,54 @@
 
 namespace Splunk.Sdk
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
+    using System.Net;
     using System.Threading.Tasks;
+    using System.Xml.Linq;
 
-    class TestService
+    [TestClass]
+    public class TestService
     {
+        [TestMethod]
+        public void Construct()
+        {
+            service = new Service(new Context(Protocol.Https, "localhost", 8089), Namespace.Default);
+        }
+
+        [TestMethod]
+        public void Login()
+        {
+            Task task;
+            
+            task = service.Login("admin", "changeme");
+            task.Wait();
+
+            Assert.AreEqual(task.Status, TaskStatus.RanToCompletion);
+            Assert.IsNotNull(service.Context.SessionKey);
+
+            task = service.Login("admin", "bad-password");
+
+            try
+            {
+                task.Wait();
+            }
+            catch (Exception)
+            {
+                Assert.AreEqual(task.Status, TaskStatus.Faulted);
+                Assert.IsInstanceOfType(task.Exception, typeof(AggregateException));
+
+                var aggregateException = (AggregateException)task.Exception;
+                Assert.AreEqual(aggregateException.InnerExceptions.Count, 1);
+                Assert.IsInstanceOfType(aggregateException.InnerExceptions[0], typeof(RequestException));
+
+                var requestException = (RequestException)(aggregateException.InnerExceptions[0]);
+                Assert.AreEqual(requestException.StatusCode, HttpStatusCode.Unauthorized);
+                Assert.AreEqual(requestException.Details.Count, 1);
+                Assert.AreEqual(requestException.Details[0], new Message(XElement.Parse(@"<msg type=""WARN"">Login failed</msg>")));
+            }
+        }
+
+        static Service service;
     }
 }

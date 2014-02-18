@@ -16,18 +16,11 @@
 
 namespace Splunk.Sdk
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
-    using System.Collections.Generic;
-    using System.Dynamic;
     using System.Net;
-    using System.Net.Http;
-    using System.Net.Security;
     using System.Threading.Tasks;
     using System.Xml.Linq;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-    using Splunk.Sdk;
 
     [TestClass]
     public class TestContext

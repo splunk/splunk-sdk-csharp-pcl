@@ -33,18 +33,25 @@ namespace Splunk.Sdk
         /// <param name="app">The name of an application or Namespace.AllApps</param>
         public Namespace(string user, string app)
         {
-            Contract.Requires<ArgumentNullException>(user != null);
-            Contract.Requires<ArgumentNullException>(app != null);
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(user), "user");
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(app), "app");
 
             this.User = user;
             this.App = app;
+        }
+
+        private Namespace()
+        {
+            this.User = this.App = "";
         }
 
         #endregion
 
         #region Fields
 
-        public const string AllUsers = "-", AllApps = "-";
+        public static readonly Namespace Default = new Namespace();
+        public const string AllUsers = "-";
+        public const string AllApps = "-";
 
         #endregion
 
@@ -72,7 +79,7 @@ namespace Splunk.Sdk
 
         public override string ToString()
         {
-            return string.Join("/", "servicesNS", this.User, this.App);
+            return this == Default ? "services" : string.Join("/", "servicesNS", Uri.EscapeUriString(this.User), Uri.EscapeUriString(this.App));
         }
 
         #endregion

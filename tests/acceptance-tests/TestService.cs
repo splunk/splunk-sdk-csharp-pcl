@@ -16,15 +16,13 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.Collections.Generic;
-    using System.Dynamic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
 
-    public class App : Entity
+    class TestService
     {
-        public App()
-        { }
-
-        internal App(Context context, Namespace @namespace, ResourceName collection, string name, ExpandoObject record = null) : base(context, @namespace, collection, name, record)
-        { }
     }
 }

@@ -18,17 +18,29 @@ namespace Splunk.Sdk
 {
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Dynamic;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
     public class Service
     {
-        public Service(Context context, Namespace @namespace = null)
+        #region Constructors
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="namespace"></param>
+        public Service(Context context, Namespace @namespace)
         {
             Contract.Requires(context != null);
+            Contract.Requires(@namespace != null);
+
             this.Context = context;
             this.Namespace = @namespace;
         }
+
+        #endregion
 
         #region Properties
 
@@ -46,6 +58,23 @@ namespace Splunk.Sdk
 
         #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Provides user authentication.
+        /// </summary>
+        /// <param name="username">Splunk account username.</param>
+        /// <param name="password">Splunk account password for username.</param>
+        /// <remarks>This method uses the Splunk <a href="http://goo.gl/yXJX75">
+        /// auth/login</a> endpoint. The session key that it returns is used for 
+        /// subsequent requests. It is accessible via the <see cref="SessionKey"/>
+        /// property.
+        /// </remarks>
+        public async Task Login(string username, string password)
+        {
+            await this.Context.Login(username, password);
+        }
+
         /// <summary>
         /// Retrieves the collection of installed apps.
         /// </summary>
@@ -56,7 +85,7 @@ namespace Splunk.Sdk
         public async Task<EntityCollection<App>> GetApps(IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var apps = new EntityCollection<App>(this.Context, this.Namespace, ResourceName.AppsLocal, parameters);
-            await apps.Refresh();
+            await apps.Update();
             return apps;
         }
 
@@ -71,14 +100,53 @@ namespace Splunk.Sdk
         {
             XDocument document = await this.Context.GetDocument(this.Namespace, ResourceName.Capabilities);
 
-            var feed = new AtomFeed(document);
-            var content = (IReadOnlyDictionary<string, object>)feed.Entries[0]["content"];
-            var capabilities = (IReadOnlyList<string>)content["capabilities"];
+            var feed = new AtomFeed<Entity>(this.Context, ResourceName.Capabilities, document);
+            Entity entity = feed.Entities[0];
+            dynamic capabilities = entity.Record.Capabilities;
 
             return capabilities;
         }
 
+        /// <summary>
+        /// Retrieves the collection of all running search jobs.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<EntityCollection<Job>> GetJobs(IEnumerable<KeyValuePair<string, object>> parameters)
+        {
+            var jobs = new EntityCollection<Job>(this.Context, this.Namespace, ResourceName.Jobs, parameters);
+            await jobs.Update();
+            return jobs;
+        }
+
+        public override string ToString()
+        {
+            return string.Join("/", this.Context.ToString(), this.Namespace.ToString());
+        }
+
+        /// <summary>
+        /// Creates a search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<Job> Search(string searchString, IEnumerable<KeyValuePair<string, object>> parameters = null)
+        {
+            XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, parameters);
+            
+            string searchId = document.Element("response").Element("sid").Value;
+            var job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
+            await job.Update<Job>();
+            
+            return job;
+        }
+
 #if false
+
     ////
     // Returns a +Collection+ of all the configuration files visible on Splunk.
     //
@@ -99,30 +167,6 @@ namespace Splunk.Sdk
     public void Getconfs
       Configurations.new(self)
     end
-
-#endif
-
-        /// <summary>
-        /// Creates a search <see cref="Job"/>.
-        /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
-        /// </remarks>
-        public async Task<Job> Search(string searchString, IEnumerable<KeyValuePair<string, object>> parameters = null)
-        {
-            XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, parameters);
-            
-            string searchId = document.Element("response").Element("sid").Value;
-            var job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
-            await job.Refresh();
-            
-            return job;
-        }
-
-#if false
 
     ////
     // Creates an asynchronous search job.
@@ -187,23 +231,6 @@ namespace Splunk.Sdk
     public void Getinputs
       InputKinds.new(self, PATH_INPUTS)
     end
-
-#endif
-
-        /// <summary>
-        /// Retrieves the collection of all running search jobs.
-        /// </summary>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
-        /// </remarks>
-        public async Task<EntityCollection<Job>> GetJobs(IEnumerable<KeyValuePair<string, object>> parameters)
-        {
-            var apps = new EntityCollection<Job>(this.Context, this.Namespace, ResourceName.Jobs, parameters);
-            await apps.Refresh();
-            return apps;
-        }
-
-#if false
 
     ////
     // Returns a collection of the loggers in Splunk.
@@ -332,5 +359,6 @@ namespace Splunk.Sdk
     end
 
 #endif
+        #endregion
     }
 }

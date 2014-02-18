@@ -17,11 +17,15 @@
 namespace Splunk.Sdk
 {
     using System.Collections.Generic;
+    using System.Dynamic;
 
     public class Job : Entity
     {
-        internal Job(Context context, Namespace @namespace, ResourceName collection, string name, IDictionary<string, object> state = null) 
-            : base(context, @namespace, collection, name, state)
+        public Job()
+        { }
+
+        internal Job(Context context, Namespace @namespace, ResourceName collection, string name, ExpandoObject record = null) 
+            : base(context, @namespace, collection, name, record)
         { }
     }
 }

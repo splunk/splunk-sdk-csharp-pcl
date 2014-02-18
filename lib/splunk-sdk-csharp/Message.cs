@@ -16,15 +16,16 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.Diagnostics.Contracts;
+    using System.IO;
     using System.Xml.Linq;
 
     public class Message
     {
         internal Message(XElement message)
         {
-            Contract.Requires(message != null);
-            Contract.Requires(message.Name == "msg");
+            Contract.Requires<ArgumentException>(message != null && message.Name == "msg", "message");
 
             string type = message.Attribute("type").Value;
 
@@ -43,8 +44,7 @@ namespace Splunk.Sdk
                     this.Type = MessageType.Error;
                     break;
                 default:
-                    Contract.Requires(false, string.Format("Unrecognized message type: {0}", type));
-                    break;
+                    throw new InvalidDataException(string.Format("Unrecognized message type: {0}", type));
             }
             
             this.Text = message.Value;

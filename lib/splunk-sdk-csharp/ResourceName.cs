@@ -16,10 +16,11 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    public struct ResourceName : IReadOnlyList<string>
+    public class ResourceName : IReadOnlyList<string>
     {
         #region Constructors
 
@@ -45,6 +46,7 @@ namespace Splunk.Sdk
         public static readonly ResourceName Info = new ResourceName("server", "info");
         public static readonly ResourceName Inputs = new ResourceName("data", "inputs");
         public static readonly ResourceName Jobs = new ResourceName("search", "jobs");
+        public static readonly ResourceName Login = new ResourceName("auth", "login");
         public static readonly ResourceName Logger = new ResourceName("server", "logger");
         public static readonly ResourceName Messages = new ResourceName("messages");
         public static readonly ResourceName ModularInputKinds = new ResourceName("data", "modular-inputs");
@@ -84,7 +86,7 @@ namespace Splunk.Sdk
 
         public override string ToString()
         {
-            return string.Join("/", this);
+            return string.Join("/", from segment in this select Uri.EscapeUriString(segment));
         }
 
         #endregion

@@ -19,12 +19,18 @@ namespace Splunk.Sdk
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
-    public class EntityCollection<T> : IReadOnlyList<T> where T : Entity
+    public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity, new()
     {
+        static void Test()
+        {
+
+        }
+
         internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             this.Context = context;
@@ -40,6 +46,23 @@ namespace Splunk.Sdk
         #region Properties
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public TEntity this[int index]
+        {
+            get
+            {
+                if (this.feed == null)
+                {
+                    throw new InvalidOperationException();
+                }
+                return this.feed.Entities[index];
+            }
+        }
+
+        /// <summary>
         /// Gets the <see cref="Context"/> instance for this <see cref="EntityCollection"/>.
         /// </summary>
         public Context Context
@@ -50,7 +73,14 @@ namespace Splunk.Sdk
         /// </summary>
         public int Count
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                if (this.feed == null)
+                {
+                    throw new InvalidOperationException();
+                }
+                return this.feed.Entities.Count;
+            }
         }
 
         /// <summary>
@@ -65,11 +95,9 @@ namespace Splunk.Sdk
         public Namespace Namespace
         { get; private set; }
 
-        public T this[int index]
-        {
-            get { throw new NotImplementedException(); }
-        }
-
+        /// <summary>
+        /// Gets the parameters for this <see cref="EntityCollection"/>.
+        /// </summary>
         public IReadOnlyDictionary<string, object> Parameters
         { get; private set; }
 
@@ -77,22 +105,40 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<TEntity> GetEnumerator()
         {
-            throw new NotImplementedException();
+            if (this.feed == null)
+            {
+                throw new InvalidOperationException();
+            }
+            return this.feed.Entities.GetEnumerator();
         }
 
-       IEnumerator IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            if (this.feed == null)
+            {
+                throw new InvalidOperationException();
+            }
+            return ((IEnumerable)this.feed.Entities).GetEnumerator();
         }
 
-        public async Task Refresh()
+        public async Task Update()
         {
-            XDocument document = await this.Context.GetDocument(this.Namespace, this.Name, this.Parameters);
-            // TODO: Convert to object model
+            Stream stream = await this.Context.GetDocumentStream(this.Namespace, this.Name, this.Parameters);
+            var document = XDocument.Load(stream);
+
+            // TODO: Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
+            // See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom
+            this.feed = new AtomFeed<TEntity>(this.Context, this.Name, document);
         }
-        
+
+        #endregion
+
+        #region Privates
+
+        AtomFeed<TEntity> feed;
+
         #endregion
     }
 }

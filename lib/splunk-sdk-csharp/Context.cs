@@ -111,7 +111,7 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocument(Namespace @namespace, IEnumerable<string> resource, IReadOnlyDictionary<string, object> parameters = null)
+        public async Task<XDocument> GetDocument(Namespace @namespace, ResourceName resource, IReadOnlyDictionary<string, object> parameters = null)
         {
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
@@ -126,12 +126,9 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocument(IEnumerable<string> resource, IReadOnlyDictionary<string, object> parameters = null)
+        public async Task<XDocument> GetDocument(ResourceName resource, IReadOnlyDictionary<string, object> parameters = null)
         {
-            Contract.Requires(resource != null);
-
-            HttpResponseMessage response = await this.client.GetAsync(this.CreateServicesUri(resource, parameters));
-            return await this.ReadDocument(response);
+            return await this.GetDocument(Namespace.Default, resource, parameters);
         }
 
         /// <summary>
@@ -141,7 +138,7 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStream(Namespace @namespace, IEnumerable<string> resource, IReadOnlyDictionary<string, object> parameters)
+        public async Task<Stream> GetDocumentStream(Namespace @namespace, ResourceName resource, IReadOnlyDictionary<string, object> parameters)
         {
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
@@ -156,12 +153,9 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStream(IEnumerable<string> resource, IReadOnlyDictionary<string, object> parameters)
+        public async Task<Stream> GetDocumentStream(ResourceName resource, IReadOnlyDictionary<string, object> parameters)
         {
-            Contract.Requires(resource != null);
-
-            HttpResponseMessage response = await this.client.GetAsync(this.CreateServicesUri(resource, parameters));
-            return await this.ReadDocumentStream(response);
+            return await this.GetDocumentStream(Namespace.Default, resource, parameters);
         }
 
         /// <summary>
@@ -182,7 +176,7 @@ namespace Splunk.Sdk
 
             using (var content = new StringContent(string.Format("username={0}&password={1}", username, password)))
             {
-                HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(new string[] { "auth", "login" }, null), content);
+                HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(ResourceName.Login, null), content);
                 XDocument document = await this.ReadDocument(response);
                 this.SessionKey = document.Element("response").Element("sessionKey").Value;
             }
@@ -207,7 +201,7 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> Post(IEnumerable<string> resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<XDocument> Post(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(resource, null), this.CreateContent(parameters));
             return await ReadDocument(response);
@@ -247,36 +241,41 @@ namespace Splunk.Sdk
             return messages;
         }
 
-        Uri CreateServicesUri(Namespace ns, IEnumerable<string> resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        Uri CreateServicesUri(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            return this.CreateUri(new string[] { "servicesNS", ns.User, ns.App }.Concat(resource), parameters);
-        }
-
-        Uri CreateServicesUri(IEnumerable<string> resource, IEnumerable<KeyValuePair<string, object>> parameters)
-        {
-            return CreateUri(new string[] { "services" }.Concat(resource), parameters);
-        }
-
-        Uri CreateUri(IEnumerable<string> segments, IEnumerable<KeyValuePair<string, object>> parameters)
-        {
-            var builder = new UriBuilder(Scheme[(int)this.Protocol], this.Host, this.Port);
-
-            builder.Path = string.Join("/", from segment in segments select Uri.EscapeUriString(segment));
-
+            var builder = new StringBuilder(this.ToString());
+            
+            builder.Append(@namespace.ToString());
+            builder.Append(resource.ToString());
+            
             if (parameters == null)
-                return builder.Uri;
+                return new Uri(builder.ToString());
 
-            builder.Query = string.Join("&", 
-                from parameter in parameters 
-                select string.Join("=", 
-                    Uri.EscapeUriString(parameter.Key), 
-                    Uri.EscapeUriString(parameter.Value.ToString())));
+            builder.Append('?');
 
-            return builder.Uri;
+            foreach (var parameter in parameters)
+            {
+                builder.Append(Uri.EscapeUriString(parameter.Key));
+                builder.Append('=');
+                builder.Append(Uri.EscapeUriString(parameter.Value.ToString()));
+                builder.Append('&');
+            }
+
+            builder.Length = builder.Length - 1; // Removes trailing '&'
+
+            return new Uri(builder.ToString());
+        }
+
+        Uri CreateServicesUri(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        {
+            return CreateServicesUri(Namespace.Default, resource, parameters);
         }
 
         void Initialize(Protocol protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler)
         {
+            Contract.Requires(!string.IsNullOrEmpty(host));
+            Contract.Requires(0 <= port && port <= 65535);
+            
             this.Protocol = protocol;
             this.Host = host;
             this.Port = port;

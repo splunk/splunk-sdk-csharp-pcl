@@ -20,17 +20,16 @@ using System.Runtime.InteropServices;
 
 // General Information
 
-[assembly: AssemblyTitle("acceptance-tests")]
+[assembly: AssemblyTitle("unit-tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Splunk Inc.")]
-[assembly: AssemblyProduct("acceptance-tests")]
+[assembly: AssemblyProduct("splunk-sdk-csharp")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Operational information
-
 [assembly: ComVisible(false)]
 
 // Version information

@@ -16,21 +16,30 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Dynamic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Xml;
     using System.Xml.Linq;
 
     public class Entity
     {
         #region Constructors
 
-        protected Entity(Context context, Namespace @namespace, ResourceName collection, string name, IEnumerable<KeyValuePair<string, object>> state = null)
+        public Entity()
+        { }
+
+        protected Entity(Context context, Namespace @namespace, ResourceName collection, string name, dynamic record = null)
         {
             Contract.Requires(context != null);
+            Contract.Requires(@namespace != null);
             Contract.Requires(!string.IsNullOrEmpty(name));
-            Contract.Requires(@namespace == null || @namespace.IsSpecific);
+            
+            Contract.Requires(@namespace.IsSpecific);
 
             this.Context = context;
             this.Namespace = @namespace;
@@ -39,9 +48,9 @@ namespace Splunk.Sdk
 
             this.resourceName = new ResourceName(collection.Concat(new string[] { name }));
 
-            if (state != null)
+            if (record != null)
             {
-                this.State = state.ToDictionary(pair => pair.Key, pair => pair.Value);
+                this.Record = record;
             }
         }
 
@@ -53,31 +62,31 @@ namespace Splunk.Sdk
         /// Gets the path to the collection containing this <see cref="Entity"/>.
         /// </summary>
         public ResourceName Collection
-        { get; private set; }
+        { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="Context"/> instance for this <see cref="Entity"/>.
         /// </summary>
         public Context Context
-        { get; private set; }
+        { get; internal set; }
 
         /// <summary>
         /// Gets the name of this <see cref="Entity"/>.
         /// </summary>
         public string Name
-        { get; private set; }
+        { get; internal set; }
 
         /// <summary>
         /// Gets the namespace containing this <see cref="Entity"/>.
         /// </summary>
         public Namespace Namespace
-        { get; private set; }
+        { get; internal set; }
 
         /// <summary>
         /// Gets the state of this <see cref="Entity"/>.
         /// </summary>
-        public IReadOnlyDictionary<string, object> State
-        { get; private set; }
+        public dynamic Record
+        { get; internal set; }
 
         #endregion
 
@@ -86,7 +95,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Refreshes the cached state of this <see cref="Entity"/>.
         /// </summary>
-        public async Task Refresh()
+        public async Task Update<TEntity>() where TEntity: Entity, new()
         {
             XDocument document = await this.Context.GetDocument(this.Namespace, this.resourceName);
 
@@ -98,13 +107,18 @@ namespace Splunk.Sdk
           end
 #endif
             // Gurantee: unique result because entities have specific namespaces
-            var feed = new AtomFeed(document);
-            this.State = feed.Entries[0];
+            var feed = new AtomFeed<TEntity>(this.Context, this.Collection, document);
+            this.Record = feed.Entities[0];
+        }
+
+        public override string ToString()
+        {
+            return string.Join("/", this.Context.ToString(), this.Namespace.ToString(), this.Collection.ToString(), this.Name);
         }
 
         #endregion
 
-        #region privates
+        #region Privates
 
         ResourceName resourceName;
 

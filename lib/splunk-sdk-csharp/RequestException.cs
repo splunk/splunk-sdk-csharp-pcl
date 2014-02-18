@@ -27,9 +27,13 @@ namespace Splunk.Sdk
             : base(string.Format("{0}: {1}", (int)statusCode, reasonPhrase))
         {
             this.Details = new List<Message>(details);
+            this.StatusCode = statusCode;
         }
 
         public IReadOnlyList<Message> Details
+        { get; private set; }
+
+        public HttpStatusCode StatusCode
         { get; private set; }
     }
 }

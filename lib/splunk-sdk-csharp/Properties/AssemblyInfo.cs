@@ -34,6 +34,8 @@ using System.Runtime.InteropServices;
 // Operational information
 
 [assembly: ComVisible(false)]
+
+[assembly: InternalsVisibleTo("acceptance-tests")]
 [assembly: InternalsVisibleTo("unit-tests")]
 
 // Version information

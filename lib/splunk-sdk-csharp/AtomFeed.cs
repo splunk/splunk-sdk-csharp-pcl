@@ -71,12 +71,13 @@ namespace Splunk.Sdk
             }
 
             dynamic record = CreatePropertyValue(content);
+            var dictionary = (IDictionary<string, object>)record;
 
             var entity = new TEntity()
             {
                 Namespace = new Namespace(record.Eai.Acl.Owner, record.Eai.Acl.App),
                 Collection = collection,
-                Name = record.Title,
+                Name = (string)dictionary[dictionary.ContainsKey("Title") ? "Title" : "Sid"], // TODO: Rework Entity so that it pulls its name from record (e.g., create a pair of entity constructors; one that accepts a name and one that accepts a record from which the name is drawn. the base Entity constructor would draw title. derives Entities would draw the name they need)
                 Record = record,
                 Context = context
             };
@@ -86,6 +87,8 @@ namespace Splunk.Sdk
 
         static ExpandoObject CreatePropertyDict(XElement content)
         {
+            // TODO: Remove property name translation because it decreases serialization fidelity
+
             ExpandoObject value = new ExpandoObject();
             var valueDictionary = (IDictionary<string, object>)value;
 
@@ -143,7 +146,7 @@ namespace Splunk.Sdk
                 {
                     throw new InvalidDataException();
                 }
-                dynamic item = value.Add(CreatePropertyValue(element));
+                value.Add(CreatePropertyValue(element));
             }
 
             return value;
@@ -158,12 +161,12 @@ namespace Splunk.Sdk
         {
             if (content.FirstNode == null)
             {
-                return null;
+                return null; // no content is represented by a null value
             }
 
             if (content.FirstNode.NextNode != null)
             {
-                throw new InvalidDataException();
+                throw new InvalidDataException(); // we expect a single value, not multiple values
             }
 
             if (content.FirstNode.NodeType == XmlNodeType.Element)

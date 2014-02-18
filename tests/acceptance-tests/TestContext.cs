@@ -20,6 +20,7 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Dynamic;
     using System.Net;
+    using System.Net.Http;
     using System.Net.Security;
     using System.Threading.Tasks;
     using System.Xml.Linq;
@@ -33,6 +34,11 @@ namespace Splunk.Sdk
     {
         static TestContext()
         {
+            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
+            // 1. Instantiate a WebRequestHandler
+            // 2. Set its ServerCertificateValidationCallback
+            // 3. Instantiate a Splunk.Sdk.Context with the WebRequestHandler
+
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;
@@ -42,7 +48,7 @@ namespace Splunk.Sdk
         [TestMethod]
         public void Construct()
         {
-            Context client = new Context(Protocol.Https, "localhost", 8089);
+            client = new Context(Protocol.Https, "localhost", 8089);
 
             Assert.AreEqual(client.Protocol, Protocol.Https);
             Assert.AreEqual(client.Host, "localhost");
@@ -55,7 +61,6 @@ namespace Splunk.Sdk
         [TestMethod]
         public void Login()
         {
-            Context client = new Context(Protocol.Https, "localhost", 8089);
             Task task;
 
             task = client.Login("admin", "changeme");
@@ -65,12 +70,27 @@ namespace Splunk.Sdk
             Assert.IsNotNull(client.SessionKey);
 
             task = client.Login("admin", "bad-password");
-            task.Wait();
 
-            Assert.AreEqual(task.Status, TaskStatus.Faulted);
-            Assert.IsInstanceOfType(task.Exception, typeof(AggregateException));
+            try
+            {
+                task.Wait();
+            }
+            catch (Exception)
+            {
+                Assert.AreEqual(task.Status, TaskStatus.Faulted);
+                Assert.IsInstanceOfType(task.Exception, typeof(AggregateException));
 
-            // TODO: Add checks for content of AggregateException and verify SplunkRequestException, especially SplunkRequestException.Details.
+                var aggregateException = (AggregateException)task.Exception;
+                Assert.AreEqual(aggregateException.InnerExceptions.Count, 1);
+                Assert.IsInstanceOfType(aggregateException.InnerExceptions[0], typeof(RequestException));
+                
+                var requestException = (RequestException)(aggregateException.InnerExceptions[0]);
+                Assert.AreEqual(requestException.StatusCode, HttpStatusCode.Unauthorized);
+                Assert.AreEqual(requestException.Details.Count, 1);
+                Assert.AreEqual(requestException.Details[0], new Message(XElement.Parse(@"<msg type=""WARN"">Login failed</msg>")));
+            }
         }
+
+        static Context client;
     }
 }

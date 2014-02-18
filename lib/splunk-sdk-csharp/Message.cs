@@ -21,12 +21,13 @@ namespace Splunk.Sdk
     using System.IO;
     using System.Xml.Linq;
 
-    public class Message
+    sealed public class Message
     {
+        #region Constructors
+        
         internal Message(XElement message)
         {
             Contract.Requires<ArgumentException>(message != null && message.Name == "msg", "message");
-
             string type = message.Attribute("type").Value;
 
             switch (message.Attribute("type").Value)
@@ -50,10 +51,52 @@ namespace Splunk.Sdk
             this.Text = message.Value;
         }
 
+        #endregion
+
+        #region Properties
+
         public string Text
         { get; private set; }
 
         public MessageType Type
         { get; private set; }
+
+        #endregion
+
+        #region Methods
+
+        public override bool Equals(object o)
+        {
+            if (object.ReferenceEquals(this, o))
+            {
+                return true;
+            }
+            
+            var other = o as Message;
+            
+            if (other == null)
+            {
+                return false;
+            }
+
+            return this.Type == other.Type && other.Text == this.Text;
+        }
+
+        public override int GetHashCode()
+        {
+            // TODO: Check this against the algorithm presented in Effective Java
+            int hash = 17;
+
+            hash = hash * 23 + this.Type.GetHashCode();
+            hash = hash * 23 + this.Text.GetHashCode();
+            
+            return hash;
+        }
+        public override string ToString()
+        {
+            return string.Concat(this.Type.ToString(), ": ", this.Text);
+        }
+
+        #endregion
     }
 }

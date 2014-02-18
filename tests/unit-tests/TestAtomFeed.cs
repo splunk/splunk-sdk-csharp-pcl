@@ -37,7 +37,7 @@ namespace Splunk.Sdk
         [TestMethod]
         public void Access()
         {
-            var expected = new List<string>();
+            var expected = new List<string>() { "https://localhost:8089/servicesNS/admin/search/search/jobs/1392687998.313"	};
             List<string> actual;
             
             actual = new List<string>();

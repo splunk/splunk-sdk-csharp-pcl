@@ -174,7 +174,7 @@ namespace Splunk.Sdk
             Contract.Requires(username != null);
             Contract.Requires(password != null);
 
-            using (var content = new StringContent(string.Format("username={0}&password={1}", username, password)))
+            using (var content = new StringContent(string.Format("username={0}&password={1}", Uri.EscapeDataString(username), Uri.EscapeDataString(password))))
             {
                 HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(ResourceName.Login, null), content);
                 XDocument document = await this.ReadDocument(response);
@@ -244,8 +244,10 @@ namespace Splunk.Sdk
         Uri CreateServicesUri(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var builder = new StringBuilder(this.ToString());
-            
+
+            builder.Append("/");
             builder.Append(@namespace.ToString());
+            builder.Append("/");
             builder.Append(resource.ToString());
             
             if (parameters == null)

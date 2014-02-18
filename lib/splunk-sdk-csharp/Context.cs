@@ -116,7 +116,14 @@ namespace Splunk.Sdk
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
 
-            HttpResponseMessage response = await this.client.GetAsync(this.CreateServicesUri(@namespace, resource, parameters));
+            var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, parameters));
+
+            if (this.SessionKey != null)
+            {
+                request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+            }
+
+            HttpResponseMessage response = await this.client.SendAsync(request);
             return await this.ReadDocument(response);
         }
 
@@ -143,7 +150,14 @@ namespace Splunk.Sdk
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
 
-            HttpResponseMessage response = await this.client.GetAsync(this.CreateServicesUri(@namespace, resource, parameters));
+            var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, parameters));
+
+            if (this.SessionKey != null)
+            {
+                request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+            }
+
+            HttpResponseMessage response = await this.client.SendAsync(request);
             return await this.ReadDocumentStream(response);
         }
 
@@ -191,7 +205,17 @@ namespace Splunk.Sdk
         /// <returns></returns>
         public async Task<XDocument> Post(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(@namespace, resource, null), this.CreateContent(parameters));
+            var request = new HttpRequestMessage(HttpMethod.Post, this.CreateServicesUri(@namespace, resource, null))
+            {
+                Content = this.CreateContent(parameters) 
+            };
+
+            if (this.SessionKey != null)
+            {
+                request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+            }
+
+            HttpResponseMessage response = await this.client.SendAsync(request);
             return await this.ReadDocument(response);
         }
 
@@ -203,8 +227,7 @@ namespace Splunk.Sdk
         /// <returns></returns>
         public async Task<XDocument> Post(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(resource, null), this.CreateContent(parameters));
-            return await ReadDocument(response);
+            return await Post(Namespace.Default, resource, parameters);
         }
 
         public override string ToString()
@@ -221,17 +244,16 @@ namespace Splunk.Sdk
 
         StringContent CreateContent(IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            var body = string.Join("&",
-                from parameter in parameters
-                select string.Join("=",
-                    Uri.EscapeDataString(parameter.Key),
-                    Uri.EscapeDataString(parameter.Value.ToString())));
+            if (parameters == null)
+            {
+                return new StringContent(string.Empty);
+            }
 
-            var stringContent = new StringContent(body);
-
-            if (this.SessionKey != null)
-                stringContent.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+            var body = string.Join("&", 
+                from parameter in parameters select string.Join("=", 
+                    Uri.EscapeDataString(parameter.Key), Uri.EscapeDataString(parameter.Value.ToString())));
             
+            var stringContent = new StringContent(body);
             return stringContent;
         }
 

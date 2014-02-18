@@ -29,6 +29,7 @@ namespace Splunk.Sdk
         public void Construct()
         {
             service = new Service(new Context(Protocol.Https, "localhost", 8089), Namespace.Default);
+            Assert.AreEqual(service.ToString(), "https://localhost:8089/services");
         }
 
         [TestMethod]
@@ -62,6 +63,15 @@ namespace Splunk.Sdk
                 Assert.AreEqual(requestException.Details.Count, 1);
                 Assert.AreEqual(requestException.Details[0], new Message(XElement.Parse(@"<msg type=""WARN"">Login failed</msg>")));
             }
+        }
+
+        [TestMethod]
+        public void Search()
+        {
+            Task<Job> task;
+
+            task = service.Search("index=_internal | head 10");
+            task.Wait();
         }
 
         static Service service;

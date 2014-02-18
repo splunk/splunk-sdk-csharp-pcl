@@ -120,11 +120,6 @@ namespace Splunk.Sdk
             return jobs;
         }
 
-        public override string ToString()
-        {
-            return string.Join("/", this.Context.ToString(), this.Namespace.ToString());
-        }
-
         /// <summary>
         /// Creates a search <see cref="Job"/>.
         /// </summary>
@@ -143,6 +138,15 @@ namespace Splunk.Sdk
             await job.Update<Job>();
             
             return job;
+        }
+
+        /// <summary>
+        /// Gets the URI string for this <see cref="Service"/> instance. 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Join("/", this.Context.ToString(), this.Namespace.ToString());
         }
 
 #if false

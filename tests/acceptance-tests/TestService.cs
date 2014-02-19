@@ -33,7 +33,7 @@ namespace Splunk.Sdk
         }
 
         [TestMethod]
-        public async Task Login()
+        public void Login()
         {
             Task task;
             
@@ -45,10 +45,10 @@ namespace Splunk.Sdk
 
             try
             {
-                task = await service.LoginAsync("admin", "bad-password");
+                task = service.LoginAsync("admin", "bad-password");
                 task.Wait();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Assert.AreEqual(task.Status, TaskStatus.Faulted);
                 Assert.IsInstanceOfType(task.Exception, typeof(AggregateException));

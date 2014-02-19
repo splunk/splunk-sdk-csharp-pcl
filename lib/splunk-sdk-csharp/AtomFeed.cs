@@ -59,9 +59,9 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Privates
-
-        static TEntity CreateEntity(Context context, ResourceName collection, XElement entry)
+        #region Methods
+        
+        public static TEntity CreateEntity(Context context, ResourceName collection, XElement entry)
         {
             XElement content = entry.Element(ElementName.Content);
 
@@ -84,6 +84,10 @@ namespace Splunk.Sdk
 
             return entity;
         }
+
+        #endregion
+
+        #region Privates
 
         static ExpandoObject CreatePropertyDict(XElement content)
         {

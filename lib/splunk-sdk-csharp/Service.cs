@@ -19,6 +19,7 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
@@ -129,8 +130,13 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<Job> Search(string searchString, IEnumerable<KeyValuePair<string, object>> parameters = null)
+        public async Task<Job> Search(string command, IEnumerable<KeyValuePair<string, object>> parameters = null)
         {
+            Contract.Requires(!string.IsNullOrWhiteSpace(command));
+
+            var searchParameter = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("search", "search " + command) };
+            parameters = parameters == null ? searchParameter : searchParameter.Concat(parameters);
+
             XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, parameters);
             
             string searchId = document.Element("response").Element("sid").Value;

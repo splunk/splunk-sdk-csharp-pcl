@@ -107,8 +107,7 @@ namespace Splunk.Sdk
           end
 #endif
             // Gurantee: unique result because entities have specific namespaces
-            var feed = new AtomFeed<TEntity>(this.Context, this.Collection, document);
-            this.Record = feed.Entities[0];
+            this.Record = AtomFeed<TEntity>.CreateEntity(this.Context, this.Collection, document.Root);
         }
 
         public override string ToString()

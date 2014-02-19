@@ -97,7 +97,7 @@ namespace Splunk.Sdk
         /// </summary>
         public async Task Update<TEntity>() where TEntity: Entity, new()
         {
-            XDocument document = await this.Context.GetDocument(this.Namespace, this.resourceName);
+            XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.resourceName);
 
 #if false
             if response.code == 204 or response.body.nil?

@@ -125,7 +125,7 @@ namespace Splunk.Sdk
 
         public async Task Update()
         {
-            Stream stream = await this.Context.GetDocumentStream(this.Namespace, this.Name, this.Parameters);
+            Stream stream = await this.Context.GetDocumentStreamAsync(this.Namespace, this.Name, this.Parameters);
             var document = XDocument.Load(stream);
 
             // TODO: Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)

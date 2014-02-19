@@ -98,7 +98,7 @@ namespace Splunk.Sdk
         /// completed.
         /// </remarks>
         public string SessionKey
-        { get; private set; }
+        { get; internal set; }
 
         #endregion
 
@@ -111,7 +111,7 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocument(Namespace @namespace, ResourceName resource, IReadOnlyDictionary<string, object> parameters = null)
+        public async Task<XDocument> GetDocumentAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters = null)
         {
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
@@ -133,9 +133,9 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocument(ResourceName resource, IReadOnlyDictionary<string, object> parameters = null)
+        public async Task<XDocument> GetDocumentAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters = null)
         {
-            return await this.GetDocument(Namespace.Default, resource, parameters);
+            return await this.GetDocumentAsync(Namespace.Default, resource, parameters);
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStream(Namespace @namespace, ResourceName resource, IReadOnlyDictionary<string, object> parameters)
+        public async Task<Stream> GetDocumentStreamAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
@@ -167,33 +167,9 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStream(ResourceName resource, IReadOnlyDictionary<string, object> parameters)
+        public async Task<Stream> GetDocumentStreamAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            return await this.GetDocumentStream(Namespace.Default, resource, parameters);
-        }
-
-        /// <summary>
-        /// Provides user authentication.
-        /// </summary>
-        /// <param name="username">The Splunk account username.</param>
-        /// <param name="password">The password for the user specified with 
-        /// username.</param>
-        /// <remarks>This method uses the Splunk <a href="http://goo.gl/yXJX75">
-        /// auth/login</a> endpoint. The session key that it returns is used for 
-        /// subsequent requests. It is accessible via the <see cref="SessionKey"/>
-        /// property.
-        /// </remarks>
-        public async Task Login(string username, string password)
-        {
-            Contract.Requires(username != null);
-            Contract.Requires(password != null);
-
-            using (var content = new StringContent(string.Format("username={0}&password={1}", Uri.EscapeDataString(username), Uri.EscapeDataString(password))))
-            {
-                HttpResponseMessage response = await this.client.PostAsync(this.CreateServicesUri(ResourceName.Login, null), content);
-                XDocument document = await this.ReadDocument(response);
-                this.SessionKey = document.Element("response").Element("sessionKey").Value;
-            }
+            return await this.GetDocumentStreamAsync(Namespace.Default, resource, parameters);
         }
 
         /// <summary>
@@ -225,7 +201,7 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task<XDocument> Post(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<XDocument> PostAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             return await Post(Namespace.Default, resource, parameters);
         }

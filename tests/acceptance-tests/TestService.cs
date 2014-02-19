@@ -33,23 +33,22 @@ namespace Splunk.Sdk
         }
 
         [TestMethod]
-        public void Login()
+        public async Task Login()
         {
             Task task;
             
-            task = service.Login("admin", "changeme");
+            task = service.LoginAsync("admin", "changeme");
             task.Wait();
 
             Assert.AreEqual(task.Status, TaskStatus.RanToCompletion);
             Assert.IsNotNull(service.Context.SessionKey);
 
-            task = service.Login("admin", "bad-password");
-
             try
             {
+                task = await service.LoginAsync("admin", "bad-password");
                 task.Wait();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Assert.AreEqual(task.Status, TaskStatus.Faulted);
                 Assert.IsInstanceOfType(task.Exception, typeof(AggregateException));
@@ -70,7 +69,7 @@ namespace Splunk.Sdk
         {
             Task<Job> task;
 
-            task = service.Search("index=_internal | head 10");
+            task = service.SearchAsync("index=_internal | head 10");
             task.Wait();
         }
 

@@ -71,9 +71,17 @@ namespace Splunk.Sdk
         /// subsequent requests. It is accessible via the <see cref="SessionKey"/>
         /// property.
         /// </remarks>
-        public async Task Login(string username, string password)
+        public async Task LoginAsync(string username, string password)
         {
-            await this.Context.Login(username, password);
+            Contract.Requires(username != null);
+            Contract.Requires(password != null);
+
+            XDocument document = await this.Context.PostAsync(ResourceName.Login, new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("username", username),
+                new KeyValuePair<string, object>("password", password)
+            });
+            this.Context.SessionKey = document.Element("response").Element("sessionKey").Value;
         }
 
         /// <summary>
@@ -83,7 +91,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
         /// </remarks>
-        public async Task<EntityCollection<App>> GetApps(IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<EntityCollection<App>> GetAppsAsync(IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var apps = new EntityCollection<App>(this.Context, this.Namespace, ResourceName.AppsLocal, parameters);
             await apps.Update();
@@ -97,9 +105,9 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/wvB9N5">authorization/capabilities</a> REST API Reference.
         /// </remarks>
-        public async Task<IReadOnlyList<string>> GetCapabilities()
+        public async Task<IReadOnlyList<string>> GetCapabilitiesAsync()
         {
-            XDocument document = await this.Context.GetDocument(this.Namespace, ResourceName.Capabilities);
+            XDocument document = await this.Context.GetDocumentAsync(this.Namespace, ResourceName.Capabilities);
 
             var feed = new AtomFeed<Entity>(this.Context, ResourceName.Capabilities, document);
             Entity entity = feed.Entities[0];
@@ -114,7 +122,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<EntityCollection<Job>> GetJobs(IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<EntityCollection<Job>> GetJobsAsync(IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var jobs = new EntityCollection<Job>(this.Context, this.Namespace, ResourceName.Jobs, parameters);
             await jobs.Update();
@@ -130,7 +138,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<Job> Search(string command, IEnumerable<KeyValuePair<string, object>> parameters = null)
+        public async Task<Job> SearchAsync(string command, IEnumerable<KeyValuePair<string, object>> parameters = null)
         {
             Contract.Requires(!string.IsNullOrWhiteSpace(command));
 

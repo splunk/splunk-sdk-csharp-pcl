@@ -51,39 +51,6 @@ namespace Splunk.Sdk
             Assert.AreEqual(client.ToString(), "https://localhost:8089");
         }
 
-        [TestMethod]
-        public void Login()
-        {
-            Task task;
-
-            task = client.Login("admin", "changeme");
-            task.Wait();
-
-            Assert.AreEqual(task.Status, TaskStatus.RanToCompletion);
-            Assert.IsNotNull(client.SessionKey);
-
-            task = client.Login("admin", "bad-password");
-
-            try
-            {
-                task.Wait();
-            }
-            catch (Exception)
-            {
-                Assert.AreEqual(task.Status, TaskStatus.Faulted);
-                Assert.IsInstanceOfType(task.Exception, typeof(AggregateException));
-
-                var aggregateException = (AggregateException)task.Exception;
-                Assert.AreEqual(aggregateException.InnerExceptions.Count, 1);
-                Assert.IsInstanceOfType(aggregateException.InnerExceptions[0], typeof(RequestException));
-                
-                var requestException = (RequestException)(aggregateException.InnerExceptions[0]);
-                Assert.AreEqual(requestException.StatusCode, HttpStatusCode.Unauthorized);
-                Assert.AreEqual(requestException.Details.Count, 1);
-                Assert.AreEqual(requestException.Details[0], new Message(XElement.Parse(@"<msg type=""WARN"">Login failed</msg>")));
-            }
-        }
-
         static Context client;
     }
 }

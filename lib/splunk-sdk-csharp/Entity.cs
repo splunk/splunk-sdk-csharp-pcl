@@ -95,7 +95,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Refreshes the cached state of this <see cref="Entity"/>.
         /// </summary>
-        public async Task Update<TEntity>() where TEntity: Entity, new()
+        public async Task UpdateAsync<TEntity>() where TEntity: Entity, new()
         {
             XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.resourceName);
 

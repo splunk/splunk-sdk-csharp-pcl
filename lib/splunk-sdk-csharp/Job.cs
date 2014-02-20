@@ -21,11 +21,22 @@ namespace Splunk.Sdk
 
     public class Job : Entity
     {
-        public Job()
-        { }
+        #region Constructors
 
         internal Job(Context context, Namespace @namespace, ResourceName collection, string name, ExpandoObject record = null) 
             : base(context, @namespace, collection, name, record)
         { }
+
+        public Job() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with a TEntity factory
+        { }
+
+        #endregion
+
+        #region Properties
+
+        public bool IsCompleted
+        { get; set; }
+
+        #endregion
     }
 }

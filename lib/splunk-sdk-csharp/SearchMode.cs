@@ -16,8 +16,19 @@
 
 namespace Splunk.Sdk
 {
-    public enum Protocol
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum SearchMode
     {
-        Http, Https
+        /// <summary>
+        /// 
+        /// </summary>
+        Normal, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Realtime
     }
 }

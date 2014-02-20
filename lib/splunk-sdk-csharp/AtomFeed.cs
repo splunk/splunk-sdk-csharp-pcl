@@ -24,9 +24,22 @@ namespace Splunk.Sdk
     using System.Linq;
     using System.Xml;
     using System.Xml.Linq;
-
+    
+    /// <summary>
+    /// Provides an object representation of a Splunk Atom feed.
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
     class AtomFeed<TEntity> where TEntity: Entity, new()
     {
+        // TODO: Refactor into AtomFeed and AtomEntry. Refactor EntityCollection<TEntity> to match a structure similar to this:
+        //
+        //  entityCollection: EntityCollection<TEntity>
+        //      feed: IReadOnlyList<AtomEntry>
+        //      *entity: TEntity
+        //  entity: Entity
+        //      entry: AtomEntry <- collection.feed[i]
+        //      properties: * <- entity.entry.*
+
         #region Constructors
 
         public AtomFeed(Context context, ResourceName collection, XDocument document)

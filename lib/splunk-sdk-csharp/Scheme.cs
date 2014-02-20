@@ -19,26 +19,16 @@ namespace Splunk.Sdk
     /// <summary>
     /// 
     /// </summary>
-    public enum MessageType
+    public enum Scheme
     {
         /// <summary>
         /// 
         /// </summary>
-        Debug, 
+        Http, 
         
         /// <summary>
         /// 
         /// </summary>
-        Information, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Warning, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Error
+        Https
     }
 }

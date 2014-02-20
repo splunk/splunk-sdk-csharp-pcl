@@ -28,7 +28,7 @@ namespace Splunk.Sdk
         [TestMethod]
         public void Construct()
         {
-            service = new Service(new Context(Protocol.Https, "localhost", 8089), Namespace.Default);
+            service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             Assert.AreEqual(service.ToString(), "https://localhost:8089/services");
         }
 

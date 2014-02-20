@@ -44,7 +44,7 @@ namespace Splunk.Sdk
         /// <param name="host">The DNS name of a Splunk server instance</param>
         /// <param name="port">The port number used to communicate with 
         /// <see cref="Host"/></param>
-        public Context(Protocol protocol, string host, int port)
+        public Context(Scheme protocol, string host, int port)
         {
             this.Initialize(protocol, host, port, null, false);
         }
@@ -60,7 +60,7 @@ namespace Splunk.Sdk
         /// <see cref="Host"/></param>
         /// <param name="handler"></param>
         /// <param name="disposeHandler"></param>
-        public Context(Protocol protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
+        public Context(Scheme protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
         {
             Contract.Requires<ArgumentNullException>(handler != null);
             Initialize(protocol, host, port, handler, disposeHandler);
@@ -87,7 +87,7 @@ namespace Splunk.Sdk
         /// Gets the protocol used to communicate with the <see cref="Host"/> 
         /// associated with this instance.
         /// </summary>
-        public Protocol Protocol
+        public Scheme Protocol
         { get; private set; }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace Splunk.Sdk
             return CreateServicesUri(Namespace.Default, resource, parameters);
         }
 
-        void Initialize(Protocol protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler)
+        void Initialize(Scheme protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler)
         {
             Contract.Requires(!string.IsNullOrEmpty(host));
             Contract.Requires(0 <= port && port <= 65535);

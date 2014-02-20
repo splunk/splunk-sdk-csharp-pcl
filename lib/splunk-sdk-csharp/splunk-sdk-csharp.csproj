@@ -106,6 +106,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="ExecutionMode.cs" />
+    <Compile Include="JobArgs.cs" />
     <Compile Include="AtomFeed.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityCollection.cs" />
@@ -113,8 +115,9 @@
     <Compile Include="Message.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="RequestException.cs" />
-    <Compile Include="Protocol.cs" />
+    <Compile Include="Scheme.cs" />
     <Compile Include="ResourceName.cs" />
+    <Compile Include="SearchMode.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="SharingMode.cs" />
     <Compile Include="Namespace.cs" />

@@ -41,9 +41,9 @@ namespace Splunk.Sdk
         [TestMethod]
         public void Construct()
         {
-            client = new Context(Protocol.Https, "localhost", 8089);
+            client = new Context(Scheme.Https, "localhost", 8089);
 
-            Assert.AreEqual(client.Protocol, Protocol.Https);
+            Assert.AreEqual(client.Protocol, Scheme.Https);
             Assert.AreEqual(client.Host, "localhost");
             Assert.AreEqual(client.Port, 8089);
             Assert.IsNull(client.SessionKey);

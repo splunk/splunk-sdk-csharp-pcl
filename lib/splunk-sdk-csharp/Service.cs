@@ -149,7 +149,7 @@ namespace Splunk.Sdk
             
             string searchId = document.Element("response").Element("sid").Value;
             var job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
-            await job.Update<Job>();
+            await job.UpdateAsync<Job>();
             
             return job;
         }

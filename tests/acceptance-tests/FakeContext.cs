@@ -32,7 +32,7 @@ namespace Splunk.Sdk.UnitTesting
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FakeContext"/> class with a 
-        /// protocol, host, and port number.
+        /// protocol, host, port number.
         /// </summary>
         /// <param name="protocol">
         ///     The <see cref="Protocol"/> used to communiate with <see cref="Host"/>.
@@ -66,6 +66,26 @@ namespace Splunk.Sdk.UnitTesting
 
         #endregion
 
+        #region Methods
+        
+        public void LoadResponseMessages(string path)
+        {
+            // Consider using the <a href="http://goo.gl/3BFVqg">JavaScriptSerializer Class</a>.
+            // Consider matching the full text of an HTTP request to the elements of a response.
+            // Sample JSON:
+            //      [ 
+            //          { Request: "full-text", Response: { 
+            //              StatusCode: "status-code", ReasonPhrase: "reason-phrase", Content: {
+            //                  ...
+            //              }
+            //          },
+            //          ...
+            //      ]
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         #region Types
 
         class MessageHandler : HttpMessageHandler
@@ -74,7 +94,8 @@ namespace Splunk.Sdk.UnitTesting
             {
                 var response = new HttpResponseMessage()
                 {
-                    StatusCode = HttpStatusCode.Forbidden,
+                    StatusCode = HttpStatusCode.OK,
+                    ReasonPhrase = "foo bar",
                     Content = new StringContent("foo bar")
                 };
                 return Task.FromResult(response);

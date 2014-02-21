@@ -16,10 +16,13 @@
 
 namespace Splunk.Sdk.UnitTesting
 {
+    using System;
+    using System.IO;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Splunk.Sdk;
-    
+
     /// <summary>
     /// Provides a class for faking HTTP requests and responses from a Splunk server.
     /// </summary>
@@ -28,14 +31,35 @@ namespace Splunk.Sdk.UnitTesting
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FakeContext"/> class 
-        /// with a protocol, host, and port number.
+        /// Initializes a new instance of the <see cref="FakeContext"/> class with a 
+        /// protocol, host, and port number.
         /// </summary>
-        /// <param name="protocol">The <see cref="Protocol"/> used to communiate 
-        /// with <see cref="Host"/></param>
-        /// <param name="host">The DNS name of a Splunk server instance</param>
-        /// <param name="port">The port number used to communicate with 
-        /// <see cref="Host"/>.</param>
+        /// <param name="protocol">
+        ///     The <see cref="Protocol"/> used to communiate with <see cref="Host"/>.
+        /// </param>
+        /// <param name="host">
+        ///     The DNS name of a Splunk server instance.
+        /// </param>
+        /// <param name="port">
+        ///     The port number used to communicate with <see cref="Host"/>.
+        /// </param>
+        /// <remarks>
+        ///     <para><b>References</b></para>
+        ///     <list type="number">
+        ///         <item>
+        ///             <description>   
+        ///                 <a href="http://goo.gl/ppbIlm">How to Avoid Creating Real
+        ///                 Tasks When Unit Testing Async</a>.
+        ///             </description>
+        ///         </item>
+        ///         <item>
+        ///             <description>
+        ///                 <a href="http://goo.gl/YUFhAO">ObjectContent Class</a>.
+        ///             </description>
+        ///         </item>
+        ///     </list>
+        /// </remarks>
+        /// 
         public FakeContext(Scheme protocol, string host, int port)
             : base(protocol, host, port, new MessageHandler())
         { }
@@ -48,7 +72,12 @@ namespace Splunk.Sdk.UnitTesting
         {
             protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
             {
-                throw new System.NotImplementedException();
+                var response = new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.Forbidden,
+                    Content = new StringContent("foo bar")
+                };
+                return Task.FromResult(response);
             }
         }
 

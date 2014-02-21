@@ -31,7 +31,7 @@ namespace Splunk.Sdk
     /// Provides a class for sending HTTP requests and receiving HTTP responses 
     /// from a Splunk server.
     /// </summary>
-    public sealed class Context
+    public class Context
     {
         #region Constructors
 

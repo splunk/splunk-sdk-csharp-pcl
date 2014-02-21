@@ -109,8 +109,8 @@ namespace Splunk.Sdk
         {
             XDocument document = await this.Context.GetDocumentAsync(this.Namespace, ResourceName.Capabilities);
 
-            var feed = new AtomFeed<Entity>(this.Context, ResourceName.Capabilities, document);
-            Entity entity = feed.Entities[0];
+            var feed = new AtomFeed<GenericEntity>(this.Context, ResourceName.Capabilities, document);
+            GenericEntity entity = feed.Entities[0];
             dynamic capabilities = entity.Record.Capabilities;
 
             return capabilities;
@@ -138,18 +138,18 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<Job> SearchAsync(string command, IEnumerable<KeyValuePair<string, object>> parameters = null)
+        public async Task<Job> SearchAsync(string search, IEnumerable<KeyValuePair<string, object>> parameters = null)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(command));
+            Contract.Requires(!string.IsNullOrWhiteSpace(search));
 
-            var searchParameter = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("search", "search " + command) };
+            var searchParameter = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("search", "search " + search) };
             parameters = parameters == null ? searchParameter : searchParameter.Concat(parameters);
 
             XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, parameters);
             
             string searchId = document.Element("response").Element("sid").Value;
             var job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
-            await job.UpdateAsync<Job>();
+            await job.UpdateAsync();
             
             return job;
         }

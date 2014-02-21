@@ -29,7 +29,7 @@ namespace Splunk.Sdk
     /// Provides an object representation of a Splunk Atom feed.
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    class AtomFeed<TEntity> where TEntity: Entity, new()
+    class AtomFeed<TEntity> where TEntity: Entity<TEntity>, new()
     {
         // TODO: Refactor into AtomFeed and AtomEntry. Refactor EntityCollection<TEntity> to match a structure similar to this:
         //

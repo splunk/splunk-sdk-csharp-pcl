@@ -26,7 +26,7 @@ namespace Splunk.Sdk
     using System.Xml;
     using System.Xml.Linq;
 
-    public class Entity
+    public class Entity<TEntity> where TEntity : Entity<TEntity>, new()
     {
         #region Constructors
 
@@ -92,10 +92,15 @@ namespace Splunk.Sdk
 
         #region Methods
 
+        protected virtual void Invalidate()
+        {
+            // Nothing to invalidate in this base type
+        }
+
         /// <summary>
         /// Refreshes the cached state of this <see cref="Entity"/>.
         /// </summary>
-        public async Task UpdateAsync<TEntity>() where TEntity: Entity, new()
+        public async Task UpdateAsync()
         {
             XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.resourceName);
 

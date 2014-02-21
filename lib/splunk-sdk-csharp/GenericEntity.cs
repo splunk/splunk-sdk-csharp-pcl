@@ -16,15 +16,19 @@
 
 namespace Splunk.Sdk
 {
-    using System.Collections.Generic;
     using System.Dynamic;
 
-    public class App : Entity<App>
+    public class GenericEntity : Entity<GenericEntity>
     {
-        public App()
+        #region Constructors
+
+        internal GenericEntity(Context context, Namespace @namespace, ResourceName collection, string name, ExpandoObject record = null) 
+            : base(context, @namespace, collection, name, record)
         { }
 
-        internal App(Context context, Namespace @namespace, ResourceName collection, string name, ExpandoObject record = null) : base(context, @namespace, collection, name, record)
+        public GenericEntity() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with a Entity<TEntity> factory
         { }
+
+        #endregion
     }
 }

@@ -31,7 +31,7 @@ namespace Splunk.Sdk
         {
             string documentPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "AtomFeed.xml"));
             Assert.IsTrue(File.Exists(documentPath));
-            feed = new AtomFeed<Entity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, XDocument.Load(documentPath));
+            feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, XDocument.Load(documentPath));
         }
 
         [TestMethod]
@@ -61,7 +61,7 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        static AtomFeed<Entity> feed;
+        static AtomFeed<GenericEntity> feed;
 
         #endregion
     }

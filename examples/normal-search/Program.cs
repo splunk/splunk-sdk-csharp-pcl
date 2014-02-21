@@ -1,4 +1,20 @@
-﻿namespace Splunk.Sdk.Examples
+﻿/*
+ * Copyright 2014 Splunk, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"): you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+namespace Splunk.Sdk.Examples
 {
     using System;
     using System.Collections.Generic;
@@ -15,10 +31,10 @@
         static void Main(string[] args)
         {
             var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
-            Task task = service.LoginAsync("admin", "changeme");
-            task.Wait();
+            Task loginTask = service.LoginAsync("admin", "changeme");
+            loginTask.Wait();
 
-            Task<Job> jobTask = service.SearchAsync(command: "* | head 100");
+            Task<Job> jobTask = service.SearchAsync("* | head 100");
             jobTask.Wait();
 
             Job job = jobTask.Result;
@@ -34,8 +50,8 @@
                     // TODO Auto-generated catch block
                     System.Console.WriteLine(e.StackTrace);
                 }
-                task = job.UpdateAsync<Job>();
-                task.Wait();
+                Task updateTask = job.UpdateAsync();
+                updateTask.Wait();
             }
 
 #if false

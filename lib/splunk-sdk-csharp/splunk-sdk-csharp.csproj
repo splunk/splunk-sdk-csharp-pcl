@@ -106,12 +106,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Args.cs" />
     <Compile Include="ExecutionMode.cs" />
+    <Compile Include="GenericEntity.cs" />
     <Compile Include="JobArgs.cs" />
     <Compile Include="AtomFeed.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityCollection.cs" />
     <Compile Include="Job.cs" />
+    <Compile Include="DispatchState.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="RequestException.cs" />

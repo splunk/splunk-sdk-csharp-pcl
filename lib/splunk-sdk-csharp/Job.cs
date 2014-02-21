@@ -16,10 +16,11 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.Collections.Generic;
     using System.Dynamic;
 
-    public class Job : Entity
+    public class Job : Entity<Job>
     {
         #region Constructors
 
@@ -27,7 +28,7 @@ namespace Splunk.Sdk
             : base(context, @namespace, collection, name, record)
         { }
 
-        public Job() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with a TEntity factory
+        public Job() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with a Entity<TEntity> factory
         { }
 
         #endregion
@@ -35,7 +36,46 @@ namespace Splunk.Sdk
         #region Properties
 
         public bool IsCompleted
-        { get; set; }
+        {
+            get { return this.DispatchState == DispatchState.Done; }
+        }
+
+        public DispatchState DispatchState
+        { 
+            get 
+            { 
+                if (this.backingFields.DispatchState == DispatchState.Unknown)
+                {
+                    this.backingFields.DispatchState = Enum.Parse(typeof(DispatchState), this.Record.DispatchState, ignoreCase: true);
+                }
+                return this.backingFields.DispatchState;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override void Invalidate()
+        {
+            this.backingFields = InvalidatedBackingFields;
+        }
+
+        #endregion
+
+        #region Privates
+
+        static readonly BackingFields InvalidatedBackingFields = new BackingFields();
+        BackingFields backingFields = new BackingFields();
+
+        #endregion
+
+        #region Types
+
+        private struct BackingFields
+        {
+            public DispatchState DispatchState;
+        }
 
         #endregion
     }

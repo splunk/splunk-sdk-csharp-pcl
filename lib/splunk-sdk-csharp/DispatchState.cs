@@ -16,26 +16,49 @@
 
 namespace Splunk.Sdk
 {
-    using System.Runtime.Serialization;
-
     /// <summary>
-    /// 
+    /// Specifies the state of a search <see cref="Job"/>.
     /// </summary>
-    /// 
-    [DataContract]
-    public enum SearchMode
+    public enum DispatchState
     {
         /// <summary>
         /// 
         /// </summary>
-        /// 
-        [EnumMember(Value = "normal")]
-        Normal, 
+        Unknown,
         
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "realtime")]
-        Realtime
+        Queued, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Parsing, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Running, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Paused, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Finalizing, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Failed, 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Done        
     }
 }

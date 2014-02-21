@@ -24,7 +24,7 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
-    public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity, new()
+    public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new()
     {
         static void Test()
         {

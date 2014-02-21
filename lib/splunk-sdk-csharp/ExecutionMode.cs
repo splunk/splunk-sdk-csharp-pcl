@@ -16,22 +16,29 @@
 
 namespace Splunk.Sdk
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// Specifies the type of a Splunk search <see cref="Job"/>.
     /// </summary>
+    /// 
+    [DataContract]
     public enum ExecutionMode
     {
         /// <summary>
         /// Specifies an asynchronous <see cref="Job"/>. A Search ID (SID)
         /// is returned as soon as the job starts. In this case you must poll
         /// back for results. This is the default.
-        /// </summary>        
+        /// </summary> 
+        /// 
+        [EnumMember(Value="normal")]
         Normal, 
         
         /// <summary>
         /// Specifies that a Search ID (SID) should be returned when the 
         /// <see cref="job"/> is complete.
         /// </summary>
+        [EnumMember(Value = "blocking")]
         Blocking, 
 
         /// <summary>
@@ -41,6 +48,8 @@ namespace Splunk.Sdk
         /// described in GET search/jobs/export. Default format for output 
         /// is XML.
         /// </summary>
+        /// 
+        [EnumMember(Value = "oneshot")]
         Oneshot
     }
 }

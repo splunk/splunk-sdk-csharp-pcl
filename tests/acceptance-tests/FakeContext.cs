@@ -16,13 +16,11 @@
 
 namespace Splunk.Sdk.UnitTesting
 {
+    using Splunk.Sdk;
     using System;
-    using System.IO;
     using System.Net;
     using System.Net.Http;
-    using System.Net.Http.Formatting;
     using System.Threading.Tasks;
-    using Splunk.Sdk;
 
     /// <summary>
     /// Provides a class for faking HTTP requests and responses from a Splunk server.

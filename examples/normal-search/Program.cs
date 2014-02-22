@@ -17,10 +17,6 @@
 namespace Splunk.Sdk.Examples
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -33,7 +29,7 @@ namespace Splunk.Sdk.Examples
         {
             var jobArgs = new JobArgs()
             {
-                RequiredFieldList = new string[] { "foo", "bar" }
+                ExecutionMode = ExecutionMode.Oneshot, RequiredFieldList = new string[] { "foo", "bar" },
             };
 
             Console.WriteLine(jobArgs.ToString());

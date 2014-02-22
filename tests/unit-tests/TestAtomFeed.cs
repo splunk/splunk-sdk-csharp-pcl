@@ -16,12 +16,11 @@
 
 namespace Splunk.Sdk
 {
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml.Linq;
-
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class TestAtomFeed

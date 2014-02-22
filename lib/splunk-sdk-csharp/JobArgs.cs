@@ -16,11 +16,8 @@
 
 namespace Splunk.Sdk
 {
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Linq;
-    using System.Reflection;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -29,7 +26,7 @@ namespace Splunk.Sdk
     [DataContract]
     public class JobArgs : Args<JobArgs>
     {
-        [DataMember(Name = "search", IsRequired=true)]
+        [DataMember(Name = "search", IsRequired = true)]
         public string Search
         { get; set; }
 

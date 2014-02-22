@@ -20,6 +20,7 @@ namespace Splunk.Sdk
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Linq;
     using System.Reflection;
     using System.Runtime.Serialization;
     using System.Text;
@@ -59,13 +60,18 @@ namespace Splunk.Sdk
                 { typeof(string),  new Formatter { Format = FormatString  } }
             };
 
+            var defaultFormatter = new Formatter { Format = FormatString };
             var serializationEntries = new List<SerializationEntry>();
-            var defaultFormatter = propertyFormatters[typeof(string)];
 
             foreach (PropertyInfo propertyInfo in typeof(TArgs).GetRuntimeProperties())
             {
-                var defaultValue = propertyInfo.GetCustomAttribute<DefaultValueAttribute>();
                 var dataMember = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
+
+                if (dataMember == null)
+                {
+                    throw new InvalidDataContractException(string.Format("Missing DataMemberAttribute on {0}.{1}", propertyInfo.PropertyType.Name, propertyInfo.Name));
+                }
+
                 var propertyType = propertyInfo.PropertyType;
                 var propertyTypeInfo = propertyType.GetTypeInfo();
 
@@ -73,22 +79,47 @@ namespace Splunk.Sdk
 
                 if (formatter == null)
                 {
-                    foreach (Type implementedInterface in propertyInfo.PropertyType.GetTypeInfo().ImplementedInterfaces)
+                    var interfaces = propertyType.GetTypeInfo().ImplementedInterfaces;
+                    var isCollection = false;
+
+                    formatter = defaultFormatter;
+
+                    foreach (Type @interface in interfaces)
                     {
-                        if (implementedInterface.IsConstructedGenericType)
+                        if (@interface.IsConstructedGenericType)
                         {
-                            if (implementedInterface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                            if (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                             {
-                                Type itemType = implementedInterface.GenericTypeArguments[0];
+                                Type itemType = @interface.GenericTypeArguments[0];
                                 formatter = GetPropertyFormatter(propertyType, itemType, itemType.GetTypeInfo(), propertyFormatters);
-                                break;
                             }
                         }
+                        else if (@interface == typeof(IEnumerable))
+                        {
+                            isCollection = true;
+                        }
                     }
-                    propertyFormatters[propertyInfo.PropertyType] = formatter ?? defaultFormatter;
+
+                    formatter = new Formatter { Format = formatter.Value.Format, IsCollection = isCollection };
                 }
 
-                serializationEntries.Add(new SerializationEntry(dataMember, defaultValue, formatter.Value, propertyInfo));
+                var defaultValue = propertyInfo.GetCustomAttribute<DefaultValueAttribute>();
+
+                serializationEntries.Add(new SerializationEntry(propertyInfo)
+                {
+                    // Properties
+
+                    ParameterName = dataMember.Name,
+                    ParameterOrder = dataMember.Order,
+                    DefaultValue = defaultValue == null ? null : defaultValue.Value,
+                    EmitDefaultValue = dataMember.EmitDefaultValue,
+                    IsCollection = formatter.Value.IsCollection,
+                    IsRequired = dataMember.IsRequired,
+
+                    // Methods
+
+                    Format = (formatter ?? defaultFormatter).Format
+                });
             }
 
             SerializationEntries = serializationEntries;
@@ -96,15 +127,12 @@ namespace Splunk.Sdk
 
         protected Args()
         {
-            foreach (var serializationEntry in SerializationEntries)
+            foreach (var serializationEntry in SerializationEntries.Where(entry => entry.DefaultValue != null))
             {
-                if (serializationEntry.Default != null)
-                {
-                    serializationEntry.Property.SetValue(this, serializationEntry.Default.Value);
-                }
+                serializationEntry.SetValue(this, serializationEntry.DefaultValue);
             }
         }
-        
+
         #endregion
 
         #region Methods
@@ -113,28 +141,28 @@ namespace Splunk.Sdk
         {
             foreach (var entry in Args<TArgs>.SerializationEntries)
             {
-                object value = entry.Property.GetValue(this);
+                object value = entry.GetValue(this);
 
                 if (value == null)
                 {
-                    if (entry.DataMember.IsRequired)
+                    if (entry.IsRequired)
                     {
-                        throw new SerializationException(string.Format("Missing value for required property: {0}", entry.Property.Name));
+                        throw new SerializationException(string.Format("Missing value for required parameter {0}", entry.ParameterName));
                     }
                     continue;
                 }
-                if (entry.Default != null && !entry.DataMember.EmitDefaultValue && value.Equals(entry.Default.Value))
+                if (entry.DefaultValue != null && !entry.EmitDefaultValue && value.Equals(entry.DefaultValue))
                 {
                     continue;
                 }
-                if (!entry.IsEnumerable)
+                if (!entry.IsCollection)
                 {
-                    yield return new KeyValuePair<string, string>(entry.DataMember.Name, entry.Format(value));
+                    yield return new KeyValuePair<string, string>(entry.ParameterName, entry.Format(value));
                     continue;
                 }
                 foreach (var item in (IEnumerable)value)
                 {
-                    yield return new KeyValuePair<string, string>(entry.DataMember.Name, entry.Format(item));
+                    yield return new KeyValuePair<string, string>(entry.ParameterName, entry.Format(item));
                 }
             }
         }
@@ -153,27 +181,27 @@ namespace Splunk.Sdk
 
             foreach (var entry in Args<TArgs>.SerializationEntries)
             {
-                object value = entry.Property.GetValue(this);
+                object value = entry.GetValue(this);
 
                 if (value == null)
                 {
-                    append("null", entry.DataMember.Name, FormatString);
+                    append("null", entry.ParameterName, FormatString);
                     continue;
                 }
-                if (!entry.IsEnumerable)
+                if (!entry.IsCollection)
                 {
-                    append(value, entry.DataMember.Name, entry.Format);
+                    append(value, entry.ParameterName, entry.Format);
                     continue;
                 }
                 foreach (var item in (IEnumerable)value)
                 {
-                    append(item, entry.DataMember.Name, entry.Format);
+                    append(item, entry.ParameterName, entry.Format);
                 }
             }
 
             if (builder.Length > 0)
             {
-                builder.Length = builder.Length - 1;
+                builder.Length = builder.Length - 2;
             }
 
             return builder.ToString();
@@ -211,7 +239,7 @@ namespace Splunk.Sdk
 
             if (container != null && formatters.TryGetValue(type, out formatter))
             {
-                formatter = new Formatter { Format = formatter.Format, IsEnumerable = true };
+                formatter = new Formatter { Format = formatter.Format, IsCollection = true };
             }
             else if (info.IsEnum)
             {
@@ -226,11 +254,11 @@ namespace Splunk.Sdk
                     map[(int)value] = enumMember == null ? name : enumMember.Value;
                 }
 
-                formatter = new Formatter { Format = (object value) => map[(int)value], IsEnumerable = container != null };
+                formatter = new Formatter { Format = (object value) => map[(int)value], IsCollection = container != null };
             }
             else if (container != null)
             {
-                formatter = new Formatter { Format = FormatString, IsEnumerable = true };
+                formatter = new Formatter { Format = FormatString, IsCollection = true };
             }
             else
             {
@@ -248,34 +276,46 @@ namespace Splunk.Sdk
         struct Formatter
         {
             public Func<object, string> Format;
-            public bool IsEnumerable;
+            public bool IsCollection;
         }
 
         class SerializationEntry
         {
-            public SerializationEntry(DataMemberAttribute dataMember, DefaultValueAttribute defaultValue, Formatter formatter, PropertyInfo property)
-            {
-                this.DataMember = dataMember;
-                this.Default = defaultValue;
-                this.Format = formatter.Format;
-                this.IsEnumerable = formatter.IsEnumerable;
-                this.Property = property;
-            }
+            public SerializationEntry(PropertyInfo propertyInfo)
+            { this.propertyInfo = propertyInfo; }
 
-            public DataMemberAttribute DataMember
-            { get; private set; }
+            public string ParameterName
+            { get; set; }
 
-            public DefaultValueAttribute Default
-            { get; private set; }
+            public int ParameterOrder
+            { get; set; }
+
+            public object DefaultValue
+            { get; set; }
+
+            public bool EmitDefaultValue
+            { get; set; }
+
+            public bool IsCollection
+            { get; set; }
+
+            public bool IsRequired
+            { get; set; }
 
             public Func<object, string> Format
-            { get; private set; }
+            { get; set; }
 
-            public bool IsEnumerable
-            { get; private set; }
+            public object GetValue(object o)
+            {
+                return this.propertyInfo.GetValue(o);
+            }
 
-            public PropertyInfo Property
-            { get; private set; }
+            public void SetValue(object o, object value)
+            {
+                this.propertyInfo.SetValue(o, value);
+            }
+
+            PropertyInfo propertyInfo;
         }
 
         #endregion

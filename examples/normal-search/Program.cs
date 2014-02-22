@@ -19,6 +19,7 @@ namespace Splunk.Sdk.Examples
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -30,6 +31,13 @@ namespace Splunk.Sdk.Examples
     {
         static void Main(string[] args)
         {
+            var jobArgs = new JobArgs()
+            {
+                RequiredFieldList = new string[] { "foo", "bar" }
+            };
+
+            Console.WriteLine(jobArgs.ToString());
+
             var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             Task loginTask = service.LoginAsync("admin", "changeme");
             loginTask.Wait();

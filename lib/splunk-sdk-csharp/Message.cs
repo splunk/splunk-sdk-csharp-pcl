@@ -21,7 +21,7 @@ namespace Splunk.Sdk
     using System.IO;
     using System.Xml.Linq;
 
-    sealed public class Message
+    sealed public class Message : IComparable, IComparable<Message>, IEquatable<Message>
     {
         #region Constructors
         
@@ -65,21 +65,31 @@ namespace Splunk.Sdk
 
         #region Methods
 
+        public int CompareTo(object o)
+        {
+            return this.CompareTo(o as Message);
+        }
+
+        public int CompareTo(Message other)
+        {
+            if (other == null)
+                return 1;
+            if (object.ReferenceEquals(this, other))
+                return 0;
+            int difference = this.Type - other.Type;
+            return difference != 0 ? difference : this.Text.CompareTo(other.Text);
+        }
+
         public override bool Equals(object o)
         {
-            if (object.ReferenceEquals(this, o))
-            {
-                return true;
-            }
-            
-            var other = o as Message;
-            
-            if (other == null)
-            {
-                return false;
-            }
+            return this.Equals(o as Message);
+        }
 
-            return this.Type == other.Type && other.Text == this.Text;
+        public bool Equals(Message other)
+        {
+            if (other == null)
+                return false;
+            return object.ReferenceEquals(this, other) || (this.Type == other.Type && other.Text == other.Text);
         }
 
         public override int GetHashCode()

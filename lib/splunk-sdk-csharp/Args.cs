@@ -20,6 +20,7 @@ namespace Splunk.Sdk
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.Serialization;
@@ -32,11 +33,12 @@ namespace Splunk.Sdk
     public abstract class Args<TArgs> where TArgs : Args<TArgs>
     {
         // TODO: Ensure this code is solid
-        // [ ] Respect DataMemberAttribute.Order
-        // [ ] Ensure correct behavior with nullable boolean/numeric values
-        // [ ] Do not serialize default values => define default values and check for them
-        // [ ] Rework this into a real serializer, not just a ToString implementation tool (?)
-        // [ ] Work on nomenclature (serialization nomenclature is not necessarily appropriate)
+        // [ ] Documentation
+        // [ ] Unit tests (e.g., Ensure correct behavior with nullable boolean/numeric values)
+        // [X] Respect DataMemberAttribute.Order
+        // [X] Do not serialize default values => define default values and check for them
+        // [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)
+        // [X] Work on nomenclature (serialization nomenclature is not necessarily appropriate)
         // [ ] More, I'm sure...
 
         #region Constructors
@@ -61,7 +63,7 @@ namespace Splunk.Sdk
             };
 
             var defaultFormatter = new Formatter { Format = FormatString };
-            var serializationEntries = new List<SerializationEntry>();
+            var parameters = new SortedSet<Parameter>();
 
             foreach (PropertyInfo propertyInfo in typeof(TArgs).GetRuntimeProperties())
             {
@@ -105,12 +107,10 @@ namespace Splunk.Sdk
 
                 var defaultValue = propertyInfo.GetCustomAttribute<DefaultValueAttribute>();
 
-                serializationEntries.Add(new SerializationEntry(propertyInfo)
+                parameters.Add(new Parameter(dataMember.Name, dataMember.Order, propertyInfo)
                 {
                     // Properties
 
-                    ParameterName = dataMember.Name,
-                    ParameterOrder = dataMember.Order,
                     DefaultValue = defaultValue == null ? null : defaultValue.Value,
                     EmitDefaultValue = dataMember.EmitDefaultValue,
                     IsCollection = formatter.Value.IsCollection,
@@ -122,12 +122,12 @@ namespace Splunk.Sdk
                 });
             }
 
-            SerializationEntries = serializationEntries;
+            Parameters = parameters;
         }
 
         protected Args()
         {
-            foreach (var serializationEntry in SerializationEntries.Where(entry => entry.DefaultValue != null))
+            foreach (var serializationEntry in Parameters.Where(entry => entry.DefaultValue != null))
             {
                 serializationEntry.SetValue(this, serializationEntry.DefaultValue);
             }
@@ -139,30 +139,30 @@ namespace Splunk.Sdk
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            foreach (var entry in Args<TArgs>.SerializationEntries)
+            foreach (var parameter in Args<TArgs>.Parameters)
             {
-                object value = entry.GetValue(this);
+                object value = parameter.GetValue(this);
 
                 if (value == null)
                 {
-                    if (entry.IsRequired)
+                    if (parameter.IsRequired)
                     {
-                        throw new SerializationException(string.Format("Missing value for required parameter {0}", entry.ParameterName));
+                        throw new SerializationException(string.Format("Missing value for required parameter {0}", parameter.Name));
                     }
                     continue;
                 }
-                if (entry.DefaultValue != null && !entry.EmitDefaultValue && value.Equals(entry.DefaultValue))
+                if (parameter.DefaultValue != null && !parameter.EmitDefaultValue && value.Equals(parameter.DefaultValue))
                 {
                     continue;
                 }
-                if (!entry.IsCollection)
+                if (!parameter.IsCollection)
                 {
-                    yield return new KeyValuePair<string, string>(entry.ParameterName, entry.Format(value));
+                    yield return new KeyValuePair<string, string>(parameter.Name, parameter.Format(value));
                     continue;
                 }
                 foreach (var item in (IEnumerable)value)
                 {
-                    yield return new KeyValuePair<string, string>(entry.ParameterName, entry.Format(item));
+                    yield return new KeyValuePair<string, string>(parameter.Name, parameter.Format(item));
                 }
             }
         }
@@ -179,23 +179,23 @@ namespace Splunk.Sdk
                 builder.Append("; ");
             };
 
-            foreach (var entry in Args<TArgs>.SerializationEntries)
+            foreach (var parameter in Args<TArgs>.Parameters)
             {
-                object value = entry.GetValue(this);
+                object value = parameter.GetValue(this);
 
                 if (value == null)
                 {
-                    append("null", entry.ParameterName, FormatString);
+                    append("null", parameter.Name, FormatString);
                     continue;
                 }
-                if (!entry.IsCollection)
+                if (!parameter.IsCollection)
                 {
-                    append(value, entry.ParameterName, entry.Format);
+                    append(value, parameter.Name, parameter.Format);
                     continue;
                 }
                 foreach (var item in (IEnumerable)value)
                 {
-                    append(item, entry.ParameterName, entry.Format);
+                    append(item, parameter.Name, parameter.Format);
                 }
             }
 
@@ -211,7 +211,7 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        static readonly IReadOnlyList<SerializationEntry> SerializationEntries;
+        static readonly SortedSet<Parameter> Parameters;
 
         static string FormatBoolean(object value)
         {
@@ -279,16 +279,75 @@ namespace Splunk.Sdk
             public bool IsCollection;
         }
 
-        class SerializationEntry
+        struct Ordinal : IComparable<Ordinal>, IEquatable<Ordinal>
         {
-            public SerializationEntry(PropertyInfo propertyInfo)
-            { this.propertyInfo = propertyInfo; }
+            #region Constructos
 
-            public string ParameterName
-            { get; set; }
+            public Ordinal(int position, string name)
+            {
+                this.Position = position;
+                this.Name = name;
+            }
 
-            public int ParameterOrder
-            { get; set; }
+            #endregion
+
+            #region Fields
+
+            public readonly int Position;
+            public readonly string Name;
+
+            #endregion
+
+            #region Methods
+
+            public int CompareTo(Ordinal other)
+            {
+                int result = this.Position - other.Position;
+                return result != 0 ? result : this.Name.CompareTo(other.Name);
+            }
+
+            public override bool Equals(object o)
+            {
+                return o != null && o is Ordinal ? this.Equals((Ordinal)o) : false;
+            }
+
+            public bool Equals(Ordinal other)
+            {
+                return this.Position == other.Position && this.Name == other.Name;
+            }
+
+            public override int GetHashCode()
+            {
+                // TODO: Check this against the algorithm presented in Effective Java
+                int hash = 17;
+
+                hash = hash * 23 + this.Position.GetHashCode();
+                hash = hash * 23 + this.Name.GetHashCode();
+
+                return hash;
+            }
+
+            public override string ToString()
+            {
+                return string.Format("({0}, {1})", this.Position, this.Name);
+            }
+
+            #endregion
+        }
+
+        class Parameter : IComparable, IComparable<Parameter>, IEquatable<Parameter>
+        {
+            #region Constructors
+
+            public Parameter(string name, int position, PropertyInfo propertyInfo)
+            {
+                this.ordinal = new Ordinal(position, name);
+                this.propertyInfo = propertyInfo;
+            }
+
+            #endregion
+
+            #region Properties
 
             public object DefaultValue
             { get; set; }
@@ -302,8 +361,53 @@ namespace Splunk.Sdk
             public bool IsRequired
             { get; set; }
 
+            public string Name
+            {
+                get { return this.ordinal.Name; }
+            }
+
+            public int Position
+            {
+                get { return this.ordinal.Position; }
+            }
+
+            #endregion
+
+            #region Methods
+
+            public int CompareTo(object other)
+            {
+                return this.CompareTo(other as Parameter);
+            }
+
+            public int CompareTo(Parameter other)
+            {
+                if (other == null)
+                    return 1;
+                if (object.ReferenceEquals(this, other))
+                    return 0;
+                return this.ordinal.CompareTo(other.ordinal);
+            }
+
+            public override bool Equals(object other)
+            {
+                return this.Equals(other as Parameter);
+            }
+
+            public bool Equals(Parameter other)
+            {
+                if (other == null)
+                    return false;
+                return object.ReferenceEquals(this, other) || this.ordinal.Equals(other.ordinal);
+            }
+
             public Func<object, string> Format
             { get; set; }
+
+            public override int GetHashCode()
+            {
+                return this.ordinal.GetHashCode();
+            }
 
             public object GetValue(object o)
             {
@@ -315,7 +419,14 @@ namespace Splunk.Sdk
                 this.propertyInfo.SetValue(o, value);
             }
 
+            #endregion
+
+            #region Privates
+
+            Ordinal ordinal;
             PropertyInfo propertyInfo;
+
+            #endregion
         }
 
         #endregion

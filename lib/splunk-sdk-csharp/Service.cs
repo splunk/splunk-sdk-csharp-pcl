@@ -16,6 +16,7 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
@@ -138,14 +139,39 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<Job> SearchAsync(string search, IEnumerable<KeyValuePair<string, object>> parameters = null)
+        public async Task<Job> SearchAsync(string command)
         {
-            Contract.Requires(!string.IsNullOrWhiteSpace(search));
+            return await this.SearchAsync(new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("search", command) });
+        }
 
-            var searchParameter = new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("search", "search " + search) };
-            parameters = parameters == null ? searchParameter : searchParameter.Concat(parameters);
+        /// <summary>
+        /// Creates a search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<Job> SearchAsync(JobArgs args)
+        {
+            return await this.SearchAsync((IEnumerable<KeyValuePair<string, object>>)args);
+        }
 
-            XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, parameters);
+        /// <summary>
+        /// Creates a search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<Job> SearchAsync(IEnumerable<KeyValuePair<string, object>> args)
+        {
+            Contract.Requires<ArgumentNullException>(args != null, "parameters");
+
+            XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, args);
             
             string searchId = document.Element("response").Element("sid").Value;
             var job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);

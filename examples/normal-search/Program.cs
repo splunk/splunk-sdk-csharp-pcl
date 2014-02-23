@@ -27,18 +27,18 @@ namespace Splunk.Sdk.Examples
     {
         static void Main(string[] args)
         {
-            var jobArgs = new JobArgs()
-            {
-                ExecutionMode = ExecutionMode.Oneshot, RequiredFieldList = new string[] { "foo", "bar" },
-            };
-
-            Console.WriteLine(jobArgs.ToString());
-
             var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             Task loginTask = service.LoginAsync("admin", "changeme");
             loginTask.Wait();
 
-            Task<Job> jobTask = service.SearchAsync("* | head 100");
+            var jobArgs = new JobArgs()
+            {
+                Search = "* | head 100",
+                ExecutionMode = ExecutionMode.Oneshot,
+                RequiredFieldList = new string[] { "foo", "bar" },
+            };
+
+            Task<Job> jobTask = service.SearchAsync(jobArgs);
             jobTask.Wait();
 
             Job job = jobTask.Result;

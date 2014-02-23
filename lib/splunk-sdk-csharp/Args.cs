@@ -137,7 +137,7 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             foreach (var parameter in Args<TArgs>.Parameters)
             {
@@ -157,12 +157,12 @@ namespace Splunk.Sdk
                 }
                 if (!parameter.IsCollection)
                 {
-                    yield return new KeyValuePair<string, string>(parameter.Name, parameter.Format(value));
+                    yield return new KeyValuePair<string, object>(parameter.Name, parameter.Format(value));
                     continue;
                 }
                 foreach (var item in (IEnumerable)value)
                 {
-                    yield return new KeyValuePair<string, string>(parameter.Name, parameter.Format(item));
+                    yield return new KeyValuePair<string, object>(parameter.Name, parameter.Format(item));
                 }
             }
         }

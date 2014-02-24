@@ -44,6 +44,9 @@ namespace Splunk.Sdk
                 case "ERROR":
                     this.Type = MessageType.Error;
                     break;
+                case "FATAL":
+                    this.Type = MessageType.Fatal;
+                    break;
                 default:
                     throw new InvalidDataException(string.Format("Unrecognized message type: {0}", type));
             }

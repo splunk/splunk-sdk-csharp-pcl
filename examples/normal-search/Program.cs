@@ -17,6 +17,7 @@
 namespace Splunk.Sdk.Examples
 {
     using System;
+    using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -25,6 +26,19 @@ namespace Splunk.Sdk.Examples
     /// </summary>
     class Program
     {
+        static Program()
+        {
+            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
+            // 1. Instantiate a WebRequestHandler
+            // 2. Set its ServerCertificateValidationCallback
+            // 3. Instantiate a Splunk.Sdk.Context with the WebRequestHandler
+
+            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
+            {
+                return true;
+            };
+        }
+
         static void Main(string[] args)
         {
             var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
@@ -33,9 +47,8 @@ namespace Splunk.Sdk.Examples
 
             var jobArgs = new JobArgs()
             {
-                Search = "* | head 100",
-                ExecutionMode = ExecutionMode.Oneshot,
-                RequiredFieldList = new string[] { "foo", "bar" },
+                Search = "search * | head 100",
+                ExecutionMode = ExecutionMode.Normal,
             };
 
             Task<Job> jobTask = service.SearchAsync(jobArgs);
@@ -58,6 +71,8 @@ namespace Splunk.Sdk.Examples
                 updateTask.Wait();
             }
 
+            jobArgs.ExecutionMode = ExecutionMode.Oneshot;
+            service.LoginAsync("admin", "changeme").ContinueWith(task => service.SearchAsync(jobArgs));
 #if false
             // Get the search results and use the built-in XML parser to display them
             var outArgs = new JobResultsArgs

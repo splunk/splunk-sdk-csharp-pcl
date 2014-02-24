@@ -46,7 +46,7 @@ namespace Splunk.Sdk
         { get; set; }
 
         [DataMember(Name = "earliest_time")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string EarliestTime // TODO: Convenience class for specifying a time string. See 
         { get; set; }
 
@@ -66,22 +66,22 @@ namespace Splunk.Sdk
         { get; set; }
 
         [DataMember(Name = "id")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string Id
         { get; set; }
 
         [DataMember(Name = "index_earliest")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string IndexEarliest
         { get; set; }
 
         [DataMember(Name = "index_latest")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string IndexLatest
         { get; set; }
 
         [DataMember(Name = "latest_time")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string LatestTime
         { get; set; }
 
@@ -96,12 +96,12 @@ namespace Splunk.Sdk
         { get; set; }
 
         [DataMember(Name = "namespace")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string Namespace
         { get; set; }
 
         [DataMember(Name = "now")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string Now
         { get; set; }
 
@@ -116,7 +116,7 @@ namespace Splunk.Sdk
         { get; set; }
 
         [DataMember(Name = "remote_server_list")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string RemoteServerList
         { get; set; }
 
@@ -126,7 +126,7 @@ namespace Splunk.Sdk
         { get; set; }
 
         [DataMember(Name = "reuse_max_seconds_ago")]
-        [DefaultValue(-1)]
+        [DefaultValue(0)]
         public int ReuseMaxSecondsAgo
         { get; set; }
 
@@ -151,7 +151,7 @@ namespace Splunk.Sdk
         { get; set; }
 
         [DataMember(Name = "search_listener")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string SearchListener
         { get; set; }
 
@@ -176,7 +176,7 @@ namespace Splunk.Sdk
         { get; set; }
 
         [DataMember(Name = "time_format")]
-        [DefaultValue("")]
+        [DefaultValue(null)]
         public string TimeFormat
         { get; set; }
 

@@ -155,7 +155,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<Job> SearchAsync(JobArgs args)
         {
-            return await this.SearchAsync((IEnumerable<KeyValuePair<string, object>>)args);
+            return await this.SearchAsync(args.AsEnumerable());
         }
 
         /// <summary>
@@ -172,11 +172,22 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(args != null, "parameters");
 
             XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, args);
-            
-            string searchId = document.Element("response").Element("sid").Value;
-            var job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
-            await job.UpdateAsync();
-            
+            Job job = null;
+
+            switch (document.Root.Name.LocalName)
+            {
+                case "response":
+
+                    string searchId = document.Element("response").Element("sid").Value;
+
+                    job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
+                    await job.UpdateAsync();
+                    break;
+
+                case "results":
+
+                    break;
+            }
             return job;
         }
 

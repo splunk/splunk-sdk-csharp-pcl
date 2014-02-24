@@ -137,7 +137,7 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        public IEnumerable<KeyValuePair<string, object>> AsEnumerable()
         {
             foreach (var parameter in Args<TArgs>.Parameters)
             {
@@ -151,7 +151,7 @@ namespace Splunk.Sdk
                     }
                     continue;
                 }
-                if (parameter.DefaultValue != null && !parameter.EmitDefaultValue && value.Equals(parameter.DefaultValue))
+                if (!parameter.EmitDefaultValue && value.Equals(parameter.DefaultValue))
                 {
                     continue;
                 }

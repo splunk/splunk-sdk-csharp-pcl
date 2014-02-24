@@ -39,6 +39,11 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
-        Error
+        Error,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Fatal
     }
 }

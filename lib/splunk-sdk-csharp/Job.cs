@@ -45,7 +45,8 @@ namespace Splunk.Sdk
             { 
                 if (this.backingFields.DispatchState == DispatchState.Unknown)
                 {
-                    this.backingFields.DispatchState = Enum.Parse(typeof(DispatchState), this.Record.DispatchState, ignoreCase: true);
+                    string value = this.Record.DispatchState.ToString();
+                    this.backingFields.DispatchState = (DispatchState)Enum.Parse(typeof(DispatchState), value, ignoreCase: true);
                 }
                 return this.backingFields.DispatchState;
             }

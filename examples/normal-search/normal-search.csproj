@@ -41,6 +41,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="xunit">
+      <HintPath>..\..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -48,9 +51,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\splunk-sdk-csharp\splunk-sdk-csharp.csproj">
+    <ProjectReference Include="..\..\source\splunk-sdk-csharp\splunk-sdk-csharp.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>splunk-sdk-csharp</Name>
     </ProjectReference>

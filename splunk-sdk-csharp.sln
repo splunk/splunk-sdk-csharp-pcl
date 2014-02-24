@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splunk-sdk-csharp", "lib\splunk-sdk-csharp\splunk-sdk-csharp.csproj", "{DE65F0D5-7753-483E-8933-E6DB22350F04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "splunk-sdk-csharp", "sources\splunk-sdk-csharp\splunk-sdk-csharp.csproj", "{DE65F0D5-7753-483E-8933-E6DB22350F04}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "acceptance-tests", "tests\acceptance-tests\acceptance-tests.csproj", "{B7C3839F-58F5-4CA9-9317-9655A0BC55D9}"
 EndProject
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. examples", "3. examples"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. tests", "2. tests", "{BBE2BB41-AE8E-4A06-AD72-0ABECE5DC1D0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. lib", "1. lib", "{19A10C52-242D-4B86-8C6C-F6628BBD68C2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. sources", "1. sources", "{19A10C52-242D-4B86-8C6C-F6628BBD68C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

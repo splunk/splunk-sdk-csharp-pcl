@@ -38,6 +38,10 @@
     <Reference Include="System" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="xunit, Version=1.9.2.1705, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\xunit-1.9.2\xunit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -56,7 +60,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\lib\splunk-sdk-csharp\splunk-sdk-csharp.csproj">
+    <ProjectReference Include="..\..\source\splunk-sdk-csharp\splunk-sdk-csharp.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>splunk-sdk-csharp</Name>
     </ProjectReference>

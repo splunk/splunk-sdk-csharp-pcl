@@ -47,8 +47,8 @@ namespace Splunk.Sdk.Examples
 
             var jobArgs = new JobArgs()
             {
+                ExecutionMode = ExecutionMode.Blocking,
                 Search = "search * | head 100",
-                ExecutionMode = ExecutionMode.Normal,
             };
 
             Task<Job> jobTask = service.SearchAsync(jobArgs);
@@ -71,8 +71,6 @@ namespace Splunk.Sdk.Examples
                 updateTask.Wait();
             }
 
-            jobArgs.ExecutionMode = ExecutionMode.Oneshot;
-            service.LoginAsync("admin", "changeme").ContinueWith(task => service.SearchAsync(jobArgs));
 #if false
             // Get the search results and use the built-in XML parser to display them
             var outArgs = new JobResultsArgs

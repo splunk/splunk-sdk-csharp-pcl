@@ -19,8 +19,6 @@ namespace Splunk.Sdk
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Dynamic;
-    using System.Linq;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
@@ -176,7 +174,7 @@ namespace Splunk.Sdk
 
             switch (document.Root.Name.LocalName)
             {
-                case "response":
+                case "response": // ExecutionMode.Normal or ExecutionMode.Blocking
 
                     string searchId = document.Element("response").Element("sid").Value;
 
@@ -184,8 +182,9 @@ namespace Splunk.Sdk
                     await job.UpdateAsync();
                     break;
 
-                case "results":
+                case "results": // ExecutionMode.Oneshot
 
+                    // TODO: Support Oneshot queries
                     break;
             }
             return job;

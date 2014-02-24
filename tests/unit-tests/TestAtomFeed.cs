@@ -16,27 +16,25 @@
 
 namespace Splunk.Sdk
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml.Linq;
+    using Xunit;
 
-    [TestClass]
     public class TestAtomFeed
     {
-        [TestMethod]
+        [Fact]
         public void Construct()
         {
-            string documentPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "AtomFeed.xml"));
-            Assert.IsTrue(File.Exists(documentPath));
-            feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, XDocument.Load(documentPath));
+            var feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
         }
 
-        [TestMethod]
+        [Fact]
         public void Access()
         {
-            var expected = new List<string>() { "https://localhost:8089/servicesNS/admin/search/search/jobs/1392687998.313"	};
+            var feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
+            var expected = new List<string>() { "https://localhost:8089/servicesNS/admin/search/search/jobs/1392687998.313" };
             List<string> actual;
             
             actual = new List<string>();
@@ -46,7 +44,7 @@ namespace Splunk.Sdk
                 actual.Add(entity.ToString());
             }
 
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
 
             actual = new List<string>();
 
@@ -55,13 +53,9 @@ namespace Splunk.Sdk
                 actual.Add(feed.Entities[i].ToString());
             }
 
-            CollectionAssert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        #region Privates
-
-        static AtomFeed<GenericEntity> feed;
-
-        #endregion
+        static readonly XDocument document = XDocument.Load(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "AtomFeed.xml")));
     }
 }

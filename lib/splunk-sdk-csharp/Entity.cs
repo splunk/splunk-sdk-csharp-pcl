@@ -113,6 +113,7 @@ namespace Splunk.Sdk
 #endif
             // Gurantee: unique result because entities have specific namespaces
             this.Record = AtomFeed<TEntity>.CreateEntity(this.Context, this.Collection, document.Root);
+            this.Invalidate();
         }
 
         public override string ToString()

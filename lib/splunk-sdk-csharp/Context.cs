@@ -108,22 +108,22 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="parameters"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocumentAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters = null)
+        public async Task<XDocument> GetDocumentAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args = null)
         {
             Contract.Requires(@namespace != null);
             Contract.Requires(resource != null);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, parameters));
-
-            if (this.SessionKey != null)
+            using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, args)))
             {
-                request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                if (this.SessionKey != null)
+                {
+                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                }
+                HttpResponseMessage response = await this.client.SendAsync(request);
+                return await this.ReadDocument(response);
             }
-
-            HttpResponseMessage response = await this.client.SendAsync(request);
-            return await this.ReadDocument(response);
         }
 
         /// <summary>
@@ -142,33 +142,33 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="parameters"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStreamAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<Stream> GetDocumentStreamAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
         {
-            Contract.Requires(@namespace != null);
-            Contract.Requires(resource != null);
+            Contract.Requires<ArgumentNullException>(@namespace != null);
+            Contract.Requires<ArgumentNullException>(resource != null);
 
-            var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, parameters));
-
-            if (this.SessionKey != null)
+            using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, args)))
             {
-                request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                if (this.SessionKey != null)
+                {
+                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                }
+                HttpResponseMessage response = await this.client.SendAsync(request);
+                return await this.ReadDocumentStream(response);
             }
-
-            HttpResponseMessage response = await this.client.SendAsync(request);
-            return await this.ReadDocumentStream(response);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="resource"></param>
-        /// <param name="parameters"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStreamAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<Stream> GetDocumentStreamAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
         {
-            return await this.GetDocumentStreamAsync(Namespace.Default, resource, parameters);
+            return await this.GetDocumentStreamAsync(Namespace.Default, resource, args);
         }
 
         /// <summary>
@@ -180,29 +180,29 @@ namespace Splunk.Sdk
         /// <returns></returns>
         public async Task<XDocument> PostAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, this.CreateServicesUri(@namespace, resource, null))
-            {
-                Content = this.CreateContent(args) 
-            };
+            Contract.Requires<ArgumentNullException>(@namespace != null);
+            Contract.Requires<ArgumentNullException>(resource != null);
 
-            if (this.SessionKey != null)
+            using (var request = new HttpRequestMessage(HttpMethod.Post, this.CreateServicesUri(@namespace, resource, null)) { Content = this.CreateContent(args) })
             {
-                request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                if (this.SessionKey != null)
+                {
+                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                }
+                HttpResponseMessage response = await this.client.SendAsync(request);
+                return await this.ReadDocument(response);
             }
-
-            HttpResponseMessage response = await this.client.SendAsync(request);
-            return await this.ReadDocument(response);
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="resource"></param>
-        /// <param name="parameters"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<XDocument> PostAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<XDocument> PostAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
         {
-            return await PostAsync(Namespace.Default, resource, parameters);
+            return await PostAsync(Namespace.Default, resource, args);
         }
 
         public override string ToString()
@@ -265,9 +265,9 @@ namespace Splunk.Sdk
             return new Uri(builder.ToString());
         }
 
-        Uri CreateServicesUri(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        Uri CreateServicesUri(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
         {
-            return CreateServicesUri(Namespace.Default, resource, parameters);
+            return CreateServicesUri(Namespace.Default, resource, args);
         }
 
         void Initialize(Scheme protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler)

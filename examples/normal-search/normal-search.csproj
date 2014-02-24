@@ -54,7 +54,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\source\splunk-sdk-csharp\splunk-sdk-csharp.csproj">
+    <ProjectReference Include="..\..\sources\splunk-sdk-csharp\splunk-sdk-csharp.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>splunk-sdk-csharp</Name>
     </ProjectReference>

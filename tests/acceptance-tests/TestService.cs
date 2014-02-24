@@ -16,23 +16,23 @@
 
 namespace Splunk.Sdk
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Net;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
-    [TestClass]
+    using Xunit;
+
     public class TestService
     {
-        [TestMethod]
+        [Fact]
         public void Construct()
         {
             service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
-            Assert.AreEqual(service.ToString(), "https://localhost:8089/services");
+            Assert.Equal(service.ToString(), "https://localhost:8089/services");
         }
 
-        [TestMethod]
+        [Fact]
         public void Login()
         {
             Task task;
@@ -40,8 +40,8 @@ namespace Splunk.Sdk
             task = service.LoginAsync("admin", "changeme");
             task.Wait();
 
-            Assert.AreEqual(task.Status, TaskStatus.RanToCompletion);
-            Assert.IsNotNull(service.Context.SessionKey);
+            Assert.Equal(task.Status, TaskStatus.RanToCompletion);
+            Assert.NotNull(service.Context.SessionKey);
 
             try
             {
@@ -50,21 +50,21 @@ namespace Splunk.Sdk
             }
             catch (Exception)
             {
-                Assert.AreEqual(task.Status, TaskStatus.Faulted);
-                Assert.IsInstanceOfType(task.Exception, typeof(AggregateException));
+                Assert.Equal(task.Status, TaskStatus.Faulted);
+                Assert.IsType(typeof(AggregateException), task.Exception);
 
                 var aggregateException = (AggregateException)task.Exception;
-                Assert.AreEqual(aggregateException.InnerExceptions.Count, 1);
-                Assert.IsInstanceOfType(aggregateException.InnerExceptions[0], typeof(RequestException));
+                Assert.Equal(aggregateException.InnerExceptions.Count, 1);
+                Assert.IsType(typeof(RequestException), aggregateException.InnerExceptions[0]);
 
                 var requestException = (RequestException)(aggregateException.InnerExceptions[0]);
-                Assert.AreEqual(requestException.StatusCode, HttpStatusCode.Unauthorized);
-                Assert.AreEqual(requestException.Details.Count, 1);
-                Assert.AreEqual(requestException.Details[0], new Message(XElement.Parse(@"<msg type=""WARN"">Login failed</msg>")));
+                Assert.Equal(requestException.StatusCode, HttpStatusCode.Unauthorized);
+                Assert.Equal(requestException.Details.Count, 1);
+                Assert.Equal(requestException.Details[0], new Message(XElement.Parse(@"<msg type=""WARN"">Login failed</msg>")));
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Search()
         {
             Task<Job> task;

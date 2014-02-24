@@ -16,13 +16,13 @@
 
 namespace Splunk.Sdk
 {
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
     using System.Net;
     using System.Threading.Tasks;
     using System.Xml.Linq;
+    
+    using Xunit;
 
-    [TestClass]
     public class TestContext
     {
         static TestContext()
@@ -38,17 +38,17 @@ namespace Splunk.Sdk
             };
         }
 
-        [TestMethod]
+        [Fact]
         public void Construct()
         {
             client = new Context(Scheme.Https, "localhost", 8089);
 
-            Assert.AreEqual(client.Protocol, Scheme.Https);
-            Assert.AreEqual(client.Host, "localhost");
-            Assert.AreEqual(client.Port, 8089);
-            Assert.IsNull(client.SessionKey);
+            Assert.Equal(client.Protocol, Scheme.Https);
+            Assert.Equal(client.Host, "localhost");
+            Assert.Equal(client.Port, 8089);
+            Assert.Null(client.SessionKey);
 
-            Assert.AreEqual(client.ToString(), "https://localhost:8089");
+            Assert.Equal(client.ToString(), "https://localhost:8089");
         }
 
         static Context client;

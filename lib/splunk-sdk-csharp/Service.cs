@@ -171,7 +171,7 @@ namespace Splunk.Sdk
         {
             Contract.Requires<ArgumentNullException>(args != null, "parameters");
 
-            XDocument document = await this.Context.Post(this.Namespace, ResourceName.Jobs, args);
+            XDocument document = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
             Job job = null;
 
             switch (document.Root.Name.LocalName)

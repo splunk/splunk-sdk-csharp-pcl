@@ -176,13 +176,13 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="parameters"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<XDocument> Post(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<XDocument> PostAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, this.CreateServicesUri(@namespace, resource, null))
             {
-                Content = this.CreateContent(parameters) 
+                Content = this.CreateContent(args) 
             };
 
             if (this.SessionKey != null)
@@ -202,7 +202,7 @@ namespace Splunk.Sdk
         /// <returns></returns>
         public async Task<XDocument> PostAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
-            return await Post(Namespace.Default, resource, parameters);
+            return await PostAsync(Namespace.Default, resource, parameters);
         }
 
         public override string ToString()

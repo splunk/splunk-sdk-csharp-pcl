@@ -73,7 +73,7 @@ namespace Splunk.Sdk
         #endregion
 
         #region Methods
-        
+
         public static TEntity CreateEntity(Context context, ResourceName collection, XElement entry)
         {
             XElement content = entry.Element(ElementName.Content);

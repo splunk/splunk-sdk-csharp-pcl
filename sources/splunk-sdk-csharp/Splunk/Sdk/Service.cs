@@ -137,9 +137,28 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<Job> SearchAsync(string command)
+        public async Task<Job> SearchAsync(string command, ExecutionMode mode = ExecutionMode.Normal)
         {
-            return await this.SearchAsync(new KeyValuePair<string, object>[] { new KeyValuePair<string, object>("search", command) });
+            return (Job)await this.SearchAsync(new JobArgs(command) { ExecutionMode = mode });
+        }
+
+        /// <summary>
+        /// Creates a search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST 
+        /// API Reference.
+        /// </remarks>
+        public async Task<Job> SearchAsync(JobArgs args)
+        {
+            Contract.Requires<ArgumentNullException>(args != null, "args");
+            Contract.Requires<ArgumentNullException>(args.Search != null, "args.Search");
+            Contract.Requires<ArgumentException>(args.ExecutionMode != ExecutionMode.Oneshot, "args.ExecutionMode: ExecutionMode.Oneshot");
+
+            return (Job)await this.SearchAsync(args.AsEnumerable());
         }
 
         /// <summary>
@@ -151,43 +170,29 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<Job> SearchAsync(JobArgs args)
+        public async Task<XDocument> SearchOneshotAsync(string command)
         {
-            return await this.SearchAsync(args.AsEnumerable());
+            return (XDocument)await this.SearchAsync(new KeyValuePair<string, object>[]
+            {
+                new KeyValuePair<string, object>("exec_mode", "oneshot"),
+                new KeyValuePair<string, object>("search", command)
+            });
         }
 
         /// <summary>
         /// Creates a search <see cref="Job"/>.
         /// </summary>
         /// <param name="searchString"></param>
-        /// <param name="args"></param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<Job> SearchAsync(IEnumerable<KeyValuePair<string, object>> args)
+        public async Task<XDocument> SearchOneshotAsync(JobArgs args)
         {
-            Contract.Requires<ArgumentNullException>(args != null, "parameters");
-
-            XDocument document = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
-            Job job = null;
-
-            switch (document.Root.Name.LocalName)
-            {
-                case "response": // ExecutionMode.Normal or ExecutionMode.Blocking
-
-                    string searchId = document.Element("response").Element("sid").Value;
-
-                    job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
-                    await job.UpdateAsync();
-                    break;
-
-                case "results": // ExecutionMode.Oneshot
-
-                    // TODO: Support Oneshot queries
-                    break;
-            }
-            return job;
+            Contract.Requires<ArgumentNullException>(args != null, "args");
+            args.ExecutionMode = ExecutionMode.Oneshot;
+            return (XDocument)await this.SearchAsync(args.AsEnumerable());
         }
 
         /// <summary>
@@ -413,6 +418,41 @@ namespace Splunk.Sdk
     end
 
 #endif
+        #endregion
+
+        #region Privates
+
+        private async Task<object> SearchAsync(IEnumerable<KeyValuePair<string, object>> args)
+        {
+            Contract.Requires<ArgumentNullException>(args != null, "parameters");
+
+            XDocument document = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
+            object result;
+
+            switch (document.Root.Name.LocalName)
+            {
+                case "response": // ExecutionMode.Normal or ExecutionMode.Blocking
+
+                    string searchId = document.Element("response").Element("sid").Value;
+
+                    Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
+                    await job.UpdateAsync();
+                    result = job;
+                    break;
+
+                case "results": // ExecutionMode.Oneshot
+
+                    result = document;
+                    break;
+
+                default:
+
+                    throw new NotSupportedException(string.Format("DocumentType: {0}", document.DocumentType));
+            }
+
+            return result;
+        }
+
         #endregion
     }
 }

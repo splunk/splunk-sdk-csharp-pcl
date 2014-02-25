@@ -74,10 +74,11 @@ namespace Splunk.Sdk
                     throw new InvalidDataContractException(string.Format("Missing DataMemberAttribute on {0}.{1}", propertyInfo.PropertyType.Name, propertyInfo.Name));
                 }
 
+                var propertyName = propertyInfo.Name;
                 var propertyType = propertyInfo.PropertyType;
                 var propertyTypeInfo = propertyType.GetTypeInfo();
 
-                Formatter? formatter = GetPropertyFormatter(null, propertyType, propertyTypeInfo, propertyFormatters);
+                Formatter? formatter = GetPropertyFormatter(propertyName, null, propertyType, propertyTypeInfo, propertyFormatters);
 
                 if (formatter == null)
                 {
@@ -93,7 +94,7 @@ namespace Splunk.Sdk
                             if (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                             {
                                 Type itemType = @interface.GenericTypeArguments[0];
-                                formatter = GetPropertyFormatter(propertyType, itemType, itemType.GetTypeInfo(), propertyFormatters);
+                                formatter = GetPropertyFormatter(propertyName, propertyType, itemType, itemType.GetTypeInfo(), propertyFormatters);
                             }
                         }
                         else if (@interface == typeof(IEnumerable))
@@ -228,7 +229,7 @@ namespace Splunk.Sdk
             return value.ToString();
         }
 
-        static Formatter? GetPropertyFormatter(Type container, Type type, TypeInfo info, Dictionary<Type, Formatter> formatters)
+        static Formatter? GetPropertyFormatter(string propertyName, Type container, Type type, TypeInfo info, Dictionary<Type, Formatter> formatters)
         {
             Formatter formatter;
 
@@ -254,7 +255,19 @@ namespace Splunk.Sdk
                     map[(int)value] = enumMember == null ? name : enumMember.Value;
                 }
 
-                formatter = new Formatter { Format = (object value) => map[(int)value], IsCollection = container != null };
+                formatter = new Formatter { 
+                    Format = (object value) => 
+                    {
+                        string name;
+
+                        if (map.TryGetValue((int)value, out name))
+                        {
+                            return name;
+                        }
+                        throw new ArgumentException(string.Format("{0}.{1}: {2}", typeof(TArgs).Name, propertyName, value));
+                    },
+                    IsCollection = container != null
+                };
             }
             else if (container != null)
             {

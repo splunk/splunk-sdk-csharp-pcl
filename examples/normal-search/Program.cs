@@ -20,6 +20,7 @@ namespace Splunk.Sdk.Examples
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Xml.Linq;
 
     /// <summary>
     /// Starts a normal search and polls for completion to find out when the search has finished.
@@ -42,19 +43,16 @@ namespace Splunk.Sdk.Examples
         static void Main(string[] args)
         {
             var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
-            Task loginTask = service.LoginAsync("admin", "changeme");
-            loginTask.Wait();
+            service.LoginAsync("admin", "changeme").Wait();
 
-            var jobArgs = new JobArgs()
-            {
-                ExecutionMode = ExecutionMode.Blocking,
-                Search = "search * | head 100",
-            };
+            // Oneshot search
 
-            Task<Job> jobTask = service.SearchAsync(jobArgs);
-            jobTask.Wait();
+            var document = service.SearchOneshotAsync("search index=_internal | head 10").Result;
+            Console.WriteLine(document.Root.ToString());
 
-            Job job = jobTask.Result;
+            // Normal asynchronous search with pollback for completion
+
+            var job = service.SearchAsync("search index=_internal | head 10").Result;
 
             while (!job.IsCompleted)
             {
@@ -70,6 +68,10 @@ namespace Splunk.Sdk.Examples
                 Task updateTask = job.UpdateAsync();
                 updateTask.Wait();
             }
+
+            // Blocking search
+
+            job = service.SearchAsync("search index=_internal | head 10", ExecutionMode.Blocking).Result;
 
 #if false
             // Get the search results and use the built-in XML parser to display them

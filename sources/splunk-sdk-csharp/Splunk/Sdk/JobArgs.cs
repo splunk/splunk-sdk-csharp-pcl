@@ -26,6 +26,20 @@ namespace Splunk.Sdk
     [DataContract]
     public class JobArgs : Args<JobArgs>
     {
+        #region Constructors
+
+        public JobArgs()
+        { }
+
+        public JobArgs(string search)
+        {
+            this.Search = search;
+        }
+
+        #endregion
+
+        #region Properties
+
         [DataMember(Name = "search", IsRequired = true)]
         public string Search
         { get; set; }
@@ -184,5 +198,7 @@ namespace Splunk.Sdk
         [DefaultValue(86400)]
         public int Timeout
         { get; set; }
+
+        #endregion
     }
 }

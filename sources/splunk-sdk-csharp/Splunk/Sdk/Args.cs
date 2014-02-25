@@ -173,9 +173,9 @@ namespace Splunk.Sdk
 
             Action<object, string, Func<object, string>> append = (item, name, format) =>
             {
-                builder.Append(Uri.EscapeDataString(name));
+                builder.Append(name);
                 builder.Append('=');
-                builder.Append(Uri.EscapeDataString(format(item)));
+                builder.Append(format(item));
                 builder.Append("; ");
             };
 

@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="TestAtomFeed.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestJobArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\sources\splunk-sdk-csharp\splunk-sdk-csharp.csproj">

@@ -26,15 +26,16 @@ namespace Splunk.Sdk
     public class TestService
     {
         [Fact]
-        public void Construct()
+        public void CanConstructService()
         {
-            service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
+            Service service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             Assert.Equal(service.ToString(), "https://localhost:8089/services");
         }
 
         [Fact]
-        public void Login()
+        public void CanLogin()
         {
+            Service service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             Task task;
             
             task = service.LoginAsync("admin", "changeme");
@@ -65,14 +66,12 @@ namespace Splunk.Sdk
         }
 
         [Fact]
-        public void Search()
+        public void CanSearch()
         {
-            Task<Job> task;
+            Service service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
 
-            task = service.SearchAsync("index=_internal | head 10");
+            Task<Task<Job>> task = service.LoginAsync("admin", "changeme").ContinueWith(loginTask => service.SearchAsync("index=_internal | head 10"));
             task.Wait();
         }
-
-        static Service service;
     }
 }

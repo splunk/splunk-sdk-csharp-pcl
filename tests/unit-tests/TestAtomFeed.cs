@@ -25,13 +25,13 @@ namespace Splunk.Sdk
     public class TestAtomFeed
     {
         [Fact]
-        public void Construct()
+        public void CanConstruct()
         {
             var feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
         }
 
         [Fact]
-        public void Access()
+        public void CanAccessEntities()
         {
             var feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
             var expected = new List<string>() { "https://localhost:8089/servicesNS/admin/search/search/jobs/1392687998.313" };

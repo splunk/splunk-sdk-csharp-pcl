@@ -24,12 +24,14 @@ namespace Splunk.Sdk
 
     public class TestAtomFeed
     {
+        [Trait("class", "AtomFeed")]
         [Fact]
         public void CanConstruct()
         {
             var feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
         }
 
+        [Trait("class", "AtomFeed")]
         [Fact]
         public void CanAccessEntities()
         {

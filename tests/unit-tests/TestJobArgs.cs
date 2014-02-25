@@ -25,6 +25,7 @@ namespace Splunk.Sdk
 
     public class TestJobArgs
     {
+        [Trait("class", "JobArgs")]
         [Fact]
         void CanConstruct()
         {
@@ -55,6 +56,7 @@ namespace Splunk.Sdk
             Assert.Throws(typeof(SerializationException), () => args.AsEnumerable().ToArray());
         }
 
+        [Trait("class", "JobArgs")]
         [Fact]
         void HasCorrectDefaults()
         {

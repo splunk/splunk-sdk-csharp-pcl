@@ -25,13 +25,15 @@ namespace Splunk.Sdk
 
     public class TestService
     {
+        [Trait("class", "Service")]
         [Fact]
-        public void CanConstructService()
+        public void CanConstruct()
         {
             Service service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             Assert.Equal(service.ToString(), "https://localhost:8089/services");
         }
 
+        [Trait("class", "Service")]
         [Fact]
         public void CanLogin()
         {
@@ -65,6 +67,7 @@ namespace Splunk.Sdk
             }
         }
 
+        [Trait("class", "Service")]
         [Fact]
         public void CanSearch()
         {

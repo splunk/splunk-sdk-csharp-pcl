@@ -38,6 +38,7 @@ namespace Splunk.Sdk
             };
         }
 
+        [Trait("class", "Context")]
         [Fact]
         public void Construct()
         {

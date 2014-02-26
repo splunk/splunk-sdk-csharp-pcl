@@ -14,22 +14,7 @@
  * under the License.
  */
 
-// TODO: 
-
-// [ ] Refactor into AtomFeed and AtomEntry. Refactor EntityCollection<TEntity>
-//     to match a structure similar to this:
-//
-//     entityCollection: EntityCollection<TEntity>
-//         feed: IReadOnlyList<AtomEntry>
-//         entities: IReadOnlyList<TEntity>
-//     entity: TEntity
-//         entry: AtomEntry // references an element of entityCollection.feed
-//         properties: exposed as strongly-typed references to elements of entry
-//
-//     Advantages: 
-//     1. AtomFeed and AtomEntry take no dependency on TEntity
-//     2. Factory code for creating Entities goes into TEntity (?)
-
+// [ ] TODO: AtomFeed: Add properties, not just entries.
 
 namespace Splunk.Sdk
 {
@@ -87,6 +72,7 @@ namespace Splunk.Sdk
             public static readonly XName Id = XName.Get("id", "http://www.w3.org/2005/Atom");
             public static readonly XName Feed = XName.Get("feed", "http://www.w3.org/2005/Atom");
             public static readonly XName Link = XName.Get("link", "http://www.w3.org/2005/Atom");
+            public static readonly XName Published = XName.Get("published", "http://www.w3.org/2005/Atom");
             public static readonly XName Title = XName.Get("title", "http://www.w3.org/2005/Atom");
             public static readonly XName Updated = XName.Get("updated", "http://www.w3.org/2005/Atom");
 

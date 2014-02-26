@@ -14,6 +14,15 @@
  * under the License.
  */
 
+// [ ] TODO: Check AtomEntry properties against splunk-sdk-csharp-1.0.X
+// 
+// [ ] TODO: Improve error handling. Bad data should in an element should 
+//     produce diagnostic field-oriented error messages via 
+//     InvalidDataException.
+//
+// [ ] TODO: Identify optional properties and sensible default values, if
+//     they're missing.
+
 namespace Splunk.Sdk
 {
     using System;
@@ -21,7 +30,6 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.Dynamic;
     using System.IO;
-    using System.Linq;
     using System.Xml;
     using System.Xml.Linq;
 
@@ -36,73 +44,39 @@ namespace Splunk.Sdk
 
             // Title
 
-            element = entry.Element(AtomFeed.ElementName.Title);
-
-            if (element == null)
-            {
-                throw new InvalidDataException(string.Format("Missing title element in atom feed entry {0}", entry.Name));
-            }
-
+            element = GetElement(entry, AtomFeed.ElementName.Title);
             this.Title = element.Value;
 
             // Author
 
-            element = entry.Element(AtomFeed.ElementName.Author);
-
-            if (element == null)
-            {
-                throw new InvalidDataException(string.Format("Missing author element in atom feed entry {0}", entry.Name));
-            }
-
+            element = GetElement(entry, AtomFeed.ElementName.Author);
             this.Author = element.Value;
 
             // Id
 
-            element = entry.Element(AtomFeed.ElementName.Id);
-
-            if (element == null)
-            {
-                throw new InvalidDataException(string.Format("Missing id element in atom feed entry {0}", entry.Name));
-            }
-
+            element = GetElement(entry, AtomFeed.ElementName.Id);
             this.Id = new Uri(element.Value);
 
             // Published
 
-            element = entry.Element(AtomFeed.ElementName.Updated);
-
-            if (element == null)
-            {
-                throw new InvalidDataException(string.Format("Missing published element in atom feed entry {0}", entry.Name));
-            }
-
+            element = GetElement(entry, AtomFeed.ElementName.Published);
             this.Updated = DateTime.Parse(element.Value);
 
             // Updated
 
-            element = entry.Element(AtomFeed.ElementName.Updated);
-
-            if (element == null)
-            {
-                throw new InvalidDataException(string.Format("Missing updated element in atom feed entry {0}", entry.Name));
-            }
-
+            element = GetElement(entry, AtomFeed.ElementName.Updated);
             this.Updated = DateTime.Parse(element.Value);
 
             // Content
 
-            element = entry.Element(AtomFeed.ElementName.Content);
-
-            if (element == null)
-            {
-                throw new InvalidDataException(string.Format("Missing content element in atom feed entry {0}", entry.Name));
-            }
+            element = GetElement(entry, AtomFeed.ElementName.Content);
             this.Content = ParsePropertyValue(element);
 
             // Links
 
-            var baseUri = new Uri(this.Id.ToString() + "/"); // must be terminated by a slash
             var links = new Dictionary<string, Uri>();
+            string id = this.Id.AbsoluteUri;
+            Uri baseUri = id.EndsWith("/") ? this.Id : new Uri(id + "/");
 
             foreach (var link in entry.Elements(AtomFeed.ElementName.Link))
             {
@@ -154,6 +128,18 @@ namespace Splunk.Sdk
         #endregion
 
         #region Privates
+
+        static XElement GetElement(XElement entry, XName name)
+        {
+            XElement element = entry.Element(name);
+
+            if (element == null)
+            {
+                throw new InvalidDataException(string.Format("Missing {0} element in atom feed entry {1}", name, entry.Name));
+            }
+
+            return element;
+        }
 
         static string NormalizePropertyName(string name)
         {

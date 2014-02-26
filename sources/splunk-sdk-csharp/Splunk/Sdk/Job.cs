@@ -23,8 +23,8 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        internal Job(Context context, Namespace @namespace, ResourceName collection, string name, ExpandoObject record = null) 
-            : base(context, @namespace, collection, name, record)
+        internal Job(Context context, Namespace @namespace, ResourceName collection, string name)
+            : base(context, @namespace, collection, name)
         { }
 
         public Job() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with a Entity<TEntity> factory
@@ -56,9 +56,14 @@ namespace Splunk.Sdk
 
         #region Methods
 
+        protected override string GetName(dynamic record)
+        {
+            return record.Sid;
+        }
         protected override void Invalidate()
         {
             this.backingFields = InvalidatedBackingFields;
+            base.Invalidate();
         }
 
         #endregion

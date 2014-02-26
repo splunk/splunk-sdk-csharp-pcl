@@ -8,7 +8,8 @@
     <OutputType>Library</OutputType>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DE65F0D5-7753-483E-8933-E6DB22350F04}</ProjectGuid>
-    <RootNamespace>Splunk.Sdk</RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
@@ -105,7 +106,27 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Splunk\Sdk\*" />
+    <Compile Include="Splunk\Sdk\App.cs" />
+    <Compile Include="Splunk\Sdk\Args.cs" />
+    <Compile Include="Splunk\Sdk\AtomEntry.cs" />
+    <Compile Include="Splunk\Sdk\AtomFeed.cs" />
+    <Compile Include="Splunk\Sdk\Context.cs" />
+    <Compile Include="Splunk\Sdk\DispatchState.cs" />
+    <Compile Include="Splunk\Sdk\Entity.cs" />
+    <Compile Include="Splunk\Sdk\EntityCollection.cs" />
+    <Compile Include="Splunk\Sdk\ExecutionMode.cs" />
+    <Compile Include="Splunk\Sdk\GenericEntity.cs" />
+    <Compile Include="Splunk\Sdk\Job.cs" />
+    <Compile Include="Splunk\Sdk\JobArgs.cs" />
+    <Compile Include="Splunk\Sdk\Message.cs" />
+    <Compile Include="Splunk\Sdk\MessageType.cs" />
+    <Compile Include="Splunk\Sdk\Namespace.cs" />
+    <Compile Include="Splunk\Sdk\RequestException.cs" />
+    <Compile Include="Splunk\Sdk\ResourceName.cs" />
+    <Compile Include="Splunk\Sdk\Scheme.cs" />
+    <Compile Include="Splunk\Sdk\SearchMode.cs" />
+    <Compile Include="Splunk\Sdk\Service.cs" />
+    <Compile Include="Splunk\Sdk\SharingMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -19,6 +19,7 @@ namespace Splunk.Sdk
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -26,11 +27,6 @@ namespace Splunk.Sdk
 
     public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new()
     {
-        static void Test()
-        {
-
-        }
-
         internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             this.Context = context;
@@ -58,7 +54,7 @@ namespace Splunk.Sdk
                 {
                     throw new InvalidOperationException();
                 }
-                return this.feed.Entities[index];
+                return this.entities[index];
             }
         }
 
@@ -79,7 +75,7 @@ namespace Splunk.Sdk
                 {
                     throw new InvalidOperationException();
                 }
-                return this.feed.Entities.Count;
+                return this.entities.Count;
             }
         }
 
@@ -111,7 +107,7 @@ namespace Splunk.Sdk
             {
                 throw new InvalidOperationException();
             }
-            return this.feed.Entities.GetEnumerator();
+            return this.entities.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -120,7 +116,7 @@ namespace Splunk.Sdk
             {
                 throw new InvalidOperationException();
             }
-            return ((IEnumerable)this.feed.Entities).GetEnumerator();
+            return ((IEnumerable)this.entities).GetEnumerator();
         }
 
         public async Task Update()
@@ -130,14 +126,21 @@ namespace Splunk.Sdk
 
             // TODO: Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
             // See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom
-            this.feed = new AtomFeed<TEntity>(this.Context, this.Name, document);
+            
+            var feed = new AtomFeed(this.Context, this.Name, document);
+            var entities = new List<TEntity>(this.feed.Entries.Count);
+            entities.AddRange(from entry in this.feed.Entries select Entity<TEntity>.CreateEntity(this.Context, this.Name, entry));
+
+            this.entities = entities;
+            this.feed = feed;
         }
 
         #endregion
 
         #region Privates
 
-        AtomFeed<TEntity> feed;
+        IReadOnlyList<TEntity> entities;
+        AtomFeed feed;
 
         #endregion
     }

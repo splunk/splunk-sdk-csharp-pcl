@@ -14,6 +14,12 @@
  * under the License.
  */
 
+// TODO:
+// [ ] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
+//     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
+// [ ] Check for HTTP Status Code 204 (No Content) and empty atoms in 
+//     Entity<TEntity>.UpdateAsync.
+
 namespace Splunk.Sdk
 {
     using System;
@@ -30,28 +36,31 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Entity()
         { }
 
-        protected Entity(Context context, Namespace @namespace, ResourceName collection, string name, dynamic record = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="namespace"></param>
+        /// <param name="collection"></param>
+        /// <param name="name"></param>
+        protected Entity(Context context, Namespace @namespace, ResourceName collection, string name)
         {
-            Contract.Requires(context != null);
-            Contract.Requires(@namespace != null);
-            Contract.Requires(!string.IsNullOrEmpty(name));
-            
+            Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
+            Contract.Requires<ArgumentException>(collection != null, "collection");
+            Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires(@namespace.IsSpecific);
 
             this.Context = context;
-            this.Namespace = @namespace;
+            this.name = name;
+            this.@namespace = @namespace;
             this.Collection = collection;
-            this.Name = name;
-
-            this.resourceName = new ResourceName(collection.Concat(new string[] { name }));
-
-            if (record != null)
-            {
-                this.Record = record;
-            }
         }
 
         #endregion
@@ -74,27 +83,80 @@ namespace Splunk.Sdk
         /// Gets the name of this <see cref="Entity"/>.
         /// </summary>
         public string Name
-        { get; internal set; }
+        { 
+            get
+            {
+                if (this.name == null)
+                {
+                    if (this.record == null)
+                    {
+                        throw new InvalidOperationException(); // TODO: documentation
+                    }
+                    this.name = this.GetName(record);
+                }
+                return this.name;
+            }
+        }
 
         /// <summary>
         /// Gets the namespace containing this <see cref="Entity"/>.
         /// </summary>
         public Namespace Namespace
-        { get; internal set; }
+        {
+            get
+            {
+                if (this.@namespace == null)
+                {
+                    if (this.record == null)
+                    {
+                        throw new InvalidOperationException(); // TODO: documentation
+                    }
+                    this.@namespace = new Namespace(record.Eai.Acl.Owner, record.Eai.Acl.App);
+                }
+                return this.@namespace;
+            }
+        }
+
+        public ResourceName ResourceName
+        {
+            get
+            {
+                if (this.resourceName == null)
+                {
+                    this.resourceName = new ResourceName(this.Collection.Concat(new string[] { this.Name }));
+                }
+                return this.resourceName;
+            }
+        }
 
         /// <summary>
         /// Gets the state of this <see cref="Entity"/>.
         /// </summary>
-        public dynamic Record
-        { get; internal set; }
+        public virtual dynamic Record
+        {
+            get { return this.record; }
+
+            internal set
+            {
+                this.record = value;
+                this.Invalidate();
+            }
+        }
 
         #endregion
 
         #region Methods
 
+        protected virtual string GetName(dynamic record)
+        {
+            return record.Title;
+        }
+
         protected virtual void Invalidate()
         {
-            // Nothing to invalidate in this base type
+            this.resourceName = null;
+            this.@namespace = null;
+            this.name = null;
         }
 
         /// <summary>
@@ -102,8 +164,7 @@ namespace Splunk.Sdk
         /// </summary>
         public async Task UpdateAsync()
         {
-            XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.resourceName);
-
+            XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.ResourceName);
 #if false
             if response.code == 204 or response.body.nil?
             // This code is here primarily to handle the case of a job not yet being
@@ -111,9 +172,7 @@ namespace Splunk.Sdk
             raise EntityNotReady.new((@resource + [name]).join("/"))
           end
 #endif
-            // Gurantee: unique result because entities have specific namespaces
-            this.Record = AtomFeed<TEntity>.CreateEntity(this.Context, this.Collection, document.Root);
-            this.Invalidate();
+            this.Record = new AtomEntry(document.Root).Content; // Gurantee: unique result because entities have specific namespaces
         }
 
         public override string ToString()
@@ -123,9 +182,28 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
         ResourceName resourceName;
+        Namespace @namespace;
+        string name;
+        dynamic record;
+
+        internal static TEntity CreateEntity(Context context, ResourceName collection, AtomEntry entry)
+        {
+            Contract.Requires<ArgumentNullException>(collection != null, "collection");
+            Contract.Requires<ArgumentNullException>(context != null, "context");
+            Contract.Requires<ArgumentNullException>(entry != null, "entry");
+
+            var entity = new TEntity()
+            {
+                Collection = collection,
+                Context = context,
+                Record = entry.Content
+            };
+
+            return entity;
+        }
 
         #endregion
     }

@@ -43,10 +43,8 @@ namespace Splunk.Sdk
         /// <param name="host">The DNS name of a Splunk server instance</param>
         /// <param name="port">The port number used to communicate with 
         /// <see cref="Host"/></param>
-        public Context(Scheme protocol, string host, int port)
-        {
-            this.Initialize(protocol, host, port, null, false);
-        }
+        public Context(Scheme protocol, string host, int port) : this(protocol, host, port, null)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Context"/> class 
@@ -61,8 +59,13 @@ namespace Splunk.Sdk
         /// <param name="disposeHandler"></param>
         public Context(Scheme protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
         {
-            Contract.Requires<ArgumentNullException>(handler != null);
-            Initialize(protocol, host, port, handler, disposeHandler);
+            Contract.Requires(!string.IsNullOrEmpty(host));
+            Contract.Requires(0 <= port && port <= 65535);
+
+            this.Protocol = protocol;
+            this.Host = host;
+            this.Port = port;
+            this.client = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
         }
 
         #endregion
@@ -97,7 +100,7 @@ namespace Splunk.Sdk
         /// completed.
         /// </remarks>
         public string SessionKey
-        { get; internal set; }
+        { get; set; }
 
         #endregion
 
@@ -268,17 +271,6 @@ namespace Splunk.Sdk
         Uri CreateServicesUri(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
         {
             return CreateServicesUri(Namespace.Default, resource, args);
-        }
-
-        void Initialize(Scheme protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler)
-        {
-            Contract.Requires(!string.IsNullOrEmpty(host));
-            Contract.Requires(0 <= port && port <= 65535);
-            
-            this.Protocol = protocol;
-            this.Host = host;
-            this.Port = port;
-            this.client = this.client == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
         }
 
         async Task<XDocument> ReadDocument(HttpResponseMessage response)

@@ -22,8 +22,8 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        internal GenericEntity(Context context, Namespace @namespace, ResourceName collection, string name, ExpandoObject record = null) 
-            : base(context, @namespace, collection, name, record)
+        internal GenericEntity(Context context, Namespace @namespace, ResourceName collection, string name)
+            : base(context, @namespace, collection, name)
         { }
 
         public GenericEntity() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with a Entity<TEntity> factory

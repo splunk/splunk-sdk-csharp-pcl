@@ -108,9 +108,9 @@ namespace Splunk.Sdk
         {
             XDocument document = await this.Context.GetDocumentAsync(this.Namespace, ResourceName.Capabilities);
 
-            var feed = new AtomFeed<GenericEntity>(this.Context, ResourceName.Capabilities, document);
-            GenericEntity entity = feed.Entities[0];
-            dynamic capabilities = entity.Record.Capabilities;
+            var feed = new AtomFeed(this.Context, ResourceName.Capabilities, document);
+            AtomEntry entry = feed.Entries[0];
+            dynamic capabilities = entry.Content.Capabilities;
 
             return capabilities;
         }

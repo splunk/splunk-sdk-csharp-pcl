@@ -28,31 +28,31 @@ namespace Splunk.Sdk
         [Fact]
         public void CanConstruct()
         {
-            var feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
+            var feed = new AtomFeed(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
         }
 
         [Trait("class", "AtomFeed")]
         [Fact]
-        public void CanAccessEntities()
+        public void CanAccessEntries()
         {
-            var feed = new AtomFeed<GenericEntity>(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
-            var expected = new List<string>() { "https://localhost:8089/servicesNS/admin/search/search/jobs/1392687998.313" };
+            var expected = new List<string>() { "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=1/1/0001 12:00:00 AM, Updated=1/1/0001 12:00:00 AM)" };
+            var feed = new AtomFeed(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
             List<string> actual;
             
             actual = new List<string>();
 
-            foreach (var entity in feed.Entities)
+            foreach (var entry in feed.Entries)
             {
-                actual.Add(entity.ToString());
+                actual.Add(entry.ToString());
             }
 
             Assert.Equal(expected, actual);
 
             actual = new List<string>();
 
-            for (int i = 0; i < feed.Entities.Count; i++)
+            for (int i = 0; i < feed.Entries.Count; i++)
             {
-                actual.Add(feed.Entities[i].ToString());
+                actual.Add(feed.Entries[i].ToString());
             }
 
             Assert.Equal(expected, actual);

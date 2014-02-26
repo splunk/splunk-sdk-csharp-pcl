@@ -24,7 +24,8 @@ namespace Splunk.Sdk
         public App()
         { }
 
-        internal App(Context context, Namespace @namespace, ResourceName collection, string name, ExpandoObject record = null) : base(context, @namespace, collection, name, record)
+        internal App(Context context, Namespace @namespace, ResourceName collection, string name)
+            : base(context, @namespace, collection, name)
         { }
     }
 }

@@ -24,6 +24,7 @@ namespace Splunk.Sdk
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Xml;
     using System.Xml.Linq;
 
     /// <summary>
@@ -177,11 +178,22 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="resource"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public async Task<HttpResponseMessage> PostAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
+        {
+            return await PostAsync(Namespace.Default, resource, args);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<XDocument> PostAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
+        public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
         {
             Contract.Requires<ArgumentNullException>(@namespace != null);
             Contract.Requires<ArgumentNullException>(resource != null);
@@ -192,20 +204,8 @@ namespace Splunk.Sdk
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
-                HttpResponseMessage response = await this.client.SendAsync(request);
-                return await this.ReadDocument(response);
+                return await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
             }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="resource"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public async Task<XDocument> PostAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
-        {
-            return await PostAsync(Namespace.Default, resource, args);
         }
 
         public override string ToString()

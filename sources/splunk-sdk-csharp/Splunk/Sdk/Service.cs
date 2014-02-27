@@ -14,12 +14,20 @@
  * under the License.
  */
 
+// TODO:
+// [ ] Consider schema validation from schemas stored as resources.
+//     See [XmlReaderSettings.Schemas Property](http://goo.gl/Syvj4V)
+
 namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.IO;
+    using System.Net.Http;
+    using System.Text;
     using System.Threading.Tasks;
+    using System.Xml;
     using System.Xml.Linq;
 
     public class Service
@@ -75,12 +83,15 @@ namespace Splunk.Sdk
             Contract.Requires(username != null);
             Contract.Requires(password != null);
 
-            XDocument document = await this.Context.PostAsync(ResourceName.Login, new KeyValuePair<string, object>[]
+            using (HttpResponseMessage response = await this.Context.PostAsync(ResourceName.Login, new KeyValuePair<string, object>[]
             {
                 new KeyValuePair<string, object>("username", username),
                 new KeyValuePair<string, object>("password", password)
-            });
-            this.Context.SessionKey = document.Element("response").Element("sessionKey").Value;
+            }))
+            {
+                XDocument document = XDocument.Load(await response.Content.ReadAsStreamAsync());
+                this.Context.SessionKey = document.Element("response").Element("sessionKey").Value;
+            }
         }
 
         /// <summary>
@@ -158,7 +169,14 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(args.Search != null, "args.Search");
             Contract.Requires<ArgumentException>(args.ExecutionMode != ExecutionMode.Oneshot, "args.ExecutionMode: ExecutionMode.Oneshot");
 
-            return (Job)await this.SearchAsync(args.AsEnumerable());
+            HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args.AsEnumerable());
+            var document = XDocument.Load(await response.Content.ReadAsStreamAsync());
+            string searchId = document.Element("response").Element("sid").Value;
+
+            Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
+            await job.UpdateAsync();
+
+            return job;
         }
 
         /// <summary>
@@ -170,13 +188,10 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<XDocument> SearchOneshotAsync(string command)
+        public async Task<SearchResults> SearchOneshotAsync(string command)
         {
-            return (XDocument)await this.SearchAsync(new KeyValuePair<string, object>[]
-            {
-                new KeyValuePair<string, object>("exec_mode", "oneshot"),
-                new KeyValuePair<string, object>("search", command)
-            });
+            Contract.Requires<ArgumentNullException>(command != null, "command");
+            return await this.SearchOneshotAsync(new JobArgs(command));
         }
 
         /// <summary>
@@ -188,11 +203,15 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<XDocument> SearchOneshotAsync(JobArgs args)
+        public async Task<SearchResults> SearchOneshotAsync(JobArgs args)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
             args.ExecutionMode = ExecutionMode.Oneshot;
-            return (XDocument)await this.SearchAsync(args.AsEnumerable());
+            
+            using (HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args.AsEnumerable()))
+            {
+                return new SearchResults(await response.Content.ReadAsStreamAsync());
+            }
         }
 
         /// <summary>
@@ -422,36 +441,7 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        private async Task<object> SearchAsync(IEnumerable<KeyValuePair<string, object>> args)
-        {
-            Contract.Requires<ArgumentNullException>(args != null, "parameters");
-
-            XDocument document = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
-            object result;
-
-            switch (document.Root.Name.LocalName)
-            {
-                case "response": // ExecutionMode.Normal or ExecutionMode.Blocking
-
-                    string searchId = document.Element("response").Element("sid").Value;
-
-                    Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
-                    await job.UpdateAsync();
-                    result = job;
-                    break;
-
-                case "results": // ExecutionMode.Oneshot
-
-                    result = document;
-                    break;
-
-                default:
-
-                    throw new NotSupportedException(string.Format("DocumentType: {0}", document.DocumentType));
-            }
-
-            return result;
-        }
+        static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings() { Async = true };
 
         #endregion
     }

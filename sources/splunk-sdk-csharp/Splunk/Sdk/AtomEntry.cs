@@ -16,7 +16,7 @@
 
 // [ ] TODO: Check AtomEntry properties against splunk-sdk-csharp-1.0.X
 // 
-// [ ] TODO: Improve error handling. Bad data should in an element should 
+// [O] TODO: Improve error handling. Bad data should in an element should 
 //     produce diagnostic field-oriented error messages via 
 //     InvalidDataException.
 //
@@ -40,37 +40,13 @@ namespace Splunk.Sdk
         public AtomEntry(XElement entry)
         {
             Contract.Requires<ArgumentNullException>(entry != null);
-            XElement element;
 
-            // Title
-
-            element = GetElement(entry, AtomFeed.ElementName.Title);
-            this.Title = element.Value;
-
-            // Author
-
-            element = GetElement(entry, AtomFeed.ElementName.Author);
-            this.Author = element.Value;
-
-            // Id
-
-            element = GetElement(entry, AtomFeed.ElementName.Id);
-            this.Id = new Uri(element.Value);
-
-            // Published
-
-            element = GetElement(entry, AtomFeed.ElementName.Published);
-            this.Updated = DateTime.Parse(element.Value);
-
-            // Updated
-
-            element = GetElement(entry, AtomFeed.ElementName.Updated);
-            this.Updated = DateTime.Parse(element.Value);
-
-            // Content
-
-            element = GetElement(entry, AtomFeed.ElementName.Content);
-            this.Content = ParsePropertyValue(element);
+            this.Title = GetElement(entry, AtomFeed.ElementName.Title, AsString);
+            this.Author = GetElement(entry, AtomFeed.ElementName.Author, AsString);
+            this.Id = GetElement(entry, AtomFeed.ElementName.Id, AsAbsoluteUri);
+            this.Published = GetElement(entry, AtomFeed.ElementName.Published, AsDateTime);
+            this.Updated = GetElement(entry, AtomFeed.ElementName.Updated, AsDateTime);
+            this.Content = GetElement(entry, AtomFeed.ElementName.Content, AsExpandoObject);
 
             // Links
 
@@ -129,7 +105,39 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        static XElement GetElement(XElement entry, XName name)
+        static Uri AsAbsoluteUri(XElement element)
+        {
+            Uri result;
+
+            if (!Uri.TryCreate(element.Value, UriKind.Absolute, out result))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+            return result;
+        }
+
+        static DateTime AsDateTime(XElement element)
+        {
+            DateTime result;
+
+            if (!DateTime.TryParse(element.Value, out result))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+            return result;
+        }
+
+        static ExpandoObject AsExpandoObject(XElement element)
+        {
+            return ParsePropertyValue(element);
+        }
+
+        static string AsString(XElement element)
+        {
+            return element.Value;
+        }
+
+        static T GetElement<T>(XElement entry, XName name, Func<XElement, T> convert)
         {
             XElement element = entry.Element(name);
 
@@ -138,7 +146,7 @@ namespace Splunk.Sdk
                 throw new InvalidDataException(string.Format("Missing {0} element in atom feed entry {1}", name, entry.Name));
             }
 
-            return element;
+            return convert(element);
         }
 
         static string NormalizePropertyName(string name)

@@ -17,6 +17,7 @@
 namespace Splunk.Sdk.Examples
 {
     using System;
+    using System.IO;
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
@@ -47,8 +48,12 @@ namespace Splunk.Sdk.Examples
 
             // Oneshot search
 
-            var document = service.SearchOneshotAsync("search index=_internal | head 10").Result;
-            Console.WriteLine(document.Root.ToString());
+            var searchResults = service.SearchOneshotAsync("search index=_internal | head 10").Result;
+
+            foreach (var record in searchResults)
+            {
+                Console.WriteLine(record.ToString());
+            }
 
             // Normal asynchronous search with pollback for completion
 

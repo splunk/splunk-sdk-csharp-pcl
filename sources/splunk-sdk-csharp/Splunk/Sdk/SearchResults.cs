@@ -29,7 +29,7 @@ namespace Splunk.Sdk
     /// reader for Splunk search results. When a stream from an export search
     /// is passed to this reader, it skips any preview events in the stream. 
     /// If you want to access the preview events, use the  
-    /// <see cref="MultiResultsReaderXml"/> class.
+    /// <see cref="MultiSearchResultsXml"/> class.
     /// </summary>
     public class SearchResults : IDisposable, IEnumerable<Record>
     {
@@ -58,7 +58,7 @@ namespace Splunk.Sdk
 
             var setting = new XmlReaderSettings
             {
-                ConformanceLevel = ConformanceLevel.Fragment,
+                Async = true, ConformanceLevel = ConformanceLevel.Fragment
             };
 
             this.XmlReader = XmlReader.Create(stream, setting);
@@ -71,7 +71,7 @@ namespace Splunk.Sdk
             while (true)
             {
                 // Stop if no more set is available
-                if (!this.AdvanceToNextSet())
+                if (!this.NextResultSet())
                 {
                     break;
                 }
@@ -104,14 +104,14 @@ namespace Splunk.Sdk
         { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether the results in this
-        /// reader are a preview from an unfinished search.
+        /// Gets a value indicating whether these <see cref="SearchResults"/> are 
+        /// a preview of the results from an unfinished search job.
         /// </summary>
         /// <remarks>
         /// This property's default value is "false", which results in no 
         /// results set skipping or concatenation.
         /// </remarks>
-        public virtual bool IsPreview
+        public bool IsPreview
         { get; private set; }
 
         #endregion
@@ -119,24 +119,11 @@ namespace Splunk.Sdk
         #region Methods
 
         /// <summary>
-        /// Advances to the next set, skipping any remaining event(s) in the 
-        /// current set.
-        /// </summary>
-        /// <remarks>
-        /// Reads metadata before the first event in the next result set.
-        /// </remarks>
-        /// <returns>False if the end is reached.</returns>     
-        internal bool AdvanceToNextSet()
-        {
-            return this.ReadIntoNextResultsElement();
-        }
-
-        /// <summary>
         /// Releases unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            ((IDisposable)this.XmlReader).Dispose();
+            this.Dispose(true);
         }
 
         /// <summary>
@@ -147,7 +134,7 @@ namespace Splunk.Sdk
         {
             while (true)
             {
-                foreach (var record in this.GetEventsFromCurrentSet())
+                foreach (var record in this.ResultSet())
                 {
                     yield return record;
                 }
@@ -164,7 +151,7 @@ namespace Splunk.Sdk
 
                 // If we did not advance to next set, i.e. the end of stream is
                 // reached, break to end the iteration.
-                if (!this.AdvanceToNextSet())
+                if (!this.NextResultSet())
                 {
                     break;
                 }
@@ -190,17 +177,23 @@ namespace Splunk.Sdk
 
         #region Privates/internals
 
+        bool disposed;
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing && !this.disposed)
+            {
+                this.XmlReader.Dispose();
+                this.disposed = true;
+                GC.SuppressFinalize(this);
+            }
+        }
+
         /// <summary>
         /// Gets a value indicating whether the stream is 
         /// from the export endpoint.
         /// </summary>
         internal bool IsExportStream
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the underlying reader of the XML stream.
-        /// </summary>
-        internal XmlReader XmlReader
         { get; private set; }
 
         /// <summary>
@@ -220,12 +213,12 @@ namespace Splunk.Sdk
         /// <para>
         /// After all events in the set is enumerated, the metadata of the 
         /// next set (if available) is read, with 
-        /// <see cref="ResultsReader.IsPreview"/> 
-        /// and <see cref="ResultsReader.Fields"/> being set accordingly.
+        /// <see cref="SearchResults.IsPreview"/> 
+        /// and <see cref="SearchResults.Fields"/> being set accordingly.
         /// </para>
         /// </remarks>
         /// <returns>A enumerator.</returns>
-        internal IEnumerable<Record> GetEventsFromCurrentSet()
+        internal IEnumerable<Record> ResultSet()
         {
             while (true)
             {
@@ -236,55 +229,120 @@ namespace Splunk.Sdk
 
                 var result = new Record();
 
-                this.ReadEachDescendant(
-                    "field",
-                    () =>
+                this.ReadEachDescendant("field", () =>
+                {
+                    var key = this.XmlReader["k"];
+
+                    if (key == null)
                     {
-                        var key = this.XmlReader["k"];
+                        throw new XmlException("'field' attribute 'k' not found");
+                    }
 
-                        if (key == null)
+                    var values = new List<string>();
+
+                    var xmlDepthField = this.XmlReader.Depth;
+
+                    while (this.XmlReader.Read())
+                    {
+                        if (this.XmlReader.Depth == xmlDepthField)
                         {
-                            throw new XmlException(
-                                "'field' attribute 'k' not found");
+                            break;
                         }
 
-                        var values = new List<string>();
+                        Debug.Assert(XmlReader.Depth > xmlDepthField, "The loop should have exited earlier.");
 
-                        var xmlDepthField = this.XmlReader.Depth;
-
-                        while (this.XmlReader.Read())
+                        if (this.XmlReader.IsStartElement("value"))
                         {
-                            if (this.XmlReader.Depth == xmlDepthField)
+                            if (this.XmlReader.ReadToDescendant("text"))
                             {
-                                break;
-                            }
-
-                            Debug.Assert(
-                                XmlReader.Depth > xmlDepthField,
-                                "The loop should have exited earlier.");
-
-                            if (this.XmlReader.IsStartElement("value"))
-                            {
-                                if (this.XmlReader.ReadToDescendant("text"))
-                                {
-                                    values.Add(
-                                        this.XmlReader.ReadElementContentAsString());
-                                }
-                            }
-                            else if (this.XmlReader.IsStartElement("v"))
-                            {
-                                result.SegmentedRaw = this.XmlReader.ReadOuterXml();
-                                string value = ReadElementContentAsString(result.SegmentedRaw);
-                                values.Add(value);
+                                values.Add(this.XmlReader.ReadElementContentAsString());
                             }
                         }
+                        else if (this.XmlReader.IsStartElement("v"))
+                        {
+                            result.SegmentedRaw = this.XmlReader.ReadOuterXml();
+                            string value = ReadElementContentAsString(result.SegmentedRaw);
+                            values.Add(value);
+                        }
+                    }
 
-                        result.Add(key, new Field(values.ToArray()));
-                    });
+                    result.Add(key, new Field(values.ToArray()));
+                });
 
                 yield return result;
             }
         }
+
+        /// <summary>
+        /// Advances to the next search results set.
+        /// </summary>
+        /// <returns><code>true</code> if there is a next search results set; 
+        /// otherwise, if the current result set is the final result set, a 
+        /// value of <code>false</code>.</returns>
+        /// <remarks>
+        /// This operation skips remaining records in the current search results
+        /// set and reads metadata before reading the first results 
+        /// <see cref="Record"/>.
+        /// Below is an example of an input stream, with a single 'results'
+        /// element. With a stream from an export point, there can be
+        /// multiple ones.
+        /// 
+        /// <example><![CDATA[
+        /// <?xml version='1.0' encoding='UTF-8'?>
+        ///  <results preview='0'>
+        ///    <meta>
+        ///    <fieldOrder>
+        ///        <field>series</field>
+        ///        <field>sum(kb)</field>
+        ///    </fieldOrder>
+        ///    </meta>
+        ///    <messages>
+        ///    <msg type='DEBUG'>base lispy: [ AND ]</msg>
+        ///    <msg type='DEBUG'>search context: user='admin', app='search', bs-pathname='/some/path'</msg>
+        ///    </messages>
+        ///    <result offset='0'>
+        ///    <field k='series'>
+        ///        <value>
+        ///        <text>twitter</text>
+        ///        </value>
+        ///    </field>
+        ///    <field k='sum(kb)'>
+        ///        <value>
+        ///        <text>14372242.758775</text>
+        ///        </value>
+        ///    </field>
+        ///    </result>
+        ///    <result offset='1'>
+        ///    <field k='series'>
+        ///        <value>
+        ///        <text>splunkd</text>
+        ///        </value>
+        ///    </field>
+        ///    <field k='sum(kb)'>
+        ///        <value>
+        ///        <text>267802.333926</text>
+        ///        </value>
+        ///    </field>
+        ///    </result>
+        /// </results>
+        /// </remarks>]]>
+        /// </example>
+        internal bool NextResultSet()
+        {
+            if (this.XmlReader.ReadToFollowing("results"))
+            {
+                this.IsPreview = XmlConvert.ToBoolean(this.XmlReader["preview"]);
+                this.ReadMetaElement();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the underlying reader of the XML stream.
+        /// </summary>
+        internal XmlReader XmlReader
+        { get; private set; }
 
         /// <summary>
         /// Reads each descendant found and positions the reader on the end
@@ -329,56 +387,6 @@ namespace Splunk.Sdk
 
                 return result.ToString();
             }
-        }
-
-        /// <summary>
-        /// Reads to next <b>results</b> element, parses out 
-        /// <see cref="ResultsReader.IsPreview"/> and <see 
-        /// cref="ResultsReader.Fields"/>.
-        /// </summary>
-        /// <returns>Returns false if the end is reached.</returns>     
-        private bool ReadIntoNextResultsElement()
-        {
-            // Below is an example of an input stream, with a single 'results'
-            // element. With a stream from an export point, there can be
-            // multiple ones.
-            //
-            //        <?xml version='1.0' encoding='UTF-8'?>
-            //        <results preview='0'>
-            //        <meta>
-            //        <fieldOrder>
-            //        <field>series</field>
-            //        <field>sum(kb)</field>
-            //        </fieldOrder>
-            //        </meta>
-            //        <messages>
-            //        <msg type='DEBUG'>base lispy: [ AND ]</msg>
-            //        <msg type='DEBUG'>search context: user='admin', app='search', bs-pathname='/some/path'</msg>
-            //        </messages>
-            //        <result offset='0'>
-            //        <field k='series'>
-            //        <value><text>twitter</text></value>
-            //        </field>
-            //        <field k='sum(kb)'>
-            //        <value><text>14372242.758775</text></value>
-            //        </field>
-            //        </result>
-            //        <result offset='1'>
-            //        <field k='series'>
-            //        <value><text>splunkd</text></value>
-            //        </field>
-            //        <field k='sum(kb)'>
-            //        <value><text>267802.333926</text></value>
-            //        </field>
-            //        </result>
-            //        </results>
-            if (this.XmlReader.ReadToFollowing("results"))
-            {
-                this.IsPreview = XmlConvert.ToBoolean(this.XmlReader["preview"]);
-                this.ReadMetaElement();
-                return true;
-            }
-            return false;
         }
 
         /// <summary>

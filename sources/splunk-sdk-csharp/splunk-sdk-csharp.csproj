@@ -121,6 +121,7 @@
     <Compile Include="Splunk\Sdk\JobArgs.cs" />
     <Compile Include="Splunk\Sdk\Message.cs" />
     <Compile Include="Splunk\Sdk\MessageType.cs" />
+    <Compile Include="Splunk\Sdk\SearchResultsReader.cs" />
     <Compile Include="Splunk\Sdk\Namespace.cs" />
     <Compile Include="Splunk\Sdk\Record.cs" />
     <Compile Include="Splunk\Sdk\RequestException.cs" />

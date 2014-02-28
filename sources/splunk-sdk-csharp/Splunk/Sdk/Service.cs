@@ -182,8 +182,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Creates a search <see cref="Job"/>.
         /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="parameters"></param>
+        /// <param name="command"></param>
         /// <returns></returns>
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
@@ -197,8 +196,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Creates a search <see cref="Job"/>.
         /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="parameters"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
@@ -207,6 +205,7 @@ namespace Splunk.Sdk
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
             args.ExecutionMode = ExecutionMode.Oneshot;
+
             
             using (HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args.AsEnumerable()))
             {

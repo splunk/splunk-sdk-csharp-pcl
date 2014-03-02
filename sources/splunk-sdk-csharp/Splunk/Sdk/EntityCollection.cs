@@ -14,6 +14,11 @@
  * under the License.
  */
 
+
+// TODO:
+// [ ] Contracts
+// [ ] Documentation
+
 namespace Splunk.Sdk
 {
     using System;
@@ -27,17 +32,21 @@ namespace Splunk.Sdk
 
     public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new()
     {
-        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<KeyValuePair<string, object>> parameters)
+        #region Constructors
+
+        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<KeyValuePair<string, object>> args)
         {
             this.Context = context;
             this.Namespace = @namespace;
             this.Name = name;
 
-            if (parameters != null)
+            if (args != null)
             {
-                this.Parameters = parameters.ToDictionary(pair => pair.Key, pair => pair.Value);
+                this.Parameters = args.ToDictionary(pair => pair.Key, pair => pair.Value);
             }
         }
+
+        #endregion
 
         #region Properties
 

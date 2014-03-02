@@ -187,7 +187,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<SearchResults> SearchOneshotAsync(string command)
+        public async Task<SearchResultsReader> SearchOneshotAsync(string command)
         {
             Contract.Requires<ArgumentNullException>(command != null, "command");
             return await this.SearchOneshotAsync(new JobArgs(command));
@@ -201,7 +201,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<SearchResults> SearchOneshotAsync(JobArgs args)
+        public async Task<SearchResultsReader> SearchOneshotAsync(JobArgs args)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
             args.ExecutionMode = ExecutionMode.Oneshot;
@@ -209,7 +209,7 @@ namespace Splunk.Sdk
             
             using (HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args.AsEnumerable()))
             {
-                return new SearchResults(await response.Content.ReadAsStreamAsync());
+                return new SearchResultsReader(await response.Content.ReadAsStreamAsync());
             }
         }
 

@@ -19,6 +19,9 @@
 //     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
 // [ ] Check for HTTP Status Code 204 (No Content) and empty atoms in 
 //     Entity<TEntity>.UpdateAsync.
+// [O] Contracts
+//
+// [ ] Documentation
 
 namespace Splunk.Sdk
 {

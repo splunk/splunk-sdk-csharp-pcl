@@ -27,7 +27,8 @@
 //        constructed in this fashion, we would simply short-circuit 
 //        Dispose and leave it to our creator to close the stream.
 //
-// [ ] Work out semantics for skipping preview SearchResults
+// [O] Work out semantics for skipping preview SearchResults
+//     Use Reactive Extensions Operators
 //
 // [O] Contracts
 //
@@ -137,10 +138,10 @@ namespace Splunk.Sdk
             while (await this.reader.ReadToFollowingAsync("results"))
             {
                 var searchResults = await SearchResults.CreateAsync(this.reader, leaveOpen: true);
-                this.NotifySubscribers(searchResults);
+                this.OnNext(searchResults);
                 await searchResults.PushObservations();
             }
-            this.Complete();
+            this.OnCompleted();
         }
 
         #endregion

@@ -38,7 +38,13 @@
 //          or more views over a set of results. First blush investigation says 
 //          XAML works best over collections that can be based on LINQ queries.
 //          One might create a set of LINQ queries that work over a one or 
-//         many sets of SearchResults.
+//          many sets of SearchResults.
+//       
+//      Observation:
+//      
+//      Rx comes with filtering capabilities: 
+//
+//          var subscription = searchResultsReader.Where(searchResults => searchResults.AreFinal).Subscribe(...);
 //
 // [O] Contracts
 // [O] Documentation
@@ -84,6 +90,20 @@ namespace Splunk.Sdk
         #region Properties
 
         /// <summary>
+        /// Gets a value indicating whether these <see cref="SearchResults"/> 
+        /// are the final results from a search job.
+        /// </summary>
+        public bool AreFinal
+        { get { return !this.ArePreview; } }
+
+        /// <summary>
+        /// Gets a value indicating whether these <see cref="SearchResults"/> 
+        /// are a preview of the results from an unfinished search job.
+        /// </summary>
+        public bool ArePreview
+        { get; private set; }
+
+        /// <summary>
         /// Gets the read-only list of field names that may appear in a search 
         /// event <see cref="Record"/>.
         /// </summary>
@@ -92,13 +112,6 @@ namespace Splunk.Sdk
         /// fields.
         /// </remarks>
         public IReadOnlyList<string> FieldNames
-        { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether these <see cref="SearchResults"/> 
-        /// are a preview of the results from an unfinished search job.
-        /// </summary>
-        public bool IsPreview
         { get; private set; }
 
         #endregion
@@ -136,7 +149,7 @@ namespace Splunk.Sdk
 
             return new SearchResults(reader, leaveOpen)
             {
-                IsPreview = isPreview,
+                ArePreview = isPreview,
                 FieldNames = fieldNames
             };
         }
@@ -202,10 +215,10 @@ namespace Splunk.Sdk
 
             for (Record record; (record = await this.ReadRecordAsync()) != null; )
             { 
-                this.NotifySubscribers(record); 
+                this.OnNext(record); 
             }
 
-            this.Complete();
+            this.OnCompleted();
         }
 
         #endregion

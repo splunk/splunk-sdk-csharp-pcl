@@ -48,7 +48,9 @@
 //
 // [ ] Check AtomEntry properties against splunk-sdk-csharp-1.0.X
 //
-// [ ] Either drop or improve AtomEntry.NormalizePropertyName
+// [X] Either drop or improve AtomEntry.NormalizePropertyName
+//     Improved AtomEntry.NormalizePropertyName since we do not have
+//     known serialization requirements; just deserialization.
 //
 // [O] Contracts
 //
@@ -61,6 +63,8 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.Dynamic;
     using System.IO;
+    using System.Text;
+    using System.Text.RegularExpressions;
     using System.Xml;
     using System.Xml.Linq;
 
@@ -136,6 +140,8 @@ namespace Splunk.Sdk
 
         #region Privates
 
+        static Regex propertyNamePattern = new Regex(@"[_.-]+(.?)");
+
         static Uri AsAbsoluteUri(XElement element)
         {
             Uri result;
@@ -182,7 +188,12 @@ namespace Splunk.Sdk
 
         static string NormalizePropertyName(string name)
         {
-            return char.ToUpper(name[0]) + name.Substring(1);
+            var builder = new StringBuilder(name);
+
+            builder[0] = char.ToUpper(builder[0]);
+            name = propertyNamePattern.Replace(builder.ToString(), (match) => match.Groups[1].Value.ToUpper());
+
+            return name;
         }
 
         static dynamic ParsePropertyValue(XElement content)

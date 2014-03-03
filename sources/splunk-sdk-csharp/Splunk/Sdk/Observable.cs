@@ -45,11 +45,12 @@ namespace Splunk.Sdk
         #region Methods
 
         /// <summary>
-        /// 
+        /// Notifies all observers that the provider has finished sending 
+        /// push-based notifications.
         /// </summary>
-        protected void Complete()
+        protected void OnCompleted()
         {
-            if (this.observers == null)
+            if (this.observers == null || this.observers.Count == 0)
             {
                 return;
             }
@@ -60,37 +61,49 @@ namespace Splunk.Sdk
                 {
                     observer.OnCompleted();
                 }
+                this.observers.Clear();
             }
         }
 
         /// <summary>
-        /// 
+        /// Notifies all observers that the provider has experienced an error condition.
         /// </summary>
-        /// <param name="observation"></param>
-        protected void NotifySubscribers(T observation)
+        /// <param name="e"></param>
+        protected void OnError(Exception e)
         {
-            if (this.observers == null)
+            if (this.observers == null || this.observers.Count == 0)
             {
                 return;
             }
 
             lock (this.gate)
             {
-                try
+                foreach (var observer in this.observers)
                 {
-                    foreach (var observer in this.observers)
-                    {
-                        observer.OnNext(observation);
-                    }
+                    observer.OnError(e);
                 }
-                catch (Exception e)
+                this.observers.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Provides all observers with new data.
+        /// </summary>
+        /// <param name="observation">The current notification information.</param>
+        protected void OnNext(T observation)
+        {
+            if (this.observers == null || this.observers.Count == 0)
+            {
+                return;
+            }
+
+            lock (this.gate)
+            {
+                foreach (var observer in this.observers)
                 {
-                    foreach (var observer in this.observers)
-                    {
-                        observer.OnError(e);
-                    }
-                    throw;
+                    observer.OnNext(observation);
                 }
+                this.observers.Clear();
             }
         }
 
@@ -130,7 +143,8 @@ namespace Splunk.Sdk
                 }
                 unsubscriber = new Unsubscriber(this, this.observers.AddLast(observer));
             }
-            this.PushObservations();
+
+            this.Start();
             return unsubscriber;
         }
 
@@ -140,6 +154,19 @@ namespace Splunk.Sdk
 
         LinkedList<IObserver<T>> observers;
         object gate = new object();
+
+        async void Start()
+        {
+            try
+            {
+                await this.PushObservations();
+            }
+            catch (Exception e)
+            {
+                this.OnError(e);
+                throw; // TODO: Double-check OnError semantics. Should we be throwing or simply reporting here?
+            }
+        }
 
         #endregion
 

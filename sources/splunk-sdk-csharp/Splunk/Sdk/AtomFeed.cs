@@ -21,10 +21,8 @@ namespace Splunk.Sdk
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Dynamic;
     using System.IO;
     using System.Linq;
-    using System.Xml;
     using System.Xml.Linq;
     
     /// <summary>

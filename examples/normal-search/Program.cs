@@ -48,9 +48,11 @@ namespace Splunk.Sdk.Examples
 
             // Oneshot search
 
+            SearchResultsReader reader;
+
             // ...Syncrhonous use case
 
-            SearchResultsReader reader = service.SearchOneshotAsync("search index=_internal | head 10").Result;
+            reader = service.SearchOneshotAsync("search index=_internal | head 10").Result;
 
             foreach (var searchResults in reader)
             {
@@ -60,6 +62,12 @@ namespace Splunk.Sdk.Examples
                 }
             }
 
+            // ...Asyncrhonous use case
+
+            reader = service.SearchOneshotAsync("search index=_internal | head 10").Result;
+            reader.Subscribe();
+
+#if false
             // Normal asynchronous search with pollback for completion
 
             var job = service.SearchAsync("search index=_internal | head 10").Result;
@@ -83,7 +91,6 @@ namespace Splunk.Sdk.Examples
 
             job = service.SearchAsync("search index=_internal | head 10", ExecutionMode.Blocking).Result;
 
-#if false
             // Get the search results and use the built-in XML parser to display them
             var outArgs = new JobResultsArgs
             {

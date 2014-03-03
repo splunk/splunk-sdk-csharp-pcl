@@ -16,8 +16,6 @@
 
 namespace Splunk.Sdk
 {
-    using System.Dynamic;
-
     public class GenericEntity : Entity<GenericEntity>
     {
         #region Constructors

@@ -19,7 +19,6 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
-    using System.Xml.Linq;
 
     public class RequestException : HttpRequestException
     {

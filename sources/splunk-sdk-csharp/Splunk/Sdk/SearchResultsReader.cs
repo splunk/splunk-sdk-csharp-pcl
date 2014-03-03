@@ -46,8 +46,8 @@ namespace Splunk.Sdk
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Net.Http;
     using System.IO;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
 

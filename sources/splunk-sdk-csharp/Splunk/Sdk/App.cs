@@ -16,9 +16,6 @@
 
 namespace Splunk.Sdk
 {
-    using System.Collections.Generic;
-    using System.Dynamic;
-
     public class App : Entity<App>
     {
         public App()

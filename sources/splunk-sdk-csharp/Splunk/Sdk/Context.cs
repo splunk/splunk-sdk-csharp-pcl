@@ -24,7 +24,6 @@ namespace Splunk.Sdk
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Xml;
     using System.Xml.Linq;
 
     /// <summary>

@@ -17,10 +17,6 @@
 namespace Splunk.Sdk
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// A field can be accessed as either an <see cref="Array"/>

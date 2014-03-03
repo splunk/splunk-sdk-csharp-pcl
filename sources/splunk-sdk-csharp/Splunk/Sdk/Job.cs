@@ -17,7 +17,6 @@
 namespace Splunk.Sdk
 {
     using System;
-    using System.Dynamic;
 
     public class Job : Entity<Job>
     {

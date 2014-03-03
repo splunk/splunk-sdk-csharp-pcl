@@ -206,15 +206,10 @@ namespace Splunk.Sdk
 
             for (var record = await this.ReadRecordAsync(); record != null; record = await this.ReadRecordAsync())
             {
-                foreach (var observer in this.Observers)
-                {
-                    observer.OnNext(record);
-                }
+                this.NotifySubscribers(record);
             }
-            foreach (var observer in this.Observers)
-            {
-                observer.OnCompleted();
-            }
+
+            this.Complete();
         }
 
         #endregion

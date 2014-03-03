@@ -32,7 +32,9 @@
 //
 // [O] Documentation
 //
-// [ ] Thread safety (?)
+// [X] Thread safety
+//     Addresed by modifications to Observable<T> class. See 
+//     Observable<T>.NotifySubscribers and Observable<T>.Complete.
 //
 // References:
 // 1. [Async, await, and yield return](http://goo.gl/RLVDK5)
@@ -107,28 +109,20 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Iterates through <see cref="SearchResults"/> asycrhonously notifying observers
-        /// as search results are read.
+        /// as search results are constructed.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing this asychronous operation.
         /// </returns>
-        public async Task ReadAsync()
+        public async Task PublishAsync()
         {
             while (await this.reader.ReadToFollowingAsync("results"))
             {
                 var searchResults = await SearchResults.CreateAsync(this.reader, leaveOpen: true);
-                    
-                foreach (var observer in this.Observers)
-                {
-                    observer.OnNext(searchResults);
-                }
-
+                this.NotifySubscribers(searchResults);
                 await searchResults.ReadRecordsAsync();
             }
-            foreach (var observer in this.Observers)
-            {
-                observer.OnCompleted();
-            }
+            this.Complete();
         }
 
         #endregion

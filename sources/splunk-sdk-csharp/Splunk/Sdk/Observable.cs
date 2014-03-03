@@ -94,6 +94,12 @@ namespace Splunk.Sdk
             }
         }
 
+        /// <summary>
+        /// Pushes observations to observers and then completes.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing this asychronous operation.
+        /// </returns>
         protected internal abstract Task PushObservations();
 
         /// <summary>

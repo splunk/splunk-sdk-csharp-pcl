@@ -48,11 +48,16 @@ namespace Splunk.Sdk.Examples
 
             // Oneshot search
 
-            var searchResults = service.SearchOneshotAsync("search index=_internal | head 10").Result;
+            // ...Syncrhonous use case
 
-            foreach (var record in searchResults)
+            SearchResultsReader reader = service.SearchOneshotAsync("search index=_internal | head 10").Result;
+
+            foreach (var searchResults in reader)
             {
-                Console.WriteLine(record.ToString());
+                foreach (var record in searchResults.ReadRecords())
+                {
+                    Console.WriteLine(record.ToString());
+                }
             }
 
             // Normal asynchronous search with pollback for completion

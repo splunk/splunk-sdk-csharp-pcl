@@ -204,7 +204,8 @@ namespace Splunk.Sdk
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
-                return await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                HttpResponseMessage response = await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                return response;
             }
         }
 

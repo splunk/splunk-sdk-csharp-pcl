@@ -16,9 +16,7 @@
 
 namespace Splunk.Sdk
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
     
     /// <summary>
@@ -31,26 +29,48 @@ namespace Splunk.Sdk
     public class Record : Dictionary<string, Field>
     {
         /// <summary>
-        /// Gets the XML markup for the <code>"_raw"</code> field value. This
-        /// value is only used by the <see cref="SearchResults"/> class.
+        /// Gets the XML markup for the <code>_raw</code> field value.
         /// <remarks>
-        /// The return value is different than that of
-        /// the <code>"_raw"</code> field value
-        /// in that this segmented raw value is an XML fragment that includes all 
-        /// markup such as XML tags and escaped characters.
-        /// For example, <code>anEvent["_raw"]</code> field value returns this:
-        /// <code>
+        /// <para>
+        /// The return value is different than that of the <code>_raw</code> 
+        /// field value in that this segmented raw value is an XML fragment
+        /// that includes all markup such as XML tags and escaped characters.
+        /// For example, <code>record["_raw"]</code> field value returns this:
+        /// </para>
+        /// <example>
         /// <![CDATA[
         /// "http://localhost:8000/en-US/app/search/flashtimeline?q=search%20search%20index%3D_internal%20%7C%20head%2010&earliest=rt-1h&latest=rt"
         /// ]]>
-        /// </code>
-        /// <code>anEvent.SegmentedRaw</code> returns this:
-        /// <code>
+        /// </example>
+        /// <para>
+        /// While <code>record.SegmentedRaw</code> returns this:</para>
+        /// <example>
         /// <v xml:space="preserve" trunc="0">"http://localhost:8000/en-US/app/<sg h="1">search</sg>/flashtimeline?q=<sg h="1">search</sg>%20<sg h="1">search</sg>%20index%3D_internal%20%7C%20head%2010&amp;earliest=rt-1h&amp;latest=rt"</v>
-        /// </code>
+        /// </example>
         /// </remarks>
         /// </summary>
         public string SegmentedRaw { get; internal set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var builder = new StringBuilder("Record(");
+
+            foreach (KeyValuePair<string, Field> pair in this)
+            {
+                builder.Append(pair.Key);
+                builder.Append(" -> ");
+                builder.Append(pair.Value);
+                builder.Append(", ");
+            }
+
+            builder.Length = builder.Length - 2;
+            builder.Append(")");
+
+            return builder.ToString();
+        }
     }
 }

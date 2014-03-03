@@ -173,7 +173,7 @@ namespace Splunk.Sdk
         ///     </item>
         ///   </list></para>
         /// </remarks>
-        public IEnumerator<Record> ReadRecords()
+        public IEnumerable<Record> ReadRecords()
         {
             if (this.enumerated)
             {
@@ -189,8 +189,7 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Iterates through <see cref="Record"/> objects asycrhonously 
-        /// notifying observers as records are created.
+        /// Pushes <see cref="Record"/> objects to observers and then completes.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing this asychronous operation.

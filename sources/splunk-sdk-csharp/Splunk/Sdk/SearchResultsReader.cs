@@ -46,6 +46,7 @@ namespace Splunk.Sdk
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Net.Http;
     using System.IO;
     using System.Threading.Tasks;
     using System.Xml;
@@ -65,15 +66,32 @@ namespace Splunk.Sdk
         /// <param name="stream">
         /// The underlying <see cref="Stream"/>.
         /// </param>
-        public SearchResultsReader(Stream stream)
+        private SearchResultsReader(HttpResponseMessage response, Stream stream)
         {
-            Contract.Requires<ArgumentNullException>(stream != null, "stream"); // TODO: Additional checks?
+            Contract.Requires<ArgumentNullException>(response != null, "response");
+            Contract.Requires<ArgumentNullException>(stream != null, "stream");
+
+            this.response = response;
             this.reader = XmlReader.Create(stream, SearchResultsReader.XmlReaderSettings);
         }
 
         #endregion
 
         #region Methods
+
+        public static async Task<SearchResultsReader> CreateAsync(HttpResponseMessage response)
+        {
+            try
+            {
+                Stream stream = await response.Content.ReadAsStreamAsync();
+                return new SearchResultsReader(response, stream);
+            }
+            catch (Exception)
+            {
+                response.Dispose();
+                throw;
+            }
+        }
 
         /// <summary>
         /// Release unmanaged resources.
@@ -108,6 +126,12 @@ namespace Splunk.Sdk
         IEnumerator IEnumerable.GetEnumerator()
         { return this.GetEnumerator(); }
 
+        /// <summary>
+        /// Pushes <see cref="SearchResults"/> to subscribers and then completes.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/>
+        /// </returns>
         override protected internal async Task PushObservations()
         {
             while (await this.reader.ReadToFollowingAsync("results"))
@@ -126,9 +150,11 @@ namespace Splunk.Sdk
         static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings
         {
             ConformanceLevel = ConformanceLevel.Fragment,
+            CloseInput = false,
             Async = true,
         };
 
+        readonly HttpResponseMessage response;
         readonly XmlReader reader;
         bool disposed;
 
@@ -136,6 +162,7 @@ namespace Splunk.Sdk
         {
             if (disposing && !this.disposed)
             {
+                this.response.Dispose();
                 this.reader.Dispose();
                 this.disposed = true;
                 GC.SuppressFinalize(this);

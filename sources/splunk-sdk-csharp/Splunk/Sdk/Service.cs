@@ -206,11 +206,8 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(args != null, "args");
             args.ExecutionMode = ExecutionMode.Oneshot;
 
-            
-            using (HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args.AsEnumerable()))
-            {
-                return new SearchResultsReader(await response.Content.ReadAsStreamAsync());
-            }
+            HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args.AsEnumerable());
+            return await SearchResultsReader.CreateAsync(response);
         }
 
         /// <summary>

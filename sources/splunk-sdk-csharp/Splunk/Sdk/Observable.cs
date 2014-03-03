@@ -32,6 +32,7 @@ namespace Splunk.Sdk
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Defines a provider for push-based notification.
@@ -42,6 +43,25 @@ namespace Splunk.Sdk
     public abstract class Observable<T> : IObservable<T>
     {
         #region Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected void Complete()
+        {
+            if (this.observers == null)
+            {
+                return;
+            }
+
+            lock (this.gate)
+            {
+                foreach (var observer in this.observers)
+                {
+                    observer.OnCompleted();
+                }
+            }
+        }
 
         /// <summary>
         /// 
@@ -74,24 +94,7 @@ namespace Splunk.Sdk
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected void Complete()
-        {
-            if (this.observers == null)
-            {
-                return;
-            }
-
-            lock (this.gate)
-            {
-                foreach (var observer in this.observers)
-                {
-                    observer.OnCompleted();
-                }
-            }
-        }
+        protected internal abstract Task PushObservations();
 
         /// <summary>
         /// Notifies the current <see cref="SearchResultsReader"/> that an 
@@ -111,15 +114,18 @@ namespace Splunk.Sdk
                 throw new ArgumentNullException("observer");
             }
 
+            IDisposable unsubscriber;
+
             lock (this.gate)
             {
                 if (this.observers == null)
                 {
                     this.observers = new LinkedList<IObserver<T>>();
                 }
-                var unsubscriber = new Unsubscriber(this, this.observers.AddLast(observer));
-                return unsubscriber;
+                unsubscriber = new Unsubscriber(this, this.observers.AddLast(observer));
             }
+            this.PushObservations();
+            return unsubscriber;
         }
 
         #endregion

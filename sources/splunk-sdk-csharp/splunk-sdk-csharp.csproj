@@ -115,7 +115,7 @@
     <Compile Include="Splunk\Sdk\Entity.cs" />
     <Compile Include="Splunk\Sdk\EntityCollection.cs" />
     <Compile Include="Splunk\Sdk\ExecutionMode.cs" />
-    <Compile Include="Splunk\Sdk\ExtensionMethods.cs" />
+    <Compile Include="Splunk\Sdk\XmlReaderExtensions.cs" />
     <Compile Include="Splunk\Sdk\Field.cs" />
     <Compile Include="Splunk\Sdk\GenericEntity.cs" />
     <Compile Include="Splunk\Sdk\Job.cs" />

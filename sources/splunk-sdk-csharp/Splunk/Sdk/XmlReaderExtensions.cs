@@ -24,7 +24,7 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml;
 
-    internal static class ExtensionMethods
+    internal static class XmlReaderExtensions
     {
         public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<Task> task)
         {

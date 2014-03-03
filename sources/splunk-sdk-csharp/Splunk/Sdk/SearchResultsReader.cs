@@ -16,7 +16,8 @@
 
 // TODO:
 //
-// [O] Refactor SearchResultsReader/SearchResults
+// [X] Refactor SearchResultsReader/SearchResults
+//
 //     1. SearchResults should read one and only one result set
 //     2. SearchResultsReader should accept a stream and instantiate a new 
 //        SearchResults instance for each result set.
@@ -107,20 +108,13 @@ namespace Splunk.Sdk
         IEnumerator IEnumerable.GetEnumerator()
         { return this.GetEnumerator(); }
 
-        /// <summary>
-        /// Iterates through <see cref="SearchResults"/> asycrhonously notifying observers
-        /// as search results are constructed.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing this asychronous operation.
-        /// </returns>
-        public async Task PublishAsync()
+        override protected internal async Task PushObservations()
         {
             while (await this.reader.ReadToFollowingAsync("results"))
             {
                 var searchResults = await SearchResults.CreateAsync(this.reader, leaveOpen: true);
                 this.NotifySubscribers(searchResults);
-                await searchResults.ReadRecordsAsync();
+                await searchResults.PushObservations();
             }
             this.Complete();
         }

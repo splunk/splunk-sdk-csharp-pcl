@@ -195,7 +195,7 @@ namespace Splunk.Sdk
         /// <returns>
         /// A <see cref="Task"/> representing this asychronous operation.
         /// </returns>
-        public async Task ReadRecordsAsync()
+        override protected internal async Task PushObservations()
         {
             if (this.enumerated)
             {
@@ -204,9 +204,9 @@ namespace Splunk.Sdk
 
             this.enumerated = true;
 
-            for (var record = await this.ReadRecordAsync(); record != null; record = await this.ReadRecordAsync())
-            {
-                this.NotifySubscribers(record);
+            for (Record record; (record = await this.ReadRecordAsync()) != null; )
+            { 
+                this.NotifySubscribers(record); 
             }
 
             this.Complete();

@@ -19,6 +19,8 @@ namespace Splunk.Sdk.Examples
     using System;
     using System.IO;
     using System.Net;
+    using System.Reactive.Concurrency;
+    using System.Reactive.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml.Linq;
@@ -52,20 +54,43 @@ namespace Splunk.Sdk.Examples
 
             // ...Syncrhonous use case
 
-            reader = service.SearchOneshotAsync("search index=_internal | head 10").Result;
-
-            foreach (var searchResults in reader)
+            using (reader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
             {
-                foreach (var record in searchResults.ReadRecords())
+                foreach (var searchResults in reader)
                 {
-                    Console.WriteLine(record.ToString());
+                    foreach (var record in searchResults.ReadRecords())
+                    {
+                        Console.WriteLine(record.ToString());
+                    }
                 }
             }
 
             // ...Asyncrhonous use case
 
-            reader = service.SearchOneshotAsync("search index=_internal | head 10").Result;
-            reader.Subscribe();
+            using (reader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
+            {
+                IDisposable unsubscriber = reader.Subscribe(
+                    onNext: (searchResults) =>
+                    {
+                        searchResults.Subscribe(
+                            onNext: (record) =>
+                                Console.WriteLine(record.ToString()),
+                            onError: (exception) =>
+                                Console.WriteLine(string.Format("SearchResults error: {0}", exception.Message)),
+                            onCompleted: () =>
+                                Console.WriteLine("end-of-records")
+                        );
+                    },
+                    onError: (exception) =>
+                    {
+                        Console.WriteLine(string.Format("SearchResultsReader error: {0}", exception.Message));
+                    },
+                    onCompleted: () =>
+                    {
+                        Console.WriteLine("end-of-searchResults");
+                    }
+                );
+            }
 
 #if false
             // Normal asynchronous search with pollback for completion

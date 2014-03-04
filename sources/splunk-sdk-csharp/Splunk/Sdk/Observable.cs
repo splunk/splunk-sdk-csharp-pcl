@@ -130,7 +130,7 @@ namespace Splunk.Sdk
         {
             if (observer == null)
             {
-                throw new ArgumentNullException("observer");
+                throw new ArgumentNullException("observer"); // TODO: Is this compliant with section 6.5 of the Rx Design Guidelines?
             }
 
             IDisposable unsubscriber;
@@ -164,7 +164,6 @@ namespace Splunk.Sdk
             catch (Exception e)
             {
                 this.OnError(e);
-                throw; // TODO: Double-check OnError semantics. Should we be throwing or simply reporting here?
             }
         }
 

@@ -73,7 +73,7 @@ namespace Splunk.Sdk.Examples
             IDisposable subscription = reader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
                 onNext: (searchResults) =>
                 {
-                    foreach (var record in searchResults.ReadRecords())
+                    foreach (var record in searchResults.ToEnumerable<Record>())
                     {
                         Console.WriteLine(record.ToString());
                     }

@@ -186,17 +186,18 @@ namespace Splunk.Sdk
             /// </summary>
             public void Dispose()
             {
-                if (this.observable == null)
+                Debug.Assert(node != null);
+
+                if (this.node.List == null)
                 {
                     return;
                 }
                 lock (this.observable.gate)
                 {
-                    if (this.observable == null)
+                    if (this.node.List == null)
                     {
                         return;
                     }
-                    Debug.Assert(node != null && node.List != null);
                     node.List.Remove(this.node);
                 }
             }

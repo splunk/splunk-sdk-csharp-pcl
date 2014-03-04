@@ -31,7 +31,6 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
@@ -186,8 +185,6 @@ namespace Splunk.Sdk
             /// </summary>
             public void Dispose()
             {
-                Debug.Assert(node != null);
-
                 if (this.node.List == null)
                 {
                     return;

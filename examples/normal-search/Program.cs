@@ -73,7 +73,27 @@ namespace Splunk.Sdk.Examples
             IDisposable subscription = reader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
                 onNext: (searchResults) =>
                 {
-                    foreach (var record in searchResults.ToEnumerable<Record>())
+                    // We use SearchResults.ToEnumerable--which buffers all
+                    // input before returning an enumerator--to verify that we
+                    // work with Rx operations. In practice you would be 
+                    // advised to use SearchResults.ReadRecords instead.
+
+                    // Requirements: 
+                    //
+                    // + You must process all records before returning from this
+                    //   method.
+                    //   Reason: The SearchResultsReader will skip past any 
+                    //   records you do not process.
+                    //
+                    // + You should process records in an asynchronous manner.
+                    //   Reactive operations are asynchrononous in the same way
+                    //   that SearchResults.ReadRecords is asynchronous. They 
+                    //   each await data to ensure that their execution context
+                    //   is time shared.
+
+                    // TODO: Verify all of the above statements.
+
+                    foreach (var record in searchResults.ToEnumerable())
                     {
                         Console.WriteLine(record.ToString());
                     }

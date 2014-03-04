@@ -152,11 +152,7 @@ namespace Splunk.Sdk
         }
 
         protected virtual void Invalidate()
-        {
-            this.resourceName = null;
-            this.@namespace = null;
-            this.name = null;
-        }
+        { }
 
         /// <summary>
         /// Refreshes the cached state of this <see cref="Entity"/>.

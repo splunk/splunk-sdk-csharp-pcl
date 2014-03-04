@@ -31,6 +31,7 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
@@ -103,7 +104,6 @@ namespace Splunk.Sdk
                 {
                     observer.OnNext(observation);
                 }
-                this.observers.Clear();
             }
         }
 
@@ -141,7 +141,7 @@ namespace Splunk.Sdk
                 {
                     this.observers = new LinkedList<IObserver<T>>();
                 }
-                unsubscriber = new Unsubscriber(this, this.observers.AddLast(observer));
+                unsubscriber = new Subscription(this, this.observers.AddLast(observer));
             }
 
             this.Start();
@@ -171,17 +171,35 @@ namespace Splunk.Sdk
 
         #region Types
 
-        struct Unsubscriber : IDisposable
+        struct Subscription : IDisposable
         {
-            public Unsubscriber(Observable<T> observable, LinkedListNode<IObserver<T>> node)
+            public Subscription(Observable<T> observable, LinkedListNode<IObserver<T>> node)
             {
+                Contract.Requires<ArgumentNullException>(observable != null, "observable");
                 Contract.Requires<ArgumentNullException>(node != null, "node");
                 this.node = node;
                 this.observable = observable;
             }
 
+            /// <summary>
+            /// Disposes of the current subscription
+            /// </summary>
             public void Dispose()
-            { lock (observable.gate) node.List.Remove(node); }
+            {
+                if (this.observable == null)
+                {
+                    return;
+                }
+                lock (this.observable.gate)
+                {
+                    if (this.observable == null)
+                    {
+                        return;
+                    }
+                    Debug.Assert(node != null && node.List != null);
+                    node.List.Remove(this.node);
+                }
+            }
 
             readonly LinkedListNode<IObserver<T>> node;
             readonly Observable<T> observable;

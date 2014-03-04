@@ -139,7 +139,6 @@ namespace Splunk.Sdk
             {
                 var searchResults = await SearchResults.CreateAsync(this.reader, leaveOpen: true);
                 this.OnNext(searchResults);
-                await searchResults.PushObservations();
             }
             this.OnCompleted();
         }

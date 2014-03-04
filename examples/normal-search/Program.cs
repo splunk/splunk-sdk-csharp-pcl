@@ -67,31 +67,34 @@ namespace Splunk.Sdk.Examples
 
             // ...Asyncrhonous use case
 
-            using (reader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
-            {
-                IDisposable unsubscriber = reader.Subscribe(
-                    onNext: (searchResults) =>
-                    {
-                        searchResults.Subscribe(
-                            onNext: (record) =>
-                                Console.WriteLine(record.ToString()),
-                            onError: (exception) =>
-                                Console.WriteLine(string.Format("SearchResults error: {0}", exception.Message)),
-                            onCompleted: () =>
-                                Console.WriteLine("end-of-records")
-                        );
-                    },
-                    onError: (exception) =>
-                    {
-                        Console.WriteLine(string.Format("SearchResultsReader error: {0}", exception.Message));
-                    },
-                    onCompleted: () =>
-                    {
-                        Console.WriteLine("end-of-searchResults");
-                    }
-                );
-            }
+            reader = service.SearchOneshotAsync("search index=_internal | head 10").Result;
+            var manualResetEvent = new ManualResetEvent(true);
 
+            IDisposable subscription = reader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
+                onNext: (searchResults) =>
+                {
+                    foreach (var record in searchResults.ReadRecords())
+                    {
+                        Console.WriteLine(record.ToString());
+                    }
+                },
+                onError: (exception) =>
+                {
+                    Console.WriteLine(string.Format("SearchResultsReader error: {0}", exception.Message));
+                    manualResetEvent.Set();
+                },
+                onCompleted: () =>
+                {
+                    Console.WriteLine("end-of-searchResults");
+                    manualResetEvent.Set();
+                }
+            );
+
+            manualResetEvent.Reset();
+            manualResetEvent.WaitOne();
+            Thread.Sleep(10); // To allow the reactive framework to finish
+
+            reader.Dispose();
 #if false
             // Normal asynchronous search with pollback for completion
 

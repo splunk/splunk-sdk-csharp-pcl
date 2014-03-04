@@ -92,7 +92,6 @@ namespace Splunk.Sdk.Examples
 
             manualResetEvent.Reset();
             manualResetEvent.WaitOne();
-            Thread.Sleep(10); // To allow the reactive framework to finish
 
             reader.Dispose();
 #if false

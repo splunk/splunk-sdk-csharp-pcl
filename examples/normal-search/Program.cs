@@ -17,13 +17,11 @@
 namespace Splunk.Sdk.Examples
 {
     using System;
-    using System.IO;
     using System.Net;
     using System.Reactive.Concurrency;
     using System.Reactive.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
 
     /// <summary>
     /// Starts a normal search and polls for completion to find out when the search has finished.
@@ -52,10 +50,10 @@ namespace Splunk.Sdk.Examples
 
             SearchResultsReader reader;
 
-            // ...Syncrhonous use case
-
             using (reader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
             {
+                Console.WriteLine("Syncrhonous user case");
+
                 foreach (var searchResults in reader)
                 {
                     foreach (var record in searchResults.ReadRecords())
@@ -63,61 +61,66 @@ namespace Splunk.Sdk.Examples
                         Console.WriteLine(record.ToString());
                     }
                 }
+                Console.WriteLine("End of search results");
             }
 
-            // ...Asyncrhonous use case
+            using (reader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
+            {
+                Console.WriteLine("Asyncrhonous user case");
 
-            reader = service.SearchOneshotAsync("search index=_internal | head 10").Result;
-            var manualResetEvent = new ManualResetEvent(true);
+                var manualResetEvent = new ManualResetEvent(true);
 
-            IDisposable subscription = reader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
-                onNext: (searchResults) =>
-                {
-                    // We use SearchResults.ToEnumerable--which buffers all
-                    // input before returning an enumerator--to verify that we
-                    // work with Rx operations. In practice you would be 
-                    // advised to use SearchResults.ReadRecords instead.
-
-                    // Requirements: 
-                    //
-                    // + You must process all records before returning from this
-                    //   method.
-                    //   Reason: The SearchResultsReader will skip past any 
-                    //   records you do not process.
-                    //
-                    // + You should process records in an asynchronous manner.
-                    //   Reactive operations are asynchrononous in the same way
-                    //   that SearchResults.ReadRecords is asynchronous. They 
-                    //   each await data to ensure that their execution context
-                    //   is time shared.
-
-                    // TODO: Verify all of the above statements.
-
-                    foreach (var record in searchResults.ToEnumerable())
+                reader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
+                    onNext: (searchResults) =>
                     {
-                        Console.WriteLine(record.ToString());
+                        // We use SearchResults.ToEnumerable--which buffers all
+                        // input before returning an enumerator--to verify that we
+                        // work with Rx operations. In practice you would be 
+                        // advised to use SearchResults.ReadRecords instead.
+
+                        // Requirements: 
+                        //
+                        // + You must process all records before returning from this
+                        //   method.
+                        //   Reason: The SearchResultsReader will skip past any 
+                        //   records you do not process.
+                        //
+                        // + You should process records in an asynchronous manner.
+                        //   Reactive operations are asynchrononous in the same way
+                        //   that SearchResults.ReadRecords is asynchronous. They 
+                        //   each await data to ensure that their execution context
+                        //   is time shared.
+
+                        // TODO: Verify all of the above statements.
+
+                        foreach (var record in searchResults.ToEnumerable())
+                        {
+                            Console.WriteLine(record.ToString());
+                        }
+                    },
+                    onError: (exception) =>
+                    {
+                        Console.WriteLine(string.Format("SearchResultsReader error: {0}", exception.Message));
+                        manualResetEvent.Set();
+                    },
+                    onCompleted: () =>
+                    {
+                        Console.WriteLine("End of search results");
+                        manualResetEvent.Set();
                     }
-                },
-                onError: (exception) =>
-                {
-                    Console.WriteLine(string.Format("SearchResultsReader error: {0}", exception.Message));
-                    manualResetEvent.Set();
-                },
-                onCompleted: () =>
-                {
-                    Console.WriteLine("end-of-searchResults");
-                    manualResetEvent.Set();
-                }
-            );
+                );
 
-            manualResetEvent.Reset();
-            manualResetEvent.WaitOne();
+                manualResetEvent.Reset();
+                manualResetEvent.WaitOne();
+            }
 
-            reader.Dispose();
-#if false
-            // Normal asynchronous search with pollback for completion
+            // Search Job
 
-            var job = service.SearchAsync("search index=_internal | head 10").Result;
+            Job job;
+            
+            Console.WriteLine("Normal search");
+            job = service.SearchAsync("search index=_internal | head 10").Result;
+            job.GetResults().Wait();
 
             while (!job.IsCompleted)
             {
@@ -137,37 +140,6 @@ namespace Splunk.Sdk.Examples
             // Blocking search
 
             job = service.SearchAsync("search index=_internal | head 10", ExecutionMode.Blocking).Result;
-
-            // Get the search results and use the built-in XML parser to display them
-            var outArgs = new JobResultsArgs
-            {
-                OutputMode = JobResultsArgs.OutputModeEnum.Xml,
-                Count = 0 // Return all entries.
-            };
-
-            using (var stream = job.Results(outArgs))
-            {
-                using (var rr = new ResultsReaderXml(stream))
-                {
-                    foreach (var @event in rr)
-                    {
-                        System.Console.WriteLine("EVENT:");
-                        foreach (string key in @event.Keys)
-                        {
-                            System.Console.WriteLine("   " + key + " -> " + @event[key]);
-                        }
-                    }
-                }
-            }
-
-            // Get properties of the job
-            System.Console.WriteLine("Search job properties:\n---------------------");
-            System.Console.WriteLine("Search job ID:         " + job.Sid);
-            System.Console.WriteLine("The number of events:  " + job.EventCount);
-            System.Console.WriteLine("The number of results: " + job.ResultCount);
-            System.Console.WriteLine("Search duration:       " + job.RunDuration + " seconds");
-            System.Console.WriteLine("This job expires in:   " + job.Ttl + " seconds");
-#endif
         }
     }
 }

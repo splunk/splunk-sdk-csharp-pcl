@@ -109,6 +109,40 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="resource"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public async Task<HttpResponseMessage> GetAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
+        {
+            return await this.GetAsync(Namespace.Default, resource, args);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="namespace"></param>
+        /// <param name="resource"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public async Task<HttpResponseMessage> GetAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
+        {
+            Contract.Requires<ArgumentNullException>(@namespace != null);
+            Contract.Requires<ArgumentNullException>(resource != null);
+
+            using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, args)))
+            {
+                if (this.SessionKey != null)
+                {
+                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                }
+                HttpResponseMessage response = await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                return response;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
         /// <param name="args"></param>

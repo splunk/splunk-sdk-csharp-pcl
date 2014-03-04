@@ -164,6 +164,9 @@ namespace Splunk.Sdk
         public async Task UpdateAsync()
         {
             XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.ResourceName);
+
+            // TODO: We need a response back to check these codes
+            // Consider doing away with GetDocument* in favor of GetAsync.
 #if false
             if response.code == 204 or response.body.nil?
             // This code is here primarily to handle the case of a job not yet being

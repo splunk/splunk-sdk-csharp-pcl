@@ -16,10 +16,8 @@
 
 // TODO:
 //
-// [X] Remove Observers property and replace it with a gated NotifySubscribers
-//     operation
-//
-// [X] Write a gated Complete method
+// [X] Remove Observers property and replace it with gated OnNext, OnError,
+//     and OnCompleted methods
 //
 // [O] Contracts
 //
@@ -66,9 +64,12 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Notifies all observers that the provider has experienced an error condition.
+        /// Notifies all observers that the provider has experienced an error 
+        /// condition.
         /// </summary>
-        /// <param name="e"></param>
+        /// <param name="e">
+        /// An <see cref="Exception"/> representing the error condition
+        /// </param>
         protected void OnError(Exception e)
         {
             if (this.observers == null || this.observers.Count == 0)
@@ -89,7 +90,9 @@ namespace Splunk.Sdk
         /// <summary>
         /// Provides all observers with new data.
         /// </summary>
-        /// <param name="observation">The current notification information.</param>
+        /// <param name="observation">
+        /// The data to be provided.
+        /// </param>
         protected void OnNext(T observation)
         {
             if (this.observers == null || this.observers.Count == 0)
@@ -118,7 +121,8 @@ namespace Splunk.Sdk
         /// Notifies the current <see cref="SearchResultsReader"/> that an 
         /// observer is to receive notifications.
         /// </summary>
-        /// <param name="observer">The object that is to receive notifications.
+        /// <param name="observer">
+        /// The object that is to receive notifications.
         /// </param>
         /// <returns>
         /// A reference to an interface that allows observers to stop receiving

@@ -14,19 +14,38 @@
  * under the License.
  */
 
+// TODO:
+//
+// [O] Contracts
+//
+// [O] Documentation
+//
+// [ ] Trace messages (e.g., when there are no observers)
+
 namespace Splunk.Sdk
 {
     using System;
+    using System.Diagnostics.Contracts;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public class Job : Entity<Job>
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="namespace"></param>
+        /// <param name="collection"></param>
+        /// <param name="name"></param>
         internal Job(Context context, Namespace @namespace, ResourceName collection, string name)
             : base(context, @namespace, collection, name)
         { }
 
-        public Job() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with a Entity<TEntity> factory
+        public Job() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with an Entity<TEntity> factory
         { }
 
         #endregion
@@ -55,10 +74,22 @@ namespace Splunk.Sdk
 
         #region Methods
 
+        public async Task GetResults(JobResultsArgs args = null)
+        {
+            while (!this.IsCompleted)
+            {
+                await Task.Delay(500);
+                await this.UpdateAsync();
+            }
+            HttpResponseMessage response = await this.Context.GetAsync(this.Namespace, this.ResourceName, args == null ? null : args.AsEnumerable());
+        }
+
         protected override string GetName(dynamic record)
         {
+            Contract.Requires<ArgumentNullException>(record != null);
             return record.Sid;
         }
+
         protected override void Invalidate()
         {
             this.backingFields = InvalidatedBackingFields;

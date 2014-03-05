@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Sdk
+namespace Splunk.Sdk.UnitTesting
 {
     using System;
     using System.Net;
@@ -23,13 +23,13 @@ namespace Splunk.Sdk
 
     using Xunit;
 
-    public class TestService
+    public class TestService : IUseFixture<AcceptanceTestingSetup>
     {
         [Trait("class", "Service")]
         [Fact]
         public void CanConstruct()
         {
-            Service service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
+            var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             Assert.Equal(service.ToString(), "https://localhost:8089/services");
         }
 
@@ -37,7 +37,7 @@ namespace Splunk.Sdk
         [Fact]
         public void CanLogin()
         {
-            Service service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
+            var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             Task task;
             
             task = service.LoginAsync("admin", "changeme");
@@ -76,5 +76,8 @@ namespace Splunk.Sdk
             Task<Task<Job>> task = service.LoginAsync("admin", "changeme").ContinueWith(loginTask => service.SearchAsync("index=_internal | head 10"));
             task.Wait();
         }
+
+        public void SetFixture(AcceptanceTestingSetup data)
+        {  }
     }
 }

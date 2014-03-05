@@ -70,7 +70,8 @@ namespace Splunk.Sdk.Examples
 
                 var manualResetEvent = new ManualResetEvent(true);
 
-                searchResultsReader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
+                searchResultsReader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe
+                (
                     onNext: (searchResults) =>
                     {
                         // We use SearchResults.ToEnumerable--which buffers all
@@ -110,26 +111,50 @@ namespace Splunk.Sdk.Examples
                     }
                 );
 
-                manualResetEvent.Reset();
-                manualResetEvent.WaitOne();
+                manualResetEvent.Reset(); manualResetEvent.WaitOne();
             }
 
             // Search Job
 
             Job job;
             
-            Console.WriteLine("Normal search");
+            Console.WriteLine("Normal search: Job.GetSearchResultsAsync");
 
             using (job = service.SearchAsync("search index=_internal | head 10").Result)
             {
-                var searchResults = job.GetSearchResults().Result;
+                var searchResults = job.GetSearchResultsAsync().Result;
+            }
+
+            Console.WriteLine("Normal search: Job.GetSearchResultsPreviewAsync");
+
+            using (job = service.SearchAsync("search index=_internal | head 10000").Result)
+            {
+                SearchResults searchResults;
+                do
+                {
+                    searchResults = job.GetSearchResultsPreviewAsync(new JobResultsArgs() { Count = 0 }).Result;
+
+                    Console.WriteLine(string.Format("searchResults.ArePreview: {0}", searchResults.ArePreview));
+                    int recordNumber = 0;
+
+                    foreach (var record in searchResults)
+                    {
+                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                    }
+                }
+                while (searchResults.ArePreview);
             }
 
             Console.WriteLine("Blocking search");
 
             using (job = service.SearchAsync("search index=_internal | head 10", ExecutionMode.Blocking).Result)
             {
-                var searchResults = job.GetSearchResults().Result;
+                var searchResults = job.GetSearchResultsAsync().Result;
+
+                foreach (var record in searchResults)
+                {
+                    Console.WriteLine(record);
+                }
             }
         }
     }

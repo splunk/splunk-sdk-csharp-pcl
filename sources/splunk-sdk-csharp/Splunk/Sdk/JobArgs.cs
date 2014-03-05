@@ -14,6 +14,9 @@
  * under the License.
  */
 
+// TODO:
+// [ ]  Documentation
+
 namespace Splunk.Sdk
 {
     using System.Collections.Generic;
@@ -21,8 +24,18 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Provides the arguments required for starting a new search job.
     /// </summary>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item>
+    ///     <description>
+    ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
+    ///     </description>
+    /// </item>
+    /// </list>
+    /// </remarks>
     [DataContract]
     public class JobArgs : Args<JobArgs>
     {

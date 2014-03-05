@@ -14,6 +14,10 @@
  * under the License.
  */
 
+// TODO:
+// [ ] Contracts
+// [ ] Documentation
+
 namespace Splunk.Sdk
 {
     using System;
@@ -21,18 +25,22 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Linq;
 
-    public class ResourceName : IReadOnlyList<string>
+    public sealed class ResourceName : IReadOnlyList<string>
     {
         #region Constructors
 
-        public ResourceName(IEnumerable<string> parts)
+        public ResourceName(ResourceName resourceName, params string[] parts)
+            : this(resourceName.Concat(parts))
+        { }
+
+        public ResourceName(params string[] parts)
+            : this(parts.AsEnumerable<string>())
+        { }
+
+        ResourceName(IEnumerable<string> parts)
         {
             this.parts = parts.ToArray();
         }
-
-        public ResourceName(params string[] parts)
-            : this((IEnumerable<string>)parts)
-        { }
 
         #endregion
 

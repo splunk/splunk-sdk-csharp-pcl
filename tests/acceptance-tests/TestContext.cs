@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Sdk
+namespace Splunk.Sdk.UnitTesting
 {
     using System;
     using System.Net;
@@ -23,21 +23,8 @@ namespace Splunk.Sdk
     
     using Xunit;
 
-    public class TestContext
+    public class TestContext : IUseFixture<AcceptanceTestingSetup>
     {
-        static TestContext()
-        {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
-            // 1. Instantiate a WebRequestHandler
-            // 2. Set its ServerCertificateValidationCallback
-            // 3. Instantiate a Splunk.Sdk.Context with the WebRequestHandler
-
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
-            {
-                return true;
-            };
-        }
-
         [Trait("class", "Context")]
         [Fact]
         public void Construct()
@@ -53,5 +40,8 @@ namespace Splunk.Sdk
         }
 
         static Context client;
+
+        public void SetFixture(AcceptanceTestingSetup data)
+        { }
     }
 }

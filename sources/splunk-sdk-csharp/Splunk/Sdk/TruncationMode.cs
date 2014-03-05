@@ -15,55 +15,20 @@
  */
 
 // TODO:
-//
 // [ ] Documentation
 
 namespace Splunk.Sdk
 {
-    /// <summary>
-    /// Specifies the state of a search <see cref="Job"/>.
-    /// </summary>
-    public enum DispatchState
+    public enum TruncationMode
     {
         /// <summary>
         /// 
         /// </summary>
-        Unknown,
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Queued, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Parsing, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Running, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Paused, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Finalizing, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-
-        Done,
+        Abstract,
 
         /// <summary>
         /// 
         /// </summary>
-        Failed, 
+        Truncate
     }
 }

@@ -29,13 +29,13 @@ namespace Splunk.Sdk
     public class Record : Dictionary<string, Field>
     {
         /// <summary>
-        /// Gets the XML markup for the <code>_raw</code> field value.
+        /// Gets the XML markup for the <c>_raw</c> field value.
         /// <remarks>
         /// <para>
-        /// The return value is different than that of the <code>_raw</code> 
-        /// field value in that this segmented raw value is an XML fragment
-        /// that includes all markup such as XML tags and escaped characters.
-        /// For example, <code>record["_raw"]</code> field value returns this:
+        /// The return value is different than that of the <c>_raw</c> field 
+        /// value in that this segmented raw value is an XML fragment that 
+        /// includes all markup such as XML tags and escaped characters. For 
+        /// example, <c>record["_raw"]</c> field value returns this:
         /// </para>
         /// <example>
         /// <![CDATA[
@@ -43,7 +43,7 @@ namespace Splunk.Sdk
         /// ]]>
         /// </example>
         /// <para>
-        /// While <code>record.SegmentedRaw</code> returns this:</para>
+        /// While <c>record.SegmentedRaw</c> returns this:</para>
         /// <example>
         /// <v xml:space="preserve" trunc="0">"http://localhost:8000/en-US/app/<sg h="1">search</sg>/flashtimeline?q=<sg h="1">search</sg>%20<sg h="1">search</sg>%20index%3D_internal%20%7C%20head%2010&amp;earliest=rt-1h&amp;latest=rt"</v>
         /// </example>

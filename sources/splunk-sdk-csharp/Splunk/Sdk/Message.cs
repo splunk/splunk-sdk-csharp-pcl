@@ -14,11 +14,17 @@
  * under the License.
  */
 
+// TODO:
+// [O] Contracts
+// [ ] Documentation
+
 namespace Splunk.Sdk
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Linq;
     using System.Xml.Linq;
 
     sealed public class Message : IComparable, IComparable<Message>, IEquatable<Message>
@@ -105,9 +111,20 @@ namespace Splunk.Sdk
             
             return hash;
         }
+
         public override string ToString()
         {
             return string.Concat(this.Type.ToString(), ": ", this.Text);
+        }
+
+        #endregion
+
+        #region Privates/internals
+
+        internal static IEnumerable<Message> GetMessages(XDocument document)
+        {
+            var messages = from element in document.Element("response").Element("messages").Elements() select new Message(element);
+            return messages;
         }
 
         #endregion

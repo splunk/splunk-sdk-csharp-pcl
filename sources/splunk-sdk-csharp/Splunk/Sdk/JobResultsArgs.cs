@@ -21,8 +21,18 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Provides the arguments required for retrieving transformed search results.
     /// </summary>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item>
+    ///     <description>
+    ///     <a href="http://goo.gl/QFga96">REST API Reference: GET search/jobs/{search_id}/results</a>
+    ///     </description>
+    /// </item>
+    /// </list>
+    /// </remarks>
     [DataContract]
     public class JobResultsArgs : Args<JobResultsArgs>
     {
@@ -39,12 +49,12 @@ namespace Splunk.Sdk
         /// The maximum number of results to return.
         /// </summary>
         /// <remarks>
-        /// If the value of <code>Count</code> is set to 0, then all available
+        /// If the value of <c>Count</c> is set to zero, then all available
         /// results are returned. The default value is 100.
         /// </remarks>
         [DataMember(Name = "count", EmitDefaultValue=false)]
         [DefaultValue(100)]
-        public string Count
+        public int Count
         { get; set; }
 
         /// <summary>
@@ -59,12 +69,12 @@ namespace Splunk.Sdk
         /// The first result (inclusive) from which to begin returning data.
         /// </summary>
         /// <remarks>
-        /// The value of <code>Offset</code> is zero-based and cannot be 
+        /// The value of <c>Offset</c> is zero-based and cannot be 
         /// negative. The default value is zero.
         /// </remarks>
         [DataMember(Name = "offset", EmitDefaultValue = false)]
         [DefaultValue(0)]
-        public string Offset
+        public int Offset
         { get; set; }
 
         /// <summary>

@@ -16,11 +16,12 @@
 
 // TODO:
 //
-// [ ] Parameterize retry strategy for Job.GetResults.
-//     It's the usual sort of thing: 
-//     + How long between retries? 
+// [ ] Parameterize Job.Transition strategy. (It's primitive at present)
+//     It's the usual sort of thing:
+//     + Linear or non-linear time between retries? 
+//     + How long before first retry? 
 //     + How many retries?
-//     Must we cancel the job?
+//     Should we cancel the job, if it times out?
 //
 // [O] Contracts
 //
@@ -34,12 +35,9 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Linq;
     using System.Net.Http;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
-    using System.Xml.Linq;
 
     public class Job : Entity<Job>, IDisposable
     {
@@ -68,8 +66,8 @@ namespace Splunk.Sdk
         /// has completed.
         /// </summary>
         /// <returns>
-        /// <code>true</code> if the current <see cref="Job"/> is complete; 
-        /// otherwise, <code>false</code>.
+        /// <c>true</c> if the current <see cref="Job"/> is complete; otherwise,
+        /// <c>false</c>.
         /// </returns>
         /// <remarks>
         /// Clients that call <see cref="Job.UpdateAsync"/> to poll for job 
@@ -115,29 +113,40 @@ namespace Splunk.Sdk
         public void Dispose()
         { this.Dispose(true); }
 
+        public async Task<SearchResults> GetSearchResultsEventsAsync(JobEventsArgs args = null)
+        {
+            await this.TransitionAsync(DispatchState.Done);
+
+            var searchResults = await this.GetAsync("events", args == null ? null : args.AsEnumerable());
+
+            return searchResults;
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResults> GetSearchResults(JobResultsArgs args = null)
+        public async Task<SearchResults> GetSearchResultsAsync(JobResultsArgs args = null)
         {
-            while (!this.IsCompleted)
-            {
-                await Task.Delay(500);
-                await this.UpdateAsync();
-            }
+            await this.TransitionAsync(DispatchState.Done);
 
-            var resourceName = new ResourceName(this.ResourceName.Concat(new string[] { "results" }));
-            var parameters = args == null ? null : args.AsEnumerable();
+            var searchResults = await this.GetAsync("results", args == null ? null : args.AsEnumerable());
 
-            this.response = await this.Context.GetAsync(this.Namespace, resourceName, parameters);
-            var stream = await response.Content.ReadAsStreamAsync();
-            var reader = XmlReader.Create(stream, SearchResultsReader.XmlReaderSettings);
+            return searchResults;
+        }
 
-            await reader.ReadToFollowingAsync("results");
-            
-            var searchResults = await SearchResults.CreateAsync(reader, leaveOpen: false);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public async Task<SearchResults> GetSearchResultsPreviewAsync(JobResultsArgs args = null)
+        {
+            await this.TransitionAsync(DispatchState.Running);
+
+            var searchResults = await this.GetAsync("results_preview", args == null ? null : args.AsEnumerable());
+
             return searchResults;
         }
 
@@ -160,18 +169,47 @@ namespace Splunk.Sdk
         static readonly BackingFields InvalidatedBackingFields = new BackingFields();
         BackingFields backingFields = new BackingFields();
         HttpResponseMessage response;
-        bool disposed;
 
         void Dispose(bool disposing)
         {
-            if (disposing && !this.disposed)
+            if (disposing && this.response != null)
             {
                 this.response.Dispose();
-                this.disposed = true;
+                this.response = null;
                 GC.SuppressFinalize(this);
             }
         }
 
+        async Task<SearchResults> GetAsync(string endpoint, IEnumerable<KeyValuePair<string, object>> args)
+        {
+            var resourceName = new ResourceName(this.ResourceName, endpoint);
+            this.Dispose(true);
+
+            this.response = await this.Context.GetAsync(this.Namespace, resourceName, args);
+            GC.ReRegisterForFinalize(this);
+            var stream = await response.Content.ReadAsStreamAsync();
+            
+            var reader = XmlReader.Create(stream, SearchResultsReader.XmlReaderSettings);
+
+            if (!await reader.ReadToFollowingAsync("results"))
+            {
+                throw new InvalidDataException();  // TODO: diagnostics
+            }
+
+            var searchResults = await SearchResults.CreateAsync(reader, leaveOpen: false);
+
+            return searchResults;
+        }
+
+        async Task TransitionAsync(DispatchState requiredState)
+        {
+            while (this.DispatchState < requiredState)
+            {
+                await Task.Delay(500);
+                await this.UpdateAsync();
+            }
+        }
+        
         #endregion
 
         #region Types

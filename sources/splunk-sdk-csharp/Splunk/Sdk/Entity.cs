@@ -122,7 +122,7 @@ namespace Splunk.Sdk
             {
                 if (this.resourceName == null)
                 {
-                    this.resourceName = new ResourceName(this.Collection.Concat(new string[] { this.Name }));
+                    this.resourceName = new ResourceName(this.Collection, this.Name);
                 }
                 return this.resourceName;
             }

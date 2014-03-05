@@ -125,9 +125,9 @@ namespace Splunk.Sdk
         /// leaves the reader open.
         /// </summary>
         /// <param name="reader"></param>
-        /// <param name="leaveOpen"><code>true</code> to leave the reader open
-        /// after the <see cref="SearchResults"/> object is disposed; otherwise, 
-        /// <code>false</code>.</param>
+        /// <param name="leaveOpen"><c>true</c> to leave the reader open after 
+        /// the <see cref="SearchResults"/> object is disposed; otherwise, 
+        /// <c>false</c>.</param>
         /// <returns>A <see cref="SearchResults"/> object for streaming Splunk 
         /// search event records.</returns>
         internal static async Task<SearchResults> CreateAsync(XmlReader reader, bool leaveOpen)

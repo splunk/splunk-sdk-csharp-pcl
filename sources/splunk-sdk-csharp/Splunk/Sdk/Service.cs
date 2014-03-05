@@ -23,6 +23,7 @@ namespace Splunk.Sdk
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
@@ -88,6 +89,12 @@ namespace Splunk.Sdk
             }))
             {
                 XDocument document = XDocument.Load(await response.Content.ReadAsStreamAsync());
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.StatusCode, response.ReasonPhrase, Message.GetMessages(document));  // TODO: diagnostics
+                }
+
                 this.Context.SessionKey = document.Element("response").Element("sessionKey").Value;
             }
         }

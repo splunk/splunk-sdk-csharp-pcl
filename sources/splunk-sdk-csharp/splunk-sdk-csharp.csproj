@@ -115,7 +115,9 @@
     <Compile Include="Splunk\Sdk\Entity.cs" />
     <Compile Include="Splunk\Sdk\EntityCollection.cs" />
     <Compile Include="Splunk\Sdk\ExecutionMode.cs" />
+    <Compile Include="Splunk\Sdk\JobEventsArgs.cs" />
     <Compile Include="Splunk\Sdk\JobResultsArgs.cs" />
+    <Compile Include="Splunk\Sdk\TruncationMode.cs" />
     <Compile Include="Splunk\Sdk\XmlReaderExtensions.cs" />
     <Compile Include="Splunk\Sdk\Field.cs" />
     <Compile Include="Splunk\Sdk\GenericEntity.cs" />

@@ -269,12 +269,6 @@ namespace Splunk.Sdk
             return stringContent;
         }
 
-        IEnumerable<Message> CreateMessages(XDocument document)
-        {
-            var messages = from element in document.Element("response").Element("messages").Elements() select new Message(element);
-            return messages;
-        }
-
         Uri CreateServicesUri(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var builder = new StringBuilder(this.ToString());
@@ -313,7 +307,7 @@ namespace Splunk.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new RequestException(response.StatusCode, response.ReasonPhrase, details: this.CreateMessages(document));
+                throw new RequestException(response.StatusCode, response.ReasonPhrase, details: Message.GetMessages(document));
             }
             return document;
         }
@@ -325,7 +319,7 @@ namespace Splunk.Sdk
             if (!response.IsSuccessStatusCode)
             {
                 var document = XDocument.Load(documentStream);
-                throw new RequestException(response.StatusCode, response.ReasonPhrase, details: this.CreateMessages(document));
+                throw new RequestException(response.StatusCode, response.ReasonPhrase, details: Message.GetMessages(document));
             }
 
             return documentStream;

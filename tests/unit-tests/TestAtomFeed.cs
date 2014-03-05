@@ -35,7 +35,7 @@ namespace Splunk.Sdk
         [Fact]
         public void CanAccessEntries()
         {
-            var expected = new List<string>() { "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=1/1/0001 12:00:00 AM, Updated=1/1/0001 12:00:00 AM)" };
+            var expected = new List<string>() { "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=2/17/2014 5:46:39 PM, Updated=2/17/2014 5:46:39 PM)" };
             var feed = new AtomFeed(new Context(Scheme.Https, "localhost", 8089), ResourceName.Jobs, document);
             List<string> actual;
             

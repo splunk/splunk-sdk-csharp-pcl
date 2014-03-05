@@ -52,6 +52,7 @@
 namespace Splunk.Sdk
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
@@ -62,7 +63,7 @@ namespace Splunk.Sdk
     /// The <see cref="SearchResults"/> class represents a stream of Splunk 
     /// search events.
     /// </summary>
-    public sealed class SearchResults : Observable<Record>, IDisposable
+    public sealed class SearchResults : Observable<Record>, IDisposable, IEnumerable<Record>
     {
         #region Constructors
 
@@ -183,7 +184,7 @@ namespace Splunk.Sdk
         ///     </item>
         ///   </list></para>
         /// </remarks>
-        public IEnumerable<Record> ReadRecords()
+        public IEnumerator<Record> GetEnumerator()
         {
             if (this.enumerated)
             {
@@ -198,6 +199,10 @@ namespace Splunk.Sdk
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
         /// <summary>
         /// Pushes <see cref="Record"/> objects to observers and then completes.
         /// </summary>

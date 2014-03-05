@@ -48,15 +48,15 @@ namespace Splunk.Sdk.Examples
 
             // Oneshot search
 
-            SearchResultsReader reader;
+            SearchResultsReader searchResultsReader;
 
-            using (reader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
+            using (searchResultsReader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
             {
                 Console.WriteLine("Syncrhonous user case");
 
-                foreach (var searchResults in reader)
+                foreach (var searchResults in searchResultsReader)
                 {
-                    foreach (var record in searchResults.ReadRecords())
+                    foreach (var record in searchResults)
                     {
                         Console.WriteLine(record.ToString());
                     }
@@ -64,19 +64,19 @@ namespace Splunk.Sdk.Examples
                 Console.WriteLine("End of search results");
             }
 
-            using (reader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
+            using (searchResultsReader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
             {
                 Console.WriteLine("Asyncrhonous user case");
 
                 var manualResetEvent = new ManualResetEvent(true);
 
-                reader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
+                searchResultsReader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
                     onNext: (searchResults) =>
                     {
                         // We use SearchResults.ToEnumerable--which buffers all
                         // input before returning an enumerator--to verify that we
                         // work with Rx operations. In practice you would be 
-                        // advised to use SearchResults.ReadRecords instead.
+                        // advised to use the SearchResults enumerator instead.
 
                         // Requirements: 
                         //
@@ -87,9 +87,9 @@ namespace Splunk.Sdk.Examples
                         //
                         // + You should process records in an asynchronous manner.
                         //   Reactive operations are asynchrononous in the same way
-                        //   that SearchResults.ReadRecords is asynchronous. They 
-                        //   each await data to ensure that their execution context
-                        //   is time shared.
+                        //   that the SearchResults enumerator is asynchronous. They 
+                        //   each await data to ensure their execution context is 
+                        //   time shared.
 
                         // TODO: Verify all of the above statements.
 

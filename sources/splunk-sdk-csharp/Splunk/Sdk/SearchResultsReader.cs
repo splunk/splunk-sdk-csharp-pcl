@@ -147,7 +147,7 @@ namespace Splunk.Sdk
 
         #region Privates/internals
 
-        static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings
+        internal static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings
         {
             ConformanceLevel = ConformanceLevel.Fragment,
             CloseInput = false,

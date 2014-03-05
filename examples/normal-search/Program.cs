@@ -119,27 +119,18 @@ namespace Splunk.Sdk.Examples
             Job job;
             
             Console.WriteLine("Normal search");
-            job = service.SearchAsync("search index=_internal | head 10").Result;
-            job.GetResults().Wait();
 
-            while (!job.IsCompleted)
+            using (job = service.SearchAsync("search index=_internal | head 10").Result)
             {
-                try
-                {
-                    Thread.Sleep(500);
-                }
-                catch (ThreadInterruptedException e)
-                {
-                    // TODO Auto-generated catch block
-                    System.Console.WriteLine(e.StackTrace);
-                }
-                Task updateTask = job.UpdateAsync();
-                updateTask.Wait();
+                var searchResults = job.GetSearchResults().Result;
             }
 
-            // Blocking search
+            Console.WriteLine("Blocking search");
 
-            job = service.SearchAsync("search index=_internal | head 10", ExecutionMode.Blocking).Result;
+            using (job = service.SearchAsync("search index=_internal | head 10", ExecutionMode.Blocking).Result)
+            {
+                var searchResults = job.GetSearchResults().Result;
+            }
         }
     }
 }

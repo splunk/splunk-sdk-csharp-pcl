@@ -17,6 +17,7 @@
 namespace Splunk.Sdk
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -79,7 +80,7 @@ namespace Splunk.Sdk
             return this.parts.GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return this.parts.GetEnumerator();
         }

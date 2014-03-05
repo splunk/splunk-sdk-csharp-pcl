@@ -16,6 +16,12 @@
 
 // TODO:
 //
+// [ ] Parameterize retry strategy for Job.GetResults.
+//     It's the usual sort of thing: 
+//     + How long between retries? 
+//     + How many retries?
+//     Must we cancel the job?
+//
 // [O] Contracts
 //
 // [O] Documentation
@@ -25,12 +31,17 @@
 namespace Splunk.Sdk
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.IO;
+    using System.Linq;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Xml;
+    using System.Xml.Linq;
 
-    public class Job : Entity<Job>
+    public class Job : Entity<Job>, IDisposable
     {
         #region Constructors
 
@@ -52,11 +63,35 @@ namespace Splunk.Sdk
 
         #region Properties
 
+        /// <summary>
+        /// Gets a value that indicates whether the current <see cref="Job"/>
+        /// has completed.
+        /// </summary>
+        /// <returns>
+        /// <code>true</code> if the current <see cref="Job"/> is complete; 
+        /// otherwise, <code>false</code>.
+        /// </returns>
+        /// <remarks>
+        /// Clients that call <see cref="Job.UpdateAsync"/> to poll for job 
+        /// status use this property to determine whether search results are
+        /// ready.
+        /// </remarks>
         public bool IsCompleted
         {
             get { return this.DispatchState == DispatchState.Done; }
         }
 
+        /// <summary>
+        /// Gets value that indicates the current <see cref="Job"/> dispatch
+        /// state.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="DispatchState"/> value.
+        /// </returns>
+        /// <remarks>
+        /// Clients that call <see cref="Job.Update"/> to poll for job status
+        /// use this property to determine the state of the current search job.
+        /// </remarks>
         public DispatchState DispatchState
         { 
             get 
@@ -74,14 +109,36 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public async Task GetResults(JobResultsArgs args = null)
+        /// <summary>
+        /// Release unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        { this.Dispose(true); }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public async Task<SearchResults> GetSearchResults(JobResultsArgs args = null)
         {
             while (!this.IsCompleted)
             {
                 await Task.Delay(500);
                 await this.UpdateAsync();
             }
-            HttpResponseMessage response = await this.Context.GetAsync(this.Namespace, this.ResourceName, args == null ? null : args.AsEnumerable());
+
+            var resourceName = new ResourceName(this.ResourceName.Concat(new string[] { "results" }));
+            var parameters = args == null ? null : args.AsEnumerable();
+
+            this.response = await this.Context.GetAsync(this.Namespace, resourceName, parameters);
+            var stream = await response.Content.ReadAsStreamAsync();
+            var reader = XmlReader.Create(stream, SearchResultsReader.XmlReaderSettings);
+
+            await reader.ReadToFollowingAsync("results");
+            
+            var searchResults = await SearchResults.CreateAsync(reader, leaveOpen: false);
+            return searchResults;
         }
 
         protected override string GetName(dynamic record)
@@ -102,6 +159,18 @@ namespace Splunk.Sdk
 
         static readonly BackingFields InvalidatedBackingFields = new BackingFields();
         BackingFields backingFields = new BackingFields();
+        HttpResponseMessage response;
+        bool disposed;
+
+        void Dispose(bool disposing)
+        {
+            if (disposing && !this.disposed)
+            {
+                this.response.Dispose();
+                this.disposed = true;
+                GC.SuppressFinalize(this);
+            }
+        }
 
         #endregion
 

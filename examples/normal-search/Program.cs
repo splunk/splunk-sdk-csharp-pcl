@@ -46,13 +46,30 @@ namespace Splunk.Sdk.Examples
             var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             service.LoginAsync("admin", "changeme").Wait();
 
+            // Saved search
+
+
+            // Export search
+
+            using (var searchResults = service.SearchExportAsync("search index=_internal | head 10").Result)
+            {
+                Console.WriteLine("Begin: Service.SearchExportAsnyc: Syncrhonous use case");
+
+                foreach (var record in searchResults)
+                {
+                    Console.WriteLine(record.ToString());
+                }
+
+                Console.WriteLine("End: Service.SearchExportAsnyc: Syncrhonous use case");
+            }
+
             // Oneshot search
 
             SearchResultsReader searchResultsReader;
 
             using (searchResultsReader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
             {
-                Console.WriteLine("Syncrhonous user case");
+                Console.WriteLine("Syncrhonous use case");
 
                 foreach (var searchResults in searchResultsReader)
                 {
@@ -61,6 +78,7 @@ namespace Splunk.Sdk.Examples
                         Console.WriteLine(record.ToString());
                     }
                 }
+
                 Console.WriteLine("End of search results");
             }
 
@@ -132,7 +150,7 @@ namespace Splunk.Sdk.Examples
                 SearchResults searchResults;
                 do
                 {
-                    searchResults = job.GetSearchResultsPreviewAsync(new JobResultsArgs() { Count = 0 }).Result;
+                    searchResults = job.GetSearchResultsPreviewAsync(new SearchResultArgs() { Count = 0 }).Result;
 
                     Console.WriteLine(string.Format("searchResults.ArePreview: {0}", searchResults.ArePreview));
                     int recordNumber = 0;

@@ -67,31 +67,22 @@ namespace Splunk.Sdk
         /// <param name="stream">
         /// The underlying <see cref="Stream"/>.
         /// </param>
-        private SearchResultsReader(HttpResponseMessage response, Stream stream)
+        SearchResultsReader(Response response)
         {
-            Contract.Requires<ArgumentNullException>(response != null, "response");
-            Contract.Requires<ArgumentNullException>(stream != null, "stream");
-
             this.response = response;
-            this.reader = XmlReader.Create(stream, SearchResultsReader.XmlReaderSettings);
         }
 
         #endregion
 
         #region Methods
 
-        public static async Task<SearchResultsReader> CreateAsync(HttpResponseMessage response)
+        internal static async Task<SearchResultsReader> CreateAsync(Response response)
         {
-            try
+            if (!await response.Reader.ReadToFollowingAsync("results"))
             {
-                Stream stream = await response.Content.ReadAsStreamAsync();
-                return new SearchResultsReader(response, stream);
+                throw new InvalidDataException();  // TODO: diagnostics
             }
-            catch (Exception)
-            {
-                response.Dispose();
-                throw;
-            }
+            return new SearchResultsReader(response);
         }
 
         /// <summary>
@@ -110,10 +101,11 @@ namespace Splunk.Sdk
         /// </returns>
         public IEnumerator<SearchResults> GetEnumerator()
         {
-            while (this.reader.ReadToFollowingAsync("results").Result)
+            do
             {
-                yield return SearchResults.CreateAsync(this.reader, leaveOpen: true).Result;
+                yield return SearchResults.CreateAsync(this.response, leaveOpen: true).Result;
             }
+            while (this.response.Reader.ReadToFollowingAsync("results").Result);
         }
 
         /// <summary>
@@ -135,27 +127,21 @@ namespace Splunk.Sdk
         /// </returns>
         override protected internal async Task PushObservations()
         {
-            while (await this.reader.ReadToFollowingAsync("results"))
+            do
             {
-                var searchResults = await SearchResults.CreateAsync(this.reader, leaveOpen: true);
+                var searchResults = await SearchResults.CreateAsync(this.response, leaveOpen: true);
                 this.OnNext(searchResults);
             }
+            while (await this.response.Reader.ReadToFollowingAsync("results"));
+
             this.OnCompleted();
         }
 
         #endregion
 
-        #region Privates/internals
+        #region Privates
 
-        internal static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings
-        {
-            ConformanceLevel = ConformanceLevel.Fragment,
-            CloseInput = false,
-            Async = true,
-        };
-
-        readonly HttpResponseMessage response;
-        readonly XmlReader reader;
+        readonly Response response;
         bool disposed;
 
         void Dispose(bool disposing)
@@ -163,7 +149,6 @@ namespace Splunk.Sdk
             if (disposing && !this.disposed)
             {
                 this.response.Dispose();
-                this.reader.Dispose();
                 this.disposed = true;
                 GC.SuppressFinalize(this);
             }

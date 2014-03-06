@@ -75,9 +75,9 @@ namespace Splunk.Sdk
         /// <param name="leaveOpen">Indicates whether the reader should be left
         /// open following <see cref="SearchResults.Dispose"/>.
         /// </param>
-        SearchResults(XmlReader reader, bool leaveOpen)
+        SearchResults(Response response, bool leaveOpen)
         {
-            this.reader = reader;
+            this.response = response;
 
             if (leaveOpen)
             {
@@ -130,25 +130,24 @@ namespace Splunk.Sdk
         /// <c>false</c>.</param>
         /// <returns>A <see cref="SearchResults"/> object for streaming Splunk 
         /// search event records.</returns>
-        internal static async Task<SearchResults> CreateAsync(XmlReader reader, bool leaveOpen)
+        internal static async Task<SearchResults> CreateAsync(Response response, bool leaveOpen)
         {
-            Contract.Requires<ArgumentNullException>(reader != null, "reader");
-            Contract.Requires<InvalidOperationException>(reader.NodeType == XmlNodeType.Element && reader.Name == "results");
+            Contract.Requires<InvalidOperationException>(response.Reader.NodeType == XmlNodeType.Element && response.Reader.Name == "results");
 
-            var isPreview = XmlConvert.ToBoolean(reader["preview"]);
+            var isPreview = XmlConvert.ToBoolean(response.Reader["preview"]);
             var fieldNames = new List<string>();
 
-            if (await reader.ReadToDescendantAsync("meta"))
+            if (await response.Reader.ReadToDescendantAsync("meta"))
             {
-                if (await reader.ReadToDescendantAsync("fieldOrder"))
+                if (await response.Reader.ReadToDescendantAsync("fieldOrder"))
                 {
-                    await reader.ReadEachDescendantAsync("field", async () => fieldNames.Add(await reader.ReadElementContentAsStringAsync()));
-                    await reader.SkipAsync();
+                    await response.Reader.ReadEachDescendantAsync("field", async () => fieldNames.Add(await response.Reader.ReadElementContentAsStringAsync()));
+                    await response.Reader.SkipAsync();
                 }
-                await reader.SkipAsync();
+                await response.Reader.SkipAsync();
             }
 
-            return new SearchResults(reader, leaveOpen)
+            return new SearchResults(response, leaveOpen)
             {
                 ArePreview = isPreview,
                 FieldNames = fieldNames
@@ -230,7 +229,7 @@ namespace Splunk.Sdk
 
         #region Privates/internals
 
-        readonly XmlReader reader;
+        readonly Response response;
         bool disposed;
         bool enumerated;
 
@@ -238,7 +237,7 @@ namespace Splunk.Sdk
         {
             if (disposing && !this.disposed)
             {
-                this.reader.Dispose();
+                this.response.Dispose();
                 this.disposed = true;
                 GC.SuppressFinalize(this);
             }
@@ -254,44 +253,44 @@ namespace Splunk.Sdk
         /// </returns>
         async Task<Record> ReadRecordAsync()
         {
-            if (!await this.reader.ReadToNextSiblingAsync("result"))
+            if (!await this.response.Reader.ReadToNextSiblingAsync("result"))
             {
                 return null;
             }
 
             var result = new Record();
 
-            await this.reader.ReadEachDescendantAsync("field", async () =>
+            await this.response.Reader.ReadEachDescendantAsync("field", async () =>
             {
-                var key = this.reader["k"];
+                var key = this.response.Reader["k"];
 
                 if (key == null)
                 {
                     throw new XmlException("'field' attribute 'k' not found");
                 }
 
-                var fieldDepth = this.reader.Depth;
+                var fieldDepth = this.response.Reader.Depth;
                 var values = new List<string>();
 
-                while (await this.reader.ReadAsync())
+                while (await this.response.Reader.ReadAsync())
                 {
-                    if (this.reader.Depth == fieldDepth)
+                    if (this.response.Reader.Depth == fieldDepth)
                     {
                         break;
                     }
 
-                    Debug.Assert(reader.Depth > fieldDepth, "The loop should have exited earlier.");
+                    Debug.Assert(this.response.Reader.Depth > fieldDepth, "The loop should have exited earlier.");
 
-                    if (this.reader.IsStartElement("value"))
+                    if (this.response.Reader.IsStartElement("value"))
                     {
-                        if (await this.reader.ReadToDescendantAsync("text"))
+                        if (await this.response.Reader.ReadToDescendantAsync("text"))
                         {
-                            values.Add(await this.reader.ReadElementContentAsStringAsync());
+                            values.Add(await this.response.Reader.ReadElementContentAsStringAsync());
                         }
                     }
-                    else if (this.reader.IsStartElement("v"))
+                    else if (this.response.Reader.IsStartElement("v"))
                     {
-                        string value = await this.reader.ReadOuterXmlAsync();
+                        string value = await this.response.Reader.ReadOuterXmlAsync();
                         result.SegmentedRaw = value;
                         values.Add(value);
                     }

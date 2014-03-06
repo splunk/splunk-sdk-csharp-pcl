@@ -37,11 +37,11 @@ namespace Splunk.Sdk
     /// </list>
     /// </remarks>
     [DataContract]
-    public sealed class JobEventsArgs : Args<JobEventsArgs>
+    public sealed class SearchEventArgs : Args<SearchEventArgs>
     {
         #region Constructors
 
-        public JobEventsArgs()
+        public SearchEventArgs()
         { }
 
         #endregion

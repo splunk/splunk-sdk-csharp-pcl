@@ -106,6 +106,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Splunk\Sdk\SavedSearchDispatchArgs.cs" />
     <Compile Include="Splunk\Sdk\App.cs" />
     <Compile Include="Splunk\Sdk\Args.cs" />
     <Compile Include="Splunk\Sdk\AtomEntry.cs" />
@@ -115,8 +116,11 @@
     <Compile Include="Splunk\Sdk\Entity.cs" />
     <Compile Include="Splunk\Sdk\EntityCollection.cs" />
     <Compile Include="Splunk\Sdk\ExecutionMode.cs" />
-    <Compile Include="Splunk\Sdk\JobEventsArgs.cs" />
-    <Compile Include="Splunk\Sdk\JobResultsArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchArgs.cs" />
+    <Compile Include="Splunk\Sdk\SearchEventArgs.cs" />
+    <Compile Include="Splunk\Sdk\SearchResultArgs.cs" />
+    <Compile Include="Splunk\Sdk\Response.cs" />
+    <Compile Include="Splunk\Sdk\SearchExportArgs.cs" />
     <Compile Include="Splunk\Sdk\TruncationMode.cs" />
     <Compile Include="Splunk\Sdk\XmlReaderExtensions.cs" />
     <Compile Include="Splunk\Sdk\Field.cs" />

@@ -34,11 +34,11 @@ namespace Splunk.Sdk
     /// </list>
     /// </remarks>
     [DataContract]
-    public class JobResultsArgs : Args<JobResultsArgs>
+    public sealed class SearchResultArgs : Args<SearchResultArgs>
     {
         #region Constructors
 
-        public JobResultsArgs()
+        public SearchResultArgs()
         { }
 
         #endregion

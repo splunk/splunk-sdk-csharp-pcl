@@ -37,7 +37,7 @@ namespace Splunk.Sdk
     /// </list>
     /// </remarks>
     [DataContract]
-    public class JobArgs : Args<JobArgs>
+    public sealed class JobArgs : Args<JobArgs>
     {
         #region Constructors
 

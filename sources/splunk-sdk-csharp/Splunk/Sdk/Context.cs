@@ -14,12 +14,25 @@
  * under the License.
  */
 
+// TODO:
+// [ ] Synchronization strategy
+// [X] Settable SessionKey
+// [X] Dead code removal
+// [O] Contracts
+// [O] Documentation
+// [O] All unsealed classes that implement IDisposable must also implement 
+//     this method: protected virtual void Dispose(bool);
+//     See [Implementing a Dispose Method](http://goo.gl/VPIovn)
+//     All sealed classes that implement IDisposable must also implemnt this
+//     method: void Dispose(bool);
+//     See [GC.SuppressFinalize Method](http://goo.gl/XiI3HZ) and note the
+//     private void Dispose(bool disposing) implementation.
+
 namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.IO;
     using System.Linq;
     using System.Net.Http;
     using System.Text;
@@ -30,33 +43,51 @@ namespace Splunk.Sdk
     /// Provides a class for sending HTTP requests and receiving HTTP responses 
     /// from a Splunk server.
     /// </summary>
-    public class Context
+    public class Context : IDisposable
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Context"/> class 
-        /// with a protocol, host, and port number.
+        /// Initializes a new instance of the <see cref="Context"/> class with
+        /// a protocol, host, and port number.
         /// </summary>
-        /// <param name="protocol">The <see cref="Protocol"/> used to communiate 
-        /// with <see cref="Host"/></param>
-        /// <param name="host">The DNS name of a Splunk server instance</param>
-        /// <param name="port">The port number used to communicate with 
-        /// <see cref="Host"/></param>
-        public Context(Scheme protocol, string host, int port) : this(protocol, host, port, null)
-        { }
+        /// <param name="protocol">
+        /// The <see cref="Protocol"/> used to communicate with <see cref="Host"/>
+        /// </param>
+        /// <param name="host">
+        /// The DNS name of a Splunk server instance.
+        /// </param>
+        /// <param name="port">
+        /// The port number used to communicate with <see cref="Host"/>
+        /// </param>
+        public Context(Scheme protocol, string host, int port)
+            : this(protocol, host, port, null)
+        {
+            // NOTE: This constructor obviates the need for callers to include a 
+            // using for System.Net.Http.
+        }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Context"/> class 
-        /// with a protocol, host, and port number.
+        /// Initializes a new instance of the <see cref="Context"/> class with
+        /// a protocol, host, port number, and optional message handler.
         /// </summary>
-        /// <param name="protocol">The <see cref="Protocol"/> used to communiate 
-        /// with <see cref="Host"/></param>
-        /// <param name="host">The DNS name of a Splunk server instance</param>
-        /// <param name="port">The port number used to communicate with
-        /// <see cref="Host"/></param>
-        /// <param name="handler"></param>
-        /// <param name="disposeHandler"></param>
+        /// <param name="protocol">
+        /// The <see cref="Protocol"/> used to communicate with <see cref="Host"/>
+        /// </param>
+        /// <param name="host">
+        /// The DNS name of a Splunk server instance
+        /// </param>
+        /// <param name="port">
+        /// The port number used to communicate with <see cref="Host"/>
+        /// </param>
+        /// <param name="handler">
+        /// The <see cref="HttpMessageHandler"/> responsible for processing the HTTP 
+        /// response messages.
+        /// </param>
+        /// <param name="disposeHandler">
+        /// <c>true</c> if the inner handler should be disposed of by Dispose, 
+        /// <c>false</c> if you intend to reuse the inner handler.
+        /// </param>
         public Context(Scheme protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
         {
             Contract.Requires(!string.IsNullOrEmpty(host));
@@ -65,7 +96,7 @@ namespace Splunk.Sdk
             this.Protocol = protocol;
             this.Host = host;
             this.Port = port;
-            this.client = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
+            this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
         }
 
         #endregion
@@ -93,11 +124,10 @@ namespace Splunk.Sdk
         { get; private set; }
 
         /// <summary>
-        /// Gets the session key associated with this instance.
+        /// Gets or sets the session key associated with this instance.
         /// </summary>
         /// <remarks>
-        /// The value returned is null until <see cref="Login"/> is successfully
-        /// completed.
+        /// The value returned is null until it is set.
         /// </remarks>
         public string SessionKey
         { get; set; }
@@ -107,14 +137,21 @@ namespace Splunk.Sdk
         #region Methods
 
         /// <summary>
-        /// 
+        /// Releases all resources used by the <see cref="Context"/>.
         /// </summary>
-        /// <param name="resource"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public async Task<HttpResponseMessage> GetAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
+        public void Dispose()
         {
-            return await this.GetAsync(Namespace.Default, resource, args);
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && this.httpClient != null)
+            {
+                this.httpClient.Dispose();
+                this.httpClient = null;
+                GC.SuppressFinalize(this);
+            }
         }
 
         /// <summary>
@@ -122,20 +159,20 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="args"></param>
+        /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> GetAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
+        public async Task<HttpResponseMessage> GetAsync(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
         {
             Contract.Requires<ArgumentNullException>(@namespace != null);
             Contract.Requires<ArgumentNullException>(resource != null);
 
-            using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, args)))
+            using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServiceUri(@namespace, resource, argumentSets)))
             {
                 if (this.SessionKey != null)
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
-                HttpResponseMessage response = await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                HttpResponseMessage response = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
                 return response;
             }
         }
@@ -145,33 +182,21 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="args"></param>
+        /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocumentAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args = null)
+        public async Task<XDocument> GetDocumentAsync(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
         {
-            Contract.Requires(@namespace != null);
-            Contract.Requires(resource != null);
-
-            using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, args)))
+            using (var response = await this.GetAsync(@namespace, resource, argumentSets))
             {
-                if (this.SessionKey != null)
-                {
-                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
-                }
-                HttpResponseMessage response = await this.client.SendAsync(request);
-                return await this.ReadDocument(response);
-            }
-        }
+                var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="resource"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        public async Task<XDocument> GetDocumentAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters = null)
-        {
-            return await this.GetDocumentAsync(Namespace.Default, resource, parameters);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new RequestException(response.StatusCode, response.ReasonPhrase, details: Message.GetMessages(document));
+                }
+
+                return document;
+            }
         }
 
         /// <summary>
@@ -179,65 +204,20 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="args"></param>
+        /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<Stream> GetDocumentStreamAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
+        public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
         {
             Contract.Requires<ArgumentNullException>(@namespace != null);
             Contract.Requires<ArgumentNullException>(resource != null);
 
-            using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServicesUri(@namespace, resource, args)))
+            using (var request = new HttpRequestMessage(HttpMethod.Post, this.CreateServiceUri(@namespace, resource, null)) { Content = this.CreateStringContent(argumentSets) })
             {
                 if (this.SessionKey != null)
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
-                HttpResponseMessage response = await this.client.SendAsync(request);
-                return await this.ReadDocumentStream(response);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="resource"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public async Task<Stream> GetDocumentStreamAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
-        {
-            return await this.GetDocumentStreamAsync(Namespace.Default, resource, args);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="resource"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public async Task<HttpResponseMessage> PostAsync(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
-        {
-            return await PostAsync(Namespace.Default, resource, args);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="namespace"></param>
-        /// <param name="resource"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
-        {
-            Contract.Requires<ArgumentNullException>(@namespace != null);
-            Contract.Requires<ArgumentNullException>(resource != null);
-
-            using (var request = new HttpRequestMessage(HttpMethod.Post, this.CreateServicesUri(@namespace, resource, null)) { Content = this.CreateContent(args) })
-            {
-                if (this.SessionKey != null)
-                {
-                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
-                }
-                HttpResponseMessage response = await this.client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                HttpResponseMessage response = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
                 return response;
             }
         }
@@ -252,24 +232,21 @@ namespace Splunk.Sdk
         #region Privates
 
         static readonly string[] Scheme = { "http", "https" };
-        HttpClient client;
+        HttpClient httpClient;
 
-        StringContent CreateContent(IEnumerable<KeyValuePair<string, object>> parameters)
+        HttpClient HttpClient
         {
-            if (parameters == null)
+            get
             {
-                return new StringContent(string.Empty);
+                if (httpClient == null)
+                {
+                    throw new ObjectDisposedException(this.ToString());
+                }
+                return this.httpClient;
             }
-
-            var body = string.Join("&", 
-                from parameter in parameters select string.Join("=", 
-                    Uri.EscapeDataString(parameter.Key), Uri.EscapeDataString(parameter.Value.ToString())));
-            
-            var stringContent = new StringContent(body);
-            return stringContent;
         }
 
-        Uri CreateServicesUri(Namespace @namespace, ResourceName resource, IEnumerable<KeyValuePair<string, object>> parameters)
+        Uri CreateServiceUri(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
         {
             var builder = new StringBuilder(this.ToString());
 
@@ -277,52 +254,46 @@ namespace Splunk.Sdk
             builder.Append(@namespace.ToString());
             builder.Append("/");
             builder.Append(resource.ToString());
-            
-            if (parameters == null)
+
+            if (argumentSets == null)
                 return new Uri(builder.ToString());
 
             builder.Append('?');
 
-            foreach (var parameter in parameters)
+            foreach (var args in argumentSets)
             {
-                builder.Append(Uri.EscapeUriString(parameter.Key));
-                builder.Append('=');
-                builder.Append(Uri.EscapeUriString(parameter.Value.ToString()));
-                builder.Append('&');
+                if (args == null)
+                {
+                    continue;
+                }
+                foreach (var arg in args)
+                {
+                    builder.Append(Uri.EscapeUriString(arg.Key));
+                    builder.Append('=');
+                    builder.Append(Uri.EscapeUriString(arg.Value.ToString()));
+                    builder.Append('&');
+                }
             }
 
             builder.Length = builder.Length - 1; // Removes trailing '&'
-
             return new Uri(builder.ToString());
         }
 
-        Uri CreateServicesUri(ResourceName resource, IEnumerable<KeyValuePair<string, object>> args)
+        StringContent CreateStringContent(params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
         {
-            return CreateServicesUri(Namespace.Default, resource, args);
-        }
-
-        async Task<XDocument> ReadDocument(HttpResponseMessage response)
-        {
-            var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
-
-            if (!response.IsSuccessStatusCode)
+            if (argumentSets == null)
             {
-                throw new RequestException(response.StatusCode, response.ReasonPhrase, details: Message.GetMessages(document));
-            }
-            return document;
-        }
-
-        async Task<Stream> ReadDocumentStream(HttpResponseMessage response)
-        {
-            Stream documentStream = await response.Content.ReadAsStreamAsync();
-
-            if (!response.IsSuccessStatusCode)
-            {
-                var document = XDocument.Load(documentStream);
-                throw new RequestException(response.StatusCode, response.ReasonPhrase, details: Message.GetMessages(document));
+                return new StringContent(string.Empty);
             }
 
-            return documentStream;
+            var body = string.Join("&",
+                from args in argumentSets
+                where args != null
+                from arg in args
+                select string.Join("=", Uri.EscapeDataString(arg.Key), Uri.EscapeDataString(arg.Value.ToString())));
+
+            var stringContent = new StringContent(body);
+            return stringContent;
         }
 
         #endregion

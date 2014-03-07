@@ -31,7 +31,7 @@ namespace Splunk.Sdk
     using System.Xml;
     using System.Xml.Linq;
 
-    public class Service
+    public class Service : IDisposable
     {
         #region Constructors
 
@@ -84,7 +84,7 @@ namespace Splunk.Sdk
             Contract.Requires(username != null);
             Contract.Requires(password != null);
 
-            using (HttpResponseMessage response = await this.Context.PostAsync(ResourceName.Login, new KeyValuePair<string, object>[]
+            using (HttpResponseMessage response = await this.Context.PostAsync(Namespace.Default, ResourceName.Login, new KeyValuePair<string, object>[]
             {
                 new KeyValuePair<string, object>("username", username),
                 new KeyValuePair<string, object>("password", password)
@@ -101,15 +101,29 @@ namespace Splunk.Sdk
             }
         }
 
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && !this.disposed)
+            {
+                this.Context.Dispose();
+                this.disposed = true;
+                GC.SuppressFinalize(this);
+            }
+        }
+
         public async Task<Job> DispatchSavedSearch(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
             Contract.Requires<ArgumentNullException>(searchName != null, "searchName");
 
             var resourceName = new ResourceName(ResourceName.SavedSearches, searchName, "dispatch");
-            var parameters = searchArgs.AsArguments().Concat(dispatchArgs.AsEnumerable());
 
-            HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, resourceName, parameters);
-            var document = XDocument.Load(await response.Content.ReadAsStreamAsync());
+            HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs);
+            var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
             string searchId = document.Element("response").Element("sid").Value;
 
             Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
@@ -193,8 +207,8 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(args.Search != null, "args.Search");
             Contract.Requires<ArgumentException>(args.ExecutionMode != ExecutionMode.Oneshot, "args.ExecutionMode: ExecutionMode.Oneshot");
 
-            HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args.AsEnumerable());
-            var document = XDocument.Load(await response.Content.ReadAsStreamAsync());
+            HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
+            var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
             string searchId = document.Element("response").Element("sid").Value;
 
             Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
@@ -229,7 +243,7 @@ namespace Splunk.Sdk
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
 
-            HttpResponseMessage message = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args.AsEnumerable());
+            HttpResponseMessage message = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args);
             var response = await Response.CreateAsync(message);
 
             if (!await response.Reader.ReadToFollowingAsync("results"))
@@ -267,7 +281,7 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(args != null, "args");
             args.ExecutionMode = ExecutionMode.Oneshot;
 
-            HttpResponseMessage message = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args.AsEnumerable());
+            HttpResponseMessage message = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
             var response = await Response.CreateAsync(message);
 
             return await SearchResultsReader.CreateAsync(response);
@@ -283,7 +297,7 @@ namespace Splunk.Sdk
         }
 
 #if false
-
+. Say
     ////
     // Returns a +Collection+ of all the configuration files visible on Splunk.
     //
@@ -500,7 +514,7 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings() { Async = true };
+        bool disposed;
 
         #endregion
     }

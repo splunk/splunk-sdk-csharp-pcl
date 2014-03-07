@@ -205,27 +205,36 @@ namespace Splunk.Sdk
 
             if (content.FirstNode.NextNode != null)
             {
-                throw new InvalidDataException(); // we expect a single value, not multiple values
+                throw new InvalidDataException(); // TODO: Diagnostics: We expect a single value, not multiple values
             }
 
-            if (content.FirstNode.NodeType == XmlNodeType.Element)
-            {
-                var element = (XElement)content.FirstNode;
+            var node = content.FirstNode;
 
-                if (element.Name == AtomFeed.ElementName.Dict)
-                {
-                    return ParseDictionary(element);
-                }
-                if (element.Name == AtomFeed.ElementName.List)
-                {
-                    return ParseList(element);
-                }
-                throw new InvalidDataException(string.Format("Unrecognized element name: {0}", element.Name));
-            }
-            else if (content.FirstNode.NodeType == XmlNodeType.Text)
+            switch (node.NodeType)
             {
-                XText text = (XText)content.FirstNode;
-                return text.Value;
+                case XmlNodeType.Element:
+                    
+                    var element = (XElement)node;
+
+                    if (element.Name == AtomFeed.ElementName.Dict)
+                    {
+                        return ParseDictionary(element);
+                    }
+                    if (element.Name == AtomFeed.ElementName.List)
+                    {
+                        return ParseList(element);
+                    }
+                    throw new InvalidDataException(string.Format("Unrecognized element name: {0}", element.Name));
+
+                case XmlNodeType.Text:
+                    
+                    XText text = (XText)node;
+                    return text.Value;
+
+                case XmlNodeType.CDATA:
+
+                    XCData cdata = (XCData)node;
+                    return cdata.Value;
             }
 
             throw new InvalidDataException(string.Format("Unexpected node type: {0}", content.FirstNode.NodeType));

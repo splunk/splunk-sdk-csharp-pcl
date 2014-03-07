@@ -43,17 +43,17 @@ namespace Splunk.Sdk
 
             args = new JobArgs();
             Assert.Equal(expectedString[0], args.ToString());
-            Assert.Throws(typeof(SerializationException), () => args.AsEnumerable().ToArray());
+            Assert.Throws(typeof(SerializationException), () => args.ToArray());
             args.Search = search;
             Assert.Equal(expectedString[1], args.ToString());
-            Assert.Equal(expectedKeyValuePairs, args.AsEnumerable().ToArray());
+            Assert.Equal(expectedKeyValuePairs, args.ToArray());
 
             args = new JobArgs(search);
             Assert.Equal(expectedString[1], args.ToString());
-            Assert.Equal(expectedKeyValuePairs, args.AsEnumerable().ToArray());
+            Assert.Equal(expectedKeyValuePairs, args.ToArray());
             args.Search = null;
             Assert.Equal(expectedString[0], args.ToString());
-            Assert.Throws(typeof(SerializationException), () => args.AsEnumerable().ToArray());
+            Assert.Throws(typeof(SerializationException), () => args.ToArray());
         }
 
         [Trait("class", "JobArgs")]

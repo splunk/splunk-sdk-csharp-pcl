@@ -43,11 +43,17 @@ namespace Splunk.Sdk.Examples
 
         static void Main(string[] args)
         {
+            Job job;
+
             var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
             service.LoginAsync("admin", "changeme").Wait();
 
             // Saved search
 
+            using (job = service.DispatchSavedSearch("Errors in the last 24 hours").Result)
+            {
+                Console.WriteLine("Begin: Service.SearchExportAsnyc: Syncrhonous use case");
+            }
 
             // Export search
 
@@ -134,8 +140,6 @@ namespace Splunk.Sdk.Examples
 
             // Search Job
 
-            Job job;
-            
             Console.WriteLine("Normal search: Job.GetSearchResultsAsync");
 
             using (job = service.SearchAsync("search index=_internal | head 10").Result)

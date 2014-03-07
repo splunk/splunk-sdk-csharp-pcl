@@ -41,7 +41,7 @@ namespace Splunk.Sdk
 
             if (args != null)
             {
-                this.Parameters = args.ToDictionary(pair => pair.Key, pair => pair.Value);
+                this.Arguments = args.ToDictionary(pair => pair.Key, pair => pair.Value);
             }
         }
 
@@ -102,7 +102,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Gets the parameters for this <see cref="EntityCollection"/>.
         /// </summary>
-        public IReadOnlyDictionary<string, object> Parameters
+        public IReadOnlyDictionary<string, object> Arguments
         { get; private set; }
 
         #endregion
@@ -129,8 +129,7 @@ namespace Splunk.Sdk
 
         public async Task Update()
         {
-            Stream stream = await this.Context.GetDocumentStreamAsync(this.Namespace, this.Name, this.Parameters);
-            var document = XDocument.Load(stream);
+            var document = await this.Context.GetDocumentAsync(this.Namespace, this.Name, this.Arguments);
 
             // TODO: Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
             // See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom

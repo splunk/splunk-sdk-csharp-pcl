@@ -140,7 +140,7 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Done);
 
-            var searchResults = await this.GetSearchResultsAsync("results", args == null ? null : args.AsEnumerable());
+            var searchResults = await this.GetSearchResultsAsync("results", args);
             return searchResults;
         }
 
@@ -153,7 +153,7 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Done);
 
-            var searchResults = await this.GetSearchResultsAsync("events", args == null ? null : args.AsEnumerable());
+            var searchResults = await this.GetSearchResultsAsync("events", args);
             return searchResults;
         }
 
@@ -166,7 +166,7 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            var searchResults = await this.GetSearchResultsAsync("results_preview", args == null ? null : args.AsEnumerable());
+            var searchResults = await this.GetSearchResultsAsync("results_preview", args);
             return searchResults;
         }
 

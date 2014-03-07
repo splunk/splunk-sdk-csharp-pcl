@@ -25,7 +25,7 @@ namespace Splunk.Sdk.UnitTesting
     /// <summary>
     /// Provides a class for faking HTTP requests and responses from a Splunk server.
     /// </summary>
-    public class FakeContext : Splunk.Sdk.Context
+    public class FakeContext : Context
     {
         #region Constructors
 

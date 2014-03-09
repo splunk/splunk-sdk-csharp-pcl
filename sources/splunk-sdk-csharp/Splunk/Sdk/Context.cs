@@ -245,7 +245,9 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(@namespace != null);
             Contract.Requires<ArgumentNullException>(resource != null);
 
-            using (var request = new HttpRequestMessage(HttpMethod.Post, this.CreateServiceUri(@namespace, resource, null)) { Content = this.CreateStringContent(argumentSets) })
+            var serviceUri = this.CreateServiceUri(@namespace, resource, null);
+
+            using (var request = new HttpRequestMessage(HttpMethod.Post, serviceUri) { Content = this.CreateStringContent(argumentSets) })
             {
                 if (this.SessionKey != null)
                 {

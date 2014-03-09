@@ -171,7 +171,7 @@ namespace Splunk.Sdk
         /// <returns></returns>
         public async Task<Job> DispatchSavedSearchAsnyc(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
-            Contract.Requires<ArgumentNullException>(searchName != null, "searchName");
+            Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(searchName), "searchName");
 
             var resourceName = new ResourceName(ResourceName.SavedSearches, searchName, "dispatch");
             string searchId;

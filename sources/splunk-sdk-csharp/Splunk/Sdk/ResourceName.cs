@@ -60,7 +60,7 @@ namespace Splunk.Sdk
         public static readonly ResourceName Messages = new ResourceName("messages");
         public static readonly ResourceName ModularInputKinds = new ResourceName("data", "modular-inputs");
         public static readonly ResourceName Roles = new ResourceName("authorization", "roles");
-        public static readonly ResourceName SavedSearches = new ResourceName("search", "saved", "searches");
+        public static readonly ResourceName SavedSearches = new ResourceName("saved", "searches");
         public static readonly ResourceName Settings = new ResourceName("server", "settings");
         public static readonly ResourceName Stanza = new ResourceName("configs", "conf-%s", "%s");
         public static readonly ResourceName Users = new ResourceName("authentication", "users");

@@ -47,13 +47,13 @@ namespace Splunk.Sdk.Examples
             SearchResults searchResults;
             Job job;
 
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace("admin", Namespace.AllApps));
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
             service.LoginAsync("admin", "changeme").Wait();
 
             // Saved search
 
             Console.WriteLine("Begin: Service.DispatchSavedSearch: Syncrhonous use case");
-            job = service.DispatchSavedSearchAsnyc("saved_search", dispatchArgs: new SavedSearchDispatchArgs()).Result;
+            job = service.DispatchSavedSearchAsnyc("Splunk errors last 24 hours", dispatchArgs: new SavedSearchDispatchArgs()).Result;
             
             do
             {

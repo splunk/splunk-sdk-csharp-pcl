@@ -31,6 +31,13 @@ namespace Splunk.Sdk
     {
         #region Constructors
         
+        internal Message(MessageType type, string text)
+        {
+            Contract.Requires<ArgumentOutOfRangeException>(MessageType.Debug <= type && type <= MessageType.Fatal, "type");
+            this.Type = type;
+            this.Text = text;
+        }
+
         internal Message(XElement message)
         {
             Contract.Requires<ArgumentException>(message != null && message.Name == "msg", "message");

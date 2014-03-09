@@ -57,7 +57,7 @@ namespace Splunk.Sdk
     using System.Xml;
     using System.Xml.Linq;
 
-    public sealed class Job : Entity<Job>, IDisposable
+    public sealed class Job : Entity<Job>
     {
         #region Constructors
 
@@ -124,12 +124,6 @@ namespace Splunk.Sdk
         #endregion
 
         #region Methods for retrieving search results
-
-        /// <summary>
-        /// Release unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        { this.Dispose(true); }
 
         /// <summary>
         /// 
@@ -356,22 +350,10 @@ namespace Splunk.Sdk
 
         static readonly BackingFields InvalidatedBackingFields = new BackingFields();
         BackingFields backingFields = new BackingFields();
-        HttpResponseMessage response;
-
-        void Dispose(bool disposing)
-        {
-            if (disposing && this.response != null)
-            {
-                this.response.Dispose();
-                this.response = null;
-                GC.SuppressFinalize(this);
-            }
-        }
 
         async Task<SearchResults> GetSearchResultsAsync(string endpoint, IEnumerable<KeyValuePair<string, object>> args)
         {
             var resourceName = new ResourceName(this.ResourceName, endpoint);
-            this.Dispose(true);
 
             HttpResponseMessage message = await this.Context.GetAsync(this.Namespace, resourceName, args);
             var response = await Response.CreateAsync(message);
@@ -394,7 +376,7 @@ namespace Splunk.Sdk
                 if (response.StatusCode != System.Net.HttpStatusCode.OK)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    throw new RequestException(response.StatusCode, response.ReasonPhrase, Message.GetMessages(XDocument.Load(content)));
+                    throw new RequestException(response.StatusCode, response.ReasonPhrase, XDocument.Load(content));
                 }
             }
         }

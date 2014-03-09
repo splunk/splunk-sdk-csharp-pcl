@@ -115,7 +115,7 @@ namespace Splunk.Sdk
         /// <returns>
         /// A <see cref="Task"/> representing this asychronous operation.
         /// </returns>
-        protected internal abstract Task PushObservations();
+        protected abstract Task PushObservations();
 
         /// <summary>
         /// Notifies the current <see cref="SearchResultsReader"/> that an 
@@ -174,18 +174,28 @@ namespace Splunk.Sdk
 
         #region Types
 
+        /// <summary>
+        /// Represents a disposable subscription to the <see cref="Observable"/>.
+        /// </summary>
+        /// <remarks>
+        /// This class implements <see cref="IDisposable"/>, but does not require
+        /// finalization because it does not access unmanaged resources.
+        /// </remarks>
         struct Subscription : IDisposable
         {
             public Subscription(Observable<T> observable, LinkedListNode<IObserver<T>> node)
             {
                 Contract.Requires<ArgumentNullException>(observable != null, "observable");
                 Contract.Requires<ArgumentNullException>(node != null, "node");
+                
                 this.node = node;
                 this.observable = observable;
+
+                GC.SuppressFinalize(this);
             }
 
             /// <summary>
-            /// Disposes of the current subscription
+            /// Disposes of the current subscription.
             /// </summary>
             public void Dispose()
             {

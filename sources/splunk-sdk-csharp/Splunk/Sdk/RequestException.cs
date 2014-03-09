@@ -19,15 +19,26 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
+    using System.Linq;
+    using System.Xml.Linq;
 
     public class RequestException : HttpRequestException
     {
         public RequestException(HttpStatusCode statusCode, string reasonPhrase, IEnumerable<Message> details)
             : base(string.Format("{0}: {1}", (int)statusCode, reasonPhrase))
         {
-            this.Details = new List<Message>(details);
+            this.Details = new List<Message>(details ?? Enumerable.Empty<Message>());
             this.StatusCode = statusCode;
         }
+
+        public RequestException(HttpStatusCode statusCode, string reasonPhrase, params Message[] details)
+            : this(statusCode, reasonPhrase, (IEnumerable<Message>)details)
+        {
+        }
+
+        public RequestException(HttpStatusCode statusCode, string reasonPhrase, XDocument response)
+            : this(statusCode, reasonPhrase, Splunk.Sdk.Message.GetMessages(response))
+        { }
 
         public IReadOnlyList<Message> Details
         { get; private set; }

@@ -159,18 +159,29 @@ namespace Splunk.Sdk
         /// </summary>
         public async Task UpdateAsync()
         {
-            XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.ResourceName);
+            RequestException requestException = null;
 
-            // TODO: We need a response back to check these codes
-            // Consider doing away with GetDocument* in favor of GetAsync.
-#if false
-            if response.code == 204 or response.body.nil?
-            // This code is here primarily to handle the case of a job not yet being
-            // ready, in which case you get back empty bodies.
-            raise EntityNotReady.new((@resource + [name]).join("/"))
-          end
-#endif
-            this.Record = new AtomEntry(document.Root).Content; // Gurantee: unique result because entities have specific namespaces
+            for (int i = 3; i > 0 ; --i)
+            {
+                try
+                {
+                    // Gurantee: unique result because entities have specific namespaces
+                    XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.ResourceName);
+                    this.Record = new AtomEntry(document.Root).Content;
+                    return;
+                }
+                catch (RequestException e)
+                {
+                    if (e.StatusCode != System.Net.HttpStatusCode.NoContent)
+                    {
+                        throw;
+                    }
+                    requestException = e;
+                }
+                await Task.Delay(500);
+            }
+
+            throw requestException;
         }
 
         public override string ToString()

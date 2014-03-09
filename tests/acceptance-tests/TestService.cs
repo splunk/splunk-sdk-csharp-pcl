@@ -29,7 +29,7 @@ namespace Splunk.Sdk.UnitTesting
         [Fact]
         public void CanConstruct()
         {
-            var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             Assert.Equal(service.ToString(), "https://localhost:8089/services");
         }
 
@@ -37,14 +37,14 @@ namespace Splunk.Sdk.UnitTesting
         [Fact]
         public void CanLogin()
         {
-            var service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             Task task;
             
             task = service.LoginAsync("admin", "changeme");
             task.Wait();
 
             Assert.Equal(task.Status, TaskStatus.RanToCompletion);
-            Assert.NotNull(service.Context.SessionKey);
+            Assert.NotNull(service.SessionKey);
 
             try
             {
@@ -71,7 +71,7 @@ namespace Splunk.Sdk.UnitTesting
         [Fact]
         public void CanSearch()
         {
-            Service service = new Service(new Context(Scheme.Https, "localhost", 8089), Namespace.Default);
+            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
             Task<Task<Job>> task = service.LoginAsync("admin", "changeme").ContinueWith(loginTask => service.SearchAsync("index=_internal | head 10"));
             task.Wait();

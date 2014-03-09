@@ -31,7 +31,7 @@ namespace Splunk.Sdk.UnitTesting
         {
             client = new Context(Scheme.Https, "localhost", 8089);
 
-            Assert.Equal(client.Protocol, Scheme.Https);
+            Assert.Equal(client.Scheme, Scheme.Https);
             Assert.Equal(client.Host, "localhost");
             Assert.Equal(client.Port, 8089);
             Assert.Null(client.SessionKey);

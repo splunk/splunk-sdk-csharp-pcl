@@ -18,6 +18,7 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Linq;
 
     /// <summary>
     /// Specifies the user/app context for a resource
@@ -57,7 +58,7 @@ namespace Splunk.Sdk
 
         #region Properties
 
-        public string App 
+        public string App
         { get; private set; }
 
         public bool IsSpecific
@@ -79,7 +80,11 @@ namespace Splunk.Sdk
 
         public override string ToString()
         {
-            return this == Default ? "services" : string.Join("/", "servicesNS", Uri.EscapeUriString(this.User), Uri.EscapeUriString(this.App));
+            if (this == Default)
+                return "services";
+            if (this.User == AllUsers)
+                return this.App == AllApps ? "services" : string.Join("/", "servicesNS", this.App);
+            return this.App == AllApps ? string.Join("/", "servicesNS", this.User) : string.Join("/", "servicesNS", this.User, this.App);
         }
 
         #endregion

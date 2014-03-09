@@ -208,7 +208,7 @@ namespace Splunk.Sdk
         /// <returns>
         /// A <see cref="Task"/> representing this asychronous operation.
         /// </returns>
-        override protected internal async Task PushObservations()
+        override protected async Task PushObservations()
         {
             if (this.enumerated)
             {

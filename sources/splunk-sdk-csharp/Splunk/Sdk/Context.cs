@@ -18,7 +18,7 @@
 // [ ] Synchronization strategy
 // [X] Settable SessionKey
 // [X] Dead code removal
-// [O] Contracts
+// [X] Contracts
 // [O] Documentation
 // [O] All unsealed classes that implement IDisposable must also implement 
 //     this method: protected virtual void Dispose(bool);
@@ -34,6 +34,7 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
@@ -52,13 +53,13 @@ namespace Splunk.Sdk
         /// a protocol, host, and port number.
         /// </summary>
         /// <param name="protocol">
-        /// The <see cref="Protocol"/> used to communicate with <see cref="Host"/>
+        /// The <see cref="Scheme"/> used to communicate with <see cref="Host"/>
         /// </param>
         /// <param name="host">
         /// The DNS name of a Splunk server instance.
         /// </param>
         /// <param name="port">
-        /// The port number used to communicate with <see cref="Host"/>
+        /// The port number used to communicate with <see cref="Host"/>.
         /// </param>
         public Context(Scheme protocol, string host, int port)
             : this(protocol, host, port, null)
@@ -71,8 +72,8 @@ namespace Splunk.Sdk
         /// Initializes a new instance of the <see cref="Context"/> class with
         /// a protocol, host, port number, and optional message handler.
         /// </summary>
-        /// <param name="protocol">
-        /// The <see cref="Protocol"/> used to communicate with <see cref="Host"/>
+        /// <param name="scheme">
+        /// The <see cref="Scheme"/> used to communicate with <see cref="Host"/>
         /// </param>
         /// <param name="host">
         /// The DNS name of a Splunk server instance
@@ -88,12 +89,13 @@ namespace Splunk.Sdk
         /// <c>true</c> if the inner handler should be disposed of by Dispose, 
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
-        public Context(Scheme protocol, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
+        public Context(Scheme scheme, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
         {
+            Contract.Requires<ArgumentOutOfRangeException>(!(scheme == Scheme.Http || scheme == Scheme.Https));
             Contract.Requires(!string.IsNullOrEmpty(host));
             Contract.Requires(0 <= port && port <= 65535);
 
-            this.Protocol = protocol;
+            this.Scheme = scheme;
             this.Host = host;
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
@@ -104,27 +106,26 @@ namespace Splunk.Sdk
         #region Properties
 
         /// <summary>
-        /// Gets the host associated with this instance.
+        /// Gets the Splunk host associated with this instance.
         /// </summary>
         public string Host
         { get; private set; }
 
         /// <summary>
-        /// Gets the management port number used to communicate with the 
-        /// <see cref="Host"/> associated with this instance.
+        /// Gets the management port number used to communicate with 
+        /// <see cref="Host"/>
         /// </summary>
         public int Port
         { get; private set; }
 
         /// <summary>
-        /// Gets the protocol used to communicate with the <see cref="Host"/> 
-        /// associated with this instance.
+        /// Gets the scheme used to communicate with <see cref="Host"/> 
         /// </summary>
-        public Scheme Protocol
+        public Scheme Scheme
         { get; private set; }
 
         /// <summary>
-        /// Gets or sets the session key associated with this instance.
+        /// Gets or sets the session key used by the <see cref="Context"/>.
         /// </summary>
         /// <remarks>
         /// The value returned is null until it is set.
@@ -139,11 +140,39 @@ namespace Splunk.Sdk
         /// <summary>
         /// Releases all resources used by the <see cref="Context"/>.
         /// </summary>
+        /// <remarks>
+        /// Do not override this method. Override 
+        /// <see cref="Context.Dispose(bool disposing)"/> instead.
+        /// </remarks>
+
         public void Dispose()
         {
             this.Dispose(true);
         }
 
+        /// <summary>
+        /// Releases all resources used by the <see cref="Context"/>.
+        /// </summary>
+        /// <remarks>
+        /// Subclasses should implement the disposable pattern as follows:
+        /// <list type="bullet">
+        /// <item><description>
+        ///     Override this method and call it from the override.
+        ///     </description></item>
+        /// <item><description>
+        ///     Provide a finalizer, if needed, and call this method from it.
+        ///     </description></item>
+        /// <item><description>
+        ///     To help ensure that resources are always cleaned up 
+        ///     appropriately, ensure that the override is callable multiple
+        ///     times without throwing an exception.
+        ///     </description></item>
+        /// </list>
+        /// There is no performance benefit in overriding this method on types
+        /// that use only managed resources (such as arrays) because they are 
+        /// automatically reclaimed by the garbage collector. See 
+        /// <a href="http://goo.gl/VPIovn">Implementing a Dispose Method</a>.
+        /// </remarks>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing && this.httpClient != null)
@@ -188,11 +217,16 @@ namespace Splunk.Sdk
         {
             using (var response = await this.GetAsync(@namespace, resource, argumentSets))
             {
+                if (response.StatusCode == HttpStatusCode.NoContent)
+                {
+                    throw new RequestException(response.StatusCode, response.ReasonPhrase, new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", @namespace, resource)));
+                }
+
                 var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    throw new RequestException(response.StatusCode, response.ReasonPhrase, details: Message.GetMessages(document));
+                    throw new RequestException(response.StatusCode, response.ReasonPhrase, document);
                 }
 
                 return document;
@@ -224,14 +258,14 @@ namespace Splunk.Sdk
 
         public override string ToString()
         {
-            return string.Concat(Scheme[(int)this.Protocol], "://", this.Host, ":", this.Port.ToString());
+            return string.Concat(SchemeStrings[(int)this.Scheme], "://", this.Host, ":", this.Port.ToString());
         }
 
         #endregion
 
         #region Privates
 
-        static readonly string[] Scheme = { "http", "https" };
+        static readonly string[] SchemeStrings = { "http", "https" };
         HttpClient httpClient;
 
         HttpClient HttpClient

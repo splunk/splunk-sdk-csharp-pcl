@@ -125,7 +125,7 @@ namespace Splunk.Sdk
         /// <returns>
         /// A <see cref="Task"/>
         /// </returns>
-        override protected internal async Task PushObservations()
+        override protected async Task PushObservations()
         {
             do
             {

@@ -17,6 +17,13 @@
 // TODO:
 // [ ] Consider schema validation from schemas stored as resources.
 //     See [XmlReaderSettings.Schemas Property](http://goo.gl/Syvj4V)
+//
+// [ ] Unit tests: 
+//
+//     + DispatchSavedSearch should throw this exception when the named
+//       saved search does not exist:
+//
+//          RequestException(HttpStatusCode.BadRequest,...);
 
 namespace Splunk.Sdk
 {
@@ -36,17 +43,17 @@ namespace Splunk.Sdk
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="Service"/> class.
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="scheme"></param>
+        /// <param name="host"></param>
+        /// <param name="port"></param>
+        /// <param name="sessionKey"></param>
         /// <param name="namespace"></param>
-        public Service(Context context, Namespace @namespace)
+        public Service(Scheme scheme, string host, int port, Namespace @namespace = null)
         {
-            Contract.Requires(context != null);
-            Contract.Requires(@namespace != null);
-
-            this.Context = context;
-            this.Namespace = @namespace;
+            this.Context = new Context(scheme, host, port);
+            this.Namespace = @namespace?? Namespace.Default;
         }
 
         #endregion
@@ -56,14 +63,23 @@ namespace Splunk.Sdk
         /// <summary>
         /// Gets the <see cref="Context"/> instance for this <see cref="Service"/>.
         /// </summary>
-        public Context Context
+        protected Context Context
         { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="Namespace"/> used by this <see cref="Service"/> instance.
+        /// Gets the <see cref="Namespace"/> used by this <see cref="Service"/>.
         /// </summary>
         public Namespace Namespace
         { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the session key used by this <see cref="Service"/>.
+        /// </summary>
+        public string SessionKey
+        {
+            get { return this.Context.SessionKey; }
+            set { this.Context.SessionKey = value; }
+        }
 
         #endregion
 
@@ -94,18 +110,48 @@ namespace Splunk.Sdk
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    throw new RequestException(response.StatusCode, response.ReasonPhrase, Message.GetMessages(document));  // TODO: diagnostics
+                    throw new RequestException(response.StatusCode, response.ReasonPhrase, document);
                 }
 
-                this.Context.SessionKey = document.Element("response").Element("sessionKey").Value;
+                this.SessionKey = document.Element("response").Element("sessionKey").Value;
             }
         }
 
+        /// <summary>
+        /// Releases all resources used by the <see cref="Service"/>.
+        /// </summary>
+        /// <remarks>
+        /// Do not override this method. Override 
+        /// <see cref="Service.Dispose(bool disposing)"/> instead.
+        /// </remarks>
         public void Dispose()
         {
             this.Dispose(true);
         }
 
+        /// <summary>
+        /// Releases all resources used by the <see cref="Service"/>.
+        /// </summary>
+        /// <remarks>
+        /// Subclasses should implement the disposable pattern as follows:
+        /// <list type="bullet">
+        /// <item><description>
+        ///     Override this method and call it from the override.
+        ///     </description></item>
+        /// <item><description>
+        ///     Provide a finalizer, if needed, and call this method from it.
+        ///     </description></item>
+        /// <item><description>
+        ///     To help ensure that resources are always cleaned up 
+        ///     appropriately, ensure that the override is callable multiple
+        ///     times without throwing an exception.
+        ///     </description></item>
+        /// </list>
+        /// There is no performance benefit in overriding this method on types
+        /// that use only managed resources (such as arrays) because they are 
+        /// automatically reclaimed by the garbage collector. See 
+        /// <a href="http://goo.gl/VPIovn">Implementing a Dispose Method</a>.
+        /// </remarks>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing && !this.disposed)
@@ -116,19 +162,67 @@ namespace Splunk.Sdk
             }
         }
 
-        public async Task<Job> DispatchSavedSearch(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="searchName"></param>
+        /// <param name="searchArgs"></param>
+        /// <param name="dispatchArgs"></param>
+        /// <returns></returns>
+        public async Task<Job> DispatchSavedSearchAsnyc(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
             Contract.Requires<ArgumentNullException>(searchName != null, "searchName");
 
             var resourceName = new ResourceName(ResourceName.SavedSearches, searchName, "dispatch");
+            string searchId;
 
-            HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs);
-            var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
-            string searchId = document.Element("response").Element("sid").Value;
+            using (HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs))
+            {
+                switch (response.StatusCode)
+                {
+                    case HttpStatusCode.Created:
+                    case HttpStatusCode.OK:
+                    case HttpStatusCode.BadRequest:
+                    case HttpStatusCode.Conflict:
+                    case HttpStatusCode.InternalServerError:
+
+                        var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
+
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            throw new RequestException(response.StatusCode, response.ReasonPhrase, document);
+                        }
+                        searchId = document.Element("response").Element("sid").Value;
+                        break;
+
+                    default:
+
+                        string text = null;
+
+                        switch (response.StatusCode)
+                        { 
+                            case HttpStatusCode.PaymentRequired:
+                                text = string.Format("The Splunk license in use has disabled '{0}'.", "Saved Searches");
+                                break;
+                            case HttpStatusCode.Unauthorized:
+                                text = string.Format("Authentication is required to access '{0}'.", "Saved Searches");
+                                break;
+                            case HttpStatusCode.Forbidden:
+                                text = string.Format("Insufficient permissions to {0} '{1}'", "dispatch saved search", searchName);
+                                break;
+                            case HttpStatusCode.NotFound:
+                                text = string.Format("{0} '{1}' does not exist.", "Saved search", searchName);
+                                break;
+                            case HttpStatusCode.ServiceUnavailable:
+                                text = string.Format("Splunk is not configured for {0}", "dispatching saved searches");
+                                break;
+                        }
+                        throw new RequestException(response.StatusCode, response.ReasonPhrase, new Message(MessageType.Error, text));
+                }
+            }
 
             Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
             await job.UpdateAsync();
-
             return job;
         }
 

@@ -91,9 +91,9 @@ namespace Splunk.Sdk
         /// </param>
         public Context(Scheme scheme, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(!(scheme == Scheme.Http || scheme == Scheme.Https));
-            Contract.Requires(!string.IsNullOrEmpty(host));
-            Contract.Requires(0 <= port && port <= 65535);
+            Contract.Requires<ArgumentException>(scheme == Scheme.Http || scheme == Scheme.Https);
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(host));
+            Contract.Requires<ArgumentException>(0 <= port && port <= 65535);
 
             this.Scheme = scheme;
             this.Host = host;

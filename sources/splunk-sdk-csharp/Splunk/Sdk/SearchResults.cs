@@ -15,37 +15,6 @@
  */
 
 // TODO:
-//
-// [ ] At present you can iterate over SearchResults just one time using
-//     ReadRecords. If you call ReadRecords more than once, it will throw
-//     an InvalidOperationException.
-//
-//     Consider these alternatives:
-//
-//     1. Let ReadRecords be called more than once, but 
-//        return nothing everytime after the last Record is returned.
-//
-//     2. Turn the SearchResults class into a lazy sequence evaluator. Record
-//        instances would be read sequentially and held in memory until 
-//        Dispose was called. Benefit: Repeated iteration over Record 
-//        instances. What are the use cases?
-//
-//        * Syncrhonous alternative to having multiple Subscribers. One would
-//          process a set of records many times; once per presentation of the
-//          Record set.
-//
-//        * LINQ-based data binding scenarios. May be useful for creating one 
-//          or more views over a set of results. First blush investigation says 
-//          XAML works best over collections that can be based on LINQ queries.
-//          One might create a set of LINQ queries that work over a one or 
-//          many sets of SearchResults.
-//       
-//      Observation:
-//      
-//      Rx comes with filtering capabilities: 
-//
-//          var subscription = searchResultsReader.Where(searchResults => searchResults.AreFinal).Subscribe(...);
-//
 // [O] Contracts
 // [O] Documentation
 
@@ -81,7 +50,6 @@ namespace Splunk.Sdk
 
             if (leaveOpen)
             {
-                GC.SuppressFinalize(this);
                 this.disposed = true;
             }
         }
@@ -159,7 +127,11 @@ namespace Splunk.Sdk
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            if (!this.disposed)
+            {
+                this.response.Dispose();
+                this.disposed = true;
+            }
         }
 
         /// <summary>
@@ -167,21 +139,19 @@ namespace Splunk.Sdk
         /// cref="Record"/> objects synchronously.
         /// </summary>
         /// <returns>
-        /// An <see cref="Record"/> enumerator structure for the <see cref="SearchResults"/>.
+        /// A <see cref="Record"/> enumerator structure for the <see 
+        /// cref="SearchResults"/>.
         /// </returns>
         /// <remarks>
-        /// <para>
-        /// You can use the <see cref="ReadRecords"/> method to
-        ///   <list type="bullet">
-        ///     <item> 
-        ///       <description>Perform LINQ to Objects queries to obtain a 
-        ///       filtered set of search result records.</description> 
-        ///     </item>
-        ///     <item> 
-        ///       <description>Append search results to an existing 
-        ///       <see cref="Record"/>collection.</description>
-        ///     </item>
-        ///   </list></para>
+        /// You can use the <see cref="GetEnumerator"/> method to
+        /// <list type="bullet">
+        /// <item><description>
+        ///     Perform LINQ to Objects queries to obtain a filtered set of 
+        ///     search result records.</description></item>
+        /// <item><description>
+        ///     Append search results to an existing <see cref="Record"/>
+        ///     collection.</description></item>
+        /// </list>
         /// </remarks>
         public IEnumerator<Record> GetEnumerator()
         {
@@ -232,16 +202,6 @@ namespace Splunk.Sdk
         readonly Response response;
         bool disposed;
         bool enumerated;
-
-        void Dispose(bool disposing)
-        {
-            if (disposing && !this.disposed)
-            {
-                this.response.Dispose();
-                this.disposed = true;
-                GC.SuppressFinalize(this);
-            }
-        }
 
         /// <summary>
         /// Reads the next <see cref="Record"/> in the <see cref=

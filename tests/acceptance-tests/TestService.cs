@@ -18,9 +18,11 @@ namespace Splunk.Sdk.UnitTesting
 {
     using System;
     using System.Net;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
+    using Splunk.Sdk;
     using Xunit;
 
     public class TestService : IUseFixture<AcceptanceTestingSetup>
@@ -39,7 +41,7 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             Task task;
-            
+
             task = service.LoginAsync("admin", "changeme");
             task.Wait();
 
@@ -69,15 +71,87 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service")]
         [Fact]
-        public void CanSearch()
+        public void CanDispatchSavedSearch()
+        {
+            Service service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+                
+                Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
+                SearchResults searchResults = await job.GetSearchResultsAsync();
+                
+                var records = new List<Splunk.Sdk.Record>(searchResults);
+                return records;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service")]
+        [Fact]
+        public void CanDispatchSearch()
         {
             Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
-            Task<Task<Job>> task = service.LoginAsync("admin", "changeme").ContinueWith(loginTask => service.SearchAsync("index=_internal | head 10"));
-            task.Wait();
+            Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                Job job = await service.SearchAsync("search index=_internal | head 10");
+                SearchResults searchResults = await job.GetSearchResultsAsync();
+
+                var records = new List<Splunk.Sdk.Record>(searchResults);
+                return records;
+            };
+            
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service")]
+        [Fact]
+        public void CanDispatchSearchExport()
+        {
+            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+
+            Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
+                var records = new List<Splunk.Sdk.Record>();
+
+                foreach (var searchResults in reader)
+                {
+                    records.AddRange(searchResults);
+                }
+                return records;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service")]
+        [Fact]
+        public void CanDispatchSearchOneshot()
+        {
+            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+
+            Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
+                var records = new List<Splunk.Sdk.Record>(searchResults);
+
+                return records;
+            };
+
+            var result = Dispatch().Result;
         }
 
         public void SetFixture(AcceptanceTestingSetup data)
-        {  }
+        { }
     }
 }

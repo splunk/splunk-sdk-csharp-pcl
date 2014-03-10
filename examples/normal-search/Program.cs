@@ -53,102 +53,85 @@ namespace Splunk.Sdk.Examples
             // Saved search
 
             Console.WriteLine("Begin: Service.DispatchSavedSearch: Syncrhonous use case");
-            job = service.DispatchSavedSearchAsnyc("Splunk errors last 24 hours", dispatchArgs: new SavedSearchDispatchArgs()).Result;
+            job = service.DispatchSavedSearchAsync("Splunk errors last 24 hours", dispatchArgs: new SavedSearchDispatchArgs()).Result;
             
-            do
+            using (searchResults = job.GetSearchResultsAsync(new SearchResultArgs() { Count = 0 }).Result)
             {
-                using (searchResults = job.GetSearchResultsPreviewAsync(new SearchResultArgs() { Count = 0 }).Result)
-                {
-                    Console.WriteLine(string.Format("searchResults.ArePreview: {0}", searchResults.ArePreview));
-                    int recordNumber = 0;
+                Console.WriteLine(string.Format("searchResults.ArePreview: {0}", searchResults.ArePreview));
+                int recordNumber = 0;
 
-                    foreach (var record in searchResults)
+                foreach (var record in searchResults)
+                {
+                    Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                }
+            }
+
+            // Export search
+
+            using (searchResultsReader = service.SearchExportAsync("search index=_internal | head 100").Result)
+            {
+                Console.WriteLine("Begin: Service.SearchExportAsnyc: Syncrhonous use case");
+                int recordNumber = 0;
+                int setNumber = 0;
+
+                foreach (var searchResultSet in searchResultsReader)
+                {
+                    Console.WriteLine(string.Format("Result set {0}", ++setNumber));
+
+                    foreach (var record in searchResultSet)
                     {
                         Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
                     }
                 }
+
+                Console.WriteLine("End: Service.SearchExportAsync: Syncrhonous use case");
             }
-            while (searchResults.ArePreview);
 
-            // Export search
-
-            using (searchResults = service.SearchExportAsync("search index=_internal | head 10").Result)
+            using (searchResultsReader = service.SearchExportAsync("search index=_internal | head 100000").Result)
             {
-                Console.WriteLine("Begin: Service.SearchExportAsnyc: Syncrhonous use case");
+                Console.WriteLine("Begin: Service.SearchExportAsync: Asyncrhonous use case");
+                int recordNumber = 0;
+                int setNumber = 0;
 
-                foreach (var record in searchResults)
+                foreach (var resultSet in searchResultsReader)
                 {
-                    Console.WriteLine(record.ToString());
-                }
+                    Console.WriteLine(string.Format("Result set {0}", ++setNumber));
+                    var manualResetEvent = new ManualResetEvent(true);
 
-                Console.WriteLine("End: Service.SearchExportAsnyc: Syncrhonous use case");
+                    resultSet.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe
+                    (
+                        onNext: (record) =>
+                        {
+                            Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                        },
+                        onError: (exception) =>
+                        {
+                            Console.WriteLine(string.Format("SearchResults error: {0}", exception.Message));
+                            manualResetEvent.Set();
+                        },
+                        onCompleted: () =>
+                        {
+                            Console.WriteLine("Service.SearchExportAsync: Asyncrhonous use case");
+                            manualResetEvent.Set();
+                        }
+                    );
+
+                    manualResetEvent.Reset(); manualResetEvent.WaitOne();
+                }
             }
 
             // Oneshot search
 
-            using (searchResultsReader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
+            using (searchResults = service.SearchOneshotAsync("search index=_internal | head 10").Result)
             {
-                Console.WriteLine("Syncrhonous use case");
+                Console.WriteLine("Begin: Service.SearchOneshotAsnyc: Syncrhonous use case");
 
-                foreach (var searchResultSet in searchResultsReader)
+                foreach (var record in searchResults)
                 {
-                    foreach (var record in searchResultSet)
-                    {
-                        Console.WriteLine(record.ToString());
-                    }
+                    Console.WriteLine(record);
                 }
 
-                Console.WriteLine("End of search results");
-            }
-
-            using (searchResultsReader = service.SearchOneshotAsync("search index=_internal | head 10").Result)
-            {
-                Console.WriteLine("Asyncrhonous user case");
-
-                var manualResetEvent = new ManualResetEvent(true);
-
-                searchResultsReader.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe
-                (
-                    onNext: (searchResultSet) =>
-                    {
-                        // We use SearchResults.ToEnumerable--which buffers all
-                        // input before returning an enumerator--to verify that we
-                        // work with Rx operations. In practice you would be 
-                        // advised to use the SearchResults enumerator instead.
-
-                        // Requirements: 
-                        //
-                        // + You must process all records before returning from this
-                        //   method.
-                        //   Reason: The SearchResultsReader will skip past any 
-                        //   records you do not process.
-                        //
-                        // + You should process records in an asynchronous manner.
-                        //   Reactive operations are asynchrononous in the same way
-                        //   that the SearchResults enumerator is asynchronous. They 
-                        //   each await data to ensure their execution context is 
-                        //   time shared.
-
-                        // TODO: Verify all of the above statements.
-
-                        foreach (var record in searchResultSet.ToEnumerable())
-                        {
-                            Console.WriteLine(record);
-                        }
-                    },
-                    onError: (exception) =>
-                    {
-                        Console.WriteLine(string.Format("SearchResultsReader error: {0}", exception.Message));
-                        manualResetEvent.Set();
-                    },
-                    onCompleted: () =>
-                    {
-                        Console.WriteLine("End of search results");
-                        manualResetEvent.Set();
-                    }
-                );
-
-                manualResetEvent.Reset(); manualResetEvent.WaitOne();
+                Console.WriteLine("End: Service.SearchOneshotAsnyc: Syncrhonous use case");
             }
 
             // Search Job

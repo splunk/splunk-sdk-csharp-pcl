@@ -78,9 +78,14 @@ namespace Splunk.Sdk
 
         internal static async Task<SearchResultsReader> CreateAsync(Response response)
         {
-            if (!await response.Reader.ReadToFollowingAsync("results"))
+            response.Reader.MoveToElement(); // ensures we're at an element, not an attribute
+
+            if (!response.Reader.IsStartElement("results"))
             {
-                throw new InvalidDataException();  // TODO: diagnostics
+                if (!await response.Reader.ReadToFollowingAsync("results"))
+                {
+                    throw new InvalidDataException();  // TODO: diagnostics
+                }
             }
             return new SearchResultsReader(response);
         }

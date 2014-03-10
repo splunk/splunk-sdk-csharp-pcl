@@ -159,6 +159,8 @@ namespace Splunk.Sdk
         /// </summary>
         public async Task UpdateAsync()
         {
+            // TODO: Parmeterized retry logic
+
             RequestException requestException = null;
 
             for (int i = 3; i > 0 ; --i)

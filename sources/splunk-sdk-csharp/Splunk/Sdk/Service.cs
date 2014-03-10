@@ -169,7 +169,7 @@ namespace Splunk.Sdk
         /// <param name="searchArgs"></param>
         /// <param name="dispatchArgs"></param>
         /// <returns></returns>
-        public async Task<Job> DispatchSavedSearchAsnyc(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
+        public async Task<Job> DispatchSavedSearchAsync(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(searchName), "searchName");
 
@@ -180,13 +180,17 @@ namespace Splunk.Sdk
             {
                 switch (response.StatusCode)
                 {
+                    // Success
                     case HttpStatusCode.Created:
                     case HttpStatusCode.OK:
+
+                    // Failure
                     case HttpStatusCode.BadRequest:
                     case HttpStatusCode.Conflict:
                     case HttpStatusCode.InternalServerError:
 
-                        var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
+                        var messageBody = await response.Content.ReadAsStringAsync();
+                        var document = XDocument.Parse(messageBody);
 
                         if (!response.IsSuccessStatusCode)
                         {
@@ -278,20 +282,6 @@ namespace Splunk.Sdk
         /// <param name="parameters"></param>
         /// <returns></returns>
         /// <remarks>
-        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
-        /// </remarks>
-        public async Task<Job> SearchAsync(string command, ExecutionMode mode = ExecutionMode.Normal)
-        {
-            return (Job)await this.SearchAsync(new JobArgs(command) { ExecutionMode = mode });
-        }
-
-        /// <summary>
-        /// Creates a search <see cref="Job"/>.
-        /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
-        /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST 
         /// API Reference.
         /// </remarks>
@@ -314,12 +304,26 @@ namespace Splunk.Sdk
         /// <summary>
         /// Creates a search <see cref="Job"/>.
         /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<Job> SearchAsync(string command, ExecutionMode mode = ExecutionMode.Normal)
+        {
+            return (Job)await this.SearchAsync(new JobArgs(command) { ExecutionMode = mode });
+        }
+
+        /// <summary>
+        /// Creates a search <see cref="Job"/>.
+        /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
         /// <remarks>
         /// See the <a href="http://goo.gl/vJvIXv">GET search/jobs/export</a> REST API Reference.
         /// </remarks>
-        public async Task<SearchResults> SearchExportAsync(string command)
+        public async Task<SearchResultsReader> SearchExportAsync(string command)
         {
             Contract.Requires<ArgumentNullException>(command != null, "command");
             return await this.SearchExportAsync(new SearchExportArgs(command));
@@ -333,19 +337,14 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/vJvIXv">GET search/jobs/export</a> REST API Reference.
         /// </remarks>
-        public async Task<SearchResults> SearchExportAsync(SearchExportArgs args)
+        public async Task<SearchResultsReader> SearchExportAsync(SearchExportArgs args)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
 
             HttpResponseMessage message = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args);
             var response = await Response.CreateAsync(message);
 
-            if (!await response.Reader.ReadToFollowingAsync("results"))
-            {
-                throw new InvalidDataException();  // TODO: diagnostics
-            }
-
-            return await SearchResults.CreateAsync(response, leaveOpen: false);
+            return await SearchResultsReader.CreateAsync(response);
         }
 
         /// <summary>
@@ -356,7 +355,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<SearchResultsReader> SearchOneshotAsync(string command)
+        public async Task<SearchResults> SearchOneshotAsync(string command)
         {
             Contract.Requires<ArgumentNullException>(command != null, "command");
             return await this.SearchOneshotAsync(new JobArgs(command));
@@ -370,7 +369,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<SearchResultsReader> SearchOneshotAsync(JobArgs args)
+        public async Task<SearchResults> SearchOneshotAsync(JobArgs args)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
             args.ExecutionMode = ExecutionMode.Oneshot;
@@ -378,7 +377,7 @@ namespace Splunk.Sdk
             HttpResponseMessage message = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
             var response = await Response.CreateAsync(message);
 
-            return await SearchResultsReader.CreateAsync(response);
+            return await SearchResults.CreateAsync(response, leaveOpen: false);
         }
 
         /// <summary>

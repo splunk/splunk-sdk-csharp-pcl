@@ -357,13 +357,8 @@ namespace Splunk.Sdk
 
             HttpResponseMessage message = await this.Context.GetAsync(this.Namespace, resourceName, args);
             var response = await Response.CreateAsync(message);
-
-            if (!await response.Reader.ReadToFollowingAsync("results"))
-            {
-                throw new InvalidDataException();  // TODO: diagnostics
-            }
-
             var searchResults = await SearchResults.CreateAsync(response, leaveOpen: false);
+
             return searchResults;
         }
 

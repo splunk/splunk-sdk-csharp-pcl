@@ -25,6 +25,7 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
+    using System.IO;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -100,7 +101,15 @@ namespace Splunk.Sdk
         /// search event records.</returns>
         internal static async Task<SearchResults> CreateAsync(Response response, bool leaveOpen)
         {
-            Contract.Requires<InvalidOperationException>(response.Reader.NodeType == XmlNodeType.Element && response.Reader.Name == "results");
+            response.Reader.MoveToElement(); // Ensures we're at an element, not an attribute
+
+            if (!response.Reader.IsStartElement("results"))
+            {
+                if (!await response.Reader.ReadToFollowingAsync("results"))
+                {
+                    throw new InvalidDataException();  // TODO: diagnostics
+                }
+            }
 
             var isPreview = XmlConvert.ToBoolean(response.Reader["preview"]);
             var fieldNames = new List<string>();

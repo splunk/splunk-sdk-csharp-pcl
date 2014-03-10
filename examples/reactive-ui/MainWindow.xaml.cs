@@ -53,6 +53,8 @@ namespace Splunk.Sdk.Examples.ReactiveUI
 
                 Job job = await service.SearchAsync(this.SearchCommand.Text);
                 SearchResults results = await job.GetSearchResultsAsync();
+
+                return results;
             };
 
             var result = Dispatch().Result;

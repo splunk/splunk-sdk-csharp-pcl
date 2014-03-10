@@ -17,6 +17,7 @@
 namespace Splunk.Sdk.Examples.ReactiveUI
 {
     using System.Windows;
+    using System.Net;
     using Splunk.Sdk;
 
     /// <summary>
@@ -39,6 +40,10 @@ namespace Splunk.Sdk.Examples.ReactiveUI
         }
         protected override void OnStartup(StartupEventArgs e)
         {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
+            {
+                return true;
+            };
             this.Service = new Service(Scheme.Https, "localhost", 8089);
         }
 

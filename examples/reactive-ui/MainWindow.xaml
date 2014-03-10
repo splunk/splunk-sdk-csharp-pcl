@@ -11,5 +11,6 @@
             <TextBox x:Name="SearchCommand" Height="23" TextWrapping="Wrap" Text="search index=_internal" VerticalAlignment="Top"/>
         </Grid>
         <Button x:Name="Search" Content="Search" HorizontalAlignment="Right" VerticalAlignment="Top" Width="52" Height="23" Click="Search_Click" Grid.ColumnSpan="2"/>
+        <DataGrid x:Name="Records" Margin="0,50,0,0" VerticalAlignment="Stretch" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>

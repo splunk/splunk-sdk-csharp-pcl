@@ -52,7 +52,7 @@ namespace Splunk.Sdk
         /// Initializes a new instance of the <see cref="Context"/> class with
         /// a protocol, host, and port number.
         /// </summary>
-        /// <param name="protocol">
+        /// <param name="scheme">
         /// The <see cref="Scheme"/> used to communicate with <see cref="Host"/>
         /// </param>
         /// <param name="host">
@@ -61,8 +61,8 @@ namespace Splunk.Sdk
         /// <param name="port">
         /// The port number used to communicate with <see cref="Host"/>.
         /// </param>
-        public Context(Scheme protocol, string host, int port)
-            : this(protocol, host, port, null)
+        public Context(Scheme scheme, string host, int port)
+            : this(scheme, host, port, null)
         {
             // NOTE: This constructor obviates the need for callers to include a 
             // using for System.Net.Http.

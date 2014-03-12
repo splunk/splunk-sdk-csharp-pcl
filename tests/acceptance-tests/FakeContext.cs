@@ -66,7 +66,7 @@ namespace Splunk.Sdk.UnitTesting
         #endregion
 
         #region Methods
-        
+
         public void LoadResponseMessages(string path)
         {
             // Consider using the <a href="http://goo.gl/3BFVqg">JavaScriptSerializer Class</a>.

@@ -19,8 +19,10 @@
 
 namespace Splunk.Sdk
 {
-    public enum SharingMode
+    public enum LicenseState
     {
-        Default, App, Global, System, User
+        Unknown,
+        Expired,
+        OK
     }
 }

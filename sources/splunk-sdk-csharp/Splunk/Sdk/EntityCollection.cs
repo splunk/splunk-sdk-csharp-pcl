@@ -127,14 +127,14 @@ namespace Splunk.Sdk
             return ((IEnumerable)this.entities).GetEnumerator();
         }
 
-        public async Task Update()
+        public async Task UpdateAsync()
         {
             var document = await this.Context.GetDocumentAsync(this.Namespace, this.Name, this.Arguments);
 
             // TODO: Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
             // See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom
             
-            var feed = new AtomFeed(this.Context, this.Name, document);
+            var feed = new AtomFeed(document.Root);
             var entities = new List<TEntity>(this.feed.Entries.Count);
             entities.AddRange(from entry in this.feed.Entries select Entity<TEntity>.CreateEntity(this.Context, this.Name, entry));
 

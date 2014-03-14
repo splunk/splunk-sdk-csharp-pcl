@@ -32,18 +32,16 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        public AtomFeed(Context context, ResourceName collection, XDocument document)
+        public AtomFeed(XElement feed)
         {
-            Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires<ArgumentNullException>(document != null, "document");
-            Contract.Requires<ArgumentNullException>(collection != null, "collection");
+            Contract.Requires<ArgumentNullException>(feed != null, "element");
 
-            if (document.Root.Name != ElementName.Feed)
+            if (feed.Name != ElementName.Feed)
             {
                 throw new InvalidDataException();
             }
 
-            var entries = document.Root.Elements(ElementName.Entry);
+            var entries = feed.Elements(ElementName.Entry);
 
             if (entries == null)
             {

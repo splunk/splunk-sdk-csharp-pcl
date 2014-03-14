@@ -72,7 +72,7 @@ namespace Splunk.Sdk
             : base(context, @namespace, collection, name)
         { }
 
-        public Job() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with an Entity<TEntity> factory
+        public Job() // TODO: Remove this after refactoring with an Entity<TEntity> factory
         { }
 
         #endregion
@@ -332,7 +332,7 @@ namespace Splunk.Sdk
 
         #region Methods used by our base class, Entity<TEntity>
 
-        protected override string GetName(dynamic record)
+        protected override string GetTitle(dynamic record)
         {
             Contract.Requires<ArgumentNullException>(record != null);
             return record.Sid;

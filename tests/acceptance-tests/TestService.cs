@@ -73,7 +73,7 @@ namespace Splunk.Sdk.UnitTesting
         [Fact]
         public void CanDispatchSavedSearch()
         {
-            Service service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
 
             Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
             {
@@ -93,7 +93,7 @@ namespace Splunk.Sdk.UnitTesting
         [Fact]
         public void CanDispatchSearch()
         {
-            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
             Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
             {
@@ -113,7 +113,7 @@ namespace Splunk.Sdk.UnitTesting
         [Fact]
         public void CanDispatchSearchExport()
         {
-            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
             Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
             {
@@ -136,7 +136,7 @@ namespace Splunk.Sdk.UnitTesting
         [Fact]
         public void CanDispatchSearchOneshot()
         {
-            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
             Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
             {
@@ -149,6 +149,33 @@ namespace Splunk.Sdk.UnitTesting
             };
 
             var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service")]
+        [Fact]
+        public void CanGetServerInfo()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            var serverInfo = service.Server.GetInfo();
+            
+            Acl acl = serverInfo.Acl;
+            int build = serverInfo.Build;
+            string cpuArchitecture = serverInfo.CpuArchitecture;
+            Guid guid = serverInfo.Guid;
+            bool isFree = serverInfo.IsFree;
+            bool isRealtimeSearchEnabled = serverInfo.IsRealTimeSearchEnabled;
+            bool isTrial = serverInfo.IsTrial;
+            IReadOnlyList<string> licenseKeys = serverInfo.LicenseKeys;
+            IReadOnlyList<string> licenseLabels = serverInfo.LicenseLabels;
+            string licenseSignature = serverInfo.LicenseSignature;
+            LicenseState licenseState = serverInfo.LicenseState;
+            Guid masterGuid = serverInfo.MasterGuid;
+            ServerMode mode = serverInfo.Mode;
+            string osBuild = serverInfo.OSBuild;
+            string osName = serverInfo.OSName;
+            string osVersion = serverInfo.OSVersion;
+            string serverName = serverInfo.ServerName;
+            Version version = serverInfo.Version;
         }
 
         public void SetFixture(AcceptanceTestingSetup data)

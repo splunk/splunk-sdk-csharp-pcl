@@ -19,8 +19,10 @@
 
 namespace Splunk.Sdk
 {
-    public enum SharingMode
+    public enum ServerMode
     {
-        Default, App, Global, System, User
+        Unknown,
+        DedicatedForwarder,
+        Normal
     }
 }

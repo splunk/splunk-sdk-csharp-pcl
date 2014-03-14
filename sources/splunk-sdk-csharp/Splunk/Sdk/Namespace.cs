@@ -85,6 +85,8 @@ namespace Splunk.Sdk
 
         public override string ToString()
         {
+            // TODO: Verify correctness by checking against Ruby code (Suspicion: this code is incorrect, but works with use cases we've tried)
+
             if (this == Default)
                 return "services";
             if (this.User == AllUsers)

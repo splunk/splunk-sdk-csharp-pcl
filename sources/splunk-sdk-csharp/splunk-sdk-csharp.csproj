@@ -103,9 +103,10 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Splunk\Sdk\Acl.cs" />
+    <Compile Include="Splunk\Sdk\ServerMode.cs" />
+    <Compile Include="Splunk\Sdk\LicenseState.cs" />
+    <Compile Include="Splunk\Sdk\Permissions.cs" />
     <Compile Include="Splunk\Sdk\SavedSearchDispatchArgs.cs" />
     <Compile Include="Splunk\Sdk\App.cs" />
     <Compile Include="Splunk\Sdk\Args.cs" />
@@ -121,6 +122,8 @@
     <Compile Include="Splunk\Sdk\SearchResultArgs.cs" />
     <Compile Include="Splunk\Sdk\Response.cs" />
     <Compile Include="Splunk\Sdk\SearchExportArgs.cs" />
+    <Compile Include="Splunk\Sdk\ServerInfo.cs" />
+    <Compile Include="Splunk\Sdk\Server.cs" />
     <Compile Include="Splunk\Sdk\TruncationMode.cs" />
     <Compile Include="Splunk\Sdk\XmlReaderExtensions.cs" />
     <Compile Include="Splunk\Sdk\Field.cs" />

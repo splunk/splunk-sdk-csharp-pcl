@@ -144,23 +144,35 @@ namespace Splunk.Sdk
 
         static Uri AsAbsoluteUri(XElement element)
         {
+            if (element == null)
+            {
+                return null;
+            }
+
             Uri result;
 
             if (!Uri.TryCreate(element.Value, UriKind.Absolute, out result))
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }
+
             return result;
         }
 
         static DateTime AsDateTime(XElement element)
         {
+            if (element == null)
+            {
+                return DateTime.MinValue;
+            }
+
             DateTime result;
 
             if (!DateTime.TryParse(element.Value, out result))
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }
+
             return result;
         }
 
@@ -171,18 +183,12 @@ namespace Splunk.Sdk
 
         static string AsString(XElement element)
         {
-            return element.Value;
+            return element == null ? null : element.Value;
         }
 
         static T GetElement<T>(XElement entry, XName name, Func<XElement, T> convert)
         {
             XElement element = entry.Element(name);
-
-            if (element == null)
-            {
-                throw new InvalidDataException(string.Format("Missing {0} element in atom feed entry {1}", name, entry.Name));
-            }
-
             return convert(element);
         }
 

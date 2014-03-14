@@ -14,13 +14,34 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
-
 namespace Splunk.Sdk
 {
-    public enum SharingMode
+    using System.Threading.Tasks;
+
+    public struct Server
     {
-        Default, App, Global, System, User
+        internal Server(Service service)
+        {
+            this.service = service;
+        }
+
+        public Namespace Namespace
+        { 
+            get { return this.service.Namespace; } 
+        }
+
+        public ServerInfo GetInfo()
+        {
+            return this.GetInfoAsync().Result;
+        }
+
+        public async Task<ServerInfo> GetInfoAsync()
+        {
+            var serverInfo = new ServerInfo(this.service);
+            await serverInfo.UpdateAsync();
+            return serverInfo;
+        }
+
+        readonly Service service;
     }
 }

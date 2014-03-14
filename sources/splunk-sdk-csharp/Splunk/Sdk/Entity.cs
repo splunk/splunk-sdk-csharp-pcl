@@ -47,19 +47,19 @@ namespace Splunk.Sdk
         /// <param name="context"></param>
         /// <param name="namespace"></param>
         /// <param name="collection"></param>
-        /// <param name="name"></param>
-        protected Entity(Context context, Namespace @namespace, ResourceName collection, string name)
+        /// <param name="title"></param>
+        protected Entity(Context context, Namespace @namespace, ResourceName collection, string title)
         {
             Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(title), "name");
             Contract.Requires<ArgumentException>(collection != null, "collection");
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires(@namespace.IsSpecific);
 
             this.Context = context;
-            this.name = name;
             this.@namespace = @namespace;
             this.Collection = collection;
+            this.name = title;
         }
 
         #endregion
@@ -93,7 +93,7 @@ namespace Splunk.Sdk
                     {
                         throw new InvalidOperationException(); // TODO: documentation
                     }
-                    this.name = this.GetName(record);
+                    this.name = this.GetTitle(record);
                 }
                 return this.name;
             }
@@ -151,7 +151,7 @@ namespace Splunk.Sdk
 
 		// FJR: Is this ever needed? The name of an entity is fixed,
 		// with the exception of restrictToHost fiascos around TCP and UDP inputs.
-		protected virtual string GetName(dynamic record)
+		protected virtual string GetTitle(dynamic record)
         {
             return record.Title;
         }
@@ -180,8 +180,18 @@ namespace Splunk.Sdk
                 try
                 {
                     // Gurantee: unique result because entities have specific namespaces
+
                     XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.ResourceName);
-                    this.Record = new AtomEntry(document.Root).Content;
+                    
+                    if (document.Root.Name == AtomFeed.ElementName.Feed)
+                    {
+                        this.Record = new AtomFeed(document.Root).Entries[0].Content;
+                    }
+                    else
+                    {
+                        this.Record = new AtomEntry(document.Root).Content;
+                    }
+                    
                     return;
                 }
                 catch (RequestException e)

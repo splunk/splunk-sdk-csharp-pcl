@@ -72,7 +72,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Gets the <see cref="Context"/> instance for this <see cref="Service"/>.
         /// </summary>
-        protected Context Context
+        protected internal Context Context
         { get; private set; }
 
         /// <summary>
@@ -80,6 +80,11 @@ namespace Splunk.Sdk
         /// </summary>
         public Namespace Namespace
         { get; private set; }
+
+        public Server Server
+        {
+            get { return new Server(this); }
+        }
 
         /// <summary>
         /// Gets or sets the session key used by this <see cref="Service"/>.
@@ -249,7 +254,7 @@ namespace Splunk.Sdk
         public async Task<EntityCollection<App>> GetAppsAsync(IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var apps = new EntityCollection<App>(this.Context, this.Namespace, ResourceName.AppsLocal, parameters);
-            await apps.Update();
+            await apps.UpdateAsync();
             return apps;
         }
 
@@ -264,7 +269,7 @@ namespace Splunk.Sdk
         {
             XDocument document = await this.Context.GetDocumentAsync(this.Namespace, ResourceName.Capabilities);
 
-            var feed = new AtomFeed(this.Context, ResourceName.Capabilities, document);
+            var feed = new AtomFeed(document.Root);
             AtomEntry entry = feed.Entries[0];
             dynamic capabilities = entry.Content.Capabilities;
 
@@ -280,7 +285,7 @@ namespace Splunk.Sdk
         public async Task<EntityCollection<Job>> GetJobsAsync(IEnumerable<KeyValuePair<string, object>> parameters)
         {
             var jobs = new EntityCollection<Job>(this.Context, this.Namespace, ResourceName.Jobs, parameters);
-            await jobs.Update();
+            await jobs.UpdateAsync();
             return jobs;
         }
 

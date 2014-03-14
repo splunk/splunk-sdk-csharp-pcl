@@ -17,18 +17,20 @@
 namespace Splunk.Sdk
 {
     using System.Threading.Tasks;
+    using System.Xml.Linq;
 
     public struct Server
     {
+        #region Constructors
+
         internal Server(Service service)
         {
             this.service = service;
         }
 
-        public Namespace Namespace
-        { 
-            get { return this.service.Namespace; } 
-        }
+        #endregion
+
+        #region Methods
 
         public ServerInfo GetInfo()
         {
@@ -42,6 +44,38 @@ namespace Splunk.Sdk
             return serverInfo;
         }
 
+        public void Restart()
+        {
+            this.RestartAsync().Wait();
+        }
+
+        public async Task RestartAsync()
+        {
+            using (var response = await this.service.Context.PostAsync(this.service.Namespace, ServerControlRestart, null))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    return;
+                }
+
+                string content = await response.Content.ReadAsStringAsync();
+
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    throw new RequestException(response.StatusCode, response.ReasonPhrase);
+                }
+                
+                throw new RequestException(response.StatusCode, response.ReasonPhrase, XDocument.Parse(content));
+            }
+        }
+
+        #endregion
+
+        #region Privates
+
+        static readonly ResourceName ServerControlRestart = new ResourceName("server", "control", "restart");
         readonly Service service;
+
+        #endregion
     }
 }

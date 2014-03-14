@@ -178,6 +178,15 @@ namespace Splunk.Sdk.UnitTesting
             Version version = serverInfo.Version;
         }
 
+        [Trait("class", "Service")]
+        [Fact]
+        public void CanRestartServer()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            service.LoginAsync("admin", "changeme").Wait();
+            service.Server.Restart();
+        }
+
         public void SetFixture(AcceptanceTestingSetup data)
         { }
     }

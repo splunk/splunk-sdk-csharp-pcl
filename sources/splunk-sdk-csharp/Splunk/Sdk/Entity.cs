@@ -82,10 +82,12 @@ namespace Splunk.Sdk
         /// Gets the name of this <see cref="Entity"/>.
         /// </summary>
         public string Name
+		// FJR: You shouldn't be able to create an Entity instance without a name. Is this
+		// logic really necessary?
         { 
             get
             {
-                if (this.name == null)
+				if (this.name == null)
                 {
                     if (this.record == null)
                     {
@@ -98,10 +100,11 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Gets the namespace containing this <see cref="Entity"/>.
+		/// Gets the namespace containing this <see cref="Entity"/>.
         /// </summary>
         public Namespace Namespace
         {
+			// FJR: You shouldn't be able to create an entity without a namespace. Is this logic necessary?
             get
             {
                 if (this.@namespace == null)
@@ -118,7 +121,7 @@ namespace Splunk.Sdk
 
         public ResourceName ResourceName
         {
-            get
+			get
             {
                 if (this.resourceName == null)
                 {
@@ -146,12 +149,16 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        protected virtual string GetName(dynamic record)
+		// FJR: Is this ever needed? The name of an entity is fixed,
+		// with the exception of restrictToHost fiascos around TCP and UDP inputs.
+		protected virtual string GetName(dynamic record)
         {
             return record.Title;
         }
 
-        protected virtual void Invalidate()
+		// FJR: This gets called when we set the record value. Add a comment saying what it's
+		// supposed to do when it's overridden.
+		protected virtual void Invalidate()
         { }
 
         /// <summary>
@@ -163,6 +170,11 @@ namespace Splunk.Sdk
 
             RequestException requestException = null;
 
+			// FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
+			// into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
+			// as of Splunk 6, getting a 200 and content back does not imply you have all the fields. For pivot
+			// support, they're now shoving fields in as they become ready, so you have to wait until the dispatchState
+			// field of the Atom entry reaches a certain point.
             for (int i = 3; i > 0 ; --i)
             {
                 try
@@ -206,16 +218,19 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires<ArgumentNullException>(entry != null, "entry");
 
+			// FJR: Can you insist the constructor of TEntity take a context, resource path, name, and record?
+			// Then you wouldn't need the empty constructor for Entity, and you could assert as a hard invariant
+			// that namespace, context, collection, and name were never null.
             var entity = new TEntity()
             {
                 Collection = collection,
                 Context = context,
-                Record = entry.Content
+				Record = entry.Content
             };
 
             return entity;
         }
 
-        #endregion
+		#endregion
     }
 }

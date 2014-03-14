@@ -298,6 +298,7 @@ namespace Splunk.Sdk
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
             Contract.Requires<ArgumentNullException>(args.Search != null, "args.Search");
+			// FJR: Also check that it's not export, which also won't return a job.
             Contract.Requires<ArgumentException>(args.ExecutionMode != ExecutionMode.Oneshot, "args.ExecutionMode: ExecutionMode.Oneshot");
 
             HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
@@ -305,6 +306,9 @@ namespace Splunk.Sdk
             string searchId = document.Element("response").Element("sid").Value;
 
             Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
+			// FJR: Jobs need to be handled a little more delicately. Let's talk about the patterns here.
+			// In the other SDKs, we've been doing functions to wait for ready and for done. Async means
+			// that we can probably make that a little slicker, but let's talk about how.
             await job.UpdateAsync();
 
             return job;
@@ -353,6 +357,9 @@ namespace Splunk.Sdk
             HttpResponseMessage message = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args);
             var response = await Response.CreateAsync(message);
 
+			// FJR: We should probably return a stream here and keep the parsers separate. That lets someone
+			// else plug in and use their own parser if they really want to. We don't particularly support the
+			// scenario, but it doesn't block the user.
             return await SearchResultsReader.CreateAsync(response);
         }
 
@@ -386,6 +393,7 @@ namespace Splunk.Sdk
             HttpResponseMessage message = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
             var response = await Response.CreateAsync(message);
 
+			// FJR: Like export, we should probably return a stream instead of parsing it here.
             return await SearchResults.CreateAsync(response, leaveOpen: false);
         }
 

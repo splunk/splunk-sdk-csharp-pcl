@@ -197,7 +197,7 @@ namespace Splunk.Sdk
 
             using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServiceUri(@namespace, resource, argumentSets)))
             {
-                if (this.SessionKey != null)
+				if (this.SessionKey != null) // FJR: Check that there's not already an Authorization header, too
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
@@ -242,6 +242,15 @@ namespace Splunk.Sdk
         /// <returns></returns>
         public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
         {
+			// FJR: Having separate GET, POST, and DELETE methods turns out to be less sensible that you would think.
+			// First, you end up repeating a lot of logic. Second, Splunk's REST API doesn't actually respect the different
+			// semantics you expect from them. For example, the HTTP inputs expect to receive arguments as though they were
+			// GET requests and a POST body of data as well. This lack of clarity makes it simpler just to have one method
+			// that takes the method as an argument, and accepts both URI arguments and a POST body (which can be either a
+			// dictionary or a string -- it's always a dictionary, except for those darned HTTP inputs again). I also ended
+			// up adding a request by URL method that the request method called because I had some situation where I had to
+			// use a link from the links element of the Atom body, and rather than parse it and reencode it, I just wanted to
+			// use it directly.			
             Contract.Requires<ArgumentNullException>(@namespace != null);
             Contract.Requires<ArgumentNullException>(resource != null);
 
@@ -249,7 +258,7 @@ namespace Splunk.Sdk
 
             using (var request = new HttpRequestMessage(HttpMethod.Post, serviceUri) { Content = this.CreateStringContent(argumentSets) })
             {
-                if (this.SessionKey != null)
+				if (this.SessionKey != null) // FJR: Check for the Authorization header already being present
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
@@ -287,13 +296,23 @@ namespace Splunk.Sdk
             var builder = new StringBuilder(this.ToString());
 
             builder.Append("/");
-            builder.Append(@namespace.ToString());
+			// FJR: The namespace path components need to be URI escaped, since usernames can arise from
+			// things like Active Directory and can have special characters. You need to not escape the /,
+			// though, so it might be simpler to call a join method with '/' as the joining character and
+			// the concatenation of the namespace path components and the resource path components. That also
+			// keeps any logic about translating data structures into URIs in this one place in this file,
+			// as opposed to spreading it around. With ToString, there's always the question of whether I'm
+			// getting something URI escaped back or not. For resource it's URI escaped. For @namespace, it's not.
+			builder.Append(@namespace.ToString());
             builder.Append("/");
             builder.Append(resource.ToString());
 
             if (argumentSets == null)
                 return new Uri(builder.ToString());
 
+			// FJR: I would replace all these StringBuilder patterns
+			// with a LINQ call and join like you do below in CreateStringContent.
+			// Personally, I find it easier to read.
             builder.Append('?');
 
             foreach (var args in argumentSets)

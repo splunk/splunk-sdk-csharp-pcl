@@ -51,10 +51,8 @@ namespace Splunk.Sdk
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using System.Xml;
     using System.Xml.Linq;
 
     public sealed class Job : Entity<Job>
@@ -112,12 +110,7 @@ namespace Splunk.Sdk
         {
             get
             {
-                if (this.backingFields.DispatchState == DispatchState.Unknown)
-                {
-                    string value = this.Record.DispatchState.ToString();
-                    this.backingFields.DispatchState = (DispatchState)Enum.Parse(typeof(DispatchState), value, ignoreCase: true);
-                }
-                return this.backingFields.DispatchState;
+                return this.GetValue("DispatchState", EnumConverter<DispatchState>.Default);
             }
         }
 
@@ -332,24 +325,15 @@ namespace Splunk.Sdk
 
         #region Methods used by our base class, Entity<TEntity>
 
-        protected override string GetTitle(dynamic record)
+        protected override string GetTitle()
         {
-            Contract.Requires<ArgumentNullException>(record != null);
-            return record.Sid;
-        }
-
-        protected override void Invalidate()
-        {
-            this.backingFields = InvalidatedBackingFields;
-            base.Invalidate();
+            Contract.Requires<InvalidOperationException>(this.Record != null);
+            return this.Record.Sid;
         }
 
         #endregion
 
         #region Privates
-
-        static readonly BackingFields InvalidatedBackingFields = new BackingFields();
-        BackingFields backingFields = new BackingFields();
 
         async Task<SearchResults> GetSearchResultsAsync(string endpoint, IEnumerable<KeyValuePair<string, object>> args)
         {
@@ -383,15 +367,6 @@ namespace Splunk.Sdk
                 await Task.Delay(500);
                 await this.UpdateAsync();
             }
-        }
-
-        #endregion
-
-        #region Types
-
-        private struct BackingFields
-        {
-            public DispatchState DispatchState;
         }
 
         #endregion

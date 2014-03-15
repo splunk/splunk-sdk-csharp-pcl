@@ -104,6 +104,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Splunk\Sdk\Acl.cs" />
+    <Compile Include="Splunk\Sdk\StringConverter.cs" />
+    <Compile Include="Splunk\Sdk\ListConverter.cs" />
+    <Compile Include="Splunk\Sdk\BooleanConverter.cs" />
+    <Compile Include="Splunk\Sdk\VersionConverter.cs" />
+    <Compile Include="Splunk\Sdk\GuidConverter.cs" />
+    <Compile Include="Splunk\Sdk\Int32Converter.cs" />
+    <Compile Include="Splunk\Sdk\EnumConverter.cs" />
+    <Compile Include="Splunk\Sdk\ValueConverter.cs" />
     <Compile Include="Splunk\Sdk\ServerMode.cs" />
     <Compile Include="Splunk\Sdk\LicenseState.cs" />
     <Compile Include="Splunk\Sdk\Permissions.cs" />

@@ -62,19 +62,7 @@ namespace Splunk.Sdk
 
         public int Build
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var x = this.Record.Build as int?;
-
-                if (x == null)
-                {
-                    x = int.Parse(this.Record.Build.ToString());
-                    this.Record.Build = x.Value;
-                }
-
-                return x.Value;
-            }
+            get { return this.GetValue("Build", Int32Converter.Default); }
         }
 
         /// <summary>
@@ -82,103 +70,32 @@ namespace Splunk.Sdk
         /// </summary>
         public Guid Guid
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var x = this.Record.Guid as Guid?;
-
-                if (x == null)
-                {
-                    x = System.Guid.Parse(this.Record.Guid.ToString());
-                    this.Record.Guid = x.Value;
-                }
-
-                return x.Value;
-            }
+            get { return this.GetValue("Guid", GuidConverter.Default); }
         }
 
         public bool IsFree
         {
-            get
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var x = this.Record.IsFree as bool?;
-
-                if (x == null)
-                {
-                    x = int.Parse(this.Record.IsFree.ToString()) != 0;
-                    this.Record.IsFree = x.Value;
-                }
-
-                return x.Value;
-            }
+            get { return this.GetValue("IsFree", BooleanConverter.Default); }
         }
 
-        public bool IsRealTimeSearchEnabled
+        public bool IsRealtimeSearchEnabled
         {
-            get
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var x = this.Record.RtsearchEnabled as bool?;
-
-                if (x == null)
-                {
-                    x = int.Parse(this.Record.RtsearchEnabled.ToString()) != 0;
-                    this.Record.RtsearchEnabled = x.Value;
-                }
-
-                return x.Value;
-            }
+            get { return this.GetValue("RtsearchEnabled", BooleanConverter.Default); }
         }
 
         public bool IsTrial
         {
-            get
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var x = this.Record.IsTrial as bool?;
-
-                if (x == null)
-                {
-                    x = int.Parse(this.Record.IsTrial.ToString()) != 0;
-                    this.Record.IsTrial = x.Value;
-                }
-                return x.Value;
-            }
+            get { return this.GetValue("IsTrial", BooleanConverter.Default); }
         }
 
         public IReadOnlyList<string> LicenseKeys
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var value = this.Record.LicenseKeys as IReadOnlyList<string>;
-
-                if (value == null)
-                {
-                    value = new List<string>(from licenseKey in (IEnumerable<object>)this.Record.LicenseKeys select licenseKey.ToString());
-                    this.Record.LicenseKeys = value;
-                }
-
-                return value;
-            }
+            get { return this.GetValue("LicenseKeys", ListConverter<string, StringConverter>.Default); }
         }
 
         public IReadOnlyList<string> LicenseLabels
         {
-            get
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var value = this.Record.LicenseLabels as IReadOnlyList<string>;
-
-                if (value == null)
-                {
-                    value = new List<string>(from licenseLabels in (IEnumerable<object>)this.Record.LicenseLabels select licenseLabels.ToString());
-                    this.Record.LicenseLabels = value;
-                }
-
-                return value;
-            }
+            get { return this.GetValue("LicenseLabels", ListConverter<string, StringConverter>.Default); }
         }
 
         public string LicenseSignature
@@ -192,27 +109,7 @@ namespace Splunk.Sdk
 
         public LicenseState LicenseState
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-
-                if (!(this.Record.LicenseState is LicenseState))
-                {
-                    switch ((string)this.Record.Mode)
-                    {
-                        default:
-                            this.Record.LicenseState = LicenseState.Unknown;
-                            break;
-                        case "OK":
-                            this.Record.LicenseState = LicenseState.OK;
-                            break;
-                        case "Expired":
-                            this.Record.LicenseState = LicenseState.Expired;
-                            break;
-                    }
-                }
-                return this.Record.LicenseState; 
-            }
+            get { return this.GetValue("LicenseState", EnumConverter<LicenseState>.Default); }
         }
 
         /// <summary>
@@ -221,19 +118,7 @@ namespace Splunk.Sdk
         /// </summary>
         public Guid MasterGuid
         {
-            get
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var x = this.Record.MasterGuid as Guid?;
-
-                if (x == null)
-                {
-                    x = System.Guid.Parse(this.Record.MasterGuid.ToString());
-                    this.Record.MasterGuid = x.Value;
-                }
-
-                return x.Value;
-            }
+            get { return this.GetValue("MasterGuid", GuidConverter.Default); }
         }
 
         public ServerMode Mode
@@ -308,19 +193,7 @@ namespace Splunk.Sdk
 
         public Version Version
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var value = this.Record.Version as Version;
-
-                if (value == null)
-                {
-                    value = System.Version.Parse(this.Record.Version);
-                    this.Record.Version = value;
-                }
-
-                return value;
-            }
+            get { return this.GetValue("Version", VersionConverter.Default); }
         }
 
         #endregion

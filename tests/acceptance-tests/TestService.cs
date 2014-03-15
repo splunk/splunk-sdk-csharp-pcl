@@ -163,7 +163,7 @@ namespace Splunk.Sdk.UnitTesting
             string cpuArchitecture = serverInfo.CpuArchitecture;
             Guid guid = serverInfo.Guid;
             bool isFree = serverInfo.IsFree;
-            bool isRealtimeSearchEnabled = serverInfo.IsRealTimeSearchEnabled;
+            bool isRealtimeSearchEnabled = serverInfo.IsRealtimeSearchEnabled;
             bool isTrial = serverInfo.IsTrial;
             IReadOnlyList<string> licenseKeys = serverInfo.LicenseKeys;
             IReadOnlyList<string> licenseLabels = serverInfo.LicenseLabels;

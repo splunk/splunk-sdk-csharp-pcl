@@ -146,34 +146,18 @@ namespace Splunk.Sdk
         {
             if (element == null)
             {
-                return null;
+                return UriConverter.Instance.DefaultValue;
             }
-
-            Uri result;
-
-            if (!Uri.TryCreate(element.Value, UriKind.Absolute, out result))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
-            return result;
+            return UriConverter.Instance.Convert(element.Value);
         }
 
         static DateTime AsDateTime(XElement element)
         {
             if (element == null)
             {
-                return DateTime.MinValue;
+                return DateTimeConverter.Instance.DefaultValue;
             }
-
-            DateTime result;
-
-            if (!DateTime.TryParse(element.Value, out result))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
-            return result;
+            return DateTimeConverter.Instance.Convert(element.Value);
         }
 
         static ExpandoObject AsExpandoObject(XElement element)
@@ -219,7 +203,7 @@ namespace Splunk.Sdk
             switch (node.NodeType)
             {
                 case XmlNodeType.Element:
-                    
+
                     var element = (XElement)node;
 
                     if (element.Name == AtomFeed.ElementName.Dict)
@@ -233,7 +217,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException(string.Format("Unrecognized element name: {0}", element.Name));
 
                 case XmlNodeType.Text:
-                    
+
                     XText text = (XText)node;
                     return text.Value;
 

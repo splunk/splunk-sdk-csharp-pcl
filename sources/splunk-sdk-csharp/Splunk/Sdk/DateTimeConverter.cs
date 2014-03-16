@@ -24,27 +24,27 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.IO;
 
-    sealed class GuidConverter : ValueConverter<Guid>
+    sealed class DateTimeConverter : ValueConverter<DateTime>
     {
-        public static readonly GuidConverter Default = new GuidConverter();
+        public static readonly DateTimeConverter Instance = new DateTimeConverter();
 
-        public override Guid Convert(object input)
+        public override DateTime Convert(object input)
         {
-            var x = input as Guid?;
+            var x = input as DateTime?;
 
             if (x != null)
             {
                 return x.Value;
             }
 
-            Guid value;
+            DateTime value;
 
-            if (Guid.TryParse(input.ToString(), result: out value))
+            if (DateTime.TryParse(input.ToString(), result: out value))
             {
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input));  // TODO: improved diagnostices
         }
     }
 }

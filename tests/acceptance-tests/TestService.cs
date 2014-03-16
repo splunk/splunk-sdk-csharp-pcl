@@ -158,7 +158,8 @@ namespace Splunk.Sdk.UnitTesting
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             var serverInfo = service.Server.GetInfo();
             
-            Acl acl = serverInfo.Acl;
+            Acl acl = serverInfo.Eai.Acl;
+            Permissions permissions = acl.Permissions;
             int build = serverInfo.Build;
             string cpuArchitecture = serverInfo.CpuArchitecture;
             Guid guid = serverInfo.Guid;

@@ -26,10 +26,17 @@ namespace Splunk.Sdk
 
     sealed class BooleanConverter : ValueConverter<Boolean>
     {
-        public static readonly BooleanConverter Default = new BooleanConverter();
+        public static readonly BooleanConverter Instance = new BooleanConverter();
 
         public override Boolean Convert(object input)
         {
+            var x = input as Boolean?;
+
+            if (x != null)
+            {
+                return (Boolean)input;
+            }
+
             Int32 value;
 
             if (Int32.TryParse(input.ToString(), result: out value))

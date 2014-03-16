@@ -21,7 +21,7 @@ namespace Splunk.Sdk
     using System;
     using System.Diagnostics.Contracts;
 
-    abstract class ValueConverter<TValue>
+    public abstract class ValueConverter<TValue>
     {
         public virtual TValue DefaultValue
         { get { return default(TValue); } }

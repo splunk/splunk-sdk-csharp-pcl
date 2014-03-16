@@ -26,15 +26,18 @@ namespace Splunk.Sdk
     using System.IO;
     using System.Linq;
 
-    sealed class ListConverter<TValue, TValueConverter> : ValueConverter<List<TValue>> where TValueConverter : ValueConverter<TValue>, new()
+    sealed class CollectionConverter<TValue, TCollection, TConverter> : ValueConverter<TCollection> 
+        where TCollection : ICollection<TValue>, new()
+        where TConverter : ValueConverter<TValue>, new()
     {
-        ListConverter(TValueConverter valueConverter)
+        CollectionConverter(TConverter valueConverter)
         {
             this.valueConverter = valueConverter;
         }
-        public static readonly ListConverter<TValue, TValueConverter> Default = new ListConverter<TValue, TValueConverter>(new TValueConverter());
 
-        public override List<TValue> Convert(object input)
+        public static readonly CollectionConverter<TValue, TCollection, TConverter> Default = new CollectionConverter<TValue, TCollection, TConverter>(new TConverter());
+
+        public override TCollection Convert(object input)
         {
             IEnumerable<object> list = input as IEnumerable<object>;
 
@@ -43,9 +46,16 @@ namespace Splunk.Sdk
                 throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostics
             }
 
-            return new List<TValue>(from value in list select this.valueConverter.Convert(value));
+            var collection = new TCollection();
+
+            foreach (var value in list)
+            {
+                collection.Add(this.valueConverter.Convert(value));
+            }
+
+            return collection;
         }
 
-        TValueConverter valueConverter;
+        TConverter valueConverter;
     }
 }

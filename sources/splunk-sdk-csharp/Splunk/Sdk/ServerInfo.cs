@@ -17,7 +17,7 @@
 // TODO:
 // [ ] Contracts
 // [ ] Documentation
-// [ ] Property accessors should not throw, but return default value if the underlying field is undefined (?)
+// [O] Property accessors should not throw, but return default value if the underlying field is undefined (?)
 // [X] Property accessors should throw InvalidOperationException when this ServerInfo.Record is null.
 
 namespace Splunk.Sdk
@@ -43,26 +43,14 @@ namespace Splunk.Sdk
 
         #region Properties
 
-        public Acl Acl
-        {
-            get
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                var value = this.Record.Eai.Acl as Acl;
-
-                if (value == null)
-                {
-                    value = new Acl(this.Record.Eai.Acl);
-                    this.Record.Eai.Acl = value;
-                }
-
-                return value;
-            }
-        }
-
         public int Build
         {
             get { return this.GetValue("Build", Int32Converter.Default); }
+        }
+
+        public Eai Eai
+        {
+            get { return this.GetValue("Eai", EaiConverter.Instance); }
         }
 
         /// <summary>
@@ -75,36 +63,32 @@ namespace Splunk.Sdk
 
         public bool IsFree
         {
-            get { return this.GetValue("IsFree", BooleanConverter.Default); }
+            get { return this.GetValue("IsFree", BooleanConverter.Instance); }
         }
 
         public bool IsRealtimeSearchEnabled
         {
-            get { return this.GetValue("RtsearchEnabled", BooleanConverter.Default); }
+            get { return this.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
         }
 
         public bool IsTrial
         {
-            get { return this.GetValue("IsTrial", BooleanConverter.Default); }
+            get { return this.GetValue("IsTrial", BooleanConverter.Instance); }
         }
 
         public IReadOnlyList<string> LicenseKeys
         {
-            get { return this.GetValue("LicenseKeys", ListConverter<string, StringConverter>.Default); }
+            get { return this.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Default); }
         }
 
         public IReadOnlyList<string> LicenseLabels
         {
-            get { return this.GetValue("LicenseLabels", ListConverter<string, StringConverter>.Default); }
+            get { return this.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Default); }
         }
 
         public string LicenseSignature
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                return this.Record.LicenseSignature; 
-            }
+            get { return this.GetValue("LicenseSignature", StringConverter.Default); }
         }
 
         public LicenseState LicenseState
@@ -123,72 +107,32 @@ namespace Splunk.Sdk
 
         public ServerMode Mode
         {
-            get
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-
-                if (!(this.Record.Mode is ServerMode))
-                {
-                    switch ((string)this.Record.Mode)
-                    {
-                        default:
-                            this.Record.Mode = ServerMode.Unknown;
-                            break;
-                        case "normal":
-                            this.Record.Mode = ServerMode.Normal;
-                            break;
-                        case "dedicated forwarder":
-                            this.Record.Mode = ServerMode.DedicatedForwarder;
-                            break;
-                    }
-                }
-                return this.Record.Mode;
-            }
+            get { return this.GetValue("Mode", EnumConverter<ServerMode>.Default); }
         }
 
         public string OSBuild
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                return this.Record.OsBuild; 
-            }
+            get { return this.GetValue("OsBuild", StringConverter.Default); }
         }
 
         public string OSName
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                return this.Record.OsName; 
-            }
+            get { return this.GetValue("OsName", StringConverter.Default); }
         }
 
         public string OSVersion
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                return this.Record.OsVersion;  
-            }
+            get { return this.GetValue("OsVersion", StringConverter.Default); }
         }
 
         public string CpuArchitecture
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                return this.Record.CpuArch; 
-            }
+            get { return this.GetValue("CpuArch", StringConverter.Default); }
         }
 
         public string ServerName
         {
-            get 
-            {
-                Contract.Requires<InvalidOperationException>((object)this.Record != null);
-                return this.Record.ServerName; 
-            }
+            get { return this.GetValue("ServerName", StringConverter.Default); }
         }
 
         public Version Version

@@ -39,7 +39,7 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
-    public class Entity<TEntity> where TEntity : Entity<TEntity>, new()
+    public class Entity<TEntity> : ExpandoAdapter where TEntity : Entity<TEntity>, new()
     {
         #region Constructors
 
@@ -113,69 +113,9 @@ namespace Splunk.Sdk
         public string Title
         { get; private set; }
 
-        /// <summary>
-        /// Gets the state of this <see cref="Entity"/>.
-        /// </summary>
-        public virtual dynamic Record
-        { get; internal set; }
-
         #endregion
 
         #region Methods
-        
-        /// <summary>
-        /// Gets a named item from an <see cref="IDictionary<string, object>"/>
-        /// and applies a <see cref="ValueConverter"/>.
-        /// </summary>
-        /// <typeparam name="TValue">
-        /// The type of value to return.
-        /// </typeparam>
-        /// <param name="record">
-        /// The <see cref="ExpandoObject"/> containing the item identified by 
-        /// <see cref="name"/>.
-        /// </param>
-        /// <param name="name">
-        /// The name of the item to be returned.
-        /// </param>
-        /// <param name="valueConverter">
-        /// The <see cref="ValueConverter"/> applied to the item identified by
-        /// <see cref="name"/>.
-        /// </param>
-        /// <returns>
-        /// A value of type <see cref="TValue"/>.
-        /// </returns>
-        /// <remarks>
-        /// The value returned by this method is stored into <see cref="record"/>
-        /// to reduce conversion overhead.
-        /// </remarks>
-        internal static TValue GetValue<TValue>(IDictionary<string, object> record, string name, ValueConverter<TValue> valueConverter)
-        {
-            Contract.Requires<InvalidOperationException>(record != null);
-            Contract.Requires<ArgumentNullException>(name != null);
-            Contract.Requires<ArgumentNullException>(valueConverter != null);
-
-            object value;
-
-            if (!record.TryGetValue(name, out value))
-            {
-                return valueConverter.DefaultValue;
-            }
-
-            if (value is TValue)
-            {
-                return (TValue)value;
-            }
-
-            var x = valueConverter.Convert(value);
-            record[name] = x;
-
-            return x;
-        }
-
-        internal TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
-        {
-            return GetValue((IDictionary<string, object>)this.Record, name, valueConverter);
-        }
 
         /// <summary>
         /// Gets the title of the current <see cref="Entity"/> from its atom entry.
@@ -190,8 +130,7 @@ namespace Splunk.Sdk
         /// </remarks>
         protected virtual string GetTitle()
         {
-            Contract.Requires<InvalidOperationException>(this.Record != null);
-            return this.Record.Title;
+            return GetValue("Title", StringConverter.Default);
         }
 
         /// <summary>
@@ -218,11 +157,11 @@ namespace Splunk.Sdk
                     
                     if (document.Root.Name == AtomFeed.ElementName.Feed)
                     {
-                        this.Record = new AtomFeed(document.Root).Entries[0].Content;
+                        this.ExpandoObject = new AtomFeed(document.Root).Entries[0].Content;
                     }
                     else
                     {
-                        this.Record = new AtomEntry(document.Root).Content;
+                        this.ExpandoObject = new AtomEntry(document.Root).Content;
                     }
                     
                     return;
@@ -262,7 +201,7 @@ namespace Splunk.Sdk
             {
                 Collection = collection,
                 Context = context,
-				Record = entry.Content,
+				ExpandoObject = entry.Content,
             };
 
             entity.Title = entity.GetTitle();

@@ -19,10 +19,25 @@
 
 namespace Splunk.Sdk
 {
+    using System.Runtime.Serialization;
+
+    [DataContract()]
     public enum ServerMode
     {
-        Unknown,
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        [EnumMember(Value = "Dedicated Forwarder")]
         DedicatedForwarder,
+
+        /// <summary>
+        /// 
+        /// </summary>
         Normal
     }
 }

@@ -24,27 +24,25 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.IO;
 
-    sealed class GuidConverter : ValueConverter<Guid>
+    sealed class UriConverter : ValueConverter<Uri>
     {
-        public static readonly GuidConverter Default = new GuidConverter();
+        public static readonly UriConverter Instance = new UriConverter();
 
-        public override Guid Convert(object input)
+        public override Uri Convert(object input)
         {
-            var x = input as Guid?;
+            var value = input as Uri;
 
-            if (x != null)
-            {
-                return x.Value;
-            }
-
-            Guid value;
-
-            if (Guid.TryParse(input.ToString(), result: out value))
+            if (value != null)
             {
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            if (Uri.TryCreate(input.ToString(), UriKind.Absolute, out value))
+            {
+                return value;
+            }
+
+            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input));  // TODO: improved diagnostices
         }
     }
 }

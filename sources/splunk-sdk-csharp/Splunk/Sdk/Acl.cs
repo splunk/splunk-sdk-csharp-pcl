@@ -14,46 +14,58 @@
  * under the License.
  */
 
+// TODO:
+// [ ] Contracts
+// [ ] Documentation
+
 namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
+    using System.Dynamic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Acl
+    public class Acl : ExpandoAdapter
     {
-        internal Acl(dynamic acl)
-        {
-            this.CanList = acl.CanList != "0";
-            this.CanWrite = acl.CanWrite != "0";
-            this.Modifiable = acl.Modifiable != "0";
-            this.Owner = acl.Owner;
-            this.Permissions = new Permissions(acl.Perms);
-            this.Removable = acl.Removable != "0";
-            this.Sharing = acl.Sharing;
-        }
+        internal Acl(ExpandoObject expandoObject)
+            : base(expandoObject)
+        { }
 
         public bool CanList
-        { get; private set; }
-		
+        {
+            get { return this.GetValue("CanList", BooleanConverter.Instance); }
+        }
+
         public bool CanWrite
-        { get; private set; }
+        {
+            get { return this.GetValue("CanWrite", BooleanConverter.Instance); }
+        }
 
         public bool Modifiable
-        { get; private set; }
+        {
+            get { return this.GetValue("Modifiable", BooleanConverter.Instance); }
+        }
 
-		public string Owner
-        { get; private set; }
+        public string Owner
+        {
+            get { return this.GetValue("Owner", StringConverter.Default); }
+        }
 
-        public dynamic Permissions
-        { get; private set; }
-		
+        public Permissions Permissions
+        {
+            get { return this.GetValue("Perms", PermissionsConverter.Default); }
+        }
+
         public bool Removable
-        { get; private set; }
+        {
+            get { return this.GetValue("Removable", BooleanConverter.Instance); }
+        }
 
-		public string Sharing
-        { get; private set; }
+		public SharingMode Sharing
+        {
+            get { return this.GetValue("Sharing", EnumConverter<SharingMode>.Default); }
+        }
     }
 }

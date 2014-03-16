@@ -108,10 +108,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public DispatchState DispatchState
         {
-            get
-            {
-                return this.GetValue("DispatchState", EnumConverter<DispatchState>.Default);
-            }
+            get { return this.GetValue("DispatchState", EnumConverter<DispatchState>.Default); }
         }
 
         #endregion
@@ -327,8 +324,7 @@ namespace Splunk.Sdk
 
         protected override string GetTitle()
         {
-            Contract.Requires<InvalidOperationException>(this.Record != null);
-            return this.Record.Sid;
+            return this.GetValue("Sid", StringConverter.Default);
         }
 
         #endregion

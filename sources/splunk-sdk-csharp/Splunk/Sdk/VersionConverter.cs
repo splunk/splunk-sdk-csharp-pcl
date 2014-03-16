@@ -30,7 +30,12 @@ namespace Splunk.Sdk
 
         public override Version Convert(object input)
         {
-            Version value;
+            var value = input as Version;
+
+            if (value != null)
+            {
+                return value;
+            }
 
             if (Version.TryParse(input.ToString(), result: out value))
             {

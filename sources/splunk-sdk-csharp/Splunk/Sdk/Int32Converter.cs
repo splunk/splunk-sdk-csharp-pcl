@@ -30,6 +30,13 @@ namespace Splunk.Sdk
 
         public override Int32 Convert(object input)
         {
+            var x = input as Int32?;
+
+            if (x != null)
+            {
+                return x.Value;
+            }
+
             Int32 value;
 
             if (Int32.TryParse(input.ToString(), result: out value))

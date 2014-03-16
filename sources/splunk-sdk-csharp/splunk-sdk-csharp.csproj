@@ -104,9 +104,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Splunk\Sdk\Acl.cs" />
+    <Compile Include="Splunk\Sdk\EaiConverter.cs" />
+    <Compile Include="Splunk\Sdk\DateTimeConverter.cs" />
+    <Compile Include="Splunk\Sdk\PermissionsConverter.cs" />
+    <Compile Include="Splunk\Sdk\AclConverter.cs" />
+    <Compile Include="Splunk\Sdk\Eai.cs" />
+    <Compile Include="Splunk\Sdk\ExpandoAdapter.cs" />
     <Compile Include="Splunk\Sdk\StringConverter.cs" />
-    <Compile Include="Splunk\Sdk\ListConverter.cs" />
+    <Compile Include="Splunk\Sdk\CollectionConverter.cs" />
     <Compile Include="Splunk\Sdk\BooleanConverter.cs" />
+    <Compile Include="Splunk\Sdk\UriConverter.cs" />
     <Compile Include="Splunk\Sdk\VersionConverter.cs" />
     <Compile Include="Splunk\Sdk\GuidConverter.cs" />
     <Compile Include="Splunk\Sdk\Int32Converter.cs" />
@@ -152,6 +159,9 @@
     <Compile Include="Splunk\Sdk\SharingMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Splunk\Sdk\Observable.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

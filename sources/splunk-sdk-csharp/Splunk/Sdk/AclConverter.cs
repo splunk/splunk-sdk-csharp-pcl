@@ -20,28 +20,27 @@
 
 namespace Splunk.Sdk
 {
-    using System;
-    using System.Diagnostics.Contracts;
+    using System.Dynamic;
     using System.IO;
 
-    sealed class GuidConverter : ValueConverter<Guid>
+    sealed class AclConverter : ValueConverter<Acl>
     {
-        public static readonly GuidConverter Default = new GuidConverter();
+        public static readonly AclConverter Default = new AclConverter();
 
-        public override Guid Convert(object input)
+        public override Acl Convert(object input)
         {
-            var x = input as Guid?;
+            var value = input as Acl;
 
-            if (x != null)
-            {
-                return x.Value;
-            }
-
-            Guid value;
-
-            if (Guid.TryParse(input.ToString(), result: out value))
+            if (value != null)
             {
                 return value;
+            }
+
+            var expandoObject = input as ExpandoObject;
+
+            if (expandoObject != null)
+            {
+                return new Acl(expandoObject);
             }
 
             throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices

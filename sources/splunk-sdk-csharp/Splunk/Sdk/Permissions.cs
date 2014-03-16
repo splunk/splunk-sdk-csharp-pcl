@@ -16,36 +16,34 @@
 
 // TODO:
 // [ ] Name table (?)
-// [ ] Contracts
-// [ ] Documentation
+// [O] Contracts
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Dynamic;
     using System.Linq;
 
     /// <summary>
-    /// 
+    /// Provides access to read/write permissions.
     /// </summary>
-    public class Permissions
+    public class Permissions : ExpandoAdapter
     {
-        internal Permissions(dynamic permissions)
-        {
-            List<object> list;
-                
-            list = permissions.Read as List<object>;
-            this.Read = (ISet<string>)new SortedSet<string>(from userName in list select userName.ToString());
-
-            list = permissions.Write as List<object>;
-            this.Write = (ISet<string>)new SortedSet<string>(from userName in list select userName.ToString());
-        }
+        internal Permissions(ExpandoObject expandoObject)
+            :base(expandoObject)
+        { }
 
         public ISet<string> Read
-        { get; private set; }
+        {
+            get { return this.GetValue("Read", CollectionConverter<string, SortedSet<string>, StringConverter>.Default); }
+        }
 
         public ISet<string> Write
-        { get; private set; }
+        {
+            get { return this.GetValue("Write", CollectionConverter<string, SortedSet<string>, StringConverter>.Default); }
+        }
     }
 }

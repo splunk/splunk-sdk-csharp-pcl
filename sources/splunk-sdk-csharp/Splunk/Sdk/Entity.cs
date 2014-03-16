@@ -115,6 +115,35 @@ namespace Splunk.Sdk
 
         #endregion
 
+        #region Properties backed by AtomEntry
+        
+        public string Author
+        { 
+            get { return this.AtomEntry == null ? null : this.AtomEntry.Author; }
+        }
+
+        public Uri Id
+        {
+            get { return this.AtomEntry == null ? null : this.AtomEntry.Id; }
+        }
+
+        public IReadOnlyDictionary<string, Uri> Links
+        {
+            get { return this.AtomEntry == null ? null : this.AtomEntry.Links; }
+        }
+
+        public DateTime Published
+        {
+            get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Published; }
+        }
+
+        public DateTime Updated
+        {
+            get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Updated; }
+        }
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -157,13 +186,14 @@ namespace Splunk.Sdk
                     
                     if (document.Root.Name == AtomFeed.ElementName.Feed)
                     {
-                        this.ExpandoObject = new AtomFeed(document.Root).Entries[0].Content;
+                        this.AtomEntry = new AtomFeed(document.Root).Entries[0];
                     }
                     else
                     {
-                        this.ExpandoObject = new AtomEntry(document.Root).Content;
+                        this.AtomEntry = new AtomEntry(document.Root);
                     }
-                    
+
+                    this.ExpandoObject = this.AtomEntry.Content;
                     return;
                 }
                 catch (RequestException e)
@@ -189,24 +219,28 @@ namespace Splunk.Sdk
 
         #region Privates/internals
 
-        internal static TEntity CreateEntity(Context context, ResourceName collection, AtomEntry entry)
+        AtomEntry AtomEntry
+        { get; set; }
+
+        internal static TEntity CreateEntity(Context context, ResourceName collection, AtomEntry atomEntry)
         {
             Contract.Requires<ArgumentNullException>(collection != null, "collection");
             Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires<ArgumentNullException>(entry != null, "entry");
+            Contract.Requires<ArgumentNullException>(atomEntry != null, "entry");
 
-            dynamic record = entry.Content;
+            dynamic content = atomEntry.Content;
 
             var entity = new TEntity()
             {
+                AtomEntry = atomEntry,
                 Collection = collection,
                 Context = context,
-				ExpandoObject = entry.Content,
+				ExpandoObject = content,
             };
 
             entity.Title = entity.GetTitle();
             entity.ResourceName = new ResourceName(collection, entity.Title);
-            entity.Namespace = new Namespace(record.Eai.Acl.Owner, record.Eai.Acl.App);
+            entity.Namespace = new Namespace(content.Eai.Acl.Owner, content.Eai.Acl.App);
 
             return entity;
         }

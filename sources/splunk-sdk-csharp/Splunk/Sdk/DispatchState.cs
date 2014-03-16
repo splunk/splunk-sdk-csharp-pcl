@@ -20,18 +20,15 @@
 
 namespace Splunk.Sdk
 {
-    using System.Runtime.Serialization;
-
     /// <summary>
     /// Specifies the state of a search <see cref="Job"/>.
     /// </summary>
-    [DataContract]
     public enum DispatchState
     {
         /// <summary>
         /// 
         /// </summary>
-        Unknown,
+        None,
         
         /// <summary>
         /// 

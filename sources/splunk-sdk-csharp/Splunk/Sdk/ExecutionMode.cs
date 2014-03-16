@@ -21,8 +21,6 @@ namespace Splunk.Sdk
     /// <summary>
     /// Specifies the type of a Splunk search <see cref="Job"/>.
     /// </summary>
-    /// 
-    [DataContract]
     public enum ExecutionMode
     {
         /// <summary>

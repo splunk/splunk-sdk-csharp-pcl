@@ -26,7 +26,13 @@ namespace Splunk.Sdk
 
     sealed class DateTimeConverter : ValueConverter<DateTime>
     {
-        public static readonly DateTimeConverter Instance = new DateTimeConverter();
+        static DateTimeConverter()
+        {
+            Instance = new DateTimeConverter();
+        }
+
+        public static DateTimeConverter Instance
+        { get; private set; }
 
         public override DateTime Convert(object input)
         {

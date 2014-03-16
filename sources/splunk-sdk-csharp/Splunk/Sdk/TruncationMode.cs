@@ -19,13 +19,10 @@
 
 namespace Splunk.Sdk
 {
-    using System.Runtime.Serialization;
-
-
     /// <summary>
-    /// 
+    /// Provides enumerated values that specify how lines in the <c>_raw</c> 
+    /// field of events should be truncated.
     /// </summary>
-    [DataContract]
     public enum TruncationMode
     {
         /// <summary>

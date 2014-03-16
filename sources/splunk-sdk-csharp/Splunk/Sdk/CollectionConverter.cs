@@ -30,17 +30,18 @@ namespace Splunk.Sdk
         where TCollection : ICollection<TValue>, new()
         where TConverter : ValueConverter<TValue>, new()
     {
-        CollectionConverter(TConverter valueConverter)
+        static CollectionConverter()
         {
-            this.valueConverter = valueConverter;
+            Instance = new CollectionConverter<TValue, TCollection, TConverter>();
+            ValueConverter = new TConverter();
         }
 
-        public static readonly CollectionConverter<TValue, TCollection, TConverter> Instance = 
-            new CollectionConverter<TValue, TCollection, TConverter>(new TConverter());
+        public static CollectionConverter<TValue, TCollection, TConverter> Instance
+        { get; private set; }
 
         public override TCollection Convert(object input)
         {
-            IEnumerable<object> list = input as IEnumerable<object>;
+            var list = input as IEnumerable<object>;
 
             if (list == null)
             {
@@ -51,12 +52,12 @@ namespace Splunk.Sdk
 
             foreach (var value in list)
             {
-                collection.Add(this.valueConverter.Convert(value));
+                collection.Add(ValueConverter.Convert(value));
             }
 
             return collection;
         }
 
-        TConverter valueConverter;
+        static readonly TConverter ValueConverter;
     }
 }

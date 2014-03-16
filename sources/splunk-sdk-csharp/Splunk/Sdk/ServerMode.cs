@@ -24,7 +24,6 @@ namespace Splunk.Sdk
     /// <summary>
     /// 
     /// </summary>
-    [DataContract]
     public enum ServerMode
     {
         /// <summary>

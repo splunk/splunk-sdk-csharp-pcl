@@ -26,7 +26,13 @@ namespace Splunk.Sdk
 
     sealed class UriConverter : ValueConverter<Uri>
     {
-        public static readonly UriConverter Instance = new UriConverter();
+        static UriConverter()
+        {
+            Instance = new UriConverter();
+        }
+
+        public static UriConverter Instance
+        { get; private set; }
 
         public override Uri Convert(object input)
         {

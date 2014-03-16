@@ -25,7 +25,13 @@ namespace Splunk.Sdk
 
     sealed class EaiConverter : ValueConverter<Eai>
     {
-        public static readonly EaiConverter Instance = new EaiConverter();
+        static EaiConverter()
+        {
+            Instance = new EaiConverter();
+        }
+
+        public static EaiConverter Instance
+        { get; private set; }
 
         public override Eai Convert(object input)
         {

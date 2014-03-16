@@ -36,7 +36,6 @@ namespace Splunk.Sdk
     /// </item>
     /// </list>
     /// </remarks>
-    [DataContract]
     public sealed class SearchEventArgs : Args<SearchEventArgs>
     {
         #region Constructors

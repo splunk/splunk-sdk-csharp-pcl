@@ -26,7 +26,13 @@ namespace Splunk.Sdk
 
     sealed class BooleanConverter : ValueConverter<Boolean>
     {
-        public static readonly BooleanConverter Instance = new BooleanConverter();
+        static BooleanConverter()
+        {
+            Instance = new BooleanConverter();
+        }
+
+        public static BooleanConverter Instance
+        { get; private set; }
 
         public override Boolean Convert(object input)
         {

@@ -48,11 +48,13 @@ namespace Splunk.Sdk
                 outputConversionTable[member.Value] = name;
             }
 
+            Instance = new EnumConverter<TEnum>();
             InputConversionTable = inputConversionTable;
             OutputConversionTable = outputConversionTable;
         }
 
-        public static readonly EnumConverter<TEnum> Instance = new EnumConverter<TEnum>();
+        public static EnumConverter<TEnum> Instance
+        { get; private set; }
 
         public override TEnum Convert(object input)
         {

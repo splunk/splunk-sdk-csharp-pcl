@@ -39,7 +39,6 @@ namespace Splunk.Sdk
     /// </item>
     /// </list>
     /// </remarks>
-    [DataContract]
     public sealed class SavedSearchDispatchArgs : Args<SavedSearchDispatchArgs>
     {
         #region Constructors

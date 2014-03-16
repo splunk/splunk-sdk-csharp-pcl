@@ -25,7 +25,13 @@ namespace Splunk.Sdk
 
     sealed class PermissionsConverter : ValueConverter<Permissions>
     {
-        public static readonly PermissionsConverter Instance = new PermissionsConverter();
+        static PermissionsConverter()
+        {
+            Instance = new PermissionsConverter();
+        }
+
+        public static PermissionsConverter Instance
+        { get; private set; }
 
         public override Permissions Convert(object input)
         {

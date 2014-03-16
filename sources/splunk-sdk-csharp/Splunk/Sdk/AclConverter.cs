@@ -25,7 +25,7 @@ namespace Splunk.Sdk
 
     sealed class AclConverter : ValueConverter<Acl>
     {
-        public static readonly AclConverter Default = new AclConverter();
+        public static readonly AclConverter Instance = new AclConverter();
 
         public override Acl Convert(object input)
         {

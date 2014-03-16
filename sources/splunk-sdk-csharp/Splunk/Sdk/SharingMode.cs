@@ -15,12 +15,46 @@
  */
 
 // TODO:
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
+    using System.Runtime.Serialization;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract]
     public enum SharingMode
     {
-        Default, App, Global, System, User
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Default, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        App, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Global, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        System, 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        User
     }
 }

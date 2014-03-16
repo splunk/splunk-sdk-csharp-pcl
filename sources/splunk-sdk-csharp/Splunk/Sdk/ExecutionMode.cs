@@ -26,11 +26,17 @@ namespace Splunk.Sdk
     public enum ExecutionMode
     {
         /// <summary>
-        /// Specifies an asynchronous <see cref="Job"/>. A Search ID (SID)
-        /// is returned as soon as the job starts. In this case you must poll
-        /// back for results. This is the default.
-        /// </summary> 
         /// 
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Specifies an asynchronous <see cref="Job"/>.
+        /// </summary> 
+        /// <remarks>
+        /// A Search ID (SID) is returned as soon as the job starts. In this
+        /// case you must poll back for results. This is the default.
+        /// </remarks>
         [EnumMember(Value="normal")]
         Normal, 
         
@@ -43,12 +49,14 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Specifies that search results should be returned when the job is 
-        /// complete. In this case you can specify the format for the output 
-        /// (for example, json output) using the OutputMode parameter as 
-        /// described in GET search/jobs/export. Default format for output 
-        /// is XML.
+        /// complete.
         /// </summary>
-        /// 
+        /// <remarks>
+        /// In this case you can specify the format for the output (for example, 
+        /// JSON output) using the OutputMode parameter as described in <a href=
+        /// "http://goo.gl/vJvIXv">GET search/jobs/export</a>. Default format for
+        /// output is XML.
+        /// </remarks>
         [EnumMember(Value = "oneshot")]
         Oneshot
     }

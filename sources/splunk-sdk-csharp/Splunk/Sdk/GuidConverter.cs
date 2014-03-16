@@ -26,7 +26,7 @@ namespace Splunk.Sdk
 
     sealed class GuidConverter : ValueConverter<Guid>
     {
-        public static readonly GuidConverter Default = new GuidConverter();
+        public static readonly GuidConverter Instance = new GuidConverter();
 
         public override Guid Convert(object input)
         {

@@ -16,11 +16,19 @@
 
 namespace Splunk.Sdk
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// 
     /// </summary>
+    [DataContract]
     public enum MessageType
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+
         /// <summary>
         /// 
         /// </summary>

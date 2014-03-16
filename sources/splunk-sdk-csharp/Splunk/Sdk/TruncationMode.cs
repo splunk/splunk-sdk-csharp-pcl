@@ -15,12 +15,24 @@
  */
 
 // TODO:
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
+    using System.Runtime.Serialization;
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract]
     public enum TruncationMode
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+
         /// <summary>
         /// 
         /// </summary>

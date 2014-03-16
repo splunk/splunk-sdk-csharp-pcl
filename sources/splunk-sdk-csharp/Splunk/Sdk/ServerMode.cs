@@ -21,7 +21,10 @@ namespace Splunk.Sdk
 {
     using System.Runtime.Serialization;
 
-    [DataContract()]
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract]
     public enum ServerMode
     {
         /// <summary>

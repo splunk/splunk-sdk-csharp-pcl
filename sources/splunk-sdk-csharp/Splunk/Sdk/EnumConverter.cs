@@ -52,7 +52,7 @@ namespace Splunk.Sdk
             OutputConversionTable = outputConversionTable;
         }
 
-        public static readonly EnumConverter<TEnum> Default = new EnumConverter<TEnum>();
+        public static readonly EnumConverter<TEnum> Instance = new EnumConverter<TEnum>();
 
         public override TEnum Convert(object input)
         {

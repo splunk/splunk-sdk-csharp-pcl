@@ -159,7 +159,7 @@ namespace Splunk.Sdk
         /// </remarks>
         protected virtual string GetTitle()
         {
-            return GetValue("Title", StringConverter.Default);
+            return GetValue("Title", StringConverter.Instance);
         }
 
         /// <summary>

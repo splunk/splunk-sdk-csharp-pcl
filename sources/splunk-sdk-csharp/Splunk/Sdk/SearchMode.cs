@@ -28,6 +28,11 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
+        None,
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// 
         [EnumMember(Value = "normal")]
         Normal, 

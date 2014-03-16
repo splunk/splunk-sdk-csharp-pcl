@@ -45,7 +45,7 @@ namespace Splunk.Sdk
 
         public int Build
         {
-            get { return this.GetValue("Build", Int32Converter.Default); }
+            get { return this.GetValue("Build", Int32Converter.Instance); }
         }
 
         public Eai Eai
@@ -58,7 +58,7 @@ namespace Splunk.Sdk
         /// </summary>
         public Guid Guid
         {
-            get { return this.GetValue("Guid", GuidConverter.Default); }
+            get { return this.GetValue("Guid", GuidConverter.Instance); }
         }
 
         public bool IsFree
@@ -78,22 +78,22 @@ namespace Splunk.Sdk
 
         public IReadOnlyList<string> LicenseKeys
         {
-            get { return this.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Default); }
+            get { return this.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
         public IReadOnlyList<string> LicenseLabels
         {
-            get { return this.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Default); }
+            get { return this.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
         public string LicenseSignature
         {
-            get { return this.GetValue("LicenseSignature", StringConverter.Default); }
+            get { return this.GetValue("LicenseSignature", StringConverter.Instance); }
         }
 
         public LicenseState LicenseState
         {
-            get { return this.GetValue("LicenseState", EnumConverter<LicenseState>.Default); }
+            get { return this.GetValue("LicenseState", EnumConverter<LicenseState>.Instance); }
         }
 
         /// <summary>
@@ -102,37 +102,37 @@ namespace Splunk.Sdk
         /// </summary>
         public Guid MasterGuid
         {
-            get { return this.GetValue("MasterGuid", GuidConverter.Default); }
+            get { return this.GetValue("MasterGuid", GuidConverter.Instance); }
         }
 
         public ServerMode Mode
         {
-            get { return this.GetValue("Mode", EnumConverter<ServerMode>.Default); }
+            get { return this.GetValue("Mode", EnumConverter<ServerMode>.Instance); }
         }
 
         public string OSBuild
         {
-            get { return this.GetValue("OsBuild", StringConverter.Default); }
+            get { return this.GetValue("OsBuild", StringConverter.Instance); }
         }
 
         public string OSName
         {
-            get { return this.GetValue("OsName", StringConverter.Default); }
+            get { return this.GetValue("OsName", StringConverter.Instance); }
         }
 
         public string OSVersion
         {
-            get { return this.GetValue("OsVersion", StringConverter.Default); }
+            get { return this.GetValue("OsVersion", StringConverter.Instance); }
         }
 
         public string CpuArchitecture
         {
-            get { return this.GetValue("CpuArch", StringConverter.Default); }
+            get { return this.GetValue("CpuArch", StringConverter.Instance); }
         }
 
         public string ServerName
         {
-            get { return this.GetValue("ServerName", StringConverter.Default); }
+            get { return this.GetValue("ServerName", StringConverter.Instance); }
         }
 
         public Version Version

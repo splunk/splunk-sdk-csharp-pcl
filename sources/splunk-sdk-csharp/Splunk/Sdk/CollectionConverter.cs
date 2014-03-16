@@ -35,7 +35,8 @@ namespace Splunk.Sdk
             this.valueConverter = valueConverter;
         }
 
-        public static readonly CollectionConverter<TValue, TCollection, TConverter> Default = new CollectionConverter<TValue, TCollection, TConverter>(new TConverter());
+        public static readonly CollectionConverter<TValue, TCollection, TConverter> Instance = 
+            new CollectionConverter<TValue, TCollection, TConverter>(new TConverter());
 
         public override TCollection Convert(object input)
         {

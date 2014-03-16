@@ -15,7 +15,7 @@
 
         public Acl Acl
         {
-            get { return this.GetValue("Acl", AclConverter.Default); }
+            get { return this.GetValue("Acl", AclConverter.Instance); }
         }
     }
 }

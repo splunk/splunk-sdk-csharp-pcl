@@ -26,7 +26,7 @@ namespace Splunk.Sdk
 
     sealed class StringConverter : ValueConverter<String>
     {
-        public static readonly StringConverter Default = new StringConverter();
+        public static readonly StringConverter Instance = new StringConverter();
 
         public override String Convert(object input)
         {

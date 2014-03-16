@@ -19,10 +19,27 @@
 
 namespace Splunk.Sdk
 {
+    using System.Runtime.Serialization;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DataContract]
     public enum LicenseState
     {
-        Unknown,
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// 
+        /// </summary>
         Expired,
+
+        /// <summary>
+        /// 
+        /// </summary>
         OK
     }
 }

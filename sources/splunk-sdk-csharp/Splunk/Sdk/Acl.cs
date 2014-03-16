@@ -50,12 +50,12 @@ namespace Splunk.Sdk
 
         public string Owner
         {
-            get { return this.GetValue("Owner", StringConverter.Default); }
+            get { return this.GetValue("Owner", StringConverter.Instance); }
         }
 
         public Permissions Permissions
         {
-            get { return this.GetValue("Perms", PermissionsConverter.Default); }
+            get { return this.GetValue("Perms", PermissionsConverter.Instance); }
         }
 
         public bool Removable
@@ -65,7 +65,7 @@ namespace Splunk.Sdk
 
 		public SharingMode Sharing
         {
-            get { return this.GetValue("Sharing", EnumConverter<SharingMode>.Default); }
+            get { return this.GetValue("Sharing", EnumConverter<SharingMode>.Instance); }
         }
     }
 }

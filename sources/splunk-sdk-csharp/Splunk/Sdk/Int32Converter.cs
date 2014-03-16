@@ -26,7 +26,7 @@ namespace Splunk.Sdk
 
     sealed class Int32Converter : ValueConverter<Int32>
     {
-        public static readonly Int32Converter Default = new Int32Converter();
+        public static readonly Int32Converter Instance = new Int32Converter();
 
         public override Int32 Convert(object input)
         {

@@ -335,8 +335,7 @@ namespace Splunk.Sdk
         {
             var resourceName = new ResourceName(this.ResourceName, endpoint);
 
-            HttpResponseMessage message = await this.Context.GetAsync(this.Namespace, resourceName, args);
-            var response = await Response.CreateAsync(message);
+            var response = await this.Context.GetAsync(this.Namespace, resourceName, args);
             var searchResults = await SearchResults.CreateAsync(response, leaveOpen: false);
 
             return searchResults;

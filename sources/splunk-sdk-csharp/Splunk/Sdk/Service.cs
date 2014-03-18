@@ -364,12 +364,12 @@ namespace Splunk.Sdk
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
 
-            HttpResponseMessage message = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args);
-            var response = await Response.CreateAsync(message);
+            var response = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args);
 
 			// FJR: We should probably return a stream here and keep the parsers separate. That lets someone
 			// else plug in and use their own parser if they really want to. We don't particularly support the
 			// scenario, but it doesn't block the user.
+
             return await SearchResultsReader.CreateAsync(response);
         }
 

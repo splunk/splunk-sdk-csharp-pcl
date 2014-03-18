@@ -83,15 +83,58 @@ namespace Splunk.Sdk
 
         #region Methods
 
+        /// <summary>
+        /// Converts the value of the current <see cref="Namespace"/> to its
+        /// equivalent string representation.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="Namespace"/>
+        /// </returns>
         public override string ToString()
+        {
+            return this.ToString(part => part);
+        }
+
+        /// <summary>
+        /// Converts the value of the current <see cref="Namespace"/> object to
+        /// its equivalent URI encoded string representation.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="Namespace"/>
+        /// </returns>
+        /// <remarks>
+        /// The value is converted using <see cref="Uri.EscapeUriString"/>.
+        /// </remarks>
+        public string ToUriString()
+        {
+            return ToString(Uri.EscapeUriString);
+        }
+
+        #endregion
+
+        #region Privates
+
+        string ToString(Func<string, string> encode)
         {
             // TODO: Verify correctness by checking against Ruby code (Suspicion: this code is incorrect, but works with use cases we've tried)
 
             if (this == Default)
+            {
                 return "services";
+            }
             if (this.User == AllUsers)
-                return this.App == AllApps ? "services" : string.Join("/", "servicesNS", this.App);
-            return this.App == AllApps ? string.Join("/", "servicesNS", this.User) : string.Join("/", "servicesNS", this.User, this.App);
+            {
+                if (this.App == AllApps)
+                {
+                    return "services";
+                }
+                return string.Join("/", "servicesNS", encode(this.App));
+            }
+            if (this.App == AllApps)
+            {
+                string.Join("/", "servicesNS", encode(this.User));
+            }
+            return string.Join("/", "servicesNS", encode(this.User), encode(this.App));
         }
 
         #endregion

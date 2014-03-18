@@ -183,27 +183,54 @@ namespace Splunk.Sdk
             }
         }
 
+        // TODO: Remove these comments before release
+
+        // FJR: Having separate GET, POST, and DELETE methods turns out to be less sensible that you would think.
+        // First, you end up repeating a lot of logic. Second, Splunk's REST API doesn't actually respect the different
+        // semantics you expect from them. For example, the HTTP inputs expect to receive arguments as though they were
+        // GET requests and a POST body of data as well. This lack of clarity makes it simpler just to have one method
+        // that takes the method as an argument, and accepts both URI arguments and a POST body (which can be either a
+        // dictionary or a string -- it's always a dictionary, except for those darned HTTP inputs again). I also ended
+        // up adding a request by URL method that the request method called because I had some situation where I had to
+        // use a link from the links element of the Atom body, and rather than parse it and reencode it, I just wanted to
+        // use it directly.			
+
+        // DSN: HttpClient class enforces these semantics on HTTP methods:
+        //
+        // + HttpMethod.Delete    May include a message body
+        //
+        // + HttpMethod.Get       May not include a message body
+        //
+        // + HttpMethod.Post      May include a message body
+        //
+        // The HttpClient class imposes no restrictions on query parameter. Any HTTP method may include a query.
+        // Hence, I've done the following.
+        //
+        // + Consolidated the code into one private method: Context.SendAsync accepts both HttpContent and parameters.
+        //
+        // + Provided these public entry points:
+        ///
+        //   o Context.DeleteAsync  Accepts parameters, but not HttpContent. 
+        //
+        //   o Context.GetAsync     Accepts parameters, but not HttpContent.
+        //
+        //   o Context.PostAsync    Two variants. The first accepts parameters and it puts them into the message body. The 
+        //                          other accepts HttpContent and parameters. Parameters are provided on the Service URL.
+        //
+        // TODO: Is there any need for delete to accept HttpContent?
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="argumentSets"></param>
+        /// <param name="parameterSets"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> GetAsync(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
+        public async Task<Response> DeleteAsync(Namespace @namespace, ResourceName resource,
+            params IEnumerable<KeyValuePair<string, object>>[] parameterSets)
         {
-            Contract.Requires<ArgumentNullException>(@namespace != null);
-            Contract.Requires<ArgumentNullException>(resource != null);
-
-            using (var request = new HttpRequestMessage(HttpMethod.Get, this.CreateServiceUri(@namespace, resource, argumentSets)))
-            {
-				if (this.SessionKey != null) // FJR: Check that there's not already an Authorization header, too
-                {
-                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
-                }
-                HttpResponseMessage response = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                return response;
-            }
+            HttpResponseMessage response = await this.SendAsync(HttpMethod.Delete, @namespace, resource, null, parameterSets);
+            return await Response.CreateAsync(response);
         }
 
         /// <summary>
@@ -211,35 +238,52 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="argumentSets"></param>
+        /// <param name="parameterSets"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
+        public async Task<Response> GetAsync(Namespace @namespace, ResourceName resource,
+            params IEnumerable<KeyValuePair<string, object>>[] parameterSets)
         {
-			// FJR: Having separate GET, POST, and DELETE methods turns out to be less sensible that you would think.
-			// First, you end up repeating a lot of logic. Second, Splunk's REST API doesn't actually respect the different
-			// semantics you expect from them. For example, the HTTP inputs expect to receive arguments as though they were
-			// GET requests and a POST body of data as well. This lack of clarity makes it simpler just to have one method
-			// that takes the method as an argument, and accepts both URI arguments and a POST body (which can be either a
-			// dictionary or a string -- it's always a dictionary, except for those darned HTTP inputs again). I also ended
-			// up adding a request by URL method that the request method called because I had some situation where I had to
-			// use a link from the links element of the Atom body, and rather than parse it and reencode it, I just wanted to
-			// use it directly.			
-            Contract.Requires<ArgumentNullException>(@namespace != null);
-            Contract.Requires<ArgumentNullException>(resource != null);
-
-            var serviceUri = this.CreateServiceUri(@namespace, resource, null);
-
-            using (var request = new HttpRequestMessage(HttpMethod.Post, serviceUri) { Content = this.CreateStringContent(argumentSets) })
-            {
-				if (this.SessionKey != null) // FJR: Check for the Authorization header already being present
-                {
-                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
-                }
-                HttpResponseMessage response = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                return response;
-            }
+            HttpResponseMessage response = await this.SendAsync(HttpMethod.Get, @namespace, resource, null, parameterSets);
+            return await Response.CreateAsync(response);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="namespace"></param>
+        /// <param name="resource"></param>
+        /// <param name="parameterSets"></param>
+        /// <returns></returns>
+        public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource, 
+            params IEnumerable<KeyValuePair<string, object>>[] parameterSets)
+        {
+            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, this.CreateStringContent(parameterSets), null);
+            return response;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="namespace"></param>
+        /// <param name="resource"></param>
+        /// <param name="parameterSets"></param>
+        /// <returns></returns>
+        public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource,
+            HttpContent content, params IEnumerable<KeyValuePair<string, object>>[] parameterSets)
+        {
+            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, content, parameterSets);
+            return response;
+        }
+
+        /// <summary>
+        /// Converts the current <see cref="Context"/> to its string representation.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="Context"/>.
+        /// </returns>
+        /// <remarks>
+        /// The value 
+        /// </remarks>
         public override string ToString()
         {
             return string.Concat(SchemeStrings[(int)this.Scheme], "://", this.Host, ":", this.Port.ToString());
@@ -264,46 +308,26 @@ namespace Splunk.Sdk
             }
         }
 
-        Uri CreateServiceUri(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
+        Uri CreateServiceUri(Namespace @namespace, ResourceName resourceName, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
         {
             var builder = new StringBuilder(this.ToString());
 
             builder.Append("/");
-			// FJR: The namespace path components need to be URI escaped, since usernames can arise from
-			// things like Active Directory and can have special characters. You need to not escape the /,
-			// though, so it might be simpler to call a join method with '/' as the joining character and
-			// the concatenation of the namespace path components and the resource path components. That also
-			// keeps any logic about translating data structures into URIs in this one place in this file,
-			// as opposed to spreading it around. With ToString, there's always the question of whether I'm
-			// getting something URI escaped back or not. For resource it's URI escaped. For @namespace, it's not.
-			builder.Append(@namespace.ToString());
+            builder.Append(@namespace.ToUriString());
             builder.Append("/");
-            builder.Append(resource.ToString());
+            builder.Append(resourceName.ToUriString());
 
-            if (argumentSets == null)
-                return new Uri(builder.ToString());
-
-			// FJR: I would replace all these StringBuilder patterns
-			// with a LINQ call and join like you do below in CreateStringContent.
-			// Personally, I find it easier to read.
-            builder.Append('?');
-
-            foreach (var args in argumentSets)
+            if (argumentSets != null)
             {
-                if (args == null)
-                {
-                    continue;
-                }
-                foreach (var arg in args)
-                {
-                    builder.Append(Uri.EscapeUriString(arg.Key));
-                    builder.Append('=');
-                    builder.Append(Uri.EscapeUriString(arg.Value.ToString()));
-                    builder.Append('&');
-                }
+                builder.Append('?');
+
+                builder.Append(string.Join("&",
+                    from args in argumentSets
+                    where args != null
+                    from arg in args
+                    select string.Join("=", Uri.EscapeUriString(arg.Key), Uri.EscapeUriString(arg.Value.ToString()))));
             }
 
-            builder.Length = builder.Length - 1; // Removes trailing '&'
             return new Uri(builder.ToString());
         }
 
@@ -322,6 +346,25 @@ namespace Splunk.Sdk
 
             var stringContent = new StringContent(body);
             return stringContent;
+        }
+
+        async Task<HttpResponseMessage> SendAsync(HttpMethod method, Namespace @namespace, ResourceName resource,
+            HttpContent content, IEnumerable<KeyValuePair<string, object>>[] parameterSets)
+        {
+            Contract.Requires<ArgumentNullException>(@namespace != null);
+            Contract.Requires<ArgumentNullException>(resource != null);
+
+            var serviceUri = this.CreateServiceUri(@namespace, resource, parameterSets);
+
+            using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
+            {
+                if (this.SessionKey != null)
+                {
+                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                }
+                HttpResponseMessage response = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                return response;
+            }
         }
 
         #endregion

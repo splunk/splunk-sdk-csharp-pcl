@@ -94,7 +94,29 @@ namespace Splunk.Sdk
             return this.parts.GetEnumerator();
         }
 
+        /// <summary>
+        /// Converts the value of the current <see cref="Namespace"/> to its
+        /// equivalent string representation.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="Namespace"/>
+        /// </returns>
         public override string ToString()
+        {
+            return string.Join("/", from segment in this select segment);
+        }
+
+        /// <summary>
+        /// Converts the value of the current <see cref="Namespace"/> object to
+        /// its equivalent URI encoded string representation.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="Namespace"/>
+        /// </returns>
+        /// <remarks>
+        /// The value is converted using <see cref="Uri.EscapeUriString"/>.
+        /// </remarks>
+        public string ToUriString()
         {
             return string.Join("/", from segment in this select Uri.EscapeUriString(segment));
         }

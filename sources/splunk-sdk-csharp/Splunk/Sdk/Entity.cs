@@ -186,7 +186,7 @@ namespace Splunk.Sdk
                 {
                     // Guarantee: unique result because entities have specific namespaces
 
-                    using (var response = await Response.CreateAsync(await this.Context.GetAsync(this.Namespace, this.ResourceName)))
+                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
                     {
                         if (response.Message.StatusCode == HttpStatusCode.NoContent)
                         {

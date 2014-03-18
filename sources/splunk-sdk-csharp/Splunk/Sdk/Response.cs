@@ -27,7 +27,7 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml;
 
-    struct Response : IDisposable
+    public struct Response : IDisposable
     {
         #region Constructors
 

@@ -24,6 +24,10 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.IO;
 
+    /// <summary>
+    /// Provides a converter to convert a string to a <see cref="Version"/>
+    /// object.
+    /// </summary>
     sealed class VersionConverter : ValueConverter<Version>
     {
         public static readonly VersionConverter Default = new VersionConverter();

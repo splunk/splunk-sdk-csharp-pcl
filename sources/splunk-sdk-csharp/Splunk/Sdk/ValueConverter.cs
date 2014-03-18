@@ -14,13 +14,26 @@
  * under the License.
  */
 
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
     using System;
     using System.Diagnostics.Contracts;
 
+    /// <summary>
+    /// Provides a way to convert objects to values of some type.
+    /// </summary>
+    /// <typeparam name="TValue">
+    /// The type of values to produce in the conversion.
+    /// </typeparam>
+    /// <remarks>
+    /// If you want to create a value converter, create a class that implements 
+    /// the <see cref="Convert"/> method and--optionally--overrides the 
+    /// <see cref="DefaultValue"/> property. Your <see cref="Convert"/> method
+    /// should accept a value of any type and produce a <see cref="TValue"/>
+    /// or throw an <see cref="InvalidDataException"/>.
+    /// </remarks>
     public abstract class ValueConverter<TValue>
     {
         public virtual TValue DefaultValue

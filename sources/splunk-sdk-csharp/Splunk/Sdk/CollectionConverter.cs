@@ -16,7 +16,7 @@
 
 // TODO:
 // [X] Contracts are in the base type: ValueConverter
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
@@ -26,6 +26,20 @@ namespace Splunk.Sdk
     using System.IO;
     using System.Linq;
 
+    /// <summary>
+    /// Provides a converter to convert an <see cref="IEnumerable"/> object to a
+    /// collection.
+    /// </summary>
+    /// <typeparam name="TValue">
+    /// The type of the values in the collection.
+    /// </typeparam>
+    /// <typeparam name="TCollection">
+    /// The type of the collection.
+    /// </typeparam>
+    /// <typeparam name="TConverter">
+    /// The type of value converter to convert items enumerated by the <see 
+    /// cref="IEnumerable"/> object.
+    /// </typeparam>
     sealed class CollectionConverter<TValue, TCollection, TConverter> : ValueConverter<TCollection> 
         where TCollection : ICollection<TValue>, new()
         where TConverter : ValueConverter<TValue>, new()

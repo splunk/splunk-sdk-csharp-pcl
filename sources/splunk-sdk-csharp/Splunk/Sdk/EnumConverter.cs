@@ -16,7 +16,7 @@
 
 // TODO:
 // [X] Contracts are in the base type: ValueConverter
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
@@ -28,6 +28,12 @@ namespace Splunk.Sdk
     using System.Reflection;
     using System.Runtime.Serialization;
 
+    /// <summary>
+    /// Provides a converter to convert strings to <see cref="Enum"/> values.
+    /// </summary>
+    /// <typeparam name="TEnum">
+    /// The type of <see cref="Enum"/> value to convert.
+    /// </typeparam>
     sealed class EnumConverter<TEnum> : ValueConverter<TEnum> where TEnum : struct
     {
         static EnumConverter()

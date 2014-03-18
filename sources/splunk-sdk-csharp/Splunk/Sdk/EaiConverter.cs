@@ -16,13 +16,17 @@
 
 // TODO:
 // [X] Contracts are in the base type: ValueConverter
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
     using System.Dynamic;
     using System.IO;
 
+    /// <summary>
+    /// Provides a converter to convert <see cref="ExpandoObject"/> instances to
+    /// <see cref="Eai"/> objects.
+    /// </summary>
     sealed class EaiConverter : ValueConverter<Eai>
     {
         static EaiConverter()

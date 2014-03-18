@@ -266,7 +266,7 @@ namespace Splunk.Sdk
                         propertyName = NormalizePropertyName(name[1]);
                     }
 
-                    dictionary.Add(propertyName, ParsePropertyValueAsync(reader));
+                    dictionary.Add(propertyName, await ParsePropertyValueAsync(reader));
                 }
 
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:dict"))
@@ -289,7 +289,7 @@ namespace Splunk.Sdk
 
                 while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:item")
                 {
-                    value.Add(ParsePropertyValueAsync(reader));
+                    value.Add(await ParsePropertyValueAsync(reader));
                 }
 
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:list"))

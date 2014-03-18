@@ -24,6 +24,9 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.IO;
 
+    /// <summary>
+    /// Provides a converter to convert strings to <see cref="Int32"/> values.
+    /// </summary>
     sealed class Int32Converter : ValueConverter<Int32>
     {
         static Int32Converter()

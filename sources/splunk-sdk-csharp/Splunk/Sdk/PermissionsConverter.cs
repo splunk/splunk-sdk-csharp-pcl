@@ -23,6 +23,10 @@ namespace Splunk.Sdk
     using System.Dynamic;
     using System.IO;
 
+    /// <summary>
+    /// Provides a converter to convert <see cref="ExpandoObject"/> instances to
+    /// <see cref="Permissions"/> objects.
+    /// </summary>
     sealed class PermissionsConverter : ValueConverter<Permissions>
     {
         static PermissionsConverter()

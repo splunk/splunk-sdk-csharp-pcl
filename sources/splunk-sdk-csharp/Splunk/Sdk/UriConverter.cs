@@ -24,6 +24,10 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.IO;
 
+    /// <summary>
+    /// Provides a converter to convert a string to a relative or absolute 
+    /// <see cref="Uri"/> instance.
+    /// </summary>
     sealed class UriConverter : ValueConverter<Uri>
     {
         static UriConverter()

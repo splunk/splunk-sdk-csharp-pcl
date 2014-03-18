@@ -16,7 +16,7 @@
 
 // TODO:
 // [X] Contracts are in the base type: ValueConverter
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
@@ -24,6 +24,9 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.IO;
 
+    /// <summary>
+    /// Provides a converter to convert strings to <see cref="Guid"/> values.
+    /// </summary>
     sealed class GuidConverter : ValueConverter<Guid>
     {
         static GuidConverter()

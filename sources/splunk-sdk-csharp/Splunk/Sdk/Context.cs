@@ -213,33 +213,6 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<XDocument> GetDocumentAsync(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
-        {
-            using (var response = await this.GetAsync(@namespace, resource, argumentSets))
-            {
-                if (response.StatusCode == HttpStatusCode.NoContent)
-                {
-                    throw new RequestException(response.StatusCode, response.ReasonPhrase, new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", @namespace, resource)));
-                }
-
-                var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new RequestException(response.StatusCode, response.ReasonPhrase, document);
-                }
-
-                return document;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="namespace"></param>
-        /// <param name="resource"></param>
-        /// <param name="argumentSets"></param>
-        /// <returns></returns>
         public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
         {
 			// FJR: Having separate GET, POST, and DELETE methods turns out to be less sensible that you would think.

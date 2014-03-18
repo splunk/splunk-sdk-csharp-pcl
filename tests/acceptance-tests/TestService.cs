@@ -65,7 +65,7 @@ namespace Splunk.Sdk.UnitTesting
                 var requestException = (RequestException)(aggregateException.InnerExceptions[0]);
                 Assert.Equal(requestException.StatusCode, HttpStatusCode.Unauthorized);
                 Assert.Equal(requestException.Details.Count, 1);
-                Assert.Equal(requestException.Details[0], new Message(XElement.Parse(@"<msg type=""WARN"">Login failed</msg>")));
+                Assert.Equal(requestException.Details[0], new Message(MessageType.Warning, "Login failed"));
             }
         }
 

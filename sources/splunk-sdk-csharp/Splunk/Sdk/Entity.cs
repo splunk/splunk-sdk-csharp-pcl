@@ -35,8 +35,12 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.IO;
     using System.Linq;
+    using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
+    using System.Xml;
     using System.Xml.Linq;
 
     public class Entity<TEntity> : ExpandoAdapter where TEntity : Entity<TEntity>, new()
@@ -92,7 +96,7 @@ namespace Splunk.Sdk
         { get; internal set; }
 
         /// <summary>
-		/// Gets the namespace containing the current <see cref="Entity"/>.
+        /// Gets the namespace containing the current <see cref="Entity"/>.
         /// </summary>
         public Namespace Namespace
         { get; private set; }
@@ -116,9 +120,9 @@ namespace Splunk.Sdk
         #endregion
 
         #region Properties backed by AtomEntry
-        
+
         public string Author
-        { 
+        {
             get { return this.AtomEntry == null ? null : this.AtomEntry.Author; }
         }
 
@@ -171,29 +175,59 @@ namespace Splunk.Sdk
 
             RequestException requestException = null;
 
-			// FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
-			// into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
-			// as of Splunk 6, getting a 200 and content back does not imply you have all the fields. For pivot
-			// support, they're now shoving fields in as they become ready, so you have to wait until the dispatchState
-			// field of the Atom entry reaches a certain point.
-            for (int i = 3; i > 0 ; --i)
+            // FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
+            // into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
+            // as of Splunk 6, getting a 200 and content back does not imply you have all the fields. For pivot
+            // support, they're now shoving fields in as they become ready, so you have to wait until the dispatchState
+            // field of the Atom entry reaches a certain point.
+            for (int i = 3; i > 0; --i)
             {
                 try
                 {
-                    // Gurantee: unique result because entities have specific namespaces
+                    // Guarantee: unique result because entities have specific namespaces
 
-                    XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.ResourceName);
-                    
-                    if (document.Root.Name == AtomFeed.ElementName.Feed)
+                    using (var response = await Response.CreateAsync(await this.Context.GetAsync(this.Namespace, this.ResourceName)))
                     {
-                        this.AtomEntry = new AtomFeed(document.Root).Entries[0];
-                    }
-                    else
-                    {
-                        this.AtomEntry = new AtomEntry(document.Root);
+                        if (response.Message.StatusCode == HttpStatusCode.NoContent)
+                        {
+                            throw new RequestException(response.Message, new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", this.Namespace, this.ResourceName)));
+                        }
+
+                        if (!response.Message.IsSuccessStatusCode)
+                        {
+                            throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                        }
+
+                        var reader = response.XmlReader;
+                        await reader.ReadAsync();
+
+                        if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                        {
+                            await response.XmlReader.ReadAsync();
+                        }
+
+                        if (reader.NodeType != XmlNodeType.Element)
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        if (reader.Name == "feed")
+                        {
+                            await response.XmlReader.ReadToFollowingAsync("entry");
+                        }
+
+                        if (reader.Name != "entry")
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        var atomEntry = new AtomEntry();
+                        
+                        await atomEntry.ReadXmlAsync(reader);
+                        this.AtomEntry = atomEntry;
+                        this.ExpandoObject = atomEntry.Content;
                     }
 
-                    this.ExpandoObject = this.AtomEntry.Content;
                     return;
                 }
                 catch (RequestException e)
@@ -235,7 +269,7 @@ namespace Splunk.Sdk
                 AtomEntry = atomEntry,
                 Collection = collection,
                 Context = context,
-				ExpandoObject = content,
+                ExpandoObject = content,
             };
 
             entity.Title = entity.GetTitle();
@@ -245,6 +279,6 @@ namespace Splunk.Sdk
             return entity;
         }
 
-		#endregion
+        #endregion
     }
 }

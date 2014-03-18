@@ -51,21 +51,12 @@ namespace Splunk.Sdk
 
         public async Task RestartAsync()
         {
-            using (var response = await this.service.Context.PostAsync(this.service.Namespace, ServerControlRestart, null))
+            using (var response = await Response.CreateAsync(await this.service.Context.PostAsync(this.service.Namespace, ServerControlRestart, null)))
             {
-                if (response.IsSuccessStatusCode)
+                if (!response.Message.IsSuccessStatusCode)
                 {
-                    return;
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
-
-                string content = await response.Content.ReadAsStringAsync();
-
-                if (string.IsNullOrWhiteSpace(content))
-                {
-                    throw new RequestException(response.StatusCode, response.ReasonPhrase);
-                }
-                
-                throw new RequestException(response.StatusCode, response.ReasonPhrase, XDocument.Parse(content));
             }
         }
 

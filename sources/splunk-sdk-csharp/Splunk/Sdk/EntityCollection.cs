@@ -129,6 +129,7 @@ namespace Splunk.Sdk
 
         public async Task UpdateAsync()
         {
+#if false
             var document = await this.Context.GetDocumentAsync(this.Namespace, this.Name, this.Arguments);
 
             // TODO: Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
@@ -140,6 +141,8 @@ namespace Splunk.Sdk
 
             this.entities = entities;
             this.feed = feed;
+#endif
+            throw new NotImplementedException();
         }
 
         #endregion

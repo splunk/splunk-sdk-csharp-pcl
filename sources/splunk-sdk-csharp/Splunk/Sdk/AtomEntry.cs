@@ -55,6 +55,8 @@
 // [O] Contracts
 //
 // [ ] Documentation
+//
+// [ ] Use NameTable in AtomEntry and AtomFeed
 
 namespace Splunk.Sdk
 {
@@ -65,6 +67,7 @@ namespace Splunk.Sdk
     using System.IO;
     using System.Text;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Linq;
 
@@ -72,38 +75,17 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        public AtomEntry(XElement entry)
-        {
-            Contract.Requires<ArgumentNullException>(entry != null);
-
-            this.Title = GetElement(entry, AtomFeed.ElementName.Title, AsString);
-            this.Author = GetElement(entry, AtomFeed.ElementName.Author, AsString);
-            this.Id = GetElement(entry, AtomFeed.ElementName.Id, AsAbsoluteUri);
-            this.Published = GetElement(entry, AtomFeed.ElementName.Published, AsDateTime);
-            this.Updated = GetElement(entry, AtomFeed.ElementName.Updated, AsDateTime);
-            this.Content = GetElement(entry, AtomFeed.ElementName.Content, AsExpandoObject);
-
-            // Links
-
-            var links = new Dictionary<string, Uri>();
-            string id = this.Id.AbsoluteUri;
-            Uri baseUri = id.EndsWith("/") ? this.Id : new Uri(id + "/");
-
-            foreach (var link in entry.Elements(AtomFeed.ElementName.Link))
-            {
-                string rel = link.Attribute("rel").Value;
-                Uri uri = new Uri(baseUri, rel);
-                links[rel] = uri;
-            }
-
-            this.Links = links;
-        }
+        public AtomEntry()
+        { }
 
         #endregion
 
         #region Properties
 
         public string Author
+        { get; private set; }
+
+        public dynamic Content
         { get; private set; }
 
         public Uri Id
@@ -115,21 +97,112 @@ namespace Splunk.Sdk
         public DateTime Published
         { get; private set; }
 
-        public DateTime Updated
-        { get; private set; }
-
-        public IReadOnlyList<Message> Messages
-        { get; private set; }
-
         public string Title
         { get; private set; }
 
-        public dynamic Content
+        public DateTime Updated
         { get; private set; }
 
         #endregion
 
         #region Methods
+
+        public async Task ReadXmlAsync(XmlReader reader)
+        {
+            Contract.Requires<ArgumentNullException>(reader != null, "reader");
+
+            if (reader.ReadState == ReadState.Initial)
+            {
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                {
+                    await reader.ReadAsync();
+                }
+            }
+            else
+            {
+                reader.MoveToElement();
+            }
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "entry"))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            var links = new Dictionary<string, Uri>();
+            await reader.ReadAsync();
+
+            while (reader.NodeType == XmlNodeType.Element)
+            {
+                string name = reader.Name;
+
+                switch (name)
+                {
+                    case "title":
+
+                        this.Title = await reader.ReadElementContentAsync(StringConverter.Instance);
+                        break;
+
+                    case "id":
+
+                        this.Id = await reader.ReadElementContentAsync(UriConverter.Instance);
+                        break;
+
+                    case "author":
+
+                        await reader.ReadAsync();
+
+                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "name"))
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        this.Author = await reader.ReadElementContentAsync(StringConverter.Instance);
+
+                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "author"))
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        await reader.ReadAsync();
+                        break;
+
+                    case "published":
+
+                        this.Published = await reader.ReadElementContentAsync(DateTimeConverter.Instance);
+                        break;
+
+                    case "updated":
+
+                        this.Updated = await reader.ReadElementContentAsync(DateTimeConverter.Instance);
+                        break;
+
+                    case "link":
+
+                        string href = reader.GetAttribute("href");
+                        string rel = reader.GetAttribute("rel");
+
+                        links[rel] = UriConverter.Instance.Convert(href);
+                        await reader.ReadAsync();
+                        break;
+
+                    case "content":
+
+                        this.Content = await ParsePropertyValueAsync(reader);
+                        break;
+
+                    default: throw new InvalidDataException(); // TODO: Diagnostics
+                }
+            }
+
+            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "entry"))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            await reader.ReadAsync();
+        }
 
         public override string ToString()
         {
@@ -142,40 +215,6 @@ namespace Splunk.Sdk
 
         static Regex propertyNamePattern = new Regex(@"[_.-]+(.?)");
 
-        static Uri AsAbsoluteUri(XElement element)
-        {
-            if (element == null)
-            {
-                return UriConverter.Instance.DefaultValue;
-            }
-            return UriConverter.Instance.Convert(element.Value);
-        }
-
-        static DateTime AsDateTime(XElement element)
-        {
-            if (element == null)
-            {
-                return DateTimeConverter.Instance.DefaultValue;
-            }
-            return DateTimeConverter.Instance.Convert(element.Value);
-        }
-
-        static ExpandoObject AsExpandoObject(XElement element)
-        {
-            return ParsePropertyValue(element);
-        }
-
-        static string AsString(XElement element)
-        {
-            return element == null ? null : element.Value;
-        }
-
-        static T GetElement<T>(XElement entry, XName name, Func<XElement, T> convert)
-        {
-            XElement element = entry.Element(name);
-            return convert(element);
-        }
-
         static string NormalizePropertyName(string name)
         {
             var builder = new StringBuilder(name);
@@ -186,114 +225,134 @@ namespace Splunk.Sdk
             return name;
         }
 
-        static dynamic ParsePropertyValue(XElement content)
+        static async Task<dynamic> ParseDictionaryAsync(XmlReader reader)
         {
-            if (content.FirstNode == null)
+            var value = (IDictionary<string, dynamic>)new ExpandoObject();
+
+            if (!reader.IsEmptyElement)
             {
-                return null; // no content is represented by a null value
-            }
+                await reader.ReadAsync();
 
-            if (content.FirstNode.NextNode != null)
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics: We expect a single value, not multiple values
-            }
+                while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:key")
+                {
+                    string[] name = reader.GetAttribute("name").Split(':');
 
-            var node = content.FirstNode;
-
-            switch (node.NodeType)
-            {
-                case XmlNodeType.Element:
-
-                    var element = (XElement)node;
-
-                    if (element.Name == AtomFeed.ElementName.Dict)
+                    if (name.Length > 2)
                     {
-                        return ParseDictionary(element);
+                        throw new InvalidDataException();
                     }
-                    if (element.Name == AtomFeed.ElementName.List)
+
+                    string propertyName = NormalizePropertyName(name[0]);
+                    var dictionary = value;
+
+                    if (name.Length == 2)
                     {
-                        return ParseList(element);
+                        dynamic propertyValue;
+
+                        if (dictionary.TryGetValue(propertyName, out propertyValue))
+                        {
+                            if (!(propertyValue is ExpandoObject))
+                            {
+                                throw new InvalidDataException();
+                            }
+                        }
+                        else
+                        {
+                            propertyValue = new ExpandoObject();
+                            dictionary.Add(propertyName, propertyValue);
+                        }
+
+                        dictionary = (IDictionary<string, object>)propertyValue;
+                        propertyName = NormalizePropertyName(name[1]);
                     }
-                    throw new InvalidDataException(string.Format("Unrecognized element name: {0}", element.Name));
 
-                case XmlNodeType.Text:
+                    dictionary.Add(propertyName, ParsePropertyValueAsync(reader));
+                }
 
-                    XText text = (XText)node;
-                    return text.Value;
-
-                case XmlNodeType.CDATA:
-
-                    XCData cdata = (XCData)node;
-                    return cdata.Value;
+                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:dict"))
+                {
+                    throw new InvalidDataException();
+                }
             }
 
-            throw new InvalidDataException(string.Format("Unexpected node type: {0}", content.FirstNode.NodeType));
+            await reader.ReadAsync();
+            return value;  // TODO: what's the type seen by dynamic?
         }
 
-        static ExpandoObject ParseDictionary(XElement content)
+        static async Task<IReadOnlyList<dynamic>>ParseListAsync(XmlReader reader)
         {
-            // TODO: Remove property name translation because it decreases serialization fidelity
+            List<dynamic> value = new List<dynamic>();
 
-            ExpandoObject value = new ExpandoObject();
-            var valueDictionary = (IDictionary<string, object>)value;
-
-            foreach (var element in content.Elements())
+            if (!reader.IsEmptyElement)
             {
-                if (element.Name != AtomFeed.ElementName.Key)
+                await reader.ReadAsync();
+
+                while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:item")
+                {
+                    value.Add(ParsePropertyValueAsync(reader));
+                }
+
+                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:list"))
                 {
                     throw new InvalidDataException();
                 }
-
-                string[] name = element.Attribute("name").Value.Split(':');
-
-                if (name.Length > 2)
-                {
-                    throw new InvalidDataException();
-                }
-
-                var dictionary = valueDictionary;
-                string propertyName = NormalizePropertyName(name[0]);
-
-                if (name.Length == 2)
-                {
-                    dynamic propertyValue;
-
-                    if (dictionary.TryGetValue(propertyName, out propertyValue))
-                    {
-                        if (!(propertyValue is ExpandoObject))
-                        {
-                            throw new InvalidDataException();
-                        }
-                    }
-                    else
-                    {
-                        propertyValue = new ExpandoObject();
-                        dictionary.Add(propertyName, propertyValue);
-                    }
-
-                    dictionary = (IDictionary<string, object>)propertyValue;
-                    propertyName = NormalizePropertyName(name[1]);
-                }
-
-                dictionary.Add(propertyName, ParsePropertyValue(element));
             }
-
+            
+            await reader.ReadAsync();
             return value;
         }
 
-        static List<object> ParseList(XElement content)
+        static async Task<dynamic> ParsePropertyValueAsync(XmlReader reader)
         {
-            List<object> value = new List<object>();
+            string name = reader.Name;
+            dynamic value;
+            
+            await reader.ReadAsync();
 
-            foreach (var element in content.Elements())
+            switch (reader.NodeType)
             {
-                if (element.Name != AtomFeed.ElementName.Item)
-                {
-                    throw new InvalidDataException();
-                }
-                value.Add(ParsePropertyValue(element));
+                default:
+
+                    value = await reader.ReadContentAsStringAsync();
+                    break;
+
+                case XmlNodeType.Element:
+
+                    // TODO: rewrite
+
+                    switch (reader.Name)
+                    {
+                        case "s:dict":
+
+                            value = await ParseDictionaryAsync(reader);
+                            break;
+
+                        case "s:list":
+
+                            value = await ParseListAsync(reader);
+                            break;
+
+                        default: throw new InvalidDataException(string.Format("Unrecognized element name: {0}", reader.Name));
+                    }
+
+                    break;
+
+                case XmlNodeType.EndElement:
+
+                    if (reader.Name != name)
+                    {
+                        throw new InvalidDataException(); // TODO: Diagnostics
+                    }
+                    value = null;
+                    break;
             }
 
+            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+            
+            await reader.ReadAsync();
             return value;
         }
 

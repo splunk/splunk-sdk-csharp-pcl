@@ -346,12 +346,11 @@ namespace Splunk.Sdk
         {
             var resourceName = new ResourceName(this.ResourceName, "control");
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            using (var response = await Response.CreateAsync(await this.Context.PostAsync(this.Namespace, resourceName, args)))
             {
-                if (response.StatusCode != System.Net.HttpStatusCode.OK)
+                if (response.Message.StatusCode != System.Net.HttpStatusCode.OK)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    throw new RequestException(response.StatusCode, response.ReasonPhrase, XDocument.Load(content));
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
             }
         }

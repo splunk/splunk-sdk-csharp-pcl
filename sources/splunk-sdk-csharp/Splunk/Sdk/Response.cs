@@ -22,6 +22,7 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
@@ -30,7 +31,8 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        Response(HttpResponseMessage message) : this()
+        Response(HttpResponseMessage message)
+            : this()
         {
             this.Message = message;
         }
@@ -42,7 +44,7 @@ namespace Splunk.Sdk
         public HttpResponseMessage Message
         { get; private set; }
 
-        public XmlReader Reader
+        public XmlReader XmlReader
         { get; private set; }
 
         #endregion
@@ -56,7 +58,8 @@ namespace Splunk.Sdk
             var response = new Response(message);
             var stream = await message.Content.ReadAsStreamAsync();
 
-            response.Reader = XmlReader.Create(stream, XmlReaderSettings);
+            response.XmlReader = XmlReader.Create(stream, XmlReaderSettings);
+
             return response;
         }
 
@@ -72,6 +75,9 @@ namespace Splunk.Sdk
             ConformanceLevel = ConformanceLevel.Fragment,
             CloseInput = false,
             Async = true,
+            IgnoreProcessingInstructions = true,
+            IgnoreComments = true,
+            IgnoreWhitespace = true
         };
 
         bool disposed;
@@ -81,7 +87,7 @@ namespace Splunk.Sdk
             if (disposing && !this.disposed)
             {
                 this.Message.Dispose();
-                this.Reader.Dispose();
+                this.XmlReader.Dispose();
                 this.disposed = true;
                 
                 GC.SuppressFinalize(this);

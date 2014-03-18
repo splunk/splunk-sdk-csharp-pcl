@@ -114,20 +114,38 @@ namespace Splunk.Sdk
             Contract.Requires(username != null);
             Contract.Requires(password != null);
 
-            using (HttpResponseMessage response = await this.Context.PostAsync(Namespace.Default, ResourceName.Login, new KeyValuePair<string, object>[]
+            using (var response = await Response.CreateAsync(await this.Context.PostAsync(Namespace.Default, ResourceName.Login, new KeyValuePair<string, object>[]
             {
                 new KeyValuePair<string, object>("username", username),
                 new KeyValuePair<string, object>("password", password)
-            }))
+            })))
             {
-                XDocument document = XDocument.Load(await response.Content.ReadAsStreamAsync());
-
-                if (response.StatusCode != HttpStatusCode.OK)
+                if (!response.Message.IsSuccessStatusCode)
                 {
-                    throw new RequestException(response.StatusCode, response.ReasonPhrase, document);
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
 
-                this.SessionKey = document.Element("response").Element("sessionKey").Value;
+                var reader = response.XmlReader;
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                {
+                    await reader.ReadAsync();
+                }
+
+                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                await reader.ReadAsync();
+
+                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "sessionKey"))
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                this.SessionKey = await reader.ReadElementContentAsStringAsync();
             }
         }
 
@@ -190,52 +208,37 @@ namespace Splunk.Sdk
             var resourceName = new ResourceName(ResourceName.SavedSearches, searchName, "dispatch");
             string searchId;
 
-            using (HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs))
+            using (var response = await Response.CreateAsync(await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs)))
             {
-                switch (response.StatusCode)
+                switch (response.Message.StatusCode)
                 {
-                    // Success
                     case HttpStatusCode.Created:
                     case HttpStatusCode.OK:
 
-                    // Failure
-                    case HttpStatusCode.BadRequest:
-                    case HttpStatusCode.Conflict:
-                    case HttpStatusCode.InternalServerError:
+                        var reader = response.XmlReader;
+                        await reader.ReadAsync();
 
-                        var messageBody = await response.Content.ReadAsStringAsync();
-                        var document = XDocument.Parse(messageBody);
-
-                        if (!response.IsSuccessStatusCode)
+                        if (reader.NodeType == XmlNodeType.XmlDeclaration)
                         {
-                            throw new RequestException(response.StatusCode, response.ReasonPhrase, document);
+                            await reader.ReadAsync();
                         }
-                        searchId = document.Element("response").Element("sid").Value;
+
+                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        await reader.ReadAsync();
+
+                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "sid"))
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        searchId = await reader.ReadElementContentAsStringAsync();
                         break;
 
-                    default:
-
-                        string text = null;
-
-                        switch (response.StatusCode)
-                        { 
-                            case HttpStatusCode.PaymentRequired:
-                                text = string.Format("The Splunk license in use has disabled '{0}'.", "Saved Searches");
-                                break;
-                            case HttpStatusCode.Unauthorized:
-                                text = string.Format("Authentication is required to access '{0}'.", "Saved Searches");
-                                break;
-                            case HttpStatusCode.Forbidden:
-                                text = string.Format("Insufficient permissions to {0} '{1}'", "dispatch saved search", searchName);
-                                break;
-                            case HttpStatusCode.NotFound:
-                                text = string.Format("{0} '{1}' does not exist.", "Saved search", searchName);
-                                break;
-                            case HttpStatusCode.ServiceUnavailable:
-                                text = string.Format("Splunk is not configured for {0}", "dispatching saved searches");
-                                break;
-                        }
-                        throw new RequestException(response.StatusCode, response.ReasonPhrase, new Message(MessageType.Error, text));
+                    default: throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
             }
 
@@ -258,6 +261,7 @@ namespace Splunk.Sdk
             return apps;
         }
 
+#if false
         /// <summary>
         /// Retrieves the list of all Splunk system capabilities.
         /// </summary>
@@ -275,6 +279,7 @@ namespace Splunk.Sdk
 
             return capabilities;
         }
+#endif
 
         /// <summary>
         /// Retrieves the collection of all running search jobs.

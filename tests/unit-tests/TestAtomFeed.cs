@@ -19,6 +19,7 @@ namespace Splunk.Sdk
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Xml;
     using System.Xml.Linq;
     using Xunit;
 
@@ -26,38 +27,40 @@ namespace Splunk.Sdk
     {
         [Trait("class", "AtomFeed")]
         [Fact]
-        public void CanConstruct()
+        public void CanReadFeed()
         {
-            var feed = new AtomFeed(document.Root);
+            using (var stream = new FileStream(AtomFeedPath, FileMode.Open, FileAccess.Read))
+            {
+                var reader = XmlReader.Create(stream, XmlReaderSettings);
+                var feed = new AtomFeed();
+
+                feed.ReadXmlAsync(reader).Wait();
+            }
         }
 
         [Trait("class", "AtomFeed")]
         [Fact]
-        public void CanAccessEntries()
+        public void CanReadEntry()
         {
             var expected = new List<string>() { "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=2/17/2014 5:46:39 PM, Updated=2/17/2014 5:46:39 PM)" };
-            var feed = new AtomFeed(document.Root);
-            List<string> actual;
-            
-            actual = new List<string>();
+            var stream = new FileStream(AtomFeedPath, FileMode.Open, FileAccess.Read);
+            var reader = XmlReader.Create(stream, XmlReaderSettings);
 
-            foreach (var entry in feed.Entries)
-            {
-                actual.Add(entry.ToString());
-            }
+            bool result = reader.ReadToFollowingAsync("entry").Result;
+            var entry = new AtomEntry();
 
-            Assert.Equal(expected, actual);
-
-            actual = new List<string>();
-
-            for (int i = 0; i < feed.Entries.Count; i++)
-            {
-                actual.Add(feed.Entries[i].ToString());
-            }
-
-            Assert.Equal(expected, actual);
+            entry.ReadXmlAsync(reader).Wait();
         }
 
-        static readonly XDocument document = XDocument.Load(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "AtomFeed.xml")));
+        static readonly string AtomFeedPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "AtomFeed.xml"));
+
+        static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()
+        {
+            Async = true,
+            ConformanceLevel = ConformanceLevel.Fragment,
+            IgnoreComments = true,
+            IgnoreProcessingInstructions = true,
+            IgnoreWhitespace = true
+        };
     }
 }

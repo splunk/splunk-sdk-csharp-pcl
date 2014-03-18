@@ -17,6 +17,7 @@
 // TODO:
 // [O] Contracts
 // [ ] Documentation
+// [ ] Consider limiting the number of messages we process in a response body
 
 namespace Splunk.Sdk
 {
@@ -25,6 +26,8 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
+    using System.Xml;
     using System.Xml.Linq;
 
     sealed public class Message : IComparable, IComparable<Message>, IEquatable<Message>
@@ -34,37 +37,9 @@ namespace Splunk.Sdk
         internal Message(MessageType type, string text)
         {
             Contract.Requires<ArgumentOutOfRangeException>(MessageType.Debug <= type && type <= MessageType.Fatal, "type");
+            Contract.Requires<ArgumentNullException>(text != null, "text");
             this.Type = type;
             this.Text = text;
-        }
-
-        internal Message(XElement message)
-        {
-            Contract.Requires<ArgumentException>(message != null && message.Name == "msg", "message");
-            string type = message.Attribute("type").Value;
-
-            switch (message.Attribute("type").Value)
-            {
-                case "DEBUG":
-                    this.Type = MessageType.Debug;
-                    break;
-                case "INFO":
-                    this.Type = MessageType.Information;
-                    break;
-                case "WARN":
-                    this.Type = MessageType.Warning;
-                    break;
-                case "ERROR":
-                    this.Type = MessageType.Error;
-                    break;
-                case "FATAL":
-                    this.Type = MessageType.Fatal;
-                    break;
-                default:
-                    throw new InvalidDataException(string.Format("Unrecognized message type: {0}", type));
-            }
-            
-            this.Text = message.Value;
         }
 
         #endregion
@@ -128,9 +103,66 @@ namespace Splunk.Sdk
 
         #region Privates/internals
 
-        internal static IEnumerable<Message> GetMessages(XDocument document)
-        {
-            var messages = from element in document.Element("response").Element("messages").Elements() select new Message(element);
+        internal static async Task<IEnumerable<Message>> ReadMessagesAsync(XmlReader reader)
+        { 
+            if (reader.ReadState == ReadState.Initial)
+            {
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                {
+                    await reader.ReadAsync();
+                }
+            }
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
+            {
+                throw new InvalidDataException();  // TODO: Diagnostics
+            }
+
+            await reader.ReadAsync();
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "messages"))
+            {
+                throw new InvalidDataException();  // TODO: Diagnostics
+            }
+
+            var messages = new List<Message>();
+            await reader.ReadAsync();
+
+            while (reader.NodeType == XmlNodeType.Element)
+            {
+                if (reader.Name != "msg")
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                MessageType type;
+
+                switch (reader.GetAttribute("type"))
+                {
+                    case "DEBUG":
+                        type = MessageType.Debug;
+                        break;
+                    case "INFO":
+                        type = MessageType.Information;
+                        break;
+                    case "WARN":
+                        type = MessageType.Warning;
+                        break;
+                    case "ERROR":
+                        type = MessageType.Error;
+                        break;
+                    case "FATAL":
+                        type = MessageType.Fatal;
+                        break;
+                    default:
+                        throw new InvalidDataException(string.Format("Unrecognized message type: {0}", reader.GetAttribute("type")));
+                }
+
+                messages.Add(new Message(type, await reader.ReadElementContentAsStringAsync()));
+            }
+
             return messages;
         }
 

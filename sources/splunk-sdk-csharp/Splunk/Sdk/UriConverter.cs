@@ -43,7 +43,7 @@ namespace Splunk.Sdk
                 return value;
             }
 
-            if (Uri.TryCreate(input.ToString(), UriKind.Absolute, out value))
+            if (Uri.TryCreate(input.ToString(), UriKind.RelativeOrAbsolute, out value))
             {
                 return value;
             }

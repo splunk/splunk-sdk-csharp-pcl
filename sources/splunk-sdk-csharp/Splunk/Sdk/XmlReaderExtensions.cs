@@ -43,6 +43,11 @@ namespace Splunk.Sdk
             }
         }
 
+        public static async Task<TValue> ReadElementContentAsync<TValue>(this XmlReader reader, ValueConverter<TValue> valueConverter)
+        {
+            return valueConverter.Convert(await reader.ReadElementContentAsStringAsync());
+        }
+
         public static async Task<bool> ReadToDescendantAsync(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");

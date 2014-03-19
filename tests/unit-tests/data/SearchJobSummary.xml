@@ -1,0 +1,48 @@
+﻿<?xml version='1.0' encoding='UTF-8'?>
+<summary earliest_time='1969-12-31T16:00:00.000-08:00' latest_time='1969-12-31T16:00:00.464-08:00' duration='0' c='150375'>
+  <field k='host' c='150375' nc='0' dc='1' exact='1'>
+    <modes>
+      <value c='150375' exact='1'>
+        <text>tiny</text>
+      </value>
+    </modes>
+  </field>
+  <field k='source' c='150375' nc='0' dc='13' exact='1'>
+    <modes>
+      <value c='136107' exact='1'>
+        <text>/mnt/scsi/steveyz/splunksi/var/log/splunk/metrics.log</text>
+      </value>
+      <value c='6682' exact='1'>
+        <text>/mnt/scsi/steveyz/splunksi/var/log/splunk/splunkd_access.log</text>
+      </value>
+      <value c='4656' exact='1'>
+        <text>/mnt/scsi/steveyz/splunksi/var/log/splunk/scheduler.log</text>
+      </value>
+      <value c='1714' exact='1'>
+        <text>/mnt/scsi/steveyz/splunksi/var/log/splunk/web_access.log</text>
+      </value>
+      <value c='937' exact='1'>
+        <text>/mnt/scsi/steveyz/splunksi/var/log/splunk/splunkd.log</text>
+      </value>
+    </modes>
+  </field>
+  <field k='sourcetype' c='150375' nc='0' dc='10' exact='1'>
+    <modes>
+      <value c='137053' exact='1'>
+        <text>splunkd</text>
+      </value>
+      <value c='6682' exact='1'>
+        <text>splunkd_access</text>
+      </value>
+      <value c='4656' exact='1'>
+        <text>scheduler</text>
+      </value>
+      <value c='1714' exact='1'>
+        <text>splunk_web_access</text>
+      </value>
+      <value c='193' exact='1'>
+        <text>splunk_web_service</text>
+      </value>
+    </modes>
+  </field>
+</summary>

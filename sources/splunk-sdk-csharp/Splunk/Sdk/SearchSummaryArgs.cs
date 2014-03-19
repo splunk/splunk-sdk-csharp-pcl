@@ -141,13 +141,13 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a count that filters events on from a search summary
-        /// based on rank.
+        /// Gets or sets a count that filters events from a search summary based
+        /// on rank.
         /// </summary>
         /// <remarks>
         /// The default value is 10, indicating that the top 10 values for each
-        /// field in <see cref="FieldList"/> should be included in the <see 
-        /// cref="Job"/> summary.
+        /// field in <see cref="FieldList"/> should be included in the search 
+        /// <see cref="Job"/> summary.
         /// </remarks>
         [DataMember(Name = "top_count", EmitDefaultValue = false)]
         [DefaultValue(10)]

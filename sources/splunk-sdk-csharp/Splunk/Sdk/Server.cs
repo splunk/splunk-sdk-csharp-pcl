@@ -51,7 +51,7 @@ namespace Splunk.Sdk
 
         public async Task RestartAsync()
         {
-            using (var response = await Response.CreateAsync(await this.service.Context.PostAsync(this.service.Namespace, ServerControlRestart)))
+            using (var response = await this.service.Context.PostAsync(this.service.Namespace, ServerControlRestart))
             {
                 if (!response.Message.IsSuccessStatusCode)
                 {

@@ -54,7 +54,7 @@
   <Class Name="Splunk.Sdk.Context" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="24.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAiAAAAAUAAAAAAAECAAACAkAAAAAIAiAAAA=</HashCode>
+      <HashCode>AABAAAAAAiAAAAAUAAAAAAAECAAACAkAAAAAIAiAAIA=</HashCode>
       <FileName>Splunk\Sdk\Context.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -69,7 +69,7 @@
   <Class Name="Splunk.Sdk.EntityCollection&lt;TEntity&gt;" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="19.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAgAAABAACAAAAAQAAAAAIQgEIAAAAAAAAAI=</HashCode>
+      <HashCode>AAgAAAAAAgAAABAACAAAAAQAAAAAIQgEAIAAAAAAAAI=</HashCode>
       <FileName>Splunk\Sdk\EntityCollection.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -126,7 +126,7 @@
   <Class Name="Splunk.Sdk.Message" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="23" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAQEgAAAAAAAAAAAEIAAAQAACACAAAA=</HashCode>
+      <HashCode>AAAAgAAAAAAAAAQEgAAAAAAAAAAAAIAAAQAACAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Message.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -134,7 +134,7 @@
   <Class Name="Splunk.Sdk.Namespace" Collapsed="true">
     <Position X="24.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAJAAAAAQAAAAAEAAAAIAAAAAAAAAAAAAIAgAAgAAA=</HashCode>
+      <HashCode>AAAJAAAAAQAAAAAEAAAAIAAAAAAAAAAAgAIAgAAgAAA=</HashCode>
       <FileName>Splunk\Sdk\Namespace.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -204,11 +204,12 @@
       <FileName>Splunk\Sdk\SearchExportArgs.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Splunk.Sdk.SearchResultArgs" Collapsed="true">
+  <Class Name="Splunk.Sdk.JobCollectionArgs" Collapsed="true">
     <Position X="0.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAIAAAAAAAAAQAAAAAAAAAAAAAAAAggAA=</HashCode>
-      <FileName>Splunk\Sdk\SearchResultArgs.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAQAAAggAA=</HashCode>
+      <FileName>Splunk\Sdk\JobCollectionArgs.cs</FileName>
+      <NewMemberFileName>Splunk\Sdk\SearchResultArgs.cs</NewMemberFileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.SearchResults" Collapsed="true">

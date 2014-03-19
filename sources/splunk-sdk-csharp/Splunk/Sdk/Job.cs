@@ -51,6 +51,7 @@ namespace Splunk.Sdk
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml.Linq;
@@ -120,7 +121,7 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResults> GetSearchResultsAsync(SearchResultArgs args = null)
+        public async Task<SearchResults> GetSearchResultsAsync(SearchResultsArgs args = null)
         {
             await this.TransitionAsync(DispatchState.Done);
 
@@ -146,7 +147,7 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResults> GetSearchResultsPreviewAsync(SearchResultArgs args = null)
+        public async Task<SearchResults> GetSearchResultsPreviewAsync(SearchResultsArgs args = null)
         {
             await this.TransitionAsync(DispatchState.Running);
 
@@ -166,9 +167,9 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "cancel")
+                new Argument("action", "cancel")
             });
         }
 
@@ -180,9 +181,9 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "disable_preview") 
+                new Argument("action", "disable_preview") 
             });
         }
 
@@ -194,9 +195,9 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "enable_preview") 
+                new Argument("action", "enable_preview") 
             });
         }
 
@@ -208,9 +209,9 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "finalize") 
+                new Argument("action", "finalize") 
             });
         }
 
@@ -222,9 +223,9 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "pause") 
+                new Argument("action", "pause") 
             });
         }
 
@@ -236,9 +237,9 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "save") 
+                new Argument("action", "save") 
             });
         }
 
@@ -251,10 +252,10 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "priority"),
-                new KeyValuePair<string, object>("priority", priority)
+                new Argument("action", "priority"),
+                new Argument("priority", priority.ToString())
             });
         }
 
@@ -267,10 +268,10 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[]
+            await this.PostControlCommandAsync(new Argument[]
             { 
-                new KeyValuePair<string, object>("action", "setttl"),
-                new KeyValuePair<string, object>("ttl", ttl)
+                new Argument("action", "setttl"),
+                new Argument("ttl", ttl.ToString())
             });
         }
 
@@ -283,10 +284,10 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[]
+            await this.PostControlCommandAsync(new Argument[]
             { 
-                new KeyValuePair<string, object>("action", "touch"),
-                new KeyValuePair<string, object>("ttl", ttl)
+                new Argument("action", "touch"),
+                new Argument("ttl", ttl.ToString())
             });
         }
 
@@ -298,9 +299,9 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "unpause") 
+                new Argument("action", "unpause") 
             });
         }
 
@@ -312,10 +313,21 @@ namespace Splunk.Sdk
         {
             await this.TransitionAsync(DispatchState.Running);
 
-            await this.PostControlCommandAsync(new KeyValuePair<string, object>[] 
+            await this.PostControlCommandAsync(new Argument[] 
             { 
-                new KeyValuePair<string, object>("action", "unsave") 
+                new Argument("action", "unsave") 
             });
+        }
+
+        public async Task UpdateJobArgs(JobArgs args)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
         }
 
         #endregion
@@ -331,7 +343,7 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        async Task<SearchResults> GetSearchResultsAsync(string endpoint, IEnumerable<KeyValuePair<string, object>> args)
+        async Task<SearchResults> GetSearchResultsAsync(string endpoint, IEnumerable<Argument> args)
         {
             var resourceName = new ResourceName(this.ResourceName, endpoint);
 
@@ -341,11 +353,11 @@ namespace Splunk.Sdk
             return searchResults;
         }
 
-        async Task PostControlCommandAsync(IEnumerable<KeyValuePair<string, object>> args)
+        async Task PostControlCommandAsync(IEnumerable<Argument> args)
         {
             var resourceName = new ResourceName(this.ResourceName, "control");
 
-            using (var response = await Response.CreateAsync(await this.Context.PostAsync(this.Namespace, resourceName, args)))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
                 if (response.Message.StatusCode != System.Net.HttpStatusCode.OK)
                 {

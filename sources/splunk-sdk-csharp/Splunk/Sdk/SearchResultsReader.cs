@@ -87,6 +87,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException();  // TODO: diagnostics
                 }
             }
+
             return new SearchResultsReader(response);
         }
 

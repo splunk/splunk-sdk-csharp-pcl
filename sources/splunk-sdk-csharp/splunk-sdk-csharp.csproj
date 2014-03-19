@@ -106,10 +106,16 @@
     <Compile Include="Splunk\Sdk\Acl.cs" />
     <Compile Include="Splunk\Sdk\EaiConverter.cs" />
     <Compile Include="Splunk\Sdk\DateTimeConverter.cs" />
+    <Compile Include="Splunk\Sdk\JobCollection.cs" />
+    <Compile Include="Splunk\Sdk\Argument.cs" />
     <Compile Include="Splunk\Sdk\PermissionsConverter.cs" />
     <Compile Include="Splunk\Sdk\AclConverter.cs" />
     <Compile Include="Splunk\Sdk\Eai.cs" />
     <Compile Include="Splunk\Sdk\ExpandoAdapter.cs" />
+    <Compile Include="Splunk\Sdk\JobCollectionArgs.cs" />
+    <Compile Include="Splunk\Sdk\SearchSummaryArgs.cs" />
+    <Compile Include="Splunk\Sdk\SearchSummary.cs" />
+    <Compile Include="Splunk\Sdk\SortDirection.cs" />
     <Compile Include="Splunk\Sdk\StringConverter.cs" />
     <Compile Include="Splunk\Sdk\CollectionConverter.cs" />
     <Compile Include="Splunk\Sdk\BooleanConverter.cs" />
@@ -134,7 +140,7 @@
     <Compile Include="Splunk\Sdk\ExecutionMode.cs" />
     <Compile Include="Splunk\Sdk\SavedSearchArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchEventArgs.cs" />
-    <Compile Include="Splunk\Sdk\SearchResultArgs.cs" />
+    <Compile Include="Splunk\Sdk\SearchResultsArgs.cs" />
     <Compile Include="Splunk\Sdk\Response.cs" />
     <Compile Include="Splunk\Sdk\SearchExportArgs.cs" />
     <Compile Include="Splunk\Sdk\ServerInfo.cs" />

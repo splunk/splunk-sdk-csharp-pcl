@@ -27,15 +27,12 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml;
 
-    public struct Response : IDisposable
+    public class Response : IDisposable
     {
         #region Constructors
 
         Response(HttpResponseMessage message)
-            : this()
-        {
-            this.Message = message;
-        }
+        { this.Message = message; }
 
         #endregion
 

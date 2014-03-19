@@ -56,157 +56,164 @@ namespace Splunk.Sdk
         public string Search
         { get; set; }
 
-        [DataMember(Name = "auto_cancel", EmitDefaultValue=false)]
+        [DataMember(Name = "auto_cancel", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int AutoCancel
         { get; set; }
         
-        [DataMember(Name = "auto_finalize_ec", EmitDefaultValue=false)]
+        [DataMember(Name = "auto_finalize_ec", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int AutoFinalizeEventCount
         { get; set; }
 
-        [DataMember(Name = "auto_pause", EmitDefaultValue=false)]
+        [DataMember(Name = "auto_pause", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int AutoPause
         { get; set; }
 
-        [DataMember(Name = "earliest_time", EmitDefaultValue=false)]
+        [DataMember(Name = "earliest_time", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string EarliestTime // TODO: Convenience class for specifying a time string. See 
         { get; set; }
 
-        [DataMember(Name = "enable_lookups", EmitDefaultValue=false)]
+        [DataMember(Name = "enable_lookups", EmitDefaultValue = false)]
         [DefaultValue(true)]
         public bool EnableLookups
         { get; set; }
 
-        [DataMember(Name = "exec_mode", EmitDefaultValue=false)]
+        [DataMember(Name = "exec_mode", EmitDefaultValue = false)]
         [DefaultValue(typeof(ExecutionMode), "Normal")]
         public ExecutionMode ExecutionMode
         { get; set; }
 
-        [DataMember(Name = "force_bundle_replication", EmitDefaultValue=false)]
+        [DataMember(Name = "force_bundle_replication", EmitDefaultValue = false)]
         [DefaultValue(false)]
         public bool ForceBundleReplication
         { get; set; }
 
-        [DataMember(Name = "id", EmitDefaultValue=false)]
+        [DataMember(Name = "id", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Id
         { get; set; }
 
-        [DataMember(Name = "index_earliest", EmitDefaultValue=false)]
+        [DataMember(Name = "index_earliest", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string IndexEarliest
         { get; set; }
 
-        [DataMember(Name = "index_latest", EmitDefaultValue=false)]
+        [DataMember(Name = "index_latest", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string IndexLatest
         { get; set; }
 
-        [DataMember(Name = "latest_time", EmitDefaultValue=false)]
+        [DataMember(Name = "latest_time", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string LatestTime
         { get; set; }
 
-        [DataMember(Name = "max_count", EmitDefaultValue=false)]
+        [DataMember(Name = "max_count", EmitDefaultValue = false)]
         [DefaultValue(10000)]
         public int MaxCount
         { get; set; }
 
-        [DataMember(Name = "max_time", EmitDefaultValue=false)]
+        [DataMember(Name = "max_time", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int MaxTime
         { get; set; }
 
-        [DataMember(Name = "namespace", EmitDefaultValue=false)]
+        /// <summary>
+        /// The application namespace in which to restrict searches. 
+        /// </summary>
+        /// <remarks>
+        /// The namespace corresponds to the identifier recognized in the 
+        /// /services/apps/local endpoint.
+        /// </remarks>
+        [DataMember(Name = "namespace", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Namespace
         { get; set; }
 
-        [DataMember(Name = "now", EmitDefaultValue=false)]
+        [DataMember(Name = "now", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Now
         { get; set; }
 
-        [DataMember(Name = "reduce_freq", EmitDefaultValue=false)]
+        [DataMember(Name = "reduce_freq", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int ReduceFrequency
         { get; set; }
 
-        [DataMember(Name = "reload_macros", EmitDefaultValue=false)]
+        [DataMember(Name = "reload_macros", EmitDefaultValue = false)]
         [DefaultValue(true)]
         public bool ReloadMacros
         { get; set; }
 
-        [DataMember(Name = "remote_server_list", EmitDefaultValue=false)]
+        [DataMember(Name = "remote_server_list", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string RemoteServerList
         { get; set; }
 
-        [DataMember(Name = "rf", EmitDefaultValue=false)]
+        [DataMember(Name = "rf", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public IReadOnlyList<string> RequiredFieldList
         { get; set; }
 
-        [DataMember(Name = "reuse_max_seconds_ago", EmitDefaultValue=false)]
+        [DataMember(Name = "reuse_max_seconds_ago", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int ReuseMaxSecondsAgo
         { get; set; }
 
-        [DataMember(Name = "rt_blocking", EmitDefaultValue=false)]
+        [DataMember(Name = "rt_blocking", EmitDefaultValue = false)]
         [DefaultValue(false)]
         public bool RealTimeBlocking
         { get; set; }
 
-        [DataMember(Name = "rt_indexfilter", EmitDefaultValue=false)]
+        [DataMember(Name = "rt_indexfilter", EmitDefaultValue = false)]
         [DefaultValue(false)]
         public bool RealTimeIndexFilter
         { get; set; }
 
-        [DataMember(Name = "rt_maxblocksecs", EmitDefaultValue=false)]
+        [DataMember(Name = "rt_maxblocksecs", EmitDefaultValue = false)]
         [DefaultValue(60)]
         public int RealTimeMaxBlockSeconds
         { get; set; }
 
-        [DataMember(Name = "rt_queue_size", EmitDefaultValue=false)]
+        [DataMember(Name = "rt_queue_size", EmitDefaultValue = false)]
         [DefaultValue(10000)]
         public int RealTimeQueueSize
         { get; set; }
 
-        [DataMember(Name = "search_listener", EmitDefaultValue=false)]
+        [DataMember(Name = "search_listener", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string SearchListener
         { get; set; }
 
-        [DataMember(Name = "search_mode", EmitDefaultValue=false)]
+        [DataMember(Name = "search_mode", EmitDefaultValue = false)]
         [DefaultValue(typeof(SearchMode), "Normal")]
         public SearchMode SearchMode
         { get; set; }
 
-        [DataMember(Name = "spawn_process", EmitDefaultValue=false)]
+        [DataMember(Name = "spawn_process", EmitDefaultValue = false)]
         [DefaultValue(true)]
         public bool SpawnProcess
         { get; set; }
 
-        [DataMember(Name = "status_buckets", EmitDefaultValue=false)]
+        [DataMember(Name = "status_buckets", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int StatusBuckets
         { get; set; }
 
-        [DataMember(Name = "sync_bundle_replication", EmitDefaultValue=false)]
+        [DataMember(Name = "sync_bundle_replication", EmitDefaultValue = false)]
         [DefaultValue(false)]
         public bool SyncBundleReplication
         { get; set; }
 
-        [DataMember(Name = "time_format", EmitDefaultValue=false)]
+        [DataMember(Name = "time_format", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string TimeFormat
         { get; set; }
 
-        [DataMember(Name = "timeout", EmitDefaultValue=false)]
+        [DataMember(Name = "timeout", EmitDefaultValue = false)]
         [DefaultValue(86400)]
         public int Timeout
         { get; set; }

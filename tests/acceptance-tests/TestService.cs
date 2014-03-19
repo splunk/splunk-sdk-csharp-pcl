@@ -99,7 +99,7 @@ namespace Splunk.Sdk.UnitTesting
             {
                 await service.LoginAsync("admin", "changeme");
 
-                Job job = await service.SearchAsync("search index=_internal | head 10");
+                Job job = await service.StartJobAsync("search index=_internal | head 10");
                 SearchResults searchResults = await job.GetSearchResultsAsync();
 
                 var records = new List<Splunk.Sdk.Record>(searchResults);

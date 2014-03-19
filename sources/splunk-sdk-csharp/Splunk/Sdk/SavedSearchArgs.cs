@@ -15,106 +15,56 @@
  */
 
 // TODO:
+// [ ] Documentation
 // [ ] Diagnostics
 
 namespace Splunk.Sdk
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
 
-    public sealed class SavedSearchArgs : IDictionary<string, object>
+    public sealed class SavedSearchArgs : ISet<Argument>
     {
         #region Constructors
 
         public SavedSearchArgs()
         {
-            this.dictionary = new Dictionary<string, object>();
+            this.set = new HashSet<Argument>();
+        }
+
+        public SavedSearchArgs(IEnumerable<Argument> collection)
+        {
+            Contract.Requires<ArgumentNullException>(collection != null, "collection");
+            this.set = new HashSet<Argument>(collection);
         }
 
         #endregion
 
         #region Properties
 
-        public object this[string key]
-        {
-            get { return this.dictionary[key]; }
-            set { this.dictionary[key] = value; }
-        }
-
         public int Count
-        { get { return this.dictionary.Count; } }
+        { get { return this.set.Count; } }
 
         public bool IsReadOnly
         { get { return false; } }
-
-        public ICollection<string> Keys
-        { get { return this.dictionary.Keys; } }
-
-        public ICollection<object> Values
-        { get { return this.dictionary.Values; } }
 
         #endregion
 
         #region Methods
 
-        public void Add(string key, object value)
-        {
-            this.dictionary.Add(key, value);
-        }
-
-        public void Add(KeyValuePair<string, object> item)
-        {
-            this.dictionary.Add(item.Key, item.Value);
-        }
-
         public void Clear()
         {
-            this.dictionary.Clear();
+            this.set.Clear();
         }
 
-        public bool Contains(KeyValuePair<string, object> item)
+        public IEnumerator<Argument> GetEnumerator()
         {
-            return this.dictionary.Contains(item);
-        }
-
-        public bool ContainsKey(string key)
-        {
-            return this.dictionary.ContainsKey(key);
-        }
-
-        public void CopyTo(KeyValuePair<string, object>[] array, int index)
-        {
-            if (array == null)
+            foreach (var item in this.set)
             {
-                throw new ArgumentNullException("array");
-            }
-            
-            if (array.Length - index < this.Count)
-            {
-                throw new ArgumentException("array");
-            }
-
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException("index");
-            }
-
-            foreach (var item in this.dictionary)
-            {
-                array[index++] = item;
-            }
-        }
-
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            foreach (var item in this.dictionary)
-            {
-                yield return new KeyValuePair<string, object>("args." + item.Key, item.Value);
+                yield return new Argument("args." + item.Name, item.Value);
             }
         }
 
@@ -123,48 +73,97 @@ namespace Splunk.Sdk
             return this.GetEnumerator();
         }
  
-        public bool Remove(string key)
-        {
-            return this.dictionary.Remove(key);
-        }
-
-        public bool Remove(KeyValuePair<string, object> item)
-        {
-            return this.Remove(item);
-        }
-
         public override string ToString()
         {
-            StringBuilder builder = new StringBuilder();
-
-            foreach (KeyValuePair<string, object> arg in this)
-            {
-                builder.Append("args.");
-                builder.Append(arg.Key);
-                builder.Append('=');
-                builder.Append(arg.Value);
-                builder.Append("; ");
-            }
-
-            if (builder.Length > 0)
-            {
-                builder.Length = builder.Length - 2;
-            }
-
-            return builder.ToString();
-        }
-
-        public bool TryGetValue(string key, out object value)
-        {
-            return this.dictionary.TryGetValue(key, out value);
+            return string.Join("; ", from arg in this select arg.ToString());
         }
 
         #endregion
 
         #region privates
 
-        Dictionary<string, object> dictionary;
+        HashSet<Argument> set;
 
         #endregion
+
+        public bool Add(Argument item)
+        {
+            return this.set.Add(item);
+        }
+
+        public void ExceptWith(IEnumerable<Argument> other)
+        {
+            this.set.ExceptWith(other);
+        }
+
+        public void IntersectWith(IEnumerable<Argument> other)
+        {
+            this.set.IntersectWith(other);
+        }
+
+        public bool IsProperSubsetOf(IEnumerable<Argument> other)
+        {
+            return this.IsProperSubsetOf(other);
+        }
+
+        public bool IsProperSupersetOf(IEnumerable<Argument> other)
+        {
+            return this.IsProperSupersetOf(other);
+        }
+
+        public bool IsSubsetOf(IEnumerable<Argument> other)
+        {
+            return this.set.IsSubsetOf(other);
+        }
+
+        public bool IsSupersetOf(IEnumerable<Argument> other)
+        {
+            return this.set.IsSupersetOf(other);
+        }
+
+        public bool Overlaps(IEnumerable<Argument> other)
+        {
+            return this.set.Overlaps(other);
+        }
+
+        public bool SetEquals(IEnumerable<Argument> other)
+        {
+            return this.SetEquals(other);
+        }
+
+        public void SymmetricExceptWith(IEnumerable<Argument> other)
+        {
+            this.set.SymmetricExceptWith(other);
+        }
+
+        public void UnionWith(IEnumerable<Argument> other)
+        {
+            this.set.UnionWith(other);
+        }
+
+        void ICollection<Argument>.Add(Argument item)
+        {
+            this.set.Add(item);
+        }
+
+        public bool Contains(Argument item)
+        {
+            return this.set.Contains(item);
+        }
+
+        public void CopyTo(Argument[] array, int index)
+        {
+            this.set.CopyTo(array, index);
+        }
+
+        public bool Remove(Argument item)
+        {
+            return this.set.Remove(item);
+        }
+
+        IEnumerator<Argument> IEnumerable<Argument>.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -114,38 +114,17 @@ namespace Splunk.Sdk
             Contract.Requires(username != null);
             Contract.Requires(password != null);
 
-            using (var response = await Response.CreateAsync(await this.Context.PostAsync(Namespace.Default, ResourceName.Login, new KeyValuePair<string, object>[]
+            using (var response = await this.Context.PostAsync(Namespace.Default, ResourceName.Login, new Argument[]
             {
-                new KeyValuePair<string, object>("username", username),
-                new KeyValuePair<string, object>("password", password)
-            })))
+                new Argument("username", username),
+                new Argument("password", password)
+            }))
             {
                 if (!response.Message.IsSuccessStatusCode)
                 {
                     throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
-
-                var reader = response.XmlReader;
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics
-                }
-
-                await reader.ReadAsync();
-
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "sessionKey"))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics
-                }
-
-                this.SessionKey = await reader.ReadElementContentAsStringAsync();
+                this.SessionKey = await response.XmlReader.ReadResponseElementAsync("sessionKey");
             }
         }
 
@@ -208,41 +187,21 @@ namespace Splunk.Sdk
             var resourceName = new ResourceName(ResourceName.SavedSearches, searchName, "dispatch");
             string searchId;
 
-            using (var response = await Response.CreateAsync(await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs)))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs))
             {
                 switch (response.Message.StatusCode)
                 {
                     case HttpStatusCode.Created:
                     case HttpStatusCode.OK:
 
-                        var reader = response.XmlReader;
-                        await reader.ReadAsync();
-
-                        if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                        {
-                            await reader.ReadAsync();
-                        }
-
-                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
-                        await reader.ReadAsync();
-
-                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "sid"))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
-                        searchId = await reader.ReadElementContentAsStringAsync();
+                        searchId = await response.XmlReader.ReadResponseElementAsync("sid");
                         break;
 
                     default: throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
             }
 
-            Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
+            Job job = new Job(this.Context, this.Namespace, ResourceName.SearchJobs, name: searchId);
             await job.UpdateAsync();
             return job;
         }
@@ -254,9 +213,9 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
         /// </remarks>
-        public async Task<EntityCollection<App>> GetAppsAsync(IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<EntityCollection<App>> GetAppsAsync(IEnumerable<Argument> args)
         {
-            var apps = new EntityCollection<App>(this.Context, this.Namespace, ResourceName.AppsLocal, parameters);
+            var apps = new EntityCollection<App>(this.Context, this.Namespace, ResourceName.AppsLocal, args);
             await apps.UpdateAsync();
             return apps;
         }
@@ -282,20 +241,64 @@ namespace Splunk.Sdk
 #endif
 
         /// <summary>
-        /// Retrieves the collection of all running search jobs.
+        /// Gets details about the search <see cref="Job"/> identified by
+        /// <c>searchId</c>.
         /// </summary>
         /// <remarks>
-        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
+        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
+        /// REST API Reference.
         /// </remarks>
-        public async Task<EntityCollection<Job>> GetJobsAsync(IEnumerable<KeyValuePair<string, object>> parameters)
+        public async Task<Job> GetJobAsync(string searchId)
         {
-            var jobs = new EntityCollection<Job>(this.Context, this.Namespace, ResourceName.Jobs, parameters);
-            await jobs.UpdateAsync();
-            return jobs;
+            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.SearchJobs, searchId)))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+
+                var atomEntry = new AtomEntry();
+                await atomEntry.ReadXmlAsync(response.XmlReader);
+                var job = Job.CreateEntity(this.Context, ResourceName.SearchJobs, atomEntry); // TODO: Entity<TEntity> derivatives should provide their ResourceName property. CreateEntity should not require it.
+                
+                return job;
+            }
         }
 
         /// <summary>
-        /// Creates a search <see cref="Job"/>.
+        /// Removes the search <see cref="Job"/> identified by <c>searchId</c>.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
+        /// REST API Reference.
+        /// </remarks>
+        public async Task RemoveJobAsync(string searchId)
+        {
+            using (var response = await this.Context.DeleteAsync(this.Namespace, new ResourceName(ResourceName.SearchJobs, searchId)))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Starts a new search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<Job> StartJobAsync(string command, ExecutionMode mode = ExecutionMode.Normal)
+        {
+            return (Job)await this.StartJobAsync(new JobArgs(command) { ExecutionMode = mode });
+        }
+
+        /// <summary>
+        /// Starts a new search <see cref="Job"/>.
         /// </summary>
         /// <param name="searchString"></param>
         /// <param name="parameters"></param>
@@ -304,38 +307,68 @@ namespace Splunk.Sdk
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST 
         /// API Reference.
         /// </remarks>
-        public async Task<Job> SearchAsync(JobArgs args)
+        public async Task<Job> StartJobAsync(JobArgs args)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
             Contract.Requires<ArgumentNullException>(args.Search != null, "args.Search");
-			// FJR: Also check that it's not export, which also won't return a job.
             Contract.Requires<ArgumentException>(args.ExecutionMode != ExecutionMode.Oneshot, "args.ExecutionMode: ExecutionMode.Oneshot");
 
-            HttpResponseMessage response = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
-            var document = XDocument.Parse(await response.Content.ReadAsStringAsync());
-            string searchId = document.Element("response").Element("sid").Value;
+            // FJR: Also check that it's not export, which also won't return a job.
+            // DSN: JobArgs does not include SearchExportArgs
 
-            Job job = new Job(this.Context, this.Namespace, ResourceName.Jobs, name: searchId);
-			// FJR: Jobs need to be handled a little more delicately. Let's talk about the patterns here.
-			// In the other SDKs, we've been doing functions to wait for ready and for done. Async means
-			// that we can probably make that a little slicker, but let's talk about how.
+            string searchId;
+
+            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.SearchJobs, args))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.Created)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+                searchId = await response.XmlReader.ReadResponseElementAsync("sid");
+            }
+
+            // FJR: Jobs need to be handled a little more delicately. Let's talk about the patterns here.
+            // In the other SDKs, we've been doing functions to wait for ready and for done. Async means
+            // that we can probably make that a little slicker, but let's talk about how.
+
+            Job job = new Job(this.Context, this.Namespace, ResourceName.SearchJobs, name: searchId);
             await job.UpdateAsync();
 
             return job;
         }
 
         /// <summary>
-        /// Creates a search <see cref="Job"/>.
+        /// Updates a search <see cref="Job"/>.
         /// </summary>
         /// <param name="searchString"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
         /// <remarks>
-        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// See the <a href="http://goo.gl/8HjDNS">POST search/jobs/{search_id}</a> 
+        /// REST API Reference.
         /// </remarks>
-        public async Task<Job> SearchAsync(string command, ExecutionMode mode = ExecutionMode.Normal)
+        public async Task UpdateJobArgsAsync(string searchId, JobArgs args)
         {
-            return (Job)await this.SearchAsync(new JobArgs(command) { ExecutionMode = mode });
+            using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(ResourceName.SearchJobs, searchId), args))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the collection of all running search jobs.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args)
+        {
+            var jobs = new JobCollection(this.Context, this.Namespace, ResourceName.SearchJobs, args);
+            await jobs.UpdateAsync();
+            return jobs;
         }
 
         /// <summary>
@@ -363,14 +396,33 @@ namespace Splunk.Sdk
         public async Task<SearchResultsReader> SearchExportAsync(SearchExportArgs args)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
+            Response response = null;
 
-            var response = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args);
+            try
+            {
+                response = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args);
 
-			// FJR: We should probably return a stream here and keep the parsers separate. That lets someone
-			// else plug in and use their own parser if they really want to. We don't particularly support the
-			// scenario, but it doesn't block the user.
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
 
-            return await SearchResultsReader.CreateAsync(response);
+                // FJR: We should probably return a stream here and keep the parsers separate. That lets someone
+                // else plug in and use their own parser if they really want to. We don't particularly support the
+                // scenario, but it doesn't block the user.
+
+                // DSN: The search results reader is a stream of SearchResultSet objects. TODO: Explanation...
+
+                return await SearchResultsReader.CreateAsync(response); // Transfers response ownership
+            }
+            catch
+            {
+                if (response != null)
+                {
+                    response.Dispose();
+                }
+                throw;
+            }
         }
 
         /// <summary>
@@ -400,11 +452,30 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(args != null, "args");
             args.ExecutionMode = ExecutionMode.Oneshot;
 
-            HttpResponseMessage message = await this.Context.PostAsync(this.Namespace, ResourceName.Jobs, args);
-            var response = await Response.CreateAsync(message);
+            Response response = null;
 
-			// FJR: Like export, we should probably return a stream instead of parsing it here.
-            return await SearchResults.CreateAsync(response, leaveOpen: false);
+            try
+            {
+                response = await this.Context.PostAsync(this.Namespace, ResourceName.SearchJobs, args);
+
+                if (response.Message.StatusCode != HttpStatusCode.Created)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+
+                // FJR: Like export, we should probably return a stream instead of parsing it here.
+                // DSN: The SearchResultsSet class is a stream of Record objects. TODO: Explain
+
+                return await SearchResults.CreateAsync(response, leaveOpen: false); // Transfers response ownership
+            }
+            catch
+            {
+                if (response != null)
+                {
+                    response.Dispose();
+                }
+                throw;
+            }
         }
 
         /// <summary>

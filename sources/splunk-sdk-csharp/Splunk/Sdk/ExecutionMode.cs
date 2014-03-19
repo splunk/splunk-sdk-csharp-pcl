@@ -24,7 +24,7 @@ namespace Splunk.Sdk
     public enum ExecutionMode
     {
         /// <summary>
-        /// 
+        /// No sort direction is set.
         /// </summary>
         None,
 

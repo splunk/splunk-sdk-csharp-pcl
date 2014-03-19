@@ -33,35 +33,32 @@ namespace Splunk.Sdk
     /// </item>
     /// </list>
     /// </remarks>
-    public sealed class SearchResultArgs : Args<SearchResultArgs>
+    public sealed class JobCollectionArgs : Args<JobCollectionArgs>
     {
         #region Constructors
 
-        public SearchResultArgs()
+        public JobCollectionArgs()
         { }
+
+        public JobCollectionArgs(string search)
+        {
+            this.Search = search;
+        }
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// The maximum number of results to return.
+        /// The maximum number of <see cref="Job"/> entries to return.
         /// </summary>
         /// <remarks>
         /// If the value of <c>Count</c> is set to zero, then all available
-        /// results are returned. The default value is 100.
+        /// results are returned. The default value is 30.
         /// </remarks>
-        [DataMember(Name = "count", EmitDefaultValue=false)]
-        [DefaultValue(100)]
+        [DataMember(Name = "count", EmitDefaultValue = false)]
+        [DefaultValue(30)]
         public int Count
-        { get; set; }
-
-        /// <summary>
-        /// The list of fields to return in the results.
-        /// </summary>
-        [DataMember(Name = "f", EmitDefaultValue = false)]
-        [DefaultValue(null)]
-        public IReadOnlyList<string> FieldList
         { get; set; }
 
         /// <summary>
@@ -77,14 +74,36 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
-        /// The post processing search to apply to the results.
+        /// Search expression to filter <see cref="Job"/> entries. 
         /// </summary>
         /// <remarks>
-        /// The post processing search string can be any Splunk command.
+        /// Use this expression to filter the entries returned based on 
+        /// search <see cref="Job"/> properties. For example, specify 
+        /// <c>eventCount>100</c>. The default is <c>null</c>.
         /// </remarks>
-        [DataMember(Name = "search", EmitDefaultValue=false)]
+        [DataMember(Name = "search", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Search
+        { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
+        [DefaultValue(SortDirection.Descending)]
+        public SortDirection SortDirection
+        { get; set; }
+
+        /// <summary>
+        /// <see cref="Job"/> property to use for sorting.
+        /// </summary>
+        /// <remarks>
+        /// The default <see cref="Job"/> property to use for sorting is 
+        /// <c>"dispatch_time"</c>
+        /// </remarks>
+        [DataMember(Name = "sort_key", EmitDefaultValue = false)]
+        [DefaultValue("dispatch_time")]
+        public string SortKey
         { get; set; }
 
         #endregion

@@ -21,6 +21,7 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.IO;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -46,6 +47,31 @@ namespace Splunk.Sdk
         public static async Task<TValue> ReadElementContentAsync<TValue>(this XmlReader reader, ValueConverter<TValue> valueConverter)
         {
             return valueConverter.Convert(await reader.ReadElementContentAsStringAsync());
+        }
+
+        public static async Task<string> ReadResponseElementAsync(this XmlReader reader, string name)
+        {
+            await reader.ReadAsync();
+
+            if (reader.NodeType == XmlNodeType.XmlDeclaration)
+            {
+                await reader.ReadAsync();
+            }
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            await reader.ReadAsync();
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "sessionKey"))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            var text = await reader.ReadElementContentAsStringAsync();
+            return text;
         }
 
         public static async Task<bool> ReadToDescendantAsync(this XmlReader reader, string name)

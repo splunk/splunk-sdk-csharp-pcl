@@ -224,13 +224,13 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="parameterSets"></param>
+        /// <param name="argumentSets"></param>
         /// <returns></returns>
         public async Task<Response> DeleteAsync(Namespace @namespace, ResourceName resource,
-            params IEnumerable<KeyValuePair<string, object>>[] parameterSets)
+            params IEnumerable<Argument>[] argumentSets)
         {
-            HttpResponseMessage response = await this.SendAsync(HttpMethod.Delete, @namespace, resource, null, parameterSets);
-            return await Response.CreateAsync(response);
+            var response = await this.SendAsync(HttpMethod.Delete, @namespace, resource, null, argumentSets);
+            return response;
         }
 
         /// <summary>
@@ -238,13 +238,13 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="parameterSets"></param>
+        /// <param name="argumentSets"></param>
         /// <returns></returns>
         public async Task<Response> GetAsync(Namespace @namespace, ResourceName resource,
-            params IEnumerable<KeyValuePair<string, object>>[] parameterSets)
+            params IEnumerable<Argument>[] argumentSets)
         {
-            HttpResponseMessage response = await this.SendAsync(HttpMethod.Get, @namespace, resource, null, parameterSets);
-            return await Response.CreateAsync(response);
+            var response = await this.SendAsync(HttpMethod.Get, @namespace, resource, null, argumentSets);
+            return response;
         }
 
         /// <summary>
@@ -252,12 +252,12 @@ namespace Splunk.Sdk
         /// </summary>
         /// <param name="namespace"></param>
         /// <param name="resource"></param>
-        /// <param name="parameterSets"></param>
+        /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource, 
-            params IEnumerable<KeyValuePair<string, object>>[] parameterSets)
+        public async Task<Response> PostAsync(Namespace @namespace, ResourceName resource, 
+            params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, this.CreateStringContent(parameterSets), null);
+            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, this.CreateStringContent(argumentSets), null);
             return response;
         }
 
@@ -268,10 +268,10 @@ namespace Splunk.Sdk
         /// <param name="resource"></param>
         /// <param name="parameterSets"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> PostAsync(Namespace @namespace, ResourceName resource,
-            HttpContent content, params IEnumerable<KeyValuePair<string, object>>[] parameterSets)
+        public async Task<Response> PostAsync(Namespace @namespace, ResourceName resource,
+            HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, content, parameterSets);
+            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, content, argumentSets);
             return response;
         }
 
@@ -308,7 +308,7 @@ namespace Splunk.Sdk
             }
         }
 
-        Uri CreateServiceUri(Namespace @namespace, ResourceName resourceName, params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
+        Uri CreateServiceUri(Namespace @namespace, ResourceName resourceName, params IEnumerable<Argument>[] argumentSets)
         {
             var builder = new StringBuilder(this.ToString());
 
@@ -325,13 +325,13 @@ namespace Splunk.Sdk
                     from args in argumentSets
                     where args != null
                     from arg in args
-                    select string.Join("=", Uri.EscapeUriString(arg.Key), Uri.EscapeUriString(arg.Value.ToString()))));
+                    select string.Join("=", Uri.EscapeUriString(arg.Name), Uri.EscapeUriString(arg.Value.ToString()))));
             }
 
             return new Uri(builder.ToString());
         }
 
-        StringContent CreateStringContent(params IEnumerable<KeyValuePair<string, object>>[] argumentSets)
+        StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)
         {
             if (argumentSets == null)
             {
@@ -342,19 +342,19 @@ namespace Splunk.Sdk
                 from args in argumentSets
                 where args != null
                 from arg in args
-                select string.Join("=", Uri.EscapeDataString(arg.Key), Uri.EscapeDataString(arg.Value.ToString())));
+                select string.Join("=", Uri.EscapeDataString(arg.Name), Uri.EscapeDataString(arg.Value.ToString())));
 
             var stringContent = new StringContent(body);
             return stringContent;
         }
 
-        async Task<HttpResponseMessage> SendAsync(HttpMethod method, Namespace @namespace, ResourceName resource,
-            HttpContent content, IEnumerable<KeyValuePair<string, object>>[] parameterSets)
+        async Task<Response> SendAsync(HttpMethod method, Namespace @namespace, ResourceName resource,
+            HttpContent content, IEnumerable<Argument>[] argumentSets)
         {
             Contract.Requires<ArgumentNullException>(@namespace != null);
             Contract.Requires<ArgumentNullException>(resource != null);
 
-            var serviceUri = this.CreateServiceUri(@namespace, resource, parameterSets);
+            var serviceUri = this.CreateServiceUri(@namespace, resource, argumentSets);
 
             using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
             {
@@ -363,7 +363,7 @@ namespace Splunk.Sdk
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
                 HttpResponseMessage response = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                return response;
+                return await Response.CreateAsync(response);
             }
         }
 

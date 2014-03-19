@@ -38,7 +38,7 @@ namespace Splunk.Sdk
     /// 
     /// </summary>
     /// <typeparam name="TArgs"></typeparam>
-    public abstract class Args<TArgs> : IEnumerable<KeyValuePair<string, object>> where TArgs : Args<TArgs>
+    public abstract class Args<TArgs> : IEnumerable<Argument> where TArgs : Args<TArgs>
     {
         #region Constructors
 
@@ -137,13 +137,13 @@ namespace Splunk.Sdk
 
         #region Fields
 
-        public static readonly IEnumerable<KeyValuePair<string, object>> Empty = Enumerable.Empty<KeyValuePair<string, object>>();
+        public static readonly IEnumerable<Argument> Empty = Enumerable.Empty<Argument>();
 
         #endregion
 
         #region Methods
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        public IEnumerator<Argument> GetEnumerator()
         {
             foreach (var parameter in Args<TArgs>.Parameters)
             {
@@ -157,18 +157,21 @@ namespace Splunk.Sdk
                     }
                     continue;
                 }
+
                 if (!parameter.EmitDefaultValue && value.Equals(parameter.DefaultValue))
                 {
                     continue;
                 }
+                
                 if (!parameter.IsCollection)
                 {
-                    yield return new KeyValuePair<string, object>(parameter.Name, parameter.Format(value));
+                    yield return new Argument(parameter.Name, parameter.Format(value));
                     continue;
                 }
+                
                 foreach (var item in (IEnumerable)value)
                 {
-                    yield return new KeyValuePair<string, object>(parameter.Name, parameter.Format(item));
+                    yield return new Argument(parameter.Name, parameter.Format(item));
                 }
             }
         }

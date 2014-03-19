@@ -51,7 +51,7 @@ namespace Splunk.Sdk.Examples.ReactiveUI
             {
                 await service.LoginAsync("admin", "changeme");
 
-                Job job = await service.SearchAsync(this.SearchCommand.Text);
+                Job job = await service.StartJobAsync(this.SearchCommand.Text);
                 SearchResults results = await job.GetSearchResultsAsync();
 
                 return results;

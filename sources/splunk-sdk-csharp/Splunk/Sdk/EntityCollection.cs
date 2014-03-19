@@ -18,6 +18,8 @@
 // TODO:
 // [ ] Contracts
 // [ ] Documentation
+// [ ] Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
+//     See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom.
 
 namespace Splunk.Sdk
 {
@@ -33,16 +35,12 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<KeyValuePair<string, object>> args)
+        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<Argument> args = null)
         {
             this.Context = context;
             this.Namespace = @namespace;
-            this.Name = name;
-
-            if (args != null)
-            {
-                this.Arguments = args.ToDictionary(pair => pair.Key, pair => pair.Value);
-            }
+            this.ResourceName = name;
+            this.Arguments = args;
         }
 
         #endregion
@@ -90,7 +88,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Gets the resource name of this <see cref="EntityCollection"/>.
         /// </summary>
-        public ResourceName Name
+        public ResourceName ResourceName
         { get; private set; }
 
         /// <summary>
@@ -102,7 +100,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Gets the parameters for this <see cref="EntityCollection"/>.
         /// </summary>
-        public IReadOnlyDictionary<string, object> Arguments
+        public IEnumerable<Argument> Arguments
         { get; private set; }
 
         #endregion
@@ -129,19 +127,17 @@ namespace Splunk.Sdk
 
         public async Task UpdateAsync()
         {
-#if false
-            var document = await this.Context.GetDocumentAsync(this.Namespace, this.Name, this.Arguments);
+            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.Arguments))
+            {
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+                var entities = new List<TEntity>(this.feed.Entries.Count);
 
-            // TODO: Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
-            // See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom
-            
-            var feed = new AtomFeed(document.Root);
-            var entities = new List<TEntity>(this.feed.Entries.Count);
-            entities.AddRange(from entry in this.feed.Entries select Entity<TEntity>.CreateEntity(this.Context, this.Name, entry));
+                entities.AddRange(from atomEntry in this.feed.Entries select Entity<TEntity>.CreateEntity(this.Context, this.ResourceName, atomEntry));
 
-            this.entities = entities;
-            this.feed = feed;
-#endif
+                this.entities = entities;
+                this.feed = feed;
+            }
             throw new NotImplementedException();
         }
 

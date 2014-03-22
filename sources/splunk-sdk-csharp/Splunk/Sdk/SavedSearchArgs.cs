@@ -24,7 +24,6 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
-    using System.Text;
 
     public sealed class SavedSearchArgs : ISet<Argument>
     {

@@ -21,8 +21,6 @@
 namespace Splunk.Sdk
 {
     using System;
-    using System.Diagnostics.Contracts;
-    using System.IO;
 
     /// <summary>
     /// Provides a converter to convert an object to its string form.

@@ -46,11 +46,8 @@ namespace Splunk.Sdk
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Net.Http;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// The <see cref="SearchResultsReader"/> class represents a streaming XML 

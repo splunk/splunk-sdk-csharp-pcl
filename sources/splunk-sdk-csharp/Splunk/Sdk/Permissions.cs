@@ -21,11 +21,8 @@
 
 namespace Splunk.Sdk
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Dynamic;
-    using System.Linq;
 
     /// <summary>
     /// Provides access to read/write permissions.

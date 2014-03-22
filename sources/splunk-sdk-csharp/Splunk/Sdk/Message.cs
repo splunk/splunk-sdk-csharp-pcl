@@ -25,10 +25,8 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
     using System.Xml;
-    using System.Xml.Linq;
 
     sealed public class Message : IComparable, IComparable<Message>, IEquatable<Message>
     {

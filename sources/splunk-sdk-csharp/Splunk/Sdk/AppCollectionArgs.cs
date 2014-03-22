@@ -14,6 +14,9 @@
  * under the License.
  */
 
+// TODO:
+// [ ] Documentation
+
 namespace Splunk.Sdk
 {
     using System.Collections.Generic;
@@ -28,19 +31,26 @@ namespace Splunk.Sdk
     /// <list type="number">
     /// <item>
     ///     <description>
-    ///     <a href="http://goo.gl/OWTUws">REST API Reference: GET search/jobs/{search_id}/results</a>
+    ///     <a href="http://goo.gl/izvjYx">REST API Reference: GET search/jobs/{search_id}/results</a>
     ///     </description>
     /// </item>
     /// </list>
     /// </remarks>
-    public sealed class JobCollectionArgs : Args<JobCollectionArgs>
+    public sealed class AppCollectionArgs : Args<AppCollectionArgs>
     {
         #region Constructors
 
-        public JobCollectionArgs()
+        /// <summary>
+        ///
+        /// </summary>
+        public AppCollectionArgs()
         { }
 
-        public JobCollectionArgs(string search)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="search"></param>
+        public AppCollectionArgs(string search)
         {
             this.Search = search;
         }
@@ -50,11 +60,12 @@ namespace Splunk.Sdk
         #region Properties
 
         /// <summary>
-        /// The maximum number of <see cref="Job"/> entries to return.
+        /// Gets or sets a value specifying the maximum number of <see cref=
+        /// "App"/> entries to return.
         /// </summary>
         /// <remarks>
-        /// If the value of <c>Count</c> is set to zero, then all available
-        /// results are returned. The default value is 30.
+        /// If the value of <c>Count</c> is set to zero, then all <see cref=
+        /// "App"/> entries are returned. The default value is 30.
         /// </remarks>
         [DataMember(Name = "count", EmitDefaultValue = false)]
         [DefaultValue(30)]
@@ -62,11 +73,12 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
-        /// The first result (inclusive) from which to begin returning data.
+        /// Gets or sets a value specifying the first result (inclusive) from 
+        /// which to begin returning <see cref="App"/> entries.
         /// </summary>
         /// <remarks>
-        /// The value of <c>Offset</c> is zero-based and cannot be 
-        /// negative. The default value is zero.
+        /// This value is zero-based and cannot be negative. The default value
+        /// is zero.
         /// </remarks>
         [DataMember(Name = "offset", EmitDefaultValue = false)]
         [DefaultValue(0)]
@@ -74,16 +86,29 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
-        /// Search expression to filter <see cref="Job"/> entries. 
+        /// Gets or sets a value indicating whether to scan for new <see cref=
+        /// "App"/> instances and reload any objects those new <see cref="App"/>
+        /// instances contain.
         /// </summary>
         /// <remarks>
-        /// Use this expression to filter the entries returned based on 
-        /// search <see cref="Job"/> properties. For example, specify 
-        /// <c>eventCount>100</c>. The default is <c>null</c>.
+        /// The default is <c>false</c>.
+        /// </remarks>
+        [DataMember(Name = "refresh", EmitDefaultValue = false)]
+        [DefaultValue(false)]
+        public bool Refresh // TODO: Verify default value (it's not in the docs)
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a search expression to filter <see cref="App"/> 
+        /// instances. 
+        /// </summary>
+        /// <remarks>
+        /// Use this expression to filter the entries returned based on <see
+        /// cref="App"/> properties.
         /// </remarks>
         [DataMember(Name = "search", EmitDefaultValue = false)]
         [DefaultValue(null)]
-        public string Search
+        public string Search // TODO: Good search example for App
         { get; set; }
 
         /// <summary>
@@ -94,20 +119,20 @@ namespace Splunk.Sdk
         /// The default value is <see cref="SortDirection.Ascending"/>.
         /// </remarks>
         [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
-        [DefaultValue(SortDirection.Descending)]
+        [DefaultValue(SortDirection.Ascending)]
         public SortDirection SortDirection
         { get; set; }
 
         /// <summary>
-        /// <see cref="Job"/> property to use for sorting.
+        /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
+        /// cref="App"/> entries.
         /// </summary>
         /// <remarks>
-        /// The default <see cref="Job"/> property to use for sorting is 
-        /// <c>"dispatch_time"</c>
+        /// The default value is <see cref="SortMode.Automatic"/>.
         /// </remarks>
-        [DataMember(Name = "sort_key", EmitDefaultValue = false)]
-        [DefaultValue("dispatch_time")]
-        public string SortKey
+        [DataMember(Name = "sort_mode", EmitDefaultValue = false)]
+        [DefaultValue(SortMode.Automatic)]
+        public SortMode SortMode
         { get; set; }
 
         #endregion

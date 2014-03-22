@@ -65,7 +65,7 @@ namespace Splunk.Sdk
 
             await reader.ReadAsync();
 
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "sessionKey"))
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }

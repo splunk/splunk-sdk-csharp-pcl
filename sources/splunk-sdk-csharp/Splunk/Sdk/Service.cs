@@ -15,15 +15,10 @@
  */
 
 // TODO:
+// [O] Contracts
+// [O] Documentation
 // [ ] Consider schema validation from schemas stored as resources.
 //     See [XmlReaderSettings.Schemas Property](http://goo.gl/Syvj4V)
-//
-// [ ] Unit tests: 
-//
-//     + DispatchSavedSearch should throw this exception when the named
-//       saved search does not exist:
-//
-//          RequestException(HttpStatusCode.BadRequest,...);
 
 namespace Splunk.Sdk
 {
@@ -31,12 +26,8 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Linq;
     using System.Net;
-    using System.Net.Http;
     using System.Threading.Tasks;
-    using System.Xml;
-    using System.Xml.Linq;
 
     public class Service : IDisposable
     {
@@ -102,12 +93,16 @@ namespace Splunk.Sdk
         /// <summary>
         /// Provides user authentication.
         /// </summary>
-        /// <param name="username">Splunk account username.</param>
-        /// <param name="password">Splunk account password for username.</param>
-        /// <remarks>This method uses the Splunk <a href="http://goo.gl/yXJX75">
-        /// auth/login</a> endpoint. The session key that it returns is used for 
-        /// subsequent requests. It is accessible via the <see cref="SessionKey"/>
-        /// property.
+        /// <param name="username">
+        /// Splunk account username.
+        /// </param>
+        /// <param name="password">
+        /// Splunk account password for username.
+        /// </param>
+        /// <remarks>
+        /// This method uses the Splunk <a href="http://goo.gl/yXJX75">auth/login</a>
+        /// endpoint. The session key that it returns is used for subsequent requests.
+        /// It is accessible via the <see cref="SessionKey"/> property.
         /// </remarks>
         public async Task LoginAsync(string username, string password)
         {
@@ -209,7 +204,21 @@ namespace Splunk.Sdk
         /// <summary>
         /// Retrieves the collection of installed apps.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// </returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
+        /// </remarks>
+        public EntityCollection<App> GetApps(IEnumerable<Argument> args)
+        {
+            return this.GetAppsAsync(args).Result;
+        }
+
+        /// <summary>
+        /// Retrieves the collection of installed apps.
+        /// </summary>
+        /// <returns>
+        /// </returns>
         /// <remarks>
         /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
         /// </remarks>
@@ -220,25 +229,63 @@ namespace Splunk.Sdk
             return apps;
         }
 
-#if false
         /// <summary>
         /// Retrieves the list of all Splunk system capabilities.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// </returns>
         /// <remarks>
         /// See the <a href="http://goo.gl/wvB9N5">authorization/capabilities</a> REST API Reference.
         /// </remarks>
-        public async Task<IReadOnlyList<string>> GetCapabilitiesAsync()
+        public dynamic GetCapabilities()
         {
-            XDocument document = await this.Context.GetDocumentAsync(this.Namespace, ResourceName.Capabilities);
-
-            var feed = new AtomFeed(document.Root);
-            AtomEntry entry = feed.Entries[0];
-            dynamic capabilities = entry.Content.Capabilities;
-
-            return capabilities;
+            return this.GetCapabilitiesAsync().Result;
         }
-#endif
+
+        /// <summary>
+        /// Retrieves the list of all Splunk system capabilities.
+        /// </summary>
+        /// <returns>
+        /// </returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/wvB9N5">authorization/capabilities</a> REST API Reference.
+        /// </remarks>
+        public async Task<dynamic> GetCapabilitiesAsync()
+        {
+            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.Capabilities)))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+
+                if (feed.Entries.Count != 1)
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                var entry = feed.Entries[0];
+                dynamic capabilities = entry.Content.Capabilities; // TODO: Static type (?)
+                
+                return capabilities;
+            }
+        }
+
+        /// <summary>
+        /// Gets details about the search <see cref="Job"/> identified by
+        /// <c>searchId</c>.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
+        /// REST API Reference.
+        /// </remarks>
+        public Job GetJob(string searchId)
+        {
+            return this.GetJobAsync(searchId).Result;
+        }
 
         /// <summary>
         /// Gets details about the search <see cref="Job"/> identified by
@@ -260,9 +307,45 @@ namespace Splunk.Sdk
                 var atomEntry = new AtomEntry();
                 await atomEntry.ReadXmlAsync(response.XmlReader);
                 var job = Job.CreateEntity(this.Context, ResourceName.SearchJobs, atomEntry); // TODO: Entity<TEntity> derivatives should provide their ResourceName property. CreateEntity should not require it.
-                
+
                 return job;
             }
+        }
+
+        /// <summary>
+        /// Retrieves the collection of all running search jobs.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
+        /// </remarks>
+        public JobCollection GetJobs(JobCollectionArgs args)
+        {
+            return this.GetJobsAsync(args).Result;
+        }
+
+        /// <summary>
+        /// Retrieves the collection of all running search jobs.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args)
+        {
+            var jobs = new JobCollection(this.Context, this.Namespace, ResourceName.SearchJobs, args);
+            await jobs.UpdateAsync();
+            return jobs;
+        }
+
+        /// <summary>
+        /// Removes the search <see cref="Job"/> identified by <c>searchId</c>.
+        /// </summary>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
+        /// REST API Reference.
+        /// </remarks>
+        public void RemoveJob(string searchId)
+        {
+            this.RemoveJobAsync(searchId).Wait();
         }
 
         /// <summary>
@@ -286,23 +369,72 @@ namespace Splunk.Sdk
         /// <summary>
         /// Starts a new search <see cref="Job"/>.
         /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <param name="search">
+        /// The search language string to execute.
+        /// </param>
+        /// <param name="mode">
+        /// The search <see cref="ExecutionMode"/>.
+        /// </param>
+        /// <returns>
+        /// A new search <see cref="Job"/>.
+        /// </returns>
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<Job> StartJobAsync(string command, ExecutionMode mode = ExecutionMode.Normal)
+        public Job StartJob(string search, ExecutionMode mode = ExecutionMode.Normal)
         {
-            return (Job)await this.StartJobAsync(new JobArgs(command) { ExecutionMode = mode });
+            return StartJob(new JobArgs(search) { ExecutionMode = mode });
         }
 
         /// <summary>
         /// Starts a new search <see cref="Job"/>.
         /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <param name="args">
+        /// Search <see cref="JobArgs"/> to pass when starting the search <see 
+        /// cref="Job"/>.
+        /// </param>
+        /// <returns>
+        /// A new search <see cref="Job"/>.
+        /// </returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST 
+        /// API Reference.
+        /// </remarks>
+        public Job StartJob(JobArgs args)
+        {
+            return StartJobAsync(args).Result;
+        }
+
+        /// <summary>
+        /// Starts a new search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="search">
+        /// The search language string to execute.
+        /// </param>
+        /// The search <see cref="ExecutionMode"/>.
+        /// <param name="mode">
+        /// </param>
+        /// <returns>
+        /// A new search <see cref="Job"/>.
+        /// </returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// </remarks>
+        public async Task<Job> StartJobAsync(string search, ExecutionMode mode = ExecutionMode.Normal)
+        {
+            return await this.StartJobAsync(new JobArgs(search) { ExecutionMode = mode });
+        }
+
+        /// <summary>
+        /// Starts a new search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="args">
+        /// Search <see cref="JobArgs"/> to pass when starting the search <see 
+        /// cref="Job"/>.
+        /// </param>
+        /// <returns>
+        /// A new search <see cref="Job"/>.
+        /// </returns>
         /// <remarks>
         /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST 
         /// API Reference.
@@ -340,12 +472,31 @@ namespace Splunk.Sdk
         /// <summary>
         /// Updates a search <see cref="Job"/>.
         /// </summary>
-        /// <param name="searchString"></param>
-        /// <param name="parameters"></param>
-        /// <returns></returns>
+        /// <param name="searchId">
+        /// </param>
+        /// <param name="args">
+        /// </param>
         /// <remarks>
-        /// See the <a href="http://goo.gl/8HjDNS">POST search/jobs/{search_id}</a> 
-        /// REST API Reference.
+        /// This method uses the <a href="http://goo.gl/8HjDNS">POST 
+        /// search/jobs/{search_id}</a> to update the <see cref="JobArgs"/> for
+        /// search <see cref="Job"/> identified by <see cref="searchId"/>.
+        /// </remarks>
+        public void UpdateJobArgs(string searchId, JobArgs args)
+        {
+            UpdateJobArgsAsync(searchId, args).Wait();
+        }
+
+        /// <summary>
+        /// Updates a search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="searchId">
+        /// </param>
+        /// <param name="args">
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/8HjDNS">POST 
+        /// search/jobs/{search_id}</a> to update the <see cref="JobArgs"/> for
+        /// search <see cref="Job"/> identified by <see cref="searchId"/>.
         /// </remarks>
         public async Task UpdateJobArgsAsync(string searchId, JobArgs args)
         {
@@ -356,19 +507,6 @@ namespace Splunk.Sdk
                     throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
             }
-        }
-
-        /// <summary>
-        /// Retrieves the collection of all running search jobs.
-        /// </summary>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
-        /// </remarks>
-        public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args)
-        {
-            var jobs = new JobCollection(this.Context, this.Namespace, ResourceName.SearchJobs, args);
-            await jobs.UpdateAsync();
-            return jobs;
         }
 
         /// <summary>
@@ -458,7 +596,7 @@ namespace Splunk.Sdk
             {
                 response = await this.Context.PostAsync(this.Namespace, ResourceName.SearchJobs, args);
 
-                if (response.Message.StatusCode != HttpStatusCode.Created)
+                if (response.Message.StatusCode != HttpStatusCode.OK)
                 {
                     throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }

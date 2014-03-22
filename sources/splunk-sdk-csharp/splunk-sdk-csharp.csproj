@@ -106,8 +106,10 @@
     <Compile Include="Splunk\Sdk\Acl.cs" />
     <Compile Include="Splunk\Sdk\EaiConverter.cs" />
     <Compile Include="Splunk\Sdk\DateTimeConverter.cs" />
+    <Compile Include="Splunk\Sdk\AppCollection.cs" />
     <Compile Include="Splunk\Sdk\JobCollection.cs" />
     <Compile Include="Splunk\Sdk\Argument.cs" />
+    <Compile Include="Splunk\Sdk\AppCollectionArgs.cs" />
     <Compile Include="Splunk\Sdk\PermissionsConverter.cs" />
     <Compile Include="Splunk\Sdk\AclConverter.cs" />
     <Compile Include="Splunk\Sdk\Eai.cs" />
@@ -115,6 +117,7 @@
     <Compile Include="Splunk\Sdk\JobCollectionArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchSummaryArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchSummary.cs" />
+    <Compile Include="Splunk\Sdk\SortMode.cs" />
     <Compile Include="Splunk\Sdk\SortDirection.cs" />
     <Compile Include="Splunk\Sdk\StringConverter.cs" />
     <Compile Include="Splunk\Sdk\CollectionConverter.cs" />

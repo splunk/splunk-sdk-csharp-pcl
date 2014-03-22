@@ -21,7 +21,6 @@
 namespace Splunk.Sdk
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.IO;
 
     /// <summary>

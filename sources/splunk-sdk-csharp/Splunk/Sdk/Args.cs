@@ -15,8 +15,7 @@
  */
 
 // TODO: Ensure this code is solid
-// [ ] Documentation
-// [ ] Unit tests (e.g., Ensure correct behavior with nullable boolean/numeric values)
+// [O] Documentation
 // [X] Respect DataMemberAttribute.Order
 // [X] Do not serialize default values => define default values and check for them
 // [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)

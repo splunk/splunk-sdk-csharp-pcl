@@ -19,12 +19,6 @@
 
 namespace Splunk.Sdk
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
     public class JobCollection : EntityCollection<Job>
     {
         internal JobCollection(Context context, Namespace @namespace, ResourceName resourceName, JobCollectionArgs args = null)

@@ -34,11 +34,9 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Linq;
-    using System.Net;
     using System.Net.Http;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
 
     /// <summary>
     /// Provides a class for sending HTTP requests and receiving HTTP responses 

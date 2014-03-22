@@ -16,13 +16,11 @@
 
 namespace Splunk.Sdk.UnitTesting
 {
-    using System;
-    using System.Net;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using System.Xml.Linq;
-
     using Splunk.Sdk;
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class TestService : IUseFixture<AcceptanceTestingSetup>

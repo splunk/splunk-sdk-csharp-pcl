@@ -33,7 +33,24 @@ namespace Splunk.Sdk.UnitTesting
             Assert.Equal(service.ToString(), "https://localhost:8089/services");
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Applications")]
+        [Fact]
+        public void CanGetApps()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<AppCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetAppsAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Authentication and Authorization")]
         [Fact]
         public void CanLogin()
         {
@@ -67,7 +84,7 @@ namespace Splunk.Sdk.UnitTesting
             }
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Saved Searches")]
         [Fact]
         public void CanDispatchSavedSearch()
         {
@@ -87,9 +104,43 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public void CanDispatchSearch()
+        public void CanGetSavedSearches()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<SavedSearchCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetSavedSearchesAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Search Jobs")]
+        [Fact]
+        public void CanGetJobs()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<JobCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetJobsAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Search Jobs")]
+        [Fact]
+        public void CanStartSearch()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
@@ -107,9 +158,9 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public void CanDispatchSearchExport()
+        public void CanStartSearchExport()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
@@ -130,9 +181,9 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public void CanDispatchSearchOneshot()
+        public void CanStartSearchOneshot()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
@@ -149,7 +200,7 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Server")]
         [Fact]
         public void CanGetServerInfo()
         {
@@ -177,7 +228,7 @@ namespace Splunk.Sdk.UnitTesting
             Version version = serverInfo.Version;
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Server")]
         [Fact]
         public void CanRestartServer()
         {

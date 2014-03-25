@@ -29,7 +29,7 @@ namespace Splunk.Sdk
     /// </summary>
     sealed class VersionConverter : ValueConverter<Version>
     {
-        public static readonly VersionConverter Default = new VersionConverter();
+        public static readonly VersionConverter Instance = new VersionConverter();
 
         public override Version Convert(object input)
         {

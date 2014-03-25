@@ -103,7 +103,7 @@ namespace Splunk.Sdk
         /// </summary>
         /// <remarks>
         /// The default <see cref="Job"/> property to use for sorting is 
-        /// <c>"dispatch_time"</c>
+        /// <c>"dispatch_time"</c>.
         /// </remarks>
         [DataMember(Name = "sort_key", EmitDefaultValue = false)]
         [DefaultValue("dispatch_time")]

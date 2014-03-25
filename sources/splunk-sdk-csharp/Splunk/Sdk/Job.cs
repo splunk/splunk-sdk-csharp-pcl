@@ -50,7 +50,7 @@ namespace Splunk.Sdk
             : base(context, @namespace, collection, name)
         { }
 
-        public Job() // TODO: Remove this after refactoring with an Entity<TEntity> factory
+        public Job()
         { }
 
         #endregion
@@ -58,7 +58,7 @@ namespace Splunk.Sdk
         #region Properties
 
         /// <summary>
-        /// Gets a value that indicates whether the current <see cref="Job"/>
+        /// Gets a value indicating whether the current search <see cref="Job"/>
         /// has completed.
         /// </summary>
         /// <returns>
@@ -88,7 +88,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public DispatchState DispatchState
         {
-            get { return this.GetValue("DispatchState", EnumConverter<DispatchState>.Instance); }
+            get { return this.Content.GetValue("DispatchState", EnumConverter<DispatchState>.Instance); }
         }
 
         #endregion
@@ -315,7 +315,7 @@ namespace Splunk.Sdk
 
         protected override string GetTitle()
         {
-            return this.GetValue("Sid", StringConverter.Instance);
+            return this.Content.GetValue("Sid", StringConverter.Instance);
         }
 
         #endregion

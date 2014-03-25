@@ -24,36 +24,37 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving <see cref="App"/> entries.
+    /// Provides the arguments required for retrieving <see cref="SavedSearch"/>
+    /// entries.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/pqZJco">REST API: GET apps/local</a>
+    ///     <a href="http://goo.gl/bKrRK0">REST API: GET saved/searches</a>
     /// </description></item>
     /// </list>
     /// </remarks>
-    public sealed class AppCollectionArgs : Args<AppCollectionArgs>
+    public sealed class SavedSearchCollectionArgs : Args<SavedSearchCollectionArgs>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AppCollectionArgs"/> 
+        /// Initializes a new instance of the <see cref="SavedSearchCollectionArgs"/> 
         /// class.
         /// </summary>
-        public AppCollectionArgs()
+        public SavedSearchCollectionArgs()
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AppCollectionArgs"/> 
+        /// Initializes a new instance of the <see cref="SavedSearchCollectionArgs"/> 
         /// class.
         /// </summary>
         /// <param name="search">
-        /// Search expression to filter <see cref="App"/> entries. This is the
-        /// value of the <see cref="Search"/> property.
+        /// Search expression to filter <see cref="SavedSearch"/> entries. This
+        /// is the value of the <see cref="Search"/> property.
         /// </param>
-        public AppCollectionArgs(string search)
+        public SavedSearchCollectionArgs(string search)
         {
             this.Search = search;
         }
@@ -64,11 +65,11 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value specifying the maximum number of <see cref=
-        /// "App"/> entries to return.
+        /// "SavedSearch"/> entries to return.
         /// </summary>
         /// <remarks>
         /// If the value of <c>Count</c> is set to zero, then all <see cref=
-        /// "App"/> entries are returned. The default value is 30.
+        /// "SavedSearch"/> entries are returned. The default value is 30.
         /// </remarks>
         [DataMember(Name = "count", EmitDefaultValue = false)]
         [DefaultValue(30)]
@@ -76,8 +77,46 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
+        /// Gets or sets the lower bound of the time window for which saved 
+        /// search schedules should be returned.
+        /// </summary>
+        /// <remarks>
+        /// This property specifies that all the scheduled times starting from 
+        /// this time (not just the next run time) should be returned.
+        /// </remarks>
+        [DataMember(Name = "earliest_time", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string EarliestTime
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the upper bound of the time window for which saved 
+        /// search schedules should be returned.
+        /// </summary>
+        /// <remarks>
+        /// This property specifies that all the scheduled times ending with 
+        /// this time (not just the next run time) should be returned.
+        /// </remarks>
+        [DataMember(Name = "latest_time", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string LatestTime
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to list default actions for
+        /// <see cref="SavedSearch"/> entries.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        [DataMember(Name = "listDefaultActionArgs", EmitDefaultValue = false)]
+        [DefaultValue(false)]
+        public bool ListDefaultActions
+        { get; set; }
+
+        /// <summary>
         /// Gets or sets a value specifying the first result (inclusive) from 
-        /// which to begin returning <see cref="App"/> entries.
+        /// which to begin returning <see cref="SavedSearch"/> entries.
         /// </summary>
         /// <remarks>
         /// This value is zero-based and cannot be negative. The default value
@@ -89,25 +128,12 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to scan for new <see cref=
-        /// "App"/> instances and reload any objects those new <see cref="App"/>
-        /// instances contain.
-        /// </summary>
-        /// <remarks>
-        /// The default is <c>false</c>.
-        /// </remarks>
-        [DataMember(Name = "refresh", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool Refresh // TODO: Verify default value (it's not in the docs)
-        { get; set; }
-
-        /// <summary>
-        /// Gets or sets a search expression to filter <see cref="App"/> 
-        /// entries. 
+        /// Gets or sets a search expression to filter <see cref=
+        /// "SavedSearch"/> entries.
         /// </summary>
         /// <remarks>
         /// Use this expression to filter the entries returned based on <see
-        /// cref="App"/> properties.
+        /// cref="SavedSearch"/> properties.
         /// </remarks>
         [DataMember(Name = "search", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -116,7 +142,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value indicating whether to sort returned <see cref=
-        /// "App"/>entries in ascending or descending order.
+        /// "SavedSearch"/>entries in ascending or descending order.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortDirection.Ascending"/>.
@@ -124,6 +150,18 @@ namespace Splunk.Sdk
         [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
         [DefaultValue(SortDirection.Ascending)]
         public SortDirection SortDirection
+        { get; set; }
+
+        /// <summary>
+        /// <see cref="Job"/> property to use for sorting.
+        /// </summary>
+        /// <remarks>
+        /// The default <see cref="SavedSearch"/> property to use for sorting 
+        /// is <c>"name"</c>.
+        /// </remarks>
+        [DataMember(Name = "sort_key", EmitDefaultValue = false)]
+        [DefaultValue("name")]
+        public string SortKey
         { get; set; }
 
         /// <summary>

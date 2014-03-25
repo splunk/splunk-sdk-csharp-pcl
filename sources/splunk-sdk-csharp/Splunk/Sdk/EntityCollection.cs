@@ -16,8 +16,8 @@
 
 
 // TODO:
-// [ ] Contracts
-// [ ] Documentation
+// [O] Contracts
+// [O] Documentation
 // [ ] Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
 //     See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom.
 
@@ -26,15 +26,18 @@ namespace Splunk.Sdk
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
-    public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new()
+    public class EntityCollection<TEntity, TArgs> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new() where TArgs : Args<TArgs>
     {
         #region Constructors
 
-        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<Argument> args = null)
+        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, TArgs args = null)
         {
+            Contract.Requires<ArgumentNullException>(context != null, "context");
+            Contract.Requires<ArgumentNullException>(@namespace != null, "name");
+
             this.Context = context;
             this.Namespace = @namespace;
             this.ResourceName = name;
@@ -45,48 +48,18 @@ namespace Splunk.Sdk
 
         #region Properties
 
+        #region Request related properties
+
         /// <summary>
-        /// 
+        /// Gets the parameters for this <see cref="EntityCollection"/>.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public TEntity this[int index]
-        {
-            get
-            {
-                if (this.feed == null)
-                {
-                    throw new InvalidOperationException();
-                }
-                return this.entities[index];
-            }
-        }
+        public TArgs Arguments
+        { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="Context"/> instance for this <see cref="EntityCollection"/>.
         /// </summary>
         public Context Context
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the number of entites in this <see cref="EntityCollection"/>.
-        /// </summary>
-        public int Count
-        {
-            get
-            {
-                if (this.feed == null)
-                {
-                    throw new InvalidOperationException();
-                }
-                return this.entities.Count;
-            }
-        }
-
-        /// <summary>
-        /// Gets the resource name of this <see cref="EntityCollection"/>.
-        /// </summary>
-        public ResourceName ResourceName
         { get; private set; }
 
         /// <summary>
@@ -96,55 +69,182 @@ namespace Splunk.Sdk
         { get; private set; }
 
         /// <summary>
-        /// Gets the parameters for this <see cref="EntityCollection"/>.
+        /// Gets the resource name of this <see cref="EntityCollection"/>.
         /// </summary>
-        public IEnumerable<Argument> Arguments
+        public ResourceName ResourceName
         { get; private set; }
+
+        #endregion
+
+        #region Properties backed by AtomFeed
+
+        public string Author
+        {
+            get { return this.AtomFeed == null ? null : this.AtomFeed.Author; }
+        }
+
+        public Version GeneratorVersion
+        {
+            get { return this.AtomFeed == null ? null : this.AtomFeed.GeneratorVersion; }
+        }
+
+        public Uri Id
+        {
+            get { return this.AtomFeed == null ? null : this.AtomFeed.Id; }
+        }
+
+        public IReadOnlyDictionary<string, Uri> Links
+        {
+            get { return this.AtomFeed == null ? null : this.AtomFeed.Links; }
+        }
+
+        public IReadOnlyList<Message> Messages
+        {
+            get { return this.AtomFeed == null ? null : this.AtomFeed.Messages; }
+        }
+
+        public Pagination Pagination
+        {
+            get { return this.AtomFeed == null ? Pagination.Empty : this.AtomFeed.Pagination; }
+        }
+
+        public string Title
+        {
+            get { return this.AtomFeed == null ? null : this.AtomFeed.Title; }
+        }
+
+        public DateTime Updated
+        {
+            get { return this.AtomFeed == null ? DateTime.MinValue : this.AtomFeed.Updated; }
+        }
+
+        #endregion
+
+        #region IReadOnlyList<TEntity> properties
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public TEntity this[int index]
+        {
+            get
+            {
+                if (this.data == null)
+                {
+                    throw new InvalidOperationException();
+                }
+                return this.data.Entities[index];
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of entites in this <see cref="EntityCollection"/>.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                if (this.data == null)
+                {
+                    throw new InvalidOperationException();
+                }
+                return this.data.Entities.Count;
+            }
+        }
+
+        #endregion
 
         #endregion
 
         #region Methods
 
-        public IEnumerator<TEntity> GetEnumerator()
+        #region Request related methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void Update()
         {
-            if (this.feed == null)
-            {
-                throw new InvalidOperationException();
-            }
-            return this.entities.GetEnumerator();
+            this.UpdateAsync().Wait();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            if (this.feed == null)
-            {
-                throw new InvalidOperationException();
-            }
-            return ((IEnumerable)this.entities).GetEnumerator();
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task UpdateAsync()
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.Arguments))
             {
                 var feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
-                var entities = new List<TEntity>(this.feed.Entries.Count);
-
-                entities.AddRange(from atomEntry in this.feed.Entries select Entity<TEntity>.CreateEntity(this.Context, this.ResourceName, atomEntry));
-
-                this.entities = entities;
-                this.feed = feed;
+                this.data = new Data(this.Context, this.ResourceName, feed);
             }
-            throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region IReadOnlyList<TEntity> methods
+
+        public IEnumerator<TEntity> GetEnumerator()
+        {
+            if (this.data == null)
+            {
+                throw new InvalidOperationException();
+            }
+            return this.data.Entities.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        #endregion
 
         #endregion
 
         #region Privates
 
-        IReadOnlyList<TEntity> entities;
-        AtomFeed feed;
+        volatile Data data;
+
+        AtomFeed AtomFeed
+        {
+            get { return this.data == null ? null : this.data.Feed; }
+        }
+
+        #endregion
+
+        #region Types
+
+        class Data
+        {
+            public Data(Context context, ResourceName resourceName, AtomFeed feed)
+            {
+                var entities = new List<TEntity>(feed.Entries.Count);
+                
+                foreach (var entry in feed.Entries)
+                    entities.Add(Entity<TEntity>.CreateEntity(context, resourceName, entry));
+
+                this.entities = entities;
+                this.feed = feed;
+            }
+
+            public IReadOnlyList<TEntity> Entities
+            { 
+                get { return this.entities; } 
+            }
+            
+            public AtomFeed Feed
+            { 
+                get { return this.feed; } 
+            }
+
+            readonly IReadOnlyList<TEntity> entities;
+            readonly AtomFeed feed;
+        }
 
         #endregion
     }

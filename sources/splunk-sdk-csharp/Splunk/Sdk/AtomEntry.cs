@@ -62,6 +62,7 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
     using System.IO;
@@ -130,6 +131,8 @@ namespace Splunk.Sdk
             }
 
             var links = new Dictionary<string, Uri>();
+            this.Links = links;
+
             await reader.ReadAsync();
 
             while (reader.NodeType == XmlNodeType.Element)
@@ -180,7 +183,18 @@ namespace Splunk.Sdk
                     case "link":
 
                         string href = reader.GetAttribute("href");
+
+                        if (string.IsNullOrWhiteSpace(href))
+                        {
+                            throw new InvalidDataException();  // TODO: Diagnostics
+                        }
+
                         string rel = reader.GetAttribute("rel");
+
+                        if (string.IsNullOrWhiteSpace(rel))
+                        {
+                            throw new InvalidDataException();  // TODO: Diagnostics
+                        }
 
                         links[rel] = UriConverter.Instance.Convert(href);
                         await reader.ReadAsync();

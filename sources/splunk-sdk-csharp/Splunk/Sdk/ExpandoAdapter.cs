@@ -15,12 +15,13 @@
  */
 
 // TODO:
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
 
@@ -28,26 +29,10 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        protected ExpandoAdapter()
-        { }
-
-        protected ExpandoAdapter(ExpandoObject expandoObject)
+        public ExpandoAdapter(ExpandoObject expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
-            this.ExpandoObject = expandoObject;
-        }
-
-        #endregion
-
-        #region Properties
-
-        protected ExpandoObject ExpandoObject
-        {
-            get
-            { return this.expandoObject; }
-
-            set
-            { this.expandoObject = value; }
+            this.expandoObject = expandoObject;
         }
 
         #endregion
@@ -55,7 +40,7 @@ namespace Splunk.Sdk
         #region Methods
 
         /// <summary>
-        /// Gets a named item from an <see cref="IDictionary<string, object>"/>
+        /// Gets a named item from the underlying <see cref="ExpandoObject"/>"/>
         /// and applies a <see cref="ValueConverter"/>.
         /// </summary>
         /// <typeparam name="TValue">
@@ -73,17 +58,20 @@ namespace Splunk.Sdk
         /// A value of type <see cref="TValue"/>.
         /// </returns>
         /// <remarks>
-        /// The value returned by this method is stored into <see cref="record"/>
-        /// to reduce conversion overhead.
+        /// The value returned by this method is stored into underlying <see 
+        /// cref="ExpandoObject"/> to reduce conversion overhead. 
         /// </remarks>
-
-        protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
+        public TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
-            Contract.Requires<InvalidOperationException>(this.ExpandoObject != null);
             Contract.Requires<ArgumentNullException>(name != null);
             Contract.Requires<ArgumentNullException>(valueConverter != null);
 
-            var dictionary = (IDictionary<string, object>)this.ExpandoObject;
+            if (this.expandoObject == null)
+            {
+                throw new InvalidOperationException(); // TODO: diagnostics
+            }
+
+            var dictionary = (IDictionary<string, object>)this.expandoObject;
             object value;
 
             if (!dictionary.TryGetValue(name, out value))
@@ -91,22 +79,83 @@ namespace Splunk.Sdk
                 return valueConverter.DefaultValue;
             }
 
-            if (value is TValue)
+            if (value is ConvertedValue)
             {
-                return (TValue)value;
+                return ((ConvertedValue)value).Convert<TValue>(valueConverter);
             }
 
-            var x = valueConverter.Convert(value);
-            dictionary[name] = x;
+            // Tradeoff: 
+            // Risk paying extra for conversion in order to minimize lock time.
+            //
+            // Rationale: 
+            // It is unsafe to assume that value converters will not cause 
+            // problems in a critical section. We only lock on code/data that's
+            // under our direct control.
+            
+            object convertedValue;
+            int count = 0;
 
-            return x;
+            do
+            {
+                convertedValue = valueConverter.Convert(value);
+
+                lock (this.gate)
+                {
+                    value = dictionary[name];
+
+                    if (value is ConvertedValue)
+                    {
+                        convertedValue = ((ConvertedValue)value).GetAs<TValue>();
+                        value = ((ConvertedValue)value).Get();
+                    }
+                    else
+                    {
+                        dictionary[name] = new ConvertedValue(convertedValue);
+                    }
+                }
+
+                Debug.Assert(++count < 2);
+            }
+            while (convertedValue == null);
+
+            return (TValue)convertedValue;
         }
 
         #endregion
 
         #region Privates
 
-        private volatile ExpandoObject expandoObject;
+        ExpandoObject expandoObject;
+        object gate = new object();
+
+        #endregion
+
+        #region Type
+
+        class ConvertedValue
+        {
+            public ConvertedValue(object value)
+            {
+                this.value = value;
+            }
+
+            public TValue Convert<TValue>(ValueConverter<TValue> valueConverter)
+            {
+                return this.value is TValue ? (TValue)this.value : valueConverter.Convert(this.value);
+            }
+
+            public object Get()
+            {
+                return this.value;                
+            }
+
+            public object GetAs<TValue>()
+            {
+                return this.value is TValue ? value : null;
+            }
+
+            readonly object value;
+        }
 
         #endregion
     }

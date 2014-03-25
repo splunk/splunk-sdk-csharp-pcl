@@ -90,6 +90,74 @@ namespace Splunk.Sdk
 
         #region Methods
 
+        #region Authentication/authorization
+
+        /// <summary>
+        /// Retrieves the list of all Splunk system capabilities.
+        /// </summary>
+        /// <returns>
+        /// </returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/wvB9N5">authorization/capabilities</a> 
+        /// REST API Reference.
+        /// </remarks>
+        public dynamic GetCapabilities()
+        {
+            return this.GetCapabilitiesAsync().Result;
+        }
+
+        /// <summary>
+        /// Retrieves the list of all Splunk system capabilities.
+        /// </summary>
+        /// <returns>
+        /// </returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/wvB9N5">authorization/capabilities</a> 
+        /// REST API Reference.
+        /// </remarks>
+        public async Task<dynamic> GetCapabilitiesAsync()
+        {
+            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.Capabilities)))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+
+                if (feed.Entries.Count != 1)
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                var entry = feed.Entries[0];
+                dynamic capabilities = entry.Content.Capabilities; // TODO: Static type (?)
+
+                return capabilities;
+            }
+        }
+
+        /// <summary>
+        /// Provides user authentication.
+        /// </summary>
+        /// <param name="username">
+        /// Splunk account username.
+        /// </param>
+        /// <param name="password">
+        /// Splunk account password for username.
+        /// </param>
+        /// <remarks>
+        /// This method uses the Splunk <a href="http://goo.gl/yXJX75">auth/login</a>
+        /// endpoint. The session key that it returns is used for subsequent requests.
+        /// It is accessible via the <see cref="SessionKey"/> property.
+        /// </remarks>
+        public void Login(string username, string password)
+        {
+            this.LoginAsync(username, password).Wait();
+        }
+
         /// <summary>
         /// Provides user authentication.
         /// </summary>
@@ -123,58 +191,45 @@ namespace Splunk.Sdk
             }
         }
 
+        #endregion
+
+        #region Saved searches
+
         /// <summary>
-        /// Releases all resources used by the <see cref="Service"/>.
+        /// Dispatches a <see cref="SavedSearch"/> just like the scheduler would.
         /// </summary>
-        /// <remarks>
-        /// Do not override this method. Override 
-        /// <see cref="Service.Dispose(bool disposing)"/> instead.
-        /// </remarks>
-        public void Dispose()
+        /// <param name="searchName">
+        /// The name of the <see cref="SavedSearch"/> to dispatch.
+        /// </param>
+        /// <param name="searchArgs">
+        /// A set of arguments to the <see cref="SavedSearch"/>.
+        /// </param>
+        /// <param name="dispatchArgs">
+        /// A set of arguments to the dispatcher.
+        /// </param>
+        /// <returns>
+        /// The search <see cref="Job"/> that was dispatched.
+        /// </returns>
+        public Job DispatchSavedSearch(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
-            this.Dispose(true);
+            return this.DispatchSavedSearchAsync(searchName, searchArgs, dispatchArgs).Result;
         }
 
         /// <summary>
-        /// Releases all resources used by the <see cref="Service"/>.
+        /// Dispatches a <see cref="SavedSearch"/> just like the scheduler would.
         /// </summary>
-        /// <remarks>
-        /// Subclasses should implement the disposable pattern as follows:
-        /// <list type="bullet">
-        /// <item><description>
-        ///     Override this method and call it from the override.
-        ///     </description></item>
-        /// <item><description>
-        ///     Provide a finalizer, if needed, and call this method from it.
-        ///     </description></item>
-        /// <item><description>
-        ///     To help ensure that resources are always cleaned up 
-        ///     appropriately, ensure that the override is callable multiple
-        ///     times without throwing an exception.
-        ///     </description></item>
-        /// </list>
-        /// There is no performance benefit in overriding this method on types
-        /// that use only managed resources (such as arrays) because they are 
-        /// automatically reclaimed by the garbage collector. See 
-        /// <a href="http://goo.gl/VPIovn">Implementing a Dispose Method</a>.
-        /// </remarks>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing && !this.disposed)
-            {
-                this.Context.Dispose();
-                this.disposed = true;
-                GC.SuppressFinalize(this);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="searchName"></param>
-        /// <param name="searchArgs"></param>
-        /// <param name="dispatchArgs"></param>
-        /// <returns></returns>
+        /// <param name="searchName">
+        /// The name of the <see cref="SavedSearch"/> to dispatch.
+        /// </param>
+        /// <param name="searchArgs">
+        /// A set of arguments to the <see cref="SavedSearch"/>.
+        /// </param>
+        /// <param name="dispatchArgs">
+        /// A set of arguments to the dispatcher.
+        /// </param>
+        /// <returns>
+        /// The search <see cref="Job"/> that was dispatched.
+        /// </returns>
         public async Task<Job> DispatchSavedSearchAsync(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(searchName), "searchName");
@@ -201,6 +256,20 @@ namespace Splunk.Sdk
             return job;
         }
 
+        public SavedSearchCollection GetSavedSearches(SavedSearchCollectionArgs args = null)
+        {
+            return this.GetSavedSearchesAsync(args).Result;
+        }
+
+        public async Task<SavedSearchCollection> GetSavedSearchesAsync(SavedSearchCollectionArgs args = null)
+        {
+            var collection = new SavedSearchCollection(this.Context, this.Namespace, args);
+            await collection.UpdateAsync();
+            return collection;
+        }
+
+        #endregion
+
         /// <summary>
         /// Retrieves the collection of installed apps.
         /// </summary>
@@ -209,7 +278,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
         /// </remarks>
-        public EntityCollection<App> GetApps(IEnumerable<Argument> args)
+        public AppCollection GetApps(AppCollectionArgs args = null)
         {
             return this.GetAppsAsync(args).Result;
         }
@@ -222,56 +291,11 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
         /// </remarks>
-        public async Task<EntityCollection<App>> GetAppsAsync(IEnumerable<Argument> args)
+        public async Task<AppCollection> GetAppsAsync(AppCollectionArgs args = null)
         {
-            var apps = new EntityCollection<App>(this.Context, this.Namespace, ResourceName.AppsLocal, args);
-            await apps.UpdateAsync();
-            return apps;
-        }
-
-        /// <summary>
-        /// Retrieves the list of all Splunk system capabilities.
-        /// </summary>
-        /// <returns>
-        /// </returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/wvB9N5">authorization/capabilities</a> REST API Reference.
-        /// </remarks>
-        public dynamic GetCapabilities()
-        {
-            return this.GetCapabilitiesAsync().Result;
-        }
-
-        /// <summary>
-        /// Retrieves the list of all Splunk system capabilities.
-        /// </summary>
-        /// <returns>
-        /// </returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/wvB9N5">authorization/capabilities</a> REST API Reference.
-        /// </remarks>
-        public async Task<dynamic> GetCapabilitiesAsync()
-        {
-            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.Capabilities)))
-            {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-
-                var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
-
-                if (feed.Entries.Count != 1)
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics
-                }
-
-                var entry = feed.Entries[0];
-                dynamic capabilities = entry.Content.Capabilities; // TODO: Static type (?)
-                
-                return capabilities;
-            }
+            var collection = new AppCollection(this.Context, this.Namespace, args);
+            await collection.UpdateAsync();
+            return collection;
         }
 
         /// <summary>
@@ -329,7 +353,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
         /// </remarks>
-        public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args)
+        public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args = null)
         {
             var jobs = new JobCollection(this.Context, this.Namespace, ResourceName.SearchJobs, args);
             await jobs.UpdateAsync();
@@ -613,6 +637,55 @@ namespace Splunk.Sdk
                     response.Dispose();
                 }
                 throw;
+            }
+        }
+
+        #endregion
+
+        #region Other methods
+
+        /// <summary>
+        /// Releases all resources used by the <see cref="Service"/>.
+        /// </summary>
+        /// <remarks>
+        /// Do not override this method. Override 
+        /// <see cref="Service.Dispose(bool disposing)"/> instead.
+        /// </remarks>
+        public void Dispose()
+        {
+            this.Dispose(true);
+        }
+
+        /// <summary>
+        /// Releases all resources used by the <see cref="Service"/>.
+        /// </summary>
+        /// <remarks>
+        /// Subclasses should implement the disposable pattern as follows:
+        /// <list type="bullet">
+        /// <item><description>
+        ///     Override this method and call it from the override.
+        ///     </description></item>
+        /// <item><description>
+        ///     Provide a finalizer, if needed, and call this method from it.
+        ///     </description></item>
+        /// <item><description>
+        ///     To help ensure that resources are always cleaned up 
+        ///     appropriately, ensure that the override is callable multiple
+        ///     times without throwing an exception.
+        ///     </description></item>
+        /// </list>
+        /// There is no performance benefit in overriding this method on types
+        /// that use only managed resources (such as arrays) because they are 
+        /// automatically reclaimed by the garbage collector. See 
+        /// <a href="http://goo.gl/VPIovn">Implementing a Dispose Method</a>.
+        /// </remarks>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && !this.disposed)
+            {
+                this.Context.Dispose();
+                this.disposed = true;
+                GC.SuppressFinalize(this);
             }
         }
 

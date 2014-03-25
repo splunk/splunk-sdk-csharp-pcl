@@ -1,18 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="Splunk.Sdk.Acl" Collapsed="true">
-    <Position X="19.5" Y="0.5" Width="1.5" />
+    <Position X="0.75" Y="10.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAACAAAAAACAAEAAAAAAAAAAAAIAAEAAAABIAAAA=</HashCode>
       <FileName>Splunk\Sdk\Acl.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Splunk.Sdk.PermissionsConverter" Collapsed="true">
-    <Position X="1.25" Y="1.75" Width="1.5" />
+  <Class Name="Splunk.Sdk.AclConverter" Collapsed="true">
+    <Position X="4" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
-      <FileName>Splunk\Sdk\PermissionsConverter.cs</FileName>
-      <NewMemberFileName>Splunk\Sdk\AclConverter.cs</NewMemberFileName>
+      <FileName>Splunk\Sdk\AclConverter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.App" Collapsed="true">
@@ -22,109 +21,174 @@
       <FileName>Splunk\Sdk\App.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Splunk.Sdk.AppCollection" Collapsed="true">
+    <Position X="0.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\AppCollection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.Args&lt;TArgs&gt;" Collapsed="true">
-    <Position X="5.25" Y="3.5" Width="1.5" />
+    <Position X="9" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAABCEAAIAAAAAgAAAAIAEAIAIAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Args.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Class Name="Splunk.Sdk.Argument" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="29" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQEgAAAAAQAAAAAAIAAAAAgAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\Argument.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
   <Class Name="Splunk.Sdk.AtomEntry" Collapsed="true">
-    <Position X="21.25" Y="0.5" Width="1.5" />
+    <Position X="30.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAQgAAAFAUiABAAAAAAAAAAAgCSAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\AtomEntry.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.AtomFeed" Collapsed="true">
-    <Position X="23" Y="0.5" Width="1.5" />
+    <Position X="32.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAACAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAAAGAAgAAAAAAAIAAAAAACQAAIAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\AtomFeed.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.BooleanConverter" Collapsed="true">
-    <Position X="14.75" Y="1.75" Width="1.5" />
+    <Position X="6.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\BooleanConverter.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Splunk.Sdk.CollectionConverter&lt;TValue, TCollection, TConverter&gt;" Collapsed="true">
+    <Position X="8.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\CollectionConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.Context" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="24.75" Y="0.5" Width="1.5" />
+    <Position X="34.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AABAAAAAAiAAAAAUAAAAAAAECAAACAkAAAAAIAiAAIA=</HashCode>
       <FileName>Splunk\Sdk\Context.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
+  <Class Name="Splunk.Sdk.DateTimeConverter" Collapsed="true">
+    <Position X="17.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\DateTimeConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Sdk.Eai" Collapsed="true">
+    <Position X="5.25" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Splunk\Sdk\Eai.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Sdk.EaiConverter" Collapsed="true">
+    <Position X="24.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\EaiConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.Entity&lt;TEntity&gt;" Collapsed="true">
     <Position X="4" Y="6.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>IAgCAAAAQgAAQEAEiAAAAAAAAAAAIQgASAAAAAAAAAA=</HashCode>
+      <HashCode>IAgCAAAAQgAAQEAEiAAAAAAAAAAAIQgASAAQAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Entity.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Splunk.Sdk.EntityCollection&lt;TEntity&gt;" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="19.5" Y="1.5" Width="1.5" />
+  <Class Name="Splunk.Sdk.EntityCollection&lt;TEntity, TArgs&gt;" Collapsed="true">
+    <Position X="1.75" Y="12.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAgAAAAAAgAAABAACAAAAAQAAAAAIQgEAIAAAAAAAAI=</HashCode>
+      <HashCode>AAgAAAAAAgAAABAACAAAAAQAAAAAIAgEIAAQAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\EntityCollection.cs</FileName>
     </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Splunk.Sdk.EnumConverter&lt;TEnum&gt;" Collapsed="true">
-    <Position X="10.25" Y="1.75" Width="1.5" />
+    <Position X="10.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAQAAAAAAIAAAAAEAAAAAAAAQAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\EnumConverter.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Splunk.Sdk.ExpandoAdapter" Collapsed="true">
+    <Position X="3" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAAAAAAAAAgAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\ExpandoAdapter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.Field" Collapsed="true">
-    <Position X="21.25" Y="1.5" Width="1.5" />
+    <Position X="29" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ABIAoAAAQAAAAAYEAAIAQYBAAgAAAAAgAAkAohYAAAA=</HashCode>
       <FileName>Splunk\Sdk\Field.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.GenericEntity" Collapsed="true">
-    <Position X="0.75" Y="7.75" Width="1.5" />
+    <Position X="7.5" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\GenericEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Splunk.Sdk.GuidConverter" Collapsed="true">
+    <Position X="26.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\GuidConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.Int32Converter" Collapsed="true">
-    <Position X="5.75" Y="1.75" Width="1.5" />
+    <Position X="1.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Int32Converter.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Splunk.Sdk.Job" Collapsed="true">
-    <Position X="5.25" Y="7.75" Width="1.5" />
+  <Class Name="Splunk.Sdk.SavedSearch" Collapsed="true">
+    <Position X="0.75" Y="7.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACAAABE0AAAAACEAEAggAIAioAAABgAAAAAQAAAAAA=</HashCode>
-      <FileName>Splunk\Sdk\Job.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\SavedSearch.cs</FileName>
+      <NewMemberFileName>Splunk\Sdk\Job.cs</NewMemberFileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.JobArgs" Collapsed="true">
-    <Position X="5.25" Y="4.75" Width="1.5" />
+    <Position X="3.5" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AQACAAQEQIYAAgBAAGQAAEAAoCpAIAICEAAAAEAhACA=</HashCode>
       <FileName>Splunk\Sdk\JobArgs.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Splunk.Sdk.CollectionConverter&lt;TValue, TCollection, TConverter&gt;" Collapsed="true">
-    <Position X="17" Y="1.75" Width="1.5" />
+  <Class Name="Splunk.Sdk.JobCollection" Collapsed="true">
+    <Position X="2.75" Y="13.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
-      <FileName>Splunk\Sdk\CollectionConverter.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\JobCollection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Sdk.JobCollectionArgs" Collapsed="true">
+    <Position X="12.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAQAAEggAA=</HashCode>
+      <FileName>Splunk\Sdk\JobCollectionArgs.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.Message" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="23" Y="1.5" Width="1.5" />
+    <Position X="30.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAAQEgAAAAAAAAAAAAIAAAQAACAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Message.cs</FileName>
@@ -132,14 +196,14 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Splunk.Sdk.Namespace" Collapsed="true">
-    <Position X="24.75" Y="1.5" Width="1.5" />
+    <Position X="32.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAJAAAAAQAAAAAEAAAAIAAAAAAAAAAAgAIAgAAgAAA=</HashCode>
       <FileName>Splunk\Sdk\Namespace.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.Observable&lt;T&gt;" Collapsed="true">
-    <Position X="1.75" Y="9.5" Width="1.5" />
+    <Position X="9.75" Y="9.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AEAIBAAAACCAAAIAAAAAAAAAAAACAAAIAAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Observable.cs</FileName>
@@ -147,203 +211,251 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Splunk.Sdk.Permissions" Collapsed="true">
-    <Position X="19.5" Y="2.5" Width="1.5" />
+    <Position X="3" Y="10.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAEAAAA=</HashCode>
       <FileName>Splunk\Sdk\Permissions.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Splunk.Sdk.PermissionsConverter" Collapsed="true">
+    <Position X="15.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\PermissionsConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.Record" Collapsed="true">
-    <Position X="21.25" Y="2.5" Width="1.5" />
+    <Position X="34.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Record.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.RequestException" Collapsed="true">
-    <Position X="23" Y="2.5" Width="1.5" />
+    <Position X="29" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\RequestException.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.ResourceName" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="24.75" Y="2.5" Width="1.5" />
+    <Position X="30.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAiAAEEIIEBIECEAABAwAEwAAEAAEgAAQAUAAAAA=</HashCode>
+      <HashCode>ACAAAiAAEEIIEBIGCAAABAwAEwAAEAAEgAAQAUAAAAA=</HashCode>
       <FileName>Splunk\Sdk\ResourceName.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Splunk.Sdk.SavedSearchArgs" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="19.5" Y="3.5" Width="1.5" />
+  <Class Name="Splunk.Sdk.Response" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="32.5" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CCIAAAAAAAAEABAUCAAABAQEAAAAAAAAAAAgAABQIAA=</HashCode>
+      <HashCode>AAIAAAAAACAAAAAAACAAAAAAAAAAAAAAAAAAYIAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\Response.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Splunk.Sdk.SavedSearchArgs" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="34.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACoAABBAACBAQBBUAAQABAQAAAAAACAIAgAAAABQIEA=</HashCode>
       <FileName>Splunk\Sdk\SavedSearchArgs.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Splunk.Sdk.SavedSearchDispatchArgs" Collapsed="true">
-    <Position X="3" Y="4.75" Width="1.5" />
+    <Position X="1.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAARAAAACAAAgAMAAAQAQAAAEABAAAAEAACAgA=</HashCode>
       <FileName>Splunk\Sdk\SavedSearchDispatchArgs.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.SearchEventArgs" Collapsed="true">
-    <Position X="7.5" Y="4.75" Width="1.5" />
+    <Position X="8" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAQAAIAAAACAAAAQEIAAIAAAAAAIAAAAggAA=</HashCode>
       <FileName>Splunk\Sdk\SearchEventArgs.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.SearchExportArgs" Collapsed="true">
-    <Position X="9.75" Y="4.75" Width="1.5" />
+    <Position X="14.75" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAQEQYYAIgBAAGQAAEQEoCpIIAIAEAIAAEAhgCA=</HashCode>
       <FileName>Splunk\Sdk\SearchExportArgs.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Splunk.Sdk.JobCollectionArgs" Collapsed="true">
-    <Position X="0.75" Y="4.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAQAAAggAA=</HashCode>
-      <FileName>Splunk\Sdk\JobCollectionArgs.cs</FileName>
-      <NewMemberFileName>Splunk\Sdk\SearchResultArgs.cs</NewMemberFileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="Splunk.Sdk.SearchResults" Collapsed="true">
-    <Position X="0.5" Y="10.75" Width="1.5" />
+    <Position X="10.75" Y="10.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAJABEAAAiAAABAAAAQAAAgAAAIAAAAEAAAAAIAAAAA=</HashCode>
       <FileName>Splunk\Sdk\SearchResults.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Class Name="Splunk.Sdk.SearchResultsArgs" Collapsed="true">
+    <Position X="17" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAAAAAAAAAQAAAAAAAAAAAAAAAAggAA=</HashCode>
+      <FileName>Splunk\Sdk\SearchResultsArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.SearchResultsReader" Collapsed="true">
-    <Position X="2.75" Y="10.75" Width="1.5" />
+    <Position X="8.5" Y="10.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAIABEAAACAAABAAAAAAAAAAAAAAAAAEAAAAAIAAAAA=</HashCode>
       <FileName>Splunk\Sdk\SearchResultsReader.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
+  <Class Name="Splunk.Sdk.SearchSummary" Collapsed="true">
+    <Position X="29" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\SearchSummary.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Sdk.SearchSummaryArgs" Collapsed="true">
+    <Position X="5.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAQQAIAAAAKAAAAAAIAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>Splunk\Sdk\SearchSummaryArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.ServerInfo" Collapsed="true">
-    <Position X="7.5" Y="7.75" Width="1.5" />
+    <Position X="5.25" Y="7.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>KAAAAAAAEIAAYACAAgAAAAAAACAAhAQECIACAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\ServerInfo.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.Service" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="21.25" Y="3.5" Width="1.5" />
+    <Position X="30.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgIAAQAAAiAABAAWBAAAAAAAAEAAIAAAAAAAAhAAAAA=</HashCode>
+      <HashCode>AgIgAUEAAiEAAAA2hAAAACAgAEAAJAIAAIAUAhAAAQA=</HashCode>
       <FileName>Splunk\Sdk\Service.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="Splunk.Sdk.StringConverter" Collapsed="true">
-    <Position X="8" Y="1.75" Width="1.5" />
+    <Position X="13" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\StringConverter.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Splunk.Sdk.UriConverter" Collapsed="true">
+    <Position X="19.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\UriConverter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="Splunk.Sdk.ValueConverter&lt;TValue&gt;" Collapsed="true">
-    <Position X="9" Y="0.5" Width="1.5" />
+    <Position X="14" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAABAABAAAAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\ValueConverter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.VersionConverter" Collapsed="true">
-    <Position X="12.5" Y="1.75" Width="1.5" />
+    <Position X="22" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAIAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\VersionConverter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.XmlReaderExtensions" Collapsed="true">
-    <Position X="23" Y="3.5" Width="1.5" />
+    <Position X="32.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>iAAAAAAAAAAAgAAAAAAAACIAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>iAAAAAAAAAAAgAAAAAAAACIAABAAAAAAAAAAAAQAAAA=</HashCode>
       <FileName>Splunk\Sdk\XmlReaderExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Splunk.Sdk.SavedSearchCollectionArgs" Collapsed="true">
+    <Position X="10.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQEAAAAACABAAQAAAAAAAAAAAAQAAEggAA=</HashCode>
+      <FileName>Splunk\Sdk\SavedSearchCollectionArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Struct Name="Splunk.Sdk.Server" Collapsed="true">
-    <Position X="21.25" Y="4.75" Width="1.5" />
+    <Position X="29" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAAQAAAQAAAAAAAAAAAAAAAAAAAEAEAAAEAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Server.cs</FileName>
     </TypeIdentifier>
   </Struct>
-  <Struct Name="Splunk.Sdk.Response" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="19.5" Y="4.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAIAAAAAACAAAAAAACAAAAAAAAAAAAAAAAAAYIAAAAA=</HashCode>
-      <FileName>Splunk\Sdk\Response.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" Collapsed="true" />
-  </Struct>
   <Enum Name="Splunk.Sdk.DispatchState" Collapsed="true">
-    <Position X="19.5" Y="6" Width="1.5" />
+    <Position X="29" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AABgAAAAAAAAAAAAAAAAQAAAQAAAABAIABAAAAEAAAA=</HashCode>
       <FileName>Splunk\Sdk\DispatchState.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Splunk.Sdk.ExecutionMode" Collapsed="true">
-    <Position X="21.25" Y="6" Width="1.5" />
+    <Position X="30.75" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAEAAAACAIAAAAAAAAAAEAAAA=</HashCode>
       <FileName>Splunk\Sdk\ExecutionMode.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Splunk.Sdk.LicenseState" Collapsed="true">
-    <Position X="23" Y="6" Width="1.5" />
+    <Position X="32.5" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAABAAEAAAA=</HashCode>
       <FileName>Splunk\Sdk\LicenseState.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Splunk.Sdk.MessageType" Collapsed="true">
-    <Position X="24.75" Y="6" Width="1.5" />
+    <Position X="34.25" Y="6" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAAAAAYAAAAAAABAAAAAAAAAAAAAAAAEEAAA=</HashCode>
       <FileName>Splunk\Sdk\MessageType.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Splunk.Sdk.Scheme" Collapsed="true">
-    <Position X="19.5" Y="6.75" Width="1.5" />
+    <Position X="29" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAACAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Sdk\Scheme.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Splunk.Sdk.SearchMode" Collapsed="true">
-    <Position X="21.25" Y="6.75" Width="1.5" />
+    <Position X="30.75" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAAIAAAAAAAAAAEAAAA=</HashCode>
       <FileName>Splunk\Sdk\SearchMode.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Splunk.Sdk.ServerMode" Collapsed="true">
-    <Position X="23" Y="6.75" Width="1.5" />
+    <Position X="32.5" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAIAAAAAAAAAAEAAAA=</HashCode>
       <FileName>Splunk\Sdk\ServerMode.cs</FileName>
     </TypeIdentifier>
   </Enum>
   <Enum Name="Splunk.Sdk.SharingMode" Collapsed="true">
-    <Position X="24.75" Y="6.75" Width="1.5" />
+    <Position X="34.25" Y="6.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAIAAAAAAAAAAIAAAAAAAAAAAAAAAAAEhAAA=</HashCode>
       <FileName>Splunk\Sdk\SharingMode.cs</FileName>
     </TypeIdentifier>
   </Enum>
+  <Enum Name="Splunk.Sdk.SortDirection" Collapsed="true">
+    <Position X="29" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAABAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Splunk\Sdk\SortDirection.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Splunk.Sdk.SortMode" Collapsed="true">
+    <Position X="30.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACABAIAAAAAABAAAEAAAA=</HashCode>
+      <FileName>Splunk\Sdk\SortMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
   <Enum Name="Splunk.Sdk.TruncationMode" Collapsed="true">
-    <Position X="19.5" Y="7.5" Width="1.5" />
+    <Position X="32.5" Y="7.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAABAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAEAAAA=</HashCode>
       <FileName>Splunk\Sdk\TruncationMode.cs</FileName>

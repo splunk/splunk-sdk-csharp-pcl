@@ -19,10 +19,10 @@
 
 namespace Splunk.Sdk
 {
-    public class AppCollection : EntityCollection<App, AppCollectionArgs>
+    public class SavedSearchCollection : EntityCollection<SavedSearch, SavedSearchCollectionArgs>
     {
-        internal AppCollection(Context context, Namespace @namespace, AppCollectionArgs args = null)
-            : base(context, @namespace, ResourceName.AppsLocal, args)
+        internal SavedSearchCollection(Context context, Namespace @namespace, SavedSearchCollectionArgs args = null)
+            : base(context, @namespace, ResourceName.SavedSearches, args)
         { }
     }
 }

@@ -15,15 +15,17 @@
  */
 
 // TODO:
-// [ ] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
-//     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
 // [ ] Check for HTTP Status Code 204 (No Content) and empty atoms in 
 //     Entity<TEntity>.UpdateAsync.
+//
 // [O] Contracts
 //
-// [ ] Documentation
+// [O] Documentation
 //
-// [ ] Remove Entity<TEntity>.Invalidate method
+// [X] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
+//     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
+//
+// [X] Remove Entity<TEntity>.Invalidate method
 //     FJR: This gets called when we set the record value. Add a comment saying what it's
 //     supposed to do when it's overridden.
 //     DSN: I've adopted an alternative method for getting strongly-typed values. See, for
@@ -39,7 +41,7 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml;
 
-    public class Entity<TEntity> : ExpandoAdapter where TEntity : Entity<TEntity>, new()
+    public class Entity<TEntity> where TEntity : Entity<TEntity>, new()
     {
         #region Constructors
 
@@ -75,7 +77,7 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Properties
+        #region Properties that are stable for the lifetime of an instance
 
         /// <summary>
         /// Gets the path to the collection containing the current <see cref=
@@ -118,28 +120,48 @@ namespace Splunk.Sdk
         #region Properties backed by AtomEntry
 
         public string Author
-        {
-            get { return this.AtomEntry == null ? null : this.AtomEntry.Author; }
+        { 
+            get { return this.AtomEntry == null ? null : this.AtomEntry.Author; } 
         }
 
         public Uri Id
-        {
-            get { return this.AtomEntry == null ? null : this.AtomEntry.Id; }
+        { 
+            get { return this.AtomEntry == null ? null : this.AtomEntry.Id; } 
         }
 
         public IReadOnlyDictionary<string, Uri> Links
-        {
-            get { return this.AtomEntry == null ? null : this.AtomEntry.Links; }
+        { 
+            get { return this.AtomEntry == null ? null : this.AtomEntry.Links; } 
         }
 
         public DateTime Published
-        {
-            get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Published; }
+        { 
+            get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Published; } 
         }
 
         public DateTime Updated
+        { 
+            get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Updated; } 
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ExpandoAdapter"/> representing the content of
+        /// the current <see cref="Entity<TEntity>"/>.
+        /// </summary>
+        /// <remarks>
+        /// Use this property to map content elements to strongly typed 
+        /// properties.
+        /// </remarks>
+        protected ExpandoAdapter Content
         {
-            get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Updated; }
+            get
+            {
+                if (this.data == null)
+                {
+                    throw new InvalidOperationException(); // TODO: diagnostics
+                }
+                return this.data.Adapter;
+            }
         }
 
         #endregion
@@ -147,23 +169,24 @@ namespace Splunk.Sdk
         #region Methods
 
         /// <summary>
-        /// Gets the title of the current <see cref="Entity"/> from its atom entry.
+        /// Gets the title of the current <see cref="Entity<TEntity>"/>.
         /// </summary>
         /// <returns>
-        /// The title of the current <see cref="Entity"/>.
+        /// The title of the current <see cref="Entity<TEntity>"/>.
         /// </returns>
         /// <remarks>
         /// This method is overridden by the <see cref="Job"/> class. Its title
         /// comes from the <c>Sid</c> property, not the <c>Title</c> property of
-        /// <see cref="Entity.Record"/>.
+        /// <see cref="Entity<TEntity>.Record"/>.
         /// </remarks>
         protected virtual string GetTitle()
         {
-            return GetValue("Title", StringConverter.Instance);
+            return this.AtomEntry == null ? null : this.AtomEntry.Title;
         }
 
         /// <summary>
-        /// Refreshes the cached state of the current <see cref="Entity"/>.
+        /// Refreshes the cached state of the current <see cref=
+        /// "Entity<TEntity>"/>.
         /// </summary>
         public async Task UpdateAsync()
         {
@@ -218,10 +241,9 @@ namespace Splunk.Sdk
                         }
 
                         var atomEntry = new AtomEntry();
-                        
+
                         await atomEntry.ReadXmlAsync(reader);
-                        this.AtomEntry = atomEntry;
-                        this.ExpandoObject = atomEntry.Content;
+                        this.data = new Data(atomEntry);
                     }
 
                     return;
@@ -250,7 +272,9 @@ namespace Splunk.Sdk
         #region Privates/internals
 
         AtomEntry AtomEntry
-        { get; set; }
+        { 
+            get { return this.data == null ? null : this.data.Entry; } 
+        }
 
         internal static TEntity CreateEntity(Context context, ResourceName collection, AtomEntry atomEntry)
         {
@@ -262,17 +286,49 @@ namespace Splunk.Sdk
 
             var entity = new TEntity()
             {
-                AtomEntry = atomEntry,
                 Collection = collection,
-                Context = context,
-                ExpandoObject = content,
+                Context = context
             };
+
+            entity.data = new Data(atomEntry);
 
             entity.Title = entity.GetTitle();
             entity.ResourceName = new ResourceName(collection, entity.Title);
             entity.Namespace = new Namespace(content.Eai.Acl.Owner, content.Eai.Acl.App);
 
             return entity;
+        }
+
+        #endregion
+
+        #region Privates
+
+        volatile Data data;
+
+        #endregion
+
+        #region Types
+
+        class Data
+        {
+            public Data(AtomEntry entry)
+            {
+                this.adapter = new ExpandoAdapter(entry.Content);
+                this.entry = entry;
+            }
+
+            public ExpandoAdapter Adapter
+            { 
+                get { return this.adapter; } 
+            }
+
+            public AtomEntry Entry
+            { 
+                get { return this.entry; } 
+            }
+
+            readonly ExpandoAdapter adapter;
+            readonly AtomEntry entry;
         }
 
         #endregion

@@ -101,7 +101,7 @@ namespace Splunk.Sdk
 
         #region Privates/internals
 
-        internal static async Task<IEnumerable<Message>> ReadMessagesAsync(XmlReader reader)
+        internal static async Task<IReadOnlyList<Message>> ReadMessagesAsync(XmlReader reader)
         { 
             if (reader.ReadState == ReadState.Initial)
             {

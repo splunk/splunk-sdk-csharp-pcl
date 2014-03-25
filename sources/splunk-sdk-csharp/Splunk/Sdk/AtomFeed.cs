@@ -227,7 +227,7 @@ namespace Splunk.Sdk
                             {
                                 throw new InvalidDataException(); // TODO: Diagnostics
                             }
-                            reader.ReadAsync();
+                            await reader.ReadAsync();
                         }
 
                         break;

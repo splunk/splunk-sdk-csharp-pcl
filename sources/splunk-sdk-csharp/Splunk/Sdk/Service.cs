@@ -256,6 +256,28 @@ namespace Splunk.Sdk
             return job;
         }
 
+        public SavedSearch GetSavedSearch(string name, SavedSearchArgs args = null)
+        {
+            return this.GetSavedSearchAsync(name, args).Result;
+        }
+
+        public async Task<SavedSearch> GetSavedSearchAsync(string name, SavedSearchArgs args = null)
+        {
+            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.SavedSearches, name)))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+
+                var atomEntry = new AtomEntry();
+                await atomEntry.ReadXmlAsync(response.XmlReader);
+                var entity = SavedSearch.CreateEntity(this.Context, ResourceName.SearchJobs, atomEntry); // TODO: Entity<TEntity> derivatives should provide their ResourceName property. CreateEntity should not require it.
+
+                return entity;
+            }
+        }
+
         public SavedSearchCollection GetSavedSearches(SavedSearchCollectionArgs args = null)
         {
             return this.GetSavedSearchesAsync(args).Result;

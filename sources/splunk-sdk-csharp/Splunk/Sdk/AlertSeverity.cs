@@ -21,41 +21,42 @@ namespace Splunk.Sdk
     /// <summary>
     /// 
     /// </summary>
-    public enum MessageType
+    public enum AlertSeverity
     {
         /// <summary>
         /// 
         /// </summary>
-        None,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "DEBUG")]
+        [EnumMember(Value = "1")]
         Debug, 
         
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "INFO")]
+        [EnumMember(Value = "2")]
         Information, 
         
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "WARN")]
+        [EnumMember(Value = "3")]
         Warning, 
         
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "ERROR")]
+        [EnumMember(Value = "4")]
         Error,
 
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "FATAL")]
+        [EnumMember(Value = "5")]
+        Severe,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [EnumMember(Value = "6")]
         Fatal
     }
 }

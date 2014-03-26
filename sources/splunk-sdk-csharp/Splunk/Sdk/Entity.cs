@@ -278,6 +278,9 @@ namespace Splunk.Sdk
 
         internal static TEntity CreateEntity(Context context, ResourceName collection, AtomEntry atomEntry)
         {
+            // TODO: Entity<TEntity> derivatives should provide their ResourceName property. 
+            // CreateEntity should not require it.
+
             Contract.Requires<ArgumentNullException>(collection != null, "collection");
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires<ArgumentNullException>(atomEntry != null, "entry");

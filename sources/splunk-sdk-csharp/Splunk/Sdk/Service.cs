@@ -193,7 +193,66 @@ namespace Splunk.Sdk
 
         #endregion
 
+        #region Applications
+
+        /// <summary>
+        /// Retrieves the collection of installed apps.
+        /// </summary>
+        /// <returns>
+        /// </returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
+        /// </remarks>
+        public AppCollection GetApps(AppCollectionArgs args = null)
+        {
+            return this.GetAppsAsync(args).Result;
+        }
+
+        /// <summary>
+        /// Retrieves the collection of installed apps.
+        /// </summary>
+        /// <returns>
+        /// </returns>
+        /// <remarks>
+        /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
+        /// </remarks>
+        public async Task<AppCollection> GetAppsAsync(AppCollectionArgs args = null)
+        {
+            var collection = new AppCollection(this.Context, this.Namespace, args);
+            await collection.UpdateAsync();
+            return collection;
+        }
+
+        #endregion
+
         #region Saved searches
+
+        public SavedSearch CreateSavedSearch(SavedSearchCreationArgs creationArgs, SavedSearchTemplateArgs templateArgs = null)
+        {
+            return this.CreateSavedSearchAsync(creationArgs, templateArgs).Result;
+        }
+
+        public async Task<SavedSearch> CreateSavedSearchAsync(SavedSearchCreationArgs creationArgs, SavedSearchTemplateArgs templateArgs = null)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.SavedSearches, creationArgs, templateArgs))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+
+                var atomFeed = new AtomFeed();
+                await atomFeed.ReadXmlAsync(response.XmlReader);
+
+                if (atomFeed.Entries.Count != 1)
+                {
+                    throw new InvalidDataException();  // TODO: Diagnostics
+                }
+
+                var entity = SavedSearch.CreateEntity(this.Context, ResourceName.SavedSearches, atomFeed.Entries[0]);
+                return entity;
+            }
+        }
 
         /// <summary>
         /// Dispatches a <see cref="SavedSearch"/> just like the scheduler would.
@@ -210,7 +269,7 @@ namespace Splunk.Sdk
         /// <returns>
         /// The search <see cref="Job"/> that was dispatched.
         /// </returns>
-        public Job DispatchSavedSearch(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
+        public Job DispatchSavedSearch(string searchName, SavedSearchTemplateArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
             return this.DispatchSavedSearchAsync(searchName, searchArgs, dispatchArgs).Result;
         }
@@ -230,7 +289,7 @@ namespace Splunk.Sdk
         /// <returns>
         /// The search <see cref="Job"/> that was dispatched.
         /// </returns>
-        public async Task<Job> DispatchSavedSearchAsync(string searchName, SavedSearchArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
+        public async Task<Job> DispatchSavedSearchAsync(string searchName, SavedSearchTemplateArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(searchName), "searchName");
 
@@ -270,10 +329,15 @@ namespace Splunk.Sdk
                     throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
 
-                var atomEntry = new AtomEntry();
-                await atomEntry.ReadXmlAsync(response.XmlReader);
-                var entity = SavedSearch.CreateEntity(this.Context, ResourceName.SearchJobs, atomEntry); // TODO: Entity<TEntity> derivatives should provide their ResourceName property. CreateEntity should not require it.
+                var atomFeed = new AtomFeed();
+                await atomFeed.ReadXmlAsync(response.XmlReader);
 
+                if (atomFeed.Entries.Count != 1)
+                {
+                    throw new InvalidDataException();  // TODO: Diagnostics
+                }
+
+                var entity = SavedSearch.CreateEntity(this.Context, ResourceName.SavedSearches, atomFeed.Entries[0]);
                 return entity;
             }
         }
@@ -292,33 +356,7 @@ namespace Splunk.Sdk
 
         #endregion
 
-        /// <summary>
-        /// Retrieves the collection of installed apps.
-        /// </summary>
-        /// <returns>
-        /// </returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
-        /// </remarks>
-        public AppCollection GetApps(AppCollectionArgs args = null)
-        {
-            return this.GetAppsAsync(args).Result;
-        }
-
-        /// <summary>
-        /// Retrieves the collection of installed apps.
-        /// </summary>
-        /// <returns>
-        /// </returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
-        /// </remarks>
-        public async Task<AppCollection> GetAppsAsync(AppCollectionArgs args = null)
-        {
-            var collection = new AppCollection(this.Context, this.Namespace, args);
-            await collection.UpdateAsync();
-            return collection;
-        }
+        #region Search jobs
 
         /// <summary>
         /// Gets details about the search <see cref="Job"/> identified by
@@ -719,6 +757,8 @@ namespace Splunk.Sdk
         {
             return string.Join("/", this.Context.ToString(), this.Namespace.ToString());
         }
+
+        #endregion
 
 #if false
 . Say

@@ -19,43 +19,43 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Specifies the paper size of a report.
     /// </summary>
-    public enum MessageType
+    public enum PaperSize
     {
         /// <summary>
-        /// 
+        /// 8.5 × 11 inches.
         /// </summary>
-        None,
+        Letter,
 
         /// <summary>
-        /// 
+        /// 420 x 594 millimeters.
         /// </summary>
-        [EnumMember(Value = "DEBUG")]
-        Debug, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "INFO")]
-        Information, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "WARN")]
-        Warning, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "ERROR")]
-        Error,
+        A2,
 
         /// <summary>
-        /// 
+        /// 297 x 420 millimeters.
         /// </summary>
-        [EnumMember(Value = "FATAL")]
-        Fatal
+        A3,
+
+        /// <summary>
+        /// 210 x 297 millimeters.
+        /// </summary>
+        A4,
+
+        /// <summary>
+        /// 148 x 210 millimeters.
+        /// </summary>
+        A5,
+
+        /// <summary>
+        /// 17 × 11 inches.
+        /// </summary>
+        Ledger,
+
+        /// <summary>
+        /// 8.5 × 14 inches.
+        /// </summary>
+        Legal
     }
 }

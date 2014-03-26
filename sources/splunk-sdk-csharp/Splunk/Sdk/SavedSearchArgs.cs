@@ -15,154 +15,79 @@
  */
 
 // TODO:
-// [ ] Documentation
-// [ ] Diagnostics
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Linq;
+    using System.ComponentModel;
+    using System.Runtime.Serialization;
 
-    public sealed class SavedSearchArgs : ISet<Argument>
+    /// <summary>
+    /// Provides the arguments required for retrieving <see cref="SavedSearch"/>
+    /// entries.
+    /// </summary>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///     <a href="http://goo.gl/bKrRK0">REST API: GET saved/searches</a>
+    /// </description></item>
+    /// </list>
+    /// </remarks>
+    public sealed class SavedSearchArgs : Args<SavedSearchArgs>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SavedSearchArgs"/> 
+        /// class.
+        /// </summary>
         public SavedSearchArgs()
-        {
-            this.set = new HashSet<Argument>();
-        }
-
-        public SavedSearchArgs(IEnumerable<Argument> collection)
-        {
-            Contract.Requires<ArgumentNullException>(collection != null, "collection");
-            this.set = new HashSet<Argument>(collection);
-        }
+        { }
 
         #endregion
 
         #region Properties
 
-        public int Count
-        { get { return this.set.Count; } }
+        /// <summary>
+        /// Gets or sets the lower bound of the time window for which saved 
+        /// search schedules should be returned.
+        /// </summary>
+        /// <remarks>
+        /// This property specifies that all the scheduled times starting from 
+        /// this time (not just the next run time) should be returned.
+        /// </remarks>
+        [DataMember(Name = "earliest_time", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string EarliestTime
+        { get; set; }
 
-        public bool IsReadOnly
-        { get { return false; } }
+        /// <summary>
+        /// Gets or sets the upper bound of the time window for which saved 
+        /// search schedules should be returned.
+        /// </summary>
+        /// <remarks>
+        /// This property specifies that all the scheduled times ending with 
+        /// this time (not just the next run time) should be returned.
+        /// </remarks>
+        [DataMember(Name = "latest_time", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string LatestTime
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to list default actions for
+        /// <see cref="SavedSearch"/> entries.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        [DataMember(Name = "listDefaultActionArgs", EmitDefaultValue = false)]
+        [DefaultValue(false)]
+        public bool ListDefaultActions
+        { get; set; }
 
         #endregion
-
-        #region Methods
-
-        public void Clear()
-        {
-            this.set.Clear();
-        }
-
-        public IEnumerator<Argument> GetEnumerator()
-        {
-            foreach (var item in this.set)
-            {
-                yield return new Argument("args." + item.Name, item.Value);
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
- 
-        public override string ToString()
-        {
-            return string.Join("; ", from arg in this select arg.ToString());
-        }
-
-        #endregion
-
-        #region privates
-
-        HashSet<Argument> set;
-
-        #endregion
-
-        public bool Add(Argument item)
-        {
-            return this.set.Add(item);
-        }
-
-        public void ExceptWith(IEnumerable<Argument> other)
-        {
-            this.set.ExceptWith(other);
-        }
-
-        public void IntersectWith(IEnumerable<Argument> other)
-        {
-            this.set.IntersectWith(other);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<Argument> other)
-        {
-            return this.IsProperSubsetOf(other);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<Argument> other)
-        {
-            return this.IsProperSupersetOf(other);
-        }
-
-        public bool IsSubsetOf(IEnumerable<Argument> other)
-        {
-            return this.set.IsSubsetOf(other);
-        }
-
-        public bool IsSupersetOf(IEnumerable<Argument> other)
-        {
-            return this.set.IsSupersetOf(other);
-        }
-
-        public bool Overlaps(IEnumerable<Argument> other)
-        {
-            return this.set.Overlaps(other);
-        }
-
-        public bool SetEquals(IEnumerable<Argument> other)
-        {
-            return this.SetEquals(other);
-        }
-
-        public void SymmetricExceptWith(IEnumerable<Argument> other)
-        {
-            this.set.SymmetricExceptWith(other);
-        }
-
-        public void UnionWith(IEnumerable<Argument> other)
-        {
-            this.set.UnionWith(other);
-        }
-
-        void ICollection<Argument>.Add(Argument item)
-        {
-            this.set.Add(item);
-        }
-
-        public bool Contains(Argument item)
-        {
-            return this.set.Contains(item);
-        }
-
-        public void CopyTo(Argument[] array, int index)
-        {
-            this.set.CopyTo(array, index);
-        }
-
-        public bool Remove(Argument item)
-        {
-            return this.set.Remove(item);
-        }
-
-        IEnumerator<Argument> IEnumerable<Argument>.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

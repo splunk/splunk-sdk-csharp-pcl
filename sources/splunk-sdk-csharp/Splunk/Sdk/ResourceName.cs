@@ -25,7 +25,7 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Linq;
 
-    public sealed class ResourceName : IReadOnlyList<string>
+    public sealed class ResourceName : IComparable, IComparable<ResourceName>, IEquatable<ResourceName>, IReadOnlyList<string>
     {
         #region Constructors
 
@@ -84,6 +84,67 @@ namespace Splunk.Sdk
 
         #region Methods
 
+        public int CompareTo(object other)
+        {
+            return this.CompareTo(other as ResourceName);
+        }
+
+        public int CompareTo(ResourceName other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+
+            if (object.ReferenceEquals(this, other))
+            {
+                return 0;
+            }
+
+            int diff = this.parts.Count - other.parts.Count;
+
+            if (diff != 0)
+            {
+                return diff;
+            }
+
+            var pair = this.parts
+                .Zip(other.parts, (p1, p2) => new { ThisPart = p1, OtherPart = p2 })
+                .First(p => p.ThisPart != p.OtherPart);
+
+            if (pair == null)
+            {
+                return 0;
+            }
+
+            return pair.ThisPart.CompareTo(pair.OtherPart);
+        }
+
+        public override bool Equals(object other)
+        {
+            return this.Equals(other as ResourceName);
+        }
+
+        public bool Equals(ResourceName other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (object.ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            if (this.parts.Count != other.parts.Count)
+            {
+                return false;
+            }
+
+            return this.parts.SequenceEqual(other.parts);
+        }
+
         public IEnumerator<string> GetEnumerator()
         {
             return this.parts.GetEnumerator();
@@ -92,6 +153,12 @@ namespace Splunk.Sdk
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.parts.GetEnumerator();
+        }
+
+        public override int GetHashCode()
+        {
+            // TODO: Check this against the algorithm presented in Effective Java
+            return this.parts.Aggregate(seed: 17, func: (value, part) => value * 23 + part.GetHashCode());
         }
 
         /// <summary>

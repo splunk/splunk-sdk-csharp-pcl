@@ -104,8 +104,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Splunk\Sdk\Acl.cs" />
+    <Compile Include="Splunk\Sdk\AlertTrigger.cs" />
+    <Compile Include="Splunk\Sdk\AlertTrack.cs" />
+    <Compile Include="Splunk\Sdk\AlertSeverity.cs" />
     <Compile Include="Splunk\Sdk\Pagination.cs" />
+    <Compile Include="Splunk\Sdk\PaperSize.cs" />
     <Compile Include="Splunk\Sdk\SavedSearch.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchArgs.cs" />
     <Compile Include="Splunk\Sdk\SavedSearchCollectionArgs.cs" />
     <Compile Include="Splunk\Sdk\SavedSearchCollection.cs" />
     <Compile Include="Splunk\Sdk\EaiConverter.cs" />
@@ -119,8 +124,11 @@
     <Compile Include="Splunk\Sdk\Eai.cs" />
     <Compile Include="Splunk\Sdk\ExpandoAdapter.cs" />
     <Compile Include="Splunk\Sdk\JobCollectionArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchCreationArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchSummaryArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchSummary.cs" />
+    <Compile Include="Splunk\Sdk\EmailFormat.cs" />
+    <Compile Include="Splunk\Sdk\PaperOrientation.cs" />
     <Compile Include="Splunk\Sdk\SortMode.cs" />
     <Compile Include="Splunk\Sdk\SortDirection.cs" />
     <Compile Include="Splunk\Sdk\StringConverter.cs" />
@@ -145,7 +153,7 @@
     <Compile Include="Splunk\Sdk\Entity.cs" />
     <Compile Include="Splunk\Sdk\EntityCollection.cs" />
     <Compile Include="Splunk\Sdk\ExecutionMode.cs" />
-    <Compile Include="Splunk\Sdk\SavedSearchArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchTemplateArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchEventArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchResultsArgs.cs" />
     <Compile Include="Splunk\Sdk\Response.cs" />

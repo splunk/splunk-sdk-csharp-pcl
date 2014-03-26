@@ -26,14 +26,16 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving transformed search results.
+    /// Provides the arguments required for retrieving transformed search 
+    /// results.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item>
     ///     <description>
-    ///     <a href="http://goo.gl/AfzBJO">REST API Reference: POST saved/searches/{name}/dispatch</a>
+    ///     <a href="http://goo.gl/AfzBJO">REST API Reference: POST 
+    ///     saved/searches/{name}/dispatch</a>
     ///     </description>
     /// </item>
     /// </list>
@@ -196,7 +198,8 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value indicating whether to start a new search even 
-        /// if another instance of the search is already running.
+        /// if another instance of the <see cref="SavedSearch"/> is already 
+        /// running.
         /// </summary>
         /// <remarks>
         /// The default value is <c>false</c>
@@ -210,8 +213,7 @@ namespace Splunk.Sdk
         /// Gets or sets a value indicating whether to trigger alert actions.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>false</c>. The value is zero-based and cannot
-        /// be negative.
+        /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "trigger_actions", EmitDefaultValue = false)]
         [DefaultValue(false)]

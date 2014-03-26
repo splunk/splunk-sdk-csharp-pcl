@@ -14,14 +14,15 @@
  * under the License.
  */
 
+// TODO:
+// [O] Documentation
+
 namespace Splunk.Sdk
 {
-    using System.Runtime.Serialization;
-
     /// <summary>
     /// 
     /// </summary>
-    public enum MessageType
+    public enum EmailFormat
     {
         /// <summary>
         /// 
@@ -31,31 +32,21 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "DEBUG")]
-        Debug, 
+        Plain, 
         
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "INFO")]
-        Information, 
+        Html, 
         
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "WARN")]
-        Warning, 
+        Raw, 
         
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "ERROR")]
-        Error,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "FATAL")]
-        Fatal
+        Csv, 
     }
 }

@@ -54,17 +54,21 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public int CompareTo(object o)
+        public int CompareTo(object other)
         {
-            return this.CompareTo(o as Message);
+            return this.CompareTo(other as Message);
         }
 
         public int CompareTo(Message other)
         {
             if (other == null)
+            {
                 return 1;
+            }
             if (object.ReferenceEquals(this, other))
+            {
                 return 0;
+            }
             int difference = this.Type - other.Type;
             return difference != 0 ? difference : this.Text.CompareTo(other.Text);
         }
@@ -77,7 +81,9 @@ namespace Splunk.Sdk
         public bool Equals(Message other)
         {
             if (other == null)
+            {
                 return false;
+            }
             return object.ReferenceEquals(this, other) || (this.Type == other.Type && other.Text == other.Text);
         }
 
@@ -135,30 +141,11 @@ namespace Splunk.Sdk
                     throw new InvalidDataException(); // TODO: Diagnostics
                 }
 
-                MessageType type;
+                // TODO: Throw InvalidDataException if type attribute is missing
 
-                switch (reader.GetAttribute("type"))
-                {
-                    case "DEBUG":
-                        type = MessageType.Debug;
-                        break;
-                    case "INFO":
-                        type = MessageType.Information;
-                        break;
-                    case "WARN":
-                        type = MessageType.Warning;
-                        break;
-                    case "ERROR":
-                        type = MessageType.Error;
-                        break;
-                    case "FATAL":
-                        type = MessageType.Fatal;
-                        break;
-                    default:
-                        throw new InvalidDataException(string.Format("Unrecognized message type: {0}", reader.GetAttribute("type")));
-                }
-
-                messages.Add(new Message(type, await reader.ReadElementContentAsStringAsync()));
+                MessageType type = EnumConverter<MessageType>.Instance.Convert(reader.GetAttribute("type"));
+                string text = await reader.ReadElementContentAsStringAsync();
+                messages.Add(new Message(type, text));
             }
 
             return messages;

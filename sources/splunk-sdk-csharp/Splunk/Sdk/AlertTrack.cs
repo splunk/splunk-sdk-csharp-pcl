@@ -19,43 +19,27 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Specifies whether to track the actions triggered by a scheduled search.
     /// </summary>
-    public enum MessageType
+    public enum AlertTrack
     {
         /// <summary>
-        /// 
+        /// Determine whether to track based on the tracking setting of each 
+        /// action. Do not track scheduled searches that always trigger 
+        /// actions.
         /// </summary>
-        None,
+        Automatic,
 
         /// <summary>
-        /// 
+        /// Force tracking.
         /// </summary>
-        [EnumMember(Value = "DEBUG")]
-        Debug, 
+        [EnumMember(Value = "true")]
+        True, 
         
         /// <summary>
-        /// 
+        /// Disable tracking.
         /// </summary>
-        [EnumMember(Value = "INFO")]
-        Information, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "WARN")]
-        Warning, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "ERROR")]
-        Error,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "FATAL")]
-        Fatal
+        [EnumMember(Value = "false")]
+        False 
     }
 }

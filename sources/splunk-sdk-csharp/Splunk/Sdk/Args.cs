@@ -422,7 +422,9 @@ namespace Splunk.Sdk
             public bool Equals(Parameter other)
             {
                 if (other == null)
+                {
                     return false;
+                }
                 return object.ReferenceEquals(this, other) || this.ordinal.Equals(other.ordinal);
             }
 

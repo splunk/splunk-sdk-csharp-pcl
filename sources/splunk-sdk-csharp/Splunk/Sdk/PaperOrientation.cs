@@ -19,43 +19,18 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Specifies the page orientation for a report.
     /// </summary>
-    public enum MessageType
+    public enum PaperOrientation
     {
         /// <summary>
-        /// 
+        /// Height of the display area is greater than the width.
         /// </summary>
-        None,
+        Portrait,
 
         /// <summary>
-        /// 
+        /// Height of the display area is less than the width.
         /// </summary>
-        [EnumMember(Value = "DEBUG")]
-        Debug, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "INFO")]
-        Information, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "WARN")]
-        Warning, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "ERROR")]
-        Error,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "FATAL")]
-        Fatal
+        Landscape
     }
 }

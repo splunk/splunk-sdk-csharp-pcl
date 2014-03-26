@@ -21,41 +21,36 @@ namespace Splunk.Sdk
     /// <summary>
     /// 
     /// </summary>
-    public enum MessageType
+    public enum AlertTrigger
     {
         /// <summary>
         /// 
         /// </summary>
-        None,
+        [EnumMember(Value = "always")]
+        Always,
 
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "DEBUG")]
-        Debug, 
+        [EnumMember(Value = "custom")]
+        Custom, 
         
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "INFO")]
-        Information, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "WARN")]
-        Warning, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "ERROR")]
-        Error,
+        [EnumMember(Value = "number of events")]
+        NumberOfEvents,
 
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "FATAL")]
-        Fatal
+        [EnumMember(Value = "number of hosts")]
+        NumberOfHosts,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [EnumMember(Value = "number of sources")]
+        NumberOfSources
     }
 }

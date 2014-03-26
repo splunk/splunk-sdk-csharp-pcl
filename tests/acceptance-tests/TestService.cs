@@ -19,6 +19,7 @@ namespace Splunk.Sdk.UnitTesting
     using Splunk.Sdk;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using Xunit;
@@ -106,6 +107,27 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
+        public void CanGetSavedSearch()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<SavedSearch>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var entity = await service.GetSavedSearchAsync("Errors in the last 24 hours");
+                Assert.Equal("Errors in the last 24 hours", entity.Title);
+                Assert.Equal(entity.Id.ToString(), entity.ToString());
+                Assert.Equal("nobody", entity.Author);
+                Assert.Equal(ResourceName.SavedSearches, entity.Collection);
+                return entity;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Saved Searches")]
+        [Fact]
         public void CanGetSavedSearches()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
@@ -116,6 +138,26 @@ namespace Splunk.Sdk.UnitTesting
 
                 var collection = await service.GetSavedSearchesAsync();
                 return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Search Jobs")]
+        [Fact]
+        public void CanGetJob()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<Job>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+                var job1 = await service.StartJobAsync("search index=_internal | head 100");
+                var job2 = await service.GetJobAsync(job1.Title);
+                Assert.Equal(job1.Title, job2.Title);
+                Assert.Equal(job1.Id, job2.Id);
+                Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
+                return job2;
             };
 
             var result = Dispatch().Result;

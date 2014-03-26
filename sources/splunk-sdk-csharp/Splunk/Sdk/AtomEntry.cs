@@ -251,19 +251,33 @@ namespace Splunk.Sdk
 
                 while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:key")
                 {
-                    string[] name = reader.GetAttribute("name").Split(':');
+                    string name = reader.GetAttribute("name");
 
-                    if (name.Length > 2)
+                    // TODO: Include a domain-specific name translation capability (?)
+
+                    switch (name)
                     {
-                        throw new InvalidDataException();
+                        case "action.email":
+                        case "action.populate_lookup":
+                        case "action.rss":
+                        case "action.script":
+                        case "action.summary_index":
+                        case "alert.suppress":
+                        case "auto_summarize":
+                            name += ".IsEnabled";
+                            break;
+                        case "display.visualizations.charting.chart":
+                            name += ".Type";
+                            break;
                     }
 
+                    string[] names = name.Split(':', '.');
                     var dictionary = value;
                     string propertyName;
 
-                    if (name.Length == 2)
+                    for (int i = 0; i < names.Length - 1; i++)
                     {
-                        propertyName = NormalizePropertyName(name[0]);
+                        propertyName = NormalizePropertyName(names[i]);
                         dynamic propertyValue;
 
                         if (dictionary.TryGetValue(propertyName, out propertyValue))
@@ -280,9 +294,33 @@ namespace Splunk.Sdk
                         }
 
                         dictionary = (IDictionary<string, object>)propertyValue;
-                        propertyName = NormalizePropertyName(name[1]);
                     }
-                    else if (name[0].StartsWith("action."))
+
+                    propertyName = NormalizePropertyName(names[names.Length - 1]);
+                    dictionary.Add(propertyName, await ParsePropertyValueAsync(reader));
+#if false
+                    if (names.Length == 2)
+                    {
+                        propertyName = NormalizePropertyName(names[0]);
+                        dynamic propertyValue;
+
+                        if (dictionary.TryGetValue(propertyName, out propertyValue))
+                        {
+                            if (!(propertyValue is ExpandoObject))
+                            {
+                                throw new InvalidDataException(); // TODO: Diagnostics
+                            }
+                        }
+                        else
+                        {
+                            propertyValue = new ExpandoObject();
+                            dictionary.Add(propertyName, propertyValue);
+                        }
+
+                        dictionary = (IDictionary<string, object>)propertyValue;
+                        propertyName = NormalizePropertyName(names[1]);
+                    }
+                    else if (names[0].StartsWith("action."))
                     {
                         propertyName = "Action";
                         dynamic propertyValue;
@@ -301,14 +339,14 @@ namespace Splunk.Sdk
                         }
 
                         dictionary = (IDictionary<string, object>)propertyValue;
-                        name = name[0].Substring("action.".Length).Split('.');
+                        names = names[0].Substring("action.".Length).Split('.');
 
-                        if (name.Length > 2)
+                        if (names.Length > 2)
                         {
                             throw new InvalidDataException(); // TODO: Diagnostics
                         }
 
-                        propertyName = NormalizePropertyName(name[0]);
+                        propertyName = NormalizePropertyName(names[0]);
 
                         if (dictionary.TryGetValue(propertyName, out propertyValue))
                         {
@@ -324,14 +362,14 @@ namespace Splunk.Sdk
                         }
 
                         dictionary = (IDictionary<string, object>)propertyValue;
-                        propertyName = name.Length == 2 ? NormalizePropertyName(name[1]) : "IsEnabled";
+                        propertyName = names.Length == 2 ? NormalizePropertyName(names[1]) : "IsEnabled";
                     }
                     else 
                     { 
-                        propertyName = NormalizePropertyName(name[0]); 
+                        propertyName = NormalizePropertyName(names[0]); 
                     }
-
                     dictionary.Add(propertyName, await ParsePropertyValueAsync(reader));
+#endif
                 }
 
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:dict"))

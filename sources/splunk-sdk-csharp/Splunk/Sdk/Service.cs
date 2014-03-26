@@ -227,11 +227,51 @@ namespace Splunk.Sdk
 
         #region Saved searches
 
+        /// <summary>
+        /// Creates a new <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <param name="searchName">
+        /// The name of the <see cref="SavedSearch"/> to dispatch.
+        /// </param>
+        /// <param name="searchArgs">
+        /// A set of arguments to the <see cref="SavedSearch"/>.
+        /// </param>
+        /// <param name="dispatchArgs">
+        /// A set of arguments to the dispatcher.
+        /// </param>
+        /// <returns>
+        /// The search <see cref="Job"/> that was dispatched.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
+        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
+        /// cref="SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
         public SavedSearch CreateSavedSearch(SavedSearchCreationArgs creationArgs, SavedSearchTemplateArgs templateArgs = null)
         {
             return this.CreateSavedSearchAsync(creationArgs, templateArgs).Result;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <param name="searchName">
+        /// The name of the <see cref="SavedSearch"/> to dispatch.
+        /// </param>
+        /// <param name="searchArgs">
+        /// A set of arguments to the <see cref="SavedSearch"/>.
+        /// </param>
+        /// <param name="dispatchArgs">
+        /// A set of arguments to the dispatcher.
+        /// </param>
+        /// <returns>
+        /// The search <see cref="Job"/> that was dispatched.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
+        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
+        /// cref="SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
         public async Task<SavedSearch> CreateSavedSearchAsync(SavedSearchCreationArgs creationArgs, SavedSearchTemplateArgs templateArgs = null)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.SavedSearches, creationArgs, templateArgs))
@@ -269,6 +309,11 @@ namespace Splunk.Sdk
         /// <returns>
         /// The search <see cref="Job"/> that was dispatched.
         /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
+        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
+        /// cref="SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
         public Job DispatchSavedSearch(string searchName, SavedSearchTemplateArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
             return this.DispatchSavedSearchAsync(searchName, searchArgs, dispatchArgs).Result;
@@ -277,7 +322,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// Dispatches a <see cref="SavedSearch"/> just like the scheduler would.
         /// </summary>
-        /// <param name="searchName">
+        /// <param name="name">
         /// The name of the <see cref="SavedSearch"/> to dispatch.
         /// </param>
         /// <param name="searchArgs">
@@ -289,11 +334,16 @@ namespace Splunk.Sdk
         /// <returns>
         /// The search <see cref="Job"/> that was dispatched.
         /// </returns>
-        public async Task<Job> DispatchSavedSearchAsync(string searchName, SavedSearchTemplateArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
+        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
+        /// cref="SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task<Job> DispatchSavedSearchAsync(string name, SavedSearchTemplateArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(searchName), "searchName");
+            Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(name), "searchName");
 
-            var resourceName = new ResourceName(ResourceName.SavedSearches, searchName, "dispatch");
+            var resourceName = new ResourceName(ResourceName.SavedSearches, name, "dispatch");
             string searchId;
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs))
@@ -315,11 +365,33 @@ namespace Splunk.Sdk
             return job;
         }
 
+        /// <summary>
+        /// Gets the named <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/> to be retrieved.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
+        /// saved/searches/{name}</a> endpoint to get the <see cref=
+        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
         public SavedSearch GetSavedSearch(string name, SavedSearchArgs args = null)
         {
             return this.GetSavedSearchAsync(name, args).Result;
         }
 
+        /// <summary>
+        /// Gets the named <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/> to be retrieved.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
+        /// saved/searches/{name}</a> endpoint to get the <see cref=
+        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
         public async Task<SavedSearch> GetSavedSearchAsync(string name, SavedSearchArgs args = null)
         {
             using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.SavedSearches, name)))
@@ -342,16 +414,123 @@ namespace Splunk.Sdk
             }
         }
 
+        /// <summary>
+        /// Gets the named <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/> to be retrieved.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
+        /// saved/searches/{name}</a> endpoint to get the <see cref=
+        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
+        public JobCollection GetSavedSearchHistory(string name)
+        {
+            return this.GetSavedSearchHistoryAsync(name).Result;
+        }
+
+        /// <summary>
+        /// Gets the named <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/> to be retrieved.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
+        /// saved/searches/{name}</a> endpoint to get the <see cref=
+        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task<JobCollection> GetSavedSearchHistoryAsync(string name)
+        {
+            var resourceName = new ResourceName(ResourceName.SavedSearches, name, "history");
+            var jobs = new JobCollection(this.Context, this.Namespace, resourceName);
+            await jobs.UpdateAsync();
+            return jobs;
+        }
+
+        /// <summary>
+        /// Retrieves information on a collection of saved searches.
+        /// </summary>
+        /// <param name="args">
+        /// Arguments identifying the collection of <see cref="SavedSearch"/>
+        /// entries to return.
+        /// </param>
+        /// <returns>
+        /// A new <see cref="SavedSearchCollection"/> containing the <see cref=
+        /// "SavedSearch"/> entries identified by <see cref="args"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/bKrRK0">GET 
+        /// saved/searches</a> endpoint to retrieve a new <see cref=
+        /// "SavedSearchCollection"/> containing the <see cref="SavedSearch"/> 
+        /// entries identified by <see cref="args"/>.
+        /// </remarks>
         public SavedSearchCollection GetSavedSearches(SavedSearchCollectionArgs args = null)
         {
             return this.GetSavedSearchesAsync(args).Result;
         }
 
+        /// <summary>
+        /// Retrieves information on a collection of saved searches.
+        /// </summary>
+        /// <param name="args">
+        /// Arguments identifying the collection of <see cref="SavedSearch"/>
+        /// entries to return.
+        /// </param>
+        /// <returns>
+        /// A new <see cref="SavedSearchCollection"/> containing the <see cref=
+        /// "SavedSearch"/> entries identified by <see cref="args"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/bKrRK0">GET 
+        /// saved/searches</a> endpoint to retrieve a new <see cref=
+        /// "SavedSearchCollection"/> containing the <see cref="SavedSearch"/> 
+        /// entries identified by <see cref="args"/>.
+        /// </remarks>
         public async Task<SavedSearchCollection> GetSavedSearchesAsync(SavedSearchCollectionArgs args = null)
         {
             var collection = new SavedSearchCollection(this.Context, this.Namespace, args);
             await collection.UpdateAsync();
             return collection;
+        }
+
+        /// <summary>
+        /// Removes the named <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/> to be removed.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/0IrFbY">DELETE 
+        /// saved/searches{name}</a> endpoint to remove the <see cref=
+        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
+        public void RemoveSavedSearch(string name)
+        {
+            this.RemoveSavedSearchAsync(name).Wait();
+        }
+
+        /// <summary>
+        /// Removes the named <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/> to be removed.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/0IrFbY">DELETE 
+        /// saved/searches{name}</a> endpoint to remove the <see cref=
+        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task RemoveSavedSearchAsync(string name)
+        {
+            using (var response = await this.Context.DeleteAsync(this.Namespace, new ResourceName(ResourceName.SavedSearches, name)))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
         }
 
         #endregion

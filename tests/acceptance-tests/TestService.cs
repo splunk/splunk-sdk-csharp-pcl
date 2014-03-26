@@ -87,6 +87,25 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
+        public void CanCreateSavedSearch()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<SavedSearch>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var savedSearchCreationArgs = new SavedSearchCreationArgs("some_saved_search", "search index=_internal | head 1000");
+                var savedSearch = await service.CreateSavedSearchAsync(savedSearchCreationArgs);
+
+                return savedSearch;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Saved Searches")]
+        [Fact]
         public void CanDispatchSavedSearch()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));

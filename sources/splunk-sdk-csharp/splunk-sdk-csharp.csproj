@@ -124,6 +124,7 @@
     <Compile Include="Splunk\Sdk\Eai.cs" />
     <Compile Include="Splunk\Sdk\ExpandoAdapter.cs" />
     <Compile Include="Splunk\Sdk\JobCollectionArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchUpdateArgs.cs" />
     <Compile Include="Splunk\Sdk\SavedSearchCreationArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchSummaryArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchSummary.cs" />

@@ -14,6 +14,8 @@
  * under the License.
  */
 
+// [ ] Documentation
+
 namespace Splunk.Sdk
 {
     using System.Runtime.Serialization;
@@ -27,36 +29,36 @@ namespace Splunk.Sdk
         /// 
         /// </summary>
         [EnumMember(Value = "1")]
-        Debug, 
+        Debug = 1, 
         
         /// <summary>
         /// 
         /// </summary>
         [EnumMember(Value = "2")]
-        Information, 
+        Information = 2, 
         
         /// <summary>
         /// 
         /// </summary>
         [EnumMember(Value = "3")]
-        Warning, 
+        Warning = 3, 
         
         /// <summary>
         /// 
         /// </summary>
         [EnumMember(Value = "4")]
-        Error,
+        Error = 4,
 
         /// <summary>
         /// 
         /// </summary>
         [EnumMember(Value = "5")]
-        Severe,
+        Severe = 5,
 
         /// <summary>
         /// 
         /// </summary>
         [EnumMember(Value = "6")]
-        Fatal
+        Fatal = 6
     }
 }

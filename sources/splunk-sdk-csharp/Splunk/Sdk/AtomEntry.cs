@@ -71,6 +71,9 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml;
 
+    /// <summary>
+    /// 
+    /// </summary>
     class AtomEntry
     {
         #region Constructors
@@ -255,18 +258,19 @@ namespace Splunk.Sdk
                         throw new InvalidDataException();
                     }
 
-                    string propertyName = NormalizePropertyName(name[0]);
                     var dictionary = value;
+                    string propertyName;
 
                     if (name.Length == 2)
                     {
+                        propertyName = NormalizePropertyName(name[0]);
                         dynamic propertyValue;
 
                         if (dictionary.TryGetValue(propertyName, out propertyValue))
                         {
                             if (!(propertyValue is ExpandoObject))
                             {
-                                throw new InvalidDataException();
+                                throw new InvalidDataException(); // TODO: Diagnostics
                             }
                         }
                         else
@@ -277,6 +281,54 @@ namespace Splunk.Sdk
 
                         dictionary = (IDictionary<string, object>)propertyValue;
                         propertyName = NormalizePropertyName(name[1]);
+                    }
+                    else if (name[0].StartsWith("action."))
+                    {
+                        propertyName = "Action";
+                        dynamic propertyValue;
+
+                        if (dictionary.TryGetValue("Action", out propertyValue))
+                        {
+                            if (!(propertyValue is ExpandoObject))
+                            {
+                                throw new InvalidDataException(); // TODO: Diagnostics
+                            }
+                        }
+                        else
+                        {
+                            propertyValue = new ExpandoObject();
+                            dictionary.Add(propertyName, propertyValue);
+                        }
+
+                        dictionary = (IDictionary<string, object>)propertyValue;
+                        name = name[0].Substring("action.".Length).Split('.');
+
+                        if (name.Length > 2)
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        propertyName = NormalizePropertyName(name[0]);
+
+                        if (dictionary.TryGetValue(propertyName, out propertyValue))
+                        {
+                            if (!(propertyValue is ExpandoObject))
+                            {
+                                throw new InvalidDataException(); // TODO: Diagnostics
+                            }
+                        }
+                        else
+                        {
+                            propertyValue = new ExpandoObject();
+                            dictionary.Add(propertyName, propertyValue);
+                        }
+
+                        dictionary = (IDictionary<string, object>)propertyValue;
+                        propertyName = name.Length == 2 ? NormalizePropertyName(name[1]) : "IsEnabled";
+                    }
+                    else 
+                    { 
+                        propertyName = NormalizePropertyName(name[0]); 
                     }
 
                     dictionary.Add(propertyName, await ParsePropertyValueAsync(reader));
@@ -292,7 +344,7 @@ namespace Splunk.Sdk
             return value;  // TODO: what's the type seen by dynamic?
         }
 
-        static async Task<IReadOnlyList<dynamic>>ParseListAsync(XmlReader reader)
+        static async Task<IReadOnlyList<dynamic>> ParseListAsync(XmlReader reader)
         {
             List<dynamic> value = new List<dynamic>();
 
@@ -310,7 +362,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException();
                 }
             }
-            
+
             await reader.ReadAsync();
             return value;
         }
@@ -319,7 +371,7 @@ namespace Splunk.Sdk
         {
             string name = reader.Name;
             dynamic value;
-            
+
             await reader.ReadAsync();
 
             switch (reader.NodeType)
@@ -364,7 +416,7 @@ namespace Splunk.Sdk
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }
-            
+
             await reader.ReadAsync();
             return value;
         }

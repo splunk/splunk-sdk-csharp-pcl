@@ -32,9 +32,21 @@ namespace Splunk.Sdk
         public ExpandoAdapter(ExpandoObject expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
-            this.expandoObject = expandoObject;
+            this.ExpandoObject = expandoObject;
         }
 
+        public ExpandoAdapter()
+        { }
+
+        #endregion
+
+        #region Properties
+
+        internal ExpandoObject ExpandoObject
+        {
+            get; set; // TODO: Synchronization
+        }
+                            
         #endregion
 
         #region Methods
@@ -66,12 +78,12 @@ namespace Splunk.Sdk
             Contract.Requires<ArgumentNullException>(name != null);
             Contract.Requires<ArgumentNullException>(valueConverter != null);
 
-            if (this.expandoObject == null)
+            if (this.ExpandoObject == null)
             {
                 throw new InvalidOperationException(); // TODO: diagnostics
             }
 
-            var dictionary = (IDictionary<string, object>)this.expandoObject;
+            var dictionary = (IDictionary<string, object>)this.ExpandoObject;
             object value;
 
             if (!dictionary.TryGetValue(name, out value))
@@ -125,7 +137,6 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        ExpandoObject expandoObject;
         object gate = new object();
 
         #endregion
@@ -152,6 +163,11 @@ namespace Splunk.Sdk
             public object GetAs<TValue>()
             {
                 return this.value is TValue ? value : null;
+            }
+
+            public override string ToString()
+            {
+                return this.value.ToString();
             }
 
             readonly object value;

@@ -35,6 +35,9 @@ namespace Splunk.Sdk
     using System.Net;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class Job : Entity<Job>
     {
         #region Constructors
@@ -42,14 +45,21 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="namespace"></param>
-        /// <param name="collection"></param>
-        /// <param name="name"></param>
+        /// <param name="context">
+        /// </param>
+        /// <param name="namespace">
+        /// </param>
+        /// <param name="collection">
+        /// </param>
+        /// <param name="name">
+        /// </param>
         internal Job(Context context, Namespace @namespace, ResourceName collection, string name)
             : base(context, @namespace, collection, name)
         { }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Job()
         { }
 

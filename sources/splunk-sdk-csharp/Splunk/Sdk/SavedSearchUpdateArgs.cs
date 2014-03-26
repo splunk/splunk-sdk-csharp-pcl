@@ -42,12 +42,11 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        public SavedSearchCreationArgs()
+        public SavedSearchUpdateArgs()
         { }
 
-        public SavedSearchCreationArgs(string name, string search)
+        public SavedSearchUpdateArgs(string search)
         {
-            this.Name = name;
             this.Search = search;
         }
 

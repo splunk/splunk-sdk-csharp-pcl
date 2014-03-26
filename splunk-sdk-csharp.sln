@@ -18,6 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1. sources", "1. sources", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "reactive-ui", "examples\reactive-ui\reactive-ui.csproj", "{BEA5697D-50A0-4927-BA3B-5761A0ABCB5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1.0-migrated-tests", "tests\1.0-migrated-tests\1.0-migrated-tests.csproj", "{BDC54072-754F-4709-92E7-2A4ED502CC68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplunkSDKHelper", "SplunkSDKHelper\SplunkSDKHelper.csproj", "{4135F018-6041-4269-A76F-B6AAF87E260D}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8674D19F-5BF3-4D17-90B9-AB3226A8E12A}"
 	ProjectSection(SolutionItems) = preProject
 		REST API coverage.xlsx = REST API coverage.xlsx

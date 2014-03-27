@@ -26,6 +26,12 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
+        [EnumMember(Value = "")]
+        None,
+
+        /// <summary>
+        /// 
+        /// </summary>
         [EnumMember(Value = "always")]
         Always,
 

@@ -82,7 +82,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// No actions are enabled by default.
         /// </remarks>
-        [DataMember(Name = "actions", IsRequired = true)]
+        [DataMember(Name = "actions", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Actions
         { get; set; }
@@ -213,7 +213,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.email.reportPaperOrientation", EmitDefaultValue = false)]
         [DefaultValue(PaperOrientation.Portrait)]
-        public string ActionEmailReportPaperOrientation
+        public PaperOrientation ActionEmailReportPaperOrientation
         { get; set; }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace Splunk.Sdk
         /// The default is <see cref="PaperSize.Letter"/>.
         /// </remarks>
         [DataMember(Name = "action.email.reportPaperSize", EmitDefaultValue = false)]
-        [DefaultValue(null)]
+        [DefaultValue(PaperSize.Letter)]
         public PaperSize ActionEmailReportPaperSize
         { get; set; }
 
@@ -409,7 +409,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.ttl", EmitDefaultValue = false)]
         [DefaultValue("86400")]
-        public int ActionPopulateLookupTtl
+        public string ActionPopulateLookupTtl
         { get; set; }
 
         /// <summary>
@@ -685,7 +685,7 @@ namespace Splunk.Sdk
         /// 
         /// </remarks>
         [DataMember(Name = "alert.track", EmitDefaultValue = false)]
-        [DefaultValue(null)]
+        [DefaultValue(AlertTrack.Automatic)]
         public AlertTrack AlertTrack
         { get; set; }
 
@@ -696,7 +696,7 @@ namespace Splunk.Sdk
         /// 
         /// </remarks>
         [DataMember(Name = "alert.type", EmitDefaultValue = false)]
-        [DefaultValue(null)]
+        [DefaultValue(AlertTrigger.None)]
         public AlertTrigger AlertTrigger
         { get; set; }
 

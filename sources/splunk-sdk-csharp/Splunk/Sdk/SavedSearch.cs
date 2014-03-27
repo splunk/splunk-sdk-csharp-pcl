@@ -130,24 +130,24 @@ namespace Splunk.Sdk
                 : base(expandoObject)
             { }
 
-            public EmailAction EmailAction
+            public EmailAction Email
             {
                 get { return this.GetValue("Email", ActionConverter<EmailAction>.Instance); }
             }
 
-            public PopulateLookupAction PopulateLookupAction
+            public PopulateLookupAction PopulateLookup
             {
                 get { return this.GetValue("PopulateLookup", ActionConverter<PopulateLookupAction>.Instance); }
             }
 
-            public RssAction RssAction
+            public RssAction Rss
             {
                 get { return this.GetValue("Rss", ActionConverter<RssAction>.Instance); }
             }
 
-            public SummaryIndexAction SummaryIndexAction
+            public SummaryIndexAction SummaryIndex
             {
-                get { return this.GetValue("SummaryIndexAction", ActionConverter<SummaryIndexAction>.Instance); }
+                get { return this.GetValue("SummaryIndex", ActionConverter<SummaryIndexAction>.Instance); }
             }
         }
 

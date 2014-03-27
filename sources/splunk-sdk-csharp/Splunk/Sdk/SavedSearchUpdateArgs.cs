@@ -71,7 +71,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// No actions are enabled by default.
         /// </remarks>
-        [DataMember(Name = "actions", IsRequired = true)]
+        [DataMember(Name = "actions", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Actions
         { get; set; }
@@ -202,7 +202,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.email.reportPaperOrientation", EmitDefaultValue = false)]
         [DefaultValue(PaperOrientation.Portrait)]
-        public string ActionEmailReportPaperOrientation
+        public PaperOrientation ActionEmailReportPaperOrientation
         { get; set; }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace Splunk.Sdk
         /// The default is <see cref="PaperSize.Letter"/>.
         /// </remarks>
         [DataMember(Name = "action.email.reportPaperSize", EmitDefaultValue = false)]
-        [DefaultValue(null)]
+        [DefaultValue(PaperSize.Letter)]
         public PaperSize ActionEmailReportPaperSize
         { get; set; }
 
@@ -357,7 +357,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.maxresults", EmitDefaultValue = false)]
         [DefaultValue(100)]
-        public int ActionPopulateLookupMaxresults
+        public int ActionPopulateLookupMaxResults
         { get; set; }
 
         /// <summary>
@@ -370,7 +370,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.maxtime", EmitDefaultValue = false)]
         [DefaultValue("5m")]
-        public string ActionPopulateLookupMaxtime
+        public string ActionPopulateLookupMaxTime
         { get; set; }
 
         /// <summary>
@@ -398,7 +398,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.ttl", EmitDefaultValue = false)]
         [DefaultValue("86400")]
-        public int ActionPopulateLookupTtl
+        public string ActionPopulateLookupTtl
         { get; set; }
 
         /// <summary>
@@ -426,7 +426,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.rss.maxresults", EmitDefaultValue = false)]
         [DefaultValue(100)]
-        public int ActionRssMaxresults
+        public int ActionRssMaxResults
         { get; set; }
 
         /// <summary>
@@ -439,7 +439,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.rss.maxtime", EmitDefaultValue = false)]
         [DefaultValue("1m")]
-        public string ActionRssMaxtime
+        public string ActionRssMaxTime
         { get; set; }
 
         /// <summary>
@@ -495,7 +495,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.script.maxresults", EmitDefaultValue = false)]
         [DefaultValue(100)]
-        public int ActionScriptMaxresults
+        public int ActionScriptMaxResults
         { get; set; }
 
         /// <summary>
@@ -508,7 +508,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.script.maxtime", EmitDefaultValue = false)]
         [DefaultValue("5m")]
-        public string ActionScriptMaxtime
+        public string ActionScriptMaxTime
         { get; set; }
 
         /// <summary>
@@ -578,7 +578,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.summary_index.maxresults", EmitDefaultValue = false)]
         [DefaultValue(100)]
-        public int ActionSummaryIndexMaxresults
+        public int ActionSummaryIndexMaxResults
         { get; set; }
 
         /// <summary>
@@ -591,7 +591,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "action.summary_index.maxtime", EmitDefaultValue = false)]
         [DefaultValue("5m")]
-        public string ActionSummaryIndexMaxtime
+        public string ActionSummaryIndexMaxTime
         { get; set; }
 
         /// <summary>

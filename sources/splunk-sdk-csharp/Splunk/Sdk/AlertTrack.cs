@@ -28,6 +28,7 @@ namespace Splunk.Sdk
         /// action. Do not track scheduled searches that always trigger 
         /// actions.
         /// </summary>
+        [EnumMember(Value = "auto")]
         Automatic,
 
         /// <summary>

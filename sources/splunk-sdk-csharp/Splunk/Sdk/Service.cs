@@ -276,7 +276,7 @@ namespace Splunk.Sdk
         {
             using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.SavedSearches, creationArgs, templateArgs))
             {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
+                if (response.Message.StatusCode != HttpStatusCode.Created)
                 {
                     throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }

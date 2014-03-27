@@ -95,6 +95,15 @@ namespace Splunk.Sdk.UnitTesting
             {
                 await service.LoginAsync("admin", "changeme");
 
+                try
+                {
+                    service.RemoveSavedSearch("some_saved_search");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
                 var savedSearchCreationArgs = new SavedSearchCreationArgs("some_saved_search", "search index=_internal | head 1000");
                 var savedSearch = await service.CreateSavedSearchAsync(savedSearchCreationArgs);
 

@@ -23,13 +23,12 @@ namespace Splunk.Sdk
 
     public class Eai : ExpandoAdapter
     {
-        internal Eai(ExpandoObject expandoObject)
-            : base(expandoObject)
+        public Eai()
         { }
 
         public Acl Acl
         {
-            get { return this.GetValue("Acl", AclConverter.Instance); }
+            get { return this.GetValue("Acl", ExpandoAdapter.Converter<Acl>.Instance); }
         }
     }
 }

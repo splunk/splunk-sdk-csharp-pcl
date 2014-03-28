@@ -54,7 +54,7 @@
   <Class Name="Splunk.Sdk.AtomFeed" Collapsed="true">
     <Position X="32.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACAAAAAAAAAGAAgAAAAAAAIAAAAAACQAAIAAAAAAA=</HashCode>
+      <HashCode>AAACAAAAAAAAAGAAgAAAAAAAIAAAAAACSAAIAQAAAAA=</HashCode>
       <FileName>Splunk\Sdk\AtomFeed.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -111,7 +111,7 @@
   <Class Name="Splunk.Sdk.EntityCollection&lt;TEntity, TArgs&gt;" Collapsed="true">
     <Position X="1.75" Y="12.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAgAAAAAAgAAABAACAAAAAQAAAAAIAgEIAAQAAAAAAA=</HashCode>
+      <HashCode>AAwCAAAAAgAAAFAAiAAAAAQAIAAAIAgEaAA4AQAAAAA=</HashCode>
       <FileName>Splunk\Sdk\EntityCollection.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -241,7 +241,7 @@
   <Class Name="Splunk.Sdk.ResourceName" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="30.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAAiAAEEIIEBIGCAAABAwAEwAAEAAEgAAQAUAAAAA=</HashCode>
+      <HashCode>ACAAAiAAEEIIEBYGiAAABAwAEwAAEIAEgAAQAUAAAAA=</HashCode>
       <FileName>Splunk\Sdk\ResourceName.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -254,19 +254,20 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Splunk.Sdk.SavedSearchArgs" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="Splunk.Sdk.SavedSearchTemplateArgs" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="34.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>ACoAABBAACBAQBBUAAQABAQAAAAAACAIAgAAAABQIEA=</HashCode>
-      <FileName>Splunk\Sdk\SavedSearchArgs.cs</FileName>
+      <FileName>Splunk\Sdk\SavedSearchTemplateArgs.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="Splunk.Sdk.SavedSearchDispatchArgs" Collapsed="true">
+  <Class Name="Splunk.Sdk.SavedSearchCreationArgs" Collapsed="true">
     <Position X="1.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAARAAAACAAAgAMAAAQAQAAAEABAAAAEAACAgA=</HashCode>
-      <FileName>Splunk\Sdk\SavedSearchDispatchArgs.cs</FileName>
+      <HashCode>BQBAkMoAZVGAeAAM5giMAAQUYwAoGOgSAPJCEBJhwgA=</HashCode>
+      <FileName>Splunk\Sdk\SavedSearchCreationArgs.cs</FileName>
+      <NewMemberFileName>Splunk\Sdk\SavedSearchUpdateArgs.cs</NewMemberFileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Sdk.SearchEventArgs" Collapsed="true">
@@ -330,7 +331,7 @@
   <Class Name="Splunk.Sdk.Service" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="30.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AgIgAUEAAiEAAAA2hAAAACAgAEAAJAIAAIAUAhAAAQA=</HashCode>
+      <HashCode>AgJgAUEABiEAAAA2hAAAACAoAEAAJCIAAIAUApAAAQA=</HashCode>
       <FileName>Splunk\Sdk\Service.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
@@ -370,11 +371,12 @@
       <FileName>Splunk\Sdk\XmlReaderExtensions.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Splunk.Sdk.SavedSearchCollectionArgs" Collapsed="true">
+  <Class Name="Splunk.Sdk.SavedSearchArgs" Collapsed="true">
     <Position X="10.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAQEAAAAACABAAQAAAAAAAAAAAAQAAEggAA=</HashCode>
-      <FileName>Splunk\Sdk\SavedSearchCollectionArgs.cs</FileName>
+      <HashCode>AAAAAAAAAAQEAAAAACAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Sdk\SavedSearchArgs.cs</FileName>
+      <NewMemberFileName>Splunk\Sdk\SavedSearchCollectionArgs.cs</NewMemberFileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="Splunk.Sdk.Server" Collapsed="true">

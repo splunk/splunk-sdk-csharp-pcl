@@ -29,8 +29,7 @@ namespace Splunk.Sdk
 
     public class Acl : ExpandoAdapter
     {
-        internal Acl(ExpandoObject expandoObject)
-            : base(expandoObject)
+        public Acl()
         { }
 
         public bool CanList

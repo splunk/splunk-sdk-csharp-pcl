@@ -27,7 +27,7 @@ namespace Splunk.Sdk
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Acl : ExpandoAdapter
+    public class Acl : ExpandoAdapter<Acl>
     {
         public Acl()
         { }

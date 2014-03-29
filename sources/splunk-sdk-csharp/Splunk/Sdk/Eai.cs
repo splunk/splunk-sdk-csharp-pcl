@@ -21,14 +21,14 @@ namespace Splunk.Sdk
 {
     using System.Dynamic;
 
-    public class Eai : ExpandoAdapter
+    public class Eai : ExpandoAdapter<Eai>
     {
         public Eai()
         { }
 
         public Acl Acl
         {
-            get { return this.GetValue("Acl", ExpandoAdapter.Converter<Acl>.Instance); }
+            get { return this.GetValue("Acl", Acl.Converter.Instance); }
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Splunk.Sdk
             this.ExpandoObject = expandoObject;
         }
 
-        public ExpandoAdapter()
+        protected ExpandoAdapter()
         { }
 
         #endregion
@@ -144,40 +144,6 @@ namespace Splunk.Sdk
 
         #region Type
 
-        /// <summary>
-        /// Provides a converter to create <see cref="ExpandoAdapter"/> 
-        /// instances from <see cref="ExpandoObject"/> instances.
-        /// </summary>
-        public class Converter<TExpandoAdapter> : ValueConverter<TExpandoAdapter> where TExpandoAdapter : ExpandoAdapter, new()
-        {
-            static Converter()
-            {
-                Instance = new Converter<TExpandoAdapter>();
-            }
-
-            public static Converter<TExpandoAdapter> Instance
-            { get; private set; }
-
-            public override TExpandoAdapter Convert(object input)
-            {
-                var value = input as TExpandoAdapter;
-
-                if (value != null)
-                {
-                    return value;
-                }
-
-                var expandoObject = input as ExpandoObject;
-
-                if (expandoObject != null)
-                {
-                    return new TExpandoAdapter() { ExpandoObject = expandoObject };
-                }
-
-                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
-            }
-        }
-
         class ConvertedValue
         {
             public ConvertedValue(object value)
@@ -206,6 +172,54 @@ namespace Splunk.Sdk
             }
 
             readonly object value;
+        }
+
+        #endregion
+    }
+
+    public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter<TExpandoAdapter>, new()
+    {
+        #region Constructors
+
+        public ExpandoAdapter()
+        { }
+
+        #endregion
+
+        #region Type
+
+        /// <summary>
+        /// Provides a converter to create <see cref="ExpandoAdapter"/> 
+        /// instances from <see cref="ExpandoObject"/> instances.
+        /// </summary>
+        public class Converter : ValueConverter<TExpandoAdapter>
+        {
+            static Converter()
+            {
+                Instance = new Converter();
+            }
+
+            public static Converter Instance
+            { get; private set; }
+
+            public override TExpandoAdapter Convert(object input)
+            {
+                var value = input as TExpandoAdapter;
+
+                if (value != null)
+                {
+                    return value;
+                }
+
+                var expandoObject = input as ExpandoObject;
+
+                if (expandoObject != null)
+                {
+                    return new TExpandoAdapter() { ExpandoObject = expandoObject };
+                }
+
+                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            }
         }
 
         #endregion

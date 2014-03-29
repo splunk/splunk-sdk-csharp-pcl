@@ -60,34 +60,34 @@ namespace Splunk.Sdk
 
         #region Properties
 
-        public ActionsAdapter Actions
+        public Action_t Actions
         {
-            get { return this.Content.GetValue("Action", ExpandoAdapter.Converter<ActionsAdapter>.Instance); }
+            get { return this.Content.GetValue("Action", Action_t.Converter.Instance); }
         }
 
-        public AlertAdapter Alert
+        public Alert_t Alert
         {
-            get { return this.Content.GetValue("Alert", ExpandoAdapter.Converter<AlertAdapter>.Instance); }
+            get { return this.Content.GetValue("Alert", Alert_t.Converter.Instance); }
         }
 
-        public AutoSummarizeAdapter AutoSummarize
+        public AutoSummarize_t AutoSummarize
         {
-            get { return this.Content.GetValue("AutoSummarize", ExpandoAdapter.Converter<AutoSummarizeAdapter>.Instance); }
+            get { return this.Content.GetValue("AutoSummarize", AutoSummarize_t.Converter.Instance); }
         }
 
-        public DispatchAdapter Dispatch
+        public Dispatch_t Dispatch
         {
-            get { return this.Content.GetValue("Dispatch", ExpandoAdapter.Converter<DispatchAdapter>.Instance); }
+            get { return this.Content.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
         }
 
-        public DisplayAdapter Display
+        public Display_t Display
         {
-            get { return this.Content.GetValue("Display", ExpandoAdapter.Converter<DisplayAdapter>.Instance); }
+            get { return this.Content.GetValue("Display", Display_t.Converter.Instance); }
         }
 
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", ExpandoAdapter.Converter<Eai>.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         public bool IsDisabled
@@ -115,9 +115,9 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("RealtimeSchedule", BooleanConverter.Instance); }
         }
 
-        public RequestAdapter Request
+        public Request_t Request
         {
-            get { return this.Content.GetValue("Request", ExpandoAdapter.Converter<RequestAdapter>.Instance); }
+            get { return this.Content.GetValue("Request", Request_t.Converter.Instance); }
         }
 
         public bool RestartOnSearchPeerAdd
@@ -152,35 +152,35 @@ namespace Splunk.Sdk
 
         #region Types
 
-        public class ActionsAdapter : ExpandoAdapter
+        public class Action_t : ExpandoAdapter<Action_t>
         {
             #region Properties
 
-            public EmailActionAdapter Email
+            public Email_t Email
             {
-                get { return this.GetValue("Email", ExpandoAdapter.Converter<EmailActionAdapter>.Instance); }
+                get { return this.GetValue("Email", Email_t.Converter.Instance); }
             }
 
-            public ActionAdapter PopulateLookup
+            public PopulateLookup_t PopulateLookup
             {
-                get { return this.GetValue("PopulateLookup", ExpandoAdapter.Converter<ActionAdapter>.Instance); }
+                get { return this.GetValue("PopulateLookup", PopulateLookup_t.Converter.Instance); }
             }
 
-            public ActionAdapter Rss
+            public Rss_t Rss
             {
-                get { return this.GetValue("Rss", ExpandoAdapter.Converter<ActionAdapter>.Instance); }
+                get { return this.GetValue("Rss", Rss_t.Converter.Instance); }
             }
 
-            public SummaryIndexAdapter SummaryIndex
+            public SummaryIndex_t SummaryIndex
             {
-                get { return this.GetValue("SummaryIndex", ExpandoAdapter.Converter<SummaryIndexAdapter>.Instance); }
+                get { return this.GetValue("SummaryIndex", SummaryIndex_t.Converter.Instance); }
             }
 
             #endregion
 
             #region Types
 
-            public class ActionAdapter : ExpandoAdapter
+            public class Action<TAction> : ExpandoAdapter<TAction> where TAction : Action<TAction>, new()
             {
                 #region Properties
 
@@ -217,7 +217,7 @@ namespace Splunk.Sdk
                 #endregion
             }
 
-            public class EmailActionAdapter : ActionAdapter
+            public class Email_t : Action<Email_t>
             {
                 #region Properties
 
@@ -299,7 +299,13 @@ namespace Splunk.Sdk
                 #endregion
             }
 
-            public class SummaryIndexAdapter : ActionAdapter
+            public class PopulateLookup_t : Action<PopulateLookup_t>
+            { }
+
+            public class Rss_t : Action<Rss_t>
+            { }
+
+            public class SummaryIndex_t : Action<SummaryIndex_t>
             {
                 #region Properties
 
@@ -315,11 +321,11 @@ namespace Splunk.Sdk
 
                 #endregion
             }
-
+            
             #endregion
         }
 
-        public class AlertAdapter : ExpandoAdapter
+        public class Alert_t : ExpandoAdapter<Alert_t>
         {
             #region Properties
 
@@ -351,7 +357,7 @@ namespace Splunk.Sdk
             #endregion
         }
 
-        public class AutoSummarizeAdapter : ExpandoAdapter
+        public class AutoSummarize_t : ExpandoAdapter<AutoSummarize_t>
         {
             #region Properties
 
@@ -370,9 +376,9 @@ namespace Splunk.Sdk
                 get { return this.GetValue("CronSchedule", StringConverter.Instance); }
             }
 
-            public DispatchAdapter Dispatch
+            public Dispatch_t Dispatch
             {
-                get { return this.GetValue("Dispatch", ExpandoAdapter.Converter<DispatchAdapter>.Instance); }
+                get { return this.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
             }
 
             public int MaxDisabledBuckets
@@ -404,7 +410,7 @@ namespace Splunk.Sdk
 
             #region Types
 
-            public class DispatchAdapter : ExpandoAdapter
+            public class Dispatch_t : ExpandoAdapter<Dispatch_t>
             {
                 public string EarliestTime
                 {
@@ -430,7 +436,7 @@ namespace Splunk.Sdk
             #endregion
         }
 
-        public class DispatchAdapter : ExpandoAdapter
+        public class Dispatch_t : ExpandoAdapter<Dispatch_t>
         {
             #region Properties
 
@@ -478,7 +484,7 @@ namespace Splunk.Sdk
             {
                 get { return this.GetValue("TimeFormat", StringConverter.Instance); }
             }
-        
+
             public string Ttl
             {
                 get { return this.GetValue("Ttl", StringConverter.Instance); }
@@ -487,40 +493,40 @@ namespace Splunk.Sdk
             #endregion
         }
 
-        public class DisplayAdapter : ExpandoAdapter
+        public class Display_t : ExpandoAdapter<Display_t>
         {
             #region Properties
 
-            public EventsAdapter Events
+            public Events_t Events
             {
-                get { return this.GetValue("Events", ExpandoAdapter.Converter<EventsAdapter>.Instance); }
+                get { return this.GetValue("Events", Events_t.Converter.Instance); }
             }
 
-            public GeneralAdapter General
+            public General_t General
             {
-                get { return this.GetValue("General", ExpandoAdapter.Converter<GeneralAdapter>.Instance); }
+                get { return this.GetValue("General", General_t.Converter.Instance); }
             }
 
-            public PageAdapter Page
+            public Page_t Page
             {
-                get { return this.GetValue("Page", ExpandoAdapter.Converter<PageAdapter>.Instance); }
+                get { return this.GetValue("Page", Page_t.Converter.Instance); }
             }
 
-            public StatisticsAdapter Statistics
+            public Statistics_t Statistics
             {
-                get { return this.GetValue("Statistics", ExpandoAdapter.Converter<StatisticsAdapter>.Instance); }
+                get { return this.GetValue("Statistics", Statistics_t.Converter.Instance); }
+            }
+
+            public Visualizations_t Visualizations
+            {
+                get { return this.GetValue("Visualizations", Visualizations_t.Converter.Instance); }
             }
 
             #endregion
 
             #region Types
 
-            public VisualizationsAdapter Visualizations
-            {
-                get { return this.GetValue("Visualizations", ExpandoAdapter.Converter<VisualizationsAdapter>.Instance); }
-            }
-
-            public class EventsAdapter : ExpandoAdapter
+            public class Events_t : ExpandoAdapter<Events_t>
             {
                 #region Properties
 
@@ -529,19 +535,19 @@ namespace Splunk.Sdk
                     get { return this.GetValue("Fields", StringConverter.Instance); }
                 }
 
-                public ListAdapter List
+                public List_t List
                 {
-                    get { return this.GetValue("List", ExpandoAdapter.Converter<ListAdapter>.Instance); }
+                    get { return this.GetValue("List", List_t.Converter.Instance); }
                 }
-                    
+
                 public int MaxLines // TODO: Verify this property is a bool
                 {
                     get { return this.GetValue("MaxLines", Int32Converter.Instance); }
                 }
 
-                public RawAdapter Raw
+                public Raw_t Raw
                 {
-                    get { return this.GetValue("Raw", ExpandoAdapter.Converter<RawAdapter>.Instance); }
+                    get { return this.GetValue("Raw", Raw_t.Converter.Instance); }
                 }
 
                 public bool RowNumbers // TODO: Verify this property is a bool
@@ -549,9 +555,9 @@ namespace Splunk.Sdk
                     get { return this.GetValue("RowNumbers", BooleanConverter.Instance); }
                 }
 
-                public TableAdapter Table
+                public Table_t Table
                 {
-                    get { return this.GetValue("Table", ExpandoAdapter.Converter<TableAdapter>.Instance); }
+                    get { return this.GetValue("Table", Table_t.Converter.Instance); }
                 }
 
                 public string Type // TODO: Encode this property as an enumeration
@@ -563,7 +569,7 @@ namespace Splunk.Sdk
 
                 #region Types
 
-                public class ListAdapter : ExpandoAdapter
+                public class List_t : ExpandoAdapter<List_t>
                 {
                     public string Drilldown // TODO: Encode this property as an enumeration
                     {
@@ -576,7 +582,7 @@ namespace Splunk.Sdk
                     }
                 }
 
-                public class RawAdapter : ExpandoAdapter
+                public class Raw_t : ExpandoAdapter<Raw_t>
                 {
                     public string Drilldown // TODO: Encode this property as an enumeration
                     {
@@ -584,7 +590,7 @@ namespace Splunk.Sdk
                     }
                 }
 
-                public class TableAdapter : ExpandoAdapter
+                public class Table_t : ExpandoAdapter<Table_t>
                 {
                     public bool Drilldown // TODO: Verify this property is a bool
                     {
@@ -600,7 +606,7 @@ namespace Splunk.Sdk
                 #endregion
             }
 
-            public class GeneralAdapter : ExpandoAdapter
+            public class General_t : ExpandoAdapter<General_t>
             {
                 public bool EnablePreview
                 {
@@ -614,7 +620,7 @@ namespace Splunk.Sdk
 
                 public TimeRangePickerAdapter TimeRangePicker
                 {
-                    get { return this.GetValue("TimeRangePicker", ExpandoAdapter.Converter<TimeRangePickerAdapter>.Instance); }
+                    get { return this.GetValue("TimeRangePicker", TimeRangePickerAdapter.Converter.Instance); }
                 }
 
                 public string Type // TODO: Encode as enumeration
@@ -624,7 +630,7 @@ namespace Splunk.Sdk
 
                 #region Types
 
-                public class TimeRangePickerAdapter : ExpandoAdapter
+                public class TimeRangePickerAdapter : ExpandoAdapter<TimeRangePickerAdapter>
                 {
                     public bool Show
                     {
@@ -635,28 +641,28 @@ namespace Splunk.Sdk
                 #endregion
             }
 
-            public class PageAdapter : ExpandoAdapter
+            public class Page_t : ExpandoAdapter<Page_t>
             {
                 #region Properties
 
                 public PivotAdapter Pivot
                 {
-                    get { return this.GetValue("Pivot", ExpandoAdapter.Converter<PivotAdapter>.Instance); }
+                    get { return this.GetValue("Pivot", PivotAdapter.Converter.Instance); }
                 }
 
                 public SearchAdapter Search
                 {
-                    get { return this.GetValue("Search", ExpandoAdapter.Converter<SearchAdapter>.Instance); }
+                    get { return this.GetValue("Search", SearchAdapter.Converter.Instance); }
                 }
 
                 #endregion
 
                 #region Types
 
-                public class PivotAdapter : ExpandoAdapter // TODO: Implement properties (when do they show?)
+                public class PivotAdapter : ExpandoAdapter<PivotAdapter> // TODO: Implement properties (when do they show?)
                 { }
 
-                public class SearchAdapter : ExpandoAdapter
+                public class SearchAdapter : ExpandoAdapter<SearchAdapter>
                 {
                     #region Properties
 
@@ -664,7 +670,7 @@ namespace Splunk.Sdk
                     {
                         get { return this.GetValue("Mode", StringConverter.Instance); }
                     }
-                
+
                     public bool ShowFields
                     {
                         get { return this.GetValue("ShowFields", BooleanConverter.Instance); }
@@ -672,14 +678,14 @@ namespace Splunk.Sdk
 
                     public TimelineAdapter Search
                     {
-                        get { return this.GetValue("Search", ExpandoAdapter.Converter<TimelineAdapter>.Instance); }
+                        get { return this.GetValue("Search", TimelineAdapter.Converter.Instance); }
                     }
 
                     #endregion
 
                     #region Types
 
-                    public class TimelineAdapter : ExpandoAdapter
+                    public class TimelineAdapter : ExpandoAdapter<TimelineAdapter>
                     {
                         public string Format // TODO: Encode as enumeration
                         {
@@ -698,7 +704,7 @@ namespace Splunk.Sdk
                 #endregion
             }
 
-            public class StatisticsAdapter : ExpandoAdapter
+            public class Statistics_t : ExpandoAdapter<Statistics_t>
             {
                 #region Properties
 
@@ -725,7 +731,7 @@ namespace Splunk.Sdk
                 #endregion
             }
 
-            public class VisualizationsAdapter : ExpandoAdapter // TODO: Fill in the remainder
+            public class Visualizations_t : ExpandoAdapter<Visualizations_t> // TODO: Fill in the remainder
             {
                 #region Properties
 
@@ -736,9 +742,9 @@ namespace Splunk.Sdk
 
                 public ChartingAdapter Charting
                 {
-                    get { return this.GetValue("Charting", ExpandoAdapter.Converter<ChartingAdapter>.Instance); }
+                    get { return this.GetValue("Charting", ChartingAdapter.Converter.Instance); }
                 }
-                
+
                 public bool Show
                 {
                     get { return this.GetValue("Show", BooleanConverter.Instance); }
@@ -753,7 +759,7 @@ namespace Splunk.Sdk
 
                 #region Types
 
-                public class ChartingAdapter : ExpandoAdapter
+                public class ChartingAdapter : ExpandoAdapter<ChartingAdapter>
                 {
                     public string Drilldown // TODO: Encode as enumeration
                     {
@@ -767,7 +773,7 @@ namespace Splunk.Sdk
             #endregion
         }
 
-        public class RequestAdapter : ExpandoAdapter
+        public class Request_t : ExpandoAdapter<Request_t>
         {
             public string UIDispatchApp
             {

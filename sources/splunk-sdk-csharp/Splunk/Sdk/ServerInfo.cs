@@ -47,7 +47,7 @@ namespace Splunk.Sdk
 
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", ExpandoAdapter.Converter<Eai>.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>

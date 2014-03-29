@@ -149,6 +149,7 @@ namespace Splunk.Sdk.UnitTesting
                 Assert.Equal("nobody", entity.Author);
                 Assert.Equal(ResourceName.SavedSearches, entity.Collection);
 
+                // TODO: Access each and every property of the saved search
                 return entity;
             };
 

@@ -19,6 +19,7 @@
 namespace Splunk.Sdk
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
 
     /// <summary>
@@ -37,14 +38,13 @@ namespace Splunk.Sdk
     public abstract class ValueConverter<TValue>
     {
         public virtual TValue DefaultValue
-        { get { return default(TValue); } }
-
-        public virtual TValue Convert(object value)
-        {
-            Contract.Requires(value != null);
-            throw new NotImplementedException("ValueConverter<TValue>.Convert method");
+        { 
+            get { return default(TValue); } 
         }
 
+        public abstract TValue Convert(object value);
+
+        protected static readonly EqualityComparer<TValue> Comparer = EqualityComparer<TValue>.Default;
         protected static readonly string TypeName = typeof(TValue).Name;
     }
 }

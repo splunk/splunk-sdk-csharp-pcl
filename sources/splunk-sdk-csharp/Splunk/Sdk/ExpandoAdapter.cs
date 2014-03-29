@@ -87,7 +87,7 @@ namespace Splunk.Sdk
             var dictionary = (IDictionary<string, object>)this.ExpandoObject;
             object value;
 
-            if (!dictionary.TryGetValue(name, out value))
+            if (!dictionary.TryGetValue(name, out value) || value == null)
             {
                 return valueConverter.DefaultValue;
             }

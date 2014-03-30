@@ -85,6 +85,23 @@ namespace Splunk.Sdk.UnitTesting
             }
         }
 
+        [Trait("class", "Service: Configuration")]
+        [Fact]
+        public void CanGetConfigurations()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<ConfigurationCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetConfigurationsAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
         [Trait("class", "Service: Saved Searches")]
         [Fact]
         public void CanCreateSavedSearch()
@@ -144,6 +161,7 @@ namespace Splunk.Sdk.UnitTesting
                 await service.LoginAsync("admin", "changeme");
 
                 var entity = await service.GetSavedSearchAsync("Errors in the last 24 hours");
+
                 Assert.Equal("Errors in the last 24 hours", entity.Title);
                 Assert.Equal(entity.Id.ToString(), entity.ToString());
                 Assert.Equal("nobody", entity.Author);

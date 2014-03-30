@@ -276,29 +276,42 @@ namespace Splunk.Sdk
             get { return this.data == null ? null : this.data.Entry; } 
         }
 
-        internal static TEntity CreateEntity(Context context, ResourceName collection, AtomEntry atomEntry)
+        internal static TEntity CreateEntity(Context context, Namespace @namespace, ResourceName collection, AtomEntry atomEntry)
         {
             // TODO: Entity<TEntity> derivatives should provide their ResourceName property. 
-            // CreateEntity should not require it.
+            // CreateEntity should not require it (?)
 
             Contract.Requires<ArgumentNullException>(collection != null, "collection");
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires<ArgumentNullException>(atomEntry != null, "entry");
 
+            var entity = new TEntity();
+
+            entity.data = new Data(atomEntry); // must be set before entity.Title
+
+            entity.Context = context;
+            entity.Collection = collection;
+            entity.ResourceName = new ResourceName(collection, entity.Title);
+
             dynamic content = atomEntry.Content;
 
-            var entity = new TEntity()
+            if (content == null)
             {
-                Collection = collection,
-                Context = context
-            };
-
-            entity.data = new Data(atomEntry);
+                entity.Namespace = @namespace;
+            }
+            else
+            {
+                try
+                {
+                    entity.Namespace = new Namespace(content.Eai.Acl.Owner, content.Eai.Acl.App);
+                }
+                catch (NullReferenceException e)
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+            }
 
             entity.Title = entity.GetTitle();
-            entity.ResourceName = new ResourceName(collection, entity.Title);
-            entity.Namespace = new Namespace(content.Eai.Acl.Owner, content.Eai.Acl.App);
-
             return entity;
         }
 
@@ -316,7 +329,7 @@ namespace Splunk.Sdk
         {
             public Data(AtomEntry entry)
             {
-                this.adapter = new ExpandoAdapter(entry.Content);
+                this.adapter = entry.Content == null ? ExpandoAdapter.Empty : new ExpandoAdapter(entry.Content);
                 this.entry = entry;
             }
 

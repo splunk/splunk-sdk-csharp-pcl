@@ -41,6 +41,12 @@ namespace Splunk.Sdk
 
         #endregion
 
+        #region Fields
+
+        public static readonly ExpandoAdapter Empty = new ExpandoAdapter(new ExpandoObject());
+
+        #endregion
+
         #region Properties
 
         internal ExpandoObject ExpandoObject

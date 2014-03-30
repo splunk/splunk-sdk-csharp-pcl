@@ -29,11 +29,11 @@ namespace Splunk.Sdk
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
-    public class EntityCollection<TEntity, TArgs> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new() where TArgs : Args<TArgs>
+    public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new()
     {
         #region Constructors
 
-        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, TArgs args = null)
+        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<Argument> args = null)
         {
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires<ArgumentNullException>(@namespace != null, "name");
@@ -41,7 +41,8 @@ namespace Splunk.Sdk
             this.Context = context;
             this.Namespace = @namespace;
             this.ResourceName = name;
-            this.Arguments = args;
+            
+            this.args = args;
         }
 
         #endregion
@@ -49,12 +50,6 @@ namespace Splunk.Sdk
         #region Properties
 
         #region Request related properties
-
-        /// <summary>
-        /// Gets the parameters for this <see cref="EntityCollection"/>.
-        /// </summary>
-        public TArgs Arguments
-        { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="Context"/> instance for this <see cref="EntityCollection"/>.
@@ -176,11 +171,11 @@ namespace Splunk.Sdk
         /// <returns></returns>
         public async Task UpdateAsync()
         {
-            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.Arguments))
+            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
             {
                 var feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
-                this.data = new Data(this.Context, this.ResourceName, feed);
+                this.data = new Data(this.Context, this.Namespace, this.ResourceName, feed);
             }
         }
 
@@ -208,6 +203,7 @@ namespace Splunk.Sdk
 
         #region Privates
 
+        readonly IEnumerable<Argument> args;
         volatile Data data;
 
         AtomFeed AtomFeed
@@ -221,12 +217,12 @@ namespace Splunk.Sdk
 
         class Data
         {
-            public Data(Context context, ResourceName resourceName, AtomFeed feed)
+            public Data(Context context, Namespace @namespace, ResourceName resourceName, AtomFeed feed)
             {
                 var entities = new List<TEntity>(feed.Entries.Count);
                 
                 foreach (var entry in feed.Entries)
-                    entities.Add(Entity<TEntity>.CreateEntity(context, resourceName, entry));
+                    entities.Add(Entity<TEntity>.CreateEntity(context, @namespace, resourceName, entry));
 
                 this.entities = entities;
                 this.feed = feed;

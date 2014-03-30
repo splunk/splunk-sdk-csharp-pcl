@@ -107,6 +107,10 @@
     <Compile Include="Splunk\Sdk\AlertTrigger.cs" />
     <Compile Include="Splunk\Sdk\AlertTrack.cs" />
     <Compile Include="Splunk\Sdk\AlertSeverity.cs" />
+    <Compile Include="Splunk\Sdk\Stanza.cs" />
+    <Compile Include="Splunk\Sdk\Configuration.cs" />
+    <Compile Include="Splunk\Sdk\StanzaCollection.cs" />
+    <Compile Include="Splunk\Sdk\ConfigurationCollection.cs" />
     <Compile Include="Splunk\Sdk\DoubleConverter.cs" />
     <Compile Include="Splunk\Sdk\Pagination.cs" />
     <Compile Include="Splunk\Sdk\PaperSize.cs" />

@@ -297,7 +297,7 @@ namespace Splunk.Sdk
         #endregion
 
         #region Types
-
+        
         struct Formatter
         {
             public Func<object, string> Format;

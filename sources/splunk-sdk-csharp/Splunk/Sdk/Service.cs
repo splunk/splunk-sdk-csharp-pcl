@@ -117,7 +117,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<dynamic> GetCapabilitiesAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.Capabilities)))
+            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.AuthorizationCapabilities)))
             {
                 if (response.Message.StatusCode != HttpStatusCode.OK)
                 {
@@ -177,7 +177,7 @@ namespace Splunk.Sdk
             Contract.Requires(username != null);
             Contract.Requires(password != null);
 
-            using (var response = await this.Context.PostAsync(Namespace.Default, ResourceName.Login, new Argument[]
+            using (var response = await this.Context.PostAsync(Namespace.Default, ResourceName.AuthLogin, new Argument[]
             {
                 new Argument("username", username),
                 new Argument("password", password)
@@ -219,6 +219,112 @@ namespace Splunk.Sdk
         public async Task<AppCollection> GetAppsAsync(AppCollectionArgs args = null)
         {
             var collection = new AppCollection(this.Context, this.Namespace, args);
+            await collection.UpdateAsync();
+            return collection;
+        }
+
+        #endregion
+
+        #region Configuration
+
+        /// <summary>
+        /// Creates a new configuration file.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the configuration file to create.
+        /// </param>
+        /// <returns>
+        /// An object that represents the configuration file created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/CBWes7"></a>POST 
+        /// properties</a> endpoint to create the <see cref="Configuration"/>
+        /// identified by <see cref="name"/>.
+        /// </remarks>
+        public Configuration CreateConfiguration(string name)
+        {
+            return this.CreateConfigurationAsync(name).Result;
+        }
+
+        /// <summary>
+        /// Creates a new configuration file.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the configuration file to create.
+        /// </param>
+        /// <returns>
+        /// An object that represents the configuration file created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/CBWes7"></a>POST 
+        /// properties</a> endpoint to create the <see cref="Configuration"/>
+        /// identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task<Configuration> CreateConfigurationAsync(string name)
+        {
+            var args = new Argument[] { new Argument("__conf", name) };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.Properties, args))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.Created)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+                return new Configuration(this.Context, this.Namespace, name);
+            }
+        }
+
+        /// <summary>
+        /// Gets a <see cref="Configuration"/> object for manipulating a
+        /// configuration file.
+        /// </summary>
+        /// <param name="name">
+        /// The name of a configuration file.
+        /// </param>
+        /// <returns>
+        /// An object for manipulating the configuration file identified by
+        /// <see cref="name"/>. This object is returned regardless of whether 
+        /// the configuration file exists.
+        /// </returns>
+        public Configuration GetConfiguration(string name)
+        {
+            return new Configuration(this.Context, this.Namespace, name);
+        }
+
+        /// <summary>
+        /// Retrieves the collection of all configuration files known to 
+        /// Splunk.
+        /// </summary>
+        /// <returns>
+        /// An object representing the collection of all configuration files
+        /// known to Splunk.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/Unj6fs"></a>GET 
+        /// properties</a> endpoint/> to construct the <see cref=
+        /// "ConfigurationCollection"/> it returns.
+        /// </remarks>
+        public ConfigurationCollection GetConfigurations()
+        {
+            return this.GetConfigurationsAsync().Result;
+        }
+
+        /// <summary>
+        /// Retrieves the collection of all configuration files known to 
+        /// Splunk.
+        /// </summary>
+        /// <returns>
+        /// An object representing the collection of all configuration files
+        /// known to Splunk.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/Unj6fs"></a>GET 
+        /// properties</a> endpoint/> to construct the <see cref=
+        /// "ConfigurationCollection"/> it returns.
+        /// </remarks>
+        public async Task<ConfigurationCollection> GetConfigurationsAsync()
+        {
+            var collection = new ConfigurationCollection(this.Context, this.Namespace);
             await collection.UpdateAsync();
             return collection;
         }
@@ -289,7 +395,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException();  // TODO: Diagnostics
                 }
 
-                var entity = SavedSearch.CreateEntity(this.Context, ResourceName.SavedSearches, atomFeed.Entries[0]);
+                var entity = SavedSearch.CreateEntity(this.Context, this.Namespace, ResourceName.SavedSearches, atomFeed.Entries[0]);
                 return entity;
             }
         }
@@ -409,7 +515,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException();  // TODO: Diagnostics
                 }
 
-                var entity = SavedSearch.CreateEntity(this.Context, ResourceName.SavedSearches, atomFeed.Entries[0]);
+                var entity = SavedSearch.CreateEntity(this.Context, this.Namespace, ResourceName.SavedSearches, atomFeed.Entries[0]);
                 return entity;
             }
         }
@@ -569,7 +675,7 @@ namespace Splunk.Sdk
 
                 var atomEntry = new AtomEntry();
                 await atomEntry.ReadXmlAsync(response.XmlReader);
-                var job = Job.CreateEntity(this.Context, ResourceName.SearchJobs, atomEntry); // TODO: Entity<TEntity> derivatives should provide their ResourceName property. CreateEntity should not require it.
+                var job = Job.CreateEntity(this.Context, this.Namespace, ResourceName.SearchJobs, atomEntry);
 
                 return job;
             }
@@ -801,7 +907,7 @@ namespace Splunk.Sdk
 
             try
             {
-                response = await this.Context.GetAsync(this.Namespace, ResourceName.Export, args);
+                response = await this.Context.GetAsync(this.Namespace, ResourceName.SearchJobsExport, args);
 
                 if (response.Message.StatusCode != HttpStatusCode.OK)
                 {

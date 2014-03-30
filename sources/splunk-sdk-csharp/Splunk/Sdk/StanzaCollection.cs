@@ -19,10 +19,10 @@
 
 namespace Splunk.Sdk
 {
-    public class AppCollection : EntityCollection<App>
+    public class StanzaCollection : EntityCollection<Stanza>
     {
-        internal AppCollection(Context context, Namespace @namespace, AppCollectionArgs args = null)
-            : base(context, @namespace, ResourceName.AppsLocal, args)
+        internal StanzaCollection(Context context, Namespace @namespace, ResourceName collection)
+            : base(context, @namespace, collection)
         { }
     }
 }

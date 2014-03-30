@@ -15,14 +15,19 @@
  */
 
 // TODO:
+// [ ] Contracts
 // [ ] Documentation
+// [ ] Properties & Methods
 
 namespace Splunk.Sdk
 {
-    public class AppCollection : EntityCollection<App>
+    public class Stanza : Entity<Stanza>
     {
-        internal AppCollection(Context context, Namespace @namespace, AppCollectionArgs args = null)
-            : base(context, @namespace, ResourceName.AppsLocal, args)
+        #region Constructors
+
+        public Stanza()
         { }
+
+        #endregion
     }
 }

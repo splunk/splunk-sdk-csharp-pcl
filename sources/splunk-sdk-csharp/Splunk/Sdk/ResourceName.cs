@@ -47,24 +47,14 @@ namespace Splunk.Sdk
         #region Fields
 
         public static readonly ResourceName AppsLocal = new ResourceName("apps", "local");
-        public static readonly ResourceName Capabilities = new ResourceName("authorization", "capabilities");
-        public static readonly ResourceName Configs = new ResourceName("configs");
-        public static readonly ResourceName Confs = new ResourceName("properties");
-        public static readonly ResourceName Export = new ResourceName("search", "jobs", "export");
-        public static readonly ResourceName Indexes = new ResourceName("data", "indexes");
-        public static readonly ResourceName Info = new ResourceName("server", "info");
-        public static readonly ResourceName Inputs = new ResourceName("data", "inputs");
-        public static readonly ResourceName Login = new ResourceName("auth", "login");
-        public static readonly ResourceName Logger = new ResourceName("server", "logger");
-        public static readonly ResourceName Messages = new ResourceName("messages");
-        public static readonly ResourceName ModularInputKinds = new ResourceName("data", "modular-inputs");
-        public static readonly ResourceName Roles = new ResourceName("authorization", "roles");
+        public static readonly ResourceName AuthLogin = new ResourceName("auth", "login");
+        public static readonly ResourceName AuthorizationCapabilities = new ResourceName("authorization", "capabilities");
+        public static readonly ResourceName SearchJobsExport = new ResourceName("search", "jobs", "export");
+        public static readonly ResourceName DataIndexes = new ResourceName("data", "indexes");
+        public static readonly ResourceName Properties = new ResourceName("properties");
         public static readonly ResourceName SavedSearches = new ResourceName("saved", "searches");
         public static readonly ResourceName SearchJobs = new ResourceName("search", "jobs");
         public static readonly ResourceName ServerInfo = new ResourceName("server", "info");
-        public static readonly ResourceName Settings = new ResourceName("server", "settings");
-        public static readonly ResourceName Stanza = new ResourceName("configs", "conf-%s", "%s");
-        public static readonly ResourceName Users = new ResourceName("authentication", "users");
         
         #endregion
 

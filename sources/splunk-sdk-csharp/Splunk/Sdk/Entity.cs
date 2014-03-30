@@ -33,6 +33,7 @@
 
 namespace Splunk.Sdk
 {
+    using Microsoft.CSharp.RuntimeBinder;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
@@ -301,13 +302,24 @@ namespace Splunk.Sdk
             }
             else
             {
+                dynamic acl;
+
                 try
                 {
-                    entity.Namespace = new Namespace(content.Eai.Acl.Owner, content.Eai.Acl.App);
+                    acl = content.Eai.Acl;
                 }
-                catch (NullReferenceException e)
+                catch (RuntimeBinderException e)
                 {
-                    throw new InvalidDataException(); // TODO: Diagnostics
+                    throw new InvalidDataException("", e); // TODO: Diagnostics
+                }
+
+                try
+                {
+                    entity.Namespace = new Namespace(acl.Owner, acl.App);
+                }
+                catch (ArgumentException e)
+                {
+                    throw new InvalidDataException("", e); // TODO: Diagnostics
                 }
             }
 

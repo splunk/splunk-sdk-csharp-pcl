@@ -27,6 +27,7 @@ namespace Splunk.Sdk
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
     public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new()
@@ -173,6 +174,10 @@ namespace Splunk.Sdk
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
             {
+                if (response.Message.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
                 var feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
                 this.data = new Data(this.Context, this.Namespace, this.ResourceName, feed);

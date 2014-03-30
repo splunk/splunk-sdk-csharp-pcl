@@ -38,7 +38,12 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public async Task<StanzaCollection> GetStanzas()
+        public StanzaCollection GetStanzas()
+        {
+            return GetStanzasAsync().Result;
+        }
+
+        public async Task<StanzaCollection> GetStanzasAsync()
         {
             var collection = new StanzaCollection(this.Context, this.Namespace, this.ResourceName);
             await collection.UpdateAsync();

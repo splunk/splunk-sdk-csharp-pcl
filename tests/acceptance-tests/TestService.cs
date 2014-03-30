@@ -102,6 +102,17 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
+        [Trait("class", "Service: Configuration")]
+        [Fact]
+        public void CanManipulateConfiguration()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            var props = service.GetConfiguration("props");
+
+            service.Login("admin", "changeme");
+            props.GetStanzas();
+        }
+
         [Trait("class", "Service: Saved Searches")]
         [Fact]
         public void CanCreateSavedSearch()

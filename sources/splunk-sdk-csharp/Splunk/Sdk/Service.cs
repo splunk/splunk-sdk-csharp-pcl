@@ -262,6 +262,8 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<Configuration> CreateConfigurationAsync(string name)
         {
+            // TODO: Must I delete the configuration file manually, restart Splunk, and then create? No delete operation?
+
             var args = new Argument[] { new Argument("__conf", name) };
 
             using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.Properties, args))

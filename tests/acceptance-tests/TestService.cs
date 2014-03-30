@@ -87,6 +87,23 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Configuration")]
         [Fact]
+        public void CanCreateConfiguration()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<Configuration>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var entity = await service.CreateConfigurationAsync("some_configuration");
+                return entity;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Configuration")]
+        [Fact]
         public void CanGetConfigurations()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));

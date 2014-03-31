@@ -241,9 +241,9 @@ namespace Splunk.Sdk
         /// properties</a> endpoint to create the <see cref="Configuration"/>
         /// identified by <see cref="name"/>.
         /// </remarks>
-        public Configuration CreateConfiguration(string name)
+        public void CreateConfiguration(string name)
         {
-            return this.CreateConfigurationAsync(name).Result;
+            this.CreateConfigurationAsync(name).Wait();
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace Splunk.Sdk
         /// properties</a> endpoint to create the <see cref="Configuration"/>
         /// identified by <see cref="name"/>.
         /// </remarks>
-        public async Task<Configuration> CreateConfigurationAsync(string name)
+        public async Task CreateConfigurationAsync(string name)
         {
             // TODO: Must I delete the configuration file manually, restart Splunk, and then create? No delete operation?
 
@@ -272,7 +272,6 @@ namespace Splunk.Sdk
                 {
                     throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
-                return new Configuration(this.Context, this.Namespace, name);
             }
         }
 
@@ -285,12 +284,29 @@ namespace Splunk.Sdk
         /// </param>
         /// <returns>
         /// An object for manipulating the configuration file identified by
-        /// <see cref="name"/>. This object is returned regardless of whether 
-        /// the configuration file exists.
+        /// <see cref="name"/>.
         /// </returns>
         public Configuration GetConfiguration(string name)
         {
-            return new Configuration(this.Context, this.Namespace, name);
+            return this.GetConfigurationAsync(name).Result;
+        }
+
+        /// <summary>
+        /// Gets a <see cref="Configuration"/> object for manipulating a
+        /// configuration file.
+        /// </summary>
+        /// <param name="name">
+        /// The name of a configuration file.
+        /// </param>
+        /// <returns>
+        /// An object for manipulating the configuration file identified by
+        /// <see cref="name"/>.
+        /// </returns>
+        public async Task<Configuration> GetConfigurationAsync(string name)
+        {
+            var entity = new Configuration(this.Context, this.Namespace, name);
+            await entity.UpdateAsync();
+            return entity;
         }
 
         /// <summary>
@@ -306,9 +322,9 @@ namespace Splunk.Sdk
         /// properties</a> endpoint/> to construct the <see cref=
         /// "ConfigurationCollection"/> it returns.
         /// </remarks>
-        public ConfigurationCollection GetConfigurations()
+        public ConfigurationInfoCollection GetConfigurationInfos()
         {
-            return this.GetConfigurationsAsync().Result;
+            return this.GetConfigurationInfosAsync().Result;
         }
 
         /// <summary>
@@ -324,9 +340,49 @@ namespace Splunk.Sdk
         /// properties</a> endpoint/> to construct the <see cref=
         /// "ConfigurationCollection"/> it returns.
         /// </remarks>
-        public async Task<ConfigurationCollection> GetConfigurationsAsync()
+        public async Task<ConfigurationInfoCollection> GetConfigurationInfosAsync()
         {
-            var collection = new ConfigurationCollection(this.Context, this.Namespace);
+            var collection = new ConfigurationInfoCollection(this.Context, this.Namespace);
+            await collection.UpdateAsync();
+            return collection;
+        }
+
+        /// <summary>
+        /// Retrieves the collection of all configuration files known to 
+        /// Splunk.
+        /// </summary>
+        /// <returns>
+        /// An object representing the collection of all configuration files
+        /// known to Splunk.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/Unj6fs"></a>GET 
+        /// properties</a> endpoint/> to construct the <see cref=
+        /// "ConfigurationCollection"/> it returns.
+        /// </remarks>
+        public Stanza GetConfigurationStanza(string configurationName, string stanzaName)
+        {
+            return this.GetConfigurationStanzaAsync(configurationName, stanzaName).Result;
+        }
+
+        /// <summary>
+        /// Retrieves the collection of all configuration files known to 
+        /// Splunk.
+        /// </summary>
+        /// <returns>
+        /// An object representing the collection of all configuration files
+        /// known to Splunk.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/Unj6fs"></a>GET 
+        /// properties</a> endpoint/> to construct the <see cref=
+        /// "ConfigurationCollection"/> it returns.
+        /// </remarks>
+        public async Task<Stanza> GetConfigurationStanzaAsync(string configurationName, string stanzaName)
+        {
+            var resourceName = new ResourceName(ResourceName.Properties, configurationName, stanzaName);
+            var collection = new Stanza(this.Context, this.Namespace, resourceName);
+
             await collection.UpdateAsync();
             return collection;
         }

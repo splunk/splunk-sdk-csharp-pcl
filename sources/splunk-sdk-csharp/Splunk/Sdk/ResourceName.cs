@@ -49,11 +49,12 @@ namespace Splunk.Sdk
         public static readonly ResourceName AppsLocal = new ResourceName("apps", "local");
         public static readonly ResourceName AuthLogin = new ResourceName("auth", "login");
         public static readonly ResourceName AuthorizationCapabilities = new ResourceName("authorization", "capabilities");
-        public static readonly ResourceName SearchJobsExport = new ResourceName("search", "jobs", "export");
+        public static readonly ResourceName Configs = new ResourceName("configs");
         public static readonly ResourceName DataIndexes = new ResourceName("data", "indexes");
         public static readonly ResourceName Properties = new ResourceName("properties");
         public static readonly ResourceName SavedSearches = new ResourceName("saved", "searches");
         public static readonly ResourceName SearchJobs = new ResourceName("search", "jobs");
+        public static readonly ResourceName SearchJobsExport = new ResourceName("search", "jobs", "export");
         public static readonly ResourceName ServerInfo = new ResourceName("server", "info");
         
         #endregion
@@ -175,7 +176,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public string ToUriString()
         {
-            return string.Join("/", from segment in this select Uri.EscapeUriString(segment));
+            return string.Join("/", from segment in this select Uri.EscapeDataString(segment));
         }
 
         #endregion

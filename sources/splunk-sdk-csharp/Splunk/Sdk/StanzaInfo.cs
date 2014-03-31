@@ -21,13 +21,31 @@
 
 namespace Splunk.Sdk
 {
-    public class Stanza : EntityCollection<ConfigurationSetting>
+    using System.Net;
+    using System.Threading.Tasks;
+
+    public class StanzaInfo : Entity<StanzaInfo>
     {
         #region Constructors
 
-        internal Stanza(Context context, Namespace @namespace, ResourceName resourceName)
-            : base(context, @namespace, resourceName)
+        public StanzaInfo()
         { }
+
+        #endregion
+
+        #region
+
+        public Stanza GetStanza()
+        {
+            return this.GetStanzaAsync().Result;
+        }
+
+        public async Task<Stanza> GetStanzaAsync()
+        {
+            var stanza = new Stanza(this.Context, this.Namespace, this.ResourceName);
+            await stanza.UpdateAsync();
+            return stanza;
+        }
 
         #endregion
     }

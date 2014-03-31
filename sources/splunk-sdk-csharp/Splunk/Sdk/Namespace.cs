@@ -107,7 +107,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public string ToUriString()
         {
-            return ToString(Uri.EscapeUriString);
+            return ToString(Uri.EscapeDataString);
         }
 
         #endregion

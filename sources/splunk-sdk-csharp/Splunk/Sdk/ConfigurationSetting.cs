@@ -15,14 +15,33 @@
  */
 
 // TODO:
+// [ ] Contracts
 // [ ] Documentation
+// [ ] Properties & Methods
 
 namespace Splunk.Sdk
 {
-    public class StanzaCollection : EntityCollection<Stanza>
+    using System.IO;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+
+    public class ConfigurationSetting : Entity<ConfigurationSetting>
     {
-        internal StanzaCollection(Context context, Namespace @namespace, ResourceName collection)
-            : base(context, @namespace, collection)
+        #region Constructors
+
+        public ConfigurationSetting()
         { }
+
+        #endregion
+
+        #region Properties
+
+        public string Value 
+        {
+            get { return this.Content.GetValue("Value", StringConverter.Instance); }
+        }
+
+        #endregion
     }
 }

@@ -95,7 +95,8 @@ namespace Splunk.Sdk.UnitTesting
             {
                 await service.LoginAsync("admin", "changeme");
 
-                var entity = await service.CreateConfigurationAsync("some_configuration");
+                await service.CreateConfigurationAsync("some_configuration");
+                var entity = await service.GetConfigurationAsync("some_configuration");
                 return entity;
             };
 
@@ -108,11 +109,11 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
 
-            Func<Task<ConfigurationCollection>> Dispatch = async () =>
+            Func<Task<ConfigurationInfoCollection>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 
-                var collection = await service.GetConfigurationsAsync();
+                var collection = await service.GetConfigurationInfosAsync();
                 return collection;
             };
 
@@ -124,10 +125,42 @@ namespace Splunk.Sdk.UnitTesting
         public void CanManipulateConfiguration()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            var props = service.GetConfiguration("props");
-
             service.Login("admin", "changeme");
-            props.GetStanzas();
+
+            // Get a well-known configuration
+
+            Configuration configuration = service.GetConfiguration("props");
+            configuration.Update();
+
+            foreach (StanzaInfo stanzaInfo in configuration)
+            {
+                Stanza stanza = null;
+                Assert.DoesNotThrow(() => stanza = stanzaInfo.GetStanza());
+                Assert.NotNull(stanza);
+            }
+
+            // Get or create a custom configuration
+            
+            // TODO: create an app and add a custom configuration to it, then delete the app
+            // Why? You can remove an app, including its configuration, but not a configuration
+
+            try
+            {
+                configuration = service.GetConfiguration("custom");
+            }
+            catch (AggregateException e)
+            {
+                Assert.Equal(1, e.InnerExceptions.Count);
+                
+                var requestException = e.InnerExceptions[0] as RequestException;
+
+                Assert.NotNull(requestException);
+                Assert.Equal(HttpStatusCode.NotFound, requestException.StatusCode);
+                Assert.NotNull(requestException.Details);
+
+                Assert.DoesNotThrow(() => service.CreateConfiguration("custom"));
+                Assert.DoesNotThrow(() => configuration = service.GetConfiguration("custom"));
+            }
         }
 
         [Trait("class", "Service: Saved Searches")]

@@ -37,6 +37,7 @@ namespace Splunk.Sdk
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Dynamic;
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
@@ -135,11 +136,6 @@ namespace Splunk.Sdk
             get { return this.AtomEntry == null ? null : this.AtomEntry.Links; } 
         }
 
-        public DateTime Published
-        { 
-            get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Published; } 
-        }
-
         public DateTime Updated
         { 
             get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Updated; } 
@@ -189,6 +185,15 @@ namespace Splunk.Sdk
         /// Refreshes the cached state of the current <see cref=
         /// "Entity<TEntity>"/>.
         /// </summary>
+        public void Update()
+        {
+            this.UpdateAsync().Wait();
+        }
+
+        /// <summary>
+        /// Refreshes the cached state of the current <see cref=
+        /// "Entity<TEntity>"/>.
+        /// </summary>
         public async Task UpdateAsync()
         {
             // TODO: Parmeterized retry logic
@@ -231,20 +236,35 @@ namespace Splunk.Sdk
                             throw new InvalidDataException(); // TODO: Diagnostics
                         }
 
+                        AtomEntry entry;
+
                         if (reader.Name == "feed")
                         {
-                            await response.XmlReader.ReadToFollowingAsync("entry");
-                        }
+                            AtomFeed feed = new AtomFeed();
 
-                        if (reader.Name != "entry")
+                            await feed.ReadXmlAsync(reader);
+                            int count = feed.Entries.Count;
+
+                            foreach (var feedEntry in feed.Entries)
+                            {
+                                string id = feedEntry.Title;
+                                id.Trim();
+                            }
+                            if (feed.Entries.Count != 1)
+                            {
+                                throw new InvalidDataException(); // TODO: Diagnostics
+                            }
+
+                            entry = feed.Entries[0];
+                        }
+                        else
                         {
-                            throw new InvalidDataException(); // TODO: Diagnostics
+                            entry = new AtomEntry();
+                            await entry.ReadXmlAsync(reader);
                         }
 
-                        var atomEntry = new AtomEntry();
-
-                        await atomEntry.ReadXmlAsync(reader);
-                        this.data = new Data(atomEntry);
+                        // TODO: Check entry type (?)
+                        this.data = new Data(entry);
                     }
 
                     return;
@@ -289,6 +309,7 @@ namespace Splunk.Sdk
             var entity = new TEntity();
 
             entity.data = new Data(atomEntry); // must be set before entity.Title
+            entity.Title = entity.GetTitle();
 
             entity.Context = context;
             entity.Collection = collection;
@@ -296,7 +317,7 @@ namespace Splunk.Sdk
 
             dynamic content = atomEntry.Content;
 
-            if (content == null)
+            if ((content as ExpandoObject) == null)
             {
                 entity.Namespace = @namespace;
             }
@@ -323,7 +344,6 @@ namespace Splunk.Sdk
                 }
             }
 
-            entity.Title = entity.GetTitle();
             return entity;
         }
 
@@ -341,7 +361,22 @@ namespace Splunk.Sdk
         {
             public Data(AtomEntry entry)
             {
-                this.adapter = entry.Content == null ? ExpandoAdapter.Empty : new ExpandoAdapter(entry.Content);
+                if (entry.Content == null)
+                {
+                    this.adapter = ExpandoAdapter.Empty;
+                }
+                else
+                {
+                    this.adapter = entry.Content as ExpandoAdapter;
+                    
+                    if (this.adapter == null)
+                    {
+                        dynamic content = new ExpandoObject();
+                        content.Value = entry.Content;
+                        this.adapter = new ExpandoAdapter(content);
+                    }
+                }
+
                 this.entry = entry;
             }
 

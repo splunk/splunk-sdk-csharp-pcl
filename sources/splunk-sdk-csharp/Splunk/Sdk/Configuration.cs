@@ -21,35 +21,38 @@
 
 namespace Splunk.Sdk
 {
+    using System.IO;
+    using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
-    public class Configuration : Entity<Configuration>
+    /// <summary>
+    /// Provides a class for manipulating Splunk configuration files.
+    /// </summary>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///     <a href="http://goo.gl/cTdaIH">REST API Reference: Accessing and 
+    ///     updating Splunk configurations</a>
+    /// </description></item>
+    /// <item><description>
+    ///     <a href="http://goo.gl/0ELhzV">REST API Reference: Configurations</a>.
+    /// </description></item>
+    /// </list>
+    /// </remarks>
+    public class Configuration : EntityCollection<StanzaInfo>
     {
         #region Constructors
 
         internal Configuration(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ResourceName.Properties, name)
-        { }
-
-        public Configuration()
+            : base(context, @namespace, new ResourceName(ResourceName.Properties, name))
         { }
 
         #endregion
 
         #region Methods
 
-        public StanzaCollection GetStanzas()
-        {
-            return GetStanzasAsync().Result;
-        }
-
-        public async Task<StanzaCollection> GetStanzasAsync()
-        {
-            var collection = new StanzaCollection(this.Context, this.Namespace, this.ResourceName);
-            await collection.UpdateAsync();
-            return collection;
-        }
-        
         #endregion
     }
 }

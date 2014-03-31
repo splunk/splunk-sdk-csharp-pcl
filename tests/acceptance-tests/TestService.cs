@@ -135,7 +135,7 @@ namespace Splunk.Sdk.UnitTesting
             foreach (StanzaInfo stanzaInfo in configuration)
             {
                 Stanza stanza = null;
-                Assert.DoesNotThrow(() => stanza = stanzaInfo.Remove());
+                Assert.DoesNotThrow(() => stanza = stanzaInfo.Get());
                 Assert.NotNull(stanza);
             }
 

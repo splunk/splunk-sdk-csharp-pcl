@@ -45,8 +45,8 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        internal Configuration(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, new ResourceName(ResourceName.Properties, name))
+        internal Configuration(Context context, Namespace @namespace, ResourceName resourceName)
+            : base(context, @namespace, resourceName)
         { }
 
         #endregion

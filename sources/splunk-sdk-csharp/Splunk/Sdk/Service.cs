@@ -304,7 +304,8 @@ namespace Splunk.Sdk
         /// </returns>
         public async Task<Configuration> GetConfigurationAsync(string name)
         {
-            var entity = new Configuration(this.Context, this.Namespace, name);
+            var resourceName = new ResourceName(ResourceName.Properties, name);
+            var entity = new Configuration(this.Context, this.Namespace, resourceName);
             await entity.UpdateAsync();
             return entity;
         }

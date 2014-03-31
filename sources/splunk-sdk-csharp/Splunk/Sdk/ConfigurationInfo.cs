@@ -52,6 +52,54 @@ namespace Splunk.Sdk
 
         #region Methods
 
+        public void Create()
+        {
+            this.CreateAsync().Wait();
+        }
+
+        public async Task CreateAsync()
+        {
+            var args = new Argument[] { new Argument("__conf", this.Title) };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, this.Collection, args))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
+        }
+
+        public Configuration Get()
+        {
+            return this.GetAsync().Result;
+        }
+
+        public async Task<Configuration> GetAsync()
+        {
+            var configuration = new Configuration(this.Context, this.Namespace, this.ResourceName);
+            await configuration.UpdateAsync();
+            return configuration;
+        }
+
+        public void Remove()
+        {
+            this.RemoveAsync().Wait();
+        }
+
+        public async Task RemoveAsync()
+        {
+            var resource = new ResourceName(ResourceName.Configs, string.Join("-", "conf", this.Collection.Name));
+
+            using (var response = await this.Context.DeleteAsync(this.Namespace, resource))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
+        }
+
         /// <summary>
         /// Removes the named stanza from the current <see cref="Configuration"/>.
         /// </summary>
@@ -91,7 +139,25 @@ namespace Splunk.Sdk
                 }
             }
         }
-        
+
+        public void UpdateStanzaSettings(string stanzaName, params Argument[] arguments)
+        {
+            this.UpdateStanzaSettingsAsync(stanzaName, arguments).Wait();
+        }
+
+        public async Task UpdateStanzaSettingsAsync(string stanzaName, params Argument[] arguments)
+        {
+            var resourceName = new ResourceName(this.ResourceName, stanzaName);
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, arguments))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
+        }
+
         #endregion
     }
 }

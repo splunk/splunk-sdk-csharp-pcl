@@ -71,6 +71,11 @@ namespace Splunk.Sdk
             get { return this.parts.Count; }
         }
 
+        public string Name
+        {
+            get { return this.parts[this.parts.Count - 1]; }
+        }
+
         #endregion
 
         #region Methods

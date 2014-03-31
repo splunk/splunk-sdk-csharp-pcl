@@ -33,18 +33,70 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region
+        #region Methods
 
-        public Stanza GetStanza()
+        public void Create()
         {
-            return this.GetStanzaAsync().Result;
+            this.CreateAsync().Wait();
         }
 
-        public async Task<Stanza> GetStanzaAsync()
+        public async Task CreateAsync()
+        {
+            var args = new Argument[] { new Argument("__stanza", this.Title) };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, this.Collection, args))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
+        }
+
+        public Stanza Get()
+        {
+            return this.GetAsync().Result;
+        }
+
+        public async Task<Stanza> GetAsync()
         {
             var stanza = new Stanza(this.Context, this.Namespace, this.ResourceName);
             await stanza.UpdateAsync();
             return stanza;
+        }
+
+        public void Remove()
+        {
+            this.RemoveAsync().Wait();
+        }
+
+        public async Task RemoveAsync()
+        {
+            var resource = new ResourceName(ResourceName.Configs, string.Join("-", "conf", this.Collection.Name));
+
+            using (var response = await this.Context.DeleteAsync(this.Namespace, resource))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
+        }
+
+        public void UpdateSettings(params Argument[] arguments)
+        {
+            this.UpdateSettingsAsync(arguments).Wait();
+        }
+
+        public async Task UpdateSettingsAsync(params Argument[] arguments)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
         }
 
         #endregion

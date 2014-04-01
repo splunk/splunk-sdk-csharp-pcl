@@ -15,7 +15,7 @@
  */
 
 // TODO:
-// [X] Contracts are in the base type: ValueConverter
+// [ ] Contracts
 // [O] Documentation
 
 namespace Splunk.Sdk

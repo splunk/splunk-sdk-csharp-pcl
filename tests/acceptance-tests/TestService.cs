@@ -85,6 +85,84 @@ namespace Splunk.Sdk.UnitTesting
             }
         }
 
+        [Trait("class", "Service: Configuration")]
+        [Fact]
+        public void CanCreateConfiguration()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<Configuration>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                await service.CreateConfigurationAsync("some_configuration");
+                var entity = await service.GetConfigurationAsync("some_configuration");
+                return entity;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Configuration")]
+        [Fact]
+        public void CanGetConfigurations()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<ConfigurationInfoCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetConfigurationInfosAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Configuration")]
+        [Fact]
+        public void CanManipulateConfiguration()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            service.Login("admin", "changeme");
+
+            // Get a well-known configuration
+
+            Configuration configuration = service.GetConfiguration("props");
+            configuration.Update();
+
+            foreach (StanzaInfo stanzaInfo in configuration)
+            {
+                Stanza stanza = null;
+                Assert.DoesNotThrow(() => stanza = stanzaInfo.Get());
+                Assert.NotNull(stanza);
+            }
+
+            // Get or create a custom configuration
+            
+            // TODO: create an app and add a custom configuration to it, then delete the app
+            // Why? You can remove an app, including its configuration, but not a configuration
+
+            try
+            {
+                configuration = service.GetConfiguration("custom");
+            }
+            catch (AggregateException e)
+            {
+                Assert.Equal(1, e.InnerExceptions.Count);
+                
+                var requestException = e.InnerExceptions[0] as RequestException;
+
+                Assert.NotNull(requestException);
+                Assert.Equal(HttpStatusCode.NotFound, requestException.StatusCode);
+                Assert.NotNull(requestException.Details);
+
+                Assert.DoesNotThrow(() => service.CreateConfiguration("custom"));
+                Assert.DoesNotThrow(() => configuration = service.GetConfiguration("custom"));
+            }
+        }
+
         [Trait("class", "Service: Saved Searches")]
         [Fact]
         public void CanCreateSavedSearch()
@@ -94,6 +172,15 @@ namespace Splunk.Sdk.UnitTesting
             Func<Task<SavedSearch>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
+
+                try
+                {
+                    service.RemoveSavedSearch("some_saved_search");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
 
                 var savedSearchCreationArgs = new SavedSearchCreationArgs("some_saved_search", "search index=_internal | head 1000");
                 var savedSearch = await service.CreateSavedSearchAsync(savedSearchCreationArgs);
@@ -135,11 +222,13 @@ namespace Splunk.Sdk.UnitTesting
                 await service.LoginAsync("admin", "changeme");
 
                 var entity = await service.GetSavedSearchAsync("Errors in the last 24 hours");
+
                 Assert.Equal("Errors in the last 24 hours", entity.Title);
                 Assert.Equal(entity.Id.ToString(), entity.ToString());
                 Assert.Equal("nobody", entity.Author);
                 Assert.Equal(ResourceName.SavedSearches, entity.Collection);
 
+                // TODO: Access each and every property of the saved search
                 return entity;
             };
 

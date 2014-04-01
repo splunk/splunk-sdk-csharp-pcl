@@ -19,7 +19,7 @@
 
 namespace Splunk.Sdk
 {
-    public class AppCollection : EntityCollection<App, AppCollectionArgs>
+    public class AppCollection : EntityCollection<App>
     {
         internal AppCollection(Context context, Namespace @namespace, AppCollectionArgs args = null)
             : base(context, @namespace, ResourceName.AppsLocal, args)

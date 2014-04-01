@@ -306,24 +306,28 @@ namespace Splunk.Sdk
             }
         }
 
-        Uri CreateServiceUri(Namespace @namespace, ResourceName resourceName, params IEnumerable<Argument>[] argumentSets)
+        Uri CreateServiceUri(Namespace @namespace, ResourceName name, params IEnumerable<Argument>[] argumentSets)
         {
             var builder = new StringBuilder(this.ToString());
 
             builder.Append("/");
             builder.Append(@namespace.ToUriString());
             builder.Append("/");
-            builder.Append(resourceName.ToUriString());
+            builder.Append(name.ToUriString());
 
             if (argumentSets != null)
             {
-                builder.Append('?');
-
-                builder.Append(string.Join("&",
+                var query = string.Join("&",
                     from args in argumentSets
                     where args != null
                     from arg in args
-                    select string.Join("=", Uri.EscapeUriString(arg.Name), Uri.EscapeUriString(arg.Value.ToString()))));
+                    select string.Join("=", Uri.EscapeUriString(arg.Name), Uri.EscapeUriString(arg.Value.ToString())));
+
+                if (query.Length > 0)
+                {
+                    builder.Append('?');
+                    builder.Append(query);
+                }
             }
 
             return new Uri(builder.ToString());

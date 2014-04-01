@@ -27,10 +27,9 @@ namespace Splunk.Sdk
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Acl : ExpandoAdapter
+    public class Acl : ExpandoAdapter<Acl>
     {
-        internal Acl(ExpandoObject expandoObject)
-            : base(expandoObject)
+        public Acl()
         { }
 
         public bool CanList

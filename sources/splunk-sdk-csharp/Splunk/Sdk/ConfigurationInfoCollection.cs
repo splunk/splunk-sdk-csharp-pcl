@@ -15,29 +15,14 @@
  */
 
 // TODO:
-// [ ] Contracts
-// [O] Documentation
+// [ ] Documentation
 
 namespace Splunk.Sdk
 {
-    using System;
-
-    /// <summary>
-    /// Provides a converter to convert an object to its string form.
-    /// </summary>
-    sealed class StringConverter : ValueConverter<String>
+    public class ConfigurationInfoCollection : EntityCollection<ConfigurationInfo>
     {
-        static StringConverter()
-        {
-            Instance = new StringConverter();
-        }
-
-        public static StringConverter Instance
-        { get; private set; }
-
-        public override String Convert(object input)
-        {
-            return input.ToString();
-        }
+        internal ConfigurationInfoCollection(Context context, Namespace @namespace)
+            : base(context, @namespace, ResourceName.Properties)
+        { }
     }
 }

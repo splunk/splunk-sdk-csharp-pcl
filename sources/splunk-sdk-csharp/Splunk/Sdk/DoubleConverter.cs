@@ -15,42 +15,41 @@
  */
 
 // TODO:
-// [X] Contracts are in the base type: ValueConverter
+// [ ] Contracts
 // [O] Documentation
 
 namespace Splunk.Sdk
 {
-    using System.Dynamic;
+    using System;
     using System.IO;
 
     /// <summary>
-    /// Provides a converter to convert <see cref="ExpandoObject"/> instances to
-    /// <see cref="Eai"/> objects.
+    /// Provides a converter to convert strings to <see cref="Double"/> values.
     /// </summary>
-    sealed class EaiConverter : ValueConverter<Eai>
+    sealed class DoubleConverter : ValueConverter<Double>
     {
-        static EaiConverter()
+        static DoubleConverter()
         {
-            Instance = new EaiConverter();
+            Instance = new DoubleConverter();
         }
 
-        public static EaiConverter Instance
+        public static DoubleConverter Instance
         { get; private set; }
 
-        public override Eai Convert(object input)
+        public override Double Convert(object input)
         {
-            var value = input as Eai;
+            var x = input as Double?;
 
-            if (value != null)
+            if (x != null)
             {
-                return value;
+                return x.Value;
             }
 
-            var expandoObject = input as ExpandoObject;
+            Double value;
 
-            if (expandoObject != null)
+            if (Double.TryParse(input.ToString(), result: out value))
             {
-                return new Eai(expandoObject);
+                return value;
             }
 
             throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices

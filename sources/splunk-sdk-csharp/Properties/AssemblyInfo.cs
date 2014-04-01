@@ -21,11 +21,11 @@ using System.Runtime.InteropServices;
 
 // General Information
 
-[assembly: AssemblyTitle("splunk-sdk-csharp")]
+[assembly: AssemblyProduct("splunk-sdk-csharp-pcl")]
+[assembly: AssemblyTitle("splunk-sdk-csharp-pcl")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Splunk Inc.")]
-[assembly: AssemblyProduct("splunk-sdk-csharp")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

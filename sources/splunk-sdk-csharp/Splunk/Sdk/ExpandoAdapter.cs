@@ -24,6 +24,7 @@ namespace Splunk.Sdk
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.IO;
 
     public class ExpandoAdapter
     {
@@ -35,8 +36,14 @@ namespace Splunk.Sdk
             this.ExpandoObject = expandoObject;
         }
 
-        public ExpandoAdapter()
+        protected ExpandoAdapter()
         { }
+
+        #endregion
+
+        #region Fields
+
+        public static readonly ExpandoAdapter Empty = new ExpandoAdapter(new ExpandoObject());
 
         #endregion
 
@@ -86,7 +93,7 @@ namespace Splunk.Sdk
             var dictionary = (IDictionary<string, object>)this.ExpandoObject;
             object value;
 
-            if (!dictionary.TryGetValue(name, out value))
+            if (!dictionary.TryGetValue(name, out value) || value == null)
             {
                 return valueConverter.DefaultValue;
             }
@@ -171,6 +178,54 @@ namespace Splunk.Sdk
             }
 
             readonly object value;
+        }
+
+        #endregion
+    }
+
+    public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter<TExpandoAdapter>, new()
+    {
+        #region Constructors
+
+        public ExpandoAdapter()
+        { }
+
+        #endregion
+
+        #region Type
+
+        /// <summary>
+        /// Provides a converter to create <see cref="ExpandoAdapter"/> 
+        /// instances from <see cref="ExpandoObject"/> instances.
+        /// </summary>
+        public class Converter : ValueConverter<TExpandoAdapter>
+        {
+            static Converter()
+            {
+                Instance = new Converter();
+            }
+
+            public static Converter Instance
+            { get; private set; }
+
+            public override TExpandoAdapter Convert(object input)
+            {
+                var value = input as TExpandoAdapter;
+
+                if (value != null)
+                {
+                    return value;
+                }
+
+                var expandoObject = input as ExpandoObject;
+
+                if (expandoObject != null)
+                {
+                    return new TExpandoAdapter() { ExpandoObject = expandoObject };
+                }
+
+                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            }
         }
 
         #endregion

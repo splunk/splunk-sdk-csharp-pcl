@@ -31,6 +31,9 @@ namespace Splunk.Sdk
     using System.Net;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class SavedSearch : Entity<SavedSearch>
     {
         #region Constructors
@@ -57,14 +60,34 @@ namespace Splunk.Sdk
 
         #region Properties
 
-        public ActionSet Actions
+        public Action_t Actions
         {
-            get { return this.Content.GetValue("Action", ActionSetConverter.Instance); }
+            get { return this.Content.GetValue("Action", Action_t.Converter.Instance); }
+        }
+
+        public Alert_t Alert
+        {
+            get { return this.Content.GetValue("Alert", Alert_t.Converter.Instance); }
+        }
+
+        public AutoSummarize_t AutoSummarize
+        {
+            get { return this.Content.GetValue("AutoSummarize", AutoSummarize_t.Converter.Instance); }
+        }
+
+        public Dispatch_t Dispatch
+        {
+            get { return this.Content.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
+        }
+
+        public Display_t Display
+        {
+            get { return this.Content.GetValue("Display", Display_t.Converter.Instance); }
         }
 
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", EaiConverter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         public bool IsDisabled
@@ -84,12 +107,17 @@ namespace Splunk.Sdk
 
         public int MaxConcurrent
         {
-            get { return this.Content.GetValue("MaxConcurrent", Int32Converter.Instance);  }
+            get { return this.Content.GetValue("MaxConcurrent", Int32Converter.Instance); }
         }
 
         public bool RealtimeSchedule
         {
             get { return this.Content.GetValue("RealtimeSchedule", BooleanConverter.Instance); }
+        }
+
+        public Request_t Request
+        {
+            get { return this.Content.GetValue("Request", Request_t.Converter.Instance); }
         }
 
         public bool RestartOnSearchPeerAdd
@@ -114,7 +142,7 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Methods for retrieving search results
+        #region Methods
 
         #endregion
 
@@ -124,154 +152,638 @@ namespace Splunk.Sdk
 
         #region Types
 
-        public class ActionSet : ExpandoAdapter
+        public class Action_t : ExpandoAdapter<Action_t>
         {
-            internal ActionSet(ExpandoObject expandoObject)
-                : base(expandoObject)
+            #region Properties
+
+            public Email_t Email
+            {
+                get { return this.GetValue("Email", Email_t.Converter.Instance); }
+            }
+
+            public PopulateLookup_t PopulateLookup
+            {
+                get { return this.GetValue("PopulateLookup", PopulateLookup_t.Converter.Instance); }
+            }
+
+            public Rss_t Rss
+            {
+                get { return this.GetValue("Rss", Rss_t.Converter.Instance); }
+            }
+
+            public SummaryIndex_t SummaryIndex
+            {
+                get { return this.GetValue("SummaryIndex", SummaryIndex_t.Converter.Instance); }
+            }
+
+            #endregion
+
+            #region Types
+
+            public class Action<TAction> : ExpandoAdapter<TAction> where TAction : Action<TAction>, new()
+            {
+                #region Properties
+
+                public string Command
+                {
+                    get { return this.GetValue("Command", StringConverter.Instance); }
+                }
+
+                public bool IsEnabled
+                {
+                    get { return this.GetValue("IsEnabled", BooleanConverter.Instance); }
+                }
+
+                public string MaxResults
+                {
+                    get { return this.GetValue("Maxresults", StringConverter.Instance); }
+                }
+
+                public string MaxTime
+                {
+                    get { return this.GetValue("Maxtime", StringConverter.Instance); }
+                }
+
+                public bool TrackAlert
+                {
+                    get { return this.GetValue("TrackAlert", BooleanConverter.Instance); }
+                }
+
+                public string Ttl
+                {
+                    get { return this.GetValue("Ttl", StringConverter.Instance); }
+                }
+
+                #endregion
+            }
+
+            public class Email_t : Action<Email_t>
+            {
+                #region Properties
+
+                public EmailFormat Format
+                {
+                    get { return this.GetValue("Format", EnumConverter<EmailFormat>.Instance); }
+                }
+
+                public string From
+                {
+                    get { return this.GetValue("From", StringConverter.Instance); }
+                }
+
+                public bool Inline
+                {
+                    get { return this.GetValue("Inline", BooleanConverter.Instance); }
+                }
+
+                public string Mailserver
+                {
+                    get { return this.GetValue("Mailserver", StringConverter.Instance); }
+                }
+
+                public string ReportCIDFontList
+                {
+                    get { return this.GetValue("ReportCIDFontList", StringConverter.Instance); }
+                }
+
+                public bool ReportIncludeSplunkLogo
+                {
+                    get { return this.GetValue("ReportIncludeSplunkLogo", BooleanConverter.Instance); }
+                }
+
+                public PaperOrientation ReportPaperOrientation
+                {
+                    get { return this.GetValue("ReportPaperOrientation", EnumConverter<PaperOrientation>.Instance); }
+                }
+
+                public PaperSize ReportPaperSize
+                {
+                    get { return this.GetValue("ReportPaperSize", EnumConverter<PaperSize>.Instance); }
+                }
+
+                public bool ReportServerEnabled
+                {
+                    get { return this.GetValue("ReportServerEnabled", BooleanConverter.Instance); }
+                }
+
+                public bool SendPdf
+                {
+                    get { return this.GetValue("Sendpdf", BooleanConverter.Instance); }
+                }
+
+                public bool SendResults
+                {
+                    get { return this.GetValue("Sendresults", BooleanConverter.Instance); }
+                }
+
+                public string Subject
+                {
+                    get { return this.GetValue("Subject", StringConverter.Instance); }
+                }
+
+                public bool UseSsl
+                {
+                    get { return this.GetValue("UseSsl", BooleanConverter.Instance); }
+                }
+
+                public bool UseTls
+                {
+                    get { return this.GetValue("UseTls", BooleanConverter.Instance); }
+                }
+
+                public bool WidthSortColumns
+                {
+                    get { return this.GetValue("WidthSortColumns", BooleanConverter.Instance); }
+                }
+
+                #endregion
+            }
+
+            public class PopulateLookup_t : Action<PopulateLookup_t>
             { }
 
-            public EmailAction Email
-            {
-                get { return this.GetValue("Email", ActionConverter<EmailAction>.Instance); }
-            }
+            public class Rss_t : Action<Rss_t>
+            { }
 
-            public PopulateLookupAction PopulateLookup
+            public class SummaryIndex_t : Action<SummaryIndex_t>
             {
-                get { return this.GetValue("PopulateLookup", ActionConverter<PopulateLookupAction>.Instance); }
-            }
+                #region Properties
 
-            public RssAction Rss
-            {
-                get { return this.GetValue("Rss", ActionConverter<RssAction>.Instance); }
-            }
+                public bool Inline
+                {
+                    get { return this.GetValue("Inline", BooleanConverter.Instance); }
+                }
 
-            public SummaryIndexAction SummaryIndex
-            {
-                get { return this.GetValue("SummaryIndex", ActionConverter<SummaryIndexAction>.Instance); }
+                public string Name
+                {
+                    get { return this.GetValue("Name", StringConverter.Instance); }
+                }
+
+                #endregion
             }
+            
+            #endregion
         }
 
-        public class Action : ExpandoAdapter
+        public class Alert_t : ExpandoAdapter<Alert_t>
         {
-            public Action()
-            { }
+            #region Properties
+
+            public bool DigestMode
+            {
+                get { return this.GetValue("DigestMode", BooleanConverter.Instance); }
+            }
+
+            public string Expires
+            {
+                get { return this.GetValue("Expires", StringConverter.Instance); }
+            }
+
+            public AlertSeverity Severity
+            {
+                get { return this.GetValue("Severity", EnumConverter<AlertSeverity>.Instance); }
+            }
+
+            public bool Track
+            {
+                get { return this.GetValue("Track", BooleanConverter.Instance); }
+            }
+
+            public AlertTrigger Trigger
+            {
+                get { return this.GetValue("Track", EnumConverter<AlertTrigger>.Instance); }
+            }
+
+            #endregion
+        }
+
+        public class AutoSummarize_t : ExpandoAdapter<AutoSummarize_t>
+        {
+            #region Properties
+
+            public string Command
+            {
+                get { return this.GetValue("Command", StringConverter.Instance); }
+            }
 
             public bool IsEnabled
             {
                 get { return this.GetValue("IsEnabled", BooleanConverter.Instance); }
             }
 
-            public string MaxResults
+            public string CronSchedule
             {
-                get { return this.GetValue("Maxresults", StringConverter.Instance); }
+                get { return this.GetValue("CronSchedule", StringConverter.Instance); }
             }
 
-            public string MaxTime
+            public Dispatch_t Dispatch
             {
-                get { return this.GetValue("Maxtime", StringConverter.Instance);  }
+                get { return this.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
             }
 
-            public bool TrackAlert
+            public int MaxDisabledBuckets
             {
-                get { return this.GetValue("TrackAlert", BooleanConverter.Instance); }
+                get { return this.GetValue("MaxDisabledBuckets", Int32Converter.Instance); }
+            }
+
+            public double MaxSummaryRatio
+            {
+                get { return this.GetValue("MaxSummaryRatio", DoubleConverter.Instance); }
+            }
+
+            public int MaxSummarySize
+            {
+                get { return this.GetValue("MaxSummarySize", Int32Converter.Instance); }
+            }
+
+            public int MaxTime
+            {
+                get { return this.GetValue("MaxTime", Int32Converter.Instance); }
+            }
+
+            public string SuspendPeriod
+            {
+                get { return this.GetValue("SuspendPeriod", StringConverter.Instance); }
+            }
+
+            #endregion
+
+            #region Types
+
+            public class Dispatch_t : ExpandoAdapter<Dispatch_t>
+            {
+                public string EarliestTime
+                {
+                    get { return this.GetValue("EarliestTime", StringConverter.Instance); }
+                }
+
+                public string LatestTime
+                {
+                    get { return this.GetValue("LatestTime", StringConverter.Instance); }
+                }
+
+                public string TimeFormat
+                {
+                    get { return this.GetValue("TimeFormat", StringConverter.Instance); }
+                }
+
+                public string Ttl
+                {
+                    get { return this.GetValue("Ttl", StringConverter.Instance); }
+                }
+            }
+
+            #endregion
+        }
+
+        public class Dispatch_t : ExpandoAdapter<Dispatch_t>
+        {
+            #region Properties
+
+            public int Buckets
+            {
+                get { return this.GetValue("Buckets", Int32Converter.Instance); }
+            }
+
+            public string EarliestTime
+            {
+                get { return this.GetValue("EarliestTime", StringConverter.Instance); }
+            }
+
+            public bool Lookups
+            {
+                get { return this.GetValue("Lookups", BooleanConverter.Instance); }
+            }
+
+            public int MaxCount
+            {
+                get { return this.GetValue("MaxCount", Int32Converter.Instance); }
+            }
+
+            public int MaxTime
+            {
+                get { return this.GetValue("MaxTime", Int32Converter.Instance); }
+            }
+
+            public int ReduceFreq
+            {
+                get { return this.GetValue("ReduceFreq", Int32Converter.Instance); }
+            }
+
+            public bool RealtimeBackfill
+            {
+                get { return this.GetValue("RealtimeBackfill", BooleanConverter.Instance); }
+            }
+
+            public bool SpawnProcess
+            {
+                get { return this.GetValue("SpawnProcess", BooleanConverter.Instance); }
+            }
+
+            public string TimeFormat
+            {
+                get { return this.GetValue("TimeFormat", StringConverter.Instance); }
             }
 
             public string Ttl
             {
                 get { return this.GetValue("Ttl", StringConverter.Instance); }
             }
+
+            #endregion
         }
 
-        /// <summary>
-        /// Provides a converter to convert <see cref="ExpandoObject"/> instances to
-        /// <see cref="Acl"/> objects.
-        /// </summary>
-        sealed class ActionConverter<TAction> : ValueConverter<TAction> where TAction : Action, new()
+        public class Display_t : ExpandoAdapter<Display_t>
         {
-            static ActionConverter()
+            #region Properties
+
+            public Events_t Events
             {
-                Instance = new ActionConverter<TAction>();
+                get { return this.GetValue("Events", Events_t.Converter.Instance); }
             }
 
-            public static ActionConverter<TAction> Instance
-            { get; private set; }
-
-            public override TAction Convert(object input)
+            public General_t General
             {
-                var value = input as TAction;
-
-                if (value != null)
-                {
-                    return value;
-                }
-
-                var expandoObject = input as ExpandoObject;
-
-                if (expandoObject != null)
-                {
-                    return new TAction() { ExpandoObject = expandoObject };
-                }
-
-                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
-            }
-        }
-
-        /// <summary>
-        /// Provides a converter to convert <see cref="ExpandoObject"/> instances to
-        /// <see cref="Acl"/> objects.
-        /// </summary>
-        sealed class ActionSetConverter : ValueConverter<ActionSet>
-        {
-            static ActionSetConverter()
-            {
-                Instance = new ActionSetConverter();
+                get { return this.GetValue("General", General_t.Converter.Instance); }
             }
 
-            public static ActionSetConverter Instance
-            { get; private set; }
-
-            public override ActionSet Convert(object input)
+            public Page_t Page
             {
-                var value = input as ActionSet;
-
-                if (value != null)
-                {
-                    return value;
-                }
-
-                var expandoObject = input as ExpandoObject;
-
-                if (expandoObject != null)
-                {
-                    return new ActionSet(expandoObject);
-                }
-
-                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+                get { return this.GetValue("Page", Page_t.Converter.Instance); }
             }
+
+            public Statistics_t Statistics
+            {
+                get { return this.GetValue("Statistics", Statistics_t.Converter.Instance); }
+            }
+
+            public Visualizations_t Visualizations
+            {
+                get { return this.GetValue("Visualizations", Visualizations_t.Converter.Instance); }
+            }
+
+            #endregion
+
+            #region Types
+
+            public class Events_t : ExpandoAdapter<Events_t>
+            {
+                #region Properties
+
+                public string Fields // TODO: Deal sensibily with this Pythonic string format: @"["host","source","sourcetype"]"
+                {
+                    get { return this.GetValue("Fields", StringConverter.Instance); }
+                }
+
+                public List_t List
+                {
+                    get { return this.GetValue("List", List_t.Converter.Instance); }
+                }
+
+                public int MaxLines // TODO: Verify this property is a bool
+                {
+                    get { return this.GetValue("MaxLines", Int32Converter.Instance); }
+                }
+
+                public Raw_t Raw
+                {
+                    get { return this.GetValue("Raw", Raw_t.Converter.Instance); }
+                }
+
+                public bool RowNumbers // TODO: Verify this property is a bool
+                {
+                    get { return this.GetValue("RowNumbers", BooleanConverter.Instance); }
+                }
+
+                public Table_t Table
+                {
+                    get { return this.GetValue("Table", Table_t.Converter.Instance); }
+                }
+
+                public string Type // TODO: Encode this property as an enumeration
+                {
+                    get { return this.GetValue("Type", StringConverter.Instance); }
+                }
+
+                #endregion
+
+                #region Types
+
+                public class List_t : ExpandoAdapter<List_t>
+                {
+                    public string Drilldown // TODO: Encode this property as an enumeration
+                    {
+                        get { return this.GetValue("Drilldown", StringConverter.Instance); }
+                    }
+
+                    public bool Wrap // TODO: Verify this property is a bool
+                    {
+                        get { return this.GetValue("Wrap", BooleanConverter.Instance); }
+                    }
+                }
+
+                public class Raw_t : ExpandoAdapter<Raw_t>
+                {
+                    public string Drilldown // TODO: Encode this property as an enumeration
+                    {
+                        get { return this.GetValue("Drilldown", StringConverter.Instance); }
+                    }
+                }
+
+                public class Table_t : ExpandoAdapter<Table_t>
+                {
+                    public bool Drilldown // TODO: Verify this property is a bool
+                    {
+                        get { return this.GetValue("Drilldown", BooleanConverter.Instance); }
+                    }
+
+                    public bool Wrap // TODO: Verify this property is a bool
+                    {
+                        get { return this.GetValue("Wrap", BooleanConverter.Instance); }
+                    }
+                }
+
+                #endregion
+            }
+
+            public class General_t : ExpandoAdapter<General_t>
+            {
+                public bool EnablePreview
+                {
+                    get { return this.GetValue("EnablePreview", BooleanConverter.Instance); }
+                }
+
+                public bool MigratedFromViewState
+                {
+                    get { return this.GetValue("MigratedFromViewState", BooleanConverter.Instance); }
+                }
+
+                public TimeRangePickerAdapter TimeRangePicker
+                {
+                    get { return this.GetValue("TimeRangePicker", TimeRangePickerAdapter.Converter.Instance); }
+                }
+
+                public string Type // TODO: Encode as enumeration
+                {
+                    get { return this.GetValue("Type", StringConverter.Instance); }
+                }
+
+                #region Types
+
+                public class TimeRangePickerAdapter : ExpandoAdapter<TimeRangePickerAdapter>
+                {
+                    public bool Show
+                    {
+                        get { return this.GetValue("Show", BooleanConverter.Instance); }
+                    }
+                }
+
+                #endregion
+            }
+
+            public class Page_t : ExpandoAdapter<Page_t>
+            {
+                #region Properties
+
+                public PivotAdapter Pivot
+                {
+                    get { return this.GetValue("Pivot", PivotAdapter.Converter.Instance); }
+                }
+
+                public SearchAdapter Search
+                {
+                    get { return this.GetValue("Search", SearchAdapter.Converter.Instance); }
+                }
+
+                #endregion
+
+                #region Types
+
+                public class PivotAdapter : ExpandoAdapter<PivotAdapter> // TODO: Implement properties (when do they show?)
+                { }
+
+                public class SearchAdapter : ExpandoAdapter<SearchAdapter>
+                {
+                    #region Properties
+
+                    public string Mode // TODO: Encode as enumeration
+                    {
+                        get { return this.GetValue("Mode", StringConverter.Instance); }
+                    }
+
+                    public bool ShowFields
+                    {
+                        get { return this.GetValue("ShowFields", BooleanConverter.Instance); }
+                    }
+
+                    public TimelineAdapter Search
+                    {
+                        get { return this.GetValue("Search", TimelineAdapter.Converter.Instance); }
+                    }
+
+                    #endregion
+
+                    #region Types
+
+                    public class TimelineAdapter : ExpandoAdapter<TimelineAdapter>
+                    {
+                        public string Format // TODO: Encode as enumeration
+                        {
+                            get { return this.GetValue("Format", StringConverter.Instance); }
+                        }
+
+                        public string Scale // TODO: Encode as enumeration
+                        {
+                            get { return this.GetValue("Scale", StringConverter.Instance); }
+                        }
+                    }
+
+                    #endregion
+                }
+
+                #endregion
+            }
+
+            public class Statistics_t : ExpandoAdapter<Statistics_t>
+            {
+                #region Properties
+
+                public string Drilldown // TODO: Encode as enumeration
+                {
+                    get { return this.GetValue("Drilldown", StringConverter.Instance); }
+                }
+
+                public bool Overlay
+                {
+                    get { return this.GetValue("Overlay", BooleanConverter.Instance); }
+                }
+
+                public bool RowNumbers
+                {
+                    get { return this.GetValue("RowNumbers", BooleanConverter.Instance); }
+                }
+
+                public bool Wrap
+                {
+                    get { return this.GetValue("Wrap", BooleanConverter.Instance); }
+                }
+
+                #endregion
+            }
+
+            public class Visualizations_t : ExpandoAdapter<Visualizations_t> // TODO: Fill in the remainder
+            {
+                #region Properties
+
+                public int ChartHeight
+                {
+                    get { return this.GetValue("ChartHeight", Int32Converter.Instance); }
+                }
+
+                public ChartingAdapter Charting
+                {
+                    get { return this.GetValue("Charting", ChartingAdapter.Converter.Instance); }
+                }
+
+                public bool Show
+                {
+                    get { return this.GetValue("Show", BooleanConverter.Instance); }
+                }
+
+                public string Type // TODO: Encode as enumeration
+                {
+                    get { return this.GetValue("Type", StringConverter.Instance); }
+                }
+
+                #endregion
+
+                #region Types
+
+                public class ChartingAdapter : ExpandoAdapter<ChartingAdapter>
+                {
+                    public string Drilldown // TODO: Encode as enumeration
+                    {
+                        get { return this.GetValue("Drilldown", StringConverter.Instance); }
+                    }
+                }
+
+                #endregion
+            }
+
+            #endregion
         }
 
-        public class EmailAction : Action
+        public class Request_t : ExpandoAdapter<Request_t>
         {
-            public EmailAction()
-            { }
-        }
+            public string UIDispatchApp
+            {
+                get { return this.GetValue("UiDispatchApp", StringConverter.Instance); }
+            }
 
-        public class PopulateLookupAction : Action
-        {
-            public PopulateLookupAction()
-            { }
-        }
-
-        public class RssAction : Action
-        {
-            public RssAction()
-            { }
-        }
-
-        public class SummaryIndexAction : Action
-        {
-            public SummaryIndexAction()
-            { }
+            public string UIDispatchView
+            {
+                get { return this.GetValue("UiDispatchView", StringConverter.Instance); }
+            }
         }
 
         #endregion

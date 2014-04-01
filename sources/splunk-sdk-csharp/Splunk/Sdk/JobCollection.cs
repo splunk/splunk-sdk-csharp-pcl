@@ -22,7 +22,7 @@ namespace Splunk.Sdk
     /// <summary>
     /// 
     /// </summary>
-    public class JobCollection : EntityCollection<Job, JobCollectionArgs>
+    public class JobCollection : EntityCollection<Job>
     {
         internal JobCollection(Context context, Namespace @namespace, ResourceName resourceName, JobCollectionArgs args = null)
             : base(context, @namespace, resourceName, args)

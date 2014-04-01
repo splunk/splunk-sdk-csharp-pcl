@@ -266,6 +266,9 @@ namespace Splunk.Sdk
                         case "auto_summarize":
                             name += ".IsEnabled";
                             break;
+                        case "alert_type":
+                            name = "alert.trigger";
+                            break;
                         case "display.visualizations.charting.chart":
                             name += ".Type";
                             break;
@@ -298,6 +301,8 @@ namespace Splunk.Sdk
 
                     propertyName = NormalizePropertyName(names[names.Length - 1]);
                     dictionary.Add(propertyName, await ParsePropertyValueAsync(reader));
+
+// TODO: Remove this code
 #if false
                     if (names.Length == 2)
                     {

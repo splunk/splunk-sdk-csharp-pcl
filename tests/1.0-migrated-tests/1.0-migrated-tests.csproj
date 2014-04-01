@@ -57,6 +57,9 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SavedSearchTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SearchTest.cs" />
     <Compile Include="ServiceTest.cs" />
     <Compile Include="TestHelper.cs" />

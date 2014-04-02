@@ -306,8 +306,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<Configuration> GetConfigurationAsync(string name)
         {
-            var resourceName = new ResourceName(ResourceName.Properties, name);
-            var entity = new Configuration(this.Context, this.Namespace, resourceName);
+            var entity = new Configuration(this.Context, this.Namespace, name);
             await entity.UpdateAsync();
             return entity;
         }
@@ -416,6 +415,47 @@ namespace Splunk.Sdk
             var collection = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
             await collection.UpdateAsync();
             return collection;
+        }
+
+        /// <summary>
+        /// Removes a configuration stanza.
+        /// </summary>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a configuration stanza in <see cref="fileName"/> to be
+        /// removed.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE 
+        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
+        /// stanza identified by <see cref="stanzaName"/>.
+        /// </remarks>
+        public void RemoveConfigurationStanza(string fileName, string stanzaName)
+        {
+            this.RemoveConfigurationStanzaAsync(fileName, stanzaName).Wait();
+        }
+
+        /// <summary>
+        /// Asynchronously removes a configuration stanza.
+        /// </summary>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a configuration stanza in <see cref="fileName"/> to be
+        /// removed.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
+        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
+        /// identified by <see cref="stanzaName"/>.
+        /// </remarks>
+        public async Task RemoveConfigurationStanzaAsync(string fileName, string stanzaName)
+        {
+            var entity = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
+            await entity.RemoveAsync();
         }
 
         /// <summary>

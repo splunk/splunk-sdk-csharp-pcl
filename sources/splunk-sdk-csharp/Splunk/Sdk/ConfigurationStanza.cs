@@ -41,6 +41,38 @@ namespace Splunk.Sdk
         #region Methods
 
         /// <summary>
+        /// Removes the current <see cref="ConfigurationStanza"/>
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE 
+        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
+        /// stanza identified by <see cref="stanzaName"/>.
+        /// </remarks>
+        public void Remove()
+        {
+            this.RemoveAsync().Wait();
+        }
+
+        /// <summary>
+        /// Asynchronously removes a configuration stanza.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
+        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
+        /// stanza identified by <see cref="stanzaName"/>.
+        /// </remarks>
+        public async Task RemoveAsync()
+        {
+            var name = new ResourceName(ResourceName.Configs, string.Concat("conf-", this.ResourceName.Collection), 
+                this.ResourceName.Title);
+
+            using (var response = await this.Context.DeleteAsync(this.Namespace, name))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+            }
+        }
+
+        /// <summary>
         /// Adds or updates a list of settings in the current 
         /// <see cref="ConfigurationStanza"/>.
         /// </summary>

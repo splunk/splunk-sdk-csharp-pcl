@@ -70,16 +70,8 @@ namespace Splunk.Sdk
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
                 var reader = new StreamReader(response.Stream);
+                var content = await reader.ReadToEndAsync();
 
-                string content;
-                try
-                {
-                    content = await reader.ReadToEndAsync();
-                }
-                catch (Exception e)
-                {
-                    content = e.ToString();
-                }
                 this.Data = new DataObject(new AtomEntry(this.Data.Entry, content.Length == 0 ? null : content));
             }
         }

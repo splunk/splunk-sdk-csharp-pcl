@@ -71,7 +71,12 @@ namespace Splunk.Sdk
             get { return this.parts.Count; }
         }
 
-        public string Name
+        public string Collection
+        {
+            get { return this.parts.Count > 1 ? this.parts[this.parts.Count - 2] : null; }
+        }
+
+        public string Title
         {
             get { return this.parts[this.parts.Count - 1]; }
         }

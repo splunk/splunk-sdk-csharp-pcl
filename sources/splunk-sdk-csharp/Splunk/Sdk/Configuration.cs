@@ -45,8 +45,8 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        internal Configuration(Context context, Namespace @namespace, ResourceName resource)
-            : base(context, @namespace, resource)
+        internal Configuration(Context context, Namespace @namespace, string fileName)
+            : base(context, @namespace, new ResourceName(ResourceName.Properties, fileName))
         { }
 
         public Configuration()
@@ -55,6 +55,41 @@ namespace Splunk.Sdk
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Removes a configuration stanza.
+        /// </summary>
+        /// <param name="stanzaName">
+        /// Name of a configuration stanza in the current <see cref=
+        /// "Configuration"/>.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE 
+        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration 
+        /// stanza identified by <see cref="stanzaName"/>.
+        /// </remarks>
+        public void RemoveStanza(string stanzaName)
+        {
+            this.RemoveStanzaAsync(stanzaName).Wait();
+        }
+
+        /// <summary>
+        /// Asynchronously removes a configuration stanza.
+        /// </summary>
+        /// <param name="stanzaName">
+        /// Name of a configuration stanza in the current <see cref=
+        /// "Configuration"/>.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
+        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
+        /// stanza identified by <see cref="stanzaName"/>.
+        /// </remarks>
+        public async Task RemoveStanzaAsync(string stanzaName)
+        {
+            var entity = new ConfigurationStanza(this.Context, this.Namespace, this.Title, stanzaName);
+            await entity.RemoveAsync();
+        }
 
         #endregion
     }

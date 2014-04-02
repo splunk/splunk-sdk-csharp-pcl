@@ -106,7 +106,7 @@ namespace Splunk.Sdk
         /// </summary>
         public string Title
         {
-            get { return this.ResourceName.Name; }
+            get { return this.ResourceName.Title; }
         }
 
         #endregion

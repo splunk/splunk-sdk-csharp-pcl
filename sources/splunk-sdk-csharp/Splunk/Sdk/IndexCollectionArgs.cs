@@ -48,7 +48,7 @@ namespace Splunk.Sdk
         #region Properties
 
         /// <summary>
-        /// The maximum number of <see cref="Job"/> entries to return.
+        /// The maximum number of <see cref="Index"/> entries to return.
         /// </summary>
         /// <remarks>
         /// If the value of <c>Count</c> is set to zero, then all available
@@ -72,12 +72,11 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
-        /// Search expression to filter <see cref="Job"/> entries. 
+        /// Search expression to filter <see cref="Index"/> entries. 
         /// </summary>
         /// <remarks>
         /// Use this expression to filter the entries returned based on 
-        /// search <see cref="Job"/> properties. For example, specify 
-        /// <c>eventCount>100</c>. The default is <c>null</c>.
+        /// search <see cref="Index"/> properties. The default is <c>null</c>.
         /// </remarks>
         [DataMember(Name = "search", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -86,7 +85,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value indicating whether to sort returned <see cref=
-        /// "App"/>entries in ascending or descending order.
+        /// "Index"/> entries in ascending or descending order.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortDirection.Ascending"/>.
@@ -97,11 +96,11 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
-        /// <see cref="Job"/> property to use for sorting.
+        /// <see cref="Index"/> property to use for sorting.
         /// </summary>
         /// <remarks>
-        /// The default <see cref="Job"/> property to use for sorting is 
-        /// <c>"dispatch_time"</c>.
+        /// The default <see cref="Index"/> property to use for sorting is 
+        /// <c>"name"</c>.
         /// </remarks>
         [DataMember(Name = "sort_key", EmitDefaultValue = false)]
         [DefaultValue("name")]
@@ -110,7 +109,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-        /// cref="App"/> entries.
+        /// cref="Index"/> entries.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortMode.Automatic"/>.

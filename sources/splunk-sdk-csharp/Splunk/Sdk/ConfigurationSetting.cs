@@ -21,14 +21,25 @@
 
 namespace Splunk.Sdk
 {
+    using System;
+    using System.Dynamic;
     using System.IO;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using System.Xml;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class ConfigurationSetting : Entity<ConfigurationSetting>
     {
         #region Constructors
+
+        internal ConfigurationSetting(Context context, Namespace @namespace, string fileName, string stanzaName, 
+            string keyName)
+            : base(context, @namespace, new ResourceName(ResourceName.Properties, fileName, stanzaName), keyName)
+        { }
 
         public ConfigurationSetting()
         { }
@@ -37,9 +48,76 @@ namespace Splunk.Sdk
 
         #region Properties
 
+        /// <summary>
+        /// Gets the cached value of the current <see cref="ConfigurationSetting"/>.
+        /// </summary>
         public string Value 
         {
             get { return this.Content.GetValue("Value", StringConverter.Instance); }
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Asynchrononously updates the cached value of the current <see cref=
+        /// "ConfigurationSetting"/>.
+        /// </summary>
+        public override async Task UpdateAsync()
+        {
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                var reader = new StreamReader(response.Stream);
+
+                string content;
+                try
+                {
+                    content = await reader.ReadToEndAsync();
+                }
+                catch (Exception e)
+                {
+                    content = e.ToString();
+                }
+                this.Data = new DataObject(new AtomEntry(this.Data.Entry, content.Length == 0 ? null : content));
+            }
+        }
+
+        /// <summary>
+        /// Updates the value of the current <see cref="ConfigurationSetting"/>.
+        /// </summary>
+        /// <param name="value">
+        /// A new value for the current <see cref="ConfigurationSetting"/>.
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
+        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
+        /// update the current <see cref="ConfigurationSetting"/> value.
+        /// </remarks>
+        public void UpdateValue(string value)
+        {
+            this.UpdateValueAsync(value).Wait();
+        }
+
+        /// <summary>
+        /// Asynchronously updates the value of the current <see cref=
+        /// "ConfigurationSetting"/>.
+        /// </summary>
+        /// <param name="value">
+        /// A new value for the current <see cref="ConfigurationSetting"/>.
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
+        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
+        /// update the current <see cref="ConfigurationSetting"/> value.
+        /// </remarks>
+        public async Task UpdateValueAsync(string value)
+        {
+            var args = new Argument[] { new Argument("value", value) };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+            }
         }
 
         #endregion

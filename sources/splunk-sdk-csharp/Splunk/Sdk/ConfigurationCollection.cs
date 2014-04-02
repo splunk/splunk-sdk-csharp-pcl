@@ -19,10 +19,13 @@
 
 namespace Splunk.Sdk
 {
-    public class ConfigurationInfoCollection : EntityCollection<ConfigurationInfo>
+    public class ConfigurationCollection : EntityCollection<ConfigurationCollection, Configuration>
     {
-        internal ConfigurationInfoCollection(Context context, Namespace @namespace)
+        internal ConfigurationCollection(Context context, Namespace @namespace)
             : base(context, @namespace, ResourceName.Properties)
+        { }
+
+        public ConfigurationCollection()
         { }
     }
 }

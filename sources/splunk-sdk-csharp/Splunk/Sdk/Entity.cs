@@ -43,38 +43,37 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml;
 
-    public class Entity<TEntity> where TEntity : Entity<TEntity>, new()
+    public class Entity<TEntity> : Resource<TEntity> where TEntity : Entity<TEntity>, new()
     {
         #region Constructors
 
         /// <summary>
         /// 
         /// </summary>
-        public Entity()
-        { }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="namespace"></param>
-        /// <param name="collection"></param>
-        /// <param name="title"></param>
+        /// <param name="context">
+        /// </param>
+        /// <param name="namespace">
+        /// </param>
+        /// <param name="collection">
+        /// </param>
+        /// <param name="title">
+        /// </param>
         protected Entity(Context context, Namespace @namespace, ResourceName collection, string title)
+            : base(context, @namespace, new ResourceName(collection, title))
         {
             Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(title), "name");
             Contract.Requires<ArgumentException>(collection != null, "collection");
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires(@namespace.IsSpecific);
+        }
 
-            this.Context = context;
-
-            this.Namespace = @namespace;
-            this.Collection = collection;
-            this.Title = title;
-
-            this.ResourceName = new ResourceName(this.Collection, this.Title);
+        /// <summary>
+        /// 
+        /// </summary>
+        public Entity()
+        {
+            this.data = DataObject.Missing;
         }
 
         #endregion
@@ -88,58 +87,31 @@ namespace Splunk.Sdk
         public ResourceName Collection
         { get; internal set; }
 
-        /// <summary>
-        /// Gets the <see cref="Context"/> instance for the current <see cref=
-        /// "Entity"/>.
-        /// </summary>
-        public Context Context
-        { get; internal set; }
-
-        /// <summary>
-        /// Gets the namespace containing the current <see cref="Entity"/>.
-        /// </summary>
-        public Namespace Namespace
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the resource name of the current <see cref="Entity"/>.
-        /// </summary>
-        /// <remarks>
-        /// The resource name is the concatenation of <see cref=
-        /// "Entity.Collection"/> and <see cref="Entity.Title"/>.
-        /// </remarks>
-        public ResourceName ResourceName
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the title of this <see cref="Entity"/>.
-        /// </summary>
-        public string Title
-        { get; private set; }
-
         #endregion
 
         #region Properties backed by AtomEntry
 
-        public string Author
+        public override string Author
         { 
-            get { return this.AtomEntry == null ? null : this.AtomEntry.Author; } 
+            get { return this.data.Entry == null ? null : this.data.Entry.Author; }
         }
 
-        public Uri Id
+        public override Uri Id
         { 
-            get { return this.AtomEntry == null ? null : this.AtomEntry.Id; } 
+            get { return this.data.Entry == null ? null : this.data.Entry.Id; } 
         }
 
-        public IReadOnlyDictionary<string, Uri> Links
+        public override IReadOnlyDictionary<string, Uri> Links
         { 
-            get { return this.AtomEntry == null ? null : this.AtomEntry.Links; } 
+            get { return this.data.Entry == null ? null : this.data.Entry.Links; } 
         }
 
-        public DateTime Updated
+        public override DateTime Updated
         { 
-            get { return this.AtomEntry == null ? DateTime.MinValue : this.AtomEntry.Updated; } 
+            get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; } 
         }
+
+        #region Protected properties
 
         /// <summary>
         /// Gets the <see cref="ExpandoAdapter"/> representing the content of
@@ -151,15 +123,19 @@ namespace Splunk.Sdk
         /// </remarks>
         protected ExpandoAdapter Content
         {
-            get
-            {
-                if (this.data == null)
-                {
-                    throw new InvalidOperationException(); // TODO: diagnostics
-                }
-                return this.data.Adapter;
-            }
+            get { return this.data.Adapter; }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected DataObject Data
+        {
+            get { return this.data; }
+            set { this.data = value; }
+        }
+
+        #endregion
 
         #endregion
 
@@ -178,33 +154,25 @@ namespace Splunk.Sdk
         /// </remarks>
         protected virtual string GetTitle()
         {
-            return this.AtomEntry == null ? null : this.AtomEntry.Title;
+            return this.data.Entry == null ? null : this.data.Entry.Title;
         }
 
         /// <summary>
         /// Refreshes the cached state of the current <see cref=
         /// "Entity<TEntity>"/>.
         /// </summary>
-        public void Update()
+        public override async Task UpdateAsync()
         {
-            this.UpdateAsync().Wait();
-        }
-
-        /// <summary>
-        /// Refreshes the cached state of the current <see cref=
-        /// "Entity<TEntity>"/>.
-        /// </summary>
-        public async Task UpdateAsync()
-        {
-            // TODO: Parmeterized retry logic
-
-            RequestException requestException = null;
+            // TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class
 
             // FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
             // into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
             // as of Splunk 6, getting a 200 and content back does not imply you have all the fields. For pivot
             // support, they're now shoving fields in as they become ready, so you have to wait until the dispatchState
             // field of the Atom entry reaches a certain point.
+
+            RequestException requestException = null;
+
             for (int i = 3; i > 0; --i)
             {
                 try
@@ -264,7 +232,7 @@ namespace Splunk.Sdk
                         }
 
                         // TODO: Check entry type (?)
-                        this.data = new Data(entry);
+                        this.data = new DataObject(entry);
                     }
 
                     return;
@@ -292,36 +260,20 @@ namespace Splunk.Sdk
 
         #region Privates/internals
 
-        AtomEntry AtomEntry
-        { 
-            get { return this.data == null ? null : this.data.Entry; } 
-        }
-
-        internal static TEntity CreateEntity(Context context, Namespace @namespace, ResourceName collection, AtomEntry atomEntry)
+        public override void Initialize(Context context, Namespace @namespace, ResourceName collection, object entry)
         {
-            // TODO: Entity<TEntity> derivatives should provide their ResourceName property. 
-            // CreateEntity should not require it (?)
+            AtomEntry atomEntry = entry as AtomEntry;
 
-            Contract.Requires<ArgumentNullException>(collection != null, "collection");
-            Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires<ArgumentNullException>(atomEntry != null, "entry");
+            if (atomEntry == null)
+            {
+                throw new ArgumentException("Expected non-null entry of type AtomEntry.");
+            }
 
-            var entity = new TEntity();
-
-            entity.data = new Data(atomEntry); // must be set before entity.Title
-            entity.Title = entity.GetTitle();
-
-            entity.Context = context;
-            entity.Collection = collection;
-            entity.ResourceName = new ResourceName(collection, entity.Title);
+            this.data = new DataObject(atomEntry); // must be set before entity.Title
 
             dynamic content = atomEntry.Content;
 
-            if ((content as ExpandoObject) == null)
-            {
-                entity.Namespace = @namespace;
-            }
-            else
+            if ((content as ExpandoObject) != null)
             {
                 dynamic acl;
 
@@ -336,7 +288,7 @@ namespace Splunk.Sdk
 
                 try
                 {
-                    entity.Namespace = new Namespace(acl.Owner, acl.App);
+                    @namespace = new Namespace(acl.Owner, acl.App);
                 }
                 catch (ArgumentException e)
                 {
@@ -344,22 +296,23 @@ namespace Splunk.Sdk
                 }
             }
 
-            return entity;
+            var resourceName = new ResourceName(collection, this.GetTitle());
+            base.Initialize(context, @namespace, resourceName, null /* unused */);
         }
 
         #endregion
 
         #region Privates
 
-        volatile Data data;
+        volatile DataObject data;
 
         #endregion
 
         #region Types
 
-        class Data
+        protected sealed class DataObject
         {
-            public Data(AtomEntry entry)
+            public DataObject(AtomEntry entry)
             {
                 if (entry.Content == null)
                 {
@@ -379,6 +332,13 @@ namespace Splunk.Sdk
 
                 this.entry = entry;
             }
+
+            DataObject()
+            {
+                this.adapter = ExpandoAdapter.Empty;
+            }
+
+            public static readonly DataObject Missing = new DataObject();
 
             public ExpandoAdapter Adapter
             { 

@@ -29,8 +29,6 @@ namespace Splunk.Sdk
 
     public struct Pagination
     {
-        public static readonly Pagination Empty;
-
         public Pagination(int itemsPerPage, int startIndex, int totalResults)
         {
             Contract.Requires<ArgumentOutOfRangeException>(itemsPerPage >= 0, "itemsPerPage < 0");
@@ -41,6 +39,15 @@ namespace Splunk.Sdk
             this.startIndex = startIndex;
             this.totalResults = totalResults;
         }
+
+        #region Fields
+
+        public static readonly Pagination Empty;
+
+        #endregion
+
+        #region Properties
+
         public int ItemsPerPage
         {
             get { return this.itemsPerPage;  }
@@ -56,8 +63,25 @@ namespace Splunk.Sdk
             get { return this.totalResults; }
         }
 
+        #endregion
+
+        #region Methods
+
+        public override string ToString()
+        {
+            var text = string.Format("ItemsPerPage = {0}, StartIndex = {1}, TotalResults = {2}", 
+                this.ItemsPerPage, this.StartIndex, this.TotalResults);
+            return text;
+        }
+
+        #endregion
+
+        #region Privates
+
         readonly int itemsPerPage;
         readonly int startIndex;
         readonly int totalResults;
+
+        #endregion
     }
 }

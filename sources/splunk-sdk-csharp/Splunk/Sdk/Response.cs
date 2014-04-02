@@ -22,6 +22,7 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
@@ -31,13 +32,18 @@ namespace Splunk.Sdk
         #region Constructors
 
         Response(HttpResponseMessage message)
-        { this.Message = message; }
+        { this.message = message; }
 
         #endregion
 
         #region Properties
 
         public HttpResponseMessage Message
+        {
+            get { return this.message; }
+        }
+
+        public Stream Stream
         { get; private set; }
 
         public XmlReader XmlReader
@@ -52,15 +58,16 @@ namespace Splunk.Sdk
             Contract.Requires(message != null);
 
             var response = new Response(message);
-            var stream = await message.Content.ReadAsStreamAsync();
-
-            response.XmlReader = XmlReader.Create(stream, XmlReaderSettings);
+            response.Stream = await message.Content.ReadAsStreamAsync();
+            response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
 
             return response;
         }
 
         public void Dispose()
-        { this.Dispose(true); }
+        { 
+            this.Dispose(true); 
+        }
 
         #endregion
 
@@ -76,6 +83,7 @@ namespace Splunk.Sdk
             IgnoreWhitespace = true
         };
 
+        HttpResponseMessage message;
         bool disposed;
 
         void Dispose(bool disposing)

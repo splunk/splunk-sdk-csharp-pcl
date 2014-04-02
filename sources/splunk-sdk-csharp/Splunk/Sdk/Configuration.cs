@@ -41,12 +41,15 @@ namespace Splunk.Sdk
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class Configuration : EntityCollection<StanzaInfo>
+    public class Configuration : EntityCollection<Configuration, ConfigurationStanza>
     {
         #region Constructors
 
-        internal Configuration(Context context, Namespace @namespace, ResourceName resourceName)
-            : base(context, @namespace, resourceName)
+        internal Configuration(Context context, Namespace @namespace, ResourceName resource)
+            : base(context, @namespace, resource)
+        { }
+
+        public Configuration()
         { }
 
         #endregion

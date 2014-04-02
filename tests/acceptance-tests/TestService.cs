@@ -109,11 +109,11 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
 
-            Func<Task<ConfigurationInfoCollection>> Dispatch = async () =>
+            Func<Task<ConfigurationCollection>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 
-                var collection = await service.GetConfigurationInfosAsync();
+                var collection = await service.GetConfigurationsAsync();
                 return collection;
             };
 
@@ -127,16 +127,28 @@ namespace Splunk.Sdk.UnitTesting
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
             service.Login("admin", "changeme");
 
-            // Get a well-known configuration
+            ConfigurationCollection configurations = null;
 
-            Configuration configuration = service.GetConfiguration("props");
-            configuration.Update();
+            Assert.DoesNotThrow(() => configurations = service.GetConfigurations());
 
-            foreach (StanzaInfo stanzaInfo in configuration)
+            // Read the entire configuration system
+
+            foreach (var configuration in configurations)
             {
-                Stanza stanza = null;
-                Assert.DoesNotThrow(() => stanza = stanzaInfo.Get());
-                Assert.NotNull(stanza);
+                configuration.Update();
+
+                foreach (ConfigurationStanza stanza in configuration)
+                {
+                    Assert.NotNull(stanza);
+                    stanza.Update();
+                    
+                    foreach (var setting in stanza)
+                    {
+                        string value = setting.Value;
+                        setting.Update();
+                        Assert.Equal(value, setting.Value);
+                    }
+                }
             }
 
             // Get or create a custom configuration
@@ -146,7 +158,7 @@ namespace Splunk.Sdk.UnitTesting
 
             try
             {
-                configuration = service.GetConfiguration("custom");
+                var configuration = service.GetConfiguration("custom");
             }
             catch (AggregateException e)
             {
@@ -158,6 +170,7 @@ namespace Splunk.Sdk.UnitTesting
                 Assert.Equal(HttpStatusCode.NotFound, requestException.StatusCode);
                 Assert.NotNull(requestException.Details);
 
+                Configuration configuration;
                 Assert.DoesNotThrow(() => service.CreateConfiguration("custom"));
                 Assert.DoesNotThrow(() => configuration = service.GetConfiguration("custom"));
             }

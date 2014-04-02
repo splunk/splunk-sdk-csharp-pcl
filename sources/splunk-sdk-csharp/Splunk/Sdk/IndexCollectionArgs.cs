@@ -47,6 +47,91 @@ namespace Splunk.Sdk
 
         #region Properties
 
+        /// <summary>
+        /// The maximum number of <see cref="Job"/> entries to return.
+        /// </summary>
+        /// <remarks>
+        /// If the value of <c>Count</c> is set to zero, then all available
+        /// results are returned. The default value is 30.
+        /// </remarks>
+        [DataMember(Name = "count", EmitDefaultValue = false)]
+        [DefaultValue(30)]
+        public int Count
+        { get; set; }
+
+        /// <summary>
+        /// The first result (inclusive) from which to begin returning data.
+        /// </summary>
+        /// <remarks>
+        /// The value of <c>Offset</c> is zero-based and cannot be 
+        /// negative. The default value is zero.
+        /// </remarks>
+        [DataMember(Name = "offset", EmitDefaultValue = false)]
+        [DefaultValue(0)]
+        public int Offset
+        { get; set; }
+
+        /// <summary>
+        /// Search expression to filter <see cref="Job"/> entries. 
+        /// </summary>
+        /// <remarks>
+        /// Use this expression to filter the entries returned based on 
+        /// search <see cref="Job"/> properties. For example, specify 
+        /// <c>eventCount>100</c>. The default is <c>null</c>.
+        /// </remarks>
+        [DataMember(Name = "search", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string Search
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to sort returned <see cref=
+        /// "App"/>entries in ascending or descending order.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="SortDirection.Ascending"/>.
+        /// </remarks>
+        [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
+        [DefaultValue(SortDirection.Ascending)]
+        public SortDirection SortDirection
+        { get; set; }
+
+        /// <summary>
+        /// <see cref="Job"/> property to use for sorting.
+        /// </summary>
+        /// <remarks>
+        /// The default <see cref="Job"/> property to use for sorting is 
+        /// <c>"dispatch_time"</c>.
+        /// </remarks>
+        [DataMember(Name = "sort_key", EmitDefaultValue = false)]
+        [DefaultValue("name")]
+        public string SortKey
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
+        /// cref="App"/> entries.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="SortMode.Automatic"/>.
+        /// </remarks>
+        [DataMember(Name = "sort_mode", EmitDefaultValue = false)]
+        [DefaultValue(SortMode.Automatic)]
+        public SortMode SortMode
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to leave out certain index 
+        /// details in order to provide a faster response.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        [DataMember(Name = "summarize", EmitDefaultValue = false)]
+        [DefaultValue(false)]
+        public bool Summarize
+        { get; set; }
+
         #endregion
     }
 }

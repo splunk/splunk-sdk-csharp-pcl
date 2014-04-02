@@ -107,7 +107,11 @@
     <Compile Include="Splunk\Sdk\AlertTrigger.cs" />
     <Compile Include="Splunk\Sdk\AlertTrack.cs" />
     <Compile Include="Splunk\Sdk\AlertSeverity.cs" />
+    <Compile Include="Splunk\Sdk\Index.cs" />
+    <Compile Include="Splunk\Sdk\IndexCollectionArgs.cs" />
+    <Compile Include="Splunk\Sdk\IndexCollection.cs" />
     <Compile Include="Splunk\Sdk\ConfigurationSetting.cs" />
+    <Compile Include="Splunk\Sdk\IndexArgs.cs" />
     <Compile Include="Splunk\Sdk\Resource.cs" />
     <Compile Include="Splunk\Sdk\ConfigurationStanza.cs" />
     <Compile Include="Splunk\Sdk\Configuration.cs" />

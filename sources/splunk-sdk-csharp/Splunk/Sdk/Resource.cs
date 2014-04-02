@@ -159,9 +159,9 @@ namespace Splunk.Sdk
         /// Refreshes the cached state of the current <see cref=
         /// "Resource<TResource>"/>.
         /// </summary>
-        public void Update()
+        public void Get()
         {
-            this.UpdateAsync().Wait();
+            this.GetAsync().Wait();
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace Splunk.Sdk
         /// "Resource<TResource>"/>.
         /// </summary>
         #pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously.
-        public virtual async Task UpdateAsync()
+        public virtual async Task GetAsync()
         { throw new NotImplementedException(); }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region
+        #region Privates
 
         bool initialized;
 

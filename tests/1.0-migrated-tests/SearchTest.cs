@@ -686,7 +686,7 @@ namespace UnitTests
                 Thread.Sleep(1000);
 
                 //has to call this to get the job.IsCompleted
-                job.UpdateAsync();
+                job.GetAsync();
                 Console.WriteLine("jobUpdated={0}", job.Updated);
 
                 if (stopwatch.Elapsed > max)

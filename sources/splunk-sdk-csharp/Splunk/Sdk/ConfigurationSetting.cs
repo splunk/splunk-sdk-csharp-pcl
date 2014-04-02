@@ -64,7 +64,7 @@ namespace Splunk.Sdk
         /// Asynchrononously updates the cached value of the current <see cref=
         /// "ConfigurationSetting"/>.
         /// </summary>
-        public override async Task UpdateAsync()
+        public override async Task GetAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {

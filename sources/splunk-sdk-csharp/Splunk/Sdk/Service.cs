@@ -219,7 +219,7 @@ namespace Splunk.Sdk
         public async Task<AppCollection> GetAppsAsync(AppCollectionArgs args = null)
         {
             var collection = new AppCollection(this.Context, this.Namespace, args);
-            await collection.UpdateAsync();
+            await collection.GetAsync();
             return collection;
         }
 
@@ -307,7 +307,7 @@ namespace Splunk.Sdk
         public async Task<Configuration> GetConfigurationAsync(string name)
         {
             var entity = new Configuration(this.Context, this.Namespace, name);
-            await entity.UpdateAsync();
+            await entity.GetAsync();
             return entity;
         }
 
@@ -345,7 +345,7 @@ namespace Splunk.Sdk
         public async Task<ConfigurationCollection> GetConfigurationsAsync()
         {
             var collection = new ConfigurationCollection(this.Context, this.Namespace);
-            await collection.UpdateAsync();
+            await collection.GetAsync();
             return collection;
         }
 
@@ -379,7 +379,7 @@ namespace Splunk.Sdk
         public async Task<ConfigurationSetting> GetConfigurationSettingAsync(string fileName, string stanzaName, string keyName)
         {
             var entity = new ConfigurationSetting(this.Context, this.Namespace, fileName, stanzaName, keyName);
-            await entity.UpdateAsync();
+            await entity.GetAsync();
             return entity;
         }
 
@@ -413,7 +413,7 @@ namespace Splunk.Sdk
         public async Task<ConfigurationStanza> GetConfigurationStanzaAsync(string fileName, string stanzaName)
         {
             var collection = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
-            await collection.UpdateAsync();
+            await collection.GetAsync();
             return collection;
         }
 
@@ -559,6 +559,68 @@ namespace Splunk.Sdk
 
         #endregion
 
+        #region Indexes
+
+        public Index CreateIndex(string name, IndexArgs args)
+        {
+            return this.CreateIndexAsync(name, args).Result;
+        }
+
+        public async Task<Index> CreateIndexAsync(string name, IndexArgs args)
+        {
+            var entity = new Index(this.Context, this.Namespace, name);
+            await entity.CreateAsync(args);
+            return entity;
+        }
+
+        public Index GetIndex(string name)
+        {
+            return this.GetIndexAsync(name).Result;
+        }
+
+        public async Task<Index> GetIndexAsync(string name)
+        {
+            var entity = new Index(this.Context, this.Namespace, name);
+            await entity.GetAsync();
+            return entity;
+        }
+
+        public IndexCollection GetIndexes(IndexCollectionArgs args)
+        {
+            return this.GetIndexesAsync(args).Result;
+        }
+
+        public async Task<IndexCollection> GetIndexesAsync(IndexCollectionArgs args)
+        {
+            var collection = new IndexCollection(this.Context, this.Namespace);
+            await collection.GetAsync();
+            return collection;
+        }
+
+        public void RemoveIndex(string name)
+        {
+            this.RemoveIndexAsync(name).Wait();
+        }
+
+        public async Task RemoveIndexAsync(string name)
+        {
+            var entity = new Index(this.Context, this.Namespace, name);
+            await entity.RemoveAsync();
+        }
+
+        public void UpdateIndex(string name, IndexArgs args)
+        {
+            this.UpdateIndexAsync(name, args).Wait();
+        }
+
+        public async Task UpdateIndexAsync(string name, IndexArgs args)
+        {
+            var entity = new Index(this.Context, this.Namespace, name);
+            await entity.UpdateAsync(args);
+        }
+
+        #endregion
+
         #region Saved searches
 
         /// <summary>
@@ -697,7 +759,7 @@ namespace Splunk.Sdk
             }
 
             Job job = new Job(this.Context, this.Namespace, ResourceName.SearchJobs, name: searchId);
-            await job.UpdateAsync();
+            await job.GetAsync();
             return job;
         }
 
@@ -783,7 +845,7 @@ namespace Splunk.Sdk
         {
             var resourceName = new ResourceName(ResourceName.SavedSearches, name, "history");
             var jobs = new JobCollection(this.Context, this.Namespace, resourceName);
-            await jobs.UpdateAsync();
+            await jobs.GetAsync();
             return jobs;
         }
 
@@ -829,7 +891,7 @@ namespace Splunk.Sdk
         public async Task<SavedSearchCollection> GetSavedSearchesAsync(SavedSearchCollectionArgs args = null)
         {
             var collection = new SavedSearchCollection(this.Context, this.Namespace, args);
-            await collection.UpdateAsync();
+            await collection.GetAsync();
             return collection;
         }
 
@@ -935,7 +997,7 @@ namespace Splunk.Sdk
         public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args = null)
         {
             var jobs = new JobCollection(this.Context, this.Namespace, ResourceName.SearchJobs, args);
-            await jobs.UpdateAsync();
+            await jobs.GetAsync();
             return jobs;
         }
 
@@ -1067,7 +1129,7 @@ namespace Splunk.Sdk
             // that we can probably make that a little slicker, but let's talk about how.
 
             Job job = new Job(this.Context, this.Namespace, ResourceName.SearchJobs, name: searchId);
-            await job.UpdateAsync();
+            await job.GetAsync();
 
             return job;
         }

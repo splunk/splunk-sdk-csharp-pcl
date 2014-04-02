@@ -360,7 +360,7 @@ namespace Splunk.Sdk
             while (this.DispatchState < requiredState)
             {
                 await Task.Delay(500);
-                await this.UpdateAsync();
+                await this.GetAsync();
             }
         }
 

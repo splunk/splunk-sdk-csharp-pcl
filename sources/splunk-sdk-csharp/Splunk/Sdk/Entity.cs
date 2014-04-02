@@ -161,7 +161,7 @@ namespace Splunk.Sdk
         /// Refreshes the cached state of the current <see cref=
         /// "Entity<TEntity>"/>.
         /// </summary>
-        public override async Task UpdateAsync()
+        public override async Task GetAsync()
         {
             // TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class
 
@@ -218,6 +218,7 @@ namespace Splunk.Sdk
                                 string id = feedEntry.Title;
                                 id.Trim();
                             }
+
                             if (feed.Entries.Count != 1)
                             {
                                 throw new InvalidDataException(); // TODO: Diagnostics

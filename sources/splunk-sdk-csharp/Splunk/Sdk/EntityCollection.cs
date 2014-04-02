@@ -149,7 +149,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
-        public override async Task UpdateAsync()
+        public override async Task GetAsync()
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
             {

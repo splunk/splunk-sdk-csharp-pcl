@@ -135,17 +135,17 @@ namespace Splunk.Sdk.UnitTesting
 
             foreach (var configuration in configurations)
             {
-                configuration.Update();
+                configuration.Get();
 
                 foreach (ConfigurationStanza stanza in configuration)
                 {
                     Assert.NotNull(stanza);
-                    stanza.Update();
+                    stanza.Get();
                     
                     foreach (var setting in stanza)
                     {
                         string value = setting.Value;
-                        setting.Update();
+                        setting.Get();
                         Assert.Equal(value, setting.Value);
                     }
                 }

@@ -37,24 +37,48 @@ namespace Splunk.Sdk
     ///     updating Splunk configurations</a>
     /// </description></item>
     /// <item><description>
-    ///     <a href="http://goo.gl/0ELhzV">REST API Reference: Configurations</a>.
+    ///     <a href="http://goo.gl/0ELhzV">REST API Reference: Indexs</a>.
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class Configuration : EntityCollection<Configuration, ConfigurationStanza>
+    public class Index : Entity<Index>
     {
         #region Constructors
 
-        internal Configuration(Context context, Namespace @namespace, string fileName)
-            : base(context, @namespace, new ResourceName(ResourceName.Properties, fileName))
+        internal Index(Context context, Namespace @namespace, string name)
+            : base(context, @namespace, ResourceName.DataIndexes, name)
         { }
 
-        public Configuration()
+        public Index()
         { }
 
         #endregion
 
         #region Methods
+
+        public void Create(IndexArgs args)
+        {
+            this.CreateAsync(args).Wait();
+        }
+
+        public async Task CreateAsync(IndexArgs args)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.DataIndexes,
+                new Argument[] { new Argument("name", this.Title) },
+                args))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
+                AtomFeed feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+
+                if (feed.Entries.Count > 1)
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                this.Data = new DataObject(feed.Entries[0]);
+            }
+        }
 
         /// <summary>
         /// Removes a configuration stanza.
@@ -68,9 +92,9 @@ namespace Splunk.Sdk
         /// configs/conf-{file}/{name}</a> endpoint to remove the configuration 
         /// stanza identified by <see cref="stanzaName"/>.
         /// </remarks>
-        public void RemoveStanza(string stanzaName)
+        public void Remove()
         {
-            this.RemoveStanzaAsync(stanzaName).Wait();
+            this.RemoveAsync().Wait();
         }
 
         /// <summary>
@@ -85,10 +109,34 @@ namespace Splunk.Sdk
         /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
         /// stanza identified by <see cref="stanzaName"/>.
         /// </remarks>
-        public async Task RemoveStanzaAsync(string stanzaName)
+        public async Task RemoveAsync()
         {
-            var entity = new ConfigurationStanza(this.Context, this.Namespace, this.Title, stanzaName);
-            await entity.RemoveAsync();
+            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+            }
+        }
+
+        public void Update(IndexArgs args)
+        {
+            this.UpdateAsync(args).Wait();
+        }
+
+        public async Task UpdateAsync(IndexArgs args)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
+                AtomFeed feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+
+                if (feed.Entries.Count > 1)
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                this.Data = new DataObject(feed.Entries[0]);
+            }
         }
 
         #endregion

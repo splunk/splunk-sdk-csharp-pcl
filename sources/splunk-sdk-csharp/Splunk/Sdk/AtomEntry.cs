@@ -74,9 +74,19 @@ namespace Splunk.Sdk
     /// <summary>
     /// 
     /// </summary>
-    class AtomEntry
+    public sealed class AtomEntry
     {
         #region Constructors
+
+        public AtomEntry(AtomEntry other, dynamic content)
+        {
+            this.Author = other.Author;
+            this.Content = content;
+            this.Id = other.Id;
+            this.Links = other.Links;
+            this.Title = other.Title;
+            this.Updated = other.Updated;
+        }
 
         public AtomEntry()
         { }
@@ -95,9 +105,6 @@ namespace Splunk.Sdk
         { get; private set; }
 
         public IReadOnlyDictionary<string, Uri> Links
-        { get; private set; }
-
-        public DateTime Published
         { get; private set; }
 
         public string Title
@@ -173,11 +180,6 @@ namespace Splunk.Sdk
                         await reader.ReadAsync();
                         break;
 
-                    case "published":
-
-                        this.Published = await reader.ReadElementContentAsync(DateTimeConverter.Instance);
-                        break;
-
                     case "updated":
 
                         this.Updated = await reader.ReadElementContentAsync(DateTimeConverter.Instance);
@@ -222,7 +224,7 @@ namespace Splunk.Sdk
 
         public override string ToString()
         {
-            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={3})", this.Title, this.Author, this.Id, this.Published, this.Updated);
+            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Updated={3})", this.Title, this.Author, this.Id, this.Updated);
         }
 
         #endregion

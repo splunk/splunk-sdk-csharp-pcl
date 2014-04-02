@@ -219,7 +219,7 @@ namespace Splunk.Sdk
         public async Task<AppCollection> GetAppsAsync(AppCollectionArgs args = null)
         {
             var collection = new AppCollection(this.Context, this.Namespace, args);
-            await collection.UpdateAsync();
+            await collection.GetAsync();
             return collection;
         }
 
@@ -233,11 +233,8 @@ namespace Splunk.Sdk
         /// <param name="name">
         /// Name of the configuration file to create.
         /// </param>
-        /// <returns>
-        /// An object that represents the configuration file created.
-        /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/CBWes7"></a>POST 
+        /// This method uses the <a href="http://goo.gl/CBWes7">POST 
         /// properties</a> endpoint to create the <see cref="Configuration"/>
         /// identified by <see cref="name"/>.
         /// </remarks>
@@ -252,11 +249,8 @@ namespace Splunk.Sdk
         /// <param name="name">
         /// Name of the configuration file to create.
         /// </param>
-        /// <returns>
-        /// An object that represents the configuration file created.
-        /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/CBWes7"></a>POST 
+        /// This method uses the <a href="http://goo.gl/CBWes7">POST 
         /// properties</a> endpoint to create the <see cref="Configuration"/>
         /// identified by <see cref="name"/>.
         /// </remarks>
@@ -276,37 +270,44 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Gets a <see cref="Configuration"/> object for manipulating a
-        /// configuration file.
+        /// Asynchronously retrieves a configuration file.
         /// </summary>
         /// <param name="name">
         /// The name of a configuration file.
         /// </param>
         /// <returns>
-        /// An object for manipulating the configuration file identified by
+        /// An object representing the configuration file.
         /// <see cref="name"/>.
         /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/JNbGtL">GET 
+        /// properties/{file_name}</a> endpoint/> to construct the <see cref=
+        /// "Configuration"/> it returns.
+        /// </remarks>
         public Configuration GetConfiguration(string name)
         {
             return this.GetConfigurationAsync(name).Result;
         }
 
         /// <summary>
-        /// Gets a <see cref="Configuration"/> object for manipulating a
-        /// configuration file.
+        /// Asynchronously retrieves a configuration file.
         /// </summary>
         /// <param name="name">
         /// The name of a configuration file.
         /// </param>
         /// <returns>
-        /// An object for manipulating the configuration file identified by
+        /// An object representing the configuration file.
         /// <see cref="name"/>.
         /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/JNbGtL">GET 
+        /// properties/{file_name}</a> endpoint/> to construct the <see cref=
+        /// "Configuration"/> it returns.
+        /// </remarks>
         public async Task<Configuration> GetConfigurationAsync(string name)
         {
-            var resourceName = new ResourceName(ResourceName.Properties, name);
-            var entity = new Configuration(this.Context, this.Namespace, resourceName);
-            await entity.UpdateAsync();
+            var entity = new Configuration(this.Context, this.Namespace, name);
+            await entity.GetAsync();
             return entity;
         }
 
@@ -319,73 +320,303 @@ namespace Splunk.Sdk
         /// known to Splunk.
         /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/Unj6fs"></a>GET 
+        /// This method uses the <a href="http://goo.gl/Unj6fs">GET 
         /// properties</a> endpoint/> to construct the <see cref=
         /// "ConfigurationCollection"/> it returns.
         /// </remarks>
-        public ConfigurationInfoCollection GetConfigurationInfos()
+        public ConfigurationCollection GetConfigurations()
         {
-            return this.GetConfigurationInfosAsync().Result;
+            return this.GetConfigurationsAsync().Result;
         }
 
         /// <summary>
-        /// Retrieves the collection of all configuration files known to 
-        /// Splunk.
+        /// Asynchronously retrieves the collection of all configuration files 
+        /// known to Splunk.
         /// </summary>
         /// <returns>
         /// An object representing the collection of all configuration files
         /// known to Splunk.
         /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/Unj6fs"></a>GET 
+        /// This method uses the <a href="http://goo.gl/Unj6fs">GET 
         /// properties</a> endpoint/> to construct the <see cref=
         /// "ConfigurationCollection"/> it returns.
         /// </remarks>
-        public async Task<ConfigurationInfoCollection> GetConfigurationInfosAsync()
+        public async Task<ConfigurationCollection> GetConfigurationsAsync()
         {
-            var collection = new ConfigurationInfoCollection(this.Context, this.Namespace);
-            await collection.UpdateAsync();
+            var collection = new ConfigurationCollection(this.Context, this.Namespace);
+            await collection.GetAsync();
             return collection;
         }
 
         /// <summary>
-        /// Retrieves the collection of all configuration files known to 
-        /// Splunk.
+        /// Retrieves a single configuration setting.
         /// </summary>
         /// <returns>
-        /// An object representing the collection of all configuration files
-        /// known to Splunk.
+        /// An object representing the configuration setting.
         /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/Unj6fs"></a>GET 
-        /// properties</a> endpoint/> to construct the <see cref=
-        /// "ConfigurationCollection"/> it returns.
+        /// This method uses the <a href="http://goo.gl/1jeyog">GET 
+        /// properties/{file_name}/{stanza_name}/{key_name}</a> endpoint/> to 
+        /// construct the <see cref="ConfigurationSetting"/> it returns.
         /// </remarks>
-        public Stanza GetConfigurationStanza(string configurationName, string stanzaName)
+        public ConfigurationSetting GetConfigurationSetting(string fileName, string stanzaName, string keyName)
         {
-            return this.GetConfigurationStanzaAsync(configurationName, stanzaName).Result;
+            return this.GetConfigurationSettingAsync(fileName, stanzaName, keyName).Result;
         }
 
         /// <summary>
-        /// Retrieves the collection of all configuration files known to 
-        /// Splunk.
+        /// Asynchronously retrieves a single configuration setting.
         /// </summary>
         /// <returns>
-        /// An object representing the collection of all configuration files
-        /// known to Splunk.
+        /// An object representing the configuration setting.
         /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/Unj6fs"></a>GET 
-        /// properties</a> endpoint/> to construct the <see cref=
-        /// "ConfigurationCollection"/> it returns.
+        /// This method uses the <a href="http://goo.gl/1jeyog">GET 
+        /// properties/{file_name}/{stanza_name}/{key_name}</a> endpoint/> to 
+        /// construct the <see cref="ConfigurationSetting"/> it returns.
         /// </remarks>
-        public async Task<Stanza> GetConfigurationStanzaAsync(string configurationName, string stanzaName)
+        public async Task<ConfigurationSetting> GetConfigurationSettingAsync(string fileName, string stanzaName, string keyName)
         {
-            var resourceName = new ResourceName(ResourceName.Properties, configurationName, stanzaName);
-            var collection = new Stanza(this.Context, this.Namespace, resourceName);
+            var entity = new ConfigurationSetting(this.Context, this.Namespace, fileName, stanzaName, keyName);
+            await entity.GetAsync();
+            return entity;
+        }
 
-            await collection.UpdateAsync();
+        /// <summary>
+        /// Retrieves a configuration stanza.
+        /// </summary>
+        /// <returns>
+        /// An object representing the configuration stanza.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sM63fa">GET 
+        /// properties/{file_name}/{stanza_name}</a> endpoint/> to construct
+        /// the <see cref="ConfigurationStanza"/> it returns.
+        /// </remarks>
+        public ConfigurationStanza GetConfigurationStanza(string fileName, string stanzaName)
+        {
+            return this.GetConfigurationStanzaAsync(fileName, stanzaName).Result;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves a configuration stanza.
+        /// </summary>
+        /// <returns>
+        /// An object representing the configuration stanza.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sM63fa">GET 
+        /// properties/{file_name}/{stanza_name}</a> endpoint/> to construct
+        /// the <see cref="ConfigurationStanza"/> it returns.
+        /// </remarks>
+        public async Task<ConfigurationStanza> GetConfigurationStanzaAsync(string fileName, string stanzaName)
+        {
+            var collection = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
+            await collection.GetAsync();
             return collection;
+        }
+
+        /// <summary>
+        /// Removes a configuration stanza.
+        /// </summary>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a configuration stanza in <see cref="fileName"/> to be
+        /// removed.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE 
+        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
+        /// stanza identified by <see cref="stanzaName"/>.
+        /// </remarks>
+        public void RemoveConfigurationStanza(string fileName, string stanzaName)
+        {
+            this.RemoveConfigurationStanzaAsync(fileName, stanzaName).Wait();
+        }
+
+        /// <summary>
+        /// Asynchronously removes a configuration stanza.
+        /// </summary>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a configuration stanza in <see cref="fileName"/> to be
+        /// removed.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
+        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
+        /// identified by <see cref="stanzaName"/>.
+        /// </remarks>
+        public async Task RemoveConfigurationStanzaAsync(string fileName, string stanzaName)
+        {
+            var entity = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
+            await entity.RemoveAsync();
+        }
+
+        /// <summary>
+        /// Updates an existing configuration setting.
+        /// </summary>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a stanza within the configuration file identified by <see 
+        /// cref="fileName"/>.
+        /// </param>
+        /// <param name="keyName">
+        /// Name of the configuration setting to update.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
+        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
+        /// update the configuration setting identified by <see cref=
+        /// "fileName"/>, <see cref="stanzaName"/>, and <see cref="keyName"/>.
+        /// </remarks>
+        public void UpdateConfigurationSetting(string fileName, string stanzaName, string keyName, string value)
+        {
+            this.UpdateConfigurationSettingAsync(fileName, stanzaName, keyName, value).Wait();
+        }
+
+        /// <summary>
+        /// Asynchronously updates an existing configuration setting.
+        /// </summary>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a configuration stanza.
+        /// </param>
+        /// <param name="keyName">
+        /// Name of the configuration setting to update.
+        /// </param>
+        /// <param name="value">
+        /// A new <see cref="string"/> value for the configuration setting
+        /// identified by <see cref="fileName"/>, <see cref="stanzaName"/>,
+        /// and <see cref="keyName"/>.
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
+        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
+        /// update the configuration setting identified by <see cref=
+        /// "fileName"/>, <see cref="stanzaName"/>, and <see cref="keyName"/>.
+        /// </remarks>
+        public async Task UpdateConfigurationSettingAsync(string fileName, string stanzaName, string keyName, string value)
+        {
+            ConfigurationSetting setting = new ConfigurationSetting(this.Context, this.Namespace, fileName, stanzaName, keyName);
+            await setting.UpdateValueAsync(value);
+        }
+
+        /// <summary>
+        /// Adds or updates a list of settings in a configuration stanza.
+        /// </summary>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a stanza within the configuration file identified by <see 
+        /// cref="fileName"/>.
+        /// <param name="settings">
+        /// A variable-length list of objects representing the settings to be
+        /// added or updated.
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/w742jw">POST 
+        /// properties/{file_name}/{stanza_name}</a> endpoint to update <see 
+        /// cref="settings"/> in the stanza identified by <see cref=
+        /// "fileName"/> and <see cref="stanzaName"/>.
+        /// </remarks>
+        public void UpdateConfigurationSettings(string fileName, string stanzaName, params Argument[] settings)
+        {
+            this.UpdateConfigurationSettingsAsync(fileName, stanzaName, settings).Wait();
+        }
+
+        /// <summary>
+        /// Adds or updates a list of settings in a configuration stanza.
+        /// </summary>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a stanza within the configuration file identified by <see 
+        /// cref="fileName"/>.
+        /// <param name="settings">
+        /// A variable-length list of objects representing the settings to be
+        /// added or updated.
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/w742jw">POST 
+        /// properties/{file_name}/{stanza_name}</a> endpoint to update <see 
+        /// cref="settings"/> in the stanza identified by <see cref=
+        /// "fileName"/> and <see cref="stanzaName"/>.
+        /// </remarks>
+        public async Task UpdateConfigurationSettingsAsync(string fileName, string stanzaName, params Argument[] settings)
+        {
+            ConfigurationStanza stanza = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
+            await stanza.UpdateSettingsAsync(settings);
+        }
+
+        #endregion
+
+        #region Indexes
+
+        public Index CreateIndex(string name, IndexArgs args)
+        {
+            return this.CreateIndexAsync(name, args).Result;
+        }
+
+        public async Task<Index> CreateIndexAsync(string name, IndexArgs args)
+        {
+            var entity = new Index(this.Context, this.Namespace, name);
+            await entity.CreateAsync(args);
+            return entity;
+        }
+
+        public Index GetIndex(string name)
+        {
+            return this.GetIndexAsync(name).Result;
+        }
+
+        public async Task<Index> GetIndexAsync(string name)
+        {
+            var entity = new Index(this.Context, this.Namespace, name);
+            await entity.GetAsync();
+            return entity;
+        }
+
+        public IndexCollection GetIndexes(IndexCollectionArgs args)
+        {
+            return this.GetIndexesAsync(args).Result;
+        }
+
+        public async Task<IndexCollection> GetIndexesAsync(IndexCollectionArgs args)
+        {
+            var collection = new IndexCollection(this.Context, this.Namespace);
+            await collection.GetAsync();
+            return collection;
+        }
+
+        public void RemoveIndex(string name)
+        {
+            this.RemoveIndexAsync(name).Wait();
+        }
+
+        public async Task RemoveIndexAsync(string name)
+        {
+            var entity = new Index(this.Context, this.Namespace, name);
+            await entity.RemoveAsync();
+        }
+
+        public void UpdateIndex(string name, IndexArgs args)
+        {
+            this.UpdateIndexAsync(name, args).Wait();
+        }
+
+        public async Task UpdateIndexAsync(string name, IndexArgs args)
+        {
+            var entity = new Index(this.Context, this.Namespace, name);
+            await entity.UpdateAsync(args);
         }
 
         #endregion
@@ -454,7 +685,9 @@ namespace Splunk.Sdk
                     throw new InvalidDataException();  // TODO: Diagnostics
                 }
 
-                var entity = SavedSearch.CreateEntity(this.Context, this.Namespace, ResourceName.SavedSearches, atomFeed.Entries[0]);
+                var entity = new SavedSearch();
+
+                entity.Initialize(this.Context, this.Namespace, ResourceName.SavedSearches, atomFeed.Entries[0]);
                 return entity;
             }
         }
@@ -526,7 +759,7 @@ namespace Splunk.Sdk
             }
 
             Job job = new Job(this.Context, this.Namespace, ResourceName.SearchJobs, name: searchId);
-            await job.UpdateAsync();
+            await job.GetAsync();
             return job;
         }
 
@@ -574,7 +807,9 @@ namespace Splunk.Sdk
                     throw new InvalidDataException();  // TODO: Diagnostics
                 }
 
-                var entity = SavedSearch.CreateEntity(this.Context, this.Namespace, ResourceName.SavedSearches, atomFeed.Entries[0]);
+                var entity = new SavedSearch();
+                entity.Initialize(this.Context, this.Namespace, ResourceName.SavedSearches, atomFeed.Entries[0]);
+                
                 return entity;
             }
         }
@@ -610,7 +845,7 @@ namespace Splunk.Sdk
         {
             var resourceName = new ResourceName(ResourceName.SavedSearches, name, "history");
             var jobs = new JobCollection(this.Context, this.Namespace, resourceName);
-            await jobs.UpdateAsync();
+            await jobs.GetAsync();
             return jobs;
         }
 
@@ -656,7 +891,7 @@ namespace Splunk.Sdk
         public async Task<SavedSearchCollection> GetSavedSearchesAsync(SavedSearchCollectionArgs args = null)
         {
             var collection = new SavedSearchCollection(this.Context, this.Namespace, args);
-            await collection.UpdateAsync();
+            await collection.GetAsync();
             return collection;
         }
 
@@ -733,10 +968,12 @@ namespace Splunk.Sdk
                 }
 
                 var atomEntry = new AtomEntry();
-                await atomEntry.ReadXmlAsync(response.XmlReader);
-                var job = Job.CreateEntity(this.Context, this.Namespace, ResourceName.SearchJobs, atomEntry);
+                var entity = new Job();
 
-                return job;
+                await atomEntry.ReadXmlAsync(response.XmlReader);
+                entity.Initialize(this.Context, this.Namespace, ResourceName.SearchJobs, atomEntry);
+
+                return entity;
             }
         }
 
@@ -760,7 +997,7 @@ namespace Splunk.Sdk
         public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args = null)
         {
             var jobs = new JobCollection(this.Context, this.Namespace, ResourceName.SearchJobs, args);
-            await jobs.UpdateAsync();
+            await jobs.GetAsync();
             return jobs;
         }
 
@@ -892,7 +1129,7 @@ namespace Splunk.Sdk
             // that we can probably make that a little slicker, but let's talk about how.
 
             Job job = new Job(this.Context, this.Namespace, ResourceName.SearchJobs, name: searchId);
-            await job.UpdateAsync();
+            await job.GetAsync();
 
             return job;
         }

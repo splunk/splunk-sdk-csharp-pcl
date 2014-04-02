@@ -40,7 +40,7 @@ namespace Splunk.Sdk
         public async Task<ServerInfo> GetInfoAsync()
         {
             var serverInfo = new ServerInfo(this.service);
-            await serverInfo.UpdateAsync();
+            await serverInfo.GetAsync();
             return serverInfo;
         }
 

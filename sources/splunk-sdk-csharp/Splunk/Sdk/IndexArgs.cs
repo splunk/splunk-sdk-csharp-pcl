@@ -15,19 +15,37 @@
  */
 
 // TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [ ] Properties & Methods
+// [ ]  Documentation
 
 namespace Splunk.Sdk
 {
-    public class Stanza : EntityCollection<ConfigurationSetting>
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Runtime.Serialization;
+
+    /// <summary>
+    /// Provides the arguments required for starting a new search job.
+    /// </summary>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item>
+    ///     <description>
+    ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
+    ///     </description>
+    /// </item>
+    /// </list>
+    /// </remarks>
+    public sealed class IndexArgs : Args<IndexArgs>
     {
         #region Constructors
 
-        internal Stanza(Context context, Namespace @namespace, ResourceName resourceName)
-            : base(context, @namespace, resourceName)
+        public IndexArgs()
         { }
+
+        #endregion
+
+        #region Properties
 
         #endregion
     }

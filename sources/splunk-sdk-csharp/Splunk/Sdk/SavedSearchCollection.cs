@@ -19,10 +19,13 @@
 
 namespace Splunk.Sdk
 {
-    public class SavedSearchCollection : EntityCollection<SavedSearch>
+    public class SavedSearchCollection : EntityCollection<SavedSearchCollection, SavedSearch>
     {
         internal SavedSearchCollection(Context context, Namespace @namespace, SavedSearchCollectionArgs args = null)
             : base(context, @namespace, ResourceName.SavedSearches, args)
+        { }
+
+        public SavedSearchCollection()
         { }
     }
 }

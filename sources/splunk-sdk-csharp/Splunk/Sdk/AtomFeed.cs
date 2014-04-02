@@ -38,7 +38,7 @@ namespace Splunk.Sdk
     /// </list>
     /// </para>
     /// </remarks>
-    class AtomFeed
+    public sealed class AtomFeed
     {
         #region Constructors
 
@@ -98,10 +98,12 @@ namespace Splunk.Sdk
                 reader.MoveToElement();
             }
 
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "feed"))
+            if (!(reader.NodeType == XmlNodeType.Element && (reader.Name == "feed" || reader.Name == "entry")))
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }
+
+            string rootElementName = reader.Name;
 
             var entries = new List<AtomEntry>();
             this.Entries = entries;
@@ -254,7 +256,7 @@ namespace Splunk.Sdk
                 }
             }
 
-            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "feed"))
+            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == rootElementName))
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }

@@ -350,8 +350,8 @@ namespace Splunk.Sdk
             return stringContent;
         }
 
-        async Task<Response> SendAsync(HttpMethod method, Namespace @namespace, ResourceName resource,
-            HttpContent content, IEnumerable<Argument>[] argumentSets)
+        async Task<Response> SendAsync(HttpMethod method, Namespace @namespace, ResourceName resource, HttpContent 
+            content, IEnumerable<Argument>[] argumentSets)
         {
             Contract.Requires<ArgumentNullException>(@namespace != null);
             Contract.Requires<ArgumentNullException>(resource != null);

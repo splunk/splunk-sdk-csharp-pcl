@@ -103,9 +103,57 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Splunk\Sdk\Acl.cs" />
+    <Compile Include="Splunk\Sdk\AlertTrigger.cs" />
+    <Compile Include="Splunk\Sdk\AlertTrack.cs" />
+    <Compile Include="Splunk\Sdk\AlertSeverity.cs" />
+    <Compile Include="Splunk\Sdk\Index.cs" />
+    <Compile Include="Splunk\Sdk\IndexCollectionArgs.cs" />
+    <Compile Include="Splunk\Sdk\IndexCollection.cs" />
+    <Compile Include="Splunk\Sdk\ConfigurationSetting.cs" />
+    <Compile Include="Splunk\Sdk\IndexAttributes.cs" />
+    <Compile Include="Splunk\Sdk\IndexArgs.cs" />
+    <Compile Include="Splunk\Sdk\Int64Converter.cs" />
+    <Compile Include="Splunk\Sdk\Resource.cs" />
+    <Compile Include="Splunk\Sdk\ConfigurationStanza.cs" />
+    <Compile Include="Splunk\Sdk\Configuration.cs" />
+    <Compile Include="Splunk\Sdk\ConfigurationCollection.cs" />
+    <Compile Include="Splunk\Sdk\DoubleConverter.cs" />
+    <Compile Include="Splunk\Sdk\Pagination.cs" />
+    <Compile Include="Splunk\Sdk\PaperSize.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearch.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchCollectionArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchCollection.cs" />
+    <Compile Include="Splunk\Sdk\DateTimeConverter.cs" />
+    <Compile Include="Splunk\Sdk\AppCollection.cs" />
+    <Compile Include="Splunk\Sdk\JobCollection.cs" />
+    <Compile Include="Splunk\Sdk\Argument.cs" />
+    <Compile Include="Splunk\Sdk\AppCollectionArgs.cs" />
+    <Compile Include="Splunk\Sdk\PermissionsConverter.cs" />
+    <Compile Include="Splunk\Sdk\Eai.cs" />
+    <Compile Include="Splunk\Sdk\ExpandoAdapter.cs" />
+    <Compile Include="Splunk\Sdk\JobCollectionArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchUpdateArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchCreationArgs.cs" />
+    <Compile Include="Splunk\Sdk\SearchSummaryArgs.cs" />
+    <Compile Include="Splunk\Sdk\SearchSummary.cs" />
+    <Compile Include="Splunk\Sdk\EmailFormat.cs" />
+    <Compile Include="Splunk\Sdk\PaperOrientation.cs" />
+    <Compile Include="Splunk\Sdk\SortMode.cs" />
+    <Compile Include="Splunk\Sdk\SortDirection.cs" />
+    <Compile Include="Splunk\Sdk\StringConverter.cs" />
+    <Compile Include="Splunk\Sdk\CollectionConverter.cs" />
+    <Compile Include="Splunk\Sdk\BooleanConverter.cs" />
+    <Compile Include="Splunk\Sdk\UriConverter.cs" />
+    <Compile Include="Splunk\Sdk\VersionConverter.cs" />
+    <Compile Include="Splunk\Sdk\GuidConverter.cs" />
+    <Compile Include="Splunk\Sdk\Int32Converter.cs" />
+    <Compile Include="Splunk\Sdk\EnumConverter.cs" />
+    <Compile Include="Splunk\Sdk\ValueConverter.cs" />
+    <Compile Include="Splunk\Sdk\ServerMode.cs" />
+    <Compile Include="Splunk\Sdk\LicenseState.cs" />
+    <Compile Include="Splunk\Sdk\Permissions.cs" />
     <Compile Include="Splunk\Sdk\SavedSearchDispatchArgs.cs" />
     <Compile Include="Splunk\Sdk\App.cs" />
     <Compile Include="Splunk\Sdk\Args.cs" />
@@ -116,15 +164,16 @@
     <Compile Include="Splunk\Sdk\Entity.cs" />
     <Compile Include="Splunk\Sdk\EntityCollection.cs" />
     <Compile Include="Splunk\Sdk\ExecutionMode.cs" />
-    <Compile Include="Splunk\Sdk\SavedSearchArgs.cs" />
+    <Compile Include="Splunk\Sdk\SavedSearchTemplateArgs.cs" />
     <Compile Include="Splunk\Sdk\SearchEventArgs.cs" />
-    <Compile Include="Splunk\Sdk\SearchResultArgs.cs" />
+    <Compile Include="Splunk\Sdk\SearchResultsArgs.cs" />
     <Compile Include="Splunk\Sdk\Response.cs" />
     <Compile Include="Splunk\Sdk\SearchExportArgs.cs" />
+    <Compile Include="Splunk\Sdk\ServerInfo.cs" />
+    <Compile Include="Splunk\Sdk\Server.cs" />
     <Compile Include="Splunk\Sdk\TruncationMode.cs" />
     <Compile Include="Splunk\Sdk\XmlReaderExtensions.cs" />
     <Compile Include="Splunk\Sdk\Field.cs" />
-    <Compile Include="Splunk\Sdk\GenericEntity.cs" />
     <Compile Include="Splunk\Sdk\Job.cs" />
     <Compile Include="Splunk\Sdk\JobArgs.cs" />
     <Compile Include="Splunk\Sdk\Message.cs" />

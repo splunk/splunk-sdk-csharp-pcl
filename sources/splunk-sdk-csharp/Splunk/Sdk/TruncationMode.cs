@@ -15,12 +15,21 @@
  */
 
 // TODO:
-// [ ] Documentation
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
+    /// <summary>
+    /// Provides enumerated values that specify how lines in the <c>_raw</c> 
+    /// field of events should be truncated.
+    /// </summary>
     public enum TruncationMode
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+
         /// <summary>
         /// 
         /// </summary>

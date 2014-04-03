@@ -22,62 +22,248 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Linq;
-    using System.Xml.Linq;
-    
+    using System.Threading.Tasks;
+    using System.Xml;
+
     /// <summary>
     /// Provides an object representation of a Splunk Atom feed.
     /// </summary>
-    class AtomFeed
+    /// <remarks>
+    /// <para>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///     <a href="http://goo.gl/YVTE9l">REST API: Atom Feed responses</a>
+    /// </description></item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    public sealed class AtomFeed
     {
         #region Constructors
 
-        public AtomFeed(Context context, ResourceName collection, XDocument document)
-        {
-            Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires<ArgumentNullException>(document != null, "document");
-            Contract.Requires<ArgumentNullException>(collection != null, "collection");
-
-            if (document.Root.Name != ElementName.Feed)
-            {
-                throw new InvalidDataException();
-            }
-
-            var entries = document.Root.Elements(ElementName.Entry);
-
-            if (entries == null)
-            {
-                throw new InvalidDataException();
-            }
-
-            this.Entries = new List<AtomEntry>(from entry in entries select new AtomEntry(entry));
-        }
+        public AtomFeed()
+        { }
 
         #endregion
 
         #region Properties
 
+        public string Author
+        { get; private set; }
+
         public IReadOnlyList<AtomEntry> Entries
+        { get; private set; }
+
+        public Version GeneratorVersion
+        { get; private set; }
+
+        public Uri Id
+        { get; private set; }
+
+        public IReadOnlyDictionary<string, Uri> Links
+        { get; private set; }
+
+        public IReadOnlyList<Message> Messages
+        { get; private set; }
+
+        public Pagination Pagination
+        { get; private set; }
+
+        public string Title
+        { get; private set; }
+
+        public DateTime Updated
         { get; private set; }
 
         #endregion
 
-        internal static class ElementName
-        {
-            public static readonly XName Author = XName.Get("author", "http://www.w3.org/2005/Atom");
-            public static readonly XName Content = XName.Get("content", "http://www.w3.org/2005/Atom");
-            public static readonly XName Entry = XName.Get("entry", "http://www.w3.org/2005/Atom");
-            public static readonly XName Id = XName.Get("id", "http://www.w3.org/2005/Atom");
-            public static readonly XName Feed = XName.Get("feed", "http://www.w3.org/2005/Atom");
-            public static readonly XName Link = XName.Get("link", "http://www.w3.org/2005/Atom");
-            public static readonly XName Published = XName.Get("published", "http://www.w3.org/2005/Atom");
-            public static readonly XName Title = XName.Get("title", "http://www.w3.org/2005/Atom");
-            public static readonly XName Updated = XName.Get("updated", "http://www.w3.org/2005/Atom");
+        #region Methods
 
-            public static readonly XName Dict = XName.Get("dict", "http://dev.splunk.com/ns/rest");
-            public static readonly XName Item = XName.Get("item", "http://dev.splunk.com/ns/rest");
-            public static readonly XName Key = XName.Get("key", "http://dev.splunk.com/ns/rest");
-            public static readonly XName List = XName.Get("list", "http://dev.splunk.com/ns/rest");
-        };
+        public async Task ReadXmlAsync(XmlReader reader)
+        {
+            Contract.Requires<ArgumentNullException>(reader != null, "reader");
+
+            if (reader.ReadState == ReadState.Initial)
+            {
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                {
+                    await reader.ReadAsync();
+                }
+            }
+            else
+            {
+                reader.MoveToElement();
+            }
+
+            if (!(reader.NodeType == XmlNodeType.Element && (reader.Name == "feed" || reader.Name == "entry")))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            string rootElementName = reader.Name;
+
+            var entries = new List<AtomEntry>();
+            this.Entries = entries;
+
+            var links = new Dictionary<string, Uri>();
+            this.Links = links;
+
+            var messages = new List<Message>();
+            this.Messages = messages;
+
+            await reader.ReadAsync();
+
+            while (reader.NodeType == XmlNodeType.Element)
+            {
+                string name = reader.Name;
+
+                switch (name)
+                {
+                    case "title":
+
+                        this.Title = await reader.ReadElementContentAsync(StringConverter.Instance);
+                        break;
+
+                    case "id":
+
+                        this.Id = await reader.ReadElementContentAsync(UriConverter.Instance);
+                        break;
+
+                    case "author":
+
+                        await reader.ReadAsync();
+
+                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "name"))
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        this.Author = await reader.ReadElementContentAsync(StringConverter.Instance);
+
+                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "author"))
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        await reader.ReadAsync();
+                        break;
+
+                    case "generator":
+
+                        string build = reader.GetAttribute("build");
+
+                        if (build == null)
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        string version = reader.GetAttribute("version");
+
+                        if (version == null)
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        this.GeneratorVersion = VersionConverter.Instance.Convert(string.Join(".", version, build));
+                        await reader.ReadAsync();
+                        break;
+
+                    case "updated":
+
+                        this.Updated = await reader.ReadElementContentAsync(DateTimeConverter.Instance);
+                        break;
+
+                    case "entry":
+
+                        var entry = new AtomEntry();
+
+                        await entry.ReadXmlAsync(reader);
+                        entries.Add(entry);
+                        break;
+
+                    case "link":
+
+                        string href = reader.GetAttribute("href");
+
+                        if (string.IsNullOrWhiteSpace(href))
+                        {
+                            throw new InvalidDataException();  // TODO: Diagnostics
+                        }
+
+                        string rel = reader.GetAttribute("rel");
+
+                        if (string.IsNullOrWhiteSpace(rel))
+                        {
+                            throw new InvalidDataException();  // TODO: Diagnostics
+                        }
+
+                        links[rel] = UriConverter.Instance.Convert(href);
+                        await reader.ReadAsync();
+                        break;
+
+                    case "s:messages":
+
+                        await reader.ReadAsync();
+
+                        while (reader.NodeType == XmlNodeType.Element && reader.Name == "msg")
+                        {
+                            string value = reader.GetAttribute("type");
+
+                            if (value == null)
+                            {
+                                throw new InvalidDataException(); // TODO: Diagnostics
+                            }
+
+                            MessageType type = EnumConverter<MessageType>.Instance.Convert(value);
+                            string text = await reader.ReadElementContentAsStringAsync();
+
+                            messages.Add(new Message(type, text));
+                        }
+
+                        if (reader.NodeType == XmlNodeType.EndElement)
+                        {
+                            if (reader.Name != "s:messages")
+                            {
+                                throw new InvalidDataException(); // TODO: Diagnostics
+                            }
+                            await reader.ReadAsync();
+                        }
+
+                        break;
+
+                    case "opensearch:itemsPerPage":
+
+                        int itemsPerPage = await reader.ReadElementContentAsync(Int32Converter.Instance);
+                        this.Pagination = new Pagination(itemsPerPage, this.Pagination.StartIndex, this.Pagination.TotalResults);
+                        break;
+
+                    case "opensearch:startIndex":
+
+                        int startIndex = await reader.ReadElementContentAsync(Int32Converter.Instance);
+                        this.Pagination = new Pagination(this.Pagination.ItemsPerPage, startIndex, this.Pagination.TotalResults);
+                        break;
+
+                    case "opensearch:totalResults":
+
+                        int totalResults = await reader.ReadElementContentAsync(Int32Converter.Instance);
+                        this.Pagination = new Pagination(this.Pagination.ItemsPerPage, this.Pagination.StartIndex, totalResults);
+                        break;
+
+                    default: throw new InvalidDataException(); // TODO: Diagnostics
+                }
+            }
+
+            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == rootElementName))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            await reader.ReadAsync();
+        }
+
+        #endregion
     }
 }

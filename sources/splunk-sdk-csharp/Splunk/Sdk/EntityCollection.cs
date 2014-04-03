@@ -16,38 +16,80 @@
 
 
 // TODO:
-// [ ] Contracts
-// [ ] Documentation
+// [O] Contracts
+// [O] Documentation
+// [ ] Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
+//     See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom.
 
 namespace Splunk.Sdk
 {
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
+    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+    using System.Net.Http;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
 
-    public class EntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : Entity<TEntity>, new()
+    public class EntityCollection<TCollection, TEntity> : Resource<TCollection>, IReadOnlyList<TEntity> 
+        where TCollection : EntityCollection<TCollection, TEntity>, new() 
+        where TEntity : Resource<TEntity>, new()
     {
         #region Constructors
 
-        internal EntityCollection(Context context, Namespace @namespace, ResourceName name, IEnumerable<KeyValuePair<string, object>> args)
+        internal EntityCollection(Context context, Namespace @namespace, ResourceName resource, IEnumerable<Argument> args = null)
+            : base(context, @namespace, resource)
         {
-            this.Context = context;
-            this.Namespace = @namespace;
-            this.Name = name;
-
-            if (args != null)
-            {
-                this.Arguments = args.ToDictionary(pair => pair.Key, pair => pair.Value);
-            }
+            this.args = args;
         }
+
+        public EntityCollection()
+        { }
 
         #endregion
 
         #region Properties
+
+        #region AtomFeed properties
+
+        public override string Author
+        {
+            get { return this.data == null ? null : this.data.Author; }
+        }
+
+        public Version GeneratorVersion
+        {
+            get { return this.data == null ? null : this.data.GeneratorVersion; }
+        }
+
+        public override Uri Id
+        {
+            get { return this.data == null ? null : this.data.Id; }
+        }
+
+        public override IReadOnlyDictionary<string, Uri> Links
+        {
+            get { return this.data == null ? null : this.data.Links; }
+        }
+
+        public IReadOnlyList<Message> Messages
+        {
+            get { return this.data == null ? null : this.data.Messages; }
+        }
+
+        public Pagination Pagination
+        {
+            get { return this.data == null ? Pagination.Empty : this.data.Pagination; }
+        }
+
+        public override DateTime Updated
+        {
+            get { return this.data == null ? DateTime.MinValue : this.data.Updated; }
+        }
+
+        #endregion
+
+        #region IReadOnlyList<TEntity> properties
 
         /// <summary>
         /// 
@@ -58,19 +100,13 @@ namespace Splunk.Sdk
         {
             get
             {
-                if (this.feed == null)
+                if (this.data == null)
                 {
                     throw new InvalidOperationException();
                 }
-                return this.entities[index];
+                return this.data.Entities[index];
             }
         }
-
-        /// <summary>
-        /// Gets the <see cref="Context"/> instance for this <see cref="EntityCollection"/>.
-        /// </summary>
-        public Context Context
-        { get; private set; }
 
         /// <summary>
         /// Gets the number of entites in this <see cref="EntityCollection"/>.
@@ -79,75 +115,186 @@ namespace Splunk.Sdk
         {
             get
             {
-                if (this.feed == null)
+                if (this.data == null)
                 {
                     throw new InvalidOperationException();
                 }
-                return this.entities.Count;
+                return this.data.Entities.Count;
             }
         }
 
-        /// <summary>
-        /// Gets the resource name of this <see cref="EntityCollection"/>.
-        /// </summary>
-        public ResourceName Name
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="Namespace"/> containing this <see cref="EntityCollection"/>.
-        /// </summary>
-        public Namespace Namespace
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the parameters for this <see cref="EntityCollection"/>.
-        /// </summary>
-        public IReadOnlyDictionary<string, object> Arguments
-        { get; private set; }
+        #endregion
 
         #endregion
 
         #region Methods
 
+        #region Request-related methods
+
+        public override void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object atom)
+        {
+            var entry = atom as AtomEntry;
+
+            Debug.Assert(entry != null, "Expected non-null entry of type AtomEntry");
+
+            if (atom == null)
+            {
+                throw new ArgumentException("Expected non-null entry of type AtomEntry");
+            }
+
+            this.data = new Data(entry);
+            base.Initialize(context, @namespace, new ResourceName(resourceName, entry.Title), atom);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override async Task GetAsync()
+        {
+            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
+            {
+                if (response.Message.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+
+                var feed = new AtomFeed();
+
+                await feed.ReadXmlAsync(response.XmlReader);
+                this.data = new Data(this.Context, this.Namespace, this.ResourceName, feed);
+            }
+        }
+
+        #endregion
+
+        #region IReadOnlyList<TEntity> methods
+
         public IEnumerator<TEntity> GetEnumerator()
         {
-            if (this.feed == null)
+            if (this.data == null)
             {
                 throw new InvalidOperationException();
             }
-            return this.entities.GetEnumerator();
+            return this.data.Entities.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            if (this.feed == null)
-            {
-                throw new InvalidOperationException();
-            }
-            return ((IEnumerable)this.entities).GetEnumerator();
+            return this.GetEnumerator();
         }
 
-        public async Task Update()
-        {
-            var document = await this.Context.GetDocumentAsync(this.Namespace, this.Name, this.Arguments);
-
-            // TODO: Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
-            // See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom
-            
-            var feed = new AtomFeed(this.Context, this.Name, document);
-            var entities = new List<TEntity>(this.feed.Entries.Count);
-            entities.AddRange(from entry in this.feed.Entries select Entity<TEntity>.CreateEntity(this.Context, this.Name, entry));
-
-            this.entities = entities;
-            this.feed = feed;
-        }
+        #endregion
 
         #endregion
 
         #region Privates
 
-        IReadOnlyList<TEntity> entities;
-        AtomFeed feed;
+        readonly IEnumerable<Argument> args;
+        volatile Data data;
+
+        #endregion
+
+        #region Types
+
+        class Data
+        {
+            #region Constructors
+
+            public Data(AtomEntry entry)
+            {
+                this.author = entry.Author;
+                this.id = entry.Id;
+                this.generatorVersion = null; // TODO: figure out a way to inherit the enclosing feed's generator version or is it in each entry too?
+                this.links = entry.Links;
+                this.messages = null; // TODO: does an entry contain messages?
+                this.pagination = Pagination.Empty;
+                this.updated = entry.Updated;
+
+                this.entities = new List<TEntity>();
+            }
+
+            public Data(Context context, Namespace @namespace, ResourceName resourceName, AtomFeed feed)
+            {
+                this.author = feed.Author;
+                this.id = feed.Id;
+                this.generatorVersion = feed.GeneratorVersion;
+                this.links = feed.Links;
+                this.messages = feed.Messages;
+                this.pagination = Pagination.Empty;
+                this.updated = feed.Updated;
+
+                var entities = new List<TEntity>(feed.Entries.Count);
+
+                foreach (var entry in feed.Entries)
+                {
+                    TEntity entity = new TEntity();
+
+                    entity.Initialize(context, @namespace, resourceName, entry);
+                    entities.Add(entity);
+                }
+
+                this.entities = entities;
+            }
+
+            #endregion
+
+            #region Properties
+
+            public string Author
+            {
+                get { return this.author; }
+            }
+
+            public Uri Id
+            {
+                get { return this.id; }
+            }
+
+            public IReadOnlyList<TEntity> Entities
+            { 
+                get { return this.entities; } 
+            }
+
+            public Version GeneratorVersion
+            {
+                get { return this.generatorVersion; }
+            }
+
+            public IReadOnlyDictionary<string, Uri> Links
+            {
+                get { return this.links; }
+            }
+
+            public IReadOnlyList<Message> Messages
+            {
+                get { return this.messages; }
+            }
+
+            public Pagination Pagination
+            {
+                get { return this.pagination; }
+            }
+
+            public DateTime Updated
+            {
+                get { return this.updated; }
+            }
+
+            #endregion
+
+            #region Privates
+
+            readonly IReadOnlyList<TEntity> entities;
+            readonly string author;
+            readonly Uri id;
+            readonly Version generatorVersion;
+            readonly IReadOnlyDictionary<string, Uri> links;
+            readonly IReadOnlyList<Message> messages;
+            readonly Pagination pagination;
+            readonly DateTime updated;
+
+            #endregion
+        }
 
         #endregion
     }

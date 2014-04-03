@@ -36,7 +36,6 @@ namespace Splunk.Sdk
     /// </item>
     /// </list>
     /// </remarks>
-    [DataContract]
     public sealed class SearchEventArgs : Args<SearchEventArgs>
     {
         #region Constructors
@@ -55,7 +54,7 @@ namespace Splunk.Sdk
         /// If the value of <c>Count</c> is set to zero, then all available
         /// results are returned. The default value is 100.
         /// </remarks>
-        [DataMember(Name = "count", EmitDefaultValue=false)]
+        [DataMember(Name = "count", EmitDefaultValue = false)]
         [DefaultValue(100)]
         public int Count
         { get; set; }

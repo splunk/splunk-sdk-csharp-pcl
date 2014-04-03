@@ -15,8 +15,7 @@
  */
 
 // TODO: Ensure this code is solid
-// [ ] Documentation
-// [ ] Unit tests (e.g., Ensure correct behavior with nullable boolean/numeric values)
+// [O] Documentation
 // [X] Respect DataMemberAttribute.Order
 // [X] Do not serialize default values => define default values and check for them
 // [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)
@@ -38,7 +37,7 @@ namespace Splunk.Sdk
     /// 
     /// </summary>
     /// <typeparam name="TArgs"></typeparam>
-    public abstract class Args<TArgs> : IEnumerable<KeyValuePair<string, object>> where TArgs : Args<TArgs>
+    public abstract class Args<TArgs> : IEnumerable<Argument> where TArgs : Args<TArgs>
     {
         #region Constructors
 
@@ -137,13 +136,13 @@ namespace Splunk.Sdk
 
         #region Fields
 
-        public static readonly IEnumerable<KeyValuePair<string, object>> Empty = Enumerable.Empty<KeyValuePair<string, object>>();
+        public static readonly IEnumerable<Argument> Empty = Enumerable.Empty<Argument>();
 
         #endregion
 
         #region Methods
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        public IEnumerator<Argument> GetEnumerator()
         {
             foreach (var parameter in Args<TArgs>.Parameters)
             {
@@ -157,18 +156,21 @@ namespace Splunk.Sdk
                     }
                     continue;
                 }
+
                 if (!parameter.EmitDefaultValue && value.Equals(parameter.DefaultValue))
                 {
                     continue;
                 }
+                
                 if (!parameter.IsCollection)
                 {
-                    yield return new KeyValuePair<string, object>(parameter.Name, parameter.Format(value));
+                    yield return new Argument(parameter.Name, parameter.Format(value));
                     continue;
                 }
+                
                 foreach (var item in (IEnumerable)value)
                 {
-                    yield return new KeyValuePair<string, object>(parameter.Name, parameter.Format(item));
+                    yield return new Argument(parameter.Name, parameter.Format(item));
                 }
             }
         }
@@ -295,7 +297,7 @@ namespace Splunk.Sdk
         #endregion
 
         #region Types
-
+        
         struct Formatter
         {
             public Func<object, string> Format;
@@ -420,7 +422,9 @@ namespace Splunk.Sdk
             public bool Equals(Parameter other)
             {
                 if (other == null)
+                {
                     return false;
+                }
                 return object.ReferenceEquals(this, other) || this.ordinal.Equals(other.ordinal);
             }
 

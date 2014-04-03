@@ -14,19 +14,32 @@
  * under the License.
  */
 
+// TODO:
+// [ ] Documentation
+
 namespace Splunk.Sdk
 {
-    public class GenericEntity : Entity<GenericEntity>
+    using System.Runtime.Serialization;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public enum ServerMode
     {
-        #region Constructors
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        [EnumMember(Value = "Dedicated Forwarder")]
+        DedicatedForwarder,
 
-        internal GenericEntity(Context context, Namespace @namespace, ResourceName collection, string name)
-            : base(context, @namespace, collection, name)
-        { }
-
-        public GenericEntity() // TODO: Remove this after refactoring EntityCollection<TEntity> and AtomFeed<TEntity> with a Entity<TEntity> factory
-        { }
-
-        #endregion
+        /// <summary>
+        /// 
+        /// </summary>
+        Normal
     }
 }

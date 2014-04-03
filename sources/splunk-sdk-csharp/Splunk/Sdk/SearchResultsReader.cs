@@ -46,11 +46,8 @@ namespace Splunk.Sdk
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Net.Http;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// The <see cref="SearchResultsReader"/> class represents a streaming XML 
@@ -78,15 +75,16 @@ namespace Splunk.Sdk
 
         internal static async Task<SearchResultsReader> CreateAsync(Response response)
         {
-            response.Reader.MoveToElement(); // ensures we're at an element, not an attribute
+            response.XmlReader.MoveToElement(); // ensures we're at an element, not an attribute
 
-            if (!response.Reader.IsStartElement("results"))
+            if (!response.XmlReader.IsStartElement("results"))
             {
-                if (!await response.Reader.ReadToFollowingAsync("results"))
+                if (!await response.XmlReader.ReadToFollowingAsync("results"))
                 {
                     throw new InvalidDataException();  // TODO: diagnostics
                 }
             }
+
             return new SearchResultsReader(response);
         }
 
@@ -110,7 +108,7 @@ namespace Splunk.Sdk
             {
                 yield return SearchResults.CreateAsync(this.response, leaveOpen: true).Result;
             }
-            while (this.response.Reader.ReadToFollowingAsync("results").Result);
+            while (this.response.XmlReader.ReadToFollowingAsync("results").Result);
         }
 
         /// <summary>
@@ -137,7 +135,7 @@ namespace Splunk.Sdk
                 var searchResults = await SearchResults.CreateAsync(this.response, leaveOpen: true);
                 this.OnNext(searchResults);
             }
-            while (await this.response.Reader.ReadToFollowingAsync("results"));
+            while (await this.response.XmlReader.ReadToFollowingAsync("results"));
 
             this.OnCompleted();
         }

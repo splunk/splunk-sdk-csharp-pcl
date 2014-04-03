@@ -14,10 +14,44 @@
  * under the License.
  */
 
+// TODO:
+// [O] Documentation
+
 namespace Splunk.Sdk
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public enum SharingMode
     {
-        Default, App, Global, System, User
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        Default, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        App, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        Global, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        System, 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        User
     }
 }

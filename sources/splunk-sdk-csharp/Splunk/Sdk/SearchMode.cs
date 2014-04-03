@@ -22,9 +22,13 @@ namespace Splunk.Sdk
     /// 
     /// </summary>
     /// 
-    [DataContract]
     public enum SearchMode
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        None,
+
         /// <summary>
         /// 
         /// </summary>

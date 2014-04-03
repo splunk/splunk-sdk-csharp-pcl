@@ -14,36 +14,40 @@
  * under the License.
  */
 
+// TODO: Documentation
+
 namespace Splunk.Sdk
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
-    using System.Linq;
-    using System.Xml.Linq;
 
-    public class RequestException : HttpRequestException
+    public sealed class RequestException : HttpRequestException
     {
-        public RequestException(HttpStatusCode statusCode, string reasonPhrase, IEnumerable<Message> details)
-            : base(string.Format("{0}: {1}", (int)statusCode, reasonPhrase))
+        #region Constructors
+
+        internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
+            : base(string.Format("{0}: {1}", (int)message.StatusCode, message.ReasonPhrase))
         {
             this.Details = new List<Message>(details ?? Enumerable.Empty<Message>());
-            this.StatusCode = statusCode;
+            this.StatusCode = message.StatusCode;
         }
 
-        public RequestException(HttpStatusCode statusCode, string reasonPhrase, params Message[] details)
-            : this(statusCode, reasonPhrase, (IEnumerable<Message>)details)
-        {
-        }
-
-        public RequestException(HttpStatusCode statusCode, string reasonPhrase, XDocument response)
-            : this(statusCode, reasonPhrase, Splunk.Sdk.Message.GetMessages(response))
+        internal RequestException(HttpResponseMessage message, params Message[] messages)
+            : this(message, (IEnumerable<Message>)messages)
         { }
+
+        #endregion
+
+        #region Properties
 
         public IReadOnlyList<Message> Details
         { get; private set; }
 
         public HttpStatusCode StatusCode
         { get; private set; }
+
+        #endregion
     }
 }

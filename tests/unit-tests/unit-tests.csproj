@@ -54,12 +54,18 @@
   <ItemGroup>
     <Compile Include="TestAtomFeed.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestIndexAttributes.cs" />
+    <Compile Include="TestIndexArgs.cs" />
+    <Compile Include="TestIndexCollectionArgs.cs" />
+    <Compile Include="TestResourceName.cs" />
+    <Compile Include="TestSavedSearchCollectionArgs.cs" />
+    <Compile Include="TestJobCollectionArgs.cs" />
     <Compile Include="TestJobArgs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\sources\splunk-sdk-csharp\splunk-sdk-csharp.csproj">
+    <ProjectReference Include="..\..\sources\splunk-sdk-csharp\splunk-sdk-csharp-pcl.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
-      <Name>splunk-sdk-csharp</Name>
+      <Name>splunk-sdk-csharp-pcl</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

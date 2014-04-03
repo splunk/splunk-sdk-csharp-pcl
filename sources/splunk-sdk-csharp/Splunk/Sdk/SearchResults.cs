@@ -24,7 +24,6 @@ namespace Splunk.Sdk
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Threading.Tasks;
     using System.Xml;
@@ -101,27 +100,27 @@ namespace Splunk.Sdk
         /// search event records.</returns>
         internal static async Task<SearchResults> CreateAsync(Response response, bool leaveOpen)
         {
-            response.Reader.MoveToElement(); // Ensures we're at an element, not an attribute
+            response.XmlReader.MoveToElement(); // Ensures we're at an element, not an attribute
 
-            if (!response.Reader.IsStartElement("results"))
+            if (!response.XmlReader.IsStartElement("results"))
             {
-                if (!await response.Reader.ReadToFollowingAsync("results"))
+                if (!await response.XmlReader.ReadToFollowingAsync("results"))
                 {
                     throw new InvalidDataException();  // TODO: diagnostics
                 }
             }
 
-            var isPreview = XmlConvert.ToBoolean(response.Reader["preview"]);
+            var isPreview = XmlConvert.ToBoolean(response.XmlReader["preview"]);
             var fieldNames = new List<string>();
 
-            if (await response.Reader.ReadToDescendantAsync("meta"))
+            if (await response.XmlReader.ReadToDescendantAsync("meta"))
             {
-                if (await response.Reader.ReadToDescendantAsync("fieldOrder"))
+                if (await response.XmlReader.ReadToDescendantAsync("fieldOrder"))
                 {
-                    await response.Reader.ReadEachDescendantAsync("field", async () => fieldNames.Add(await response.Reader.ReadElementContentAsStringAsync()));
-                    await response.Reader.SkipAsync();
+                    await response.XmlReader.ReadEachDescendantAsync("field", async () => fieldNames.Add(await response.XmlReader.ReadElementContentAsStringAsync()));
+                    await response.XmlReader.SkipAsync();
                 }
-                await response.Reader.SkipAsync();
+                await response.XmlReader.SkipAsync();
             }
 
             return new SearchResults(response, leaveOpen)
@@ -222,44 +221,44 @@ namespace Splunk.Sdk
         /// </returns>
         async Task<Record> ReadRecordAsync()
         {
-            if (!await this.response.Reader.ReadToNextSiblingAsync("result"))
+            if (!await this.response.XmlReader.ReadToNextSiblingAsync("result"))
             {
                 return null;
             }
 
             var result = new Record();
 
-            await this.response.Reader.ReadEachDescendantAsync("field", async () =>
+            await this.response.XmlReader.ReadEachDescendantAsync("field", async () =>
             {
-                var key = this.response.Reader["k"];
+                var key = this.response.XmlReader["k"];
 
                 if (key == null)
                 {
                     throw new XmlException("'field' attribute 'k' not found");
                 }
 
-                var fieldDepth = this.response.Reader.Depth;
+                var fieldDepth = this.response.XmlReader.Depth;
                 var values = new List<string>();
 
-                while (await this.response.Reader.ReadAsync())
+                while (await this.response.XmlReader.ReadAsync())
                 {
-                    if (this.response.Reader.Depth == fieldDepth)
+                    if (this.response.XmlReader.Depth == fieldDepth)
                     {
                         break;
                     }
 
-                    Debug.Assert(this.response.Reader.Depth > fieldDepth, "The loop should have exited earlier.");
+                    Debug.Assert(this.response.XmlReader.Depth > fieldDepth, "The loop should have exited earlier.");
 
-                    if (this.response.Reader.IsStartElement("value"))
+                    if (this.response.XmlReader.IsStartElement("value"))
                     {
-                        if (await this.response.Reader.ReadToDescendantAsync("text"))
+                        if (await this.response.XmlReader.ReadToDescendantAsync("text"))
                         {
-                            values.Add(await this.response.Reader.ReadElementContentAsStringAsync());
+                            values.Add(await this.response.XmlReader.ReadElementContentAsStringAsync());
                         }
                     }
-                    else if (this.response.Reader.IsStartElement("v"))
+                    else if (this.response.XmlReader.IsStartElement("v"))
                     {
-                        string value = await this.response.Reader.ReadOuterXmlAsync();
+                        string value = await this.response.XmlReader.ReadOuterXmlAsync();
                         result.SegmentedRaw = value;
                         values.Add(value);
                     }

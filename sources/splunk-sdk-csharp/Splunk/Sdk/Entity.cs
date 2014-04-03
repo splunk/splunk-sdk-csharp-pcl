@@ -15,173 +15,227 @@
  */
 
 // TODO:
-// [ ] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
-//     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
 // [ ] Check for HTTP Status Code 204 (No Content) and empty atoms in 
 //     Entity<TEntity>.UpdateAsync.
+//
 // [O] Contracts
 //
-// [ ] Documentation
+// [O] Documentation
+//
+// [X] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
+//     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
+//
+// [X] Remove Entity<TEntity>.Invalidate method
+//     FJR: This gets called when we set the record value. Add a comment saying what it's
+//     supposed to do when it's overridden.
+//     DSN: I've adopted an alternative method for getting strongly-typed values. See, for
+//     example, Job.DispatchState or ServerInfo.Guid.
 
 namespace Splunk.Sdk
 {
+    using Microsoft.CSharp.RuntimeBinder;
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Linq;
+    using System.Dynamic;
+    using System.IO;
+    using System.Net;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
+    using System.Xml;
 
-    public class Entity<TEntity> where TEntity : Entity<TEntity>, new()
+    public class Entity<TEntity> : Resource<TEntity> where TEntity : Entity<TEntity>, new()
     {
         #region Constructors
 
         /// <summary>
         /// 
         /// </summary>
-        public Entity()
-        { }
+        /// <param name="context">
+        /// </param>
+        /// <param name="namespace">
+        /// </param>
+        /// <param name="collection">
+        /// </param>
+        /// <param name="title">
+        /// </param>
+        protected Entity(Context context, Namespace @namespace, ResourceName collection, string title)
+            : base(context, @namespace, new ResourceName(collection, title))
+        {
+            Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(title), "name");
+            Contract.Requires<ArgumentException>(collection != null, "collection");
+            Contract.Requires<ArgumentNullException>(context != null, "context");
+            Contract.Requires(@namespace.IsSpecific);
+        }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="namespace"></param>
-        /// <param name="collection"></param>
-        /// <param name="name"></param>
-        protected Entity(Context context, Namespace @namespace, ResourceName collection, string name)
+        public Entity()
         {
-            Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
-            Contract.Requires<ArgumentException>(collection != null, "collection");
-            Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires(@namespace.IsSpecific);
-
-            this.Context = context;
-            this.name = name;
-            this.@namespace = @namespace;
-            this.Collection = collection;
+            this.data = DataObject.Missing;
         }
 
         #endregion
 
-        #region Properties
+        #region Properties that are stable for the lifetime of an instance
 
         /// <summary>
-        /// Gets the path to the collection containing this <see cref="Entity"/>.
+        /// Gets the path to the collection containing the current <see cref=
+        /// "Entity"/>.
         /// </summary>
         public ResourceName Collection
         { get; internal set; }
 
-        /// <summary>
-        /// Gets the <see cref="Context"/> instance for this <see cref="Entity"/>.
-        /// </summary>
-        public Context Context
-        { get; internal set; }
+        #endregion
 
-        /// <summary>
-        /// Gets the name of this <see cref="Entity"/>.
-        /// </summary>
-        public string Name
-		// FJR: You shouldn't be able to create an Entity instance without a name. Is this
-		// logic really necessary?
+        #region Properties backed by AtomEntry
+
+        public override string Author
         { 
-            get
-            {
-				if (this.name == null)
-                {
-                    if (this.record == null)
-                    {
-                        throw new InvalidOperationException(); // TODO: documentation
-                    }
-                    this.name = this.GetName(record);
-                }
-                return this.name;
-            }
+            get { return this.data.Entry == null ? null : this.data.Entry.Author; }
+        }
+
+        public override Uri Id
+        { 
+            get { return this.data.Entry == null ? null : this.data.Entry.Id; } 
+        }
+
+        public override IReadOnlyDictionary<string, Uri> Links
+        { 
+            get { return this.data.Entry == null ? null : this.data.Entry.Links; } 
+        }
+
+        public override DateTime Updated
+        { 
+            get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; } 
+        }
+
+        #region Protected properties
+
+        /// <summary>
+        /// Gets the <see cref="ExpandoAdapter"/> representing the content of
+        /// the current <see cref="Entity<TEntity>"/>.
+        /// </summary>
+        /// <remarks>
+        /// Use this property to map content elements to strongly typed 
+        /// properties.
+        /// </remarks>
+        protected ExpandoAdapter Content
+        {
+            get { return this.data.Adapter; }
         }
 
         /// <summary>
-		/// Gets the namespace containing this <see cref="Entity"/>.
+        /// 
         /// </summary>
-        public Namespace Namespace
+        protected DataObject Data
         {
-			// FJR: You shouldn't be able to create an entity without a namespace. Is this logic necessary?
-            get
-            {
-                if (this.@namespace == null)
-                {
-                    if (this.record == null)
-                    {
-                        throw new InvalidOperationException(); // TODO: documentation
-                    }
-                    this.@namespace = new Namespace(record.Eai.Acl.Owner, record.Eai.Acl.App);
-                }
-                return this.@namespace;
-            }
+            get { return this.data; }
+            set { this.data = value; }
         }
 
-        public ResourceName ResourceName
-        {
-			get
-            {
-                if (this.resourceName == null)
-                {
-                    this.resourceName = new ResourceName(this.Collection, this.Name);
-                }
-                return this.resourceName;
-            }
-        }
-
-        /// <summary>
-        /// Gets the state of this <see cref="Entity"/>.
-        /// </summary>
-        public virtual dynamic Record
-        {
-            get { return this.record; }
-
-            internal set
-            {
-                this.record = value;
-                this.Invalidate();
-            }
-        }
+        #endregion
 
         #endregion
 
         #region Methods
 
-		// FJR: Is this ever needed? The name of an entity is fixed,
-		// with the exception of restrictToHost fiascos around TCP and UDP inputs.
-		protected virtual string GetName(dynamic record)
+        /// <summary>
+        /// Gets the title of the current <see cref="Entity<TEntity>"/>.
+        /// </summary>
+        /// <returns>
+        /// The title of the current <see cref="Entity<TEntity>"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method is overridden by the <see cref="Job"/> class. Its title
+        /// comes from the <c>Sid</c> property, not the <c>Title</c> property of
+        /// <see cref="Entity<TEntity>.Record"/>.
+        /// </remarks>
+        protected virtual string GetTitle()
         {
-            return record.Title;
+            return this.data.Entry == null ? null : this.data.Entry.Title;
         }
 
-		// FJR: This gets called when we set the record value. Add a comment saying what it's
-		// supposed to do when it's overridden.
-		protected virtual void Invalidate()
-        { }
-
         /// <summary>
-        /// Refreshes the cached state of this <see cref="Entity"/>.
+        /// Refreshes the cached state of the current <see cref=
+        /// "Entity<TEntity>"/>.
         /// </summary>
-        public async Task UpdateAsync()
+        public override async Task GetAsync()
         {
-            // TODO: Parmeterized retry logic
+            // TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class
+
+            // FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
+            // into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
+            // as of Splunk 6, getting a 200 and content back does not imply you have all the fields. For pivot
+            // support, they're now shoving fields in as they become ready, so you have to wait until the dispatchState
+            // field of the Atom entry reaches a certain point.
 
             RequestException requestException = null;
 
-			// FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
-			// into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
-			// as of Splunk 6, getting a 200 and content back does not imply you have all the fields. For pivot
-			// support, they're now shoving fields in as they become ready, so you have to wait until the dispatchState
-			// field of the Atom entry reaches a certain point.
-            for (int i = 3; i > 0 ; --i)
+            for (int i = 3; i > 0; --i)
             {
                 try
                 {
-                    // Gurantee: unique result because entities have specific namespaces
-                    XDocument document = await this.Context.GetDocumentAsync(this.Namespace, this.ResourceName);
-                    this.Record = new AtomEntry(document.Root).Content;
+                    // Guarantee: unique result because entities have specific namespaces
+
+                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+                    {
+                        if (response.Message.StatusCode == HttpStatusCode.NoContent)
+                        {
+                            throw new RequestException(response.Message, new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", this.Namespace, this.ResourceName)));
+                        }
+
+                        if (!response.Message.IsSuccessStatusCode)
+                        {
+                            throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                        }
+
+                        var reader = response.XmlReader;
+                        await reader.ReadAsync();
+
+                        if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                        {
+                            await response.XmlReader.ReadAsync();
+                        }
+
+                        if (reader.NodeType != XmlNodeType.Element)
+                        {
+                            throw new InvalidDataException(); // TODO: Diagnostics
+                        }
+
+                        AtomEntry entry;
+
+                        if (reader.Name == "feed")
+                        {
+                            AtomFeed feed = new AtomFeed();
+
+                            await feed.ReadXmlAsync(reader);
+                            int count = feed.Entries.Count;
+
+                            foreach (var feedEntry in feed.Entries)
+                            {
+                                string id = feedEntry.Title;
+                                id.Trim();
+                            }
+
+                            if (feed.Entries.Count != 1)
+                            {
+                                throw new InvalidDataException(); // TODO: Diagnostics
+                            }
+
+                            entry = feed.Entries[0];
+                        }
+                        else
+                        {
+                            entry = new AtomEntry();
+                            await entry.ReadXmlAsync(reader);
+                        }
+
+                        // TODO: Check entry type (?)
+                        this.data = new DataObject(entry);
+                    }
+
                     return;
                 }
                 catch (RequestException e)
@@ -198,39 +252,104 @@ namespace Splunk.Sdk
             throw requestException;
         }
 
-        public override string ToString()
-        {
-            return string.Join("/", this.Context.ToString(), this.Namespace.ToString(), this.Collection.ToString(), this.Name);
-        }
-
         #endregion
 
         #region Privates/internals
 
-        ResourceName resourceName;
-        Namespace @namespace;
-        string name;
-        dynamic record;
-
-        internal static TEntity CreateEntity(Context context, ResourceName collection, AtomEntry entry)
+        public override void Initialize(Context context, Namespace @namespace, ResourceName collection, object entry)
         {
-            Contract.Requires<ArgumentNullException>(collection != null, "collection");
-            Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires<ArgumentNullException>(entry != null, "entry");
+            AtomEntry atomEntry = entry as AtomEntry;
 
-			// FJR: Can you insist the constructor of TEntity take a context, resource path, name, and record?
-			// Then you wouldn't need the empty constructor for Entity, and you could assert as a hard invariant
-			// that namespace, context, collection, and name were never null.
-            var entity = new TEntity()
+            if (atomEntry == null)
             {
-                Collection = collection,
-                Context = context,
-				Record = entry.Content
-            };
+                throw new ArgumentException("Expected non-null entry of type AtomEntry.");
+            }
 
-            return entity;
+            this.data = new DataObject(atomEntry); // must be set before entity.Title
+            dynamic content = atomEntry.Content;
+
+            if ((content as ExpandoObject) != null)
+            {
+                dynamic acl;
+
+                try
+                {
+                    acl = content.Eai.Acl;
+                }
+                catch (RuntimeBinderException e)
+                {
+                    throw new InvalidDataException("", e); // TODO: Diagnostics
+                }
+
+                try
+                {
+                    @namespace = new Namespace(acl.Owner, acl.App);
+                }
+                catch (ArgumentException e)
+                {
+                    throw new InvalidDataException("", e); // TODO: Diagnostics
+                }
+            }
+
+            var resourceName = new ResourceName(collection, this.GetTitle());
+            base.Initialize(context, @namespace, resourceName, null /* unused */);
         }
 
-		#endregion
+        #endregion
+
+        #region Privates
+
+        volatile DataObject data;
+
+        #endregion
+
+        #region Types
+
+        protected sealed class DataObject
+        {
+            public DataObject(AtomEntry entry)
+            {
+                if (entry.Content == null)
+                {
+                    this.adapter = ExpandoAdapter.Empty;
+                }
+                else
+                {
+                    dynamic content = entry.Content as ExpandoObject;
+                    
+                    if (content == null)
+                    {
+                        content = new ExpandoObject();
+                        content.Value = entry.Content;
+                    }
+
+                    this.adapter = new ExpandoAdapter(content);
+                }
+
+                this.entry = entry;
+            }
+
+            DataObject()
+            {
+                this.adapter = ExpandoAdapter.Empty;
+            }
+
+            public static readonly DataObject Missing = new DataObject();
+
+            public ExpandoAdapter Adapter
+            { 
+                get { return this.adapter; } 
+            }
+
+            public AtomEntry Entry
+            { 
+                get { return this.entry; } 
+            }
+
+            readonly ExpandoAdapter adapter;
+            readonly AtomEntry entry;
+        }
+
+        #endregion
     }
 }

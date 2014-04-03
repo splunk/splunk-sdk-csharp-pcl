@@ -15,155 +15,78 @@
  */
 
 // TODO:
-// [ ] Diagnostics
+// [O] Documentation
 
 namespace Splunk.Sdk
 {
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using System.ComponentModel;
+    using System.Runtime.Serialization;
 
-    public sealed class SavedSearchArgs : IDictionary<string, object>
+    /// <summary>
+    /// Provides the arguments required for retrieving <see cref="SavedSearch"/>
+    /// entries.
+    /// </summary>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///     <a href="http://goo.gl/bKrRK0">REST API: GET saved/searches</a>
+    /// </description></item>
+    /// </list>
+    /// </remarks>
+    public sealed class SavedSearchArgs : Args<SavedSearchArgs>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SavedSearchArgs"/> 
+        /// class.
+        /// </summary>
         public SavedSearchArgs()
-        {
-            this.dictionary = new Dictionary<string, object>();
-        }
+        { }
 
         #endregion
 
         #region Properties
 
-        public object this[string key]
-        {
-            get { return this.dictionary[key]; }
-            set { this.dictionary[key] = value; }
-        }
+        /// <summary>
+        /// Gets or sets the lower bound of the time window for which saved 
+        /// search schedules should be returned.
+        /// </summary>
+        /// <remarks>
+        /// This property specifies that all the scheduled times starting from 
+        /// this time (not just the next run time) should be returned.
+        /// </remarks>
+        [DataMember(Name = "earliest_time", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string EarliestTime
+        { get; set; }
 
-        public int Count
-        { get { return this.dictionary.Count; } }
+        /// <summary>
+        /// Gets or sets the upper bound of the time window for which saved 
+        /// search schedules should be returned.
+        /// </summary>
+        /// <remarks>
+        /// This property specifies that all the scheduled times ending with 
+        /// this time (not just the next run time) should be returned.
+        /// </remarks>
+        [DataMember(Name = "latest_time", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string LatestTime
+        { get; set; }
 
-        public bool IsReadOnly
-        { get { return false; } }
-
-        public ICollection<string> Keys
-        { get { return this.dictionary.Keys; } }
-
-        public ICollection<object> Values
-        { get { return this.dictionary.Values; } }
-
-        #endregion
-
-        #region Methods
-
-        public void Add(string key, object value)
-        {
-            this.dictionary.Add(key, value);
-        }
-
-        public void Add(KeyValuePair<string, object> item)
-        {
-            this.dictionary.Add(item.Key, item.Value);
-        }
-
-        public void Clear()
-        {
-            this.dictionary.Clear();
-        }
-
-        public bool Contains(KeyValuePair<string, object> item)
-        {
-            return this.dictionary.Contains(item);
-        }
-
-        public bool ContainsKey(string key)
-        {
-            return this.dictionary.ContainsKey(key);
-        }
-
-        public void CopyTo(KeyValuePair<string, object>[] array, int index)
-        {
-            if (array == null)
-            {
-                throw new ArgumentNullException("array");
-            }
-            
-            if (array.Length - index < this.Count)
-            {
-                throw new ArgumentException("array");
-            }
-
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException("index");
-            }
-
-            foreach (var item in this.dictionary)
-            {
-                array[index++] = item;
-            }
-        }
-
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            foreach (var item in this.dictionary)
-            {
-                yield return new KeyValuePair<string, object>("args." + item.Key, item.Value);
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
- 
-        public bool Remove(string key)
-        {
-            return this.dictionary.Remove(key);
-        }
-
-        public bool Remove(KeyValuePair<string, object> item)
-        {
-            return this.Remove(item);
-        }
-
-        public override string ToString()
-        {
-            StringBuilder builder = new StringBuilder();
-
-            foreach (KeyValuePair<string, object> arg in this)
-            {
-                builder.Append("args.");
-                builder.Append(arg.Key);
-                builder.Append('=');
-                builder.Append(arg.Value);
-                builder.Append("; ");
-            }
-
-            if (builder.Length > 0)
-            {
-                builder.Length = builder.Length - 2;
-            }
-
-            return builder.ToString();
-        }
-
-        public bool TryGetValue(string key, out object value)
-        {
-            return this.dictionary.TryGetValue(key, out value);
-        }
-
-        #endregion
-
-        #region privates
-
-        Dictionary<string, object> dictionary;
+        /// <summary>
+        /// Gets or sets a value indicating whether to list default actions for
+        /// <see cref="SavedSearch"/> entries.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        [DataMember(Name = "listDefaultActionArgs", EmitDefaultValue = false)]
+        [DefaultValue(false)]
+        public bool ListDefaultActions
+        { get; set; }
 
         #endregion
     }

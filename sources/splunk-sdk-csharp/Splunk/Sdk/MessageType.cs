@@ -16,6 +16,8 @@
 
 namespace Splunk.Sdk
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
     /// 
     /// </summary>
@@ -24,26 +26,36 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
+        None,
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [EnumMember(Value = "DEBUG")]
         Debug, 
         
         /// <summary>
         /// 
         /// </summary>
+        [EnumMember(Value = "INFO")]
         Information, 
         
         /// <summary>
         /// 
         /// </summary>
+        [EnumMember(Value = "WARN")]
         Warning, 
         
         /// <summary>
         /// 
         /// </summary>
+        [EnumMember(Value = "ERROR")]
         Error,
 
         /// <summary>
         /// 
         /// </summary>
+        [EnumMember(Value = "FATAL")]
         Fatal
     }
 }

@@ -28,7 +28,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
-        Unknown,
+        None,
         
         /// <summary>
         /// 

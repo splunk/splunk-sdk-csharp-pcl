@@ -16,13 +16,12 @@
 
 namespace Splunk.Sdk.UnitTesting
 {
-    using System;
-    using System.Net;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using System.Xml.Linq;
-
     using Splunk.Sdk;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class TestService : IUseFixture<AcceptanceTestingSetup>
@@ -35,7 +34,9 @@ namespace Splunk.Sdk.UnitTesting
             Assert.Equal(service.ToString(), "https://localhost:8089/services");
         }
 
-        [Trait("class", "Service")]
+        #region Access Control
+
+        [Trait("class", "Service: Access Control")]
         [Fact]
         public void CanLogin()
         {
@@ -65,15 +66,169 @@ namespace Splunk.Sdk.UnitTesting
                 var requestException = (RequestException)(aggregateException.InnerExceptions[0]);
                 Assert.Equal(requestException.StatusCode, HttpStatusCode.Unauthorized);
                 Assert.Equal(requestException.Details.Count, 1);
-                Assert.Equal(requestException.Details[0], new Message(XElement.Parse(@"<msg type=""WARN"">Login failed</msg>")));
+                Assert.Equal(requestException.Details[0], new Message(MessageType.Warning, "Login failed"));
             }
         }
 
-        [Trait("class", "Service")]
+        #endregion
+
+        #region Applications
+
+        [Trait("class", "Service: Applications")]
+        [Fact]
+        public void CanGetApps()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<AppCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetAppsAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        #endregion
+
+        #region Configuration
+
+        [Trait("class", "Service: Configuration")]
+        [Fact]
+        public void CanCreateConfiguration()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<Configuration>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                await service.CreateConfigurationAsync("some_configuration");
+                var entity = await service.GetConfigurationAsync("some_configuration");
+                return entity;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Configuration")]
+        [Fact]
+        public void CanGetConfigurations()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<ConfigurationCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetConfigurationsAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Configuration")]
+        [Fact]
+        public void CanManipulateConfiguration()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            service.Login("admin", "changeme");
+
+            ConfigurationCollection configurations = null;
+
+            Assert.DoesNotThrow(() => configurations = service.GetConfigurations());
+
+            // Read the entire configuration system
+
+            foreach (var configuration in configurations)
+            {
+                configuration.Get();
+
+                foreach (ConfigurationStanza stanza in configuration)
+                {
+                    Assert.NotNull(stanza);
+                    stanza.Get();
+                }
+            }
+
+            // Get or create a custom configuration
+            
+            // TODO: create an app and add a custom configuration to it, then delete the app
+            // Why? You can remove an app, including its configuration, but not a configuration
+
+            try
+            {
+                var configuration = service.GetConfiguration("custom");
+            }
+            catch (AggregateException e)
+            {
+                Assert.Equal(1, e.InnerExceptions.Count);
+                
+                var requestException = e.InnerExceptions[0] as RequestException;
+
+                Assert.NotNull(requestException);
+                Assert.Equal(HttpStatusCode.NotFound, requestException.StatusCode);
+                Assert.NotNull(requestException.Details);
+
+                Configuration configuration;
+                Assert.DoesNotThrow(() => service.CreateConfiguration("custom"));
+                Assert.DoesNotThrow(() => configuration = service.GetConfiguration("custom"));
+            }
+        }
+
+        #endregion
+
+        #region Indexes
+
+        [Trait("class", "Service: Indexes")]
+        [Fact]
+        public void CanGetIndexes()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            service.Login("admin", "changeme");
+            var collection = service.GetIndexes();
+        }
+
+        #endregion
+
+        #region Saved Searches
+
+        [Trait("class", "Service: Saved Searches")]
+        [Fact]
+        public void CanCreateSavedSearch()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<SavedSearch>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                try
+                {
+                    service.RemoveSavedSearch("some_saved_search");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
+                var savedSearchCreationArgs = new SavedSearchCreationArgs("some_saved_search", "search index=_internal | head 1000");
+                var savedSearch = await service.CreateSavedSearchAsync(savedSearchCreationArgs);
+
+                return savedSearch;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Saved Searches")]
         [Fact]
         public void CanDispatchSavedSearch()
         {
-            Service service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
 
             Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
             {
@@ -89,17 +244,99 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public void CanDispatchSearch()
+        public void CanGetSavedSearch()
         {
-            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<SavedSearch>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var entity = await service.GetSavedSearchAsync("Errors in the last 24 hours");
+
+                Assert.Equal("Errors in the last 24 hours", entity.Title);
+                Assert.Equal(entity.Id.ToString(), entity.ToString());
+                Assert.Equal("nobody", entity.Author);
+                Assert.Equal(ResourceName.SavedSearches, entity.Collection);
+
+                // TODO: Access each and every property of the saved search
+                return entity;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Saved Searches")]
+        [Fact]
+        public void CanGetSavedSearches()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<SavedSearchCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetSavedSearchesAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        #endregion
+
+        #region Search Jobs
+
+        [Trait("class", "Service: Search Jobs")]
+        [Fact]
+        public void CanGetJob()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<Job>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+                var job1 = await service.StartJobAsync("search index=_internal | head 100");
+                var job2 = await service.GetJobAsync(job1.Title);
+                Assert.Equal(job1.Title, job2.Title);
+                Assert.Equal(job1.Id, job2.Id);
+                Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
+                return job2;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Search Jobs")]
+        [Fact]
+        public void CanGetJobs()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<JobCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetJobsAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        [Trait("class", "Service: Search Jobs")]
+        [Fact]
+        public void CanStartSearch()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
             Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 
-                Job job = await service.SearchAsync("search index=_internal | head 10");
+                Job job = await service.StartJobAsync("search index=_internal | head 10");
                 SearchResults searchResults = await job.GetSearchResultsAsync();
 
                 var records = new List<Splunk.Sdk.Record>(searchResults);
@@ -109,11 +346,11 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public void CanDispatchSearchExport()
+        public void CanStartSearchExport()
         {
-            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
             Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
             {
@@ -132,11 +369,11 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public void CanDispatchSearchOneshot()
+        public void CanStartSearchOneshot()
         {
-            Service service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
             Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
             {
@@ -150,6 +387,50 @@ namespace Splunk.Sdk.UnitTesting
 
             var result = Dispatch().Result;
         }
+
+        #endregion
+
+        #region System
+
+        [Trait("class", "Service: System")]
+
+        [Fact]
+        public void CanGetServerInfo()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            var serverInfo = service.Server.GetInfo();
+            
+            Acl acl = serverInfo.Eai.Acl;
+            Permissions permissions = acl.Permissions;
+            int build = serverInfo.Build;
+            string cpuArchitecture = serverInfo.CpuArchitecture;
+            Guid guid = serverInfo.Guid;
+            bool isFree = serverInfo.IsFree;
+            bool isRealtimeSearchEnabled = serverInfo.IsRealtimeSearchEnabled;
+            bool isTrial = serverInfo.IsTrial;
+            IReadOnlyList<string> licenseKeys = serverInfo.LicenseKeys;
+            IReadOnlyList<string> licenseLabels = serverInfo.LicenseLabels;
+            string licenseSignature = serverInfo.LicenseSignature;
+            LicenseState licenseState = serverInfo.LicenseState;
+            Guid masterGuid = serverInfo.MasterGuid;
+            ServerMode mode = serverInfo.Mode;
+            string osBuild = serverInfo.OSBuild;
+            string osName = serverInfo.OSName;
+            string osVersion = serverInfo.OSVersion;
+            string serverName = serverInfo.ServerName;
+            Version version = serverInfo.Version;
+        }
+
+        [Trait("class", "Service: Server")]
+        [Fact]
+        public void CanRestartServer()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            service.LoginAsync("admin", "changeme").Wait();
+            service.Server.Restart();
+        }
+
+        #endregion
 
         public void SetFixture(AcceptanceTestingSetup data)
         { }

@@ -57,7 +57,7 @@ namespace Splunk.Sdk.Examples
 
             // Search : Pull model (foreach loop => IEnumerable)
 
-            Job job = await service.SearchAsync("search index=_internal | head 10");
+            Job job = await service.StartJobAsync("search index=_internal | head 10");
             SearchResults searchResults;
 
             using (searchResults = await job.GetSearchResultsAsync())
@@ -78,7 +78,7 @@ namespace Splunk.Sdk.Examples
 
             // Search : Push model (by way of subscription to search result records => IObservable)
 
-            job = await service.SearchAsync("search index=_internal | head 10");
+            job = await service.StartJobAsync("search index=_internal | head 10");
 
             using (searchResults = await job.GetSearchResultsAsync())
             {
@@ -138,10 +138,10 @@ namespace Splunk.Sdk.Examples
 
             // Search : Results preview
 
-            job = await service.SearchAsync("search index=_internal | head 10000");
+            job = await service.StartJobAsync("search index=_internal | head 10000");
             do
             {
-                using (searchResults = await job.GetSearchResultsPreviewAsync(new SearchResultArgs() { Count = 0 }))
+                using (searchResults = await job.GetSearchResultsPreviewAsync(new SearchResultsArgs() { Count = 0 }))
                 {
                     int recordNumber = 0;
 
@@ -157,7 +157,7 @@ namespace Splunk.Sdk.Examples
 
             job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours", dispatchArgs: new SavedSearchDispatchArgs());
 
-            using (searchResults = await job.GetSearchResultsAsync(new SearchResultArgs() { Count = 0 }))
+            using (searchResults = await job.GetSearchResultsAsync(new SearchResultsArgs() { Count = 0 }))
             {
                 int recordNumber = 0;
 
@@ -179,7 +179,7 @@ namespace Splunk.Sdk.Examples
             await service.LoginAsync("admin", "changeme");
 
             Console.WriteLine("Blocking search");
-            job = await service.SearchAsync("search index=_internal | head 10", ExecutionMode.Blocking);
+            job = await service.StartJobAsync("search index=_internal | head 10", ExecutionMode.Blocking);
 
             using (searchResults = await job.GetSearchResultsAsync())
             {

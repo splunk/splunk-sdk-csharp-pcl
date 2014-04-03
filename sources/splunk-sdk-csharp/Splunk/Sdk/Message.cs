@@ -17,6 +17,7 @@
 // TODO:
 // [O] Contracts
 // [ ] Documentation
+// [ ] Consider limiting the number of messages we process in a response body
 
 namespace Splunk.Sdk
 {
@@ -24,8 +25,8 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Linq;
-    using System.Xml.Linq;
+    using System.Threading.Tasks;
+    using System.Xml;
 
     sealed public class Message : IComparable, IComparable<Message>, IEquatable<Message>
     {
@@ -34,37 +35,9 @@ namespace Splunk.Sdk
         internal Message(MessageType type, string text)
         {
             Contract.Requires<ArgumentOutOfRangeException>(MessageType.Debug <= type && type <= MessageType.Fatal, "type");
+            Contract.Requires<ArgumentNullException>(text != null, "text");
             this.Type = type;
             this.Text = text;
-        }
-
-        internal Message(XElement message)
-        {
-            Contract.Requires<ArgumentException>(message != null && message.Name == "msg", "message");
-            string type = message.Attribute("type").Value;
-
-            switch (message.Attribute("type").Value)
-            {
-                case "DEBUG":
-                    this.Type = MessageType.Debug;
-                    break;
-                case "INFO":
-                    this.Type = MessageType.Information;
-                    break;
-                case "WARN":
-                    this.Type = MessageType.Warning;
-                    break;
-                case "ERROR":
-                    this.Type = MessageType.Error;
-                    break;
-                case "FATAL":
-                    this.Type = MessageType.Fatal;
-                    break;
-                default:
-                    throw new InvalidDataException(string.Format("Unrecognized message type: {0}", type));
-            }
-            
-            this.Text = message.Value;
         }
 
         #endregion
@@ -81,17 +54,21 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public int CompareTo(object o)
+        public int CompareTo(object other)
         {
-            return this.CompareTo(o as Message);
+            return this.CompareTo(other as Message);
         }
 
         public int CompareTo(Message other)
         {
             if (other == null)
+            {
                 return 1;
+            }
             if (object.ReferenceEquals(this, other))
+            {
                 return 0;
+            }
             int difference = this.Type - other.Type;
             return difference != 0 ? difference : this.Text.CompareTo(other.Text);
         }
@@ -104,7 +81,9 @@ namespace Splunk.Sdk
         public bool Equals(Message other)
         {
             if (other == null)
+            {
                 return false;
+            }
             return object.ReferenceEquals(this, other) || (this.Type == other.Type && other.Text == other.Text);
         }
 
@@ -128,9 +107,47 @@ namespace Splunk.Sdk
 
         #region Privates/internals
 
-        internal static IEnumerable<Message> GetMessages(XDocument document)
-        {
-            var messages = from element in document.Element("response").Element("messages").Elements() select new Message(element);
+        internal static async Task<IReadOnlyList<Message>> ReadMessagesAsync(XmlReader reader)
+        { 
+            if (reader.ReadState == ReadState.Initial)
+            {
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                {
+                    await reader.ReadAsync();
+                }
+            }
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
+            {
+                throw new InvalidDataException();  // TODO: Diagnostics
+            }
+
+            await reader.ReadAsync();
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "messages"))
+            {
+                throw new InvalidDataException();  // TODO: Diagnostics
+            }
+
+            var messages = new List<Message>();
+            await reader.ReadAsync();
+
+            while (reader.NodeType == XmlNodeType.Element)
+            {
+                if (reader.Name != "msg")
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                // TODO: Throw InvalidDataException if type attribute is missing
+
+                MessageType type = EnumConverter<MessageType>.Instance.Convert(reader.GetAttribute("type"));
+                string text = await reader.ReadElementContentAsStringAsync();
+                messages.Add(new Message(type, text));
+            }
+
             return messages;
         }
 

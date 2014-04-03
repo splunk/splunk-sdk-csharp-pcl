@@ -22,27 +22,31 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.IO;
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
 
-    struct Response : IDisposable
+    public class Response : IDisposable
     {
         #region Constructors
 
-        Response(HttpResponseMessage message) : this()
-        {
-            this.Message = message;
-        }
+        Response(HttpResponseMessage message)
+        { this.message = message; }
 
         #endregion
 
         #region Properties
 
         public HttpResponseMessage Message
+        {
+            get { return this.message; }
+        }
+
+        public Stream Stream
         { get; private set; }
 
-        public XmlReader Reader
+        public XmlReader XmlReader
         { get; private set; }
 
         #endregion
@@ -54,14 +58,16 @@ namespace Splunk.Sdk
             Contract.Requires(message != null);
 
             var response = new Response(message);
-            var stream = await message.Content.ReadAsStreamAsync();
+            response.Stream = await message.Content.ReadAsStreamAsync();
+            response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
 
-            response.Reader = XmlReader.Create(stream, XmlReaderSettings);
             return response;
         }
 
         public void Dispose()
-        { this.Dispose(true); }
+        { 
+            this.Dispose(true); 
+        }
 
         #endregion
 
@@ -72,8 +78,12 @@ namespace Splunk.Sdk
             ConformanceLevel = ConformanceLevel.Fragment,
             CloseInput = false,
             Async = true,
+            IgnoreProcessingInstructions = true,
+            IgnoreComments = true,
+            IgnoreWhitespace = true
         };
 
+        HttpResponseMessage message;
         bool disposed;
 
         void Dispose(bool disposing)
@@ -81,7 +91,7 @@ namespace Splunk.Sdk
             if (disposing && !this.disposed)
             {
                 this.Message.Dispose();
-                this.Reader.Dispose();
+                this.XmlReader.Dispose();
                 this.disposed = true;
                 
                 GC.SuppressFinalize(this);

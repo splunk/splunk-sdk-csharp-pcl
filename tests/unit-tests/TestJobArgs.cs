@@ -29,9 +29,9 @@ namespace Splunk.Sdk
         [Fact]
         void CanConstruct()
         {
-            var expectedKeyValuePairs = new KeyValuePair<string, object>[]
+            var expectedArguments = new Argument[]
             {
-                new KeyValuePair<string, object>("search", "some unchecked search string")
+                new Argument("search", "some unchecked search string")
             };
             string[] expectedString = new string[] {
                 "auto_cancel=0; auto_finalize_ec=0; auto_pause=0; earliest_time=null; enable_lookups=t; exec_mode=normal; force_bundle_replication=f; id=null; index_earliest=null; index_latest=null; latest_time=null; max_count=10000; max_time=0; namespace=null; now=null; reduce_freq=0; reload_macros=t; remote_server_list=null; reuse_max_seconds_ago=0; rf=null; rt_blocking=f; rt_indexfilter=f; rt_maxblocksecs=60; rt_queue_size=10000; search=null; search_listener=null; search_mode=normal; spawn_process=t; status_buckets=0; sync_bundle_replication=f; time_format=null; timeout=86400",
@@ -43,99 +43,132 @@ namespace Splunk.Sdk
 
             args = new JobArgs();
             Assert.Equal(expectedString[0], args.ToString());
-            Assert.Throws(typeof(SerializationException), () => args.ToArray());
+            Assert.Throws(typeof(SerializationException), () => args.ToArray()); // because a search string is required
             args.Search = search;
             Assert.Equal(expectedString[1], args.ToString());
-            Assert.Equal(expectedKeyValuePairs, args.ToArray());
+            Assert.Equal(expectedArguments, args);
 
             args = new JobArgs(search);
             Assert.Equal(expectedString[1], args.ToString());
-            Assert.Equal(expectedKeyValuePairs, args.ToArray());
+            Assert.Equal(expectedArguments, args);
             args.Search = null;
             Assert.Equal(expectedString[0], args.ToString());
-            Assert.Throws(typeof(SerializationException), () => args.ToArray());
+            Assert.Throws(typeof(SerializationException), () => args.ToArray()); // because a search string is required
         }
 
         [Trait("class", "JobArgs")]
         [Fact]
-        void HasCorrectDefaults()
+        void CanSetEveryValue()
         {
-            var defaults = new List<KeyValuePair<string, Func<JobArgs, bool>>>()
+            var args = new JobArgs()
             {
-                new KeyValuePair<string, Func<JobArgs, bool>>("Search",
-                    (jobArgs) => jobArgs.Search == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("AutoCancel", 
-                    (jobArgs) => jobArgs.AutoCancel == 0),
-                new KeyValuePair<string, Func<JobArgs, bool>>("AutoFinalizeEventCount",
-                    (jobArgs) => jobArgs.AutoFinalizeEventCount == 0),
-                new KeyValuePair<string, Func<JobArgs, bool>>("AutoPause",
-                    (jobArgs) => jobArgs.AutoPause == 0),
-                new KeyValuePair<string, Func<JobArgs, bool>>("EarliestTime", 
-                    (jobArgs) => jobArgs.EarliestTime == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("EnableLookups",
-                    (jobArgs) => jobArgs.EnableLookups == true),
-                new KeyValuePair<string, Func<JobArgs, bool>>("ExecutionMode",
-                    (jobArgs) => jobArgs.ExecutionMode == ExecutionMode.Normal),
-                new KeyValuePair<string, Func<JobArgs, bool>>("ForceBundleReplication",
-                    (jobArgs) => jobArgs.ForceBundleReplication == false),
-                new KeyValuePair<string, Func<JobArgs, bool>>("ForceBundleReplication",
-                    (jobArgs) => jobArgs.Id == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("ForceBundleReplication",
-                    (jobArgs) => jobArgs.ForceBundleReplication == false),
-                new KeyValuePair<string, Func<JobArgs, bool>>("IndexEarliest",
-                    (jobArgs) => jobArgs.IndexEarliest == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("IndexLatest",
-                    (jobArgs) => jobArgs.IndexLatest == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("LatestTime",
-                    (jobArgs) => jobArgs.LatestTime == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("MaxCount",
-                    (jobArgs) => jobArgs.MaxCount == 10000),
-                new KeyValuePair<string, Func<JobArgs, bool>>("MaxTime",
-                    (jobArgs) => jobArgs.MaxTime == 0),
-                new KeyValuePair<string, Func<JobArgs, bool>>("Namespace",
-                    (jobArgs) => jobArgs.Namespace == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("Now",
-                    (jobArgs) => jobArgs.Now == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("ReduceFrequency",
-                    (jobArgs) => jobArgs.ReduceFrequency == 0),
-                new KeyValuePair<string, Func<JobArgs, bool>>("ReloadMacros",
-                    (jobArgs) => jobArgs.ReloadMacros == true),
-                new KeyValuePair<string, Func<JobArgs, bool>>("RemoteServerList",
-                    (jobArgs) => jobArgs.RemoteServerList == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("RequiredFieldList",
-                    (jobArgs) => jobArgs.RequiredFieldList == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("ReuseMaxSecondsAgo",
-                    (jobArgs) => jobArgs.ReuseMaxSecondsAgo == 0),
-                new KeyValuePair<string, Func<JobArgs, bool>>("RealTimeBlocking",
-                    (jobArgs) => jobArgs.RealTimeBlocking == false),
-                new KeyValuePair<string, Func<JobArgs, bool>>("RealTimeIndexFilter",
-                    (jobArgs) => jobArgs.RealTimeIndexFilter == false),
-                new KeyValuePair<string, Func<JobArgs, bool>>("RealTimeMaxBlockSeconds",
-                    (jobArgs) => jobArgs.RealTimeMaxBlockSeconds == 60),
-                new KeyValuePair<string, Func<JobArgs, bool>>("RealTimeQueueSize",
-                    (jobArgs) => jobArgs.RealTimeQueueSize == 10000),
-                new KeyValuePair<string, Func<JobArgs, bool>>("SearchListener",
-                    (jobArgs) => jobArgs.SearchListener == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("SearchMode",
-                    (jobArgs) => jobArgs.SearchMode == SearchMode.Normal),
-                new KeyValuePair<string, Func<JobArgs, bool>>("SpawnProcess",
-                    (jobArgs) => jobArgs.SpawnProcess == true),
-                new KeyValuePair<string, Func<JobArgs, bool>>("StatusBuckets",
-                    (jobArgs) => jobArgs.StatusBuckets == 0),
-                new KeyValuePair<string, Func<JobArgs, bool>>("SyncBundleReplication",
-                    (jobArgs) => jobArgs.SyncBundleReplication == false),
-                new KeyValuePair<string, Func<JobArgs, bool>>("TimeFormat",
-                    (jobArgs) => jobArgs.TimeFormat == null),
-                new KeyValuePair<string, Func<JobArgs, bool>>("Timeout",
-                    (jobArgs) => jobArgs.Timeout == 86400),
+                AutoCancel = 1,
+                AutoFinalizeEventCount = 2,
+                AutoPause = 3,
+                EarliestTime = "some_unchecked_string",
+                EnableLookups = false,
+                ExecutionMode = ExecutionMode.Blocking,
+                ForceBundleReplication = true,
+                Id = "some_unchecked_string",
+                IndexEarliest = "some_unchecked_string",
+                IndexLatest = "some_unchecked_string",
+                LatestTime = "some_unchecked_string",
+                MaxCount = 4,
+                MaxTime = 5,
+                Namespace = "some_unchecked_string",
+                Now = "some_unchecked_string",
+                RealTimeBlocking = true,
+                RealTimeIndexFilter = true,
+                RealTimeMaxBlockSeconds = 6,
+                RealTimeQueueSize = 7,
+                ReduceFrequency = 8,
+                ReloadMacros = false,
+                RemoteServerList = "some_unchecked_string",
+                RequiredFieldList = new List<string>() { "some_unchecked_string", "some_other_uncheck_string" },
+                ReuseMaxSecondsAgo = 9,
+                Search = "some_unchecked_string",
+                SearchListener = "some_unchecked_string",
+                SearchMode = SearchMode.Realtime,
+                SpawnProcess = false,
+                StatusBuckets = 10,
+                SyncBundleReplication = true,
+                TimeFormat = "some_unchecked_string",
+                Timeout = 11
             };
 
-            var args = new JobArgs();
+            Assert.Equal(
+                "auto_cancel=1; " +
+                "auto_finalize_ec=2; " +
+                "auto_pause=3; " + 
+                "earliest_time=some_unchecked_string; " + 
+                "enable_lookups=f; " +
+                "exec_mode=blocking; " +
+                "force_bundle_replication=t; " +
+                "id=some_unchecked_string; " +
+                "index_earliest=some_unchecked_string; " +
+                "index_latest=some_unchecked_string; " +
+                "latest_time=some_unchecked_string; " +
+                "max_count=4; " +
+                "max_time=5; " +
+                "namespace=some_unchecked_string; " +
+                "now=some_unchecked_string; " +
+                "reduce_freq=8; " +
+                "reload_macros=f; " +
+                "remote_server_list=some_unchecked_string; " +
+                "reuse_max_seconds_ago=9; " +
+                "rf=some_unchecked_string; " +
+                "rf=some_other_uncheck_string; " +
+                "rt_blocking=t; " +
+                "rt_indexfilter=t; " +
+                "rt_maxblocksecs=6; " +
+                "rt_queue_size=7; " +
+                "search=some_unchecked_string; " +
+                "search_listener=some_unchecked_string; " +
+                "search_mode=realtime; " +
+                "spawn_process=f; " +
+                "status_buckets=10; " +
+                "sync_bundle_replication=t; " +
+                "time_format=some_unchecked_string; " +
+                "timeout=11", 
+                args.ToString());
 
-            foreach (var item in defaults)
-            {
-                Assert.True(item.Value(args), string.Format("Incorrect default value: JobArgs.{0}", item.Key));
-            }
+            Assert.Equal(new List<Argument>()
+                {
+                    new Argument("auto_cancel", "1"),
+                    new Argument("auto_finalize_ec", "2"),
+                    new Argument("auto_pause", "3"),
+                    new Argument("earliest_time", "some_unchecked_string"),
+                    new Argument("enable_lookups", "f"),
+                    new Argument("exec_mode", "blocking"),
+                    new Argument("force_bundle_replication", "t"),
+                    new Argument("id", "some_unchecked_string"),
+                    new Argument("index_earliest", "some_unchecked_string"),
+                    new Argument("index_latest", "some_unchecked_string"),
+                    new Argument("latest_time", "some_unchecked_string"),
+                    new Argument("max_count", "4"),
+                    new Argument("max_time", "5"),
+                    new Argument("namespace", "some_unchecked_string"),
+                    new Argument("now", "some_unchecked_string"),
+                    new Argument("reduce_freq", "8"),
+                    new Argument("reload_macros", "f"),
+                    new Argument("remote_server_list", "some_unchecked_string"),
+                    new Argument("reuse_max_seconds_ago", "9"),
+                    new Argument("rf", "some_unchecked_string"),
+                    new Argument("rf", "some_other_uncheck_string"),
+                    new Argument("rt_blocking", "t"),
+                    new Argument("rt_indexfilter", "t"),
+                    new Argument("rt_maxblocksecs", "6"),
+                    new Argument("rt_queue_size", "7"),
+                    new Argument("search", "some_unchecked_string"),
+                    new Argument("search_listener", "some_unchecked_string"),
+                    new Argument("search_mode", "realtime"),
+                    new Argument("spawn_process", "f"),
+                    new Argument("status_buckets", "10"),
+                    new Argument("sync_bundle_replication", "t"),
+                    new Argument("time_format", "some_unchecked_string"),
+                    new Argument("timeout", "11")
+                },
+                args);
         }
     }
 }

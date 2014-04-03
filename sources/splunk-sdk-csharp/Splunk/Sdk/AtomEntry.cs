@@ -145,10 +145,10 @@ namespace Splunk.Sdk
 
             await reader.ReadAsync();
 
-            
             while (reader.NodeType == XmlNodeType.Element)
             {
                 string name = reader.Name;
+
                 switch (name)
                 {
                     case "title":
@@ -210,17 +210,13 @@ namespace Splunk.Sdk
                         this.Content = await ParsePropertyValueAsync(reader);
                         break;
 
-                    default: 
-                        //throw new InvalidDataException(); // TODO: Diagnostics
-                        await reader.ReadAsync();
-                        break;
+                    default: throw new InvalidDataException(); // TODO: Diagnostics
                 }
             }
 
             if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "entry"))
             {
-
-                //throw new InvalidDataException(); // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics
             }
 
             await reader.ReadAsync();

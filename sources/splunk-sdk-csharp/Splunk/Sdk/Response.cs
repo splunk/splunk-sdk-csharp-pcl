@@ -61,16 +61,6 @@ namespace Splunk.Sdk
             response.Stream = await message.Content.ReadAsStreamAsync();
             response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
 
-            //Stream mystream = response.Stream;
-            //StreamReader streamReader = new StreamReader(mystream, true);
-            //string x=streamReader.ReadToEnd();
-
-            //if (x.Length < 1)
-            //{
-            //    throw new Exception(x);
-            //}
-            //streamReader.Dispose();
-
             return response;
         }
 

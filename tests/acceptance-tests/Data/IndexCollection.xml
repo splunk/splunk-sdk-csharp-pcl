@@ -1,0 +1,870 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>indexes</title>
+  <id>https://localhost:8089/servicesNS/nobody/search/data/indexes</id>
+  <updated>2014-04-03T11:08:59-07:00</updated>
+  <generator build="189883" version="6.0.1"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <link href="/servicesNS/nobody/search/data/indexes/_new" rel="create"/>
+  <link href="/servicesNS/nobody/search/data/indexes/_reload" rel="_reload"/>
+  <opensearch:totalResults>8</opensearch:totalResults>
+  <opensearch:itemsPerPage>30</opensearch:itemsPerPage>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <s:messages/>
+  <entry>
+    <title>_audit</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/_audit</id>
+    <updated>2014-04-03T11:04:54-07:00</updated>
+    <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_audit/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="edit"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_audit/disable" rel="disable"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="assureUTF8">0</s:key>
+        <s:key name="blockSignSize">0</s:key>
+        <s:key name="blockSignatureDatabase">_blocksignature</s:key>
+        <s:key name="bucketRebuildMemoryHint">auto</s:key>
+        <s:key name="coldPath">$SPLUNK_DB\audit\colddb</s:key>
+        <s:key name="coldPath_expanded">C:\Program Files\Splunk\var\lib\splunk\audit\colddb</s:key>
+        <s:key name="coldToFrozenDir"></s:key>
+        <s:key name="coldToFrozenScript"></s:key>
+        <s:key name="compressRawdata">1</s:key>
+        <s:key name="currentDBSizeMB">11</s:key>
+        <s:key name="defaultDatabase">main</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableOnlineBucketRepair">1</s:key>
+        <s:key name="enableRealtimeSearch">1</s:key>
+        <s:key name="frozenTimePeriodInSecs">188697600</s:key>
+        <s:key name="homePath">$SPLUNK_DB\audit\db</s:key>
+        <s:key name="homePath_expanded">C:\Program Files\Splunk\var\lib\splunk\audit\db</s:key>
+        <s:key name="indexThreads">auto</s:key>
+        <s:key name="isInternal">1</s:key>
+        <s:key name="isReady">1</s:key>
+        <s:key name="isVirtual">0</s:key>
+        <s:key name="lastInitSequenceNumber">1</s:key>
+        <s:key name="lastInitTime">1396214405</s:key>
+        <s:key name="maxBloomBackfillBucketAge">30d</s:key>
+        <s:key name="maxBucketSizeCacheEntries">0</s:key>
+        <s:key name="maxConcurrentOptimizes">6</s:key>
+        <s:key name="maxDataSize">auto</s:key>
+        <s:key name="maxHotBuckets">3</s:key>
+        <s:key name="maxHotIdleSecs">0</s:key>
+        <s:key name="maxHotSpanSecs">7776000</s:key>
+        <s:key name="maxMemMB">5</s:key>
+        <s:key name="maxMetaEntries">1000000</s:key>
+        <s:key name="maxRunningProcessGroups">8</s:key>
+        <s:key name="maxRunningProcessGroupsLowPriority">1</s:key>
+        <s:key name="maxTime">2014-03-30T14:20:04-0700</s:key>
+        <s:key name="maxTimeUnreplicatedNoAcks">300</s:key>
+        <s:key name="maxTimeUnreplicatedWithAcks">60</s:key>
+        <s:key name="maxTotalDataSizeMB">500000</s:key>
+        <s:key name="maxWarmDBCount">300</s:key>
+        <s:key name="memPoolMB">auto</s:key>
+        <s:key name="minRawFileSyncSecs">disable</s:key>
+        <s:key name="minStreamGroupQueueSize"/>
+        <s:key name="minTime">2013-11-04T13:28:54-0800</s:key>
+        <s:key name="partialServiceMetaPeriod">0</s:key>
+        <s:key name="processTrackerServiceInterval">1</s:key>
+        <s:key name="quarantineFutureSecs">2592000</s:key>
+        <s:key name="quarantinePastSecs">77760000</s:key>
+        <s:key name="rawChunkSizeBytes">131072</s:key>
+        <s:key name="repFactor">0</s:key>
+        <s:key name="rotatePeriodInSecs">60</s:key>
+        <s:key name="serviceMetaPeriod">25</s:key>
+        <s:key name="serviceOnlyAsNeeded">1</s:key>
+        <s:key name="serviceSubtaskTimingPeriod">30</s:key>
+        <s:key name="summaryHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\audit\summary</s:key>
+        <s:key name="suppressBannerList"></s:key>
+        <s:key name="sync">0</s:key>
+        <s:key name="syncMeta">1</s:key>
+        <s:key name="thawedPath">$SPLUNK_DB\audit\thaweddb</s:key>
+        <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\audit\thaweddb</s:key>
+        <s:key name="throttleCheckPeriod">15</s:key>
+        <s:key name="totalEventCount">56071</s:key>
+        <s:key name="tstatsHomePath">volume:_splunk_summaries\audit\datamodel_summary</s:key>
+        <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\audit\datamodel_summary</s:key>
+        <s:key name="warmToColdScript"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>_blocksignature</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/_blocksignature</id>
+    <updated>2014-03-30T14:20:05-07:00</updated>
+    <link href="/servicesNS/nobody/system/data/indexes/_blocksignature" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/_blocksignature" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_blocksignature/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_blocksignature" rel="edit"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_blocksignature/disable" rel="disable"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="assureUTF8">0</s:key>
+        <s:key name="blockSignSize">0</s:key>
+        <s:key name="blockSignatureDatabase">_blocksignature</s:key>
+        <s:key name="bucketRebuildMemoryHint">auto</s:key>
+        <s:key name="coldPath">$SPLUNK_DB\blockSignature\colddb</s:key>
+        <s:key name="coldPath_expanded">C:\Program Files\Splunk\var\lib\splunk\blockSignature\colddb</s:key>
+        <s:key name="coldToFrozenDir"></s:key>
+        <s:key name="coldToFrozenScript"></s:key>
+        <s:key name="compressRawdata">1</s:key>
+        <s:key name="currentDBSizeMB">1</s:key>
+        <s:key name="defaultDatabase">main</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableOnlineBucketRepair">1</s:key>
+        <s:key name="enableRealtimeSearch">1</s:key>
+        <s:key name="frozenTimePeriodInSecs">0</s:key>
+        <s:key name="homePath">$SPLUNK_DB\blockSignature\db</s:key>
+        <s:key name="homePath_expanded">C:\Program Files\Splunk\var\lib\splunk\blockSignature\db</s:key>
+        <s:key name="indexThreads">auto</s:key>
+        <s:key name="isInternal">1</s:key>
+        <s:key name="isReady">1</s:key>
+        <s:key name="isVirtual">0</s:key>
+        <s:key name="lastInitSequenceNumber">1</s:key>
+        <s:key name="lastInitTime">1396214405</s:key>
+        <s:key name="maxBloomBackfillBucketAge">30d</s:key>
+        <s:key name="maxBucketSizeCacheEntries">0</s:key>
+        <s:key name="maxConcurrentOptimizes">6</s:key>
+        <s:key name="maxDataSize">1000</s:key>
+        <s:key name="maxHotBuckets">3</s:key>
+        <s:key name="maxHotIdleSecs">0</s:key>
+        <s:key name="maxHotSpanSecs">7776000</s:key>
+        <s:key name="maxMemMB">5</s:key>
+        <s:key name="maxMetaEntries">1000000</s:key>
+        <s:key name="maxRunningProcessGroups">8</s:key>
+        <s:key name="maxRunningProcessGroupsLowPriority">1</s:key>
+        <s:key name="maxTime"></s:key>
+        <s:key name="maxTimeUnreplicatedNoAcks">300</s:key>
+        <s:key name="maxTimeUnreplicatedWithAcks">60</s:key>
+        <s:key name="maxTotalDataSizeMB">0</s:key>
+        <s:key name="maxWarmDBCount">300</s:key>
+        <s:key name="memPoolMB">auto</s:key>
+        <s:key name="minRawFileSyncSecs">disable</s:key>
+        <s:key name="minStreamGroupQueueSize"/>
+        <s:key name="minTime"></s:key>
+        <s:key name="partialServiceMetaPeriod">0</s:key>
+        <s:key name="processTrackerServiceInterval">1</s:key>
+        <s:key name="quarantineFutureSecs">2592000</s:key>
+        <s:key name="quarantinePastSecs">77760000</s:key>
+        <s:key name="rawChunkSizeBytes">131072</s:key>
+        <s:key name="repFactor">0</s:key>
+        <s:key name="rotatePeriodInSecs">60</s:key>
+        <s:key name="serviceMetaPeriod">25</s:key>
+        <s:key name="serviceOnlyAsNeeded">1</s:key>
+        <s:key name="serviceSubtaskTimingPeriod">30</s:key>
+        <s:key name="summaryHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\blockSignature\summary</s:key>
+        <s:key name="suppressBannerList"></s:key>
+        <s:key name="sync">0</s:key>
+        <s:key name="syncMeta">1</s:key>
+        <s:key name="thawedPath">$SPLUNK_DB\blockSignature\thaweddb</s:key>
+        <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\blockSignature\thaweddb</s:key>
+        <s:key name="throttleCheckPeriod">15</s:key>
+        <s:key name="totalEventCount">0</s:key>
+        <s:key name="tstatsHomePath">volume:_splunk_summaries\blockSignature\datamodel_summary</s:key>
+        <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\blockSignature\datamodel_summary</s:key>
+        <s:key name="warmToColdScript"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>_internal</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/_internal</id>
+    <updated>2014-04-03T11:08:59-07:00</updated>
+    <link href="/servicesNS/nobody/system/data/indexes/_internal" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/_internal" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_internal/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_internal" rel="edit"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_internal/disable" rel="disable"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="assureUTF8">0</s:key>
+        <s:key name="blockSignSize">0</s:key>
+        <s:key name="blockSignatureDatabase">_blocksignature</s:key>
+        <s:key name="bucketRebuildMemoryHint">auto</s:key>
+        <s:key name="coldPath">$SPLUNK_DB\_internaldb\colddb</s:key>
+        <s:key name="coldPath_expanded">C:\Program Files\Splunk\var\lib\splunk\_internaldb\colddb</s:key>
+        <s:key name="coldToFrozenDir"></s:key>
+        <s:key name="coldToFrozenScript"></s:key>
+        <s:key name="compressRawdata">1</s:key>
+        <s:key name="currentDBSizeMB">211</s:key>
+        <s:key name="defaultDatabase">main</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableOnlineBucketRepair">1</s:key>
+        <s:key name="enableRealtimeSearch">1</s:key>
+        <s:key name="frozenTimePeriodInSecs">2592000</s:key>
+        <s:key name="homePath">$SPLUNK_DB\_internaldb\db</s:key>
+        <s:key name="homePath_expanded">C:\Program Files\Splunk\var\lib\splunk\_internaldb\db</s:key>
+        <s:key name="indexThreads">auto</s:key>
+        <s:key name="isInternal">1</s:key>
+        <s:key name="isReady">1</s:key>
+        <s:key name="isVirtual">0</s:key>
+        <s:key name="lastInitSequenceNumber">1</s:key>
+        <s:key name="lastInitTime">1396214405</s:key>
+        <s:key name="maxBloomBackfillBucketAge">30d</s:key>
+        <s:key name="maxBucketSizeCacheEntries">0</s:key>
+        <s:key name="maxConcurrentOptimizes">6</s:key>
+        <s:key name="maxDataSize">100</s:key>
+        <s:key name="maxHotBuckets">3</s:key>
+        <s:key name="maxHotIdleSecs">0</s:key>
+        <s:key name="maxHotSpanSecs">7776000</s:key>
+        <s:key name="maxMemMB">5</s:key>
+        <s:key name="maxMetaEntries">1000000</s:key>
+        <s:key name="maxRunningProcessGroups">8</s:key>
+        <s:key name="maxRunningProcessGroupsLowPriority">1</s:key>
+        <s:key name="maxTime">2014-03-30T22:19:57-0700</s:key>
+        <s:key name="maxTimeUnreplicatedNoAcks">300</s:key>
+        <s:key name="maxTimeUnreplicatedWithAcks">60</s:key>
+        <s:key name="maxTotalDataSizeMB">500000</s:key>
+        <s:key name="maxWarmDBCount">300</s:key>
+        <s:key name="memPoolMB">auto</s:key>
+        <s:key name="minRawFileSyncSecs">disable</s:key>
+        <s:key name="minStreamGroupQueueSize"/>
+        <s:key name="minTime">2014-02-22T13:04:17-0800</s:key>
+        <s:key name="partialServiceMetaPeriod">0</s:key>
+        <s:key name="processTrackerServiceInterval">1</s:key>
+        <s:key name="quarantineFutureSecs">2592000</s:key>
+        <s:key name="quarantinePastSecs">77760000</s:key>
+        <s:key name="rawChunkSizeBytes">131072</s:key>
+        <s:key name="repFactor">0</s:key>
+        <s:key name="rotatePeriodInSecs">60</s:key>
+        <s:key name="serviceMetaPeriod">25</s:key>
+        <s:key name="serviceOnlyAsNeeded">1</s:key>
+        <s:key name="serviceSubtaskTimingPeriod">30</s:key>
+        <s:key name="summaryHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\_internaldb\summary</s:key>
+        <s:key name="suppressBannerList"></s:key>
+        <s:key name="sync">0</s:key>
+        <s:key name="syncMeta">1</s:key>
+        <s:key name="thawedPath">$SPLUNK_DB\_internaldb\thaweddb</s:key>
+        <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\_internaldb\thaweddb</s:key>
+        <s:key name="throttleCheckPeriod">15</s:key>
+        <s:key name="totalEventCount">3733090</s:key>
+        <s:key name="tstatsHomePath">volume:_splunk_summaries\_internaldb\datamodel_summary</s:key>
+        <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\_internaldb\datamodel_summary</s:key>
+        <s:key name="warmToColdScript"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>_thefishbucket</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/_thefishbucket</id>
+    <updated>2014-03-30T14:20:05-07:00</updated>
+    <link href="/servicesNS/nobody/system/data/indexes/_thefishbucket" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/_thefishbucket" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_thefishbucket/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_thefishbucket" rel="edit"/>
+    <link href="/servicesNS/nobody/system/data/indexes/_thefishbucket/disable" rel="disable"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="assureUTF8">0</s:key>
+        <s:key name="blockSignSize">0</s:key>
+        <s:key name="blockSignatureDatabase">_blocksignature</s:key>
+        <s:key name="bucketRebuildMemoryHint">auto</s:key>
+        <s:key name="coldPath">$SPLUNK_DB\fishbucket\colddb</s:key>
+        <s:key name="coldPath_expanded">C:\Program Files\Splunk\var\lib\splunk\fishbucket\colddb</s:key>
+        <s:key name="coldToFrozenDir"></s:key>
+        <s:key name="coldToFrozenScript"></s:key>
+        <s:key name="compressRawdata">1</s:key>
+        <s:key name="currentDBSizeMB">1</s:key>
+        <s:key name="defaultDatabase">main</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableOnlineBucketRepair">1</s:key>
+        <s:key name="enableRealtimeSearch">1</s:key>
+        <s:key name="frozenTimePeriodInSecs">2419200</s:key>
+        <s:key name="homePath">$SPLUNK_DB\fishbucket\db</s:key>
+        <s:key name="homePath_expanded">C:\Program Files\Splunk\var\lib\splunk\fishbucket\db</s:key>
+        <s:key name="indexThreads">auto</s:key>
+        <s:key name="isInternal">1</s:key>
+        <s:key name="isReady">1</s:key>
+        <s:key name="isVirtual">0</s:key>
+        <s:key name="lastInitSequenceNumber">1</s:key>
+        <s:key name="lastInitTime">1396214405</s:key>
+        <s:key name="maxBloomBackfillBucketAge">30d</s:key>
+        <s:key name="maxBucketSizeCacheEntries">0</s:key>
+        <s:key name="maxConcurrentOptimizes">6</s:key>
+        <s:key name="maxDataSize">500</s:key>
+        <s:key name="maxHotBuckets">3</s:key>
+        <s:key name="maxHotIdleSecs">0</s:key>
+        <s:key name="maxHotSpanSecs">7776000</s:key>
+        <s:key name="maxMemMB">5</s:key>
+        <s:key name="maxMetaEntries">1000000</s:key>
+        <s:key name="maxRunningProcessGroups">8</s:key>
+        <s:key name="maxRunningProcessGroupsLowPriority">1</s:key>
+        <s:key name="maxTime"></s:key>
+        <s:key name="maxTimeUnreplicatedNoAcks">300</s:key>
+        <s:key name="maxTimeUnreplicatedWithAcks">60</s:key>
+        <s:key name="maxTotalDataSizeMB">500000</s:key>
+        <s:key name="maxWarmDBCount">300</s:key>
+        <s:key name="memPoolMB">auto</s:key>
+        <s:key name="minRawFileSyncSecs">disable</s:key>
+        <s:key name="minStreamGroupQueueSize"/>
+        <s:key name="minTime"></s:key>
+        <s:key name="partialServiceMetaPeriod">0</s:key>
+        <s:key name="processTrackerServiceInterval">1</s:key>
+        <s:key name="quarantineFutureSecs">2592000</s:key>
+        <s:key name="quarantinePastSecs">77760000</s:key>
+        <s:key name="rawChunkSizeBytes">131072</s:key>
+        <s:key name="repFactor">0</s:key>
+        <s:key name="rotatePeriodInSecs">60</s:key>
+        <s:key name="serviceMetaPeriod">25</s:key>
+        <s:key name="serviceOnlyAsNeeded">1</s:key>
+        <s:key name="serviceSubtaskTimingPeriod">30</s:key>
+        <s:key name="summaryHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\fishbucket\summary</s:key>
+        <s:key name="suppressBannerList"></s:key>
+        <s:key name="sync">0</s:key>
+        <s:key name="syncMeta">1</s:key>
+        <s:key name="thawedPath">$SPLUNK_DB\fishbucket\thaweddb</s:key>
+        <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\fishbucket\thaweddb</s:key>
+        <s:key name="throttleCheckPeriod">15</s:key>
+        <s:key name="totalEventCount">0</s:key>
+        <s:key name="tstatsHomePath">volume:_splunk_summaries\fishbucket\datamodel_summary</s:key>
+        <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\fishbucket\datamodel_summary</s:key>
+        <s:key name="warmToColdScript"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>history</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/history</id>
+    <updated>2014-03-30T14:20:05-07:00</updated>
+    <link href="/servicesNS/nobody/system/data/indexes/history" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/history" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/history/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/data/indexes/history" rel="edit"/>
+    <link href="/servicesNS/nobody/system/data/indexes/history/disable" rel="disable"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="assureUTF8">0</s:key>
+        <s:key name="blockSignSize">0</s:key>
+        <s:key name="blockSignatureDatabase">_blocksignature</s:key>
+        <s:key name="bucketRebuildMemoryHint">auto</s:key>
+        <s:key name="coldPath">$SPLUNK_DB\historydb\colddb</s:key>
+        <s:key name="coldPath_expanded">C:\Program Files\Splunk\var\lib\splunk\historydb\colddb</s:key>
+        <s:key name="coldToFrozenDir"></s:key>
+        <s:key name="coldToFrozenScript"></s:key>
+        <s:key name="compressRawdata">1</s:key>
+        <s:key name="currentDBSizeMB">1</s:key>
+        <s:key name="defaultDatabase">main</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableOnlineBucketRepair">1</s:key>
+        <s:key name="enableRealtimeSearch">1</s:key>
+        <s:key name="frozenTimePeriodInSecs">604800</s:key>
+        <s:key name="homePath">$SPLUNK_DB\historydb\db</s:key>
+        <s:key name="homePath_expanded">C:\Program Files\Splunk\var\lib\splunk\historydb\db</s:key>
+        <s:key name="indexThreads">auto</s:key>
+        <s:key name="isInternal">0</s:key>
+        <s:key name="isReady">1</s:key>
+        <s:key name="isVirtual">0</s:key>
+        <s:key name="lastInitSequenceNumber">1</s:key>
+        <s:key name="lastInitTime">1396214405</s:key>
+        <s:key name="maxBloomBackfillBucketAge">30d</s:key>
+        <s:key name="maxBucketSizeCacheEntries">0</s:key>
+        <s:key name="maxConcurrentOptimizes">6</s:key>
+        <s:key name="maxDataSize">10</s:key>
+        <s:key name="maxHotBuckets">3</s:key>
+        <s:key name="maxHotIdleSecs">0</s:key>
+        <s:key name="maxHotSpanSecs">7776000</s:key>
+        <s:key name="maxMemMB">5</s:key>
+        <s:key name="maxMetaEntries">1000000</s:key>
+        <s:key name="maxRunningProcessGroups">8</s:key>
+        <s:key name="maxRunningProcessGroupsLowPriority">1</s:key>
+        <s:key name="maxTime"></s:key>
+        <s:key name="maxTimeUnreplicatedNoAcks">300</s:key>
+        <s:key name="maxTimeUnreplicatedWithAcks">60</s:key>
+        <s:key name="maxTotalDataSizeMB">500000</s:key>
+        <s:key name="maxWarmDBCount">300</s:key>
+        <s:key name="memPoolMB">auto</s:key>
+        <s:key name="minRawFileSyncSecs">disable</s:key>
+        <s:key name="minStreamGroupQueueSize"/>
+        <s:key name="minTime"></s:key>
+        <s:key name="partialServiceMetaPeriod">0</s:key>
+        <s:key name="processTrackerServiceInterval">1</s:key>
+        <s:key name="quarantineFutureSecs">2592000</s:key>
+        <s:key name="quarantinePastSecs">77760000</s:key>
+        <s:key name="rawChunkSizeBytes">131072</s:key>
+        <s:key name="repFactor">0</s:key>
+        <s:key name="rotatePeriodInSecs">60</s:key>
+        <s:key name="serviceMetaPeriod">25</s:key>
+        <s:key name="serviceOnlyAsNeeded">1</s:key>
+        <s:key name="serviceSubtaskTimingPeriod">30</s:key>
+        <s:key name="summaryHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\historydb\summary</s:key>
+        <s:key name="suppressBannerList"></s:key>
+        <s:key name="sync">0</s:key>
+        <s:key name="syncMeta">1</s:key>
+        <s:key name="thawedPath">$SPLUNK_DB\historydb\thaweddb</s:key>
+        <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\historydb\thaweddb</s:key>
+        <s:key name="throttleCheckPeriod">15</s:key>
+        <s:key name="totalEventCount">0</s:key>
+        <s:key name="tstatsHomePath">volume:_splunk_summaries\historydb\datamodel_summary</s:key>
+        <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\historydb\datamodel_summary</s:key>
+        <s:key name="warmToColdScript"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>main</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/main</id>
+    <updated>2014-03-30T14:20:05-07:00</updated>
+    <link href="/servicesNS/nobody/system/data/indexes/main" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/main" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/main/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/data/indexes/main" rel="edit"/>
+    <link href="/servicesNS/nobody/system/data/indexes/main/disable" rel="disable"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="assureUTF8">0</s:key>
+        <s:key name="blockSignSize">0</s:key>
+        <s:key name="blockSignatureDatabase">_blocksignature</s:key>
+        <s:key name="bucketRebuildMemoryHint">auto</s:key>
+        <s:key name="coldPath">$SPLUNK_DB\defaultdb\colddb</s:key>
+        <s:key name="coldPath_expanded">C:\Program Files\Splunk\var\lib\splunk\defaultdb\colddb</s:key>
+        <s:key name="coldToFrozenDir"></s:key>
+        <s:key name="coldToFrozenScript"></s:key>
+        <s:key name="compressRawdata">1</s:key>
+        <s:key name="currentDBSizeMB">1</s:key>
+        <s:key name="defaultDatabase">main</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableOnlineBucketRepair">1</s:key>
+        <s:key name="enableRealtimeSearch">1</s:key>
+        <s:key name="frozenTimePeriodInSecs">188697600</s:key>
+        <s:key name="homePath">$SPLUNK_DB\defaultdb\db</s:key>
+        <s:key name="homePath_expanded">C:\Program Files\Splunk\var\lib\splunk\defaultdb\db</s:key>
+        <s:key name="indexThreads">auto</s:key>
+        <s:key name="isInternal">0</s:key>
+        <s:key name="isReady">1</s:key>
+        <s:key name="isVirtual">0</s:key>
+        <s:key name="lastInitSequenceNumber">1</s:key>
+        <s:key name="lastInitTime">1396214405</s:key>
+        <s:key name="maxBloomBackfillBucketAge">30d</s:key>
+        <s:key name="maxBucketSizeCacheEntries">0</s:key>
+        <s:key name="maxConcurrentOptimizes">6</s:key>
+        <s:key name="maxDataSize">auto_high_volume</s:key>
+        <s:key name="maxHotBuckets">10</s:key>
+        <s:key name="maxHotIdleSecs">86400</s:key>
+        <s:key name="maxHotSpanSecs">7776000</s:key>
+        <s:key name="maxMemMB">20</s:key>
+        <s:key name="maxMetaEntries">1000000</s:key>
+        <s:key name="maxRunningProcessGroups">8</s:key>
+        <s:key name="maxRunningProcessGroupsLowPriority">1</s:key>
+        <s:key name="maxTime"></s:key>
+        <s:key name="maxTimeUnreplicatedNoAcks">300</s:key>
+        <s:key name="maxTimeUnreplicatedWithAcks">60</s:key>
+        <s:key name="maxTotalDataSizeMB">500000</s:key>
+        <s:key name="maxWarmDBCount">300</s:key>
+        <s:key name="memPoolMB">auto</s:key>
+        <s:key name="minRawFileSyncSecs">disable</s:key>
+        <s:key name="minStreamGroupQueueSize"/>
+        <s:key name="minTime"></s:key>
+        <s:key name="partialServiceMetaPeriod">0</s:key>
+        <s:key name="processTrackerServiceInterval">1</s:key>
+        <s:key name="quarantineFutureSecs">2592000</s:key>
+        <s:key name="quarantinePastSecs">77760000</s:key>
+        <s:key name="rawChunkSizeBytes">131072</s:key>
+        <s:key name="repFactor">0</s:key>
+        <s:key name="rotatePeriodInSecs">60</s:key>
+        <s:key name="serviceMetaPeriod">25</s:key>
+        <s:key name="serviceOnlyAsNeeded">1</s:key>
+        <s:key name="serviceSubtaskTimingPeriod">30</s:key>
+        <s:key name="summaryHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\defaultdb\summary</s:key>
+        <s:key name="suppressBannerList"></s:key>
+        <s:key name="sync">0</s:key>
+        <s:key name="syncMeta">1</s:key>
+        <s:key name="thawedPath">$SPLUNK_DB\defaultdb\thaweddb</s:key>
+        <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\defaultdb\thaweddb</s:key>
+        <s:key name="throttleCheckPeriod">15</s:key>
+        <s:key name="totalEventCount">0</s:key>
+        <s:key name="tstatsHomePath">volume:_splunk_summaries\defaultdb\datamodel_summary</s:key>
+        <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\defaultdb\datamodel_summary</s:key>
+        <s:key name="warmToColdScript"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>splunklogger</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/splunklogger</id>
+    <updated>2014-04-03T11:09:18-07:00</updated>
+    <link href="/servicesNS/nobody/system/data/indexes/splunklogger" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/splunklogger" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/splunklogger/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/data/indexes/splunklogger" rel="edit"/>
+    <link href="/servicesNS/nobody/system/data/indexes/splunklogger/enable" rel="enable"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="assureUTF8">0</s:key>
+        <s:key name="blockSignSize">0</s:key>
+        <s:key name="blockSignatureDatabase">_blocksignature</s:key>
+        <s:key name="bucketRebuildMemoryHint">auto</s:key>
+        <s:key name="coldPath">$SPLUNK_DB\splunklogger\colddb</s:key>
+        <s:key name="coldPath_expanded">C:\Program Files\Splunk\var\lib\splunk\splunklogger\colddb</s:key>
+        <s:key name="coldToFrozenDir"></s:key>
+        <s:key name="coldToFrozenScript"></s:key>
+        <s:key name="compressRawdata">1</s:key>
+        <s:key name="currentDBSizeMB">0</s:key>
+        <s:key name="defaultDatabase">main</s:key>
+        <s:key name="disabled">1</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableOnlineBucketRepair">1</s:key>
+        <s:key name="enableRealtimeSearch">1</s:key>
+        <s:key name="frozenTimePeriodInSecs">188697600</s:key>
+        <s:key name="homePath">$SPLUNK_DB\splunklogger\db</s:key>
+        <s:key name="homePath_expanded">C:\Program Files\Splunk\var\lib\splunk\splunklogger\db</s:key>
+        <s:key name="indexThreads">auto</s:key>
+        <s:key name="isInternal">0</s:key>
+        <s:key name="isReady">0</s:key>
+        <s:key name="isVirtual">0</s:key>
+        <s:key name="maxBloomBackfillBucketAge">30d</s:key>
+        <s:key name="maxBucketSizeCacheEntries">0</s:key>
+        <s:key name="maxConcurrentOptimizes">6</s:key>
+        <s:key name="maxDataSize">auto</s:key>
+        <s:key name="maxHotBuckets">3</s:key>
+        <s:key name="maxHotIdleSecs">0</s:key>
+        <s:key name="maxHotSpanSecs">7776000</s:key>
+        <s:key name="maxMemMB">5</s:key>
+        <s:key name="maxMetaEntries">1000000</s:key>
+        <s:key name="maxRunningProcessGroups">8</s:key>
+        <s:key name="maxRunningProcessGroupsLowPriority">1</s:key>
+        <s:key name="maxTime"></s:key>
+        <s:key name="maxTimeUnreplicatedNoAcks">300</s:key>
+        <s:key name="maxTimeUnreplicatedWithAcks">60</s:key>
+        <s:key name="maxTotalDataSizeMB">500000</s:key>
+        <s:key name="maxWarmDBCount">300</s:key>
+        <s:key name="memPoolMB">auto</s:key>
+        <s:key name="minRawFileSyncSecs">disable</s:key>
+        <s:key name="minStreamGroupQueueSize"/>
+        <s:key name="minTime"></s:key>
+        <s:key name="partialServiceMetaPeriod">0</s:key>
+        <s:key name="processTrackerServiceInterval">1</s:key>
+        <s:key name="quarantineFutureSecs">2592000</s:key>
+        <s:key name="quarantinePastSecs">77760000</s:key>
+        <s:key name="rawChunkSizeBytes">131072</s:key>
+        <s:key name="repFactor">0</s:key>
+        <s:key name="rotatePeriodInSecs">60</s:key>
+        <s:key name="serviceMetaPeriod">25</s:key>
+        <s:key name="serviceOnlyAsNeeded">1</s:key>
+        <s:key name="serviceSubtaskTimingPeriod">30</s:key>
+        <s:key name="suppressBannerList"></s:key>
+        <s:key name="sync">0</s:key>
+        <s:key name="syncMeta">1</s:key>
+        <s:key name="thawedPath">$SPLUNK_DB\splunklogger\thaweddb</s:key>
+        <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\splunklogger\thaweddb</s:key>
+        <s:key name="throttleCheckPeriod">15</s:key>
+        <s:key name="totalEventCount">0</s:key>
+        <s:key name="tstatsHomePath">volume:_splunk_summaries\$_index_name\datamodel_summary</s:key>
+        <s:key name="warmToColdScript"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>summary</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/summary</id>
+    <updated>2014-03-30T14:20:05-07:00</updated>
+    <link href="/servicesNS/nobody/system/data/indexes/summary" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/data/indexes/summary" rel="list"/>
+    <link href="/servicesNS/nobody/system/data/indexes/summary/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/data/indexes/summary" rel="edit"/>
+    <link href="/servicesNS/nobody/system/data/indexes/summary/disable" rel="disable"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="assureUTF8">0</s:key>
+        <s:key name="blockSignSize">0</s:key>
+        <s:key name="blockSignatureDatabase">_blocksignature</s:key>
+        <s:key name="bucketRebuildMemoryHint">auto</s:key>
+        <s:key name="coldPath">$SPLUNK_DB\summarydb\colddb</s:key>
+        <s:key name="coldPath_expanded">C:\Program Files\Splunk\var\lib\splunk\summarydb\colddb</s:key>
+        <s:key name="coldToFrozenDir"></s:key>
+        <s:key name="coldToFrozenScript"></s:key>
+        <s:key name="compressRawdata">1</s:key>
+        <s:key name="currentDBSizeMB">1</s:key>
+        <s:key name="defaultDatabase">main</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableOnlineBucketRepair">1</s:key>
+        <s:key name="enableRealtimeSearch">1</s:key>
+        <s:key name="frozenTimePeriodInSecs">188697600</s:key>
+        <s:key name="homePath">$SPLUNK_DB\summarydb\db</s:key>
+        <s:key name="homePath_expanded">C:\Program Files\Splunk\var\lib\splunk\summarydb\db</s:key>
+        <s:key name="indexThreads">auto</s:key>
+        <s:key name="isInternal">0</s:key>
+        <s:key name="isReady">1</s:key>
+        <s:key name="isVirtual">0</s:key>
+        <s:key name="lastInitSequenceNumber">1</s:key>
+        <s:key name="lastInitTime">1396214405</s:key>
+        <s:key name="maxBloomBackfillBucketAge">30d</s:key>
+        <s:key name="maxBucketSizeCacheEntries">0</s:key>
+        <s:key name="maxConcurrentOptimizes">6</s:key>
+        <s:key name="maxDataSize">auto</s:key>
+        <s:key name="maxHotBuckets">3</s:key>
+        <s:key name="maxHotIdleSecs">0</s:key>
+        <s:key name="maxHotSpanSecs">7776000</s:key>
+        <s:key name="maxMemMB">5</s:key>
+        <s:key name="maxMetaEntries">1000000</s:key>
+        <s:key name="maxRunningProcessGroups">8</s:key>
+        <s:key name="maxRunningProcessGroupsLowPriority">1</s:key>
+        <s:key name="maxTime"></s:key>
+        <s:key name="maxTimeUnreplicatedNoAcks">300</s:key>
+        <s:key name="maxTimeUnreplicatedWithAcks">60</s:key>
+        <s:key name="maxTotalDataSizeMB">500000</s:key>
+        <s:key name="maxWarmDBCount">300</s:key>
+        <s:key name="memPoolMB">auto</s:key>
+        <s:key name="minRawFileSyncSecs">disable</s:key>
+        <s:key name="minStreamGroupQueueSize"/>
+        <s:key name="minTime"></s:key>
+        <s:key name="partialServiceMetaPeriod">0</s:key>
+        <s:key name="processTrackerServiceInterval">1</s:key>
+        <s:key name="quarantineFutureSecs">2592000</s:key>
+        <s:key name="quarantinePastSecs">77760000</s:key>
+        <s:key name="rawChunkSizeBytes">131072</s:key>
+        <s:key name="repFactor">0</s:key>
+        <s:key name="rotatePeriodInSecs">60</s:key>
+        <s:key name="serviceMetaPeriod">25</s:key>
+        <s:key name="serviceOnlyAsNeeded">1</s:key>
+        <s:key name="serviceSubtaskTimingPeriod">30</s:key>
+        <s:key name="summaryHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\summarydb\summary</s:key>
+        <s:key name="suppressBannerList"></s:key>
+        <s:key name="sync">0</s:key>
+        <s:key name="syncMeta">1</s:key>
+        <s:key name="thawedPath">$SPLUNK_DB\summarydb\thaweddb</s:key>
+        <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\summarydb\thaweddb</s:key>
+        <s:key name="throttleCheckPeriod">15</s:key>
+        <s:key name="totalEventCount">0</s:key>
+        <s:key name="tstatsHomePath">volume:_splunk_summaries\summarydb\datamodel_summary</s:key>
+        <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\summarydb\datamodel_summary</s:key>
+        <s:key name="warmToColdScript"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+</feed>

@@ -21,6 +21,7 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.IO;
     using System.Net;
     using System.Net.Http;
@@ -54,18 +55,272 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Methods
+        #region Properties
 
-        public void Create(IndexArgs args)
+        public bool AssureUTF8
         {
-            this.CreateAsync(args).Wait();
+            get { return this.Content.GetValue("AssureUTF8", BooleanConverter.Instance); }
         }
 
-        public async Task CreateAsync(IndexArgs args)
+        public int BlockSignSize
+        {
+            get { return this.Content.GetValue("BlockSignSize", Int32Converter.Instance); }
+        }
+
+        public string BlockSignatureDatabase
+        {
+            get { return this.Content.GetValue("BlockSignatureDatabase", StringConverter.Instance); }
+        }
+
+        public int BloomFilterTotalSizeKB
+        {
+            get { return this.Content.GetValue("BloomfilterTotalSizeKB", Int32Converter.Instance); }
+        }
+
+        public string ColdPath
+        {
+            get { return this.Content.GetValue("ColdPath", StringConverter.Instance); }
+        }
+
+        public string ColdPathExpanded
+        {
+            get { return this.Content.GetValue("ColdPathExpanded", StringConverter.Instance); }
+        }
+
+        public string ColdToFrozenDir
+        {
+            get { return this.Content.GetValue("ColdToFrozenDir", StringConverter.Instance); }
+        }
+
+        public string ColdToFrozenScript
+        {
+            get { return this.Content.GetValue("ColdToFrozenScript", StringConverter.Instance); }
+        }
+
+        public int CurrentDBSizeMB
+        {
+            get { return this.Content.GetValue("CurrentDBSizeMB", Int32Converter.Instance); }
+        }
+
+        public string DefaultDatabase
+        {
+            get { return this.Content.GetValue("DefaultDatabase", StringConverter.Instance); }
+        }
+
+        public bool Disabled
+        {
+            get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
+        }
+
+        string EaiAttributes
+        {
+            get { return this.Content.GetValue("EaiAttributes", StringConverter.Instance); }
+        }
+
+        public bool EnableRealtimeSearch
+        {
+            get { return this.Content.GetValue("EnableRealtimeSearch", BooleanConverter.Instance); }
+        }
+
+        public int FrozenTimePeriodInSecs
+        {
+            get { return this.Content.GetValue("FrozenTimePeriodInSecs", Int32Converter.Instance); }
+        }
+
+        public string HomePath
+        {
+            get { return this.Content.GetValue("HomePath", StringConverter.Instance); }
+        }
+
+        public string HomePathExpanded
+        {
+            get { return this.Content.GetValue("HomePathExpanded", StringConverter.Instance); }
+        }
+
+        public int IndexThreads
+        {
+            get { return this.Content.GetValue("IndexThreads", Int32Converter.Instance); }
+        }
+
+        public bool IsInternal
+        {
+            get { return this.Content.GetValue("IsInternal", BooleanConverter.Instance); }
+        }
+
+        public DateTime LastInitTime
+        {
+            get { return this.Content.GetValue("LastInitTime", DateTimeConverter.Instance); }
+        }
+
+        public int MaxConcurrentOptimizes
+        {
+            get { return this.Content.GetValue("MaxConcurrentOptimizes", Int32Converter.Instance); }
+        }
+
+        public string MaxDataSize
+        {
+            get { return this.Content.GetValue("MaxDataSize", StringConverter.Instance); }
+        }
+
+        public int MaxHotBuckets
+        {
+            get { return this.Content.GetValue("MaxHotBuckets", Int32Converter.Instance); }
+        }
+
+        public int MaxHotIdleSecs
+        {
+            get { return this.Content.GetValue("MaxHotIdleSecs", Int32Converter.Instance); }
+        }
+
+        public int MaxHotSpanSecs
+        {
+            get { return this.Content.GetValue("MaxHotSpanSecs", Int32Converter.Instance); }
+        }
+
+        public int MaxMemMB
+        {
+            get { return this.Content.GetValue("MaxMemMB", Int32Converter.Instance); }
+        }
+
+        public int MaxMetaEntries
+        {
+            get { return this.Content.GetValue("MaxMetaEntries", Int32Converter.Instance); }
+        }
+
+        public int MaxRunningProcessGroups
+        {
+            get { return this.Content.GetValue("MaxRunningProcessGroups", Int32Converter.Instance); }
+        }
+
+        public long MaxTime
+        {
+            get { return this.Content.GetValue("MaxTime", Int64Converter.Instance); }
+        }
+
+        public string MaxTotalDataSizeMB
+        {
+            get { return this.Content.GetValue("MaxTotalDataSizeMB", StringConverter.Instance); }
+        }
+
+        public string MaxWarmDBCount
+        {
+            get { return this.Content.GetValue("MaxWarmDBCount", StringConverter.Instance); }
+        }
+
+        public string MemPoolMB
+        {
+            get { return this.Content.GetValue("MemPoolMB", StringConverter.Instance); }
+        }
+
+        public string MinRawFileSyncSecs
+        {
+            get { return this.Content.GetValue("MinRawFileSyncSecs", StringConverter.Instance); }
+        }
+
+        public string MinTime
+        {
+            get { return this.Content.GetValue("MinTime", StringConverter.Instance); }
+        }
+
+        public string NumBloomfilters
+        {
+            get { return this.Content.GetValue("NumBloomfilters", StringConverter.Instance); }
+        }
+
+        public string NumHotBuckets
+        {
+            get { return this.Content.GetValue("NumHotBuckets", StringConverter.Instance); }
+        }
+
+        public string NumWarmBuckets
+        {
+            get { return this.Content.GetValue("NumWarmBuckets", StringConverter.Instance); }
+        }
+
+        public string PartialServiceMetaPeriod
+        {
+            get { return this.Content.GetValue("PartialServiceMetaPeriod", StringConverter.Instance); }
+        }
+
+        public string QuarantineFutureSecs
+        {
+            get { return this.Content.GetValue("QuarantineFutureSecs", StringConverter.Instance); }
+        }
+
+        public string QuarantinePastSecs
+        {
+            get { return this.Content.GetValue("QuarantinePastSecs", StringConverter.Instance); }
+        }
+
+        public string RawChunkSizeBytes
+        {
+            get { return this.Content.GetValue("RawChunkSizeBytes", StringConverter.Instance); }
+        }
+
+        public string RotatePeriodInSecs
+        {
+            get { return this.Content.GetValue("RotatePeriodInSecs", StringConverter.Instance); }
+        }
+
+        public string ServiceMetaPeriod
+        {
+            get { return this.Content.GetValue("ServiceMetaPeriod", StringConverter.Instance); }
+        }
+
+        public string Summarize
+        {
+            get { return this.Content.GetValue("Summarize", StringConverter.Instance); }
+        }
+
+        public string SuppressBannerList
+        {
+            get { return this.Content.GetValue("SuppressBannerList", StringConverter.Instance); }
+        }
+
+        public string Sync
+        {
+            get { return this.Content.GetValue("Sync", StringConverter.Instance); }
+        }
+
+        public string SyncMeta
+        {
+            get { return this.Content.GetValue("SyncMeta", StringConverter.Instance); }
+        }
+
+        public string ThawedPath
+        {
+            get { return this.Content.GetValue("ThawedPath", StringConverter.Instance); }
+        }
+
+        public string ThawedPathExpanded
+        {
+            get { return this.Content.GetValue("ThawedPathExpanded", StringConverter.Instance); }
+        }
+
+        public string ThrottleCheckPeriod
+        {
+            get { return this.Content.GetValue("ThrottleCheckPeriod", StringConverter.Instance); }
+        }
+
+        public string TotalEventCount
+        {
+            get { return this.Content.GetValue("TotalEventCount", StringConverter.Instance); }
+        }
+
+        #endregion
+
+        #region Methods
+
+        public async Task CreateAsync(string coldPath, string homePath, string thawedPath, IndexAttributes attributes = null)
+        {
+            await this.CreateAsync(new IndexArgs(coldPath, homePath, thawedPath), attributes);
+        }
+
+        public async Task CreateAsync(IndexArgs create, IndexAttributes attributes)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.DataIndexes,
                 new Argument[] { new Argument("name", this.Title) },
-                args))
+                create, attributes))
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
                 AtomFeed feed = new AtomFeed();
@@ -117,14 +372,14 @@ namespace Splunk.Sdk
             }
         }
 
-        public void Update(IndexArgs args)
+        public void Update(IndexAttributes attributes)
         {
-            this.UpdateAsync(args).Wait();
+            this.UpdateAsync(attributes).Wait();
         }
 
-        public async Task UpdateAsync(IndexArgs args)
+        public async Task UpdateAsync(IndexAttributes attributes)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
                 AtomFeed feed = new AtomFeed();

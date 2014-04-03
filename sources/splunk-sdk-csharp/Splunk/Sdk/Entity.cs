@@ -252,11 +252,6 @@ namespace Splunk.Sdk
             throw requestException;
         }
 
-        public override string ToString()
-        {
-            return string.Join("/", this.Context.ToString(), this.Namespace.ToString(), this.Collection.ToString(), this.Title);
-        }
-
         #endregion
 
         #region Privates/internals
@@ -271,7 +266,6 @@ namespace Splunk.Sdk
             }
 
             this.data = new DataObject(atomEntry); // must be set before entity.Title
-
             dynamic content = atomEntry.Content;
 
             if ((content as ExpandoObject) != null)
@@ -321,14 +315,15 @@ namespace Splunk.Sdk
                 }
                 else
                 {
-                    this.adapter = entry.Content as ExpandoAdapter;
+                    dynamic content = entry.Content as ExpandoObject;
                     
-                    if (this.adapter == null)
+                    if (content == null)
                     {
-                        dynamic content = new ExpandoObject();
+                        content = new ExpandoObject();
                         content.Value = entry.Content;
-                        this.adapter = new ExpandoAdapter(content);
                     }
+
+                    this.adapter = new ExpandoAdapter(content);
                 }
 
                 this.entry = entry;

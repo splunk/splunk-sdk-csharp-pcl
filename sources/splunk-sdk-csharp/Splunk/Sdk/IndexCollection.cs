@@ -36,15 +36,15 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public Index CreateIndex(string name, IndexArgs args)
+        public Index CreateIndex(string name, IndexArgs args, IndexAttributes attributes)
         {
-            return this.CreateIndexAsync(name, args).Result;
+            return this.CreateIndexAsync(name, args, attributes).Result;
         }
 
-        public async Task<Index> CreateIndexAsync(string name, IndexArgs args)
+        public async Task<Index> CreateIndexAsync(string name, IndexArgs args, IndexAttributes attributes)
         {
             var entity = new Index(this.Context, this.Namespace, name);
-            await entity.CreateAsync(args);
+            await entity.CreateAsync(args, attributes);
             return entity;
         }
 
@@ -71,15 +71,15 @@ namespace Splunk.Sdk
             await entity.RemoveAsync();
         }
 
-        public void UpdateIndex(string name, IndexArgs args)
+        public void UpdateIndex(string name, IndexAttributes attributes)
         {
-            this.UpdateIndexAsync(name, args).Wait();
+            this.UpdateIndexAsync(name, attributes).Wait();
         }
 
-        public async Task UpdateIndexAsync(string name, IndexArgs args)
+        public async Task UpdateIndexAsync(string name, IndexAttributes attributes)
         {
             var entity = new Index(this.Context, this.Namespace, name);
-            await entity.UpdateAsync(args);
+            await entity.UpdateAsync(attributes);
         }
 
         #endregion

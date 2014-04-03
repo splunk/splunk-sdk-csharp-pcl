@@ -54,6 +54,9 @@
   <ItemGroup>
     <Compile Include="TestAtomFeed.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestIndexAttributes.cs" />
+    <Compile Include="TestIndexArgs.cs" />
+    <Compile Include="TestIndexCollectionArgs.cs" />
     <Compile Include="TestResourceName.cs" />
     <Compile Include="TestSavedSearchCollectionArgs.cs" />
     <Compile Include="TestJobCollectionArgs.cs" />

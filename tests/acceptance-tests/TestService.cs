@@ -34,24 +34,9 @@ namespace Splunk.Sdk.UnitTesting
             Assert.Equal(service.ToString(), "https://localhost:8089/services");
         }
 
-        [Trait("class", "Service: Applications")]
-        [Fact]
-        public void CanGetApps()
-        {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+        #region Access Control
 
-            Func<Task<AppCollection>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
-
-                var collection = await service.GetAppsAsync();
-                return collection;
-            };
-
-            var result = Dispatch().Result;
-        }
-
-        [Trait("class", "Service: Authentication and Authorization")]
+        [Trait("class", "Service: Access Control")]
         [Fact]
         public void CanLogin()
         {
@@ -84,6 +69,31 @@ namespace Splunk.Sdk.UnitTesting
                 Assert.Equal(requestException.Details[0], new Message(MessageType.Warning, "Login failed"));
             }
         }
+
+        #endregion
+
+        #region Applications
+
+        [Trait("class", "Service: Applications")]
+        [Fact]
+        public void CanGetApps()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+
+            Func<Task<AppCollection>> Dispatch = async () =>
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                var collection = await service.GetAppsAsync();
+                return collection;
+            };
+
+            var result = Dispatch().Result;
+        }
+
+        #endregion
+
+        #region Configuration
 
         [Trait("class", "Service: Configuration")]
         [Fact]
@@ -141,13 +151,6 @@ namespace Splunk.Sdk.UnitTesting
                 {
                     Assert.NotNull(stanza);
                     stanza.Get();
-                    
-                    foreach (var setting in stanza)
-                    {
-                        string value = setting.Value;
-                        setting.Get();
-                        Assert.Equal(value, setting.Value);
-                    }
                 }
             }
 
@@ -175,6 +178,23 @@ namespace Splunk.Sdk.UnitTesting
                 Assert.DoesNotThrow(() => configuration = service.GetConfiguration("custom"));
             }
         }
+
+        #endregion
+
+        #region Indexes
+
+        [Trait("class", "Service: Indexes")]
+        [Fact]
+        public void CanGetIndexes()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            service.Login("admin", "changeme");
+            var collection = service.GetIndexes();
+        }
+
+        #endregion
+
+        #region Saved Searches
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
@@ -264,6 +284,10 @@ namespace Splunk.Sdk.UnitTesting
 
             var result = Dispatch().Result;
         }
+
+        #endregion
+
+        #region Search Jobs
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
@@ -364,7 +388,12 @@ namespace Splunk.Sdk.UnitTesting
             var result = Dispatch().Result;
         }
 
-        [Trait("class", "Service: Server")]
+        #endregion
+
+        #region System
+
+        [Trait("class", "Service: System")]
+
         [Fact]
         public void CanGetServerInfo()
         {
@@ -400,6 +429,8 @@ namespace Splunk.Sdk.UnitTesting
             service.LoginAsync("admin", "changeme").Wait();
             service.Server.Restart();
         }
+
+        #endregion
 
         public void SetFixture(AcceptanceTestingSetup data)
         { }

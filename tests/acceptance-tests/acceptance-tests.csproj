@@ -58,6 +58,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="MockServiceTest.cs" />
+    <Compile Include="MockContext.cs" />
+    <Compile Include="MockHttpMessageHandler.cs" />
     <Compile Include="FakeContext.cs" />
     <Compile Include="TestContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -69,6 +72,13 @@
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>splunk-sdk-csharp-pcl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SplunkSDKHelper\SplunkSDKHelper.csproj">
+      <Project>{4135f018-6041-4269-a76f-b6aaf87e260d}</Project>
+      <Name>SplunkSDKHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

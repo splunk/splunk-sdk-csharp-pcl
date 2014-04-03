@@ -16,7 +16,7 @@
 
 using System.Linq;
 
-namespace UnitTests
+namespace Splunk.Sdk.UnitTesting
 {
     using System;
     using System.Collections.Generic;

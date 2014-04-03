@@ -307,80 +307,6 @@ namespace Splunk.Sdk
 
                     propertyName = NormalizePropertyName(names[names.Length - 1]);
                     dictionary.Add(propertyName, await ParsePropertyValueAsync(reader));
-
-// TODO: Remove this code
-#if false
-                    if (names.Length == 2)
-                    {
-                        propertyName = NormalizePropertyName(names[0]);
-                        dynamic propertyValue;
-
-                        if (dictionary.TryGetValue(propertyName, out propertyValue))
-                        {
-                            if (!(propertyValue is ExpandoObject))
-                            {
-                                throw new InvalidDataException(); // TODO: Diagnostics
-                            }
-                        }
-                        else
-                        {
-                            propertyValue = new ExpandoObject();
-                            dictionary.Add(propertyName, propertyValue);
-                        }
-
-                        dictionary = (IDictionary<string, object>)propertyValue;
-                        propertyName = NormalizePropertyName(names[1]);
-                    }
-                    else if (names[0].StartsWith("action."))
-                    {
-                        propertyName = "Action";
-                        dynamic propertyValue;
-
-                        if (dictionary.TryGetValue("Action", out propertyValue))
-                        {
-                            if (!(propertyValue is ExpandoObject))
-                            {
-                                throw new InvalidDataException(); // TODO: Diagnostics
-                            }
-                        }
-                        else
-                        {
-                            propertyValue = new ExpandoObject();
-                            dictionary.Add(propertyName, propertyValue);
-                        }
-
-                        dictionary = (IDictionary<string, object>)propertyValue;
-                        names = names[0].Substring("action.".Length).Split('.');
-
-                        if (names.Length > 2)
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
-                        propertyName = NormalizePropertyName(names[0]);
-
-                        if (dictionary.TryGetValue(propertyName, out propertyValue))
-                        {
-                            if (!(propertyValue is ExpandoObject))
-                            {
-                                throw new InvalidDataException(); // TODO: Diagnostics
-                            }
-                        }
-                        else
-                        {
-                            propertyValue = new ExpandoObject();
-                            dictionary.Add(propertyName, propertyValue);
-                        }
-
-                        dictionary = (IDictionary<string, object>)propertyValue;
-                        propertyName = names.Length == 2 ? NormalizePropertyName(names[1]) : "IsEnabled";
-                    }
-                    else 
-                    { 
-                        propertyName = NormalizePropertyName(names[0]); 
-                    }
-                    dictionary.Add(propertyName, await ParsePropertyValueAsync(reader));
-#endif
                 }
 
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:dict"))
@@ -418,6 +344,12 @@ namespace Splunk.Sdk
 
         static async Task<dynamic> ParsePropertyValueAsync(XmlReader reader)
         {
+            if (reader.IsEmptyElement)
+            {
+                await reader.ReadAsync();
+                return null;
+            }
+
             string name = reader.Name;
             dynamic value;
 
@@ -446,7 +378,7 @@ namespace Splunk.Sdk
                             value = await ParseListAsync(reader);
                             break;
 
-                        default: throw new InvalidDataException(string.Format("Unrecognized element name: {0}", reader.Name));
+                        default: throw new InvalidDataException(string.Format("Unexpected element name: {0}", reader.Name));
                     }
 
                     break;

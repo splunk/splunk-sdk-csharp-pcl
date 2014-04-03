@@ -36,9 +36,16 @@ namespace Splunk.Sdk
     /// </item>
     /// </list>
     /// </remarks>
-    public sealed class IndexArgs : Args<IndexArgs>
+    public class IndexArgs : Args<IndexArgs>
     {
         #region Constructors
+
+        public IndexArgs(string coldPath, string homePath, string thawedPath)
+        {
+            this.ColdPath = coldPath;
+            this.HomePath = homePath;
+            this.ThawedPath = thawedPath;
+        }
 
         public IndexArgs()
         { }
@@ -46,6 +53,44 @@ namespace Splunk.Sdk
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Gets or sets an absolute path that contains the cold databases for 
+        /// an index.
+        /// </summary>
+        /// <remarks>
+        /// The path must be readable and writable. Cold databases are opened 
+        /// as needed when searching. The path may be defined in terms of a 
+        /// volume definition. Splunk will not start if an index lacks a valid 
+        /// cold path. This value is required.
+        /// </remarks>
+        [DataMember(Name = "coldPath", IsRequired = true)]
+        public string ColdPath
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets an absolute path that contains the hot and warm 
+        /// buckets for an index.
+        /// </summary>
+        /// <remarks>
+        /// The path must be readable and writable. This value is required.
+        /// </remarks>
+        [DataMember(Name = "homePath", IsRequired = true)]
+        public string HomePath
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets an absolute path that contains the thawed (resurrected)
+        /// databases for an index.
+        /// </summary>
+        /// <remarks>
+        /// The path must be readable and writable. The path cannot be defined 
+        /// in terms of a volume definition. Splunk will not start if an index 
+        /// lacks a valid thawed path. This value is required.
+        /// </remarks>
+        [DataMember(Name = "thawedPath", IsRequired = true)]
+        public string ThawedPath
+        { get; set; }
 
         #endregion
     }

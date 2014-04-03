@@ -168,9 +168,7 @@ namespace Splunk.Sdk
         /// Refreshes the cached state of the current <see cref=
         /// "Resource<TResource>"/>.
         /// </summary>
-        #pragma warning disable 1998 // This async method lacks 'await' operators and will run synchronously.
-        public virtual async Task GetAsync()
-        { throw new NotImplementedException(); }
+        public abstract Task GetAsync();
 
         /// <summary>
         /// Gets a string identifying the current <see cref="Resource<TResource>"/>.

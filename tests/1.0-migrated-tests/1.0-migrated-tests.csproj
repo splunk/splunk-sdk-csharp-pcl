@@ -123,6 +123,10 @@
       <Project>{4135f018-6041-4269-a76f-b6aaf87e260d}</Project>
       <Name>SplunkSDKHelper</Name>
     </ProjectReference>
+    <ProjectReference Include="..\acceptance-tests\acceptance-tests.csproj">
+      <Project>{b7c3839f-58f5-4ca9-9317-9655a0bc55d9}</Project>
+      <Name>acceptance-tests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

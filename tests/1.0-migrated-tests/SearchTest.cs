@@ -14,19 +14,19 @@
  * under the License.
  */
 
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using System;
-using System.IO;
-using System.Net;
-using System.Text.RegularExpressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Splunk.Sdk;
-
-namespace UnitTests
+namespace Splunk.Sdk.UnitTesting
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System;
+    using System.IO;
+    using System.Net;
+    using System.Text.RegularExpressions;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Splunk.Sdk;
+
     /// <summary>
     /// This is the search test class
     /// </summary>

@@ -77,6 +77,11 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("BloomfilterTotalSizeKB", Int32Converter.Instance); }
         }
 
+        public string BucketRebuildMemoryHint
+        {
+            get { return this.Content.GetValue("BucketRebuildMemoryHint", StringConverter.Instance); }
+        }
+
         public string ColdPath
         {
             get { return this.Content.GetValue("ColdPath", StringConverter.Instance); }
@@ -112,9 +117,14 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
         }
 
-        string EaiAttributes
+        public Eai Eai
         {
-            get { return this.Content.GetValue("EaiAttributes", StringConverter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        public bool EnableOnlineBucketRepair
+        {
+            get { return this.Content.GetValue("EnableOnlineBucketRepair", BooleanConverter.Instance); }
         }
 
         public bool EnableRealtimeSearch
@@ -137,9 +147,9 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("HomePathExpanded", StringConverter.Instance); }
         }
 
-        public int IndexThreads
+        public string IndexThreads
         {
-            get { return this.Content.GetValue("IndexThreads", Int32Converter.Instance); }
+            get { return this.Content.GetValue("IndexThreads", StringConverter.Instance); }
         }
 
         public bool IsInternal
@@ -147,9 +157,34 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("IsInternal", BooleanConverter.Instance); }
         }
 
-        public DateTime LastInitTime
+        public bool IsReady
         {
-            get { return this.Content.GetValue("LastInitTime", DateTimeConverter.Instance); }
+            get { return this.Content.GetValue("IsReady", BooleanConverter.Instance); }
+        }
+
+        public bool IsVirtual
+        {
+            get { return this.Content.GetValue("IsVirtual", BooleanConverter.Instance); }
+        }
+
+        public long LastInitSequenceNumber
+        {
+            get { return this.Content.GetValue("LastInitSequenceNumber", Int64Converter.Instance); }
+        }
+
+        public long LastInitTime
+        {
+            get { return this.Content.GetValue("LastInitTime", Int64Converter.Instance); }
+        }
+
+        public string MaxBloomBackfillBucketAge
+        {
+            get { return this.Content.GetValue("MaxBloomBackfillBucketAge", StringConverter.Instance); }
+        }
+
+        public int MaxBucketSizeCacheEntries
+        {
+            get { return this.Content.GetValue("MaxBucketSizeCacheEntries", Int32Converter.Instance); }
         }
 
         public int MaxConcurrentOptimizes
@@ -192,19 +227,34 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("MaxRunningProcessGroups", Int32Converter.Instance); }
         }
 
-        public long MaxTime
+        public int MaxRunningProcessGroupsLowPriority
         {
-            get { return this.Content.GetValue("MaxTime", Int64Converter.Instance); }
+            get { return this.Content.GetValue("MaxRunningProcessGroupsLowPriority", Int32Converter.Instance); }
         }
 
-        public string MaxTotalDataSizeMB
+        public DateTime MaxTime
         {
-            get { return this.Content.GetValue("MaxTotalDataSizeMB", StringConverter.Instance); }
+            get { return this.Content.GetValue("MaxTime", DateTimeConverter.Instance); }
         }
 
-        public string MaxWarmDBCount
+        public int MaxTimeUnreplicatedNoAcks
         {
-            get { return this.Content.GetValue("MaxWarmDBCount", StringConverter.Instance); }
+            get { return this.Content.GetValue("MaxTimeUnreplicatedNoAcks", Int32Converter.Instance); }
+        }
+
+        public int MaxTimeUnreplicatedWithAcks
+        {
+            get { return this.Content.GetValue("MaxTimeUnreplicatedWithAcks", Int32Converter.Instance); }
+        }
+
+        public int MaxTotalDataSizeMB
+        {
+            get { return this.Content.GetValue("MaxTotalDataSizeMB", Int32Converter.Instance); }
+        }
+
+        public int MaxWarmDBCount
+        {
+            get { return this.Content.GetValue("MaxWarmDBCount", Int32Converter.Instance); }
         }
 
         public string MemPoolMB
@@ -217,74 +267,74 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("MinRawFileSyncSecs", StringConverter.Instance); }
         }
 
-        public string MinTime
+        public DateTime MinTime
         {
-            get { return this.Content.GetValue("MinTime", StringConverter.Instance); }
+            get { return this.Content.GetValue("MinTime", DateTimeConverter.Instance); }
         }
 
-        public string NumBloomfilters
+        public int PartialServiceMetaPeriod
         {
-            get { return this.Content.GetValue("NumBloomfilters", StringConverter.Instance); }
+            get { return this.Content.GetValue("PartialServiceMetaPeriod", Int32Converter.Instance); }
         }
 
-        public string NumHotBuckets
+        public int ProcessTrackerServiceInterval
         {
-            get { return this.Content.GetValue("NumHotBuckets", StringConverter.Instance); }
+            get { return this.Content.GetValue("ProcessTrackerServiceInterval", Int32Converter.Instance); }
         }
 
-        public string NumWarmBuckets
+        public int QuarantineFutureSecs
         {
-            get { return this.Content.GetValue("NumWarmBuckets", StringConverter.Instance); }
+            get { return this.Content.GetValue("QuarantineFutureSecs", Int32Converter.Instance); }
         }
 
-        public string PartialServiceMetaPeriod
+        public int QuarantinePastSecs
         {
-            get { return this.Content.GetValue("PartialServiceMetaPeriod", StringConverter.Instance); }
+            get { return this.Content.GetValue("QuarantinePastSecs", Int32Converter.Instance); }
         }
 
-        public string QuarantineFutureSecs
+        public int RawChunkSizeBytes
         {
-            get { return this.Content.GetValue("QuarantineFutureSecs", StringConverter.Instance); }
+            get { return this.Content.GetValue("RawChunkSizeBytes", Int32Converter.Instance); }
         }
 
-        public string QuarantinePastSecs
+        public int RepFactor
         {
-            get { return this.Content.GetValue("QuarantinePastSecs", StringConverter.Instance); }
+            get { return this.Content.GetValue("RepFactor", Int32Converter.Instance); }
         }
 
-        public string RawChunkSizeBytes
+        public int RotatePeriodInSecs
         {
-            get { return this.Content.GetValue("RawChunkSizeBytes", StringConverter.Instance); }
+            get { return this.Content.GetValue("RotatePeriodInSecs", Int32Converter.Instance); }
         }
 
-        public string RotatePeriodInSecs
+        public int ServiceMetaPeriod
         {
-            get { return this.Content.GetValue("RotatePeriodInSecs", StringConverter.Instance); }
+            get { return this.Content.GetValue("ServiceMetaPeriod", Int32Converter.Instance); }
         }
 
-        public string ServiceMetaPeriod
+        public bool ServiceOnlyAsNeeded
         {
-            get { return this.Content.GetValue("ServiceMetaPeriod", StringConverter.Instance); }
+            get { return this.Content.GetValue("ServiceOnlyAsNeeded", BooleanConverter.Instance); }
         }
 
-        public string Summarize
+        public int ServiceSubtaskTimingPeriod
         {
-            get { return this.Content.GetValue("Summarize", StringConverter.Instance); }
+            get { return this.Content.GetValue("ServiceSubtaskTimingPeriod", Int32Converter.Instance); }
         }
 
-        public string SuppressBannerList
+        public string SummaryHomePathExpanded
         {
-            get { return this.Content.GetValue("SuppressBannerList", StringConverter.Instance); }
+            get { return this.Content.GetValue("SummaryHomePathExpanded", StringConverter.Instance); }
         }
 
-        public string Sync
+        public bool Sync
         {
-            get { return this.Content.GetValue("Sync", StringConverter.Instance); }
+            get { return this.Content.GetValue("Sync", BooleanConverter.Instance); }
         }
 
-        public string SyncMeta
+        public bool SyncMeta
         {
-            get { return this.Content.GetValue("SyncMeta", StringConverter.Instance); }
+            get { return this.Content.GetValue("SyncMeta", BooleanConverter.Instance); }
         }
 
         public string ThawedPath
@@ -297,14 +347,24 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("ThawedPathExpanded", StringConverter.Instance); }
         }
 
-        public string ThrottleCheckPeriod
+        public int ThrottleCheckPeriod
         {
-            get { return this.Content.GetValue("ThrottleCheckPeriod", StringConverter.Instance); }
+            get { return this.Content.GetValue("ThrottleCheckPeriod", Int32Converter.Instance); }
         }
 
-        public string TotalEventCount
+        public long TotalEventCount
         {
-            get { return this.Content.GetValue("TotalEventCount", StringConverter.Instance); }
+            get { return this.Content.GetValue("TotalEventCount", Int64Converter.Instance); }
+        }
+
+        public string TStatsHomePath
+        {
+            get { return this.Content.GetValue("TstatsHomePath", StringConverter.Instance); }
+        }
+
+        public string TStatsHomePathExpanded
+        {
+            get { return this.Content.GetValue("TstatsHomePathExpanded", StringConverter.Instance); }
         }
 
         #endregion

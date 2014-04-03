@@ -31,6 +31,7 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
@@ -67,26 +68,33 @@ namespace Splunk.Sdk
 
         #region Properties
 
-        /// <summary>
-        /// Gets a value indicating whether the current search <see cref="Job"/>
-        /// has completed.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if the current <see cref="Job"/> is complete; otherwise,
-        /// <c>false</c>.
-        /// </returns>
-        /// <remarks>
-        /// Clients that call <see cref="Job.UpdateAsync"/> to poll for job 
-        /// status use this property to determine whether search results are
-        /// ready.
-        /// </remarks>
-        public bool IsCompleted
+        public bool CanSummarize
         {
-            get { return this.DispatchState == DispatchState.Done; }
+            get { return this.Content.GetValue("CanSummarize", BooleanConverter.Instance); }
+        }
+
+        public DateTime CursorTime
+        {
+            get { return this.Content.GetValue("CursorTime", DateTimeConverter.Instance); }
+        }
+
+        public int DefaultSaveTTL
+        {
+            get { return this.Content.GetValue("DefaultSaveTTL", Int32Converter.Instance); }
+        }
+
+        public int DefaultTTL
+        {
+            get { return this.Content.GetValue("DefaultTTL", Int32Converter.Instance); }
+        }
+
+        public long DiskUsage
+        {
+            get { return this.Content.GetValue("DiskUsage", Int64Converter.Instance); } // sample value: "86016"
         }
 
         /// <summary>
-        /// Gets value that indicates the current <see cref="Job"/> dispatch
+        /// Gets a value that indicates the current <see cref="Job"/> dispatch
         /// state.
         /// </summary>
         /// <returns>
@@ -99,6 +107,206 @@ namespace Splunk.Sdk
         public DispatchState DispatchState
         {
             get { return this.Content.GetValue("DispatchState", EnumConverter<DispatchState>.Instance); }
+        }
+
+        public double DoneProgress
+        {
+            get { return this.Content.GetValue("DoneProgress", DoubleConverter.Instance); }
+        }
+
+        public long DropCount
+        {
+            get { return this.Content.GetValue("DropCount", Int64Converter.Instance); }
+        }
+
+        public Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        public DateTime EarliestTime
+        {
+            get { return this.Content.GetValue("EarliestTime", DateTimeConverter.Instance); }
+        }
+
+        public long EventAvailableCount
+        {
+            get { return this.Content.GetValue("EventAvailableCount", Int64Converter.Instance); }
+        }
+
+        public long EventCount
+        {
+            get { return this.Content.GetValue("EventCount", Int64Converter.Instance); }
+        }
+
+        public int EventFieldCount
+        {
+            get { return this.Content.GetValue("EventFieldCount", Int32Converter.Instance); }
+        }
+
+        public bool EventIsStreaming
+        {
+            get { return this.Content.GetValue("EventIsStreaming", BooleanConverter.Instance); } // sample value: "1"
+        }
+
+        public bool EventIsTruncated
+        {
+            get { return this.Content.GetValue("EventIsTruncated", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public string EventSearch
+        {
+            get { return this.Content.GetValue("EventSearch", StringConverter.Instance); } // sample value: "search index=_internal  | head 10"
+        }
+
+        public SortDirection EventSorting
+        {
+            get { return this.Content.GetValue("EventSorting", EnumConverter<SortDirection>.Instance); }
+        }
+
+        public long IndexEarliestTime
+        {
+            get { return this.Content.GetValue("IndexEarliestTime", Int64Converter.Instance); } // sample value: "1396566178"
+        }
+
+        public long IndexLatestTime
+        {
+            get { return this.Content.GetValue("IndexLatestTime", Int64Converter.Instance); } // sample value: "1396566183"
+        }
+
+        public bool IsBatchModeSearch
+        {
+            get { return this.Content.GetValue("IsBatchModeSearch", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsDone
+        {
+            get { return this.Content.GetValue("IsDone", BooleanConverter.Instance); } // sample value: "1"
+        }
+
+        public bool IsFailed
+        {
+            get { return this.Content.GetValue("IsFailed", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsFinalized
+        {
+            get { return this.Content.GetValue("IsFinalized", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsPaused
+        {
+            get { return this.Content.GetValue("IsPaused", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsPreviewEnabled
+        {
+            get { return this.Content.GetValue("IsPreviewEnabled", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsRealTimeSearch
+        {
+            get { return this.Content.GetValue("IsRealTimeSearch", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsRemoteTimeline
+        {
+            get { return this.Content.GetValue("IsRemoteTimeline", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsSaved
+        {
+            get { return this.Content.GetValue("IsSaved", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsSavedSearch
+        {
+            get { return this.Content.GetValue("IsSavedSearch", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public bool IsZombie
+        {
+            get { return this.Content.GetValue("IsZombie", BooleanConverter.Instance); } // sample value: "0"
+        }
+
+        public string Keywords
+        {
+            get { return this.Content.GetValue("Keywords", StringConverter.Instance); } // sample value: "index::_internal"
+        }
+
+        // Messages	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+
+        public string NormalizedSearch
+        {
+            get { return this.Content.GetValue("NormalizedSearch", StringConverter.Instance); } 
+        }
+
+        public int NumPreviews
+        {
+            get { return this.Content.GetValue("NumPreviews", Int32Converter.Instance); }
+        }
+
+        // Performance	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+
+        public int Pid
+        {
+            get { return this.Content.GetValue("Pid", Int32Converter.Instance); } // sample value: "1692"
+        }
+
+        public int Priority
+        {
+            get { return this.Content.GetValue("Priority", Int32Converter.Instance); } // sample value: "5"
+        }
+
+        public string RemoteSearch
+        {
+            get { return this.Content.GetValue("RemoteSearch", StringConverter.Instance); }
+        }
+
+        // Request	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+
+        public long ResultCount
+        {
+            get { return this.Content.GetValue("ResultCount", Int64Converter.Instance); }
+        }
+
+        public bool ResultIsStreaming
+        {
+            get { return this.Content.GetValue("ResultIsStreaming", BooleanConverter.Instance); }
+        }
+
+        public long ResultPreviewCount
+        {
+            get { return this.Content.GetValue("ResultPreviewCount", Int64Converter.Instance); }
+        }
+
+        public double RunDuration
+        {
+            get { return this.Content.GetValue("RunDuration", DoubleConverter.Instance); } // sample value: "0.220000"
+        }
+
+        // Runtime	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+
+        public long ScanCount
+        {
+            get { return this.Content.GetValue("ScanCount", Int64Converter.Instance); }
+        }
+
+        //	SearchProviders	{System.Collections.Generic.List<object>}	System.Collections.Generic.List`1[System.Object]
+
+        public string Sid
+        {
+            get { return this.Content.GetValue("Sid", StringConverter.Instance); } // sample value: "1396566184.230"
+        }
+
+        public int StatusBuckets
+        {
+            get { return this.Content.GetValue("StatusBuckets", Int32Converter.Instance); } // sample value: "0"
+        }
+
+        public long Ttl
+        {
+            get { return this.Content.GetValue("Ttl", Int64Converter.Instance); } // sample value: "599"
         }
 
         #endregion

@@ -122,6 +122,9 @@ namespace Splunk.Sdk
         public abstract IReadOnlyDictionary<string, Uri> Links
         { get; }
 
+        public abstract DateTime Published
+        { get; }
+
         public abstract DateTime Updated
         { get; }
 
@@ -153,15 +156,6 @@ namespace Splunk.Sdk
             {
                 throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
             }
-        }
-
-        /// <summary>
-        /// Refreshes the cached state of the current <see cref=
-        /// "Resource<TResource>"/>.
-        /// </summary>
-        public void Get()
-        {
-            this.GetAsync().Wait();
         }
 
         /// <summary>

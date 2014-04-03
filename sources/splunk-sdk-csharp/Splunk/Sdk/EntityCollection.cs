@@ -82,6 +82,11 @@ namespace Splunk.Sdk
             get { return this.data == null ? Pagination.Empty : this.data.Pagination; }
         }
 
+        public override DateTime Published
+        {
+            get { return this.data == null ? DateTime.MinValue : this.data.Published; }
+        }
+
         public override DateTime Updated
         {
             get { return this.data == null ? DateTime.MinValue : this.data.Updated; }
@@ -142,7 +147,7 @@ namespace Splunk.Sdk
                 throw new ArgumentException("Expected non-null entry of type AtomEntry");
             }
 
-            this.data = new Data(entry);
+            this.data = new DataObject(entry);
             base.Initialize(context, @namespace, new ResourceName(resourceName, entry.Title), atom);
         }
 
@@ -161,7 +166,7 @@ namespace Splunk.Sdk
                 var feed = new AtomFeed();
 
                 await feed.ReadXmlAsync(response.XmlReader);
-                this.data = new Data(this.Context, this.Namespace, this.ResourceName, feed);
+                this.data = new DataObject(this.Context, this.Namespace, this.ResourceName, feed);
             }
         }
 
@@ -190,17 +195,17 @@ namespace Splunk.Sdk
         #region Privates
 
         readonly IEnumerable<Argument> args;
-        volatile Data data;
+        volatile DataObject data;
 
         #endregion
 
         #region Types
 
-        class Data
+        class DataObject
         {
             #region Constructors
 
-            public Data(AtomEntry entry)
+            public DataObject(AtomEntry entry)
             {
                 this.author = entry.Author;
                 this.id = entry.Id;
@@ -208,12 +213,13 @@ namespace Splunk.Sdk
                 this.links = entry.Links;
                 this.messages = null; // TODO: does an entry contain messages?
                 this.pagination = Pagination.Empty;
+                this.published = entry.Published;
                 this.updated = entry.Updated;
 
                 this.entities = new List<TEntity>();
             }
 
-            public Data(Context context, Namespace @namespace, ResourceName resourceName, AtomFeed feed)
+            public DataObject(Context context, Namespace @namespace, ResourceName resourceName, AtomFeed feed)
             {
                 this.author = feed.Author;
                 this.id = feed.Id;
@@ -275,6 +281,11 @@ namespace Splunk.Sdk
                 get { return this.pagination; }
             }
 
+            public DateTime Published
+            {
+                get { return this.updated; }
+            }
+
             public DateTime Updated
             {
                 get { return this.updated; }
@@ -291,6 +302,7 @@ namespace Splunk.Sdk
             readonly IReadOnlyDictionary<string, Uri> links;
             readonly IReadOnlyList<Message> messages;
             readonly Pagination pagination;
+            readonly DateTime published;
             readonly DateTime updated;
 
             #endregion

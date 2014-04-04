@@ -1001,34 +1001,11 @@ namespace Splunk.Sdk
         /// <remarks>
         /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
         /// </remarks>
-        public JobCollection GetJobs(JobCollectionArgs args)
-        {
-            return this.GetJobsAsync(args).Result;
-        }
-
-        /// <summary>
-        /// Retrieves the collection of all running search jobs.
-        /// </summary>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
-        /// </remarks>
         public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args = null)
         {
             var jobs = new JobCollection(this.Context, this.Namespace, ResourceName.SearchJobs, args);
             await jobs.GetAsync();
             return jobs;
-        }
-
-        /// <summary>
-        /// Removes the search <see cref="Job"/> identified by <c>searchId</c>.
-        /// </summary>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
-        /// REST API Reference.
-        /// </remarks>
-        public void RemoveJob(string searchId)
-        {
-            this.RemoveJobAsync(searchId).Wait();
         }
 
         /// <summary>
@@ -1047,26 +1024,6 @@ namespace Splunk.Sdk
                     throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
                 }
             }
-        }
-
-        /// <summary>
-        /// Starts a new search <see cref="Job"/>.
-        /// </summary>
-        /// <param name="search">
-        /// The search language string to execute.
-        /// </param>
-        /// <param name="mode">
-        /// The search <see cref="ExecutionMode"/>.
-        /// </param>
-        /// <returns>
-        /// A new search <see cref="Job"/>.
-        /// </returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
-        /// </remarks>
-        public Job StartJob(string search, ExecutionMode mode = ExecutionMode.Normal)
-        {
-            return StartJob(new JobArgs(search) { ExecutionMode = mode });
         }
 
         /// <summary>

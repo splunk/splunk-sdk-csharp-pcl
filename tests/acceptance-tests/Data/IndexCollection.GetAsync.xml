@@ -4,7 +4,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
   <title>indexes</title>
   <id>https://localhost:8089/servicesNS/nobody/search/data/indexes</id>
-  <updated>2014-04-03T11:08:59-07:00</updated>
+  <updated>2014-04-04T09:01:34-07:00</updated>
   <generator build="189883" version="6.0.1"/>
   <author>
     <name>Splunk</name>
@@ -18,7 +18,7 @@
   <entry>
     <title>_audit</title>
     <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/_audit</id>
-    <updated>2014-04-03T11:04:54-07:00</updated>
+    <updated>2014-04-04T09:00:04-07:00</updated>
     <link href="/servicesNS/nobody/system/data/indexes/_audit" rel="alternate"/>
     <author>
       <name>nobody</name>
@@ -38,7 +38,7 @@
         <s:key name="coldToFrozenDir"></s:key>
         <s:key name="coldToFrozenScript"></s:key>
         <s:key name="compressRawdata">1</s:key>
-        <s:key name="currentDBSizeMB">11</s:key>
+        <s:key name="currentDBSizeMB">10</s:key>
         <s:key name="defaultDatabase">main</s:key>
         <s:key name="disabled">0</s:key>
         <s:key name="eai:acl">
@@ -115,7 +115,7 @@
         <s:key name="thawedPath">$SPLUNK_DB\audit\thaweddb</s:key>
         <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\audit\thaweddb</s:key>
         <s:key name="throttleCheckPeriod">15</s:key>
-        <s:key name="totalEventCount">56071</s:key>
+        <s:key name="totalEventCount">56239</s:key>
         <s:key name="tstatsHomePath">volume:_splunk_summaries\audit\datamodel_summary</s:key>
         <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\audit\datamodel_summary</s:key>
         <s:key name="warmToColdScript"></s:key>
@@ -232,7 +232,7 @@
   <entry>
     <title>_internal</title>
     <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/_internal</id>
-    <updated>2014-04-03T11:08:59-07:00</updated>
+    <updated>2014-04-04T09:01:34-07:00</updated>
     <link href="/servicesNS/nobody/system/data/indexes/_internal" rel="alternate"/>
     <author>
       <name>nobody</name>
@@ -252,7 +252,7 @@
         <s:key name="coldToFrozenDir"></s:key>
         <s:key name="coldToFrozenScript"></s:key>
         <s:key name="compressRawdata">1</s:key>
-        <s:key name="currentDBSizeMB">211</s:key>
+        <s:key name="currentDBSizeMB">214</s:key>
         <s:key name="defaultDatabase">main</s:key>
         <s:key name="disabled">0</s:key>
         <s:key name="eai:acl">
@@ -329,7 +329,7 @@
         <s:key name="thawedPath">$SPLUNK_DB\_internaldb\thaweddb</s:key>
         <s:key name="thawedPath_expanded">C:\Program Files\Splunk\var\lib\splunk\_internaldb\thaweddb</s:key>
         <s:key name="throttleCheckPeriod">15</s:key>
-        <s:key name="totalEventCount">3733090</s:key>
+        <s:key name="totalEventCount">3801192</s:key>
         <s:key name="tstatsHomePath">volume:_splunk_summaries\_internaldb\datamodel_summary</s:key>
         <s:key name="tstatsHomePath_expanded">C:\Program Files\Splunk\var\lib\splunk\_internaldb\datamodel_summary</s:key>
         <s:key name="warmToColdScript"></s:key>
@@ -660,7 +660,7 @@
   <entry>
     <title>splunklogger</title>
     <id>https://localhost:8089/servicesNS/nobody/system/data/indexes/splunklogger</id>
-    <updated>2014-04-03T11:09:18-07:00</updated>
+    <updated>2014-04-04T09:01:56-07:00</updated>
     <link href="/servicesNS/nobody/system/data/indexes/splunklogger" rel="alternate"/>
     <author>
       <name>nobody</name>

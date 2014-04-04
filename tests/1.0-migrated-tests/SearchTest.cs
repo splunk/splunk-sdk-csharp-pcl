@@ -675,7 +675,7 @@ namespace Splunk.Sdk.UnitTesting
 
             var service = new Service(Scheme.Https, "localhost", 8089);
             service.LoginAsync("admin", "changeme").Wait();
-            var job = service.StartJob((string) cli.Opts["search"]);
+            var job = service.StartJobAsync((string) cli.Opts["search"]).Result;
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();

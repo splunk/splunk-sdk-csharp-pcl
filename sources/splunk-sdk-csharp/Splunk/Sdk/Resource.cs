@@ -39,7 +39,12 @@ namespace Splunk.Sdk
     using System.Net;
     using System.Threading.Tasks;
 
-    public abstract class Resource<TResource> where TResource : Resource<TResource>, new()
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TResource"></typeparam>
+    public abstract class Resource<TResource> : IComparable, IComparable<Resource<TResource>>, 
+        IEquatable<Resource<TResource>> where TResource : Resource<TResource>, new()
     {
         #region Constructors
 
@@ -80,29 +85,27 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets the <see cref="Context"/> instance for the current <see cref=
-        /// "Resource"/>.
+        /// "Resource&lt;TResource&gt;"/>.
         /// </summary>
         public Context Context
         { get; internal set; }
 
         /// <summary>
-        /// Gets the namespace containing the current <see cref="Resource"/>.
+        /// Gets the namespace containing the current <see cref=
+        /// "Resource&lt;TResource&gt;"/>.
         /// </summary>
         public Namespace Namespace
         { get; private set; }
 
         /// <summary>
-        /// Gets the resource name of the current <see cref="Resource"/>.
+        /// Gets the resource name of the current <see cref=
+        /// "Resource&lt;TResource&gt;"/>.
         /// </summary>
-        /// <remarks>
-        /// The resource name is the concatenation of <see cref=
-        /// "Resource.Collection"/> and <see cref="Resource.Title"/>.
-        /// </remarks>
         public ResourceName ResourceName
         { get; private set; }
 
         /// <summary>
-        /// Gets the title of this <see cref="Resource"/>.
+        /// Gets the title of this <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
         public string Title
         {
@@ -132,7 +135,61 @@ namespace Splunk.Sdk
 
         #region Methods
 
-        public virtual void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object entry)
+        /// <summary>
+        /// Compares the specified object with the current <see cref=
+        /// "Resource&lt;TResource&gt;"/> instance and indicates whether the 
+        /// identity of the current instance precedes, follows, or appears in 
+        /// the same position in the sort order as the specified object.
+        /// </summary>
+        /// <param name="other">
+        /// An object to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// A signed number indicating the relative values of this instance and
+        /// value.
+        /// </returns>
+        public int CompareTo(object other)
+        {
+            return this.CompareTo(other as Resource<TResource>);
+        }
+
+        /// <summary>
+        /// Compares the specified <see cref="Resource&lt;TResource&gt;"/> with 
+        /// the current instance and indicates whether the identity of the 
+        /// current instance precedes, follows, or appears in the same position
+        /// in the sort order as the specified instance.
+        /// </summary>
+        /// <param name="other">
+        /// An instance to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// A signed number indicating the relative values of the current 
+        /// instance and <see cref="other"/>.
+        /// </returns>
+        public int CompareTo(Resource<TResource> other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+
+            if (object.ReferenceEquals(this, other))
+            {
+                return 0;
+            }
+
+            return this.ToString().CompareTo(other.ToString());
+        }
+
+        protected static async Task EnsureStatusCodeAsync(Response response, HttpStatusCode expected)
+        {
+            if (response.Message.StatusCode != expected)
+            {
+                throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+            }
+        }
+
+        protected internal virtual void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object entry)
         {
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
@@ -150,24 +207,77 @@ namespace Splunk.Sdk
             this.initialized = true;
         }
 
-        protected static async Task EnsureStatusCodeAsync(Response response, HttpStatusCode expected)
+        /// <summary>
+        /// Determines whether the specified <see cref=
+        /// "Resource&lt;TResource&gt;"/> refers to the same resource as the
+        /// current one.
+        /// </summary>
+        /// <param name="other">
+        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the current
+        /// instance.
+        /// </param>
+        /// <returns>
+        /// A value of <c>true</c> if the two instances represent the same
+        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object other)
         {
-            if (response.Message.StatusCode != expected)
+            return this.Equals(other as Resource<TResource>);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Resource&lt;TResource&gt;"/>
+        /// refers to the same resource as the current one.
+        /// </summary>
+        /// <param name="other">
+        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the current
+        /// instance.
+        /// </param>
+        /// <returns>
+        /// A value of <c>true</c> if the two instances represent the same
+        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(Resource<TResource> other)
+        {
+            if (other == null)
             {
-                throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                return false;
             }
+
+            if (object.ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            bool result = this.ToString() == other.ToString();
+            return result;
         }
 
         /// <summary>
         /// Refreshes the cached state of the current <see cref=
-        /// "Resource<TResource>"/>.
+        /// "Resource&lt;TResource&gt;"/>.
         /// </summary>
         public abstract Task GetAsync();
 
         /// <summary>
-        /// Gets a string identifying the current <see cref="Resource<TResource>"/>.
+        /// Returns the hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// Hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        /// <summary>
+        /// Gets a string identifying the current <see cref=
+        /// "Resource&lt;TResource&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A string representing the identity of the current <see cref=
+        /// "Resource&lt;TResource&gt;"/>.
+        /// </returns>
         public override string ToString()
         {
             return string.Join("/", this.Context.ToString(), this.Namespace.ToString(), this.ResourceName.ToString());

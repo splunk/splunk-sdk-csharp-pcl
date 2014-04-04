@@ -161,7 +161,7 @@ namespace Splunk.Sdk.UnitTesting
                 "use_file_operator"
             };
 
-            List<object> caps = service.GetCapabilities();
+            List<object> caps = service.GetCapabilitiesAsync().Result;
             string[] capStrings = caps.Select(a => (string) a).ToArray();
             foreach (string name in expected)
             {

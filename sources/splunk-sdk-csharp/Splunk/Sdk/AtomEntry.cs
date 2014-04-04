@@ -107,6 +107,9 @@ namespace Splunk.Sdk
         public IReadOnlyDictionary<string, Uri> Links
         { get; private set; }
 
+        public DateTime Published
+        { get; private set; }
+
         public string Title
         { get; private set; }
 
@@ -178,6 +181,11 @@ namespace Splunk.Sdk
                         }
 
                         await reader.ReadAsync();
+                        break;
+
+                    case "published":
+
+                        this.Published = await reader.ReadElementContentAsync(DateTimeConverter.Instance);
                         break;
 
                     case "updated":

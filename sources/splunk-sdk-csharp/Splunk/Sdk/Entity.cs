@@ -78,17 +78,6 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Properties that are stable for the lifetime of an instance
-
-        /// <summary>
-        /// Gets the path to the collection containing the current <see cref=
-        /// "Entity"/>.
-        /// </summary>
-        public ResourceName Collection
-        { get; internal set; }
-
-        #endregion
-
         #region Properties backed by AtomEntry
 
         public override string Author
@@ -104,6 +93,11 @@ namespace Splunk.Sdk
         public override IReadOnlyDictionary<string, Uri> Links
         { 
             get { return this.data.Entry == null ? null : this.data.Entry.Links; } 
+        }
+
+        public override DateTime Published
+        {
+            get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; }
         }
 
         public override DateTime Updated

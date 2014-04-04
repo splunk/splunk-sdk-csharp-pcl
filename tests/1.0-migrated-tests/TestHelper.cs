@@ -62,7 +62,7 @@ namespace Splunk.Sdk.UnitTesting
         {
             //var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             var service = new Service(Scheme.Https, this.command.Host, this.command.Port, Namespace.Default);
-            service.Login(this.command.Username, this.command.Password);
+            service.LoginAsync(this.command.Username, this.command.Password).Wait();
             return service;
         }
 
@@ -246,7 +246,7 @@ namespace Splunk.Sdk.UnitTesting
         /// <returns>The same job</returns>
         public Job Wait(Job job) 
         {
-            while (!job.IsCompleted) 
+            while (!job.IsDone) 
             {
                 Thread.Sleep(1000);
             }

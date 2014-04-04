@@ -674,14 +674,14 @@ namespace Splunk.Sdk.UnitTesting
             cli.Opts["search"] = "search index=_internal * | head 10 ";
 
             var service = new Service(Scheme.Https, "localhost", 8089);
-            service.Login("admin", "changeme");
+            service.LoginAsync("admin", "changeme").Wait();
             var job = service.StartJob((string) cli.Opts["search"]);
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             TimeSpan max = new TimeSpan(0, 0, 0, 10);
 
-            while (!job.IsCompleted)
+            while (!job.IsDone)
             {
                 Thread.Sleep(1000);
 

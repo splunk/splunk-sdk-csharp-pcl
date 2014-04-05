@@ -61,9 +61,14 @@ namespace Splunk.Sdk
         #region Methods
 
         /// <summary>
-        /// Asynchrononously updates the cached value of the current <see cref=
+        /// Asynchrononously retrieves the value of the current <see cref=
         /// "ConfigurationSetting"/>.
         /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/cqT50u">GET 
+        /// properties/{file_name}/{stanza_name}/{key_name}</a> endpoint to 
+        /// retrieve the configuration setting represented by this instance.
+        /// </remarks>
         public override async Task GetAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
@@ -77,21 +82,6 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Updates the value of the current <see cref="ConfigurationSetting"/>.
-        /// </summary>
-        /// <param name="value">
-        /// A new value for the current <see cref="ConfigurationSetting"/>.
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
-        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// update the current <see cref="ConfigurationSetting"/> value.
-        /// </remarks>
-        public void UpdateValue(string value)
-        {
-            this.UpdateValueAsync(value).Wait();
-        }
-
-        /// <summary>
         /// Asynchronously updates the value of the current <see cref=
         /// "ConfigurationSetting"/>.
         /// </summary>
@@ -102,7 +92,7 @@ namespace Splunk.Sdk
         /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
         /// update the current <see cref="ConfigurationSetting"/> value.
         /// </remarks>
-        public async Task UpdateValueAsync(string value)
+        public async Task UpdateAsync(string value)
         {
             var args = new Argument[] { new Argument("value", value) };
 

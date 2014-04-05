@@ -41,67 +41,59 @@ namespace Splunk.Sdk
         #region Methods
 
         /// <summary>
-        /// Removes the current <see cref="ConfigurationStanza"/>
+        /// Asynchronously creates the configuration stanza represented by the
+        /// current instance.
         /// </summary>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE 
-        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
-        /// stanza identified by <see cref="stanzaName"/>.
+        /// This method uses the <a href="http://goo.gl/jae44k">POST 
+        /// properties/{file_name></a> endpoint to create the configuration
+        /// stanza identified by the current instance.
         /// </remarks>
-        public void Remove()
+        public async Task CreateAsync()
         {
-            this.RemoveAsync().Wait();
+            var args = new Argument[] { new Argument("__stanza", this.Title) };
+            var resourceName = this.ResourceName.GetParent();
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
+            }
         }
 
         /// <summary>
-        /// Asynchronously removes a configuration stanza.
+        /// Asynchronously removes the configuration stanza represented by the
+        /// current instance.
         /// </summary>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
         /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
-        /// stanza identified by <see cref="stanzaName"/>.
+        /// stanza identified by the current instance.
         /// </remarks>
         public async Task RemoveAsync()
         {
-            var name = new ResourceName(ResourceName.Configs, string.Concat("conf-", this.ResourceName.Collection), 
+            var resourceName = new ResourceName(ResourceName.Configs, "conf-" + this.ResourceName.Collection,
                 this.ResourceName.Title);
 
-            using (var response = await this.Context.DeleteAsync(this.Namespace, name))
+            using (var response = await this.Context.DeleteAsync(this.Namespace, resourceName))
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
             }
         }
 
         /// <summary>
-        /// Adds or updates a list of settings in the current 
-        /// <see cref="ConfigurationStanza"/>.
+        /// Asynchronously adds or updates settings in the configuration stanza
+        /// represented by the current instance.
         /// </summary>
         /// <param name="settings">
         /// A variable-length list of objects representing the settings to be
         /// added or updated.
+        /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/w742jw">POST 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
-        /// <see cref="settings"/>.
+        /// properties/{file_name}/{stanza_name}</a> endpoint to add or update
+        /// <see cref="settings"/> in the current <see cref="ConfigurationStanza"/>.
         /// </remarks>
-        public void UpdateSettings(params Argument[] settings)
-        {
-            this.UpdateSettingsAsync(settings).Wait();
-        }
-
-        /// <summary>
-        /// Asynchronously adds or updates a list of settings in the current 
-        /// <see cref="ConfigurationStanza"/>.
-        /// </summary>
-        /// <param name="settings">
-        /// A variable-length list of objects representing the settings to be
-        /// added or updated.
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/w742jw">POST 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
-        /// <see cref="settings"/>.
-        /// </remarks>
-        public async Task UpdateSettingsAsync(params Argument[] settings)
+        public async Task UpdateAsync(params Argument[] settings)
         {
             Contract.Requires(settings != null);
 
@@ -114,6 +106,63 @@ namespace Splunk.Sdk
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
             }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves a configuration setting from the current
+        /// instance.
+        /// </summary>
+        /// <param name="keyName">
+        /// The name of a configuration setting.
+        /// </param>
+        /// <returns>
+        /// An object representing the configuration setting identified by <see
+        /// cref="keyName"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/cqT50u">GET 
+        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
+        /// construct the <see cref="ConfigurationSetting"/> identified by <see 
+        /// cref="keyName"/>.
+        /// </remarks>
+        public async Task<ConfigurationSetting> GetSettingAsync(string keyName)
+        {
+            var resource = new ConfigurationSetting(this.Context, this.Namespace,
+                fileName: this.ResourceName.Collection,
+                stanzaName: this.ResourceName.Title,
+                keyName: keyName);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously updates the value of a setting in the current <see 
+        /// cref="ConfigurationStanza"/>.
+        /// </summary>
+        /// <param name="keyName">
+        /// The name of a configuration setting in the current <see cref=
+        /// "ConfigurationStanza"/>.
+        /// </param>
+        /// <param name="value">
+        /// A new value for the setting identified by <see cref="keyName"/>.
+        /// </param>
+        /// <returns>
+        /// An object representing the configuration setting that was updated.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
+        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
+        /// update the <see cref="ConfigurationSetting"/> identified by <see 
+        /// cref="keyName"/>.
+        /// </remarks>
+        public async Task<ConfigurationSetting> UpdateSettingAsync(string keyName, string value)
+        {
+            var resource = new ConfigurationSetting(this.Context, this.Namespace, 
+                fileName: this.ResourceName.Collection, 
+                stanzaName: this.ResourceName.Title, 
+                keyName: keyName); 
+            await resource.UpdateAsync(value);
+            return resource;
         }
 
         #endregion

@@ -27,21 +27,6 @@ namespace Splunk.Sdk
     using System.Net.Http;
     using System.Threading.Tasks;
 
-    /// <summary>
-    /// Provides a class for manipulating Splunk configuration files.
-    /// </summary>
-    /// <remarks>
-    /// <para><b>References:</b></para>
-    /// <list type="number">
-    /// <item><description>
-    ///     <a href="http://goo.gl/cTdaIH">REST API Reference: Accessing and 
-    ///     updating Splunk configurations</a>
-    /// </description></item>
-    /// <item><description>
-    ///     <a href="http://goo.gl/0ELhzV">REST API Reference: Indexs</a>.
-    /// </description></item>
-    /// </list>
-    /// </remarks>
     public class Index : Entity<Index>
     {
         #region Constructors

@@ -139,7 +139,7 @@ namespace Splunk.Sdk.UnitTesting
 
             ConfigurationCollection configurations = null;
 
-            Assert.DoesNotThrow(() => configurations = service.GetConfigurations());
+            Assert.DoesNotThrow(() => configurations = service.GetConfigurationsAsync().Result);
 
             // Read the entire configuration system
 
@@ -161,7 +161,7 @@ namespace Splunk.Sdk.UnitTesting
 
             try
             {
-                var configuration = service.GetConfiguration("custom");
+                var configuration = await service.GetConfigurationAsync("custom");
             }
             catch (AggregateException e)
             {
@@ -174,8 +174,8 @@ namespace Splunk.Sdk.UnitTesting
                 Assert.NotNull(requestException.Details);
 
                 Configuration configuration;
-                Assert.DoesNotThrow(() => service.CreateConfiguration("custom"));
-                Assert.DoesNotThrow(() => configuration = service.GetConfiguration("custom"));
+                Assert.DoesNotThrow(() => service.CreateConfigurationAsync("custom").Wait());
+                Assert.DoesNotThrow(() => configuration = service.GetConfigurationAsync("custom").Result);
             }
         }
 
@@ -434,8 +434,11 @@ namespace Splunk.Sdk.UnitTesting
             await service.LoginAsync("admin", "changeme");
             Job job1 = null, job2 = null;
             
-            Assert.DoesNotThrow(async () => job1 = await service.StartJobAsync("search index=_internal | head 100"));
-            Assert.DoesNotThrow(async () => job2 = await service.GetJobAsync(job1.Title));
+            Assert.DoesNotThrow(() => job1 = service.StartJobAsync("search index=_internal | head 100").Result);
+            await job1.GetSearchResultsAsync();
+            await job1.GetSearchResultsEventsAsync();
+            await job1.GetSearchResultsPreviewAsync();
+            Assert.DoesNotThrow(() => job2 = service.GetJobAsync(job1.Title).Result);
             Assert.Equal(job1.Title, job2.Title);
             Assert.Equal(job1.Id, job2.Id);
             

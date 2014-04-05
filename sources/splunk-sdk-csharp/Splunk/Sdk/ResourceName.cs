@@ -163,6 +163,18 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
+        /// Gets the parent of this ResourceName.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="ResourceName"/> representing the parent of the current
+        /// instance.
+        /// </returns>
+        public ResourceName GetParent()
+        {
+            return new ResourceName(parts.Take(parts.Count - 1));
+        }
+
+        /// <summary>
         /// Converts the value of the current <see cref="Namespace"/> to its
         /// equivalent string representation.
         /// </summary>

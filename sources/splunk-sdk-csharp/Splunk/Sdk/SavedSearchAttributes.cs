@@ -38,14 +38,14 @@ namespace Splunk.Sdk
     /// </item>
     /// </list>
     /// </remarks>
-    public sealed class SavedSearchUpdateArgs : Args<SavedSearchUpdateArgs>
+    public sealed class SavedSearchAttributes : Args<SavedSearchAttributes>
     {
         #region Constructors
 
-        public SavedSearchUpdateArgs()
+        public SavedSearchAttributes()
         { }
 
-        public SavedSearchUpdateArgs(string search)
+        public SavedSearchAttributes(string search)
         {
             this.Search = search;
         }
@@ -674,7 +674,7 @@ namespace Splunk.Sdk
         /// 
         /// </remarks>
         [DataMember(Name = "alert.track", EmitDefaultValue = false)]
-        [DefaultValue(null)]
+        [DefaultValue(AlertTrack.Automatic)]
         public AlertTrack AlertTrack
         { get; set; }
 
@@ -685,7 +685,7 @@ namespace Splunk.Sdk
         /// 
         /// </remarks>
         [DataMember(Name = "alert.type", EmitDefaultValue = false)]
-        [DefaultValue(null)]
+        [DefaultValue(AlertTrigger.None)]
         public AlertTrigger AlertTrigger
         { get; set; }
 

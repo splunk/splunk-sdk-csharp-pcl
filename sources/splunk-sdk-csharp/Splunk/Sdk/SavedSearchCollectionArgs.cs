@@ -166,7 +166,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-        /// cref="App"/> entries.
+        /// cref="Application"/> entries.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortMode.Automatic"/>.

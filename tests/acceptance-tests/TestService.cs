@@ -80,11 +80,11 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
 
-            Func<Task<AppCollection>> Dispatch = async () =>
+            Func<Task<ApplicationCollection>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 
-                var collection = await service.GetAppsAsync();
+                var collection = await service.GetApplicationsAsync();
                 return collection;
             };
 
@@ -336,30 +336,22 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public void CanCreateSavedSearch()
+        public async Task CanCreateSavedSearch()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<SavedSearch>> Dispatch = async () =>
+            try
             {
-                await service.LoginAsync("admin", "changeme");
+                await service.RemoveSavedSearchAsync("some_saved_search");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
-                try
-                {
-                    service.RemoveSavedSearch("some_saved_search");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-
-                var savedSearchCreationArgs = new SavedSearchCreationArgs("some_saved_search", "search index=_internal | head 1000");
-                var savedSearch = await service.CreateSavedSearchAsync(savedSearchCreationArgs);
-
-                return savedSearch;
-            };
-
-            var result = Dispatch().Result;
+            var attributes = new SavedSearchAttributes("search index=_internal | head 1000");
+            var savedSearch = await service.CreateSavedSearchAsync("some_saved_search", attributes);
         }
 
         [Trait("class", "Service: Saved Searches")]

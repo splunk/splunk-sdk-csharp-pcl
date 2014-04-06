@@ -282,7 +282,7 @@ namespace Splunk.Sdk.UnitTesting
             Job job = null;
             try
             {
-                job = service.StartJob(jobArgs);
+                job = service.StartJobAsync(jobArgs).Result;
             }
             catch (Exception e)
             {

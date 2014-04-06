@@ -24,7 +24,7 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving <see cref="App"/> entries.
+    /// Provides the arguments required for retrieving <see cref="Application"/> entries.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
@@ -34,26 +34,26 @@ namespace Splunk.Sdk
     /// </description></item>
     /// </list>
     /// </remarks>
-    public sealed class AppCollectionArgs : Args<AppCollectionArgs>
+    public sealed class ApplicationCollectionArgs : Args<ApplicationCollectionArgs>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AppCollectionArgs"/> 
+        /// Initializes a new instance of the <see cref="ApplicationCollectionArgs"/> 
         /// class.
         /// </summary>
-        public AppCollectionArgs()
+        public ApplicationCollectionArgs()
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AppCollectionArgs"/> 
+        /// Initializes a new instance of the <see cref="ApplicationCollectionArgs"/> 
         /// class.
         /// </summary>
         /// <param name="search">
-        /// Search expression to filter <see cref="App"/> entries. This is the
+        /// Search expression to filter <see cref="Application"/> entries. This is the
         /// value of the <see cref="Search"/> property.
         /// </param>
-        public AppCollectionArgs(string search)
+        public ApplicationCollectionArgs(string search)
         {
             this.Search = search;
         }
@@ -64,11 +64,11 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value specifying the maximum number of <see cref=
-        /// "App"/> entries to return.
+        /// "Application"/> entries to return.
         /// </summary>
         /// <remarks>
         /// If the value of <c>Count</c> is set to zero, then all <see cref=
-        /// "App"/> entries are returned. The default value is 30.
+        /// "Application"/> entries are returned. The default value is 30.
         /// </remarks>
         [DataMember(Name = "count", EmitDefaultValue = false)]
         [DefaultValue(30)]
@@ -77,7 +77,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value specifying the first result (inclusive) from 
-        /// which to begin returning <see cref="App"/> entries.
+        /// which to begin returning <see cref="Application"/> entries.
         /// </summary>
         /// <remarks>
         /// This value is zero-based and cannot be negative. The default value
@@ -90,7 +90,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value indicating whether to scan for new <see cref=
-        /// "App"/> instances and reload any objects those new <see cref="App"/>
+        /// "Application"/> instances and reload any objects those new <see cref="Application"/>
         /// instances contain.
         /// </summary>
         /// <remarks>
@@ -102,12 +102,12 @@ namespace Splunk.Sdk
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a search expression to filter <see cref="App"/> 
+        /// Gets or sets a search expression to filter <see cref="Application"/> 
         /// entries. 
         /// </summary>
         /// <remarks>
         /// Use this expression to filter the entries returned based on <see
-        /// cref="App"/> properties.
+        /// cref="Application"/> properties.
         /// </remarks>
         [DataMember(Name = "search", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -116,7 +116,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value indicating whether to sort returned <see cref=
-        /// "App"/>entries in ascending or descending order.
+        /// "Application"/>entries in ascending or descending order.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortDirection.Ascending"/>.
@@ -128,7 +128,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-        /// cref="App"/> entries.
+        /// cref="Application"/> entries.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortMode.Automatic"/>.

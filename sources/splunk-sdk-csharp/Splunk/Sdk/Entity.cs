@@ -246,11 +246,18 @@ namespace Splunk.Sdk
             throw requestException;
         }
 
-        #endregion
-
-        #region Privates/internals
-
-        public override void Initialize(Context context, Namespace @namespace, ResourceName collection, object entry)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context">
+        /// </param>
+        /// <param name="namespace">
+        /// </param>
+        /// <param name="collection">
+        /// </param>
+        /// <param name="entry">
+        /// </param>
+        protected internal override void Initialize(Context context, Namespace @namespace, ResourceName collection, object entry)
         {
             AtomEntry atomEntry = entry as AtomEntry;
 

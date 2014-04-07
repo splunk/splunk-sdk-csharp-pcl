@@ -88,7 +88,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets or sets a value indicating whether to sort returned <see cref=
-        /// "App"/>entries in ascending or descending order.
+        /// "Application"/>entries in ascending or descending order.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortDirection.Ascending"/>.

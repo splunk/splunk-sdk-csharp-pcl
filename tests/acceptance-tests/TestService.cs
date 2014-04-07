@@ -80,11 +80,11 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
 
-            Func<Task<AppCollection>> Dispatch = async () =>
+            Func<Task<ApplicationCollection>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 
-                var collection = await service.GetAppsAsync();
+                var collection = await service.GetApplicationsAsync();
                 return collection;
             };
 
@@ -139,7 +139,7 @@ namespace Splunk.Sdk.UnitTesting
 
             ConfigurationCollection configurations = null;
 
-            Assert.DoesNotThrow(() => configurations = service.GetConfigurations());
+            Assert.DoesNotThrow(() => configurations = service.GetConfigurationsAsync().Result);
 
             // Read the entire configuration system
 
@@ -161,7 +161,7 @@ namespace Splunk.Sdk.UnitTesting
 
             try
             {
-                var configuration = service.GetConfiguration("custom");
+                var configuration = await service.GetConfigurationAsync("custom");
             }
             catch (AggregateException e)
             {
@@ -174,8 +174,8 @@ namespace Splunk.Sdk.UnitTesting
                 Assert.NotNull(requestException.Details);
 
                 Configuration configuration;
-                Assert.DoesNotThrow(() => service.CreateConfiguration("custom"));
-                Assert.DoesNotThrow(() => configuration = service.GetConfiguration("custom"));
+                Assert.DoesNotThrow(() => service.CreateConfigurationAsync("custom").Wait());
+                Assert.DoesNotThrow(() => configuration = service.GetConfigurationAsync("custom").Result);
             }
         }
 
@@ -336,30 +336,22 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public void CanCreateSavedSearch()
+        public async Task CanCreateSavedSearch()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<SavedSearch>> Dispatch = async () =>
+            try
             {
-                await service.LoginAsync("admin", "changeme");
+                await service.RemoveSavedSearchAsync("some_saved_search");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
-                try
-                {
-                    service.RemoveSavedSearch("some_saved_search");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-
-                var savedSearchCreationArgs = new SavedSearchCreationArgs("some_saved_search", "search index=_internal | head 1000");
-                var savedSearch = await service.CreateSavedSearchAsync(savedSearchCreationArgs);
-
-                return savedSearch;
-            };
-
-            var result = Dispatch().Result;
+            var attributes = new SavedSearchAttributes("search index=_internal | head 1000");
+            var savedSearch = await service.CreateSavedSearchAsync("some_saved_search", attributes);
         }
 
         [Trait("class", "Service: Saved Searches")]
@@ -428,39 +420,48 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public void CanGetJob()
+        public async Task CanGetJob()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-
-            Func<Task<Job>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
-                var job1 = await service.StartJobAsync("search index=_internal | head 100");
-                var job2 = await service.GetJobAsync(job1.Title);
-                Assert.Equal(job1.Title, job2.Title);
-                Assert.Equal(job1.Id, job2.Id);
-                Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
-                return job2;
-            };
-
-            var result = Dispatch().Result;
+            await service.LoginAsync("admin", "changeme");
+            Job job1 = null, job2 = null;
+            
+            Assert.DoesNotThrow(() => job1 = service.StartJobAsync("search index=_internal | head 100").Result);
+            await job1.GetSearchResultsAsync();
+            await job1.GetSearchResultsEventsAsync();
+            await job1.GetSearchResultsPreviewAsync();
+            Assert.DoesNotThrow(() => job2 = service.GetJobAsync(job1.Title).Result);
+            Assert.Equal(job1.Title, job2.Title);
+            Assert.Equal(job1.Id, job2.Id);
+            
+            Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
         }
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public void CanGetJobs()
+        public async Task CanGetJobs()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-
-            Func<Task<JobCollection>> Dispatch = async () =>
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "admin", app: "search"));
+            await service.LoginAsync("admin", "changeme");
+            
+            var jobs = new Job[]
             {
-                await service.LoginAsync("admin", "changeme");
-
-                var collection = await service.GetJobsAsync();
-                return collection;
+                await service.StartJobAsync("search index=_internal | head 1000"),
+                await service.StartJobAsync("search index=_internal | head 1000"),
+                await service.StartJobAsync("search index=_internal | head 1000"),
+                await service.StartJobAsync("search index=_internal | head 1000"),
+                await service.StartJobAsync("search index=_internal | head 1000"),
             };
 
-            var result = Dispatch().Result;
+            JobCollection collection = null;
+            Assert.DoesNotThrow(() => collection = service.GetJobsAsync().Result);
+            Assert.NotNull(collection);
+            Assert.Equal(collection.ToString(), collection.Id.ToString());
+
+            foreach (var job in jobs)
+            {
+                Assert.Contains(job, collection, EqualityComparer<Job>.Default);
+            }
         }
 
         [Trait("class", "Service: Search Jobs")]
@@ -469,34 +470,33 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             await service.LoginAsync("admin", "changeme");
+            Job job = null;
+            SearchResults results = null;
+            List<Splunk.Sdk.Record> records = null;
 
-            Job job = await service.StartJobAsync("search index=_internal | head 10");
-            SearchResults searchResults = await job.GetSearchResultsAsync();
-
-            var records = new List<Splunk.Sdk.Record>(searchResults);
+            Assert.DoesNotThrow(async () => job = await service.StartJobAsync("search index=_internal | head 10"));
+            Assert.NotNull(job);
+            Assert.DoesNotThrow(async () => results = await job.GetSearchResultsAsync());
+            Assert.NotNull(results);
+            Assert.DoesNotThrow(() => records = new List<Splunk.Sdk.Record>(results));
+            Assert.NotNull(records);
+            Assert.Equal(10, records.Count);
         }
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public void CanStartSearchExport()
+        public async Task CanStartSearchExport()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
+            SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
+            var records = new List<Splunk.Sdk.Record>();
+
+            foreach (var searchResults in reader)
             {
-                await service.LoginAsync("admin", "changeme");
-
-                SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
-                var records = new List<Splunk.Sdk.Record>();
-
-                foreach (var searchResults in reader)
-                {
-                    records.AddRange(searchResults);
-                }
-                return records;
-            };
-
-            var result = Dispatch().Result;
+                records.AddRange(searchResults);
+            }
         }
 
         [Trait("class", "Service: Search Jobs")]

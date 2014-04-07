@@ -26,6 +26,7 @@ namespace Splunk.Sdk
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Dynamic;
     using System.IO;
     using System.Net;
@@ -49,8 +50,8 @@ namespace Splunk.Sdk
         /// </param>
         /// <param name="name">
         /// </param>
-        internal SavedSearch(Context context, Namespace @namespace, ResourceName collection, string name)
-            : base(context, @namespace, collection, name)
+        internal SavedSearch(Context context, Namespace @namespace, string name)
+            : base(context, @namespace, ResourceName.SavedSearches, name)
         { }
 
         public SavedSearch()
@@ -143,6 +144,182 @@ namespace Splunk.Sdk
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Asynchronously creates a new saved search.
+        /// </summary>
+        /// <param name="searchName">
+        /// Name of the saved search to be created.
+        /// </param>
+        /// <param name="attributes">
+        /// Attributes of the saved search to be created.
+        /// </param>
+        /// <param name="dispatchArgs">
+        /// Dispatch arguments for the saved search to be created.
+        /// </param>
+        /// <param name="templateArgs">
+        /// Template arguments for the saved search to be created.
+        /// </param>
+        /// This method uses the <a href="http://goo.gl/EPQypw">POST 
+        /// saved/searches</a> endpoint to create the <see cref="SavedSearch"/>
+        /// represented by the current instance.
+        /// </remarks>
+        public async Task CreateAsync(SavedSearchAttributes attributes, SavedSearchDispatchArgs dispatchArgs = null, 
+            SavedSearchTemplateArgs templateArgs = null)
+        {
+            var args = new Argument[] { new Argument("name", this.ResourceName.Title) };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.SavedSearches, args, 
+                attributes, dispatchArgs, templateArgs))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+
+                if (feed.Entries.Count != 1)
+                {
+                    throw new InvalidDataException();  // TODO: Diagnostics
+                }
+
+                this.Data = new DataObject(feed.Entries[0]);
+            }
+        }
+
+        /// <summary>
+        /// Dispatches the current <see cref="SavedSearch"/> just like the 
+        /// scheduler would.
+        /// </summary>
+        /// <param name="dispatchArgs">
+        /// A set of template arguments to the saved search.
+        /// </param>
+        /// <param name="dispatchArgs">
+        /// A set of arguments to the dispatcher.
+        /// </param>
+        /// <returns>
+        /// An object representing the search job that was created by the 
+        /// dispatcher.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
+        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the 
+        /// current <see cref="SavedSearch"/>.
+        /// </remarks>
+        public async Task<Job> DispatchAsync(SavedSearchDispatchArgs
+            dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
+        {
+            string searchId;
+
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, templateArgs, 
+                dispatchArgs))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                searchId = await response.XmlReader.ReadResponseElementAsync("sid");
+            }
+
+            Job job = new Job(this.Context, this.Namespace, searchId);
+            await job.GetAsync();
+            return job;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves information about the current instance.
+        /// </summary>
+        /// <param name="args">
+        /// Constrains the information returned about the current instance.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
+        /// saved/searches/{name}</a> endpoint to get information about the
+        /// current <see cref="SavedSearch"/> instance.
+        /// </remarks>
+        public async Task GetAsync(SavedSearchFilterArgs args)
+        {
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, args))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+
+                if (feed.Entries.Count != 1)
+                {
+                    throw new InvalidDataException();  // TODO: Diagnostics
+                }
+
+                this.Data = new DataObject(feed.Entries[0]);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves the collection of jobs created from the
+        /// current instance.
+        /// </summary>
+        /// <returns>
+        /// An object representing the collection of jobs created from the
+        /// current instance.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/kv9L1l">GET 
+        /// saved/searches/{name}/history</a> endpoint to construct the <see 
+        /// cref="JobCollection"/> object it returns.
+        /// </remarks>
+        public async Task<JobCollection> GetHistoryAsync()
+        {
+            var jobs = new JobCollection(this.Context, this.Namespace, new ResourceName(this.ResourceName, "history"));
+            await jobs.GetAsync();
+            return jobs;
+        }
+
+        /// <summary>
+        /// Asynchronously removes the saved search represented by the current
+        /// instance.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sn7qC5">DELETE 
+        /// saved/searches/{name}</a> endpoint to remove the saved search
+        /// represented by the current instance.
+        /// </remarks>
+        public async Task RemoveAsync()
+        {
+            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously updates the saved search represented by the current
+        /// instance.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/> to be updated.
+        /// </param>
+        /// <param name="name">
+        /// Name of the saved search to be updated.
+        /// </param>
+        /// <param name="attributes">
+        /// New attributes for the saved search to be updated.
+        /// </param>
+        /// <param name="dispatchArgs">
+        /// New dispatch arguments for the saved search to be updated.
+        /// </param>
+        /// <param name="templateArgs">
+        /// New template arguments for the saved search to be updated.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/aV9eiZ">POST 
+        /// saved/searches{name}</a> endpoint to update the saved search
+        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// </remarks>
+
+        public async Task UpdateAsync(SavedSearchAttributes attributes, SavedSearchDispatchArgs dispatchArgs, 
+            SavedSearchTemplateArgs templateArgs)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes, 
+                dispatchArgs, templateArgs))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+            }
+        }
 
         #endregion
 

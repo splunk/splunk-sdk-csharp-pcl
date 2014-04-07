@@ -31,13 +31,19 @@ namespace Splunk.Sdk
     using System.Net.Http;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TCollection"></typeparam>
+    /// <typeparam name="TEntity"></typeparam>
     public class EntityCollection<TCollection, TEntity> : Resource<TCollection>, IReadOnlyList<TEntity> 
         where TCollection : EntityCollection<TCollection, TEntity>, new() 
         where TEntity : Resource<TEntity>, new()
     {
         #region Constructors
 
-        internal EntityCollection(Context context, Namespace @namespace, ResourceName resource, IEnumerable<Argument> args = null)
+        internal EntityCollection(Context context, Namespace @namespace, ResourceName resource, IEnumerable<Argument> 
+            args = null)
             : base(context, @namespace, resource)
         {
             this.args = args;
@@ -136,7 +142,7 @@ namespace Splunk.Sdk
 
         #region Request-related methods
 
-        public override void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object atom)
+        protected internal override void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object atom)
         {
             var entry = atom as AtomEntry;
 

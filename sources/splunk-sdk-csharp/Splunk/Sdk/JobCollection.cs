@@ -24,8 +24,12 @@ namespace Splunk.Sdk
     /// </summary>
     public class JobCollection : EntityCollection<JobCollection, Job>
     {
-        internal JobCollection(Context context, Namespace @namespace, ResourceName resourceName, JobCollectionArgs args = null)
-            : base(context, @namespace, resourceName, args)
+        internal JobCollection(Context context, Namespace @namespace, JobCollectionArgs args = null)
+            : base(context, @namespace, ResourceName.SearchJobs, args)
+        { }
+
+        internal JobCollection(Context context, Namespace @namespace, ResourceName resourceName)
+            : base(context, @namespace, resourceName)
         { }
 
         public JobCollection()

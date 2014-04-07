@@ -21,13 +21,13 @@
 
 namespace Splunk.Sdk
 {
-    public class App : Entity<App>
+    public class Application : Entity<Application>
     {
-        internal App(Context context, Namespace @namespace, ResourceName collection, string name)
+        internal Application(Context context, Namespace @namespace, ResourceName collection, string name)
             : base(context, @namespace, collection, name)
         { }
 
-        public App()
+        public Application()
         { }
     }
 }

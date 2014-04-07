@@ -54,8 +54,8 @@ namespace Splunk.Sdk
         /// </param>
         /// <param name="name">
         /// </param>
-        internal Job(Context context, Namespace @namespace, ResourceName collection, string name)
-            : base(context, @namespace, collection, name)
+        internal Job(Context context, Namespace @namespace, string name)
+            : base(context, @namespace, ResourceName.SearchJobs, name)
         { }
 
         /// <summary>
@@ -310,6 +310,14 @@ namespace Splunk.Sdk
         }
 
         #endregion
+
+        public async Task RemoveAsync()
+        {
+            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+            }
+        }
 
         #region Methods for retrieving search results
 

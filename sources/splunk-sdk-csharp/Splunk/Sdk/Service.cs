@@ -165,29 +165,23 @@ namespace Splunk.Sdk
         #region Applications
 
         /// <summary>
-        /// Retrieves the collection of installed apps.
+        /// Asynchronously retrieves a collection of installed applications.
         /// </summary>
+        /// <param name="args">
+        /// Specification of the collection of applications to retrieve.
+        /// </param>
         /// <returns>
+        /// An object representing the collection of installed applications
+        /// specified by <see cref="args"/>.
         /// </returns>
         /// <remarks>
-        /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
+        /// This method uses the <a href="http://goo.gl/iiCmcY">GET apps/local</a> 
+        /// endpoint to construct the <see cref="ApplicationCollection"/> object
+        /// it returns.
         /// </remarks>
-        public AppCollection GetApps(AppCollectionArgs args = null)
+        public async Task<ApplicationCollection> GetApplicationsAsync(ApplicationCollectionArgs args = null)
         {
-            return this.GetAppsAsync(args).Result;
-        }
-
-        /// <summary>
-        /// Retrieves the collection of installed apps.
-        /// </summary>
-        /// <returns>
-        /// </returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/izvjYx">apps/local</a> REST API Reference.
-        /// </remarks>
-        public async Task<AppCollection> GetAppsAsync(AppCollectionArgs args = null)
-        {
-            var collection = new AppCollection(this.Context, this.Namespace, args);
+            var collection = new ApplicationCollection(this.Context, this.Namespace, args);
             await collection.GetAsync();
             return collection;
         }
@@ -197,7 +191,7 @@ namespace Splunk.Sdk
         #region Configuration
 
         /// <summary>
-        /// Creates a new configuration file.
+        /// Asynchronously creates a new configuration file.
         /// </summary>
         /// <param name="name">
         /// Name of the configuration file to create.
@@ -207,55 +201,33 @@ namespace Splunk.Sdk
         /// properties</a> endpoint to create the <see cref="Configuration"/>
         /// identified by <see cref="name"/>.
         /// </remarks>
-        public void CreateConfiguration(string name)
+        public async Task<Configuration> CreateConfigurationAsync(string name)
         {
-            this.CreateConfigurationAsync(name).Wait();
+            var entity = new Configuration(this.Context, this.Namespace, name);
+            await entity.CreateAsync();
+            return entity;
         }
 
         /// <summary>
-        /// Creates a new configuration file.
+        /// Asynchronously creates a new stanza in a configuration file.
         /// </summary>
-        /// <param name="name">
-        /// Name of the configuration file to create.
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="fileName">
+        /// Name of the configuration stanza to create.
         /// </param>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/CBWes7">POST 
-        /// properties</a> endpoint to create the <see cref="Configuration"/>
-        /// identified by <see cref="name"/>.
+        /// This method uses the <a href="http://goo.gl/jae44k">POST 
+        /// properties/{file_name></a> endpoint to create the <see cref=
+        /// "ConfigurationStanza"/> identified by <see cref="fileName"/> and
+        /// <see cref="stanzaName"/>.
         /// </remarks>
-        public async Task CreateConfigurationAsync(string name)
+        public async Task<ConfigurationStanza> CreateConfigurationAsync(string fileName, string stanzaName)
         {
-            // TODO: Must I delete the configuration file manually, restart Splunk, and then create? No delete operation?
-
-            var args = new Argument[] { new Argument("__conf", name) };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.Properties, args))
-            {
-                if (response.Message.StatusCode != HttpStatusCode.Created)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a configuration file.
-        /// </summary>
-        /// <param name="name">
-        /// The name of a configuration file.
-        /// </param>
-        /// <returns>
-        /// An object representing the configuration file.
-        /// <see cref="name"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/JNbGtL">GET 
-        /// properties/{file_name}</a> endpoint/> to construct the <see cref=
-        /// "Configuration"/> it returns.
-        /// </remarks>
-        public Configuration GetConfiguration(string name)
-        {
-            return this.GetConfigurationAsync(name).Result;
+            var entity = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
+            await entity.CreateAsync();
+            return entity;
         }
 
         /// <summary>
@@ -281,24 +253,6 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Retrieves the collection of all configuration files known to 
-        /// Splunk.
-        /// </summary>
-        /// <returns>
-        /// An object representing the collection of all configuration files
-        /// known to Splunk.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/Unj6fs">GET 
-        /// properties</a> endpoint/> to construct the <see cref=
-        /// "ConfigurationCollection"/> it returns.
-        /// </remarks>
-        public ConfigurationCollection GetConfigurations()
-        {
-            return this.GetConfigurationsAsync().Result;
-        }
-
-        /// <summary>
         /// Asynchronously retrieves the collection of all configuration files 
         /// known to Splunk.
         /// </summary>
@@ -316,22 +270,6 @@ namespace Splunk.Sdk
             var collection = new ConfigurationCollection(this.Context, this.Namespace);
             await collection.GetAsync();
             return collection;
-        }
-
-        /// <summary>
-        /// Retrieves a single configuration setting.
-        /// </summary>
-        /// <returns>
-        /// An object representing the configuration setting.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/1jeyog">GET 
-        /// properties/{file_name}/{stanza_name}/{key_name}</a> endpoint/> to 
-        /// construct the <see cref="ConfigurationSetting"/> it returns.
-        /// </remarks>
-        public ConfigurationSetting GetConfigurationSetting(string fileName, string stanzaName, string keyName)
-        {
-            return this.GetConfigurationSettingAsync(fileName, stanzaName, keyName).Result;
         }
 
         /// <summary>
@@ -353,22 +291,6 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Retrieves a configuration stanza.
-        /// </summary>
-        /// <returns>
-        /// An object representing the configuration stanza.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/sM63fa">GET 
-        /// properties/{file_name}/{stanza_name}</a> endpoint/> to construct
-        /// the <see cref="ConfigurationStanza"/> it returns.
-        /// </remarks>
-        public ConfigurationStanza GetConfigurationStanza(string fileName, string stanzaName)
-        {
-            return this.GetConfigurationStanzaAsync(fileName, stanzaName).Result;
-        }
-
-        /// <summary>
         /// Asynchronously retrieves a configuration stanza.
         /// </summary>
         /// <returns>
@@ -384,26 +306,6 @@ namespace Splunk.Sdk
             var collection = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
             await collection.GetAsync();
             return collection;
-        }
-
-        /// <summary>
-        /// Removes a configuration stanza.
-        /// </summary>
-        /// <param name="fileName">
-        /// Name of a configuration file.
-        /// </param>
-        /// <param name="stanzaName">
-        /// Name of a configuration stanza in <see cref="fileName"/> to be
-        /// removed.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE 
-        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
-        /// stanza identified by <see cref="stanzaName"/>.
-        /// </remarks>
-        public void RemoveConfigurationStanza(string fileName, string stanzaName)
-        {
-            this.RemoveConfigurationStanzaAsync(fileName, stanzaName).Wait();
         }
 
         /// <summary>
@@ -425,30 +327,6 @@ namespace Splunk.Sdk
         {
             var entity = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
             await entity.RemoveAsync();
-        }
-
-        /// <summary>
-        /// Updates an existing configuration setting.
-        /// </summary>
-        /// <param name="fileName">
-        /// Name of a configuration file.
-        /// </param>
-        /// <param name="stanzaName">
-        /// Name of a stanza within the configuration file identified by <see 
-        /// cref="fileName"/>.
-        /// </param>
-        /// <param name="keyName">
-        /// Name of the configuration setting to update.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
-        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// update the configuration setting identified by <see cref=
-        /// "fileName"/>, <see cref="stanzaName"/>, and <see cref="keyName"/>.
-        /// </remarks>
-        public void UpdateConfigurationSetting(string fileName, string stanzaName, string keyName, string value)
-        {
-            this.UpdateConfigurationSettingAsync(fileName, stanzaName, keyName, value).Wait();
         }
 
         /// <summary>
@@ -476,30 +354,7 @@ namespace Splunk.Sdk
         public async Task UpdateConfigurationSettingAsync(string fileName, string stanzaName, string keyName, string value)
         {
             ConfigurationSetting setting = new ConfigurationSetting(this.Context, this.Namespace, fileName, stanzaName, keyName);
-            await setting.UpdateValueAsync(value);
-        }
-
-        /// <summary>
-        /// Adds or updates a list of settings in a configuration stanza.
-        /// </summary>
-        /// <param name="fileName">
-        /// Name of a configuration file.
-        /// </param>
-        /// <param name="stanzaName">
-        /// Name of a stanza within the configuration file identified by <see 
-        /// cref="fileName"/>.
-        /// <param name="settings">
-        /// A variable-length list of objects representing the settings to be
-        /// added or updated.
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/w742jw">POST 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to update <see 
-        /// cref="settings"/> in the stanza identified by <see cref=
-        /// "fileName"/> and <see cref="stanzaName"/>.
-        /// </remarks>
-        public void UpdateConfigurationSettings(string fileName, string stanzaName, params Argument[] settings)
-        {
-            this.UpdateConfigurationSettingsAsync(fileName, stanzaName, settings).Wait();
+            await setting.UpdateAsync(value);
         }
 
         /// <summary>
@@ -523,7 +378,7 @@ namespace Splunk.Sdk
         public async Task UpdateConfigurationSettingsAsync(string fileName, string stanzaName, params Argument[] settings)
         {
             ConfigurationStanza stanza = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
-            await stanza.UpdateSettingsAsync(settings);
+            await stanza.UpdateAsync(settings);
         }
 
         #endregion
@@ -642,110 +497,48 @@ namespace Splunk.Sdk
         #region Saved searches
 
         /// <summary>
-        /// Creates a new <see cref="SavedSearch"/>.
+        /// Asynchronously creates a new saved search.
         /// </summary>
-        /// <param name="searchName">
-        /// The name of the <see cref="SavedSearch"/> to dispatch.
+        /// <param name="name">
+        /// Name of the saved search to be created.
         /// </param>
-        /// <param name="searchArgs">
-        /// A set of arguments to the <see cref="SavedSearch"/>.
+        /// <param name="attributes">
+        /// Attributes of the saved search to be created.
         /// </param>
         /// <param name="dispatchArgs">
-        /// A set of arguments to the dispatcher.
+        /// Dispatch arguments for the saved search to be created.
+        /// </param>
+        /// <param name="templateArgs">
+        /// Template arguments for the saved search to be created.
         /// </param>
         /// <returns>
-        /// The search <see cref="Job"/> that was dispatched.
+        /// An object representing the saved search that was created.
         /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
-        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
-        /// cref="SavedSearch"/> identified by <see cref="name"/>.
+        /// This method uses the <a href="http://goo.gl/EPQypw">POST 
+        /// saved/searches</a> endpoint to create the <see cref="SavedSearch"/>
+        /// object it returns.
         /// </remarks>
-        public SavedSearch CreateSavedSearch(SavedSearchCreationArgs creationArgs, SavedSearchTemplateArgs templateArgs = null)
+        public async Task<SavedSearch> CreateSavedSearchAsync(string name, SavedSearchAttributes attributes, 
+            SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
         {
-            return this.CreateSavedSearchAsync(creationArgs, templateArgs).Result;
+            var resource = new SavedSearch(this.Context, this.Namespace, name);
+            await resource.CreateAsync(attributes, dispatchArgs, templateArgs);
+            return resource;
         }
 
         /// <summary>
-        /// Creates a new <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <param name="searchName">
-        /// The name of the <see cref="SavedSearch"/> to dispatch.
-        /// </param>
-        /// <param name="searchArgs">
-        /// A set of arguments to the <see cref="SavedSearch"/>.
-        /// </param>
-        /// <param name="dispatchArgs">
-        /// A set of arguments to the dispatcher.
-        /// </param>
-        /// <returns>
-        /// The search <see cref="Job"/> that was dispatched.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
-        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
-        /// cref="SavedSearch"/> identified by <see cref="name"/>.
-        /// </remarks>
-        public async Task<SavedSearch> CreateSavedSearchAsync(SavedSearchCreationArgs creationArgs, SavedSearchTemplateArgs templateArgs = null)
-        {
-            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.SavedSearches, creationArgs, templateArgs))
-            {
-                if (response.Message.StatusCode != HttpStatusCode.Created)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-
-                var atomFeed = new AtomFeed();
-                await atomFeed.ReadXmlAsync(response.XmlReader);
-
-                if (atomFeed.Entries.Count != 1)
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
-                var entity = new SavedSearch();
-
-                entity.Initialize(this.Context, this.Namespace, ResourceName.SavedSearches, atomFeed.Entries[0]);
-                return entity;
-            }
-        }
-
-        /// <summary>
-        /// Dispatches a <see cref="SavedSearch"/> just like the scheduler would.
-        /// </summary>
-        /// <param name="searchName">
-        /// The name of the <see cref="SavedSearch"/> to dispatch.
-        /// </param>
-        /// <param name="searchArgs">
-        /// A set of arguments to the <see cref="SavedSearch"/>.
-        /// </param>
-        /// <param name="dispatchArgs">
-        /// A set of arguments to the dispatcher.
-        /// </param>
-        /// <returns>
-        /// The search <see cref="Job"/> that was dispatched.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
-        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
-        /// cref="SavedSearch"/> identified by <see cref="name"/>.
-        /// </remarks>
-        public Job DispatchSavedSearch(string searchName, SavedSearchTemplateArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
-        {
-            return this.DispatchSavedSearchAsync(searchName, searchArgs, dispatchArgs).Result;
-        }
-
-        /// <summary>
-        /// Dispatches a <see cref="SavedSearch"/> just like the scheduler would.
+        /// Asynchronously dispatches a <see cref="SavedSearch"/> just like the
+        /// scheduler would.
         /// </summary>
         /// <param name="name">
         /// The name of the <see cref="SavedSearch"/> to dispatch.
         /// </param>
-        /// <param name="searchArgs">
-        /// A set of arguments to the <see cref="SavedSearch"/>.
-        /// </param>
         /// <param name="dispatchArgs">
         /// A set of arguments to the dispatcher.
+        /// </param>
+        /// <param name="templateArgs">
+        /// A set of template arguments to the <see cref="SavedSearch"/>.
         /// </param>
         /// <returns>
         /// The search <see cref="Job"/> that was dispatched.
@@ -755,146 +548,42 @@ namespace Splunk.Sdk
         /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
         /// cref="SavedSearch"/> identified by <see cref="name"/>.
         /// </remarks>
-        public async Task<Job> DispatchSavedSearchAsync(string name, SavedSearchTemplateArgs searchArgs = null, SavedSearchDispatchArgs dispatchArgs = null)
+        public async Task<Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null, 
+            SavedSearchTemplateArgs templateArgs = null)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrWhiteSpace(name), "searchName");
-
-            var resourceName = new ResourceName(ResourceName.SavedSearches, name, "dispatch");
-            string searchId;
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, searchArgs, dispatchArgs))
-            {
-                switch (response.Message.StatusCode)
-                {
-                    case HttpStatusCode.Created:
-                    case HttpStatusCode.OK:
-
-                        searchId = await response.XmlReader.ReadResponseElementAsync("sid");
-                        break;
-
-                    default: throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-            }
-
-            Job job = new Job(this.Context, this.Namespace, ResourceName.SearchJobs, name: searchId);
-            await job.GetAsync();
+            var savedSearch = new SavedSearch(this.Context, this.Namespace, name);
+            var job = await savedSearch.DispatchAsync(dispatchArgs, templateArgs);
             return job;
         }
 
         /// <summary>
-        /// Gets the named <see cref="SavedSearch"/>.
+        /// Asynchronously retrieves the named <see cref="SavedSearch"/>.
         /// </summary>
         /// <param name="name">
         /// Name of the <see cref="SavedSearch"/> to be retrieved.
+        /// </param>
+        /// <param name="args">
+        /// Constrains the information returned about the <see cref=
+        /// "SavedSearch"/>.
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
         /// saved/searches/{name}</a> endpoint to get the <see cref=
         /// "SavedSearch"/> identified by <see cref="name"/>.
         /// </remarks>
-        public SavedSearch GetSavedSearch(string name, SavedSearchArgs args = null)
+        public async Task<SavedSearch> GetSavedSearchAsync(string name, SavedSearchFilterArgs args = null)
         {
-            return this.GetSavedSearchAsync(name, args).Result;
+            var resource = new SavedSearch(this.Context, this.Namespace, name);
+            await resource.GetAsync(args);
+            return resource;
         }
 
         /// <summary>
-        /// Gets the named <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="SavedSearch"/> to be retrieved.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
-        /// saved/searches/{name}</a> endpoint to get the <see cref=
-        /// "SavedSearch"/> identified by <see cref="name"/>.
-        /// </remarks>
-        public async Task<SavedSearch> GetSavedSearchAsync(string name, SavedSearchArgs args = null)
-        {
-            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.SavedSearches, name)))
-            {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-
-                var atomFeed = new AtomFeed();
-                await atomFeed.ReadXmlAsync(response.XmlReader);
-
-                if (atomFeed.Entries.Count != 1)
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
-                var entity = new SavedSearch();
-                entity.Initialize(this.Context, this.Namespace, ResourceName.SavedSearches, atomFeed.Entries[0]);
-                
-                return entity;
-            }
-        }
-
-        /// <summary>
-        /// Gets the named <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="SavedSearch"/> to be retrieved.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
-        /// saved/searches/{name}</a> endpoint to get the <see cref=
-        /// "SavedSearch"/> identified by <see cref="name"/>.
-        /// </remarks>
-        public JobCollection GetSavedSearchHistory(string name)
-        {
-            return this.GetSavedSearchHistoryAsync(name).Result;
-        }
-
-        /// <summary>
-        /// Gets the named <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="SavedSearch"/> to be retrieved.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
-        /// saved/searches/{name}</a> endpoint to get the <see cref=
-        /// "SavedSearch"/> identified by <see cref="name"/>.
-        /// </remarks>
-        public async Task<JobCollection> GetSavedSearchHistoryAsync(string name)
-        {
-            var resourceName = new ResourceName(ResourceName.SavedSearches, name, "history");
-            var jobs = new JobCollection(this.Context, this.Namespace, resourceName);
-            await jobs.GetAsync();
-            return jobs;
-        }
-
-        /// <summary>
-        /// Retrieves information on a collection of saved searches.
+        /// Asynchronously retrieves a collection of saved searches.
         /// </summary>
         /// <param name="args">
         /// Arguments identifying the collection of <see cref="SavedSearch"/>
-        /// entries to return.
-        /// </param>
-        /// <returns>
-        /// A new <see cref="SavedSearchCollection"/> containing the <see cref=
-        /// "SavedSearch"/> entries identified by <see cref="args"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/bKrRK0">GET 
-        /// saved/searches</a> endpoint to retrieve a new <see cref=
-        /// "SavedSearchCollection"/> containing the <see cref="SavedSearch"/> 
-        /// entries identified by <see cref="args"/>.
-        /// </remarks>
-        public SavedSearchCollection GetSavedSearches(SavedSearchCollectionArgs args = null)
-        {
-            return this.GetSavedSearchesAsync(args).Result;
-        }
-
-        /// <summary>
-        /// Retrieves information on a collection of saved searches.
-        /// </summary>
-        /// <param name="args">
-        /// Arguments identifying the collection of <see cref="SavedSearch"/>
-        /// entries to return.
+        /// entries to retrieve.
         /// </param>
         /// <returns>
         /// A new <see cref="SavedSearchCollection"/> containing the <see cref=
@@ -908,47 +597,84 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<SavedSearchCollection> GetSavedSearchesAsync(SavedSearchCollectionArgs args = null)
         {
-            var collection = new SavedSearchCollection(this.Context, this.Namespace, args);
-            await collection.GetAsync();
-            return collection;
+            var resource = new SavedSearchCollection(this.Context, this.Namespace, args);
+            await resource.GetAsync();
+            return resource;
         }
 
         /// <summary>
-        /// Removes the named <see cref="SavedSearch"/>.
+        /// Asynchronously removes a saved search.
         /// </summary>
         /// <param name="name">
-        /// Name of the <see cref="SavedSearch"/> to be removed.
+        /// Name of the saved search to be removed.
         /// </param>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/0IrFbY">DELETE 
-        /// saved/searches{name}</a> endpoint to remove the <see cref=
-        /// "SavedSearch"/> identified by <see cref="name"/>.
-        /// </remarks>
-        public void RemoveSavedSearch(string name)
-        {
-            this.RemoveSavedSearchAsync(name).Wait();
-        }
-
-        /// <summary>
-        /// Removes the named <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="SavedSearch"/> to be removed.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/0IrFbY">DELETE 
-        /// saved/searches{name}</a> endpoint to remove the <see cref=
-        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// This method uses the <a href="http://goo.gl/sn7qC5">DELETE 
+        /// saved/searches/{name}</a> endpoint to remove the saved search
+        /// identified by <see cref="name"/>.
         /// </remarks>
         public async Task RemoveSavedSearchAsync(string name)
         {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, new ResourceName(ResourceName.SavedSearches, name)))
-            {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-            }
+            var resource = new SavedSearch(this.Context, this.Namespace, name);
+            await resource.RemoveAsync();
+        }
+
+        /// <summary>
+        /// Asynchronously updates a saved search.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/> to be updated.
+        /// </param>
+        /// <param name="name">
+        /// Name of the saved search to be updated.
+        /// </param>
+        /// <param name="attributes">
+        /// New attributes for the saved search to be updated.
+        /// </param>
+        /// <param name="dispatchArgs">
+        /// New dispatch arguments for the saved search to be updated.
+        /// </param>
+        /// <param name="templateArgs">
+        /// New template arguments for the saved search to be updated.
+        /// </param>
+        /// <returns>
+        /// An object representing the saved search that was updated.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/aV9eiZ">POST 
+        /// saved/searches/{name}</a> endpoint to update the saved search
+        /// identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task<SavedSearch> UpdateSavedSearchAsync(string name, SavedSearchAttributes attributes, SavedSearchDispatchArgs 
+            dispatchArgs, SavedSearchTemplateArgs templateArgs)
+        {
+            var resource = new SavedSearch(this.Context, this.Namespace, name);
+            await resource.UpdateAsync(attributes, dispatchArgs, templateArgs);
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves the collection of jobs created from a
+        /// saved search.
+        /// </summary>
+        /// <param name="name">
+        /// Name of a saved search.
+        /// </param>
+        /// <returns>
+        /// An object representing the collection of jobs created from the
+        /// saved search identified by <see cref="name"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/kv9L1l">GET 
+        /// saved/searches/{name}/history</a> endpoint to get the collection of
+        /// jobs created from the <see cref="SavedSearch"/> identified by <see 
+        /// cref="name"/>.
+        /// </remarks>
+        public async Task<JobCollection> GetSavedSearchHistoryAsync(string name)
+        {
+            var savedSearch = new SavedSearch(this.Context, this.Namespace, name);
+            var jobs = await savedSearch.GetHistoryAsync();
+            return jobs;
         }
 
         #endregion
@@ -956,152 +682,77 @@ namespace Splunk.Sdk
         #region Search jobs
 
         /// <summary>
-        /// Gets details about the search <see cref="Job"/> identified by
-        /// <c>searchId</c>.
+        /// Asynchronously retrieves information about a search job.
         /// </summary>
+        /// <param name="searchId">
+        /// ID of a search job.
+        /// </param>
         /// <remarks>
-        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
-        /// REST API Reference.
-        /// </remarks>
-        public Job GetJob(string searchId)
-        {
-            return this.GetJobAsync(searchId).Result;
-        }
-
-        /// <summary>
-        /// Gets details about the search <see cref="Job"/> identified by
-        /// <c>searchId</c>.
-        /// </summary>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
-        /// REST API Reference.
+        /// This method uses the <a href="http://goo.gl/SFqSPI">GET 
+        /// search/jobs/{search_id}</a> endpoint to get the <see cref="Job"/> 
+        /// identified by identified by <see cref="searchId"/>.
         /// </remarks>
         public async Task<Job> GetJobAsync(string searchId)
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.SearchJobs, searchId)))
-            {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-
-                var atomEntry = new AtomEntry();
-                var entity = new Job();
-
-                await atomEntry.ReadXmlAsync(response.XmlReader);
-                entity.Initialize(this.Context, this.Namespace, ResourceName.SearchJobs, atomEntry);
-
-                return entity;
-            }
+            var resource = new Job(this.Context, this.Namespace, searchId);
+            await resource.GetAsync();
+            return resource;
         }
 
         /// <summary>
-        /// Retrieves the collection of all running search jobs.
+        /// Asynchronously retrieves a collection of running search jobs.
         /// </summary>
+        /// <param name="args">
+        /// Specification of the collection of running search jobs to retrieve.
+        /// </param>
         /// <remarks>
-        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
-        /// </remarks>
-        public JobCollection GetJobs(JobCollectionArgs args)
-        {
-            return this.GetJobsAsync(args).Result;
-        }
-
-        /// <summary>
-        /// Retrieves the collection of all running search jobs.
-        /// </summary>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/gf67qS">search/jobs</a> REST API Reference.
+        /// This method uses the <a href="http://goo.gl/ja2Sev">GET 
+        /// search/jobs</a> endpoint to get the <see cref="JobCollelction"/> 
+        /// specified by <see cref="args"/>.
         /// </remarks>
         public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args = null)
         {
-            var jobs = new JobCollection(this.Context, this.Namespace, ResourceName.SearchJobs, args);
+            var jobs = new JobCollection(this.Context, this.Namespace, args);
             await jobs.GetAsync();
             return jobs;
         }
 
         /// <summary>
-        /// Removes the search <see cref="Job"/> identified by <c>searchId</c>.
+        /// Asynchronously removes a search <see cref="Job"/>.
         /// </summary>
+        /// <param name="searchId">
+        /// ID of a search job.
+        /// </param>
         /// <remarks>
-        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
-        /// REST API Reference.
-        /// </remarks>
-        public void RemoveJob(string searchId)
-        {
-            this.RemoveJobAsync(searchId).Wait();
-        }
-
-        /// <summary>
-        /// Removes the search <see cref="Job"/> identified by <c>searchId</c>.
-        /// </summary>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/X4smdW">search/jobs/{search_id}</a>
-        /// REST API Reference.
+        /// This method uses the <a href="http://goo.gl/TUqQUc">DELETE 
+        /// search/jobs/{search_id}</a> endpoint to remove the <see cref="Job"/> 
+        /// identified by <see cref="searchId"/>.
         /// </remarks>
         public async Task RemoveJobAsync(string searchId)
         {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, new ResourceName(ResourceName.SearchJobs, searchId)))
-            {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-            }
+            var resource = new Job(this.Context, this.Namespace, searchId);
+            await resource.RemoveAsync();
         }
 
         /// <summary>
-        /// Starts a new search <see cref="Job"/>.
+        /// Asynchronously starts a new search <see cref="Job"/>.
         /// </summary>
         /// <param name="search">
         /// The search language string to execute.
         /// </param>
         /// <param name="mode">
-        /// The search <see cref="ExecutionMode"/>.
-        /// </param>
-        /// <returns>
-        /// A new search <see cref="Job"/>.
-        /// </returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
-        /// </remarks>
-        public Job StartJob(string search, ExecutionMode mode = ExecutionMode.Normal)
-        {
-            return StartJob(new JobArgs(search) { ExecutionMode = mode });
-        }
-
-        /// <summary>
-        /// Starts a new search <see cref="Job"/>.
-        /// </summary>
-        /// <param name="args">
-        /// Search <see cref="JobArgs"/> to pass when starting the search <see 
-        /// cref="Job"/>.
-        /// </param>
-        /// <returns>
-        /// A new search <see cref="Job"/>.
-        /// </returns>
-        /// <remarks>
-        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST 
-        /// API Reference.
-        /// </remarks>
-        public Job StartJob(JobArgs args)
-        {
-            return StartJobAsync(args).Result;
-        }
-
-        /// <summary>
-        /// Starts a new search <see cref="Job"/>.
-        /// </summary>
-        /// <param name="search">
-        /// The search language string to execute.
-        /// </param>
-        /// The search <see cref="ExecutionMode"/>.
+        /// The search <see cref="ExecutionMode"/>. A value of <see cref=
+        /// "ExecutionMode.Normal"/> or <see cref="ExecutionMode.Blocking"/> is
+        /// required. The default value is <see cref="ExecutionMode.Normal"/>.
         /// <param name="mode">
         /// </param>
         /// <returns>
-        /// A new search <see cref="Job"/>.
+        /// An object representing the search job that was started.
         /// </returns>
         /// <remarks>
-        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST API Reference.
+        /// This method uses the <a href="http://goo.gl/JZcPEb">POST 
+        /// search/jobs</a> endpoint to start a job to execute the specified
+        /// <see cref="search"/> language string in <see cref="mode"/>.
         /// </remarks>
         public async Task<Job> StartJobAsync(string search, ExecutionMode mode = ExecutionMode.Normal)
         {
@@ -1109,18 +760,18 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Starts a new search <see cref="Job"/>.
+        /// Asynchronously starts a new search <see cref="Job"/>.
         /// </summary>
         /// <param name="args">
-        /// Search <see cref="JobArgs"/> to pass when starting the search <see 
-        /// cref="Job"/>.
+        /// Specification of a search job.
         /// </param>
         /// <returns>
-        /// A new search <see cref="Job"/>.
+        /// An object representing the search job that was started.
         /// </returns>
         /// <remarks>
-        /// See the <a href="http://goo.gl/b02g1d">POST search/jobs</a> REST 
-        /// API Reference.
+        /// This method uses the <a href="http://goo.gl/JZcPEb">POST 
+        /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
+        /// specified by <see cref="args"/>.
         /// </remarks>
         public async Task<Job> StartJobAsync(JobArgs args)
         {
@@ -1146,35 +797,20 @@ namespace Splunk.Sdk
             // In the other SDKs, we've been doing functions to wait for ready and for done. Async means
             // that we can probably make that a little slicker, but let's talk about how.
 
-            Job job = new Job(this.Context, this.Namespace, ResourceName.SearchJobs, name: searchId);
+            Job job = new Job(this.Context, this.Namespace, name: searchId);
             await job.GetAsync();
 
             return job;
         }
 
         /// <summary>
-        /// Updates a search <see cref="Job"/>.
+        /// Asynchronously updates the specification of a search <see cref="Job"/>.
         /// </summary>
         /// <param name="searchId">
+        /// ID of a search <see cref="Job"/>.
         /// </param>
         /// <param name="args">
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/8HjDNS">POST 
-        /// search/jobs/{search_id}</a> to update the <see cref="JobArgs"/> for
-        /// search <see cref="Job"/> identified by <see cref="searchId"/>.
-        /// </remarks>
-        public void UpdateJobArgs(string searchId, JobArgs args)
-        {
-            UpdateJobArgsAsync(searchId, args).Wait();
-        }
-
-        /// <summary>
-        /// Updates a search <see cref="Job"/>.
-        /// </summary>
-        /// <param name="searchId">
-        /// </param>
-        /// <param name="args">
+        /// New specification of the search job.
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/8HjDNS">POST 

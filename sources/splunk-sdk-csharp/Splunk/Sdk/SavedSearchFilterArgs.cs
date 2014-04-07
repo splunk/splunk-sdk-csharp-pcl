@@ -35,15 +35,15 @@ namespace Splunk.Sdk
     /// </description></item>
     /// </list>
     /// </remarks>
-    public sealed class SavedSearchArgs : Args<SavedSearchArgs>
+    public sealed class SavedSearchFilterArgs : Args<SavedSearchFilterArgs>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SavedSearchArgs"/> 
+        /// Initializes a new instance of the <see cref="SavedSearchFilterArgs"/> 
         /// class.
         /// </summary>
-        public SavedSearchArgs()
+        public SavedSearchFilterArgs()
         { }
 
         #endregion

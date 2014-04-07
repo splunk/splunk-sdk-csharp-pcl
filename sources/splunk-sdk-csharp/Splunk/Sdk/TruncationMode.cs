@@ -15,29 +15,30 @@
  */
 
 // TODO:
-// [O] Documentation
+// [X] Documentation
 
 namespace Splunk.Sdk
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
-    /// Provides enumerated values that specify how lines in the <c>_raw</c> 
-    /// field of events should be truncated.
+    /// Provides enumerated values that specify how Splunk reduces the number 
+    /// of lines in the <c>_raw</c> field of events.
     /// </summary>
     public enum TruncationMode
     {
         /// <summary>
-        /// 
+        /// Indicates that lines in the <c>_raw</c> field of events should be
+        /// abstracted.
         /// </summary>
-        None,
-
-        /// <summary>
-        /// 
-        /// </summary>
+        [EnumMember(Value = "abstract")]
         Abstract,
 
         /// <summary>
-        /// 
+        /// Indicates that lines in the <c>_raw</c> field of events should be
+        /// truncated.
         /// </summary>
+        [EnumMember(Value = "truncate")]
         Truncate
     }
 }

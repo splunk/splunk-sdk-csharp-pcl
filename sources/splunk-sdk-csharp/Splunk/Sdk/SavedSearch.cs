@@ -308,7 +308,7 @@ namespace Splunk.Sdk
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/aV9eiZ">POST 
         /// saved/searches{name}</a> endpoint to update the saved search
-        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// represented by the current instance.
         /// </remarks>
 
         public async Task UpdateAsync(SavedSearchAttributes attributes, SavedSearchDispatchArgs dispatchArgs, 

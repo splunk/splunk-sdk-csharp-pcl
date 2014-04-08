@@ -43,30 +43,30 @@ namespace Splunk.Sdk.UnitTesting
         {
             string dummyString;
             string[] dummyList;
-            int dummyInt;
+            long dummyInt;
             bool dummyBool;
             DateTime dummyDateTime;
             double dummyDouble;
 
-            //// wait until job is queryable
-            //this.Ready(job);
-            //dummyDateTime = job.CursorTime;
+            // wait until job is queryable
+            this.Ready(job);
+            dummyDateTime = job.CursorTime;
             //dummyString = job.Delegate;
-            //dummyInt = job.DiskUsage;
-            //dummyString = job.DispatchState;
-            //dummyDouble = job.DoneProgress;
-            //dummyInt = job.DropCount;
-            //dummyDateTime = job.EarliestTime;
-            //dummyInt = job.EventAvailableCount;
-            //dummyInt = job.EventCount;
-            //dummyInt = job.EventFieldCount;
-            //dummyBool = job.EventIsStreaming;
-            //dummyBool = job.EventIsTruncated;
-            //dummyString = job.EventSearch;
-            //dummyString = job.EventSorting;
-            //dummyString = job.IndexEarliest;
-            //dummyString = job.IndexLatest;
-            //dummyString = job.Keywords;
+            dummyInt = job.DiskUsage;
+            DispatchState dummyDispatchState = job.DispatchState;
+            dummyDouble = job.DoneProgress;
+            dummyInt = job.DropCount;
+            dummyDateTime = job.EarliestTime;
+            dummyInt = job.EventAvailableCount;
+            dummyInt = job.EventCount;
+            dummyInt = job.EventFieldCount;
+            dummyBool = job.EventIsStreaming;
+            dummyBool = job.EventIsTruncated;
+            dummyString = job.EventSearch;
+            SortDirection sordirection = job.EventSorting;
+            long indexEarliestTime = job.IndexEarliestTime;
+            long indexLatestTime = job.IndexLatestTime;
+            dummyString = job.Keywords;
             //dummyString = job.Label;
 
             //if (service.VersionCompare("6.0") < 0)
@@ -74,33 +74,33 @@ namespace Splunk.Sdk.UnitTesting
             //    dummyDateTime = job.LatestTime;
             //}
 
-            //dummyInt = job.NumPreviews;
-            //dummyInt = job.Priority;
-            //dummyString = job.RemoteSearch;
+            dummyInt = job.NumPreviews;
+            dummyInt = job.Priority;
+            dummyString = job.RemoteSearch;
             //dummyString = job.ReportSearch;
-            //dummyInt = job.ResultCount;
-            //dummyBool = job.ResultIsStreaming;
-            //dummyInt = job.ResultPreviewCount;
-            //dummyDouble = job.RunDuration;
-            //dummyInt = job.ScanCount;
+            dummyInt = job.ResultCount;
+            dummyBool = job.ResultIsStreaming;
+            dummyInt = job.ResultPreviewCount;
+            dummyDouble = job.RunDuration;
+            dummyInt = job.ScanCount;
             //dummyString = job.Search;
             //dummyString = job.SearchEarliestTime;
             //dummyString = job.SearchLatestTime;
             //dummyList = job.SearchProviders;
-            //dummyString = job.Sid;
-            //dummyInt = job.StatusBuckets;
-            //dummyInt = job.Ttl;
-            //dummyBool = job.IsDone;
-            //dummyBool = job.IsFailed;
-            //dummyBool = job.IsFinalized;
-            //dummyBool = job.IsPaused;
-            //dummyBool = job.IsPreviewEnabled;
-            //dummyBool = job.IsRealTimeSearch;
-            //dummyBool = job.IsRemoteTimeline;
-            //dummyBool = job.IsSaved;
-            //dummyBool = job.IsSavedSearch;
-            //dummyBool = job.IsZombie;
-            //Assert.AreEqual(job.Name, job.Sid, this.assertRoot + "#1");
+            dummyString = job.Sid;
+            dummyInt = job.StatusBuckets;
+            dummyInt = job.Ttl;
+            dummyBool = job.IsDone;
+            dummyBool = job.IsFailed;
+            dummyBool = job.IsFinalized;
+            dummyBool = job.IsPaused;
+            dummyBool = job.IsPreviewEnabled;
+            dummyBool = job.IsRealTimeSearch;
+            dummyBool = job.IsRemoteTimeline;
+            dummyBool = job.IsSaved;
+            dummyBool = job.IsSavedSearch;
+            dummyBool = job.IsZombie;
+            Assert.AreEqual(job.Title, job.Sid, this.assertRoot + "#1");
         }
 
         ///// <summary>
@@ -114,6 +114,7 @@ namespace Splunk.Sdk.UnitTesting
         //    {
         //        // Make sure we can at least load the Atom response
         //        AtomFeed.Parse(response.Content);
+                
         //    }
         //    catch (Exception e)
         //    {
@@ -129,10 +130,11 @@ namespace Splunk.Sdk.UnitTesting
         {
             Service service = this.Connect();
             String query = "Search * | head 10";
+            
             Job job = service.StartJobAsync(query).Result;
-            /////this.CheckJob(job, service);
-            ////// summary of job
-            ////job.Summary().Close();
+            this.CheckJob(job, service);
+            // summary of job
+            //job.Summary().Close();
         }
 
         /// <summary>
@@ -206,92 +208,86 @@ namespace Splunk.Sdk.UnitTesting
         //    Assert.Fail(this.assertRoot + "#4.1");
         //}
 
-        ///// <summary>
-        ///// Tests the getting of service info (there are no set arguments)
-        ///// </summary>
-        //[TestMethod]
-        //public void ServiceInfo()
-        //{
-        //    List<string> expected = new List<string> 
-        //    {
-        //        "build", "cpu_arch", "guid", "isFree", "isTrial", "licenseKeys",
-        //        "licenseSignature", "licenseState", "master_guid", "mode",
-        //        "os_build", "os_name", "os_version", "serverName", "version"
-        //    };
+        /// <summary>
+        /// Tests the getting of service info (there are no set arguments)
+        /// </summary>
+        [TestMethod]
+        public void ServiceInfo()
+        {            
+            Service service = Connect();
+            ServerInfo info = service.Server.GetInfoAsync().Result;
+            
+            bool dummyBool;
+            int dummyInt;
+            string[] dummyStrings;
+            string dummyString;
 
-        //    Service service = Connect();
-        //    ServiceInfo info = service.GetInfo();
+            dummyInt = info.Build;
+            dummyString = info.CpuArchitecture;
+            Guid guid = info.Guid;
+            IReadOnlyList<string> licents = info.LicenseKeys;
+             IReadOnlyList<string> licentLabel = info.LicenseLabels;
+            dummyString = info.LicenseSignature;
+            LicenseState state = info.LicenseState;
+            Guid guid2 = info.MasterGuid;
+            ServerMode mode = info.Mode;
+            dummyString = info.OSBuild;
+            dummyString = info.OSName;
+            dummyString = info.OSVersion;
+            dummyString = info.ServerName;
+            Version version = info.Version;
+            dummyBool = info.IsFree;
+            dummyBool = info.IsRealtimeSearchEnabled;
+            dummyBool = info.IsTrial;
+        }
 
-        //    // check for standard fields
-        //    foreach (string name in expected)
-        //    {
-        //        Assert.IsTrue(
-        //            info.ContainsKey(name),
-        //            string.Format("{0} not found.", name));
-        //    }
+        /// <summary>
+        /// Test login
+        /// </summary>
+        [TestMethod]
+        public void ServiceLogin()
+        {
+            //ResponseMessage response;
 
-        //    bool dummyBool;
-        //    int dummyInt;
-        //    string[] dummyStrings;
-        //    string dummyString;
+            Service service = new Service(Scheme.Https, this.SetUp().Host, this.SetUp().Port);
+            ConfigurationCollection config;
 
-        //    dummyInt = info.Build;
-        //    dummyString = info.CpuArch;
-        //    dummyString = info.Guid;
-        //    dummyStrings = info.LicenseKeys;
-        //    dummyStrings = info.LicenseLabels;
-        //    dummyString = info.LicenseSignature;
-        //    dummyString = info.LicenseState;
-        //    dummyString = info.MasterGuid;
-        //    dummyString = info.Mode;
-        //    dummyString = info.OsBuild;
-        //    dummyString = info.OsName;
-        //    dummyString = info.OsVersion;
-        //    dummyString = info.ServerName;
-        //    dummyString = info.Version;
-        //    dummyBool = info.IsFree;
-        //    dummyBool = info.IsRtSearchEnabled;
-        //    dummyBool = info.IsTrial;
-        //}
+            // Not logged in, should fail with 401
+            try
+            {
+                //response = service.Get("/services/authentication/users");
+                config = service.GetConfigurationsAsync().Result;
+                Assert.Fail("Expected HttpException");
+            }
+            catch (WebException ex)
+            {
+                Assert.AreEqual(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#6");
+            }
+            catch (Exception e)
+            {
+                //TODO, if dev fix the aggregate exception issue, should only catch the above exception
+                Assert.IsTrue(e.InnerException.Message.Contains("401"));
+            }
 
-        ///// <summary>
-        ///// Test login
-        ///// </summary>
-        //[TestMethod]
-        //public void ServiceLogin()
-        //{
-        //    ResponseMessage response;
+            // Logged in, request should succeed
+            service.LoginAsync(this.SetUp().Username, this.SetUp().Password).Wait();
+            //response = service.Get("/services/authentication/users");
+            //this.CheckResponse(response);
+            config = service.GetConfigurationsAsync().Result;
+            Assert.IsNotNull(config, "get null return");
 
-        //    Service service = new Service(Scheme.Https,this.SetUp().Host, this.SetUp().Port);
-
-        //    // Not logged in, should fail with 401
-        //    try
-        //    {
-        //        response = service.Get("/services/authentication/users");
-        //        Assert.Fail("Expected HttpException");
-        //    }
-        //    catch (WebException ex)
-        //    {
-        //        Assert.AreEqual(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#6");
-        //    }
-
-        //    // Logged in, request should succeed
-        //    service.Login(this.SetUp().Username, this.SetUp().Password);
-        //    response = service.Get("/services/authentication/users");
-        //    this.CheckResponse(response);
-
-        //    // Logout, the request should fail with a 401
-        //    service.Logout();
-        //    try
-        //    {
-        //        response = service.Get("/services/authentication/users");
-        //        Assert.Fail("Expected HttpException");
-        //    }
-        //    catch (WebException ex)
-        //    {
-        //        Assert.AreEqual(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#6");
-        //    }
-        //}
+            //// Logout, the request should fail with a 401
+            //service.Logout();
+            //try
+            //{
+            //    response = service.Get("/services/authentication/users");
+            //    Assert.Fail("Expected HttpException");
+            //}
+            //catch (WebException ex)
+            //{
+            //    Assert.AreEqual(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#6");
+            //}
+        }
 
         ///// <summary>
         ///// Test setters and getters

@@ -34,7 +34,7 @@ namespace Splunk.Sdk.UnitTesting
         /// <summary>
         /// Root Debug string for assertions
         /// </summary>
-        //private string assertRoot = "Test Support assert: ";
+        private string assertRoot = "Test Support assert: ";
 
         /// <summary>
         /// The command object
@@ -94,24 +94,27 @@ namespace Splunk.Sdk.UnitTesting
         {
             //EntityCollection<App> apps;
 
-            //Service service = this.Connect();
+            Service service = this.Connect();
 
-            //apps = service.GetAppsAsync(null).Result;
-            //if (apps.(name))
+            ApplicationCollection apps = service.GetApplicationsAsync(new ApplicationCollectionArgs()).Result;
+
+          
+            //if (apps.GetAsync(name))
             //{
-            //    apps.Remove(name);
+            //     apps.Remove(name);
             //    this.SplunkRestart();
             //    service = this.Connect();
             //}
 
-            //apps = service.GetAppsAsync().Result;
+            //apps = service.GetApplicationsAsync().Result;
             //Assert.IsFalse(apps.ContainsKey(name), this.assertRoot + "#1");
 
             //apps.Create(name);
-            //this.SplunkRestart();
-            //service = this.Connect();
+            this.SplunkRestart();
 
-            //apps = service.GetAppsAsync().Result;
+            service = this.Connect();
+
+            apps = service.GetApplicationsAsync().Result;
             //Assert.IsTrue(apps.ContainsKey(name), this.assertRoot + "#2");
         }
 
@@ -165,64 +168,64 @@ namespace Splunk.Sdk.UnitTesting
         /// <param name="millisecondTimeout">The number of milliseconds</param>
         public void SplunkRestart(int millisecondTimeout) 
         {
-            //bool restarted = false;
+            bool restarted = false;
 
             Service service = this.Connect();
 
             service.Server.Restart();
 
-            //// Sniff the management port. We expect the port to be up for a short
-            //// while, and then no conection
-            //int totalTime = 0;
+            // Sniff the management port. We expect the port to be up for a short
+            // while, and then no conection
+            int totalTime = 0;
 
             //// Server is back up, wait until socket no longer accepted.
-            //while (totalTime < millisecondTimeout) 
+            //while (totalTime < millisecondTimeout)
             //{
-            //    try 
+            //    try
             //    {
             //        Socket socket = service.Open(service.Port);
             //        socket.Close();
             //        Thread.Sleep(10);
             //        totalTime += 10;
             //    }
-            //    catch (Exception) 
+            //    catch (Exception)
             //    {
             //        break;
             //    }
             //}
 
             //// server down, wait until socket accepted.
-            //while (totalTime < millisecondTimeout) 
+            //while (totalTime < millisecondTimeout)
             //{
-            //    try 
+            //    try
             //    {
             //        Socket socket = service.Open(service.Port);
             //        socket.Close();
             //        break;
             //    }
-            //    catch (Exception) 
+            //    catch (Exception)
             //    {
             //        Thread.Sleep(10);
             //        totalTime += 10;
             //    }
             //}
 
-            //while (totalTime < millisecondTimeout) 
-            //{
-            //    try 
-            //    {
-            //        this.Connect();
-            //        restarted = true;
-            //        break;
-            //    }
-            //    catch (Exception) 
-            //    {
-            //        Thread.Sleep(100);
-            //        totalTime += 100;
-            //    }
-            //}
-            
-            //Assert.IsTrue(restarted, this.assertRoot + "#5");
+            while (totalTime < millisecondTimeout)
+            {
+                try
+                {
+                    this.Connect();
+                    restarted = true;
+                    break;
+                }
+                catch (Exception)
+                {
+                    Thread.Sleep(100);
+                    totalTime += 100;
+                }
+            }
+
+            Assert.IsTrue(restarted, this.assertRoot + "#5");
         }
 
         /// <summary>

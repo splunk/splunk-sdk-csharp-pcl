@@ -52,6 +52,7 @@ namespace Splunk.Sdk
         public static readonly ResourceName Configs = new ResourceName("configs");
         public static readonly ResourceName DataIndexes = new ResourceName("data", "indexes");
         public static readonly ResourceName Properties = new ResourceName("properties");
+        public static readonly ResourceName Receivers = new ResourceName("receivers");
         public static readonly ResourceName SavedSearches = new ResourceName("saved", "searches");
         public static readonly ResourceName SearchJobs = new ResourceName("search", "jobs");
         public static readonly ResourceName SearchJobsExport = new ResourceName("search", "jobs", "export");

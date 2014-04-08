@@ -99,7 +99,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task CreateAsync()
         {
-            var args = new Argument[] { new Argument("__conf", this.Title) };
+            var args = new Argument[] { new Argument("__conf", this.ResourceName.Title) };
 
             using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.Properties, args))
             {
@@ -131,7 +131,8 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<ConfigurationSetting> GetSettingAsync(string stanzaName, string keyName)
         {
-            var resource = new ConfigurationSetting(this.Context, this.Namespace, this.Title, stanzaName, keyName);
+            var resource = new ConfigurationSetting(this.Context, this.Namespace, this.ResourceName.Title, stanzaName, 
+                keyName);
             await resource.GetAsync();
             return resource;
         }
@@ -155,7 +156,8 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<ConfigurationSetting> UpdateSettingAsync(string stanzaName, string keyName, string value)
         {
-            var resource = new ConfigurationSetting(this.Context, this.Namespace, this.Title, stanzaName, keyName);
+            var resource = new ConfigurationSetting(this.Context, this.Namespace, this.ResourceName.Title, stanzaName, 
+                keyName);
             await resource.UpdateAsync(value);
             return resource;
         }
@@ -172,7 +174,7 @@ namespace Splunk.Sdk
         /// </returns>
         public async Task<ConfigurationStanza> CreateStanzaAsync(string stanzaName)
         {
-            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.Title, stanzaName);
+            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
             await resource.CreateAsync();
             return resource;
         }
@@ -196,7 +198,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<ConfigurationStanza> GetStanzaAsync(string stanzaName)
         {
-            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.Title, stanzaName);
+            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
             await resource.GetAsync();
             return resource;
         }
@@ -216,7 +218,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task RemoveStanzaAsync(string stanzaName)
         {
-            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.Title, stanzaName);
+            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
             await resource.RemoveAsync();
         }
 
@@ -239,7 +241,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<ConfigurationStanza> UpdateStanzaAsync(string stanzaName)
         {
-            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.Title, stanzaName);
+            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
             await resource.UpdateAsync();
             return resource;
         }

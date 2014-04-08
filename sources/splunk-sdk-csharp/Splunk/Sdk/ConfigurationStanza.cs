@@ -51,7 +51,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task CreateAsync()
         {
-            var args = new Argument[] { new Argument("__stanza", this.Title) };
+            var args = new Argument[] { new Argument("__stanza", this.ResourceName.Title) };
             var resourceName = this.ResourceName.GetParent();
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))

@@ -195,7 +195,6 @@ namespace Splunk.Sdk.UnitTesting
             {
                 await entity.GetAsync();
 
-                Assert.Equal(entity.Title, entity.ResourceName.Title);
                 Assert.Equal(entity.ToString(), entity.Id.ToString());
 
                 Assert.DoesNotThrow(() => { bool value = entity.AssureUTF8; });
@@ -261,7 +260,7 @@ namespace Splunk.Sdk.UnitTesting
                 Assert.DoesNotThrow(() => { string value = entity.TStatsHomePath; });
                 Assert.DoesNotThrow(() => { string value = entity.TStatsHomePathExpanded; });
 
-                var sameEntity = await service.GetIndexAsync(entity.Title);
+                var sameEntity = await service.GetIndexAsync(entity.ResourceName.Title);
 
                 Assert.Equal(entity.ResourceName, sameEntity.ResourceName);
 
@@ -386,7 +385,7 @@ namespace Splunk.Sdk.UnitTesting
 
                 var entity = await service.GetSavedSearchAsync("Errors in the last 24 hours");
 
-                Assert.Equal("Errors in the last 24 hours", entity.Title);
+                Assert.Equal("Errors in the last 24 hours", entity.ResourceName.Title);
                 Assert.Equal(entity.Id.ToString(), entity.ToString());
                 Assert.Equal("nobody", entity.Author);
 
@@ -425,15 +424,20 @@ namespace Splunk.Sdk.UnitTesting
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
             await service.LoginAsync("admin", "changeme");
             Job job1 = null, job2 = null;
-            
-            Assert.DoesNotThrow(() => job1 = service.StartJobAsync("search index=_internal | head 100").Result);
+
+            job1 = await service.StartJobAsync("search index=_internal | head 100");
             await job1.GetSearchResultsAsync();
             await job1.GetSearchResultsEventsAsync();
             await job1.GetSearchResultsPreviewAsync();
-            Assert.DoesNotThrow(() => job2 = service.GetJobAsync(job1.Title).Result);
+
+            job2 = await service.GetJobAsync(job1.ResourceName.Title);
+            Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
+            Assert.Equal(job1.Title, job1.ResourceName.Title);
             Assert.Equal(job1.Title, job2.Title);
+            Assert.Equal(job1.Sid, job1.Title);
+            Assert.Equal(job1.Sid, job2.Sid);
             Assert.Equal(job1.Id, job2.Id);
-            
+
             Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
         }
 
@@ -470,16 +474,12 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             await service.LoginAsync("admin", "changeme");
-            Job job = null;
-            SearchResults results = null;
-            List<Splunk.Sdk.Record> records = null;
 
-            Assert.DoesNotThrow(async () => job = await service.StartJobAsync("search index=_internal | head 10"));
+            var job = await service.StartJobAsync("search index=_internal | head 10");
             Assert.NotNull(job);
-            Assert.DoesNotThrow(async () => results = await job.GetSearchResultsAsync());
+            var results = await job.GetSearchResultsAsync();
             Assert.NotNull(results);
-            Assert.DoesNotThrow(() => records = new List<Splunk.Sdk.Record>(results));
-            Assert.NotNull(records);
+            var records = new List<Splunk.Sdk.Record>(results);
             Assert.Equal(10, records.Count);
         }
 

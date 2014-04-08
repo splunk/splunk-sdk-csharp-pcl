@@ -47,11 +47,16 @@ namespace Splunk.Sdk
         /// <summary>
         /// Initializes a new instance of the <see cref="Service"/> class.
         /// </summary>
-        /// <param name="scheme"></param>
-        /// <param name="host"></param>
-        /// <param name="port"></param>
-        /// <param name="sessionKey"></param>
-        /// <param name="namespace"></param>
+        /// <param name="scheme">
+        /// </param>
+        /// <param name="host">
+        /// </param>
+        /// <param name="port">
+        /// </param>
+        /// <param name="sessionKey">
+        /// </param>
+        /// <param name="namespace">
+        /// </param>
         public Service(Scheme scheme, string host, int port, Namespace @namespace = null)
             : this(new Context(scheme, host, port), @namespace)
         { }

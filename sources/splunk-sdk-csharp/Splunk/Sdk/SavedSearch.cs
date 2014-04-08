@@ -181,7 +181,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException();  // TODO: Diagnostics
                 }
 
-                this.Data = new DataObject(feed.Entries[0]);
+                this.Data = new DataCache(feed.Entries[0]);
             }
         }
 
@@ -245,7 +245,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException();  // TODO: Diagnostics
                 }
 
-                this.Data = new DataObject(feed.Entries[0]);
+                this.Data = new DataCache(feed.Entries[0]);
             }
         }
 

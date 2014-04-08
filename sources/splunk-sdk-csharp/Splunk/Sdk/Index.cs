@@ -364,7 +364,7 @@ namespace Splunk.Sdk
         public async Task CreateAsync(IndexArgs create, IndexAttributes attributes)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.DataIndexes,
-                new Argument[] { new Argument("name", this.Title) },
+                new Argument[] { new Argument("name", this.ResourceName.Title) },
                 create, attributes))
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
@@ -376,7 +376,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException(); // TODO: Diagnostics
                 }
 
-                this.Data = new DataObject(feed.Entries[0]);
+                this.Data = new DataCache(feed.Entries[0]);
             }
         }
 
@@ -435,7 +435,7 @@ namespace Splunk.Sdk
                     throw new InvalidDataException(); // TODO: Diagnostics
                 }
 
-                this.Data = new DataObject(feed.Entries[0]);
+                this.Data = new DataCache(feed.Entries[0]);
             }
         }
 

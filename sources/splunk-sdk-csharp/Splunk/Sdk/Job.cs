@@ -93,6 +93,11 @@ namespace Splunk.Sdk
             get { return this.Content.GetValue("DiskUsage", Int64Converter.Instance); } // sample value: "86016"
         }
 
+        public override string Title
+        {
+            get { return this.Content.GetValue("Sid", StringConverter.Instance); }
+        }
+
         /// <summary>
         /// Gets a value that indicates the current <see cref="Job"/> dispatch
         /// state.
@@ -538,11 +543,6 @@ namespace Splunk.Sdk
         #endregion
 
         #region Methods used by our base class, Entity<TEntity>
-
-        protected override string GetTitle()
-        {
-            return this.Content.GetValue("Sid", StringConverter.Instance);
-        }
 
         #endregion
 

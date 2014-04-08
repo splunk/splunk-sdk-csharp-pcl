@@ -77,7 +77,7 @@ namespace Splunk.Sdk
                 var reader = new StreamReader(response.Stream);
                 var content = await reader.ReadToEndAsync();
 
-                this.Data = new DataObject(new AtomEntry(this.Data.Entry, content.Length == 0 ? null : content));
+                this.Data = new DataCache(new AtomEntry(this.Data.Entry, content.Length == 0 ? null : content));
             }
         }
 

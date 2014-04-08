@@ -28,6 +28,7 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
 
@@ -58,7 +59,7 @@ namespace Splunk.Sdk
 
         #region AtomFeed properties
 
-        public override string Author
+        public string Author
         {
             get { return this.data == null ? null : this.data.Author; }
         }
@@ -68,12 +69,12 @@ namespace Splunk.Sdk
             get { return this.data == null ? null : this.data.GeneratorVersion; }
         }
 
-        public override Uri Id
+        public Uri Id
         {
             get { return this.data == null ? null : this.data.Id; }
         }
 
-        public override IReadOnlyDictionary<string, Uri> Links
+        public IReadOnlyDictionary<string, Uri> Links
         {
             get { return this.data == null ? null : this.data.Links; }
         }
@@ -88,12 +89,12 @@ namespace Splunk.Sdk
             get { return this.data == null ? Pagination.Empty : this.data.Pagination; }
         }
 
-        public override DateTime Published
+        public DateTime Published
         {
             get { return this.data == null ? DateTime.MinValue : this.data.Published; }
         }
 
-        public override DateTime Updated
+        public DateTime Updated
         {
             get { return this.data == null ? DateTime.MinValue : this.data.Updated; }
         }
@@ -153,7 +154,7 @@ namespace Splunk.Sdk
                 throw new ArgumentException("Expected non-null entry of type AtomEntry");
             }
 
-            this.data = new DataObject(entry);
+            this.data = new DataCache(entry);
             base.Initialize(context, @namespace, new ResourceName(resourceName, entry.Title), atom);
         }
 
@@ -164,15 +165,11 @@ namespace Splunk.Sdk
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
             {
-                if (response.Message.StatusCode != System.Net.HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
-
+                await EnsureStatusCodeAsync(response, System.Net.HttpStatusCode.OK);
                 var feed = new AtomFeed();
-
                 await feed.ReadXmlAsync(response.XmlReader);
-                this.data = new DataObject(this.Context, this.Namespace, this.ResourceName, feed);
+
+                this.data = new DataCache(this.Context, this.Namespace, this.ResourceName, feed);
             }
         }
 
@@ -201,17 +198,17 @@ namespace Splunk.Sdk
         #region Privates
 
         readonly IEnumerable<Argument> args;
-        volatile DataObject data;
+        volatile DataCache data;
 
         #endregion
 
         #region Types
 
-        class DataObject
+        class DataCache
         {
             #region Constructors
 
-            public DataObject(AtomEntry entry)
+            public DataCache(AtomEntry entry)
             {
                 this.author = entry.Author;
                 this.id = entry.Id;
@@ -225,7 +222,7 @@ namespace Splunk.Sdk
                 this.entities = new List<TEntity>();
             }
 
-            public DataObject(Context context, Namespace @namespace, ResourceName resourceName, AtomFeed feed)
+            public DataCache(Context context, Namespace @namespace, ResourceName resourceName, AtomFeed feed)
             {
                 this.author = feed.Author;
                 this.id = feed.Id;

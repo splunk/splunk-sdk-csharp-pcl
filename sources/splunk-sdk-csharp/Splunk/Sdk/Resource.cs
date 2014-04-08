@@ -81,7 +81,7 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Properties that are stable for the lifetime of an instance
+        #region Properties (stable for the lifetime of an instance)
 
         /// <summary>
         /// Gets the <see cref="Context"/> instance for the current <see cref=
@@ -103,33 +103,6 @@ namespace Splunk.Sdk
         /// </summary>
         public ResourceName ResourceName
         { get; private set; }
-
-        /// <summary>
-        /// Gets the title of this <see cref="Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        public string Title
-        {
-            get { return this.ResourceName.Title; }
-        }
-
-        #endregion
-
-        #region Properties backed by AtomEntry
-
-        public abstract string Author
-        { get; }
-
-        public abstract Uri Id
-        { get; }
-
-        public abstract IReadOnlyDictionary<string, Uri> Links
-        { get; }
-
-        public abstract DateTime Published
-        { get; }
-
-        public abstract DateTime Updated
-        { get; }
 
         #endregion
 

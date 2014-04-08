@@ -73,34 +73,39 @@ namespace Splunk.Sdk
         /// </summary>
         public Entity()
         {
-            this.data = DataObject.Missing;
+            this.data = DataCache.Missing;
         }
 
         #endregion
 
         #region Properties backed by AtomEntry
 
-        public override string Author
+        public string Author
         { 
             get { return this.data.Entry == null ? null : this.data.Entry.Author; }
         }
 
-        public override Uri Id
+        public Uri Id
         { 
             get { return this.data.Entry == null ? null : this.data.Entry.Id; } 
         }
 
-        public override IReadOnlyDictionary<string, Uri> Links
+        public IReadOnlyDictionary<string, Uri> Links
         { 
             get { return this.data.Entry == null ? null : this.data.Entry.Links; } 
         }
 
-        public override DateTime Published
+        public DateTime Published
         {
             get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; }
         }
 
-        public override DateTime Updated
+        public virtual string Title
+        {
+            get { return this.data.Entry == null ? null : this.data.Entry.Title; }
+        }
+
+        public DateTime Updated
         { 
             get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; } 
         }
@@ -123,7 +128,7 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
-        protected DataObject Data
+        protected DataCache Data
         {
             get { return this.data; }
             set { this.data = value; }
@@ -134,22 +139,6 @@ namespace Splunk.Sdk
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Gets the title of the current <see cref="Entity<TEntity>"/>.
-        /// </summary>
-        /// <returns>
-        /// The title of the current <see cref="Entity<TEntity>"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method is overridden by the <see cref="Job"/> class. Its title
-        /// comes from the <c>Sid</c> property, not the <c>Title</c> property of
-        /// <see cref="Entity<TEntity>.Record"/>.
-        /// </remarks>
-        protected virtual string GetTitle()
-        {
-            return this.data.Entry == null ? null : this.data.Entry.Title;
-        }
 
         /// <summary>
         /// Refreshes the cached state of the current <see cref=
@@ -227,7 +216,7 @@ namespace Splunk.Sdk
                         }
 
                         // TODO: Check entry type (?)
-                        this.data = new DataObject(entry);
+                        this.data = new DataCache(entry);
                     }
 
                     return;
@@ -257,17 +246,18 @@ namespace Splunk.Sdk
         /// </param>
         /// <param name="entry">
         /// </param>
-        protected internal override void Initialize(Context context, Namespace @namespace, ResourceName collection, object entry)
+        protected internal override void Initialize(Context context, Namespace @namespace, ResourceName collection, 
+            object data)
         {
-            AtomEntry atomEntry = entry as AtomEntry;
+            AtomEntry entry = data as AtomEntry;
 
-            if (atomEntry == null)
+            if (entry == null)
             {
                 throw new ArgumentException("Expected non-null entry of type AtomEntry.");
             }
 
-            this.data = new DataObject(atomEntry); // must be set before entity.Title
-            dynamic content = atomEntry.Content;
+            this.data = new DataCache(entry); // must be set before entity.Title
+            dynamic content = entry.Content;
 
             if ((content as ExpandoObject) != null)
             {
@@ -292,23 +282,23 @@ namespace Splunk.Sdk
                 }
             }
 
-            var resourceName = new ResourceName(collection, this.GetTitle());
-            base.Initialize(context, @namespace, resourceName, null /* unused */);
+            var resourceName = new ResourceName(collection, this.Title);
+            base.Initialize(context, @namespace, resourceName, null);
         }
 
         #endregion
 
         #region Privates
 
-        volatile DataObject data;
+        volatile DataCache data;
 
         #endregion
 
         #region Types
 
-        protected sealed class DataObject
+        protected sealed class DataCache
         {
-            public DataObject(AtomEntry entry)
+            public DataCache(AtomEntry entry)
             {
                 if (entry.Content == null)
                 {
@@ -330,12 +320,12 @@ namespace Splunk.Sdk
                 this.entry = entry;
             }
 
-            DataObject()
+            DataCache()
             {
                 this.adapter = ExpandoAdapter.Empty;
             }
 
-            public static readonly DataObject Missing = new DataObject();
+            public static readonly DataCache Missing = new DataCache();
 
             public ExpandoAdapter Adapter
             { 

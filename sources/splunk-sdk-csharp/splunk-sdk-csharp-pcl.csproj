@@ -107,6 +107,7 @@
     <Compile Include="Splunk\Sdk\AlertTrigger.cs" />
     <Compile Include="Splunk\Sdk\AlertTrack.cs" />
     <Compile Include="Splunk\Sdk\AlertSeverity.cs" />
+    <Compile Include="Splunk\Sdk\Receiver.cs" />
     <Compile Include="Splunk\Sdk\Index.cs" />
     <Compile Include="Splunk\Sdk\IndexCollectionArgs.cs" />
     <Compile Include="Splunk\Sdk\IndexCollection.cs" />
@@ -189,6 +190,9 @@
     <Compile Include="Splunk\Sdk\SharingMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Splunk\Sdk\Observable.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -35,7 +35,7 @@ namespace Splunk.Sdk.UnitTesting
         {
             foreach (Configuration conf in confs)
             {
-                if (conf.Title == key)
+                if (conf.ResourceName.Title == key)
                 {
                     return true;
                 }
@@ -54,38 +54,36 @@ namespace Splunk.Sdk.UnitTesting
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
 
             // Make sure the collection contains some of the expected entries.
-            Assert.IsTrue(this.ConfigurationContainKey(confs,"eventtypes"), assertRoot + "#1");
-            Assert.IsTrue(this.ConfigurationContainKey(confs,"searchbnf"), assertRoot + "#2");
-            Assert.IsTrue(this.ConfigurationContainKey(confs,"indexes"), assertRoot + "#3");
-            Assert.IsTrue(this.ConfigurationContainKey(confs,"inputs"), assertRoot + "#4");
-            Assert.IsTrue(this.ConfigurationContainKey(confs,"props"), assertRoot + "#5");
-            Assert.IsTrue(this.ConfigurationContainKey(confs,"transforms"), assertRoot + "#6");
-            Assert.IsTrue(this.ConfigurationContainKey(confs,"savedsearches"), assertRoot + "#7");
-            
+            Assert.IsTrue(this.ConfigurationContainKey(confs, "eventtypes"), assertRoot + "#1");
+            Assert.IsTrue(this.ConfigurationContainKey(confs, "searchbnf"), assertRoot + "#2");
+            Assert.IsTrue(this.ConfigurationContainKey(confs, "indexes"), assertRoot + "#3");
+            Assert.IsTrue(this.ConfigurationContainKey(confs, "inputs"), assertRoot + "#4");
+            Assert.IsTrue(this.ConfigurationContainKey(confs, "props"), assertRoot + "#5");
+            Assert.IsTrue(this.ConfigurationContainKey(confs, "transforms"), assertRoot + "#6");
+            Assert.IsTrue(this.ConfigurationContainKey(confs, "savedsearches"), assertRoot + "#7");
+
             // Iterate over the confs just to make sure we can read them
             foreach (Configuration conf in confs)
             {
                 string dummyString;
                 //dummyString = conf.Name;
-                dummyString = conf.Title;
+                dummyString = conf.ResourceName.Title;
                 //dummyString = conf.Path;
 
-
-                //??? what is Stanza??
-                //ConfigurationStanza stanza = conf.GetStanzaAsync(conf.s//).Result;
-                //{
-                //    try
-                //    {
-                //        //dummyString = stanza.Name;
-                //        dummyString = stanza.Title;
-                //        //dummyString = stanza.Path;
-                //    }
-                //    catch (Exception)
-                //    {
-                //        // IF the application is disabled, trying to get info
-                //        // on it will in fact give us a 404 exception.
-                //    }
-                //}
+                foreach (ConfigurationStanza stanza in conf)
+                {
+                    try
+                    {
+                        //dummyString = stanza.Name;
+                        dummyString = stanza.ResourceName.Title;
+                        //dummyString = stanza.Path;
+                    }
+                    catch (Exception)
+                    {
+                        // IF the application is disabled, trying to get info
+                        // on it will in fact give us a 404 exception.
+                    }
+                }
             }
         }
 
@@ -106,7 +104,16 @@ namespace Splunk.Sdk.UnitTesting
             this.CreateApp(app);
             service = this.Connect();
             var apps = service.GetApplicationsAsync().Result;
-           // Assert.IsTrue(service.GetApplicationsAsync().Result.ContainsKey(app), assertRoot + "#8");
+            
+            bool foundApp=false;
+            foreach(Application application in apps)
+            {
+                if (application.ResourceName.Title == app)
+                {
+                    foundApp=true;
+                }
+            }
+            Assert.IsTrue(foundApp, assertRoot + "#8");
 
             //// Create an app specific service instance
             //Args args = new Args(this.SetUp().Opts);

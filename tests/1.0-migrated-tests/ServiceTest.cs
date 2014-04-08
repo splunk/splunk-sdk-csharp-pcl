@@ -69,10 +69,11 @@ namespace Splunk.Sdk.UnitTesting
             dummyString = job.Keywords;
             //dummyString = job.Label;
 
-            //if (service.VersionCompare("6.0") < 0)
-            //{
-            //    dummyDateTime = job.LatestTime;
-            //}
+
+            if (service.Server.GetInfoAsync().Result.Version.Major<6)
+            {
+                //dummyDateTime = job.LatestTime;
+            }
 
             dummyInt = job.NumPreviews;
             dummyInt = job.Priority;

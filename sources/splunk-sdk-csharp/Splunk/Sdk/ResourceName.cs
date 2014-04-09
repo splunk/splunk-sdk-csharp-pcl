@@ -48,6 +48,7 @@ namespace Splunk.Sdk
 
         public static readonly ResourceName AppsLocal = new ResourceName("apps", "local");
         public static readonly ResourceName AuthLogin = new ResourceName("auth", "login");
+        public static readonly ResourceName AuthenticationHttpAuthTokens = new ResourceName("authentication", "httpauth-tokens");
         public static readonly ResourceName AuthorizationCapabilities = new ResourceName("authorization", "capabilities");
         public static readonly ResourceName Configs = new ResourceName("configs");
         public static readonly ResourceName DataIndexes = new ResourceName("data", "indexes");

@@ -173,15 +173,7 @@ namespace Splunk.Sdk
                 attributes, dispatchArgs, templateArgs))
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
-                var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
-
-                if (feed.Entries.Count != 1)
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
-                this.Data = new DataCache(feed.Entries[0]);
+                await this.UpdateDataAsync(response);
             }
         }
 
@@ -237,15 +229,7 @@ namespace Splunk.Sdk
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, args))
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
-                var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
-
-                if (feed.Entries.Count != 1)
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
-                this.Data = new DataCache(feed.Entries[0]);
+                await this.UpdateDataAsync(response);
             }
         }
 
@@ -270,6 +254,32 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
+        /// Asynchronously gets the scheduled times for the saved search 
+        /// represented by the current instance.
+        /// </summary>
+        /// <param name="earliestTime">
+        /// An absolute or relative time string specifying a lower-bound for
+        /// the scheduled time range.
+        /// </param>
+        /// <param name="latestTime">
+        /// An absolute or relative time string specifying a upper-bound for
+        /// the scheduled time range.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sn7qC5">DELETE 
+        /// saved/searches/{name}</a> endpoint to remove the saved search
+        /// represented by the current instance.
+        /// </remarks>
+        public async Task GetScheduledTimesAsync(string earliestTime, string latestTime)
+        {
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await this.UpdateDataAsync(response);
+            }
+        }
+
+        /// <summary>
         /// Asynchronously removes the saved search represented by the current
         /// instance.
         /// </summary>
@@ -281,6 +291,35 @@ namespace Splunk.Sdk
         public async Task RemoveAsync()
         {
             using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            {
+                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously reschedules the saved search represented by the 
+        /// current instance.
+        /// </summary>
+        /// <param name="scheduleTime">
+        /// A time string specifying the next time to run the search. This 
+        /// value defaults to null indicating that the saved search should
+        /// be run as soon as possible.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SJcEr5">POST 
+        /// saved/searches/{name}/reschedule</a> endpoint to reschedule the 
+        /// saved search represented by the current instance.
+        /// </remarks>
+        public async Task RescheduleAsync(string scheduleTime = null)
+        {
+            var resourceName = new ResourceName(this.ResourceName, "reschedule");
+            
+            Argument[] args = scheduleTime == null ? null : new Argument[] 
+            { 
+                new Argument("schedule_time", scheduleTime) 
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args) )
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
             }
@@ -325,6 +364,19 @@ namespace Splunk.Sdk
 
         #region Privates
 
+        async Task UpdateDataAsync(Response response)
+        {
+            var feed = new AtomFeed();
+            await feed.ReadXmlAsync(response.XmlReader);
+
+            if (feed.Entries.Count != 1)
+            {
+                throw new InvalidDataException();  // TODO: Diagnostics
+            }
+
+            this.Data = new DataCache(feed.Entries[0]);
+        }
+        
         #endregion
 
         #region Types

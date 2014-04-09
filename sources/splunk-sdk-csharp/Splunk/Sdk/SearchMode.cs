@@ -19,25 +19,18 @@ namespace Splunk.Sdk
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Specifies the mode for a search job.
     /// </summary>
-    /// 
     public enum SearchMode
     {
         /// <summary>
-        /// 
+        /// Indicates that a search job should run over historical data.
         /// </summary>
-        None,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// 
         [EnumMember(Value = "normal")]
         Normal, 
         
         /// <summary>
-        /// 
+        /// Indicates taht a search job should run over realtime data.
         /// </summary>
         [EnumMember(Value = "realtime")]
         Realtime

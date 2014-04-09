@@ -32,7 +32,7 @@ namespace Splunk.Sdk
     /// The <see cref="SearchResults"/> class represents a stream of Splunk 
     /// search events.
     /// </summary>
-    public sealed class SearchResults : Observable<Record>, IDisposable, IEnumerable<Record>
+    public sealed class SearchResults : Observable<Result>, IDisposable, IEnumerable<Result>
     {
         #region Constructors
 
@@ -74,7 +74,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Gets the read-only list of field names that may appear in a search 
-        /// event <see cref="Record"/>.
+        /// event <see cref="Result"/>.
         /// </summary>
         /// <remarks>
         /// Be aware that any given result will contain a subset of these 
@@ -144,10 +144,10 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Returns an enumerator that iterates through search result <see 
-        /// cref="Record"/> objects synchronously.
+        /// cref="Result"/> objects synchronously.
         /// </summary>
         /// <returns>
-        /// A <see cref="Record"/> enumerator structure for the <see 
+        /// A <see cref="Result"/> enumerator structure for the <see 
         /// cref="SearchResults"/>.
         /// </returns>
         /// <remarks>
@@ -157,11 +157,11 @@ namespace Splunk.Sdk
         ///     Perform LINQ to Objects queries to obtain a filtered set of 
         ///     search result records.</description></item>
         /// <item><description>
-        ///     Append search results to an existing <see cref="Record"/>
+        ///     Append search results to an existing <see cref="Result"/>
         ///     collection.</description></item>
         /// </list>
         /// </remarks>
-        public IEnumerator<Record> GetEnumerator()
+        public IEnumerator<Result> GetEnumerator()
         {
             if (this.enumerated)
             {
@@ -170,7 +170,7 @@ namespace Splunk.Sdk
 
             this.enumerated = true;
 
-            for (var task = this.ReadRecordAsync(); task.Result != null; task = this.ReadRecordAsync())
+            for (var task = this.ReadResultAsync(); task.Result != null; task = this.ReadResultAsync())
             {
                 yield return task.Result;
             }
@@ -181,7 +181,7 @@ namespace Splunk.Sdk
             return this.GetEnumerator();
         }
         /// <summary>
-        /// Pushes <see cref="Record"/> objects to observers and then completes.
+        /// Pushes <see cref="Result"/> objects to observers and then completes.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing this asychronous operation.
@@ -195,7 +195,7 @@ namespace Splunk.Sdk
 
             this.enumerated = true;
 
-            for (Record record; (record = await this.ReadRecordAsync()) != null; )
+            for (Result record; (record = await this.ReadResultAsync()) != null; )
             { 
                 this.OnNext(record); 
             }
@@ -212,21 +212,21 @@ namespace Splunk.Sdk
         bool enumerated;
 
         /// <summary>
-        /// Reads the next <see cref="Record"/> in the <see cref=
+        /// Reads the next <see cref="Result"/> in the <see cref=
         /// "SearchResults"/> stream.
         /// </summary>
         /// <returns>
-        /// A <see cref="Record"/> if the next result was read successfully; 
+        /// A <see cref="Result"/> if the next result was read successfully; 
         /// <code>null</code> if there are no more records to read.
         /// </returns>
-        async Task<Record> ReadRecordAsync()
+        async Task<Result> ReadResultAsync()
         {
             if (!await this.response.XmlReader.ReadToNextSiblingAsync("result"))
             {
                 return null;
             }
 
-            var result = new Record();
+            var result = new Result();
 
             await this.response.XmlReader.ReadEachDescendantAsync("field", async () =>
             {

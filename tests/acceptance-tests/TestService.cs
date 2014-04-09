@@ -359,14 +359,14 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
 
-            Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
+            Func<Task<IEnumerable<Splunk.Sdk.Result>>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
                 SearchResults searchResults = await job.GetSearchResultsAsync();
 
-                var records = new List<Splunk.Sdk.Record>(searchResults);
+                var records = new List<Splunk.Sdk.Result>(searchResults);
                 return records;
             };
 
@@ -479,7 +479,7 @@ namespace Splunk.Sdk.UnitTesting
             Assert.NotNull(job);
             var results = await job.GetSearchResultsAsync();
             Assert.NotNull(results);
-            var records = new List<Splunk.Sdk.Record>(results);
+            var records = new List<Splunk.Sdk.Result>(results);
             Assert.Equal(10, records.Count);
         }
 
@@ -491,7 +491,7 @@ namespace Splunk.Sdk.UnitTesting
             await service.LoginAsync("admin", "changeme");
 
             SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
-            var records = new List<Splunk.Sdk.Record>();
+            var records = new List<Splunk.Sdk.Result>();
 
             foreach (var searchResults in reader)
             {
@@ -505,12 +505,12 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
-            Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
+            Func<Task<IEnumerable<Splunk.Sdk.Result>>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 
                 SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
-                var records = new List<Splunk.Sdk.Record>(searchResults);
+                var records = new List<Splunk.Sdk.Result>(searchResults);
 
                 return records;
             };
@@ -528,7 +528,7 @@ namespace Splunk.Sdk.UnitTesting
         public void CanGetServerInfo()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            var serverInfo = service.Server.GetInfo();
+            var serverInfo = service.Server.GetInfoAsync().Result;
 
             Acl acl = serverInfo.Eai.Acl;
             Permissions permissions = acl.Permissions;
@@ -557,7 +557,7 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             service.LoginAsync("admin", "changeme").Wait();
-            service.Server.Restart();
+            service.Server.RestartAsync().Wait();
         }
 
         #endregion

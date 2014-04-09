@@ -47,7 +47,7 @@ namespace Splunk.Sdk.Examples.ReactiveUI
         {
             var service = ((App)App.Current).Service;
 
-            Func<Task<IEnumerable<Splunk.Sdk.Record>>> Dispatch = async () =>
+            Func<Task<IEnumerable<Splunk.Sdk.Result>>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 

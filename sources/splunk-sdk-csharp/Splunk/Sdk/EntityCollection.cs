@@ -158,10 +158,7 @@ namespace Splunk.Sdk
             base.Initialize(context, @namespace, new ResourceName(resourceName, entry.Title), atom);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public override async Task GetAsync()
+        public virtual async Task GetAsync()
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
             {

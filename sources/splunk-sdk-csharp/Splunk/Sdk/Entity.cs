@@ -54,16 +54,16 @@ namespace Splunk.Sdk
         /// </param>
         /// <param name="namespace">
         /// </param>
-        /// <param name="collection">
+        /// <param name="resourceName">
         /// </param>
         /// <param name="title">
         /// </param>
-        protected Entity(Context context, Namespace @namespace, ResourceName collection, string title)
-            : base(context, @namespace, new ResourceName(collection, title))
+        protected Entity(Context context, Namespace @namespace, ResourceName resourceName, string title = null)
+            : base(context, @namespace, title == null ? resourceName : new ResourceName(resourceName, title))
         {
             Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(title), "name");
-            Contract.Requires<ArgumentException>(collection != null, "collection");
+            Contract.Requires<ArgumentException>(resourceName != null, "collection");
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires(@namespace.IsSpecific);
         }
@@ -144,7 +144,7 @@ namespace Splunk.Sdk
         /// Refreshes the cached state of the current <see cref=
         /// "Entity<TEntity>"/>.
         /// </summary>
-        public override async Task GetAsync()
+        public virtual async Task GetAsync()
         {
             // TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class
 

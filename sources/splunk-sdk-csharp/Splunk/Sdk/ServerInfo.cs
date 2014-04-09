@@ -29,8 +29,8 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        public ServerInfo(Service service)
-            : base(service.Context, service.Namespace, ResourceName.ServerInfo, "server-info")
+        public ServerInfo(Context context, Namespace @namespace)
+            : base(context, @namespace, ClassResourceName)
         { }
 
         public ServerInfo()
@@ -136,6 +136,12 @@ namespace Splunk.Sdk
         {
             get { return this.Content.GetValue("Version", VersionConverter.Instance); }
         }
+
+        #endregion
+
+        #region Privates
+
+        static readonly ResourceName ClassResourceName = new ResourceName("server", "info");
 
         #endregion
     }

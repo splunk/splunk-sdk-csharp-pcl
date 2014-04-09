@@ -172,7 +172,7 @@ namespace Splunk.Sdk.UnitTesting
 
             Service service = this.Connect();
 
-            service.Server.Restart();
+            service.Server.RestartAsync().Wait();
 
             // Sniff the management port. We expect the port to be up for a short
             // while, and then no conection

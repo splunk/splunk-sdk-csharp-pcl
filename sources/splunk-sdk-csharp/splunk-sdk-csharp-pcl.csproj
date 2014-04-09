@@ -3,7 +3,7 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-    <AssemblyName>splunk-sdk-csharp</AssemblyName>
+    <AssemblyName>splunk-sdk-csharp-pcl</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <OutputType>Library</OutputType>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -59,6 +59,8 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -107,6 +109,7 @@
     <Compile Include="Splunk\Sdk\AlertTrigger.cs" />
     <Compile Include="Splunk\Sdk\AlertTrack.cs" />
     <Compile Include="Splunk\Sdk\AlertSeverity.cs" />
+    <Compile Include="Splunk\Sdk\ReceiverArgs.cs" />
     <Compile Include="Splunk\Sdk\Receiver.cs" />
     <Compile Include="Splunk\Sdk\Index.cs" />
     <Compile Include="Splunk\Sdk\IndexCollectionArgs.cs" />
@@ -140,6 +143,7 @@
     <Compile Include="Splunk\Sdk\SearchSummary.cs" />
     <Compile Include="Splunk\Sdk\EmailFormat.cs" />
     <Compile Include="Splunk\Sdk\PaperOrientation.cs" />
+    <Compile Include="Splunk\Sdk\ServerMessageCollection.cs" />
     <Compile Include="Splunk\Sdk\SortMode.cs" />
     <Compile Include="Splunk\Sdk\SortDirection.cs" />
     <Compile Include="Splunk\Sdk\StringConverter.cs" />
@@ -180,7 +184,7 @@
     <Compile Include="Splunk\Sdk\MessageType.cs" />
     <Compile Include="Splunk\Sdk\SearchResultsReader.cs" />
     <Compile Include="Splunk\Sdk\Namespace.cs" />
-    <Compile Include="Splunk\Sdk\Record.cs" />
+    <Compile Include="Splunk\Sdk\Result.cs" />
     <Compile Include="Splunk\Sdk\RequestException.cs" />
     <Compile Include="Splunk\Sdk\ResourceName.cs" />
     <Compile Include="Splunk\Sdk\SearchResults.cs" />

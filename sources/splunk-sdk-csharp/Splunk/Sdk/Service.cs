@@ -77,6 +77,11 @@ namespace Splunk.Sdk
         public Namespace Namespace
         { get; private set; }
 
+        public Receiver Receiver
+        {
+            get { return new Receiver(this.Context, this.Namespace); }
+        }
+
         public Server Server
         {
             get { return new Server(this); }

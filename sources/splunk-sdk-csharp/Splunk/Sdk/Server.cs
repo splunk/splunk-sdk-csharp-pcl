@@ -19,39 +19,38 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml.Linq;
 
-    public struct Server
+    public class Server : Resource<Server>
     {
         #region Constructors
 
         internal Server(Service service)
-        {
-            this.service = service;
-        }
+            : base(service.Context, service.Namespace, ResourceName.Server)
+        { }
+
+        public Server()
+        { }
 
         #endregion
 
         #region Methods
 
-        public ServerInfo GetInfo()
-        {
-            return this.GetInfoAsync().Result;
-        }
-
         public async Task<ServerInfo> GetInfoAsync()
         {
-            var serverInfo = new ServerInfo(this.service);
+            var serverInfo = new ServerInfo(this.Context, this.Namespace);
             await serverInfo.GetAsync();
             return serverInfo;
         }
 
-        public void Restart()
+        public async Task<ServerMessageCollection> GetMessagesAsync()
         {
-            this.RestartAsync().Wait();
+            var serverMessages = new ServerMessageCollection(this.Context, this.Namespace);
+            await serverMessages.GetAsync();
+            return serverMessages;
         }
 
         public async Task RestartAsync()
         {
-            using (var response = await this.service.Context.PostAsync(this.service.Namespace, ServerControlRestart))
+            using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(this.ResourceName, "restart")))
             {
                 if (!response.Message.IsSuccessStatusCode)
                 {
@@ -64,8 +63,7 @@ namespace Splunk.Sdk
 
         #region Privates
 
-        static readonly ResourceName ServerControlRestart = new ResourceName("server", "control", "restart");
-        readonly Service service;
+        static readonly ResourceName ClassResourceName = new ResourceName("server", "control");
 
         #endregion
     }

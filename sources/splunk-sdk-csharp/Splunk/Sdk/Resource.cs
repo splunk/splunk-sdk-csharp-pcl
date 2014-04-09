@@ -227,12 +227,6 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Refreshes the cached state of the current <see cref=
-        /// "Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        public abstract Task GetAsync();
-
-        /// <summary>
         /// Returns the hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
         /// <returns>

@@ -389,7 +389,7 @@ namespace Splunk.Sdk.UnitTesting
             var service = Connect();
             JobArgs jobArgs = new JobArgs();
             jobArgs.Search = Query;
-            jobArgs.SearchMode = SearchMode.None;
+            jobArgs.SearchMode = SearchMode.Normal;
 
             Job job = service.StartJobAsync(jobArgs).Result;
             Assert.IsNotNull(job, "#1");
@@ -697,7 +697,7 @@ namespace Splunk.Sdk.UnitTesting
                 Thread.Sleep(1000);
 
                 //has to call this to get the job.IsCompleted
-                job.GetAsync();
+                job.GetAsync().Wait();
                 Console.WriteLine("jobUpdated={0}", job.Updated);
 
                 if (stopwatch.Elapsed > max)

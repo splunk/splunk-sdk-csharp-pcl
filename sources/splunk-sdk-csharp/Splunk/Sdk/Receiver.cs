@@ -25,9 +25,16 @@
 namespace Splunk.Sdk
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
+    using System.Xml;
 
+    /// <summary>
+    /// Provides a class for sending events to Splunk.
+    /// </summary>
     public class Receiver : Resource<Receiver>
     {
         #region Constructors
@@ -43,20 +50,75 @@ namespace Splunk.Sdk
 
         #region Methods
 
-
-        public override Task GetAsync()
+        /// <summary>
+        /// Asynchronously sends a stream of raw events to Splunk.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Stream"/> used to send events to Splunk.
+        /// </returns>
+        /// This method the <a href="http://goo.gl/zFKzMp">POST 
+        /// receivers/stream</a> endpoint to send raw events to Splunk as
+        /// they become available on <see cref="stream"/>.
+        public async Task SendAsync(Stream stream, ReceiverArgs args = null)
         {
-            throw new NotImplementedException();
+            using (var content = new StreamContent(stream))
+            {
+                using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, content, args))
+                {
+                    await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                }
+            }
         }
 
-        public async Task<Record> SendAsync(Stream recordStream)
+        /// <summary>
+        /// Asynchronously send raw event text to Splunk.
+        /// </summary>
+        /// <param name="eventText">
+        /// Raw event text.
+        /// <param name="args">
+        /// Arguments identifying the event type and destination.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Result"/> object representing the event created by
+        /// Splunk.
+        /// </returns>
+        /// This method uses the <a href="http://goo.gl/GPLUVg">POST 
+        /// receivers/simple</a> endpoint to obtain the <see cref="Result"/>
+        /// that it returns.
+        public async Task<Result> SendAsync(string eventText, ReceiverArgs args = null)
         {
-            throw new NotImplementedException();
-        }
+            using (var content = new StringContent(eventText))
+            {
+                using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, content, args))
+                {
+                    await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                    var reader = response.XmlReader;
 
-        public async Task SendAsync(string record)
-        {
-            throw new NotImplementedException();
+                    foreach (var name in new string[] { "response", "results", "result" })
+                    {
+                        await reader.ReadAsync();
+
+                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "results"))
+                        {
+                            throw new InvalidDataException(); // TODO: diagnostics
+                        }
+                    }
+
+                    var result = new Result();
+                    await result.ReadXmlAsync(reader);
+
+                    foreach (var name in new string[] { "result", "results", "response" })
+                    {
+                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "results"))
+                        {
+                            throw new InvalidDataException(); // TODO: diagnostics
+                        }
+                        await reader.ReadAsync();
+                    }
+
+                    return result;
+                }
+            }
         }
 
         #endregion

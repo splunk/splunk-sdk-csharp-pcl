@@ -165,6 +165,29 @@ namespace Splunk.Sdk
             }
         }
 
+        /// <summary>
+        /// Ends the session by associated with the current instance.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/hdNhwA">DELETE 
+        /// authentication/httpauth-tokens/{name}</a> endpoint to end the
+        /// the session by removing <see cref="SessionKey"/>.
+        /// </remarks>
+        public async Task LogoffAsync()
+        {
+            Contract.Requires<InvalidOperationException>(this.SessionKey != null);
+
+            var resourceName = new ResourceName(ResourceName.AuthenticationHttpAuthTokens, this.SessionKey);
+            
+            using (var response = await this.Context.DeleteAsync(Namespace.Default, resourceName))
+            {
+                if (response.Message.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
+                }
+            }
+        }
+
         #endregion
 
         #region Applications

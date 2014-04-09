@@ -23,11 +23,15 @@ namespace Splunk.Sdk
 {
     public class Application : Entity<Application>
     {
+        #region Constructors
+
         internal Application(Context context, Namespace @namespace, ResourceName collection, string name)
             : base(context, @namespace, collection, name)
         { }
 
         public Application()
         { }
+
+        #endregion
     }
 }

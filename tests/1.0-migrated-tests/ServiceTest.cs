@@ -70,7 +70,7 @@ namespace Splunk.Sdk.UnitTesting
             //dummyString = job.Label;
 
 
-            if (service.Server.GetInfoAsync().Result.Version.Major<6)
+            if (this.VersionCompare(service, "6.0") < 0)
             {
                 //dummyDateTime = job.LatestTime;
             }
@@ -115,7 +115,7 @@ namespace Splunk.Sdk.UnitTesting
         //    {
         //        // Make sure we can at least load the Atom response
         //        AtomFeed.Parse(response.Content);
-                
+
         //    }
         //    catch (Exception e)
         //    {
@@ -131,7 +131,7 @@ namespace Splunk.Sdk.UnitTesting
         {
             Service service = this.Connect();
             String query = "Search * | head 10";
-            
+
             Job job = service.StartJobAsync(query).Result;
             this.CheckJob(job, service);
             // summary of job
@@ -165,7 +165,7 @@ namespace Splunk.Sdk.UnitTesting
             };
 
             List<object> caps = service.GetCapabilitiesAsync().Result;
-            string[] capStrings = caps.Select(a => (string) a).ToArray();
+            string[] capStrings = caps.Select(a => (string)a).ToArray();
             foreach (string name in expected)
             {
                 Assert.IsTrue(this.Contains(capStrings, name), this.assertRoot + "#3");
@@ -214,10 +214,10 @@ namespace Splunk.Sdk.UnitTesting
         /// </summary>
         [TestMethod]
         public void ServiceInfo()
-        {            
+        {
             Service service = Connect();
             ServerInfo info = service.Server.GetInfoAsync().Result;
-            
+
             bool dummyBool;
             int dummyInt;
             string[] dummyStrings;
@@ -227,7 +227,7 @@ namespace Splunk.Sdk.UnitTesting
             dummyString = info.CpuArchitecture;
             Guid guid = info.Guid;
             IReadOnlyList<string> licents = info.LicenseKeys;
-             IReadOnlyList<string> licentLabel = info.LicenseLabels;
+            IReadOnlyList<string> licentLabel = info.LicenseLabels;
             dummyString = info.LicenseSignature;
             LicenseState state = info.LicenseState;
             Guid guid2 = info.MasterGuid;

@@ -392,7 +392,7 @@
 //            job.Cancel();
 
 //            var savedSearchDispatchArgs = new SavedSearchDispatchArgs();
-//            if (service.VersionCompare("6.0") < 0)
+//            if (this.VersionCompare(service,"6.0") < 0)
 //            {
 //                savedSearchDispatchArgs.Actions.Email.AuthPassword = "sdk-password";
 //                savedSearchDispatchArgs.Actions.Email.AuthUsername = "sdk-username";

@@ -278,16 +278,22 @@ namespace Splunk.Sdk.UnitTesting
             Assert.IsNotNull(config, "get null return");
 
             //// Logout, the request should fail with a 401
-            //service.Logout();
-            //try
-            //{
-            //    response = service.Get("/services/authentication/users");
-            //    Assert.Fail("Expected HttpException");
-            //}
-            //catch (WebException ex)
-            //{
-            //    Assert.AreEqual(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#6");
-            //}
+            service.LogoffAsync().Wait();
+            try
+            {
+                //response = service.Get("/services/authentication/users");
+                config = service.GetConfigurationsAsync().Result;    
+                Assert.Fail("Expected HttpException");
+            }
+            catch (WebException ex)
+            {
+                Assert.AreEqual(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#6");
+            }
+            catch (Exception e)
+            {
+                //TODO, if dev fix the aggregate exception issue, should only catch the above exception
+                Assert.IsTrue(e.InnerException.Message.Contains("401"));
+            }
         }
 
         ///// <summary>

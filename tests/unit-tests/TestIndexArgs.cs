@@ -29,34 +29,7 @@ namespace Splunk.Sdk
         [Fact]
         void CanConstruct()
         {
-            // Verified against 
-            IndexArgs args;
-
-            args = new IndexArgs();
-            Assert.Throws(typeof(SerializationException), () => args.ToArray());
-
-            args = new IndexArgs();
-            args.ColdPath = "coldPath";
-            args.HomePath = "homePath";
-            Assert.Throws(typeof(SerializationException), () => args.ToArray());
-
-            args = new IndexArgs();
-            args.ColdPath = "coldPath";
-            args.ThawedPath = "thawedPath";
-            Assert.Throws(typeof(SerializationException), () => args.ToArray());
-
-            args = new IndexArgs();
-            args.HomePath = "homePath";
-            args.ThawedPath = "thawedPath";
-            Assert.Throws(typeof(SerializationException), () => args.ToArray());
-
-            args = new IndexArgs();
-            args.ColdPath = "coldPath";
-            args.HomePath = "homePath";
-            args.ThawedPath = "thawedPath";
-            Assert.Throws(typeof(SerializationException), () => args.ToArray());
-
-            args = new IndexArgs("coldPath", "homePath", "thawedPath");
+            var args = new IndexArgs("coldPath", "homePath", "thawedPath");
             Assert.DoesNotThrow(() => args.ToArray());
 
             Assert.Equal("coldPath=coldPath; homePath=homePath; thawedPath=thawedPath", args.ToString());

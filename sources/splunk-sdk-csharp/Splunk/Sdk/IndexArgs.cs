@@ -47,9 +47,6 @@ namespace Splunk.Sdk
             this.ThawedPath = thawedPath;
         }
 
-        public IndexArgs()
-        { }
-
         #endregion
 
         #region Properties
@@ -66,7 +63,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "coldPath", IsRequired = true)]
         public string ColdPath
-        { get; set; }
+        { get; private set; }
 
         /// <summary>
         /// Gets or sets an absolute path that contains the hot and warm 
@@ -77,7 +74,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "homePath", IsRequired = true)]
         public string HomePath
-        { get; set; }
+        { get; private set; }
 
         /// <summary>
         /// Gets or sets an absolute path that contains the thawed (resurrected)
@@ -90,7 +87,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "thawedPath", IsRequired = true)]
         public string ThawedPath
-        { get; set; }
+        { get; private set; }
 
         #endregion
     }

@@ -40,9 +40,6 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        public JobArgs()
-        { }
-
         public JobArgs(string search)
         {
             this.Search = search;
@@ -54,7 +51,7 @@ namespace Splunk.Sdk
 
         [DataMember(Name = "search", IsRequired = true)]
         public string Search
-        { get; set; }
+        { get; private set; }
 
         [DataMember(Name = "auto_cancel", EmitDefaultValue = false)]
         [DefaultValue(0)]

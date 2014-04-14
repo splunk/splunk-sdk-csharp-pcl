@@ -45,20 +45,7 @@ namespace Splunk.Sdk
         /// </summary>
         public SavedSearchCollectionArgs()
         { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SavedSearchCollectionArgs"/> 
-        /// class.
-        /// </summary>
-        /// <param name="search">
-        /// Search expression to filter <see cref="SavedSearch"/> entries. This
-        /// is the value of the <see cref="Search"/> property.
-        /// </param>
-        public SavedSearchCollectionArgs(string search)
-        {
-            this.Search = search;
-        }
-
+ 
         #endregion
 
         #region Properties

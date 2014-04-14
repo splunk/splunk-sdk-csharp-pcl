@@ -40,11 +40,6 @@ namespace Splunk.Sdk
         public JobCollectionArgs()
         { }
 
-        public JobCollectionArgs(string search)
-        {
-            this.Search = search;
-        }
-
         #endregion
 
         #region Properties

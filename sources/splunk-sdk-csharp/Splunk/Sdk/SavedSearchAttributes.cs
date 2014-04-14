@@ -62,7 +62,7 @@ namespace Splunk.Sdk
         /// </remarks>
         [DataMember(Name = "search", IsRequired = true)]
         public string Search
-        { get; set; }
+        { get; private set; }
 
         /// <summary>
         /// Gets or sets a comma-separated list of actions to enable for a

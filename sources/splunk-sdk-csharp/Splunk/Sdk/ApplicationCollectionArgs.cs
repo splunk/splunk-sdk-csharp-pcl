@@ -45,19 +45,6 @@ namespace Splunk.Sdk
         public ApplicationCollectionArgs()
         { }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationCollectionArgs"/> 
-        /// class.
-        /// </summary>
-        /// <param name="search">
-        /// Search expression to filter <see cref="Application"/> entries. This is the
-        /// value of the <see cref="Search"/> property.
-        /// </param>
-        public ApplicationCollectionArgs(string search)
-        {
-            this.Search = search;
-        }
-
         #endregion
 
         #region Properties

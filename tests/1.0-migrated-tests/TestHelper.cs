@@ -98,10 +98,11 @@ namespace Splunk.Sdk.UnitTesting
 
             ApplicationCollection apps = service.GetApplicationsAsync(new ApplicationCollectionArgs()).Result;
 
-          
-            //if (apps.GetAsync(name))
+            //if(apps.Select(a => a.ResourceName.Title == name).Single()!=null)
+            ////if (apps.GetAsync(name))
             //{
-            //     apps.Remove(name);
+            //    service.re
+            //    apps.Remove(name);
             //    this.SplunkRestart();
             //    service = this.Connect();
             //}
@@ -153,7 +154,7 @@ namespace Splunk.Sdk.UnitTesting
         /// <summary>
         /// Restarts splunk with a default 3 minute restart time check.
         /// </summary>
-        public void SplunkRestart() 
+        public void SplunkRestart()
         {
             // If not specified, use 3 minutes (in milliseconds) as default
             // restart timeout.
@@ -166,7 +167,7 @@ namespace Splunk.Sdk.UnitTesting
         /// the assertion that the service is back up will throw an exception.
         /// </summary>
         /// <param name="millisecondTimeout">The number of milliseconds</param>
-        public void SplunkRestart(int millisecondTimeout) 
+        public void SplunkRestart(int millisecondTimeout)
         {
             bool restarted = false;
 
@@ -247,14 +248,33 @@ namespace Splunk.Sdk.UnitTesting
         /// </summary>
         /// <param name="job">The job</param>
         /// <returns>The same job</returns>
-        public Job Wait(Job job) 
+        public Job Wait(Job job)
         {
-            while (!job.IsDone) 
+            while (!job.IsDone)
             {
                 Thread.Sleep(1000);
             }
 
             return job;
+        }
+
+        public int VersionCompare(Service service, string versionToCompare)
+        {
+            int major = service.Server.GetInfoAsync().Result.Version.Major;
+            int minor = service.Server.GetInfoAsync().Result.Version.Minor;
+            float version = major + minor / 10;
+            float inputVersion = float.Parse(versionToCompare);
+
+            if (version < inputVersion)
+            {
+                return -1;
+            }
+            if (version == inputVersion)
+            {
+                return 0;
+            }
+
+            return 1;
         }
     }
 }

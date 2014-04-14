@@ -283,7 +283,7 @@ namespace Splunk.Sdk
 
             public DateTime Published
             {
-                get { return this.updated; }
+                get { return this.published; }
             }
 
             public DateTime Updated

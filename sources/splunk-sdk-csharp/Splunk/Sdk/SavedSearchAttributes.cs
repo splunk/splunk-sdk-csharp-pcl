@@ -56,6 +56,7 @@ namespace Splunk.Sdk
         /// This value is required.
         /// </remarks>
         [DataMember(Name = "search", EmitDefaultValue = false)]
+        [DefaultValue(null)]
         public string Search
         { get; set; }
 
@@ -94,8 +95,8 @@ namespace Splunk.Sdk
         /// This value also applies to any attachments.
         /// </remarks>
         [DataMember(Name = "action.email.format", EmitDefaultValue = false)]
-        [DefaultValue(EmailFormat.None)]
-        public EmailFormat ActionEmailFormat
+        [DefaultValue(null)]
+        public EmailFormat? ActionEmailFormat
         { get; set; }
 
         /// <summary>
@@ -146,8 +147,8 @@ namespace Splunk.Sdk
         /// The default value is <c>100</c>.
         /// </remarks>
         [DataMember(Name = "action.email.maxresults", EmitDefaultValue = false)]
-        [DefaultValue(100)]
-        public int ActionEmailMaxResults
+        [DefaultValue(null)]
+        public int? ActionEmailMaxResults
         { get; set; }
 
         /// <summary>
@@ -159,7 +160,7 @@ namespace Splunk.Sdk
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"5m"</c>.
         /// </remarks>
         [DataMember(Name = "action.email.maxtime", EmitDefaultValue = false)]
-        [DefaultValue("5m")]
+        [DefaultValue(null)]
         public string ActionEmailMaxTime
         { get; set; }
 
@@ -172,7 +173,7 @@ namespace Splunk.Sdk
         /// The default value is <c>"gb cns jp kor"</c>.
         /// </remarks>
         [DataMember(Name = "action.email.reportCIDFontList", EmitDefaultValue = false)]
-        [DefaultValue("gb cns jp kor")]
+        [DefaultValue(null)]
         public string ActionEmailReportCidFontList
         { get; set; }
 
@@ -184,8 +185,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.email.reportIncludeSplunkLogo", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionEmailReportIncludeSplunkLogo
+        [DefaultValue(null)]
+        public bool? ActionEmailReportIncludeSplunkLogo
         { get; set; }
 
         /// <summary>
@@ -196,8 +197,8 @@ namespace Splunk.Sdk
         /// The default is <see cref="PaperOrientation.Portrait"/>.
         /// </remarks>
         [DataMember(Name = "action.email.reportPaperOrientation", EmitDefaultValue = false)]
-        [DefaultValue(PaperOrientation.Portrait)]
-        public PaperOrientation ActionEmailReportPaperOrientation
+        [DefaultValue(null)]
+        public PaperOrientation? ActionEmailReportPaperOrientation
         { get; set; }
 
         /// <summary>
@@ -208,8 +209,8 @@ namespace Splunk.Sdk
         /// The default is <see cref="PaperSize.Letter"/>.
         /// </remarks>
         [DataMember(Name = "action.email.reportPaperSize", EmitDefaultValue = false)]
-        [DefaultValue(PaperSize.Letter)]
-        public PaperSize ActionEmailReportPaperSize
+        [DefaultValue(null)]
+        public PaperSize? ActionEmailReportPaperSize
         { get; set; }
 
         /// <summary>
@@ -220,8 +221,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.email.reportServerEnabled", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionEmailReportServerEnabled
+        [DefaultValue(null)]
+        public bool? ActionEmailReportServerEnabled
         { get; set; }
 
         /// <summary>
@@ -233,8 +234,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>
         /// </remarks>
         [DataMember(Name = "action.email.sendpdf", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionEmailSendPdf
+        [DefaultValue(null)]
+        public bool? ActionEmailSendPdf
         { get; set; }
 
         /// <summary>
@@ -246,8 +247,8 @@ namespace Splunk.Sdk
         /// "ActionEmailInline"/>. The default value is <c>false</c>
         /// </remarks>
         [DataMember(Name = "action.email.sendresults", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionEmailSendResults
+        [DefaultValue(null)]
+        public bool? ActionEmailSendResults
         { get; set; }
 
         /// <summary>
@@ -270,8 +271,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.email.track_alert", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionEmailTrackAlert
+        [DefaultValue(null)]
+        public bool? ActionEmailTrackAlert
         { get; set; }
 
         /// <summary>
@@ -298,8 +299,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.email.use_ssl", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionEmailUseSsl
+        [DefaultValue(null)]
+        public bool? ActionEmailUseSsl
         { get; set; }
 
         /// <summary>
@@ -310,8 +311,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.email.use_tls", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionEmailUseTls
+        [DefaultValue(null)]
+        public bool? ActionEmailUseTls
         { get; set; }
 
         /// <summary>
@@ -322,8 +323,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.email.width_sort_columns", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionEmailWidthSortColumns
+        [DefaultValue(null)]
+        public bool? ActionEmailWidthSortColumns
         { get; set; }
 
         /// <summary>
@@ -351,8 +352,8 @@ namespace Splunk.Sdk
         /// The default value is <c>100</c>.
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.maxresults", EmitDefaultValue = false)]
-        [DefaultValue(100)]
-        public int ActionPopulateLookupMaxResults
+        [DefaultValue(null)]
+        public int? ActionPopulateLookupMaxResults
         { get; set; }
 
         /// <summary>
@@ -364,7 +365,7 @@ namespace Splunk.Sdk
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"5m"</c>.
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.maxtime", EmitDefaultValue = false)]
-        [DefaultValue("5m")]
+        [DefaultValue(null)]
         public string ActionPopulateLookupMaxTime
         { get; set; }
 
@@ -376,8 +377,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.track_alert", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionPopulateLookupTrackAlert
+        [DefaultValue(null)]
+        public bool? ActionPopulateLookupTrackAlert
         { get; set; }
 
         /// <summary>
@@ -392,7 +393,7 @@ namespace Splunk.Sdk
         /// to 24 hours.
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.ttl", EmitDefaultValue = false)]
-        [DefaultValue("86400")]
+        [DefaultValue(null)]
         public string ActionPopulateLookupTtl
         { get; set; }
 
@@ -420,8 +421,8 @@ namespace Splunk.Sdk
         /// The default value is <c>100</c>.
         /// </remarks>
         [DataMember(Name = "action.rss.maxresults", EmitDefaultValue = false)]
-        [DefaultValue(100)]
-        public int ActionRssMaxResults
+        [DefaultValue(null)]
+        public int? ActionRssMaxResults
         { get; set; }
 
         /// <summary>
@@ -433,7 +434,7 @@ namespace Splunk.Sdk
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"1m"</c>.
         /// </remarks>
         [DataMember(Name = "action.rss.maxtime", EmitDefaultValue = false)]
-        [DefaultValue("1m")]
+        [DefaultValue(null)]
         public string ActionRssMaxTime
         { get; set; }
 
@@ -489,8 +490,8 @@ namespace Splunk.Sdk
         /// The default value is <c>100</c>.
         /// </remarks>
         [DataMember(Name = "action.script.maxresults", EmitDefaultValue = false)]
-        [DefaultValue(100)]
-        public int ActionScriptMaxResults
+        [DefaultValue(null)]
+        public int? ActionScriptMaxResults
         { get; set; }
 
         /// <summary>
@@ -502,7 +503,7 @@ namespace Splunk.Sdk
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"5m"</c>.
         /// </remarks>
         [DataMember(Name = "action.script.maxtime", EmitDefaultValue = false)]
-        [DefaultValue("5m")]
+        [DefaultValue(null)]
         public string ActionScriptMaxTime
         { get; set; }
 
@@ -514,8 +515,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.script.track_alert", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionScriptTrackAlert
+        [DefaultValue(null)]
+        public bool? ActionScriptTrackAlert
         { get; set; }
 
         /// <summary>
@@ -530,7 +531,7 @@ namespace Splunk.Sdk
         /// to 10 minutes.
         /// </remarks>
         [DataMember(Name = "action.script.ttl", EmitDefaultValue = false)]
-        [DefaultValue("600")]
+        [DefaultValue(null)]
         public string ActionScriptTtl
         { get; set; }
 
@@ -560,8 +561,8 @@ namespace Splunk.Sdk
         /// enabled and is always executed. The default value is <c>true</c>.
         /// </remarks>
         [DataMember(Name = "action.summary_index.inline", EmitDefaultValue = false)]
-        [DefaultValue(true)]
-        public bool ActionSummaryIndexInline
+        [DefaultValue(null)]
+        public bool? ActionSummaryIndexInline
         { get; set; }
 
         /// <summary>
@@ -572,8 +573,8 @@ namespace Splunk.Sdk
         /// The default value is <c>100</c>.
         /// </remarks>
         [DataMember(Name = "action.summary_index.maxresults", EmitDefaultValue = false)]
-        [DefaultValue(100)]
-        public int ActionSummaryIndexMaxResults
+        [DefaultValue(null)]
+        public int? ActionSummaryIndexMaxResults
         { get; set; }
 
         /// <summary>
@@ -585,7 +586,7 @@ namespace Splunk.Sdk
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"5m"</c>.
         /// </remarks>
         [DataMember(Name = "action.summary_index.maxtime", EmitDefaultValue = false)]
-        [DefaultValue("5m")]
+        [DefaultValue(null)]
         public string ActionSummaryIndexMaxTime
         { get; set; }
 
@@ -597,7 +598,7 @@ namespace Splunk.Sdk
         /// The default summary index name is <c>"summary"</c>.
         /// </remarks>
         [DataMember(Name = "action.summary_index.name", EmitDefaultValue = false)]
-        [DefaultValue("summary")]
+        [DefaultValue(null)]
         public string ActionSummaryIndexName
         { get; set; }
 
@@ -609,8 +610,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "action.summary_index.track_alert", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool ActionSummaryIndexTrackAlert
+        [DefaultValue(null)]
+        public bool? ActionSummaryIndexTrackAlert
         { get; set; }
 
         /// <summary>
@@ -624,7 +625,7 @@ namespace Splunk.Sdk
         /// unit of time is seconds. The default is ten scheduled periods. 
         /// </remarks>
         [DataMember(Name = "action.summary_index.ttl", EmitDefaultValue = false)]
-        [DefaultValue("10p")]
+        [DefaultValue(null)]
         public string ActionSummaryIndexTtl
         { get; set; }
 
@@ -635,8 +636,8 @@ namespace Splunk.Sdk
         /// 
         /// </remarks>
         [DataMember(Name = "alert.digest_mode", EmitDefaultValue = false)]
-        [DefaultValue(true)]
-        public bool AlertDigestMode
+        [DefaultValue(null)]
+        public bool? AlertDigestMode
         { get; set; }
 
         /// <summary>
@@ -647,7 +648,7 @@ namespace Splunk.Sdk
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"24h"</c>.
         /// </remarks>
         [DataMember(Name = "alert.expires", EmitDefaultValue = false)]
-        [DefaultValue("24h")]
+        [DefaultValue(null)]
         public string AlertExpires
         { get; set; }
 
@@ -655,33 +656,33 @@ namespace Splunk.Sdk
         /// Gets or sets
         /// </summary>
         /// <remarks>
-        /// 
+        /// The default value is <see cref="AlertSeverity.Warning"/>.
         /// </remarks>
         [DataMember(Name = "alert.severity", EmitDefaultValue = false)]
-        [DefaultValue(AlertSeverity.Warning)]
-        public AlertSeverity AlertSeverity
+        [DefaultValue(null)]
+        public AlertSeverity? AlertSeverity
         { get; set; }
 
         /// <summary>
         /// Gets or sets
         /// </summary>
         /// <remarks>
-        /// 
+        /// The default value is <see cref="AlertTrack.Automatic"/>.
         /// </remarks>
         [DataMember(Name = "alert.track", EmitDefaultValue = false)]
-        [DefaultValue(AlertTrack.Automatic)]
-        public AlertTrack AlertTrack
+        [DefaultValue(null)]
+        public AlertTrack? AlertTrack
         { get; set; }
 
         /// <summary>
         /// Gets or sets
         /// </summary>
         /// <remarks>
-        /// 
+        /// The default value is <see cref="AlertTrigger.None"/>.
         /// </remarks>
         [DataMember(Name = "alert.type", EmitDefaultValue = false)]
-        [DefaultValue(AlertTrigger.None)]
-        public AlertTrigger AlertTrigger
+        [DefaultValue(null)]
+        public AlertTrigger? AlertTrigger
         { get; set; }
 
         /// <summary>
@@ -692,8 +693,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "auto_summarize", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool AutoSummarize
+        [DefaultValue(null)]
+        public bool? AutoSummarize
         { get; set; }
 
         /// <summary>
@@ -816,8 +817,8 @@ namespace Splunk.Sdk
         /// 
         /// </remarks>
         [DataMember(Name = "disabled", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool Disabled
+        [DefaultValue(null)]
+        public bool? Disabled
         { get; set; }
 
         /// <summary>
@@ -827,8 +828,8 @@ namespace Splunk.Sdk
         /// This default value is <c>0</c>.
         /// </remarks>        
         [DataMember(Name = "dispatch.buckets", EmitDefaultValue = false)]
-        [DefaultValue(0)]
-        public int DispatchBuckets
+        [DefaultValue(null)]
+        public int? DispatchBuckets
         { get; set; }
 
         /// <summary>
@@ -862,8 +863,8 @@ namespace Splunk.Sdk
         /// The default value is <c>true</c>.
         /// </remarks>
         [DataMember(Name = "dispatch.lookups", EmitDefaultValue = false)]
-        [DefaultValue(true)]
-        public bool DispatchLookups
+        [DefaultValue(null)]
+        public bool? DispatchLookups
         { get; set; }
 
         /// <summary>
@@ -871,8 +872,8 @@ namespace Splunk.Sdk
         /// finalizing a search.
         /// </summary>
         [DataMember(Name = "dispatch.max_count", EmitDefaultValue = false)]
-        [DefaultValue(0)]
-        public int DispatchMaxCount
+        [DefaultValue(null)]
+        public int? DispatchMaxCount
         { get; set; }
 
         /// <summary>
@@ -880,8 +881,8 @@ namespace Splunk.Sdk
         /// search.
         /// </summary>
         [DataMember(Name = "dispatch.max_time", EmitDefaultValue = false)]
-        [DefaultValue(0)]
-        public int DispatchMaxTime
+        [DefaultValue(null)]
+        public int? DispatchMaxTime
         { get; set; }
 
         /// <summary>
@@ -893,8 +894,8 @@ namespace Splunk.Sdk
         /// </para>
         /// </remarks>
         [DataMember(Name = "dispatch.reduce_freq", EmitDefaultValue = false)]
-        [DefaultValue(10)]
-        public int DispatchReduceFrequency
+        [DefaultValue(null)]
+        public int? DispatchReduceFrequency
         { get; set; }
 
         /// <summary>
@@ -905,8 +906,8 @@ namespace Splunk.Sdk
         /// This value only applies to real-time searches.
         /// </remarks>
         [DataMember(Name = "dispatch.rt_backfill", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool DispatchRealTimeBackfill
+        [DefaultValue(null)]
+        public bool? DispatchRealTimeBackfill
         { get; set; }
 
         /// <summary>
@@ -918,8 +919,8 @@ namespace Splunk.Sdk
         /// run in its own process.
         /// </remarks>
         [DataMember(Name = "dispatch.spawn_process", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool DispatchSpawnProcess
+        [DefaultValue(null)]
+        public bool? DispatchSpawnProcess
         { get; set; }
 
         /// <summary>
@@ -930,7 +931,7 @@ namespace Splunk.Sdk
         /// The default value is <c>"%FT%T.%Q%:z"</c>.
         /// </remarks>
         [DataMember(Name = "dispatch.time_format", EmitDefaultValue = false)]
-        [DefaultValue("%FT%T.%Q%:z")]
+        [DefaultValue(null)]
         public string DispatchTimeFormat
         { get; set; }
 
@@ -949,7 +950,7 @@ namespace Splunk.Sdk
         /// Splunk Admin Manual.</para>
         /// </remarks>
         [DataMember(Name = "dispatch.time_format", EmitDefaultValue = false)]
-        [DefaultValue("2p")]
+        [DefaultValue(null)]
         public string DispatchTtl
         { get; set; }
 
@@ -961,8 +962,8 @@ namespace Splunk.Sdk
         /// The default value is <c>false</c>.
         /// </remarks>
         [DataMember(Name = "is_scheduled", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool IsScheduled
+        [DefaultValue(null)]
+        public bool? IsScheduled
         { get; set; }
 
         /// <summary>
@@ -973,8 +974,8 @@ namespace Splunk.Sdk
         /// The default value is <c>true</c>.
         /// </remarks>
         [DataMember(Name = "is_visible", EmitDefaultValue = false)]
-        [DefaultValue(true)]
-        public bool IsVisible
+        [DefaultValue(null)]
+        public bool? IsVisible
         { get; set; }
 
         /// <summary>
@@ -985,8 +986,8 @@ namespace Splunk.Sdk
         /// The default value is one.
         /// </remarks>
         [DataMember(Name = "max_concurrent", EmitDefaultValue = false)]
-        [DefaultValue(1)]
-        public int MaxConcurrent
+        [DefaultValue(null)]
+        public int? MaxConcurrent
         { get; set; }
 
         /// <summary>
@@ -1042,8 +1043,8 @@ namespace Splunk.Sdk
         /// time.
         /// </remarks>
         [DataMember(Name = "run_on_startup", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool RunOnStartup
+        [DefaultValue(null)]
+        public bool? RunOnStartup
         { get; set; }
 
         #endregion

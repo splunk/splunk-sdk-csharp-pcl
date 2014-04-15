@@ -348,22 +348,33 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public async Task CanCreateSavedSearch()
+        public async Task CanCrudSavedSearch()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
             await service.LoginAsync("admin", "changeme");
 
-            try
-            {
-                await service.RemoveSavedSearchAsync("some_saved_search");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
+            // Create
+            
+            var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
             var attributes = new SavedSearchAttributes() { Search = "search index=_internal | head 1000" };
-            var savedSearch = await service.CreateSavedSearchAsync("some_saved_search", attributes);
+
+            var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
+            Assert.Equal(true, savedSearch.IsVisible);
+
+            // Retrieve
+            
+            savedSearch = await service.GetSavedSearchAsync(name);
+            Assert.Equal(true, savedSearch.IsVisible);
+
+            // Update
+
+            attributes.IsVisible = false;
+
+            savedSearch = await service.UpdateSavedSearchAsync(name);
+            Assert.Equal(false, savedSearch.IsVisible);
+
+            // Delete
+            await savedSearch.RemoveAsync();
         }
 
         [Trait("class", "Service: Saved Searches")]
@@ -384,22 +395,6 @@ namespace Splunk.Sdk.UnitTesting
             };
 
             var result = Dispatch().Result;
-        }
-
-        [Trait("class", "Service: Saved Searches")]
-        [Fact]
-        public async Task CanGetSavedSearch()
-        {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-
-            var entity = await service.GetSavedSearchAsync("Errors in the last 24 hours");
-
-            Assert.Equal("Errors in the last 24 hours", entity.ResourceName.Title);
-            Assert.Equal(entity.Id.ToString(), entity.ToString());
-            Assert.Equal("nobody", entity.Author);
-
-            // TODO: Access each and every property of the saved search
         }
 
         [Trait("class", "Service: Saved Searches")]

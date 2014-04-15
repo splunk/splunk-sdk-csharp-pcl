@@ -27,11 +27,6 @@ namespace Splunk.Sdk
         /// <summary>
         /// 
         /// </summary>
-        None,
-
-        /// <summary>
-        /// 
-        /// </summary>
         Plain, 
         
         /// <summary>

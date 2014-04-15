@@ -34,36 +34,36 @@ namespace Splunk.Sdk
             Assert.DoesNotThrow(() => attributes.ToArray());
 
             Assert.Equal(
-                "blockSignSize=0; " +
-                "bucketRebuildMemoryHint=auto; " +
+                "blockSignSize=null; " +
+                "bucketRebuildMemoryHint=null; " +
                 "coldToFrozenDir=null; " +
                 "coldToFrozenScript=null; " +
-                "enableOnlineBucketRepair=t; " +
-                "frozenTimePeriodInSecs=188697600; " +
-                "maxBloomBackfillBucketAge=30d; " +
-                "maxConcurrentOptimizes=6; " +
-                "maxDataSize=auto; " +
-                "maxHotBuckets=3; " +
-                "maxHotIdleSecs=0; " +
-                "maxHotSpanSecs=7776000; " +
-                "maxMemMB=5; " +
-                "maxMetaEntries=1000000; " +
-                "maxTimeUnreplicatedNoAcks=300; " +
-                "maxTimeUnreplicatedWithAcks=60; " +
-                "maxTotalDataSizeMB=500000; " +
-                "maxWarmDBCount=300; " +
-                "minRawFileSyncSecs=disable; " +
-                "minStreamGroupQueueSize=2000; " +
-                "partialServiceMetaPeriod=0; " +
-                "processTrackerServiceInterval=1; " +
-                "quarantineFutureSecs=2592000; " +
-                "quarantinePastSecs=77760000; " +
-                "rawChunkSizeBytes=131072; " +
-                "repFactor=0; " +
-                "rotatePeriodInSecs=60; " +
-                "serviceMetaPeriod=25; " +
-                "syncMeta=t; " +
-                "throttleCheckPeriod=15; " +
+                "enableOnlineBucketRepair=null; " +
+                "frozenTimePeriodInSecs=null; " +
+                "maxBloomBackfillBucketAge=null; " +
+                "maxConcurrentOptimizes=null; " +
+                "maxDataSize=null; " +
+                "maxHotBuckets=null; " +
+                "maxHotIdleSecs=null; " +
+                "maxHotSpanSecs=null; " +
+                "maxMemMB=null; " +
+                "maxMetaEntries=null; " +
+                "maxTimeUnreplicatedNoAcks=null; " +
+                "maxTimeUnreplicatedWithAcks=null; " +
+                "maxTotalDataSizeMB=null; " +
+                "maxWarmDBCount=null; " +
+                "minRawFileSyncSecs=null; " +
+                "minStreamGroupQueueSize=null; " +
+                "partialServiceMetaPeriod=null; " +
+                "processTrackerServiceInterval=null; " +
+                "quarantineFutureSecs=null; " +
+                "quarantinePastSecs=null; " +
+                "rawChunkSizeBytes=null; " +
+                "repFactor=null; " +
+                "rotatePeriodInSecs=null; " +
+                "serviceMetaPeriod=null; " +
+                "syncMeta=null; " +
+                "throttleCheckPeriod=null; " +
                 "tstatsHomePath=null; " +
                 "warmToColdScript=null",
                 attributes.ToString());
@@ -75,6 +75,79 @@ namespace Splunk.Sdk
         [Fact]
         void CanSetEveryValue()
         {
+            var defaultAttributes = new IndexAttributes()
+            {
+                BlockSignSize = 0,
+                BucketRebuildMemoryHint = "auto",
+                ColdToFrozenDir = "",
+                ColdToFrozenScript = "",
+                EnableOnlineBucketRepair = true,
+                FrozenTimePeriodInSecs = 188697600,
+                MaxBloomBackfillBucketAge = "30d",
+                MaxConcurrentOptimizes = 6,
+                MaxDataSize = "auto",
+                MaxHotBuckets = 3,
+                MaxHotIdleSecs = 0,
+                MaxHotSpanSecs = 7776000,
+                MaxMemMB = 5,
+                MaxMetaEntries = 1000000,
+                MaxTimeUnreplicatedNoAcks = 300,
+                MaxTimeUnreplicatedWithAcks = 60,
+                MaxTotalDataSizeMB = 500000,
+                MaxWarmDBCount = 300,
+                MinRawFileSyncSecs = "disable",
+                MinStreamGroupQueueSize = 2000,
+                PartialServiceMetaPeriod = 0,
+                ProcessTrackerServiceInterval = 1,
+                QuarantineFutureSecs = 2592000,
+                QuarantinePastSecs = 77760000,
+                RawChunkSizeBytes = 131072,
+                RepFactor = "0",
+                RotatePeriodInSecs = 60,
+                ServiceMetaPeriod = 25,
+                SyncMeta = true,
+                ThrottleCheckPeriod = 15,
+                TStatsHomePath = "",
+                WarmToColdScript = "",
+            };
+
+            Assert.Equal(new List<Argument>()
+                {
+                    new Argument("blockSignSize", "0"),
+                    new Argument("bucketRebuildMemoryHint", "auto"),
+                    new Argument("coldToFrozenDir", ""),
+                    new Argument("coldToFrozenScript", ""),
+                    new Argument("enableOnlineBucketRepair", "t"),
+                    new Argument("frozenTimePeriodInSecs", "188697600"),
+                    new Argument("maxBloomBackfillBucketAge", "30d"),
+                    new Argument("maxConcurrentOptimizes", "6"),
+                    new Argument("maxDataSize", "auto"),
+                    new Argument("maxHotBuckets", "3"),
+                    new Argument("maxHotIdleSecs", "0"),
+                    new Argument("maxHotSpanSecs", "7776000"),
+                    new Argument("maxMemMB", "5"),
+                    new Argument("maxMetaEntries", "1000000"),
+                    new Argument("maxTimeUnreplicatedNoAcks", "300"),
+                    new Argument("maxTimeUnreplicatedWithAcks", "60"),
+                    new Argument("maxTotalDataSizeMB", "500000"),
+                    new Argument("maxWarmDBCount", "300"),
+                    new Argument("minRawFileSyncSecs", "disable"),
+                    new Argument("minStreamGroupQueueSize", "2000"),
+                    new Argument("partialServiceMetaPeriod", "0"),
+                    new Argument("processTrackerServiceInterval", "1"),
+                    new Argument("quarantineFutureSecs", "2592000"),
+                    new Argument("quarantinePastSecs", "77760000"),
+                    new Argument("rawChunkSizeBytes", "131072"),
+                    new Argument("repFactor", "0"),
+                    new Argument("rotatePeriodInSecs", "60"),
+                    new Argument("serviceMetaPeriod", "25"),
+                    new Argument("syncMeta", "t"),
+                    new Argument("throttleCheckPeriod", "15"),
+                    new Argument("tstatsHomePath", ""),
+                    new Argument("warmToColdScript", ""),
+                },
+                defaultAttributes);
+
             var attributes = new IndexAttributes()
             {
                 BlockSignSize = 1 + 0,

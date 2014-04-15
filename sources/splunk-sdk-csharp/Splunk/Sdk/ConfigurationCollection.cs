@@ -19,6 +19,10 @@
 
 namespace Splunk.Sdk
 {
+    /// <summary>
+    /// Provides a class that represents a collection of Splunk <see cref=
+    /// "Configuration"/> files.
+    /// </summary>
     public class ConfigurationCollection : EntityCollection<ConfigurationCollection, Configuration>
     {
         internal ConfigurationCollection(Context context, Namespace @namespace)

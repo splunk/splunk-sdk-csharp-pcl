@@ -20,6 +20,8 @@
 // [X] Do not serialize default values => define default values and check for them
 // [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)
 // [X] Work on nomenclature (serialization nomenclature is not necessarily appropriate)
+// [X] Ensure this class works with nullable types.
+// [ ] Support more than one level of inheritance => move away from generic implementation.
 // [ ] More (?)
 
 namespace Splunk.Sdk
@@ -45,19 +47,31 @@ namespace Splunk.Sdk
         {
             var propertyFormatters = new Dictionary<Type, Formatter>()
             {
-                { typeof(bool),    new Formatter { Format = FormatBoolean } },
-                { typeof(byte),    new Formatter { Format = FormatNumber  } },
-                { typeof(sbyte),   new Formatter { Format = FormatNumber  } },
-                { typeof(short),   new Formatter { Format = FormatNumber  } },
-                { typeof(ushort),  new Formatter { Format = FormatNumber  } },
-                { typeof(int),     new Formatter { Format = FormatNumber  } },
-                { typeof(uint),    new Formatter { Format = FormatNumber  } },
-                { typeof(long),    new Formatter { Format = FormatNumber  } },
-                { typeof(ulong),   new Formatter { Format = FormatNumber  } },
-                { typeof(float),   new Formatter { Format = FormatNumber  } },
-                { typeof(double),  new Formatter { Format = FormatNumber  } },
-                { typeof(decimal), new Formatter { Format = FormatNumber  } },
-                { typeof(string),  new Formatter { Format = FormatString  } }
+                { typeof(bool),     new Formatter { Format = FormatBoolean } },
+                { typeof(bool?),    new Formatter { Format = FormatBoolean } },
+                { typeof(byte),     new Formatter { Format = FormatNumber  } },
+                { typeof(byte?),    new Formatter { Format = FormatNumber  } },
+                { typeof(sbyte),    new Formatter { Format = FormatNumber  } },
+                { typeof(sbyte?),   new Formatter { Format = FormatNumber  } },
+                { typeof(short),    new Formatter { Format = FormatNumber  } },
+                { typeof(short?),   new Formatter { Format = FormatNumber  } },
+                { typeof(ushort),   new Formatter { Format = FormatNumber  } },
+                { typeof(ushort?),  new Formatter { Format = FormatNumber  } },
+                { typeof(int),      new Formatter { Format = FormatNumber  } },
+                { typeof(int?),     new Formatter { Format = FormatNumber  } },
+                { typeof(uint),     new Formatter { Format = FormatNumber  } },
+                { typeof(uint?),    new Formatter { Format = FormatNumber  } },
+                { typeof(long),     new Formatter { Format = FormatNumber  } },
+                { typeof(long?),    new Formatter { Format = FormatNumber  } },
+                { typeof(ulong),    new Formatter { Format = FormatNumber  } },
+                { typeof(ulong?),   new Formatter { Format = FormatNumber  } },
+                { typeof(float),    new Formatter { Format = FormatNumber  } },
+                { typeof(float?),   new Formatter { Format = FormatNumber  } },
+                { typeof(double),   new Formatter { Format = FormatNumber  } },
+                { typeof(double?),  new Formatter { Format = FormatNumber  } },
+                { typeof(decimal),  new Formatter { Format = FormatNumber  } },
+                { typeof(decimal?), new Formatter { Format = FormatNumber  } },
+                { typeof(string),   new Formatter { Format = FormatString  } }
             };
 
             var defaultFormatter = new Formatter { Format = FormatString };
@@ -346,8 +360,8 @@ namespace Splunk.Sdk
                 // TODO: Check this against the algorithm presented in Effective Java
                 int hash = 17;
 
-                hash = hash * 23 + this.Position.GetHashCode();
-                hash = hash * 23 + this.Name.GetHashCode();
+                hash = (hash * 23) + this.Position.GetHashCode();
+                hash = (hash * 23) + this.Name.GetHashCode();
 
                 return hash;
             }

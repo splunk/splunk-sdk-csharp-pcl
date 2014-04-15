@@ -25,6 +25,9 @@ namespace Splunk.Sdk
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>
+    /// Provides a class for representing a Splunk resource name.
+    /// </summary>
     public sealed class ResourceName : IComparable, IComparable<ResourceName>, IEquatable<ResourceName>, IReadOnlyList<string>
     {
         #region Constructors
@@ -144,7 +147,7 @@ namespace Splunk.Sdk
         public override int GetHashCode()
         {
             // TODO: Check this against the algorithm presented in Effective Java
-            return this.parts.Aggregate(seed: 17, func: (value, part) => value * 23 + part.GetHashCode());
+            return this.parts.Aggregate(seed: 17, func: (value, part) => (value * 23) + part.GetHashCode());
         }
 
         /// <summary>

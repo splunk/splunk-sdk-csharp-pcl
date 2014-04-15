@@ -38,35 +38,27 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Access Control")]
         [Fact]
-        public void CanLogin()
+        public async Task CanLogin()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            Task task;
+            await service.LoginAsync("admin", "changeme");
 
-            task = service.LoginAsync("admin", "changeme");
-            task.Wait();
-
-            Assert.Equal(task.Status, TaskStatus.RanToCompletion);
             Assert.NotNull(service.SessionKey);
 
             try
             {
-                task = service.LoginAsync("admin", "bad-password");
-                task.Wait();
+                await service.LoginAsync("admin", "bad-password");
+                Assert.False(true, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, "no exception"));
             }
-            catch (Exception)
+            catch (AuthenticationFailureException e)
             {
-                Assert.Equal(task.Status, TaskStatus.Faulted);
-                Assert.IsType(typeof(AggregateException), task.Exception);
-
-                var aggregateException = (AggregateException)task.Exception;
-                Assert.Equal(aggregateException.InnerExceptions.Count, 1);
-                Assert.IsType(typeof(RequestException), aggregateException.InnerExceptions[0]);
-
-                var requestException = (RequestException)(aggregateException.InnerExceptions[0]);
-                Assert.Equal(requestException.StatusCode, HttpStatusCode.Unauthorized);
-                Assert.Equal(requestException.Details.Count, 1);
-                Assert.Equal(requestException.Details[0], new Message(MessageType.Warning, "Login failed"));
+                Assert.Equal(e.StatusCode, HttpStatusCode.Unauthorized);
+                Assert.Equal(e.Details.Count, 1);
+                Assert.Equal(e.Details[0], new Message(MessageType.Warning, "Login failed"));
+            }
+            catch (Exception e)
+            {
+                Assert.True(false, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, e.GetType().FullName));
             }
         }
 
@@ -327,6 +319,28 @@ namespace Splunk.Sdk.UnitTesting
                 Assert.Equal(entity.TStatsHomePath, sameEntity.TStatsHomePath);
                 Assert.Equal(entity.TStatsHomePathExpanded, sameEntity.TStatsHomePathExpanded);
             }
+        }
+
+        [Trait("class", "Service: Indexes")]
+        [Fact]
+        public async Task CanCrudIndex()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
+
+            var indexName = string.Format("delete-me-{0:N}", Guid.NewGuid());
+
+            var index = await service.CreateIndexAsync(indexName, new IndexArgs(
+                coldPath: "", 
+                homePath: "", 
+                thawedPath: ""));
+
+            var indexAttributes = new IndexAttributes()
+            {
+                EnableOnlineBucketRepair = false
+            };
+
+            await index.UpdateAsync(indexAttributes);
         }
 
         #endregion

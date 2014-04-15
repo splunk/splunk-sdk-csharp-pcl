@@ -25,6 +25,10 @@ namespace Splunk.Sdk
     using System.Net;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Provides a class that represents a stanza within a Splunk <see cref=
+    /// "Configuration"/> file.
+    /// </summary>
     public class ConfigurationStanza : EntityCollection<ConfigurationStanza, ConfigurationSetting>
     {
         #region Constructors
@@ -56,7 +60,7 @@ namespace Splunk.Sdk
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
             }
         }
 
@@ -76,7 +80,7 @@ namespace Splunk.Sdk
 
             using (var response = await this.Context.DeleteAsync(this.Namespace, resourceName))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
@@ -104,7 +108,7 @@ namespace Splunk.Sdk
             
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, settings))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 

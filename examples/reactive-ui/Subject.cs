@@ -16,9 +16,10 @@
 
 namespace Splunk.Sdk.Examples.ReactiveUI
 {
-    using Splunk.Sdk;
     using System.Collections.Generic;
     using System.Reactive.Subjects;
+
+    using Splunk.Sdk;
 
     static class Subject
     {

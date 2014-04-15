@@ -21,10 +21,24 @@
 
 namespace Splunk.Sdk
 {
+    /// <summary>
+    /// Provides a class that represents a Splunk Application resource.
+    /// </summary>
     public class Application : Entity<Application>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Application"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// </param>
+        /// <param name="namespace">
+        /// </param>
+        /// <param name="collection">
+        /// </param>
+        /// <param name="name">
+        /// </param>
         internal Application(Context context, Namespace @namespace, ResourceName collection, string name)
             : base(context, @namespace, collection, name)
         { }

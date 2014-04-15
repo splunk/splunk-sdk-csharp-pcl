@@ -23,10 +23,14 @@ namespace Splunk.Sdk
     using System;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
 
+    /// <summary>
+    /// Provides a class that represents a Splunk service response.
+    /// </summary>
     public class Response : IDisposable
     {
         #region Constructors
@@ -67,6 +71,26 @@ namespace Splunk.Sdk
         public void Dispose()
         { 
             this.Dispose(true); 
+        }
+
+        public async Task EnsureStatusCodeAsync(HttpStatusCode expected)
+        {
+            var statusCode = this.Message.StatusCode;
+
+            if (statusCode != expected)
+            {
+                var details = await Splunk.Sdk.Message.ReadMessagesAsync(this.XmlReader);
+
+                switch (statusCode)
+                {
+                    case HttpStatusCode.Unauthorized:
+                        throw new AuthenticationFailureException(this.Message, details);
+                    case HttpStatusCode.NotFound:
+                        throw new ResourceNotFoundException(this.Message, details);
+                    default:
+                        throw new RequestException(this.Message, details);
+                }
+            }
         }
 
         #endregion

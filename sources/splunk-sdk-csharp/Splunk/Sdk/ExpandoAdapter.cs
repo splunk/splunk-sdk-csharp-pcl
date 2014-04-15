@@ -26,6 +26,10 @@ namespace Splunk.Sdk
     using System.Dynamic;
     using System.IO;
 
+    /// <summary>
+    /// Provides a base class for implementing strong types over an <see cref=
+    /// "ExpandoObject"/>.
+    /// </summary>
     public class ExpandoAdapter
     {
         #region Constructors
@@ -183,6 +187,13 @@ namespace Splunk.Sdk
         #endregion
     }
 
+    /// <summary>
+    /// Provides a generic base class for implementing strong types over an 
+    /// <see cref="ExpandoObject"/>.
+    /// </summary>
+    /// <typeparam name="TExpandoAdapter">
+    /// The type inheriting from this class.
+    /// </typeparam>
     public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter<TExpandoAdapter>, new()
     {
         #region Constructors

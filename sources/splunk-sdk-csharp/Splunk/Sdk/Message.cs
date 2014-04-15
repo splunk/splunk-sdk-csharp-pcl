@@ -28,7 +28,10 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml;
 
-    sealed public class Message : IComparable, IComparable<Message>, IEquatable<Message>
+    /// <summary>
+    /// Provides a class that represents a Splunk service response message.
+    /// </summary>
+    public sealed class Message : IComparable, IComparable<Message>, IEquatable<Message>
     {
         #region Constructors
         
@@ -92,8 +95,8 @@ namespace Splunk.Sdk
             // TODO: Check this against the algorithm presented in Effective Java
             int hash = 17;
 
-            hash = hash * 23 + this.Type.GetHashCode();
-            hash = hash * 23 + this.Text.GetHashCode();
+            hash = (hash * 23) + this.Type.GetHashCode();
+            hash = (hash * 23) + this.Text.GetHashCode();
             
             return hash;
         }

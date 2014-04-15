@@ -19,8 +19,10 @@
 
 namespace Splunk.Sdk
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -42,6 +44,7 @@ namespace Splunk.Sdk
 
         public JobArgs(string search)
         {
+            Contract.Requires<ArgumentNullException>(search != null, "search");
             this.Search = search;
         }
 

@@ -154,14 +154,6 @@ namespace Splunk.Sdk
             return this.ToString().CompareTo(other.ToString());
         }
 
-        protected static async Task EnsureStatusCodeAsync(Response response, HttpStatusCode expected)
-        {
-            if (response.Message.StatusCode != expected)
-            {
-                throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-            }
-        }
-
         protected internal virtual void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object entry)
         {
             Contract.Requires<ArgumentNullException>(context != null, "context");

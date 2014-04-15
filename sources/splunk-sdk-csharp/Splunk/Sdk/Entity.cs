@@ -43,6 +43,12 @@ namespace Splunk.Sdk
     using System.Threading.Tasks;
     using System.Xml;
 
+    /// <summary>
+    /// Provides a base class for representing a Splunk entity resource.
+    /// </summary>
+    /// <typeparam name="TEntity">
+    /// The entity type inheriting from this class.
+    /// </typeparam>
     public class Entity<TEntity> : Resource<TEntity> where TEntity : Entity<TEntity>, new()
     {
         #region Constructors

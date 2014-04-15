@@ -23,7 +23,10 @@ namespace Splunk.Sdk
     using System.Net;
     using System.Net.Http;
 
-    public sealed class RequestException : HttpRequestException
+    /// <summary>
+    /// The expception that is thrown when a Splunk service request fails.
+    /// </summary>
+    public class RequestException : HttpRequestException
     {
         #region Constructors
 

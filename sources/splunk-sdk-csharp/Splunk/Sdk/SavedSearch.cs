@@ -170,7 +170,7 @@ namespace Splunk.Sdk
             using (var response = await this.Context.PostAsync(this.Namespace, SavedSearchCollection.ClassResourceName, args, 
                 attributes, dispatchArgs, templateArgs))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 await this.UpdateDataAsync(response);
             }
         }
@@ -202,7 +202,7 @@ namespace Splunk.Sdk
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, templateArgs, 
                 dispatchArgs))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 searchId = await response.XmlReader.ReadResponseElementAsync("sid");
             }
 
@@ -226,7 +226,7 @@ namespace Splunk.Sdk
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, args))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 await this.UpdateDataAsync(response);
             }
         }
@@ -272,7 +272,7 @@ namespace Splunk.Sdk
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 await this.UpdateDataAsync(response);
             }
         }
@@ -290,7 +290,7 @@ namespace Splunk.Sdk
         {
             using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
@@ -319,7 +319,7 @@ namespace Splunk.Sdk
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args) )
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
@@ -354,7 +354,7 @@ namespace Splunk.Sdk
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes, 
                 dispatchArgs, templateArgs))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 

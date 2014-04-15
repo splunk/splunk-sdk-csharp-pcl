@@ -14,25 +14,27 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
+// TODO: Documentation
 
 namespace Splunk.Sdk
 {
-    using System.Dynamic;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
 
     /// <summary>
-    /// Provides a class that represents a Splunk server's Extensible 
-    /// Administration Interface.
+    /// The exception that is thrown when invalid credentials are passed to
+    /// <see cref="Service.LoginAsync"/> or a request fails because the session 
+    /// timed out.
     /// </summary>
-    public class Eai : ExpandoAdapter<Eai>
+    public sealed class AuthenticationFailureException : RequestException
     {
-        public Eai()
+        #region Constructors
+
+        internal AuthenticationFailureException(HttpResponseMessage message, IEnumerable<Message> details)
+            : base(message, details)
         { }
 
-        public Acl Acl
-        {
-            get { return this.GetValue("Acl", Acl.Converter.Instance); }
-        }
+        #endregion
     }
 }

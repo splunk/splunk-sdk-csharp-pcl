@@ -21,6 +21,9 @@ namespace Splunk.Sdk
 {
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Provides a class that represents a collection of Splunk data indexes.
+    /// </summary>
     public class IndexCollection : EntityCollection<IndexCollection, Index>
     {
         #region Constructors

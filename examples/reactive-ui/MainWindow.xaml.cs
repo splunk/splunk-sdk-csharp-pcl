@@ -40,24 +40,16 @@ namespace Splunk.Sdk.Examples.ReactiveUI
     {
         public MainWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
-        private void Search_Click(object sender, RoutedEventArgs e)
+        async void Search_Click(object sender, RoutedEventArgs e)
         {
             var service = ((App)App.Current).Service;
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<IEnumerable<Splunk.Sdk.Result>>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
-
-                Job job = await service.StartJobAsync(this.SearchCommand.Text);
-                SearchResults results = await job.GetSearchResultsAsync();
-
-                return results;
-            };
-
-            var result = Dispatch().Result;
+            Job job = await service.StartJobAsync(this.SearchCommand.Text);
+            SearchResults results = await job.GetSearchResultsAsync();
         }
     }
 }

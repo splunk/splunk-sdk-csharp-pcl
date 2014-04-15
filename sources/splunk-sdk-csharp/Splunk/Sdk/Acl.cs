@@ -27,10 +27,22 @@ namespace Splunk.Sdk
     using System.Text;
     using System.Threading.Tasks;
 
-    public class Acl : ExpandoAdapter<Acl>
+    /// <summary>
+    /// Provides a class that represents a Splunk ACL.
+    /// </summary>
+    public sealed class Acl : ExpandoAdapter<Acl>
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Acl"/> class.
+        /// </summary>
         public Acl()
         { }
+
+        #endregion
+
+        #region Properties
 
         public bool CanList
         {
@@ -66,5 +78,7 @@ namespace Splunk.Sdk
         {
             get { return this.GetValue("Sharing", EnumConverter<SharingMode>.Instance); }
         }
+
+        #endregion
     }
 }

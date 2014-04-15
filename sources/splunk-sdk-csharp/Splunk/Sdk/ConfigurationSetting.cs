@@ -73,7 +73,7 @@ namespace Splunk.Sdk
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 var reader = new StreamReader(response.Stream);
                 var content = await reader.ReadToEndAsync();
 
@@ -98,7 +98,7 @@ namespace Splunk.Sdk
 
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 

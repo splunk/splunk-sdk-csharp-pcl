@@ -28,14 +28,44 @@ namespace Splunk.Sdk
     /// </summary>
     sealed class BooleanConverter : ValueConverter<Boolean>
     {
+        #region Constructors
+
         static BooleanConverter()
         {
             Instance = new BooleanConverter();
         }
 
-        public static BooleanConverter Instance
-        { get; private set; }
+        #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// Gets a default <see cref="BooleanConverter"/> instance for converting 
+        /// strings to <see cref="Boolean"/> values
+        /// </summary>
+        public static BooleanConverter Instance
+        { 
+            get; private set; 
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Converts the string representation of an object to a <see cref=
+        /// "Boolean"/> value.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The <see cref="input"/> does not represent a <see cref="Boolean"/>
+        /// value.
+        /// </exception>
         public override Boolean Convert(object input)
         {
             var x = input as Boolean?;
@@ -54,5 +84,7 @@ namespace Splunk.Sdk
 
             throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
         }
+
+        #endregion
     }
 }

@@ -16,8 +16,9 @@
 
 namespace Splunk.Sdk.Examples.ReactiveUI
 {
-    using System.Windows;
     using System.Net;
+    using System.Windows;
+
     using Splunk.Sdk;
 
     /// <summary>
@@ -28,7 +29,9 @@ namespace Splunk.Sdk.Examples.ReactiveUI
         #region Properties
 
         public Service Service
-        { get; private set; }
+        { 
+            get; private set; 
+        }
 
         #endregion
 
@@ -38,6 +41,7 @@ namespace Splunk.Sdk.Examples.ReactiveUI
         {
             this.Service.Dispose();
         }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>

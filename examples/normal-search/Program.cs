@@ -51,11 +51,11 @@ namespace Splunk.Sdk.Examples
 
         static async Task Run(Service service)
         {
-            // Login
+            //// Login
 
             await service.LoginAsync("admin", "changeme");
 
-            // Search : Pull model (foreach loop => IEnumerable)
+            //// Search : Pull model (foreach loop => IEnumerable)
 
             Job job = await service.StartJobAsync("search index=_internal | head 10");
             SearchResults searchResults;
@@ -76,7 +76,7 @@ namespace Splunk.Sdk.Examples
                 }
             }
 
-            // Search : Push model (by way of subscription to search result records => IObservable)
+            //// Search : Push model (by way of subscription to search result records => IObservable)
 
             job = await service.StartJobAsync("search index=_internal | head 10");
 
@@ -85,8 +85,7 @@ namespace Splunk.Sdk.Examples
                 var manualResetEvent = new ManualResetEvent(true);
                 int recordNumber = 0;
 
-                searchResults.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe
-                (
+                searchResults.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
                     onNext: (record) =>
                     {
                         Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
@@ -99,14 +98,13 @@ namespace Splunk.Sdk.Examples
                     onCompleted: () =>
                     {
                         manualResetEvent.Set();
-                    }
-                );
+                    });
 
                 manualResetEvent.Reset();
                 manualResetEvent.WaitOne();
             }
 
-            // Search : Export
+            //// Search : Export
 
             SearchResultsReader searchResultsReader;
 
@@ -126,7 +124,7 @@ namespace Splunk.Sdk.Examples
                 }
             }
 
-            // Search : Oneshot
+            //// Search : Oneshot
 
             using (searchResults = await service.SearchOneshotAsync("search index=_internal | head 10"))
             {
@@ -136,7 +134,7 @@ namespace Splunk.Sdk.Examples
                 }
             }
 
-            // Search : Results preview
+            //// Search : Results preview
 
             job = await service.StartJobAsync("search index=_internal | head 10000");
             do
@@ -153,7 +151,7 @@ namespace Splunk.Sdk.Examples
             }
             while (searchResults.ArePreview);
 
-            // Search : Saved search
+            //// Search : Saved search
 
             job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours", dispatchArgs: new SavedSearchDispatchArgs());
 
@@ -173,7 +171,7 @@ namespace Splunk.Sdk.Examples
             SearchResults searchResults;
             Job job;
 
-            // Login
+            //// Login
 
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
             await service.LoginAsync("admin", "changeme");
@@ -200,8 +198,7 @@ namespace Splunk.Sdk.Examples
                     Console.WriteLine(string.Format("Result set {0}", ++setNumber));
                     var manualResetEvent = new ManualResetEvent(true);
 
-                    resultSet.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe
-                    (
+                    resultSet.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
                         onNext: (record) =>
                         {
                             Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
@@ -215,10 +212,10 @@ namespace Splunk.Sdk.Examples
                         {
                             Console.WriteLine("Service.SearchExportAsync: Asyncrhonous use case");
                             manualResetEvent.Set();
-                        }
-                    );
+                        });
 
-                    manualResetEvent.Reset(); manualResetEvent.WaitOne();
+                    manualResetEvent.Reset(); 
+                    manualResetEvent.WaitOne();
                 }
             }
         }

@@ -27,9 +27,6 @@ namespace Splunk.Sdk
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.Net;
-    using System.Net.Http;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -162,7 +159,7 @@ namespace Splunk.Sdk
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
             {
-                await EnsureStatusCodeAsync(response, System.Net.HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
                 var feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
 

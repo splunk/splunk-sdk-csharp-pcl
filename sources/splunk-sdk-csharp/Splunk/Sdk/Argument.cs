@@ -23,6 +23,10 @@ namespace Splunk.Sdk
     using System;
     using System.Diagnostics.Contracts;
 
+    /// <summary>
+    /// Provides a class that represents the value of a parameter to a Splunk
+    /// REST API endpoint.
+    /// </summary>
     public class Argument : IComparable, IComparable<Argument>, IEquatable<Argument>
     {
         public Argument(string name, string value)
@@ -78,8 +82,8 @@ namespace Splunk.Sdk
             // TODO: Check this against the algorithm presented in Effective Java
             int hash = 17;
 
-            hash = hash * 23 + this.Name.GetHashCode();
-            hash = hash * 23 + this.Value.GetHashCode();
+            hash = (hash * 23) + this.Name.GetHashCode();
+            hash = (hash * 23) + this.Value.GetHashCode();
 
             return hash;
         }

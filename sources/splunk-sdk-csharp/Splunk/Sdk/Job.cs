@@ -320,7 +320,7 @@ namespace Splunk.Sdk
         {
             using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 

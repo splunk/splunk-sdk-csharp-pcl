@@ -27,6 +27,9 @@ namespace Splunk.Sdk
     using System.Net.Http;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Provides a class that represents a Splunk data index.
+    /// </summary>
     public class Index : Entity<Index>
     {
         #region Constructors
@@ -367,7 +370,7 @@ namespace Splunk.Sdk
                 new Argument[] { new Argument("name", this.ResourceName.Title) },
                 create, attributes))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 AtomFeed feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
 
@@ -398,35 +401,42 @@ namespace Splunk.Sdk
         }
 
         /// <summary>
-        /// Asynchronously removes a configuration stanza.
+        /// Asynchronously removes the current <see cref="Index"/>.
         /// </summary>
-        /// <param name="stanzaName">
-        /// Name of a configuration stanza in the current <see cref=
-        /// "Configuration"/>.
-        /// </param>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
-        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
-        /// stanza identified by <see cref="stanzaName"/>.
+        /// This method uses the <a href="http://goo.gl/hCc1xe">DELETE 
+        /// data/indexes/{name} </a> endpoint to remove the index represented 
+        /// by this instance. 
+        /// <para>
+        /// <b>Caution:</b> This operation fully removes the index, not just 
+        /// the data contained in it. The index's data directories indexes.conf
+        /// stanzas are also deleted.</para>
         /// </remarks>
         public async Task RemoveAsync()
         {
             using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
-        public void Update(IndexAttributes attributes)
-        {
-            this.UpdateAsync(attributes).Wait();
-        }
-
+        /// <summary>
+        /// Asychronously updates the current <see cref="Index"/> with new <see
+        /// cref="IndexAttributes"/>.
+        /// </summary>
+        /// <param name="attributes">
+        /// New attributes for the current <see cref="Index"/>instance.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/n3S22S">POST 
+        /// data/indexes/{name} </a> endpoint to update the attributes of the
+        /// index represented by this instance.
+        /// </remarks>
         public async Task UpdateAsync(IndexAttributes attributes)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
             {
-                await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 AtomFeed feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
 

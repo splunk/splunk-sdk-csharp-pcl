@@ -57,8 +57,8 @@ namespace Splunk.Sdk
         /// is recommended. 
         /// </remarks>
         [DataMember(Name = "blockSignSize", EmitDefaultValue = false)]
-        [DefaultValue(0)]
-        public int BlockSignSize
+        [DefaultValue(null)]
+        public int? BlockSignSize
         { get; set; }
 
         /// <summary> 
@@ -77,7 +77,7 @@ namespace Splunk.Sdk
         /// will not start when a rebuild is required.</para>
         /// </remarks>
         [DataMember(Name = "bucketRebuildMemoryHint", EmitDefaultValue = false)]
-        [DefaultValue("auto")]
+        [DefaultValue(null)]
         public string BucketRebuildMemoryHint
         { get; set; }
 
@@ -121,8 +121,8 @@ namespace Splunk.Sdk
         /// performance degradation while bucket repair is underway.
         /// </remarks>
         [DataMember(Name = "enableOnlineBucketRepair", EmitDefaultValue = false)]
-        [DefaultValue(true)]
-        public bool EnableOnlineBucketRepair
+        [DefaultValue(null)]
+        public bool? EnableOnlineBucketRepair
         { get; set; }
 
         /// <summary>
@@ -130,11 +130,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>188697600</c>.
         /// </remarks>
         [DataMember(Name = "frozenTimePeriodInSecs", EmitDefaultValue = false)]
-        [DefaultValue(188697600)]
-        public int FrozenTimePeriodInSecs
+        [DefaultValue(null)]
+        public int? FrozenTimePeriodInSecs
         { get; set; }
 
         /// <summary>
@@ -142,10 +142,10 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>"30d"</c>.
         /// </remarks>
         [DataMember(Name = "maxBloomBackfillBucketAge", EmitDefaultValue = false)]
-        [DefaultValue("30d")]
+        [DefaultValue(null)]
         public string MaxBloomBackfillBucketAge
         { get; set; }
 
@@ -154,11 +154,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>6</c>.
         /// </remarks>
         [DataMember(Name = "maxConcurrentOptimizes", EmitDefaultValue = false)]
-        [DefaultValue(6)]
-        public int MaxConcurrentOptimizes
+        [DefaultValue(null)]
+        public int? MaxConcurrentOptimizes
         { get; set; }
 
         /// <summary>
@@ -166,10 +166,10 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>"auto"</c>.
         /// </remarks>
         [DataMember(Name = "maxDataSize", EmitDefaultValue = false)]
-        [DefaultValue("auto")]
+        [DefaultValue(null)]
         public string MaxDataSize
         { get; set; }
 
@@ -178,11 +178,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>3</c>.
         /// </remarks>
         [DataMember(Name = "maxHotBuckets", EmitDefaultValue = false)]
-        [DefaultValue(3)]
-        public int MaxHotBuckets
+        [DefaultValue(null)]
+        public int? MaxHotBuckets
         { get; set; }
 
         /// <summary>
@@ -190,11 +190,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>0</c>.
         /// </remarks>
         [DataMember(Name = "maxHotIdleSecs", EmitDefaultValue = false)]
-        [DefaultValue(0)]
-        public int MaxHotIdleSecs
+        [DefaultValue(null)]
+        public int? MaxHotIdleSecs
         { get; set; }
 
         /// <summary>
@@ -202,11 +202,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>7776000</c>.
         /// </remarks>
         [DataMember(Name = "maxHotSpanSecs", EmitDefaultValue = false)]
-        [DefaultValue(7776000)]
-        public int MaxHotSpanSecs
+        [DefaultValue(null)]
+        public int? MaxHotSpanSecs
         { get; set; }
 
         /// <summary>
@@ -214,11 +214,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>5</c>.
         /// </remarks>
         [DataMember(Name = "maxMemMB", EmitDefaultValue = false)]
-        [DefaultValue(5)]
-        public int MaxMemMB
+        [DefaultValue(null)]
+        public int? MaxMemMB
         { get; set; }
 
         /// <summary>
@@ -226,11 +226,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>1000000</c>.
         /// </remarks>
         [DataMember(Name = "maxMetaEntries", EmitDefaultValue = false)]
-        [DefaultValue(1000000)]
-        public int MaxMetaEntries
+        [DefaultValue(null)]
+        public int? MaxMetaEntries
         { get; set; }
 
         /// <summary>
@@ -238,11 +238,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>300</c>.
         /// </remarks>
         [DataMember(Name = "maxTimeUnreplicatedNoAcks", EmitDefaultValue = false)]
-        [DefaultValue(300)]
-        public int MaxTimeUnreplicatedNoAcks
+        [DefaultValue(null)]
+        public int? MaxTimeUnreplicatedNoAcks
         { get; set; }
 
         /// <summary>
@@ -250,11 +250,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>60</c>.
         /// </remarks>
         [DataMember(Name = "maxTimeUnreplicatedWithAcks", EmitDefaultValue = false)]
-        [DefaultValue(60)]
-        public int MaxTimeUnreplicatedWithAcks
+        [DefaultValue(null)]
+        public int? MaxTimeUnreplicatedWithAcks
         { get; set; }
 
         /// <summary>
@@ -262,11 +262,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>500000</c>.
         /// </remarks>
         [DataMember(Name = "maxTotalDataSizeMB", EmitDefaultValue = false)]
-        [DefaultValue(500000)]
-        public int MaxTotalDataSizeMB
+        [DefaultValue(null)]
+        public int? MaxTotalDataSizeMB
         { get; set; }
 
         /// <summary>
@@ -274,11 +274,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>300</c>.
         /// </remarks>
         [DataMember(Name = "maxWarmDBCount", EmitDefaultValue = false)]
-        [DefaultValue(300)]
-        public int MaxWarmDBCount
+        [DefaultValue(null)]
+        public int? MaxWarmDBCount
         { get; set; }
 
         /// <summary>
@@ -286,10 +286,10 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>"disable"</c>.
         /// </remarks>
         [DataMember(Name = "minRawFileSyncSecs", EmitDefaultValue = false)]
-        [DefaultValue("disable")]
+        [DefaultValue(null)]
         public string MinRawFileSyncSecs
         { get; set; }
 
@@ -298,11 +298,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>2000</c>.
         /// </remarks>
         [DataMember(Name = "minStreamGroupQueueSize", EmitDefaultValue = false)]
-        [DefaultValue(2000)]
-        public int MinStreamGroupQueueSize
+        [DefaultValue(null)]
+        public int? MinStreamGroupQueueSize
         { get; set; }
 
         /// <summary>
@@ -310,11 +310,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>0</c>.
         /// </remarks>
         [DataMember(Name = "partialServiceMetaPeriod", EmitDefaultValue = false)]
-        [DefaultValue(0)]
-        public int PartialServiceMetaPeriod
+        [DefaultValue(null)]
+        public int? PartialServiceMetaPeriod
         { get; set; }
 
         /// <summary>
@@ -322,11 +322,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>1</c>.
         /// </remarks>
         [DataMember(Name = "processTrackerServiceInterval", EmitDefaultValue = false)]
-        [DefaultValue(1)]
-        public int ProcessTrackerServiceInterval
+        [DefaultValue(null)]
+        public int? ProcessTrackerServiceInterval
         { get; set; }
 
         /// <summary>
@@ -334,11 +334,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>2592000</c>.
         /// </remarks>
         [DataMember(Name = "quarantineFutureSecs", EmitDefaultValue = false)]
-        [DefaultValue(2592000)]
-        public int QuarantineFutureSecs
+        [DefaultValue(null)]
+        public int? QuarantineFutureSecs
         { get; set; }
 
         /// <summary>
@@ -346,11 +346,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>77760000</c>.
         /// </remarks>
         [DataMember(Name = "quarantinePastSecs", EmitDefaultValue = false)]
-        [DefaultValue(77760000)]
-        public int QuarantinePastSecs
+        [DefaultValue(null)]
+        public int? QuarantinePastSecs
         { get; set; }
 
         /// <summary>
@@ -358,11 +358,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>131072</c>.
         /// </remarks>
         [DataMember(Name = "rawChunkSizeBytes", EmitDefaultValue = false)]
-        [DefaultValue(131072)]
-        public int RawChunkSizeBytes
+        [DefaultValue(null)]
+        public int? RawChunkSizeBytes
         { get; set; }
 
         /// <summary>
@@ -370,10 +370,10 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>"0"</c>.
         /// </remarks>
         [DataMember(Name = "repFactor", EmitDefaultValue = false)]
-        [DefaultValue("0")]
+        [DefaultValue(null)]
         public string RepFactor
         { get; set; }
 
@@ -382,11 +382,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>60</c>.
         /// </remarks>
         [DataMember(Name = "rotatePeriodInSecs", EmitDefaultValue = false)]
-        [DefaultValue(60)]
-        public int RotatePeriodInSecs
+        [DefaultValue(null)]
+        public int? RotatePeriodInSecs
         { get; set; }
 
         /// <summary>
@@ -394,11 +394,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>25</c>.
         /// </remarks>
         [DataMember(Name = "serviceMetaPeriod", EmitDefaultValue = false)]
-        [DefaultValue(25)]
-        public int ServiceMetaPeriod
+        [DefaultValue(null)]
+        public int? ServiceMetaPeriod
         { get; set; }
 
         /// <summary>
@@ -406,11 +406,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>true</c>.
         /// </remarks>
         [DataMember(Name = "syncMeta", EmitDefaultValue = false)]
-        [DefaultValue(true)]
-        public bool SyncMeta
+        [DefaultValue(null)]
+        public bool? SyncMeta
         { get; set; }
 
         /// <summary>
@@ -418,11 +418,11 @@ namespace Splunk.Sdk
         ///
         /// </summary>
         /// <remarks>
-        ///
+        /// The default value is <c>15</c>.
         /// </remarks>
         [DataMember(Name = "throttleCheckPeriod", EmitDefaultValue = false)]
-        [DefaultValue(15)]
-        public int ThrottleCheckPeriod
+        [DefaultValue(null)]
+        public int? ThrottleCheckPeriod
         { get; set; }
 
         /// <summary>

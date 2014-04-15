@@ -19,14 +19,22 @@
 
 namespace Splunk.Sdk
 {
+    /// <summary>
+    /// Provides a class that represents a collection of Splunk Application
+    /// resources.
+    /// </summary>
     public class ApplicationCollection : EntityCollection<ApplicationCollection, Application>
     {
+        #region Constructors
+
         internal ApplicationCollection(Context context, Namespace @namespace, ApplicationCollectionArgs args = null)
             : base(context, @namespace, ClassResourceName, args)
         { }
 
         public ApplicationCollection()
         { }
+
+        #endregion
 
         #region Privates/internals
 

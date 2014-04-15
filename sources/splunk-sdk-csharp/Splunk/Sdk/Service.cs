@@ -174,10 +174,7 @@ namespace Splunk.Sdk
                 new Argument("password", password)
             }))
             {
-                if (!response.Message.IsSuccessStatusCode)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 this.SessionKey = await response.XmlReader.ReadResponseElementAsync("sessionKey");
             }
         }

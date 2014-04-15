@@ -80,7 +80,7 @@ namespace Splunk.Sdk
         /// </summary>
         public Namespace Namespace
         {
-            get { return this.Namespace; }
+            get { return this.@namespace; }
         }
 
         /// <summary>

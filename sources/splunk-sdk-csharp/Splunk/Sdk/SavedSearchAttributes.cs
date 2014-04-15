@@ -45,11 +45,6 @@ namespace Splunk.Sdk
         public SavedSearchAttributes()
         { }
 
-        public SavedSearchAttributes(string search)
-        {
-            this.Search = search;
-        }
-
         #endregion
 
         #region Properties
@@ -60,9 +55,9 @@ namespace Splunk.Sdk
         /// <remarks>
         /// This value is required.
         /// </remarks>
-        [DataMember(Name = "search", IsRequired = true)]
+        [DataMember(Name = "search", EmitDefaultValue = false)]
         public string Search
-        { get; private set; }
+        { get; set; }
 
         /// <summary>
         /// Gets or sets a comma-separated list of actions to enable for a

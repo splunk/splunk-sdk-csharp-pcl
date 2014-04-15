@@ -349,7 +349,7 @@ namespace Splunk.Sdk.UnitTesting
                 Console.WriteLine(e);
             }
 
-            var attributes = new SavedSearchAttributes("search index=_internal | head 1000");
+            var attributes = new SavedSearchAttributes() { Search = "search index=_internal | head 1000" };
             var savedSearch = await service.CreateSavedSearchAsync("some_saved_search", attributes);
         }
 
@@ -375,42 +375,38 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public void CanGetSavedSearch()
+        public async Task CanGetSavedSearch()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<SavedSearch>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
+            var entity = await service.GetSavedSearchAsync("Errors in the last 24 hours");
 
-                var entity = await service.GetSavedSearchAsync("Errors in the last 24 hours");
+            Assert.Equal("Errors in the last 24 hours", entity.ResourceName.Title);
+            Assert.Equal(entity.Id.ToString(), entity.ToString());
+            Assert.Equal("nobody", entity.Author);
 
-                Assert.Equal("Errors in the last 24 hours", entity.ResourceName.Title);
-                Assert.Equal(entity.Id.ToString(), entity.ToString());
-                Assert.Equal("nobody", entity.Author);
-
-                // TODO: Access each and every property of the saved search
-                return entity;
-            };
-
-            var result = Dispatch().Result;
+            // TODO: Access each and every property of the saved search
         }
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public void CanGetSavedSearches()
+        public async Task CanGetSavedSearches()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<SavedSearchCollection>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
+            var collection = await service.GetSavedSearchesAsync();
+        }
 
-                var collection = await service.GetSavedSearchesAsync();
-                return collection;
-            };
+        [Trait("class", "Service: Saved Searches")]
+        [Fact]
+        public async Task CanUpdateSavedSearch()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
 
-            var result = Dispatch().Result;
+            await service.UpdateSavedSearchAsync("Errors in the last 24 hours", new SavedSearchAttributes() { IsVisible = false });
         }
 
         #endregion

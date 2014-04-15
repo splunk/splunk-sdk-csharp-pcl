@@ -49,10 +49,6 @@ namespace Splunk.Sdk
             args = new SavedSearchCollectionArgs();
             Assert.Equal(expectedString[0], args.ToString());
             Assert.Equal(expectedArguments[0], args);
-
-            args = new SavedSearchCollectionArgs("some_unchecked_string");
-            Assert.Equal(expectedString[1], args.ToString());
-            Assert.Equal(expectedArguments[1], args);
         }
 
         [Trait("class", "SavedSearchCollectionArgs")]

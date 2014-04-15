@@ -198,7 +198,7 @@ namespace Splunk.Sdk.UnitTesting
 
             // Create a saved search
             //savedSearches.Create("sdk-test1", search);
-            SavedSearchAttributes attrs = new SavedSearchAttributes(search);
+            SavedSearchAttributes attrs = new SavedSearchAttributes() { Search = search };
             service.CreateSavedSearchAsync(savedSearchTitle, attrs).Wait();
             savedSearches.GetAsync().Wait();
             Assert.IsTrue(savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0, this.assertRoot + "#2");

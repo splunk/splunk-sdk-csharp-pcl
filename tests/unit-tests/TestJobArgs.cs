@@ -39,28 +39,16 @@ namespace Splunk.Sdk
             };
             string search = "some unchecked search string";
 
-            JobArgs args;
-
-            args = new JobArgs();
-            Assert.Equal(expectedString[0], args.ToString());
-            Assert.Throws(typeof(SerializationException), () => args.ToArray()); // because a search string is required
-            args.Search = search;
+            var args = new JobArgs(search);
             Assert.Equal(expectedString[1], args.ToString());
             Assert.Equal(expectedArguments, args);
-
-            args = new JobArgs(search);
-            Assert.Equal(expectedString[1], args.ToString());
-            Assert.Equal(expectedArguments, args);
-            args.Search = null;
-            Assert.Equal(expectedString[0], args.ToString());
-            Assert.Throws(typeof(SerializationException), () => args.ToArray()); // because a search string is required
         }
 
         [Trait("class", "JobArgs")]
         [Fact]
         void CanSetEveryValue()
         {
-            var args = new JobArgs()
+            var args = new JobArgs("some_unchecked_string")
             {
                 AutoCancel = 1,
                 AutoFinalizeEventCount = 2,
@@ -86,7 +74,6 @@ namespace Splunk.Sdk
                 RemoteServerList = "some_unchecked_string",
                 RequiredFieldList = new List<string>() { "some_unchecked_string", "some_other_uncheck_string" },
                 ReuseMaxSecondsAgo = 9,
-                Search = "some_unchecked_string",
                 SearchListener = "some_unchecked_string",
                 SearchMode = SearchMode.Realtime,
                 SpawnProcess = false,

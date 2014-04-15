@@ -122,13 +122,7 @@ namespace Splunk.Sdk.UnitTesting
             Service service = Connect();
 
             //Job job;
-            JobArgs jobArgs = new JobArgs();
-
-            jobArgs.Search = Query;
-            service.StartJobAsync(jobArgs).Wait();
-
-            jobArgs.Search = Query;
-            //jobArgs.e="csv"
+            JobArgs jobArgs = new JobArgs(Query);
             service.StartJobAsync(jobArgs).Wait();
 
 
@@ -275,8 +269,8 @@ namespace Splunk.Sdk.UnitTesting
         public void BadOutputMode()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs();
-            jobArgs.Search = "invalidpart" + Query;
+            JobArgs jobArgs = new JobArgs("invalidpart" + Query);
+
             //jobArgs.outuputMode = badOutputMode;
 
             Job job = null;
@@ -323,8 +317,7 @@ namespace Splunk.Sdk.UnitTesting
         public void JobSearchMode()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs();
-            jobArgs.Search = Query;
+            JobArgs jobArgs = new JobArgs(Query);
 
             jobArgs.SearchMode = SearchMode.Normal;
             Job job = service.StartJobAsync(jobArgs).Result;
@@ -356,8 +349,8 @@ namespace Splunk.Sdk.UnitTesting
         public void JobExecutionMode()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs();
-            jobArgs.Search = Query;
+            JobArgs jobArgs = new JobArgs(Query);
+
             jobArgs.ExecutionMode = ExecutionMode.Blocking;
 
             Job job = service.StartJobAsync(jobArgs).Result;
@@ -387,8 +380,8 @@ namespace Splunk.Sdk.UnitTesting
         public void BadSearchModeExport()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs();
-            jobArgs.Search = Query;
+            JobArgs jobArgs = new JobArgs(Query);
+
             jobArgs.SearchMode = SearchMode.Normal;
 
             Job job = service.StartJobAsync(jobArgs).Result;
@@ -604,12 +597,10 @@ namespace Splunk.Sdk.UnitTesting
         public void JobSearchModeArgument()
         {
             var type = typeof(SearchMode);
-            JobArgs jobArgs = new JobArgs(Query);
-            jobArgs.Search = Query;
 
             RunJobForEachEnum(
                 type,
-                (mode) => new JobArgs
+                (mode) => new JobArgs(Query)
                     {
                         SearchMode =
                             (SearchMode)Enum.Parse(
@@ -628,9 +619,8 @@ namespace Splunk.Sdk.UnitTesting
 
             RunExportForEachEnum(
                 type,
-                (mode) => new SearchExportArgs
+                (mode) => new SearchExportArgs(Query)
                 {
-                    Search = Query,
                     SearchMode =
                         (SearchMode)Enum.Parse(
                                 type,
@@ -667,9 +657,8 @@ namespace Splunk.Sdk.UnitTesting
 
             RunExportForEachEnum(
                 type,
-                (mode) => new SearchExportArgs
+                (mode) => new SearchExportArgs(Query)
                 {
-                    Search = Query,
                     TruncationMode =
                         (TruncationMode)Enum.Parse(
                                 type,
@@ -781,14 +770,14 @@ namespace Splunk.Sdk.UnitTesting
             const string ParamName = "remote_server_list";
             var array = "first,second";// new string[] { "first", "second" };
 
-            var args1 = new SearchExportArgs()
+            var args1 = new SearchExportArgs(Query)
                 {
                     RemoteServerList = array,
                 };
 
             Assert.AreEqual("first,second", args1.RemoteServerList);
 
-            var args2 = new JobArgs
+            var args2 = new JobArgs(Query)
             {
                 RemoteServerList = array,
             };

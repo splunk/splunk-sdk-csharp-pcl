@@ -8,15 +8,14 @@
     <OutputType>Library</OutputType>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DE65F0D5-7753-483E-8933-E6DB22350F04}</ProjectGuid>
-    <RootNamespace>
-    </RootNamespace>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>22455d9b</NuGetPackageImportStamp>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <RootNamespace/>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <NuGetPackageImportStamp>22455d9b</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

@@ -78,7 +78,7 @@ namespace Splunk.Sdk
         #region Constructors
 
         internal Configuration(Context context, Namespace @namespace, string fileName)
-            : base(context, @namespace, new ResourceName(ResourceName.Properties, fileName))
+            : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName))
         { }
 
         public Configuration()
@@ -101,7 +101,7 @@ namespace Splunk.Sdk
         {
             var args = new Argument[] { new Argument("__conf", this.ResourceName.Title) };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.Properties, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, ConfigurationCollection.ClassResourceName, args))
             {
                 if (response.Message.StatusCode != HttpStatusCode.Created)
                 {

@@ -44,23 +44,6 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Fields
-
-        public static readonly ResourceName AppsLocal = new ResourceName("apps", "local");
-        public static readonly ResourceName AuthLogin = new ResourceName("auth", "login");
-        public static readonly ResourceName AuthenticationHttpAuthTokens = new ResourceName("authentication", "httpauth-tokens");
-        public static readonly ResourceName AuthorizationCapabilities = new ResourceName("authorization", "capabilities");
-        public static readonly ResourceName Configs = new ResourceName("configs");
-        public static readonly ResourceName DataIndexes = new ResourceName("data", "indexes");
-        public static readonly ResourceName Properties = new ResourceName("properties");
-        public static readonly ResourceName Receivers = new ResourceName("receivers");
-        public static readonly ResourceName SavedSearches = new ResourceName("saved", "searches");
-        public static readonly ResourceName SearchJobs = new ResourceName("search", "jobs");
-        public static readonly ResourceName SearchJobsExport = new ResourceName("search", "jobs", "export");
-        public static readonly ResourceName Server = new ResourceName("server");
-        
-        #endregion
-
         #region Properties
 
         public string this[int index]

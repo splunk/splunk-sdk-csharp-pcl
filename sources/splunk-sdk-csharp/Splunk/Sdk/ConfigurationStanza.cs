@@ -30,7 +30,7 @@ namespace Splunk.Sdk
         #region Constructors
 
         internal ConfigurationStanza(Context context, Namespace @namespace, string fileName, string stanzaName)
-            : base(context, @namespace, new ResourceName(ResourceName.Properties, fileName, stanzaName))
+            : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName))
         { }
 
         public ConfigurationStanza()
@@ -71,7 +71,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task RemoveAsync()
         {
-            var resourceName = new ResourceName(ResourceName.Configs, "conf-" + this.ResourceName.Collection,
+            var resourceName = new ResourceName("configs", "conf-" + this.ResourceName.Collection,
                 this.ResourceName.Title);
 
             using (var response = await this.Context.DeleteAsync(this.Namespace, resourceName))

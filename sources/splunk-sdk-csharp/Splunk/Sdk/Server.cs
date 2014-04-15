@@ -23,8 +23,8 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        internal Server(Service service)
-            : base(service.Context, service.Namespace, ResourceName.Server)
+        internal Server(Context context, Namespace @namespace)
+            : base(context, @namespace, ClassResourceName)
         { }
 
         public Server()
@@ -61,9 +61,9 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
-        static readonly ResourceName ClassResourceName = new ResourceName("server", "control");
+        internal static readonly ResourceName ClassResourceName = new ResourceName("server", "control");
 
         #endregion
     }

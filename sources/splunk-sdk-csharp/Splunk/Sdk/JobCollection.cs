@@ -24,8 +24,10 @@ namespace Splunk.Sdk
     /// </summary>
     public class JobCollection : EntityCollection<JobCollection, Job>
     {
+        #region Constructors
+
         internal JobCollection(Context context, Namespace @namespace, JobCollectionArgs args = null)
-            : base(context, @namespace, ResourceName.SearchJobs, args)
+            : base(context, @namespace, ClassResourceName, args)
         { }
 
         internal JobCollection(Context context, Namespace @namespace, ResourceName resourceName)
@@ -34,5 +36,13 @@ namespace Splunk.Sdk
 
         public JobCollection()
         { }
+
+        #endregion
+
+        #region Privates/internals
+
+        internal static readonly ResourceName ClassResourceName = new ResourceName("search", "jobs");
+
+        #endregion
     }
 }

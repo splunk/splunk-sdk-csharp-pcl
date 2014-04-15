@@ -26,7 +26,7 @@ namespace Splunk.Sdk
         #region Constructors
 
         internal IndexCollection(Context context, Namespace @namespace)
-            : base(context, @namespace, ResourceName.DataIndexes)
+            : base(context, @namespace, ClassResourceName)
         { }
 
         public IndexCollection()
@@ -81,6 +81,12 @@ namespace Splunk.Sdk
             var entity = new Index(this.Context, this.Namespace, name);
             await entity.UpdateAsync(attributes);
         }
+
+        #endregion
+
+        #region Privates/internals
+
+        internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");
 
         #endregion
     }

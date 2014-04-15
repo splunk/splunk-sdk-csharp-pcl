@@ -32,7 +32,7 @@ namespace Splunk.Sdk
         #region Constructors
 
         internal Index(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ResourceName.DataIndexes, name)
+            : base(context, @namespace, ClassResourceName, name)
         { }
 
         public Index()
@@ -363,7 +363,7 @@ namespace Splunk.Sdk
 
         public async Task CreateAsync(IndexArgs create, IndexAttributes attributes)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.DataIndexes,
+            using (var response = await this.Context.PostAsync(this.Namespace, IndexCollection.ClassResourceName,
                 new Argument[] { new Argument("name", this.ResourceName.Title) },
                 create, attributes))
             {
@@ -438,6 +438,12 @@ namespace Splunk.Sdk
                 this.Data = new DataCache(feed.Entries[0]);
             }
         }
+
+        #endregion
+
+        #region Privates/internals
+
+        internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");
 
         #endregion
     }

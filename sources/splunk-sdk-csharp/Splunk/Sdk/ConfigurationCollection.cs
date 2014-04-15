@@ -22,10 +22,16 @@ namespace Splunk.Sdk
     public class ConfigurationCollection : EntityCollection<ConfigurationCollection, Configuration>
     {
         internal ConfigurationCollection(Context context, Namespace @namespace)
-            : base(context, @namespace, ResourceName.Properties)
+            : base(context, @namespace, ClassResourceName)
         { }
 
         public ConfigurationCollection()
         { }
+
+        #region Privates/internals
+
+        internal static readonly ResourceName ClassResourceName = new ResourceName("properties");
+        
+        #endregion
     }
 }

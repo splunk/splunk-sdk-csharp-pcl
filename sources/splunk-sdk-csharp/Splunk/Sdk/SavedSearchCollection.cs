@@ -22,10 +22,16 @@ namespace Splunk.Sdk
     public class SavedSearchCollection : EntityCollection<SavedSearchCollection, SavedSearch>
     {
         internal SavedSearchCollection(Context context, Namespace @namespace, SavedSearchCollectionArgs args = null)
-            : base(context, @namespace, ResourceName.SavedSearches, args)
+            : base(context, @namespace, ClassResourceName, args)
         { }
 
         public SavedSearchCollection()
         { }
+
+        #region Privates/internals
+
+        internal static readonly ResourceName ClassResourceName = new ResourceName("saved", "searches");
+
+        #endregion
     }
 }

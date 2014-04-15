@@ -40,8 +40,12 @@ namespace Splunk.Sdk
         /// <param name="namespace"></param>
         internal Service(Context context, Namespace @namespace = null)
         {
-            this.Context = context;
-            this.Namespace = @namespace ?? Namespace.Default;
+            Contract.Requires<ArgumentNullException>(context != null, "context");
+
+            this.context = context;
+            this.@namespace = @namespace ?? Namespace.Default;
+            this.receiver = new Receiver(context, @namespace);
+            this.server = new Server(context, @namespace);
         }
 
         /// <summary>
@@ -52,8 +56,6 @@ namespace Splunk.Sdk
         /// <param name="host">
         /// </param>
         /// <param name="port">
-        /// </param>
-        /// <param name="sessionKey">
         /// </param>
         /// <param name="namespace">
         /// </param>
@@ -69,22 +71,32 @@ namespace Splunk.Sdk
         /// Gets the <see cref="Context"/> instance for this <see cref="Service"/>.
         /// </summary>
         protected internal Context Context
-        { get; private set; }
+        {
+            get { return this.context; }
+        }
 
         /// <summary>
         /// Gets the <see cref="Namespace"/> used by this <see cref="Service"/>.
         /// </summary>
         public Namespace Namespace
-        { get; private set; }
-
-        public Receiver Receiver
         {
-            get { return new Receiver(this.Context, this.Namespace); }
+            get { return this.Namespace; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public Receiver Receiver
+        {
+            get { return this.receiver; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public Server Server
         {
-            get { return new Server(this); }
+            get { return this.server; }
         }
 
         /// <summary>
@@ -114,7 +126,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task<dynamic> GetCapabilitiesAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, new ResourceName(ResourceName.AuthorizationCapabilities)))
+            using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities))
             {
                 if (response.Message.StatusCode != HttpStatusCode.OK)
                 {
@@ -153,10 +165,10 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task LoginAsync(string username, string password)
         {
-            Contract.Requires(username != null);
-            Contract.Requires(password != null);
+            Contract.Requires<ArgumentNullException>(username != null);
+            Contract.Requires<ArgumentNullException>(password != null);
 
-            using (var response = await this.Context.PostAsync(Namespace.Default, ResourceName.AuthLogin, new Argument[]
+            using (var response = await this.Context.PostAsync(Namespace.Default, AuthLogin, new Argument[]
             {
                 new Argument("username", username),
                 new Argument("password", password)
@@ -182,8 +194,8 @@ namespace Splunk.Sdk
         {
             Contract.Requires<InvalidOperationException>(this.SessionKey != null);
 
-            var resourceName = new ResourceName(ResourceName.AuthenticationHttpAuthTokens, this.SessionKey);
-            
+            var resourceName = new ResourceName(AuthenticationHttpAuthTokens, this.SessionKey);
+
             using (var response = await this.Context.DeleteAsync(Namespace.Default, resourceName))
             {
                 if (response.Message.StatusCode != HttpStatusCode.OK)
@@ -552,7 +564,7 @@ namespace Splunk.Sdk
         /// saved/searches</a> endpoint to create the <see cref="SavedSearch"/>
         /// object it returns.
         /// </remarks>
-        public async Task<SavedSearch> CreateSavedSearchAsync(string name, SavedSearchAttributes attributes, 
+        public async Task<SavedSearch> CreateSavedSearchAsync(string name, SavedSearchAttributes attributes,
             SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
         {
             var resource = new SavedSearch(this.Context, this.Namespace, name);
@@ -581,7 +593,7 @@ namespace Splunk.Sdk
         /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
         /// cref="SavedSearch"/> identified by <see cref="name"/>.
         /// </remarks>
-        public async Task<Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null, 
+        public async Task<Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null,
             SavedSearchTemplateArgs templateArgs = null)
         {
             var savedSearch = new SavedSearch(this.Context, this.Namespace, name);
@@ -678,8 +690,8 @@ namespace Splunk.Sdk
         /// saved/searches/{name}</a> endpoint to update the saved search
         /// identified by <see cref="name"/>.
         /// </remarks>
-        public async Task<SavedSearch> UpdateSavedSearchAsync(string name, SavedSearchAttributes attributes, SavedSearchDispatchArgs 
-            dispatchArgs, SavedSearchTemplateArgs templateArgs)
+        public async Task<SavedSearch> UpdateSavedSearchAsync(string name, SavedSearchAttributes attributes = null, 
+            SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
         {
             var resource = new SavedSearch(this.Context, this.Namespace, name);
             await resource.UpdateAsync(attributes, dispatchArgs, templateArgs);
@@ -817,7 +829,7 @@ namespace Splunk.Sdk
 
             string searchId;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.SearchJobs, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, JobCollection.ClassResourceName, args))
             {
                 if (response.Message.StatusCode != HttpStatusCode.Created)
                 {
@@ -852,7 +864,7 @@ namespace Splunk.Sdk
         /// </remarks>
         public async Task UpdateJobArgsAsync(string searchId, JobArgs args)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(ResourceName.SearchJobs, searchId), args))
+            using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(JobCollection.ClassResourceName, searchId), args))
             {
                 if (response.Message.StatusCode != HttpStatusCode.OK)
                 {
@@ -890,7 +902,7 @@ namespace Splunk.Sdk
 
             try
             {
-                response = await this.Context.GetAsync(this.Namespace, ResourceName.SearchJobsExport, args);
+                response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, args);
 
                 if (response.Message.StatusCode != HttpStatusCode.OK)
                 {
@@ -946,7 +958,7 @@ namespace Splunk.Sdk
 
             try
             {
-                response = await this.Context.PostAsync(this.Namespace, ResourceName.SearchJobs, args);
+                response = await this.Context.PostAsync(this.Namespace, JobCollection.ClassResourceName, args);
 
                 if (response.Message.StatusCode != HttpStatusCode.OK)
                 {
@@ -1031,6 +1043,16 @@ namespace Splunk.Sdk
         #endregion
 
         #region Privates
+
+        static readonly ResourceName AuthLogin = new ResourceName("auth", "login");
+        static readonly ResourceName AuthenticationHttpAuthTokens = new ResourceName("authentication", "httpauth-tokens");
+        static readonly ResourceName AuthorizationCapabilities = new ResourceName("authorization", "capabilities");
+        static readonly ResourceName SearchJobsExport = new ResourceName("search", "jobs", "export");
+        
+        readonly Context context;
+        readonly Namespace @namespace;
+        readonly Receiver receiver;
+        readonly Server server;
 
         bool disposed;
 

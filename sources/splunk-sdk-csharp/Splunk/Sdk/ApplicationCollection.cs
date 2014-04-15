@@ -22,10 +22,16 @@ namespace Splunk.Sdk
     public class ApplicationCollection : EntityCollection<ApplicationCollection, Application>
     {
         internal ApplicationCollection(Context context, Namespace @namespace, ApplicationCollectionArgs args = null)
-            : base(context, @namespace, ResourceName.AppsLocal, args)
+            : base(context, @namespace, ClassResourceName, args)
         { }
 
         public ApplicationCollection()
         { }
+
+        #region Privates/internals
+
+        internal static readonly ResourceName ClassResourceName = new ResourceName("apps", "local");
+
+        #endregion
     }
 }

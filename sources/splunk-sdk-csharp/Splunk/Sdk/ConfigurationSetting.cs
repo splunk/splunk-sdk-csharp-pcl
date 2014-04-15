@@ -38,7 +38,7 @@ namespace Splunk.Sdk
 
         internal ConfigurationSetting(Context context, Namespace @namespace, string fileName, string stanzaName, 
             string keyName)
-            : base(context, @namespace, new ResourceName(ResourceName.Properties, fileName, stanzaName), keyName)
+            : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName), keyName)
         { }
 
         public ConfigurationSetting()

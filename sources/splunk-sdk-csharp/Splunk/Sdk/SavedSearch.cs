@@ -46,12 +46,10 @@ namespace Splunk.Sdk
         /// </param>
         /// <param name="namespace">
         /// </param>
-        /// <param name="collection">
-        /// </param>
         /// <param name="name">
         /// </param>
         internal SavedSearch(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ResourceName.SavedSearches, name)
+            : base(context, @namespace, SavedSearchCollection.ClassResourceName, name)
         { }
 
         public SavedSearch()
@@ -169,7 +167,7 @@ namespace Splunk.Sdk
         {
             var args = new Argument[] { new Argument("name", this.ResourceName.Title) };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, ResourceName.SavedSearches, args, 
+            using (var response = await this.Context.PostAsync(this.Namespace, SavedSearchCollection.ClassResourceName, args, 
                 attributes, dispatchArgs, templateArgs))
             {
                 await EnsureStatusCodeAsync(response, HttpStatusCode.Created);
@@ -362,7 +360,7 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
         async Task UpdateDataAsync(Response response)
         {

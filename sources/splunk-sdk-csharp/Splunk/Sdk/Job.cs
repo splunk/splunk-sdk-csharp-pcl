@@ -55,7 +55,7 @@ namespace Splunk.Sdk
         /// <param name="name">
         /// </param>
         internal Job(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ResourceName.SearchJobs, name)
+            : base(context, @namespace, JobCollection.ClassResourceName, name)
         { }
 
         /// <summary>

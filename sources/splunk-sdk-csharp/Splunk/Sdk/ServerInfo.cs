@@ -139,9 +139,9 @@ namespace Splunk.Sdk
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
-        static readonly ResourceName ClassResourceName = new ResourceName("server", "info");
+        internal static readonly ResourceName ClassResourceName = new ResourceName("server", "info");
 
         #endregion
     }

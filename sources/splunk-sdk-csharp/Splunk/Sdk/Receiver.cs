@@ -40,7 +40,7 @@ namespace Splunk.Sdk
         #region Constructors
 
         internal Receiver(Context context, Namespace @namespace)
-            : base(context, @namespace, ResourceName.Receivers)
+            : base(context, @namespace, ClassResourceName)
         { }
 
         public Receiver()
@@ -56,13 +56,17 @@ namespace Splunk.Sdk
         /// <returns>
         /// A <see cref="Stream"/> used to send events to Splunk.
         /// </returns>
+        /// <remarks>
         /// This method the <a href="http://goo.gl/zFKzMp">POST 
         /// receivers/stream</a> endpoint to send raw events to Splunk as
         /// they become available on <see cref="stream"/>.
-        public async Task SendAsync(Stream stream, ReceiverArgs args = null)
+        /// </remarks>
+        public async Task SendAsync(Stream eventStream, ReceiverArgs args = null)
         {
-            using (var content = new StreamContent(stream))
+            using (var content = new StreamContent(eventStream))
             {
+                content.Headers.Add("x-splunk-input-mode", "streaming");
+
                 using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, content, args))
                 {
                     await EnsureStatusCodeAsync(response, HttpStatusCode.OK);
@@ -82,9 +86,11 @@ namespace Splunk.Sdk
         /// A <see cref="Result"/> object representing the event created by
         /// Splunk.
         /// </returns>
+        /// <remarks>
         /// This method uses the <a href="http://goo.gl/GPLUVg">POST 
         /// receivers/simple</a> endpoint to obtain the <see cref="Result"/>
         /// that it returns.
+        /// </remarks>
         public async Task<Result> SendAsync(string eventText, ReceiverArgs args = null)
         {
             using (var content = new StringContent(eventText))
@@ -120,6 +126,12 @@ namespace Splunk.Sdk
                 }
             }
         }
+
+        #endregion
+
+        #region Privates/internals
+
+        internal static readonly ResourceName ClassResourceName = new ResourceName("receivers");
 
         #endregion
     }

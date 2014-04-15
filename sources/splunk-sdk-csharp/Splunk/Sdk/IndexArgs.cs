@@ -40,7 +40,7 @@ namespace Splunk.Sdk
     {
         #region Constructors
 
-        public IndexArgs(string coldPath, string homePath, string thawedPath)
+        public IndexArgs(string coldPath = "", string homePath = "", string thawedPath = "")
         {
             this.ColdPath = coldPath;
             this.HomePath = homePath;

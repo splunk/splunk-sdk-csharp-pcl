@@ -436,7 +436,7 @@ namespace Splunk.Sdk
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 AtomFeed feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
 

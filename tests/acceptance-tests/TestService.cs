@@ -330,10 +330,8 @@ namespace Splunk.Sdk.UnitTesting
 
             var indexName = string.Format("delete-me-{0:N}", Guid.NewGuid());
 
-            var index = await service.CreateIndexAsync(indexName, new IndexArgs(
-                coldPath: "", 
-                homePath: "", 
-                thawedPath: ""));
+            var index = await service.CreateIndexAsync(indexName, new IndexArgs());
+            Assert.Equal(true, index.EnableOnlineBucketRepair);
 
             var indexAttributes = new IndexAttributes()
             {
@@ -341,6 +339,7 @@ namespace Splunk.Sdk.UnitTesting
             };
 
             await index.UpdateAsync(indexAttributes);
+            Assert.Equal(false, index.EnableOnlineBucketRepair);
         }
 
         #endregion

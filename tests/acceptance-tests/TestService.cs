@@ -404,6 +404,18 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
+        public async Task CanGetSavedSearchHistory()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
+
+            var entity = await service.GetSavedSearchHistoryAsync("Errors in the last 24 hours");
+
+            // TODO: Access each and every property of the saved search
+        }
+
+        [Trait("class", "Service: Saved Searches")]
+        [Fact]
         public async Task CanGetSavedSearches()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));

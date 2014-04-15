@@ -206,7 +206,13 @@ namespace Splunk.Sdk
 
                     case "s:messages":
 
+                        bool isEmptyElement = reader.IsEmptyElement;
                         await reader.ReadAsync();
+
+                        if (isEmptyElement)
+                        {
+                            continue;
+                        }
 
                         while (reader.NodeType == XmlNodeType.Element && reader.Name == "msg")
                         {

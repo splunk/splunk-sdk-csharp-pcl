@@ -48,24 +48,45 @@ namespace Splunk.Sdk
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="Entity&lt;TEntity&gt;"/> 
+        /// class as specified by <see cref="context"/>, <see cref="namespace"/>
+        /// and "<see cref="resourceName"/>.
         /// </summary>
         /// <param name="context">
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
         /// </param>
         /// <param name="resourceName">
+        /// An object identifying a Splunk resource within <see cref="namespace"/>.
+        /// </param>
+        protected Entity(Context context, Namespace @namespace, ResourceName resourceName)
+            : base(context, @namespace, resourceName)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Entity&lt;TEntity&gt;"/> 
+        /// class as specified by <see cref="context"/>, <see cref="namespace"/>,
+        /// and resource <see cref="collection"/> and <see cref="title"/>.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
+        /// </param>
+        /// <param name="collection">
+        /// An object identifying a Splunk resource collection within <see 
+        /// cref="namespace"/>.
         /// </param>
         /// <param name="title">
+        /// The title of a resource within <see cref="collection"/>.
         /// </param>
-        protected Entity(Context context, Namespace @namespace, ResourceName resourceName, string title = null)
-            : base(context, @namespace, title == null ? resourceName : new ResourceName(resourceName, title))
+        protected Entity(Context context, Namespace @namespace, ResourceName collection, string title)
+            : this(context, @namespace, new ResourceName(collection, title))
         {
-            Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(title), "name");
-            Contract.Requires<ArgumentException>(resourceName != null, "collection");
-            Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires(@namespace.IsSpecific);
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(title), "title");
         }
 
         /// <summary>

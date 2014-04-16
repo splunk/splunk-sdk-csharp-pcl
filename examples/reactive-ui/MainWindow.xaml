@@ -1,4 +1,4 @@
-﻿<Window x:Class="Splunk.Sdk.Examples.ReactiveUI.MainWindow"
+﻿<Window x:Class="Splunk.Client.Examples.ReactiveUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="splunk-sdk-csharp-2.0.0: Reactive UI" Height="350" Width="874">

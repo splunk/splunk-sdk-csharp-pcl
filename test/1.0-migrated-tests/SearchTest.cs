@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.UnitTesting
+namespace Splunk.Client.UnitTesting
 {
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -25,7 +25,7 @@ namespace Splunk.Sdk.UnitTesting
     using System.Net;
     using System.Text.RegularExpressions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Splunk.Sdk;
+    using Splunk.Client;
 
     /// <summary>
     /// This is the search test class

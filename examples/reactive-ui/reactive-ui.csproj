@@ -115,9 +115,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\splunk-sdk-csharp-pcl\splunk-sdk-csharp-pcl.csproj">
+    <ProjectReference Include="..\..\src\splunk-sdk-csharp-pcl\Splunk.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
-      <Name>splunk-sdk-csharp-pcl</Name>
+      <Name>Splunk</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

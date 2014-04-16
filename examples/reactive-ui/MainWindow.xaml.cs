@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.Examples.ReactiveUI
+namespace Splunk.Client.Examples.ReactiveUI
 {
     using System;
     using System.Collections.Generic;
@@ -31,7 +31,7 @@ namespace Splunk.Sdk.Examples.ReactiveUI
     using System.Windows.Navigation;
     using System.Windows.Shapes;
 
-    using Splunk.Sdk;
+    using Splunk.Client;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml

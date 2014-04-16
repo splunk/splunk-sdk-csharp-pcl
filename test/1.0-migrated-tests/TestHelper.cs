@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.UnitTesting
+namespace Splunk.Client.UnitTesting
 {
     using System;
     using System.Linq;
@@ -22,8 +22,8 @@ namespace Splunk.Sdk.UnitTesting
     using System.Net.Sockets;
     using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Splunk.Sdk;
-    using Splunk.Sdk.UnitTesting;
+    using Splunk.Client;
+    using Splunk.Client.UnitTesting;
     using SplunkSDKHelper;
 
     /// <summary>

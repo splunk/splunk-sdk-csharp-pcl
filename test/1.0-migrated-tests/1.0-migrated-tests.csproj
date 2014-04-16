@@ -125,9 +125,9 @@
     <None Include="TestKey.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\splunk-sdk-csharp-pcl\splunk-sdk-csharp-pcl.csproj">
+    <ProjectReference Include="..\..\src\splunk-sdk-csharp-pcl\Splunk.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
-      <Name>splunk-sdk-csharp-pcl</Name>
+      <Name>Splunk</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SplunkSDKHelper\SplunkSDKHelper.csproj">
       <Project>{4135f018-6041-4269-a76f-b6aaf87e260d}</Project>

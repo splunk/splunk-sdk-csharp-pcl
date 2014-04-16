@@ -14,9 +14,9 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.UnitTesting
+namespace Splunk.Client.UnitTesting
 {
-    using Splunk.Sdk;
+    using Splunk.Client;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -387,7 +387,7 @@ namespace Splunk.Sdk.UnitTesting
             Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
             SearchResults searchResults = await job.GetSearchResultsAsync();
 
-            var records = new List<Splunk.Sdk.Result>(searchResults);
+            var records = new List<Splunk.Client.Result>(searchResults);
         }
 
         [Trait("class", "Service: Saved Searches")]
@@ -488,7 +488,7 @@ namespace Splunk.Sdk.UnitTesting
             Assert.NotNull(job);
             var results = await job.GetSearchResultsAsync();
             Assert.NotNull(results);
-            var records = new List<Splunk.Sdk.Result>(results);
+            var records = new List<Splunk.Client.Result>(results);
             Assert.Equal(10, records.Count);
         }
 
@@ -500,7 +500,7 @@ namespace Splunk.Sdk.UnitTesting
             await service.LoginAsync("admin", "changeme");
 
             SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
-            var records = new List<Splunk.Sdk.Result>();
+            var records = new List<Splunk.Client.Result>();
 
             foreach (var searchResults in reader)
             {
@@ -514,12 +514,12 @@ namespace Splunk.Sdk.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
 
-            Func<Task<IEnumerable<Splunk.Sdk.Result>>> Dispatch = async () =>
+            Func<Task<IEnumerable<Splunk.Client.Result>>> Dispatch = async () =>
             {
                 await service.LoginAsync("admin", "changeme");
 
                 SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
-                var records = new List<Splunk.Sdk.Result>(searchResults);
+                var records = new List<Splunk.Client.Result>(searchResults);
 
                 return records;
             };

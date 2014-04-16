@@ -14,12 +14,12 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.Examples.ReactiveUI
+namespace Splunk.Client.Examples.ReactiveUI
 {
     using System.Net;
     using System.Windows;
 
-    using Splunk.Sdk;
+    using Splunk.Client;
 
     /// <summary>
     /// Interaction logic for App.xaml

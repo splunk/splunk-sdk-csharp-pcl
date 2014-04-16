@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.UnitTesting
+namespace Splunk.Client.UnitTesting
 {
     using System.Net;
 
@@ -25,7 +25,7 @@ namespace Splunk.Sdk.UnitTesting
             // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
             // 1. Instantiate a WebRequestHandler
             // 2. Set its ServerCertificateValidationCallback
-            // 3. Instantiate a Splunk.Sdk.Context with the WebRequestHandler
+            // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
 
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {

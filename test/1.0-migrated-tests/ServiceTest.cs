@@ -16,13 +16,13 @@
 
 using System.Linq;
 
-namespace Splunk.Sdk.UnitTesting
+namespace Splunk.Client.UnitTesting
 {
     using System;
     using System.Collections.Generic;
     using System.Net;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Splunk.Sdk;
+    using Splunk.Client;
 
     /// <summary>
     /// This class tests all the Splunk Service methods.

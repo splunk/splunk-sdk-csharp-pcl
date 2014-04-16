@@ -14,12 +14,12 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.Examples.ReactiveUI
+namespace Splunk.Client.Examples.ReactiveUI
 {
     using System.Collections.Generic;
     using System.Reactive.Subjects;
 
-    using Splunk.Sdk;
+    using Splunk.Client;
 
     static class Subject
     {

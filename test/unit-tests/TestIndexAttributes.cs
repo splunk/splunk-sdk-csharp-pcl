@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Sdk
+namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;

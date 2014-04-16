@@ -24,8 +24,7 @@ namespace Splunk.Sdk.UnitTesting
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Splunk.Sdk;
     using Splunk.Sdk.UnitTesting;
-    using SplunkSDKHelper;
-
+  
     /// <summary>
     /// TODO: Update summary.
     /// </summary>

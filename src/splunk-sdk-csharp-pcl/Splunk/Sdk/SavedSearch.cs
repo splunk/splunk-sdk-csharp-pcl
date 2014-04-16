@@ -180,29 +180,30 @@ namespace Splunk.Sdk
         /// scheduler would.
         /// </summary>
         /// <param name="dispatchArgs">
-        /// A set of template arguments to the saved search.
-        /// </param>
-        /// <param name="dispatchArgs">
         /// A set of arguments to the dispatcher.
         /// </param>
+        /// <param name="templateArgs">
+        /// A set of template arguments to the saved search.
+        /// </param>
         /// <returns>
-        /// An object representing the search job that was created by the 
-        /// dispatcher.
+        /// An object representing the search job created by the dispatcher.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
         /// saved/searches/{name}/dispatch</a> endpoint to dispatch the 
-        /// current <see cref="SavedSearch"/>.
+        /// current <see cref="SavedSearch"/>. It then uses the <a href=
+        /// "http://goo.gl/C9qc98">GET search/jobs/{search_id}</a> endpoint to 
+        /// retrieve the <see cref="Job"/> object that it returns.
         /// </remarks>
-        public async Task<Job> DispatchAsync(SavedSearchDispatchArgs
-            dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
+        public async Task<Job> DispatchAsync(SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs 
+            templateArgs = null)
         {
+            var resourceName = new ResourceName(this.ResourceName, "dispatch");
             string searchId;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, templateArgs, 
-                dispatchArgs))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, dispatchArgs, templateArgs))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 searchId = await response.XmlReader.ReadResponseElementAsync("sid");
             }
 

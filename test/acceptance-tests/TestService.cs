@@ -379,22 +379,15 @@ namespace Splunk.Sdk.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public void CanDispatchSavedSearch()
+        public async Task CanDispatchSavedSearch()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<IEnumerable<Splunk.Sdk.Result>>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
+            Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
+            SearchResults searchResults = await job.GetSearchResultsAsync();
 
-                Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
-                SearchResults searchResults = await job.GetSearchResultsAsync();
-
-                var records = new List<Splunk.Sdk.Result>(searchResults);
-                return records;
-            };
-
-            var result = Dispatch().Result;
+            var records = new List<Splunk.Sdk.Result>(searchResults);
         }
 
         [Trait("class", "Service: Saved Searches")]

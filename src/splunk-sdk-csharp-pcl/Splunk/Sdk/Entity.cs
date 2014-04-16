@@ -169,7 +169,7 @@ namespace Splunk.Sdk
 
         /// <summary>
         /// Refreshes the cached state of the current <see cref=
-        /// "Entity<TEntity>"/>.
+        /// "Entity&lt;TEntity&gt;"/>.
         /// </summary>
         public virtual async Task GetAsync()
         {

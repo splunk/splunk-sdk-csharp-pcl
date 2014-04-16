@@ -27,6 +27,8 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <Prefer32Bit>false</Prefer32Bit>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,6 +46,10 @@
     <AssemblyOriginatorKeyFile>TestKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="dotnetcli-0.1.1, Version=0.1.1.0, Culture=neutral, PublicKeyToken=ccf0f9cc98fff4ef, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\dotnetcli-0.1.1.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="StyleCop">
@@ -64,6 +70,9 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command.cs" />
+    <Compile Include="ConfTest.cs" />
+    <Compile Include="IndexTest.cs" />
     <Compile Include="SavedSearchTest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -128,10 +137,6 @@
     <ProjectReference Include="..\..\src\splunk-sdk-csharp-pcl\Splunk.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>Splunk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SplunkSDKHelper\SplunkSDKHelper.csproj">
-      <Project>{4135f018-6041-4269-a76f-b6aaf87e260d}</Project>
-      <Name>SplunkSDKHelper</Name>
     </ProjectReference>
     <ProjectReference Include="..\acceptance-tests\acceptance-tests.csproj">
       <Project>{b7c3839f-58f5-4ca9-9317-9655a0bc55d9}</Project>

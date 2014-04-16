@@ -22,9 +22,9 @@ namespace Splunk.Client.UnitTesting
     using System.Net.Sockets;
     using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+
     using Splunk.Client;
     using Splunk.Client.UnitTesting;
-    using SplunkSDKHelper;
 
     /// <summary>
     /// TODO: Update summary.

@@ -123,6 +123,9 @@ namespace Splunk.Client.UnitTesting
 
             //Job job;
             JobArgs jobArgs = new JobArgs(Query);
+
+            service.StartJobAsync(jobArgs).Wait();
+            //jobArgs.e="csv"
             service.StartJobAsync(jobArgs).Wait();
 
 
@@ -210,7 +213,7 @@ namespace Splunk.Client.UnitTesting
         //    var service = Connect();
 
         //    // SDK's segmentation default has no impact on Splunk 4.3.5 (or earlier).
-        //    var segmentationDefaultEffective = true;//service.VersionCompare("5.0") >= 0;
+        //    var segmentationDefaultEffective = true;//this.VersionCompare(service,"5.0") >= 0;
 
         //    var countSgWithDefault = CountSgIn(
         //        () => getResults(
@@ -269,8 +272,7 @@ namespace Splunk.Client.UnitTesting
         public void BadOutputMode()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs("invalidpart" + Query);
-
+            JobArgs jobArgs = new JobArgs( "invalidpart" + Query);
             //jobArgs.outuputMode = badOutputMode;
 
             Job job = null;
@@ -350,7 +352,7 @@ namespace Splunk.Client.UnitTesting
         {
             var service = Connect();
             JobArgs jobArgs = new JobArgs(Query);
-
+            
             jobArgs.ExecutionMode = ExecutionMode.Blocking;
 
             Job job = service.StartJobAsync(jobArgs).Result;
@@ -381,8 +383,8 @@ namespace Splunk.Client.UnitTesting
         {
             var service = Connect();
             JobArgs jobArgs = new JobArgs(Query);
-
-            jobArgs.SearchMode = SearchMode.Normal;
+            
+            //jobArgs.SearchMode = SearchMode.Realtime;
 
             Job job = service.StartJobAsync(jobArgs).Result;
             Assert.IsNotNull(job, "#1");
@@ -597,7 +599,8 @@ namespace Splunk.Client.UnitTesting
         public void JobSearchModeArgument()
         {
             var type = typeof(SearchMode);
-
+            JobArgs jobArgs = new JobArgs(Query);
+            
             RunJobForEachEnum(
                 type,
                 (mode) => new JobArgs(Query)
@@ -620,7 +623,7 @@ namespace Splunk.Client.UnitTesting
             RunExportForEachEnum(
                 type,
                 (mode) => new SearchExportArgs(Query)
-                {
+                {                    
                     SearchMode =
                         (SearchMode)Enum.Parse(
                                 type,
@@ -669,7 +672,7 @@ namespace Splunk.Client.UnitTesting
         [TestMethod]
         public void JobRefreshTest()
         {
-            var cli = SplunkSDKHelper.Command.Splunk("search");
+            var cli = Command.Splunk("search");
             cli.AddRule("search", typeof(string), "search string");
             cli.Opts["search"] = "search index=_internal * | head 10 ";
 
@@ -770,14 +773,14 @@ namespace Splunk.Client.UnitTesting
             const string ParamName = "remote_server_list";
             var array = "first,second";// new string[] { "first", "second" };
 
-            var args1 = new SearchExportArgs(Query)
+            var args1 = new SearchExportArgs("")
                 {
                     RemoteServerList = array,
                 };
 
             Assert.AreEqual("first,second", args1.RemoteServerList);
 
-            var args2 = new JobArgs(Query)
+            var args2 = new JobArgs("")
             {
                 RemoteServerList = array,
             };

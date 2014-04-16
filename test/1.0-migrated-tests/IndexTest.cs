@@ -152,7 +152,7 @@ namespace Splunk.Sdk.UnitTesting
 
                 if (indexes.GetIndexAsync(indexName).Result == null)
                 {
-                    indexes.CreateIndexAsync(indexName, new IndexArgs(), new IndexAttributes()).Wait();
+                    indexes.CreateIndexAsync(indexName, new IndexArgs("", "", ""), new IndexAttributes()).Wait();
                     //indexes.Refresh();
                 }
             }

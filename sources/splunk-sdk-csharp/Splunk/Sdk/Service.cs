@@ -36,28 +36,36 @@ namespace Splunk.Sdk
         /// <summary>
         /// Initializes a new instance of the <see cref="Service"/> class.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="namespace"></param>
-        internal Service(Context context, Namespace @namespace = null)
+        /// <param name="context">
+        /// The context for requests by the new <see cref="Service"/>.
+        /// </param>
+        /// <param name="namespace">
+        /// The namespace for requests by the new <see cref="Service"/>.
+        /// </param>
+        public Service(Context context, Namespace @namespace = null)
         {
             Contract.Requires<ArgumentNullException>(context != null, "context");
 
             this.context = context;
             this.@namespace = @namespace ?? Namespace.Default;
-            this.receiver = new Receiver(context, @namespace);
-            this.server = new Server(context, @namespace);
+            this.receiver = new Receiver(context, this.Namespace);
+            this.server = new Server(context, this.Namespace);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Service"/> class.
         /// </summary>
         /// <param name="scheme">
+        /// The scheme for the new <see cref="Service"/>.
         /// </param>
         /// <param name="host">
+        /// The host for the new <see cref="Service"/>.
         /// </param>
         /// <param name="port">
+        /// The port for the new <see cref="Service"/>.
         /// </param>
         /// <param name="namespace">
+        /// The namespace for requests issue by the new <see cref="Service"/>.
         /// </param>
         public Service(Scheme scheme, string host, int port, Namespace @namespace = null)
             : this(new Context(scheme, host, port), @namespace)

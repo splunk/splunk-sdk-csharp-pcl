@@ -31,11 +31,12 @@ namespace Splunk.Sdk
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
+    /// <item><description>
     ///     <a href="http://goo.gl/khXMdf">REST API: POST saved/searches.</a>
-    ///     </description>
-    /// </item>
+    /// </description></item>
+    /// <item><description>
+    ///     <a href="http://goo.gl/csTpM2">REST API: POST saved/searches/{name}.</a>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class SavedSearchAttributes : Args<SavedSearchAttributes>

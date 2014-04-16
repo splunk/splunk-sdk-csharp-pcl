@@ -327,12 +327,6 @@ namespace Splunk.Sdk
         /// Asynchronously updates the saved search represented by the current
         /// instance.
         /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="SavedSearch"/> to be updated.
-        /// </param>
-        /// <param name="name">
-        /// Name of the saved search to be updated.
-        /// </param>
         /// <param name="attributes">
         /// New attributes for the saved search to be updated.
         /// </param>
@@ -342,15 +336,21 @@ namespace Splunk.Sdk
         /// <param name="templateArgs">
         /// New template arguments for the saved search to be updated.
         /// </param>
+        /// <exception cref="ArgumentException">
+        /// <see cref="attributes"/>, <see cref="dispatchArgs"/>, and <see 
+        /// cref="templateArgs"/> are <c>null</c>.
+        /// </exception>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/aV9eiZ">POST 
         /// saved/searches{name}</a> endpoint to update the saved search
         /// represented by the current instance.
         /// </remarks>
 
-        public async Task UpdateAsync(SavedSearchAttributes attributes, SavedSearchDispatchArgs dispatchArgs, 
-            SavedSearchTemplateArgs templateArgs)
+        public async Task UpdateAsync(SavedSearchAttributes attributes = null, SavedSearchDispatchArgs dispatchArgs = 
+            null, SavedSearchTemplateArgs templateArgs = null)
         {
+            Contract.Requires<ArgumentException>(!(attributes == null && dispatchArgs == null && templateArgs == null));
+
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes, 
                 dispatchArgs, templateArgs))
             {

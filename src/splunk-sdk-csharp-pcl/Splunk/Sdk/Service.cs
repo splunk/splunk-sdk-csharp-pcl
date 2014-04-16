@@ -673,9 +673,6 @@ namespace Splunk.Sdk
         /// Asynchronously updates a saved search.
         /// </summary>
         /// <param name="name">
-        /// Name of the <see cref="SavedSearch"/> to be updated.
-        /// </param>
-        /// <param name="name">
         /// Name of the saved search to be updated.
         /// </param>
         /// <param name="attributes">

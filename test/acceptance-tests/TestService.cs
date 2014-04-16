@@ -370,7 +370,7 @@ namespace Splunk.Sdk.UnitTesting
 
             attributes.IsVisible = false;
 
-            savedSearch = await service.UpdateSavedSearchAsync(name);
+            savedSearch = await service.UpdateSavedSearchAsync(name, attributes);
             Assert.Equal(false, savedSearch.IsVisible);
 
             // Delete

@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.UnitTesting
+namespace Splunk.Client.UnitTesting
 {
     using System;
     using System.IO;
@@ -22,7 +22,7 @@ namespace Splunk.Sdk.UnitTesting
     using System.Text;
     using System.Threading;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Splunk.Sdk;
+    using Splunk.Client;
 
     /// <summary>
     /// Tests the Index class

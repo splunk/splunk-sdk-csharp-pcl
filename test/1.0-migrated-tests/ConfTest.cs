@@ -14,11 +14,11 @@
  * under the License.
  */
 
-namespace Splunk.Sdk.UnitTesting
+namespace Splunk.Client.UnitTesting
 {
     using System;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Splunk.Sdk;
+    using Splunk.Client;
 
     /// <summary>
     /// Tests the configurations

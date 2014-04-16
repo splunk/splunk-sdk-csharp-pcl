@@ -355,6 +355,7 @@ namespace Splunk.Sdk
                 dispatchArgs, templateArgs))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await this.UpdateDataAsync(response);
             }
         }
 

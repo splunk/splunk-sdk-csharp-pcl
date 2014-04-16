@@ -350,7 +350,7 @@ namespace Splunk.Sdk.UnitTesting
         [Fact]
         public async Task CanCrudSavedSearch()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            var service = new Service(Scheme.Https, "localhost", 8089/*, new Namespace(user: "nobody", app: "search")*/);
             await service.LoginAsync("admin", "changeme");
 
             // Create

@@ -438,9 +438,9 @@ namespace Splunk.Client
                     get { return this.GetValue("IsEnabled", BooleanConverter.Instance); }
                 }
 
-                public string MaxResults
+                public int MaxResults
                 {
-                    get { return this.GetValue("Maxresults", StringConverter.Instance); }
+                    get { return this.GetValue("Maxresults", Int32Converter.Instance); }
                 }
 
                 public string MaxTime

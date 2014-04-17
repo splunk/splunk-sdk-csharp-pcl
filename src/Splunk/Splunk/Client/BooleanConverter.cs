@@ -72,17 +72,25 @@ namespace Splunk.Client
 
             if (x != null)
             {
-                return (Boolean)input;
+                return x.Value;
             }
 
-            Int32 value;
+            string value = input.ToString();
 
-            if (Int32.TryParse(input.ToString(), result: out value))
+            switch (value)
             {
-                return value != 0;
+                case "t": return true;
+                case "f": return false;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            Int32 result;
+
+            if (Int32.TryParse(input.ToString(), result: out result))
+            {
+                return result != 0;
+            }
+
+            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostics
         }
 
         #endregion

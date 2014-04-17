@@ -303,7 +303,7 @@ namespace Splunk.Client.UnitTesting
             //Assert.AreEqual("sdk-bcc@splunk.com", savedSearch.Actions.Email.Bcc, this.assertRoot + "#14");
             //Assert.AreEqual("sdk-cc@splunk.com", savedSearch.Actions.Email.Cc, this.assertRoot + "#15");
             Assert.AreEqual("$name1$", savedSearch.Actions.Email.Command, this.assertRoot + "#16");
-            Assert.AreEqual("text", savedSearch.Actions.Email.Format, this.assertRoot + "#17");
+            Assert.AreEqual(EmailFormat.Plain, savedSearch.Actions.Email.Format, this.assertRoot + "#17");
             Assert.AreEqual("sdk@splunk.com", savedSearch.Actions.Email.From, this.assertRoot + "#18");
             //Assert.AreEqual("dummy1.host.com", savedSearch.Actions.Email.Hostname, this.assertRoot + "#19");
             Assert.IsTrue(savedSearch.Actions.Email.Inline, this.assertRoot + "#20");
@@ -312,8 +312,8 @@ namespace Splunk.Client.UnitTesting
             Assert.AreEqual("10s", savedSearch.Actions.Email.MaxTime, this.assertRoot + "#23");
             //Assert.AreEqual("dummy", savedSearch.Actions.Email.PdfView, this.assertRoot + "#24");
             //Assert.AreEqual("*", savedSearch.Actions.Email.PreProcessResults, this.assertRoot + "#25");
-            Assert.AreEqual("landscape", savedSearch.Actions.Email.ReportPaperOrientation, this.assertRoot + "#26");
-            Assert.AreEqual("letter", savedSearch.Actions.Email.ReportPaperSize, this.assertRoot + "#27");
+            Assert.AreEqual(PaperOrientation.Landscape, savedSearch.Actions.Email.ReportPaperOrientation, this.assertRoot + "#26");
+            Assert.AreEqual(PaperSize.Letter, savedSearch.Actions.Email.ReportPaperSize, this.assertRoot + "#27");
             Assert.IsFalse(savedSearch.Actions.Email.ReportServerEnabled, this.assertRoot + "#28");
             //Assert.AreEqual("splunk.com", savedSearch.Actions.Email.ReportServerUrl, this.assertRoot + "#29");
             Assert.IsFalse(savedSearch.Actions.Email.SendPdf, this.assertRoot + "#30");

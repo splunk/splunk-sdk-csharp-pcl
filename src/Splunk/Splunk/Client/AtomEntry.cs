@@ -239,16 +239,57 @@ namespace Splunk.Client
 
         #region Privates
 
-        static Regex propertyNamePattern = new Regex(@"[_.-]+(.?)");
-
         static string NormalizePropertyName(string name)
         {
-            var builder = new StringBuilder(name);
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
+            var builder = new StringBuilder(name.Length);
+            int index = 0;
 
-            builder[0] = char.ToUpper(builder[0]);
-            name = propertyNamePattern.Replace(builder.ToString(), (match) => match.Groups[1].Value.ToUpper());
+            // Leading underscores distinguish some names
 
-            return name;
+            while (name[index] == '_')
+            {
+                builder.Append('_');
+
+                if (++index >= name.Length)
+                {
+                    return builder.ToString();
+                }
+            }
+
+            for (; ; )
+            {
+                // We squeeze out dashes, dots, and all but the leading underscores
+
+                while (name[index] == '_' || name[index] == '.' || name[index] == '-')
+                {
+                    if (++index >= name.Length)
+                    {
+                        return builder.ToString();
+                    }
+                }
+
+                // We capitalize the first character following [_.-]
+
+                builder.Append(char.ToUpper(name[index]));
+
+                if (++index >= name.Length)
+                {
+                    return builder.ToString();
+                }
+
+                // We don't alter the case of subsequent characters following [_.-]
+
+                while (!(name[index] == '_' || name[index] == '.' || name[index] == '-'))
+                {
+                    builder.Append(name[index]);
+
+                    if (++index >= name.Length)
+                    {
+                        return builder.ToString();
+                    }
+                }
+            }
         }
 
         static async Task<dynamic> ParseDictionaryAsync(XmlReader reader)

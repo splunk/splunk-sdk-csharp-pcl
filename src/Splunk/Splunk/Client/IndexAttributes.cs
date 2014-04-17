@@ -121,7 +121,7 @@ namespace Splunk.Client
         /// specify the program followed by the path. The script must be in 
         /// <c>$SPLUNK_HOME/bin</c> or one of its subdirectories.
         /// </remarks>
-        [DataMember(Name = "compressRawData", EmitDefaultValue = false)]
+        [DataMember(Name = "compressRawdata", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public bool? CompressRawData
         { get; set; }

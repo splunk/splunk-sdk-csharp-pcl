@@ -36,7 +36,7 @@ namespace Splunk.Client
                 "bucketRebuildMemoryHint=null; " +
                 "coldToFrozenDir=null; " +
                 "coldToFrozenScript=null; " +
-                "compressRawData=null; " +
+                "compressRawdata=null; " +
                 "enableOnlineBucketRepair=null; " +
                 "frozenTimePeriodInSecs=null; " +
                 "maxBloomBackfillBucketAge=null; " +
@@ -117,7 +117,7 @@ namespace Splunk.Client
                     new Argument("bucketRebuildMemoryHint", "auto"),
                     new Argument("coldToFrozenDir", ""),
                     new Argument("coldToFrozenScript", ""),
-                    new Argument("compressRawData", "t"),
+                    new Argument("compressRawdata", "t"),
                     new Argument("enableOnlineBucketRepair", "t"),
                     new Argument("frozenTimePeriodInSecs", "188697600"),
                     new Argument("maxBloomBackfillBucketAge", "30d"),
@@ -191,7 +191,7 @@ namespace Splunk.Client
                 "bucketRebuildMemoryHint=some_unchecked_string_value; " +
                 "coldToFrozenDir=some_unchecked_string_value; " +
                 "coldToFrozenScript=some_unchecked_string_value; " +
-                "compressRawData=f; " +
+                "compressRawdata=f; " +
                 "enableOnlineBucketRepair=f; " +
                 "frozenTimePeriodInSecs=2147483647; " +
                 "maxBloomBackfillBucketAge=some_unchecked_string_value; " +
@@ -228,7 +228,7 @@ namespace Splunk.Client
                     new Argument("bucketRebuildMemoryHint", "some_unchecked_string_value"),
                     new Argument("coldToFrozenDir", "some_unchecked_string_value"),
                     new Argument("coldToFrozenScript", "some_unchecked_string_value"),
-                    new Argument("compressRawData", "f"),
+                    new Argument("compressRawdata", "f"),
                     new Argument("enableOnlineBucketRepair", "f"),
                     new Argument("frozenTimePeriodInSecs", "2147483647"),
                     new Argument("maxBloomBackfillBucketAge", "some_unchecked_string_value"),

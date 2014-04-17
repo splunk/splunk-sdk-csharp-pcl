@@ -92,7 +92,7 @@ namespace Splunk.Client
 
         public bool CompressRawData
         {
-            get { return this.Content.GetValue("CompressRawData", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("compressRawdata", BooleanConverter.Instance); }
         }
 
         public int CurrentDBSizeMB

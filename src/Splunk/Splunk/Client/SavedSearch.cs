@@ -465,6 +465,26 @@ namespace Splunk.Client
             {
                 #region Properties
 
+                public string AuthPassword
+                {
+                    get { return this.GetValue("AuthPassword", StringConverter.Instance); }
+                }
+
+                public string AuthUsername
+                {
+                    get { return this.GetValue("AuthUsername", StringConverter.Instance); }
+                }
+
+                public string Bcc
+                {
+                    get { return this.GetValue("Bcc", StringConverter.Instance); }
+                }
+
+                public string CC
+                {
+                    get { return this.GetValue("Cc", StringConverter.Instance); }
+                }
+
                 public EmailFormat Format
                 {
                     get { return this.GetValue("Format", EnumConverter<EmailFormat>.Instance); }
@@ -525,6 +545,11 @@ namespace Splunk.Client
                     get { return this.GetValue("Subject", StringConverter.Instance); }
                 }
 
+                public string To
+                {
+                    get { return this.GetValue("To", StringConverter.Instance); }
+                }
+
                 public bool UseSsl
                 {
                     get { return this.GetValue("UseSsl", BooleanConverter.Instance); }
@@ -544,13 +569,41 @@ namespace Splunk.Client
             }
 
             public class PopulateLookup_t : Action<PopulateLookup_t>
-            { }
+            {
+                #region Properties
+
+                public string Destination
+                {
+                    get { return this.GetValue("Dest", StringConverter.Instance); }
+                }
+
+                public string Hostname
+                {
+                    get { return this.GetValue("Hostname", StringConverter.Instance); }
+                }
+
+                #endregion
+            }
 
             public class Rss_t : Action<Rss_t>
             { }
 
             public class Script_t : Action<Script_t>
-            { }
+            {
+                #region Properties
+
+                public string FileName
+                {
+                    get { return this.GetValue("Filename", StringConverter.Instance); }
+                }
+
+                public string Hostname
+                {
+                    get { return this.GetValue("Hostname", StringConverter.Instance); }
+                }
+
+                #endregion
+            }
 
             public class SummaryIndex_t : Action<SummaryIndex_t>
             {
@@ -576,6 +629,16 @@ namespace Splunk.Client
         {
             #region Properties
 
+            public AlertComparator Comparator
+            {
+                get { return this.GetValue("Comparator", EnumConverter<AlertComparator>.Instance); }
+            }
+
+            public string Condition
+            {
+                get { return this.GetValue("Comparator", StringConverter.Instance); }
+            }
+
             public bool DigestMode
             {
                 get { return this.GetValue("DigestMode", BooleanConverter.Instance); }
@@ -591,16 +654,52 @@ namespace Splunk.Client
                 get { return this.GetValue("Severity", EnumConverter<AlertSeverity>.Instance); }
             }
 
+            public Suppress_t Suppress
+            {
+                get { return this.GetValue("Suppress", Suppress_t.Converter.Instance); }
+            }
+
+            public string Threshold
+            {
+                get { return this.GetValue("Threshold", StringConverter.Instance); }
+            }
+
             public bool Track
             {
                 get { return this.GetValue("Track", BooleanConverter.Instance); }
             }
 
-            public AlertTrigger Trigger
+            public AlertType Type
             {
-                get { return this.GetValue("Trigger", EnumConverter<AlertTrigger>.Instance); }
+                get { return this.GetValue("Type", EnumConverter<AlertType>.Instance); }
             }
 
+            #endregion
+
+            #region Types
+
+            public class Suppress_t : ExpandoAdapter<Suppress_t>
+            {
+                #region Properties
+
+                public bool IsEnabled
+                {
+                    get { return this.GetValue("IsEnabled", BooleanConverter.Instance); }
+                }
+
+                public string Fields
+                {
+                    get { return this.GetValue("Fields", StringConverter.Instance); }
+                }
+
+                public string Period
+                {
+                    get { return this.GetValue("Period", StringConverter.Instance); }
+                }
+
+                #endregion
+            }
+            
             #endregion
         }
 

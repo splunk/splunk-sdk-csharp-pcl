@@ -369,9 +369,17 @@ namespace Splunk.Client.UnitTesting
             // Update
 
             attributes.IsVisible = false;
+            attributes.ActionEmailBcc = "ljiang@splunk.com";
+            attributes.ActionEmailCC = "dnoble@splunk.com";
+            attributes.ActionEmailFrom = "fross@splunk.com";
+            attributes.ActionEmailTo = "gblock@splunk.com, ineeman@splunk.com";
 
             savedSearch = await service.UpdateSavedSearchAsync(name, attributes);
             Assert.Equal(false, savedSearch.IsVisible);
+            Assert.Equal("ljiang@splunk.com", savedSearch.Actions.Email.Bcc);
+            Assert.Equal("dnoble@splunk.com", savedSearch.Actions.Email.CC);
+            Assert.Equal("fross@splunk.com", savedSearch.Actions.Email.From);
+            Assert.Equal("gblock@splunk.com, ineeman@splunk.com", savedSearch.Actions.Email.To);
 
             // Delete
             await savedSearch.RemoveAsync();

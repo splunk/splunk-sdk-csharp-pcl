@@ -276,8 +276,17 @@ namespace Splunk.Client
                         case "auto_summarize":
                             name += ".IsEnabled";
                             break;
+                        case "alert_comparator":
+                            name = "alert.comparator";
+                            break;
+                        case "alert_condition":
+                            name = "alert.condition";
+                            break;
+                        case "alert_threshold":
+                            name = "alert.threshold";
+                            break;
                         case "alert_type":
-                            name = "alert.trigger";
+                            name = "alert.type";
                             break;
                         case "display.visualizations.charting.chart":
                             name += ".Type";
@@ -287,11 +296,11 @@ namespace Splunk.Client
                     string[] names = name.Split(':', '.');
                     var dictionary = value;
                     string propertyName;
+                    dynamic propertyValue;
 
                     for (int i = 0; i < names.Length - 1; i++)
                     {
                         propertyName = NormalizePropertyName(names[i]);
-                        dynamic propertyValue;
 
                         if (dictionary.TryGetValue(propertyName, out propertyValue))
                         {
@@ -310,7 +319,8 @@ namespace Splunk.Client
                     }
 
                     propertyName = NormalizePropertyName(names[names.Length - 1]);
-                    dictionary.Add(propertyName, await ParsePropertyValueAsync(reader));
+                    propertyValue = await ParsePropertyValueAsync(reader);
+                    dictionary.Add(propertyName, propertyValue);
                 }
 
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:dict"))

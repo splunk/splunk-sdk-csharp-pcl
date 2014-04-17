@@ -111,7 +111,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Splunk\Client\Acl.cs" />
-    <Compile Include="Splunk\Client\AlertTrigger.cs" />
+    <Compile Include="Splunk\Client\AlertType.cs" />
+    <Compile Include="Splunk\Client\AlertComparator.cs" />
     <Compile Include="Splunk\Client\AlertTrack.cs" />
     <Compile Include="Splunk\Client\AlertSeverity.cs" />
     <Compile Include="Splunk\Client\ReceiverArgs.cs" />

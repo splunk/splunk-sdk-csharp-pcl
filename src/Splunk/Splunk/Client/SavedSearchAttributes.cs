@@ -74,6 +74,24 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
+        /// Gets or sets the e-mail addresses of the blind carbon copy (BCC) 
+        /// recipients for the e-mail action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        [DataMember(Name = "action.email.bcc", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string ActionEmailBcc
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the e-mail addresses of the carbon copy (CC) 
+        /// recipients for the e-mail action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        [DataMember(Name = "action.email.cc", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string ActionEmailCC
+        { get; set; }
+
+        /// <summary>
         /// Gets or sets the search command which is responsible for executing 
         /// the e-mail action for a <see cref="SavedSearch"/>.
         /// </summary>
@@ -265,6 +283,15 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
+        /// Gets or sets the e-mail addresses of the recipients for the e-mail 
+        /// action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        [DataMember(Name = "action.email.to", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string ActionEmailTo
+        { get; set; }
+
+        /// <summary>
         /// Gets or sets a value that indicates whether the e-mail action of a
         /// <see cref="SavedSearch"/> signifies a trackable alert.
         /// </summary>
@@ -342,6 +369,28 @@ namespace Splunk.Client
         [DataMember(Name = "action.populate_lookup.command", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string ActionPopulateLookupCommand
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the lookup table or lookup path to fill in
+        /// the lookup action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        [DataMember(Name = "action.populate_lookup.dest", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string ActionPopulateLookupDestination
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hostname used in the web link (URI) that is sent 
+        /// in the populate lookup action of a <see cref="SavedSearch"/>.
+        /// for a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
+        /// </remarks>
+        [DataMember(Name = "action.populate_lookup.hostname", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string ActionPopulateLookupHostname
         { get; set; }
 
         /// <summary>
@@ -469,7 +518,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the search command which is responsible for executing 
-        /// the RSS action for a <see cref="SavedSearch"/>.
+        /// the script action for a <see cref="SavedSearch"/>.
         /// </summary>
         /// <remarks>
         /// Generally the command is a template search pipeline which is 
@@ -484,8 +533,33 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
+        /// Gets or sets the file name of the script to invoke when the
+        /// script action of a <see cref="SavedSearch"/> is enabled.
+        /// </summary>
+        /// <remarks>
+        /// A value is required when the script action of a <see cref=
+        /// "SavedSearch"/> is enabled.
+        /// </remarks>
+        [DataMember(Name = "action.script.filename", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string ActionScriptFileName
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hostname used in the web link (URI) that is sent 
+        /// in the script script action for a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
+        /// </remarks>
+        [DataMember(Name = "action.script.hostname", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string ActionScriptHostname
+        { get; set; }
+
+        /// <summary>
         /// Gets or sets the global maximum number of search results to send 
-        /// when the RSS action for a <see cref="SavedSearch"/> is enabled.
+        /// when the script action for a <see cref="SavedSearch"/> is enabled.
         /// </summary>
         /// <remarks>
         /// The default value is <c>100</c>.
@@ -496,7 +570,7 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum period of time the RSS action for a 
+        /// Gets or sets the maximum period of time the script action for a 
         /// <see cref="SearchCommand"/> may execute before it is aborted.
         /// </summary>
         /// <remarks>
@@ -636,6 +710,28 @@ namespace Splunk.Client
         /// <remarks>
         /// 
         /// </remarks>
+        [DataMember(Name = "alert_comparator", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public AlertComparator AlertComparator
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
+        [DataMember(Name = "alert_condition", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string AlertCondition
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets
+        /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
         [DataMember(Name = "alert.digest_mode", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public bool? AlertDigestMode
@@ -668,6 +764,17 @@ namespace Splunk.Client
         /// Gets or sets
         /// </summary>
         /// <remarks>
+        /// 
+        /// </remarks>
+        [DataMember(Name = "alert_threshold", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string AlertThreshold
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets
+        /// </summary>
+        /// <remarks>
         /// The default value is <see cref="AlertTrack.Automatic"/>.
         /// </remarks>
         [DataMember(Name = "alert.track", EmitDefaultValue = false)]
@@ -679,11 +786,11 @@ namespace Splunk.Client
         /// Gets or sets
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="AlertTrigger.None"/>.
+        /// 
         /// </remarks>
-        [DataMember(Name = "alert.type", EmitDefaultValue = false)]
+        [DataMember(Name = "alert_type", EmitDefaultValue = false)]
         [DefaultValue(null)]
-        public AlertTrigger? AlertTrigger
+        public AlertType AlertType
         { get; set; }
 
         /// <summary>

@@ -19,44 +19,42 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
     /// </summary>
-    public enum AlertTrigger
+    public enum AlertComparator
     {
         /// <summary>
-        /// 
         /// </summary>
-        [EnumMember(Value = "")]
-        None,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "always")]
-        Always,
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "custom")]
-        Custom, 
+        [EnumMember(Value = "drops by")]
+        DropsBy,
         
         /// <summary>
-        /// 
         /// </summary>
-        [EnumMember(Value = "number of events")]
-        NumberOfEvents,
+        [EnumMember(Value = "drops by perc")]
+        DropsByPercent,
 
         /// <summary>
-        /// 
         /// </summary>
-        [EnumMember(Value = "number of hosts")]
-        NumberOfHosts,
+        [EnumMember(Value = "equal to")]
+        Equal,
 
         /// <summary>
-        /// 
         /// </summary>
-        [EnumMember(Value = "number of sources")]
-        NumberOfSources
+        [EnumMember(Value = "greater than")]
+        GreaterThan,
+
+        /// <summary>
+        /// </summary>
+        [EnumMember(Value = "less than")]
+        LessThan,
+
+        /// <summary>
+        /// </summary>
+        [EnumMember(Value = "rises by")]
+        RisesBy,
+
+        /// <summary>
+        /// </summary>
+        [EnumMember(Value = "rises by perc")]
+        RisesByPercent
     }
 }

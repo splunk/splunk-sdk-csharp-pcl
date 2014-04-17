@@ -329,9 +329,18 @@ namespace Splunk.Client.UnitTesting
             await service.LoginAsync("admin", "changeme");
 
             var indexName = string.Format("delete-me-{0:N}", Guid.NewGuid());
+            Index index;
 
-            var index = await service.CreateIndexAsync(indexName, new IndexArgs());
+            // Create
+
+            index = await service.CreateIndexAsync(indexName, new IndexArgs());
             Assert.Equal(true, index.EnableOnlineBucketRepair);
+
+            // Read
+
+            index = await service.GetIndexAsync(indexName);
+
+            // Update
 
             var indexAttributes = new IndexAttributes()
             {
@@ -340,6 +349,10 @@ namespace Splunk.Client.UnitTesting
 
             await index.UpdateAsync(indexAttributes);
             Assert.Equal(false, index.EnableOnlineBucketRepair);
+
+            // Delete
+
+            await service.RemoveIndexAsync(indexName);
         }
 
         #endregion

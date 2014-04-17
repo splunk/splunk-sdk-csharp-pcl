@@ -90,6 +90,11 @@ namespace Splunk.Client
             get { return this.Content.GetValue("ColdToFrozenScript", StringConverter.Instance); }
         }
 
+        public bool CompressRawData
+        {
+            get { return this.Content.GetValue("CompressRawData", BooleanConverter.Instance); }
+        }
+
         public int CurrentDBSizeMB
         {
             get { return this.Content.GetValue("CurrentDBSizeMB", Int32Converter.Instance); }
@@ -260,6 +265,33 @@ namespace Splunk.Client
             get { return this.Content.GetValue("MinTime", DateTimeConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the number of bloom filters that have been created for the 
+        /// current <see cref="Index"/>.
+        /// </summary>
+        public int NumBloomFilters
+        {
+            get { return this.Content.GetValue("NumBloomfilters", Int32Converter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the number of hot buckets that have been created for the 
+        /// current <see cref="Index"/>.
+        /// </summary>
+        public int NumHotBuckets
+        {
+            get { return this.Content.GetValue("NumHotBuckets", Int32Converter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the number of warm buckets that have been created for the 
+        /// current <see cref="Index"/>.
+        /// </summary>
+        public int NumWarmBuckets
+        {
+            get { return this.Content.GetValue("NumWarmBuckets", Int32Converter.Instance); }
+        }
+
         public int PartialServiceMetaPeriod
         {
             get { return this.Content.GetValue("PartialServiceMetaPeriod", Int32Converter.Instance); }
@@ -313,6 +345,18 @@ namespace Splunk.Client
         public string SummaryHomePathExpanded
         {
             get { return this.Content.GetValue("SummaryHomePathExpanded", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the list of indexes for the "index missing" warning banner 
+        /// messages are suppressed.
+        /// </summary>
+        /// <remarks>
+        /// This is a global setting, not a per index setting.
+        /// </remarks>
+        public string SuppressBannerList
+        {
+            get { return this.Content.GetValue("SuppressBannerList", StringConverter.Instance); }
         }
 
         public bool Sync

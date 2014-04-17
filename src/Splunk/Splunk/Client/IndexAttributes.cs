@@ -24,16 +24,18 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for starting a new search job.
+    /// Provides the arguments required for creating or updating the attributes
+    /// of a data <see cref="Index"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///     <a href="http://goo.gl/L6GlMC">REST API Reference: POST 
+    ///     data/indexes</a>
+    ///     <a href="http://goo.gl/r5rZ7i">REST API Reference: POST 
+    ///     data/indexes/{name}</a>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public class IndexAttributes : Args<IndexAttributes>
@@ -108,6 +110,20 @@ namespace Splunk.Client
         [DataMember(Name = "coldToFrozenScript", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string ColdToFrozenScript
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path to an archiving script for the frozen archive
+        /// of an index.
+        /// </summary>
+        /// <remarks>
+        /// If your script requires a program to run it (for example, python), 
+        /// specify the program followed by the path. The script must be in 
+        /// <c>$SPLUNK_HOME/bin</c> or one of its subdirectories.
+        /// </remarks>
+        [DataMember(Name = "compressRawData", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public bool? CompressRawData
         { get; set; }
 
         /// <summary>

@@ -19,9 +19,20 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
+    /// Used with a threshold value to trigger the alert actions of a <see 
+    /// cref="SavedSearch"/>.
     /// </summary>
     public enum AlertComparator
     {
+        /// <summary>
+        /// Specifies that there is no alert comparator.
+        /// </summary>
+        /// <remarks>
+        /// This value unsets the alert comparator for a <see cref="SavedSearch"/>.
+        /// </remarks>
+        [EnumMember(Value = "")]
+        None,
+
         /// <summary>
         /// </summary>
         [EnumMember(Value = "drops by")]

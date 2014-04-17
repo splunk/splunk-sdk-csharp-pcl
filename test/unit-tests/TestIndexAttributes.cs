@@ -25,7 +25,7 @@ namespace Splunk.Client
 
     public class TestIndexAttributes
     {
-        [Trait("class", "IndexAttributes")]
+        [Trait("class", "Args")]
         [Fact]
         void CanConstruct()
         {
@@ -71,7 +71,7 @@ namespace Splunk.Client
             Assert.Equal(0, ((IEnumerable<Argument>)attributes).Count());
         }
 
-        [Trait("class", "IndexAttributes")]
+        [Trait("class", "Args")]
         [Fact]
         void CanSetEveryValue()
         {

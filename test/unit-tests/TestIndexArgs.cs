@@ -25,7 +25,7 @@ namespace Splunk.Client
 
     public class TestIndexArgs
     {
-        [Trait("class", "IndexArgs")]
+        [Trait("class", "Args")]
         [Fact]
         void CanConstruct()
         {

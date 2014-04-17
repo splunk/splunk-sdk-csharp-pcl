@@ -361,7 +361,7 @@ namespace Splunk.Client.UnitTesting
             var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
             Assert.Equal(true, savedSearch.IsVisible);
 
-            // Retrieve
+            // Read
             
             savedSearch = await service.GetSavedSearchAsync(name);
             Assert.Equal(true, savedSearch.IsVisible);
@@ -382,6 +382,7 @@ namespace Splunk.Client.UnitTesting
             Assert.Equal("gblock@splunk.com, ineeman@splunk.com", savedSearch.Actions.Email.To);
 
             // Delete
+
             await savedSearch.RemoveAsync();
         }
 

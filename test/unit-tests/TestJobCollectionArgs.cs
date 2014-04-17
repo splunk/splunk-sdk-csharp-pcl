@@ -25,7 +25,7 @@ namespace Splunk.Client
 
     public class TestJobCollectionArgs
     {
-        [Trait("class", "JobCollectionArgs")]
+        [Trait("class", "Args")]
         [Fact]
         void CanConstruct()
         {
@@ -51,7 +51,7 @@ namespace Splunk.Client
             Assert.Equal(expectedArguments[0], args);
         }
 
-        [Trait("class", "JobCollectionArgs")]
+        [Trait("class", "Args")]
         [Fact]
         void CanSetEveryValue()
         {

@@ -664,9 +664,9 @@ namespace Splunk.Client
                 get { return this.GetValue("Threshold", StringConverter.Instance); }
             }
 
-            public bool Track
+            public AlertTrack Track
             {
-                get { return this.GetValue("Track", BooleanConverter.Instance); }
+                get { return this.GetValue("Track", EnumConverter<AlertTrack>.Instance); }
             }
 
             public AlertType Type

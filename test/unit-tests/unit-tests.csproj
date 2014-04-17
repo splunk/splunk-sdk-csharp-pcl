@@ -64,6 +64,7 @@
     <Compile Include="TestIndexArgs.cs" />
     <Compile Include="TestIndexCollectionArgs.cs" />
     <Compile Include="TestResourceName.cs" />
+    <Compile Include="TestSavedSearchAttributes.cs" />
     <Compile Include="TestSavedSearchCollectionArgs.cs" />
     <Compile Include="TestJobCollectionArgs.cs" />
     <Compile Include="TestJobArgs.cs" />

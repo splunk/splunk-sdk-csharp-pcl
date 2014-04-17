@@ -712,7 +712,7 @@ namespace Splunk.Client
         /// </remarks>
         [DataMember(Name = "alert_comparator", EmitDefaultValue = false)]
         [DefaultValue(null)]
-        public AlertComparator AlertComparator
+        public AlertComparator? AlertComparator
         { get; set; }
 
         /// <summary>
@@ -790,7 +790,7 @@ namespace Splunk.Client
         /// </remarks>
         [DataMember(Name = "alert_type", EmitDefaultValue = false)]
         [DefaultValue(null)]
-        public AlertType AlertType
+        public AlertType? AlertType
         { get; set; }
 
         /// <summary>

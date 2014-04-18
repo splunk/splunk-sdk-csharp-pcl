@@ -140,19 +140,10 @@ namespace Splunk.Client
 
         #region Request-related methods
 
-        protected internal override void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object atom)
+        protected internal override void Initialize(Context context, AtomEntry entry)
         {
-            var entry = atom as AtomEntry;
-
-            Debug.Assert(entry != null, "Expected non-null entry of type AtomEntry");
-
-            if (atom == null)
-            {
-                throw new ArgumentException("Expected non-null entry of type AtomEntry");
-            }
-
             this.data = new DataCache(entry);
-            base.Initialize(context, @namespace, new ResourceName(resourceName, entry.Title), null);
+            base.Initialize(context, entry);
         }
 
         public virtual async Task GetAsync()
@@ -163,7 +154,7 @@ namespace Splunk.Client
                 var feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
 
-                this.data = new DataCache(this.Context, this.Namespace, this.ResourceName, feed);
+                this.data = new DataCache(this.Context, feed);
             }
         }
 
@@ -216,7 +207,7 @@ namespace Splunk.Client
                 this.entities = new List<TEntity>();
             }
 
-            public DataCache(Context context, Namespace @namespace, ResourceName resourceName, AtomFeed feed)
+            public DataCache(Context context, AtomFeed feed)
             {
                 this.author = feed.Author;
                 this.id = feed.Id;
@@ -232,7 +223,7 @@ namespace Splunk.Client
                 {
                     TEntity entity = new TEntity();
 
-                    entity.Initialize(context, @namespace, resourceName, entry);
+                    entity.Initialize(context, entry);
                     entities.Add(entity);
                 }
 

@@ -36,6 +36,8 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
 
@@ -162,15 +164,53 @@ namespace Splunk.Client
             return this.ToString().CompareTo(other.ToString());
         }
 
-        protected internal virtual void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object atom)
+        protected internal virtual void Initialize(Context context, AtomEntry entry)
         {
-            Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
-            Contract.Requires<ArgumentNullException>(resourceName != null, "resourceName");
+            Contract.Requires<ArgumentNullException>(context != null);
+            Contract.Requires<ArgumentNullException>(entry != null);
 
             if (this.initialized)
             {
                 throw new InvalidOperationException(); // TODO: diagnostics
+            }
+
+            // Compute namespace and resource name from entry.Id
+
+            var path = entry.Id.AbsolutePath.Split('/');
+
+            if (path.Length < 3)
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            for (int i = 0; i < path.Length; i++)
+            {
+                path[i] = Uri.UnescapeDataString(path[i]);
+            }
+
+            Namespace @namespace;
+            ResourceName resourceName;
+
+            switch (path[1])
+            {
+                case "services":
+
+                    @namespace = Namespace.Default;
+                    resourceName = new ResourceName(path[2]);
+                    break;
+
+                case "servicesNS":
+
+                    if (path.Length < 5)
+                    {
+                        throw new InvalidDataException(); // TODO: Diagnostics
+                    }
+
+                    @namespace = new Namespace(user: path[2], app: path[3]);
+                    resourceName = new ResourceName(new ArraySegment<string>(path, 4, path.Length - 4));
+                    break;
+
+                default: throw new InvalidDataException(); // TODO: Diagnostics
             }
 
             this.Context = context;

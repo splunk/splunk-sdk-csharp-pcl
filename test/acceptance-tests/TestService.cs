@@ -151,50 +151,24 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Configuration")]
         [Fact]
-        public async Task CanManipulateConfiguration()
+        public async Task CanReadConfigurations()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
             await service.LoginAsync("admin", "changeme");
 
-            ConfigurationCollection configurations = null;
+            //// Read the entire configuration system
 
-            Assert.DoesNotThrow(() => configurations = service.GetConfigurationsAsync().Result);
-
-            // Read the entire configuration system
+            var configurations = await service.GetConfigurationsAsync();
 
             foreach (var configuration in configurations)
             {
-                configuration.GetAsync().Wait();
+                await configuration.GetAsync();
 
                 foreach (ConfigurationStanza stanza in configuration)
                 {
                     Assert.NotNull(stanza);
-                    stanza.GetAsync().Wait();
+                    await stanza.GetAsync();
                 }
-            }
-
-            // Get or create a custom configuration
-
-            // TODO: create an app and add a custom configuration to it, then delete the app
-            // Why? You can remove an app, including its configuration, but not a configuration
-
-            try
-            {
-                var configuration = await service.GetConfigurationAsync("custom");
-            }
-            catch (AggregateException e)
-            {
-                Assert.Equal(1, e.InnerExceptions.Count);
-
-                var requestException = e.InnerExceptions[0] as RequestException;
-
-                Assert.NotNull(requestException);
-                Assert.Equal(HttpStatusCode.NotFound, requestException.StatusCode);
-                Assert.NotNull(requestException.Details);
-
-                Configuration configuration;
-                Assert.DoesNotThrow(() => service.CreateConfigurationAsync("custom").Wait());
-                Assert.DoesNotThrow(() => configuration = service.GetConfigurationAsync("custom").Result);
             }
         }
 

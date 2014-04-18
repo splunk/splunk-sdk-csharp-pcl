@@ -268,52 +268,10 @@ namespace Splunk.Client
         /// </param>
         /// <param name="entry">
         /// </param>
-        protected internal override void Initialize(Context context, Namespace @namespace, ResourceName collection, 
-            object data)
+        protected internal override void Initialize(Context context, AtomEntry entry)
         {
-            AtomEntry entry = data as AtomEntry;
-
-            if (entry == null)
-            {
-                throw new ArgumentException("Expected non-null entry of type AtomEntry.");
-            }
-
-            // Compute namespace and resource name from entry.Id
-
-            var path = entry.Id.AbsolutePath.Split('/');
-            ResourceName resourceName;
-
-            if (path.Length < 3)
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
-            switch (path[1])
-            {
-                case "services":
-
-                    @namespace = Namespace.Default;
-                    resourceName = new ResourceName(path[2]);
-                    break;
-
-                case "servicesNS":
-
-                    if (path.Length < 5)
-                    {
-                        throw new InvalidDataException(); // TODO: Diagnostics
-                    }
-
-                    @namespace = new Namespace(user: path[2], app: path[3]);
-                    resourceName = new ResourceName(new ArraySegment<string>(path, 4, path.Length - 4));
-                    break;
-
-                default: throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
-            // Setup data cache
-
             this.data = new DataCache(entry);
-            base.Initialize(context, @namespace, resourceName, null);
+            base.Initialize(context, entry);
         }
 
         #endregion

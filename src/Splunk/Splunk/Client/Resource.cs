@@ -91,6 +91,14 @@ namespace Splunk.Client
         { get; internal set; }
 
         /// <summary>
+        /// Gets the name of the current <see cref="Resource&lt;TResource&gt;"/>.
+        /// </summary>
+        public string Name
+        {
+            get { return this.ResourceName.Title; }
+        }
+
+        /// <summary>
         /// Gets the namespace containing the current <see cref=
         /// "Resource&lt;TResource&gt;"/>.
         /// </summary>
@@ -154,7 +162,7 @@ namespace Splunk.Client
             return this.ToString().CompareTo(other.ToString());
         }
 
-        protected internal virtual void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object entry)
+        protected internal virtual void Initialize(Context context, Namespace @namespace, ResourceName resourceName, object atom)
         {
             Contract.Requires<ArgumentNullException>(context != null, "context");
             Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");

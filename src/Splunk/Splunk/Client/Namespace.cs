@@ -28,7 +28,7 @@ namespace Splunk.Client
     /// <summary>
     /// Specifies the user/app context for a resource
     /// </summary>
-    public class Namespace
+    public class Namespace : IComparable, IComparable<Namespace>, IEquatable<Namespace>
     {
         #region Constructors
 
@@ -82,6 +82,52 @@ namespace Splunk.Client
         #endregion
 
         #region Methods
+
+        public int CompareTo(object other)
+        {
+            return this.CompareTo(other as Namespace);
+        }
+
+        public int CompareTo(Namespace other)
+        {
+            if (other == null)
+            {
+                return 1;
+            }
+
+            if (object.ReferenceEquals(this, other))
+            {
+                return 0;
+            }
+
+            int difference = this.User.CompareTo(other.User);
+            return difference != 0 ? difference : this.App.CompareTo(other.App);
+        }
+
+        public override bool Equals(object other)
+        {
+            return this.Equals(other as Namespace);
+        }
+
+        public bool Equals(Namespace other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+            return object.ReferenceEquals(this, other) || (this.User == other.User && this.App == other.App);
+        }
+
+        public override int GetHashCode()
+        {
+            // TODO: Check this against the algorithm presented in Effective Java
+            int hash = 17;
+
+            hash = (hash * 23) + this.User.GetHashCode();
+            hash = (hash * 23) + this.App.GetHashCode();
+
+            return hash;
+        }
 
         /// <summary>
         /// Converts the value of the current <see cref="Namespace"/> to its

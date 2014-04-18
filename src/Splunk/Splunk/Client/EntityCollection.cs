@@ -152,7 +152,7 @@ namespace Splunk.Client
             }
 
             this.data = new DataCache(entry);
-            base.Initialize(context, @namespace, new ResourceName(resourceName, entry.Title), atom);
+            base.Initialize(context, @namespace, new ResourceName(resourceName, entry.Title), null);
         }
 
         public virtual async Task GetAsync()

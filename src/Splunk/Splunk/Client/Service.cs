@@ -273,7 +273,7 @@ namespace Splunk.Client
         /// "ConfigurationStanza"/> identified by <see cref="fileName"/> and
         /// <see cref="stanzaName"/>.
         /// </remarks>
-        public async Task<ConfigurationStanza> CreateConfigurationAsync(string fileName, string stanzaName)
+        public async Task<ConfigurationStanza> CreateConfigurationStanzaAsync(string fileName, string stanzaName)
         {
             var entity = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
             await entity.CreateAsync();

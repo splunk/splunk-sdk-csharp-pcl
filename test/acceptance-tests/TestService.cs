@@ -68,19 +68,12 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Applications")]
         [Fact]
-        public void CanGetApps()
+        public async Task CanGetApps()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<ApplicationCollection>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
-
-                var collection = await service.GetApplicationsAsync();
-                return collection;
-            };
-
-            var result = Dispatch().Result;
+            var collection = await service.GetApplicationsAsync();
         }
 
         #endregion
@@ -89,37 +82,71 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Configuration")]
         [Fact]
-        public void CanCreateConfiguration()
+        public async Task CanCrudConfiguration() // no delete operation is available
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<Configuration>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
+            var fileName = string.Format("delete-me-{0:N}", Guid.NewGuid());
 
-                await service.CreateConfigurationAsync("some_configuration");
-                var entity = await service.GetConfigurationAsync("some_configuration");
-                return entity;
-            };
+            //// Create
 
-            var result = Dispatch().Result;
+            var configuration = await service.CreateConfigurationAsync(fileName);
+
+            //// Read
+
+            configuration = await service.GetConfigurationAsync(fileName);
+
+            //// Update the default stanza through a ConfigurationStanza object
+
+            var defaultStanza = await configuration.UpdateStanzaAsync("default", new Argument("foo", "1"), new Argument("bar", "2"));
+            await defaultStanza.UpdateAsync(new Argument("bar", "3"), new Argument("foobar", "4"));
+            await defaultStanza.UpdateSettingAsync("foobar", "5");
+
+            await defaultStanza.GetAsync(); // because the rest api does not return settings unless you ask for them
+            Assert.Equal(3, defaultStanza.Count);
+            List<ConfigurationSetting> settings;
+            
+            settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
+            Assert.Equal(1, settings.Count);
+            Assert.Equal("1", settings[0].Value);
+
+            settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "bar").ToList();
+            Assert.Equal(1, settings.Count);
+            Assert.Equal("3", settings[0].Value);
+
+            settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foobar").ToList();
+            Assert.Equal(1, settings.Count);
+            Assert.Equal("5", settings[0].Value);
+
+            //// Create, read, update, and delete a stanza through the Service object
+
+            await service.CreateConfigurationStanzaAsync(fileName, "stanza");
+
+            await service.UpdateConfigurationSettingsAsync(fileName, "stanza", new Argument("foo", "1"), new Argument("bar", "2"));
+            await service.UpdateConfigurationSettingAsync(fileName, "stanza", "bar", "3");
+
+            var stanza = await service.GetConfigurationStanzaAsync(fileName, "stanza");
+
+            settings = stanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
+            Assert.Equal(1, settings.Count);
+            Assert.Equal("1", settings[0].Value);
+
+            settings = stanza.Select(setting => setting).Where(setting => setting.Name == "bar").ToList();
+            Assert.Equal(1, settings.Count);
+            Assert.Equal("3", settings[0].Value);
+
+            await service.RemoveConfigurationStanzaAsync(fileName, "stanza");
         }
 
         [Trait("class", "Service: Configuration")]
         [Fact]
-        public void CanGetConfigurations()
+        public async Task CanGetConfigurations()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-
-            Func<Task<ConfigurationCollection>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
-
-                var collection = await service.GetConfigurationsAsync();
-                return collection;
-            };
-
-            var result = Dispatch().Result;
+            await service.LoginAsync("admin", "changeme");
+            
+            var collection = await service.GetConfigurationsAsync();
         }
 
         [Trait("class", "Service: Configuration")]
@@ -419,9 +446,41 @@ namespace Splunk.Client.UnitTesting
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
             await service.LoginAsync("admin", "changeme");
 
-            var entity = await service.GetSavedSearchHistoryAsync("Errors in the last 24 hours");
+            var attributes = new SavedSearchAttributes() { Search = "search index=_internal * earliest=-1m" };
+            var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+            var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
 
-            // TODO: Access each and every property of the saved search
+            var jobHistory = await savedSearch.GetHistoryAsync();
+            Assert.Equal(0, jobHistory.Count);
+
+            Job job1 = await savedSearch.DispatchAsync();
+
+            jobHistory = await savedSearch.GetHistoryAsync();
+            Assert.Equal(1, jobHistory.Count);
+            Assert.Equal(job1.Id, jobHistory[0].Id);
+            Assert.Equal(job1.Name, jobHistory[0].Name);
+            Assert.Equal(job1.Namespace, jobHistory[0].Namespace);
+            Assert.Equal(job1.ResourceName, jobHistory[0].ResourceName);
+
+            Job job2 = await savedSearch.DispatchAsync();
+
+            jobHistory = await savedSearch.GetHistoryAsync();
+            Assert.Equal(2, jobHistory.Count);
+            Assert.Equal(1, jobHistory.Select(job => job).Where(job => job.Id.Equals(job1.Id)).Count());
+            Assert.Equal(1, jobHistory.Select(job => job).Where(job => job.Id.Equals(job2.Id)).Count());
+
+            await job1.CancelAsync();
+
+            jobHistory = await savedSearch.GetHistoryAsync();
+            Assert.Equal(1, jobHistory.Count);
+            Assert.Equal(job2.Id, jobHistory[0].Id);
+
+            await job2.CancelAsync();
+
+            jobHistory = await savedSearch.GetHistoryAsync();
+            Assert.Equal(0, jobHistory.Count);
+
+            await savedSearch.RemoveAsync();
         }
 
         [Trait("class", "Service: Saved Searches")]
@@ -463,9 +522,9 @@ namespace Splunk.Client.UnitTesting
 
             job2 = await service.GetJobAsync(job1.ResourceName.Title);
             Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
-            Assert.Equal(job1.Title, job1.ResourceName.Title);
-            Assert.Equal(job1.Title, job2.Title);
-            Assert.Equal(job1.Sid, job1.Title);
+            Assert.Equal(job1.Name, job1.ResourceName.Title);
+            Assert.Equal(job1.Name, job2.Name);
+            Assert.Equal(job1.Sid, job1.Name);
             Assert.Equal(job1.Sid, job2.Sid);
             Assert.Equal(job1.Id, job2.Id);
 
@@ -510,7 +569,7 @@ namespace Splunk.Client.UnitTesting
             Assert.NotNull(job);
             var results = await job.GetSearchResultsAsync();
             Assert.NotNull(results);
-            var records = new List<Splunk.Client.Result>(results);
+            var records = new List<Result>(results);
             Assert.Equal(10, records.Count);
         }
 
@@ -532,21 +591,13 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public void CanStartSearchOneshot()
+        public async Task CanStartSearchOneshot()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            await service.LoginAsync("admin", "changeme");
 
-            Func<Task<IEnumerable<Splunk.Client.Result>>> Dispatch = async () =>
-            {
-                await service.LoginAsync("admin", "changeme");
-
-                SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
-                var records = new List<Splunk.Client.Result>(searchResults);
-
-                return records;
-            };
-
-            var result = Dispatch().Result;
+            SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
+            var records = new List<Splunk.Client.Result>(searchResults);
         }
 
         #endregion
@@ -554,12 +605,11 @@ namespace Splunk.Client.UnitTesting
         #region System
 
         [Trait("class", "Service: System")]
-
         [Fact]
-        public void CanGetServerInfo()
+        public async Task CanGetServerInfo()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            var serverInfo = service.Server.GetInfoAsync().Result;
+            var serverInfo = await service.Server.GetInfoAsync();
 
             Acl acl = serverInfo.Eai.Acl;
             Permissions permissions = acl.Permissions;
@@ -582,6 +632,7 @@ namespace Splunk.Client.UnitTesting
             Version version = serverInfo.Version;
         }
 
+#if false
         [Trait("class", "Service: Server")]
         [Fact]
         public void CanRestartServer()
@@ -590,6 +641,7 @@ namespace Splunk.Client.UnitTesting
             service.LoginAsync("admin", "changeme").Wait();
             service.Server.RestartAsync().Wait();
         }
+#endif
 
         #endregion
 

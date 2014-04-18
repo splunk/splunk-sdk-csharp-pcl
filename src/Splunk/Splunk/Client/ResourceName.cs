@@ -40,7 +40,7 @@ namespace Splunk.Client
             : this(parts.AsEnumerable<string>())
         { }
 
-        ResourceName(IEnumerable<string> parts)
+        public ResourceName(IEnumerable<string> parts)
         {
             this.parts = parts.ToArray();
         }

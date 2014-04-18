@@ -68,10 +68,12 @@ namespace Splunk.Client
             {
                 return 1;
             }
+
             if (object.ReferenceEquals(this, other))
             {
                 return 0;
             }
+            
             int difference = this.Type - other.Type;
             return difference != 0 ? difference : this.Text.CompareTo(other.Text);
         }
@@ -87,7 +89,7 @@ namespace Splunk.Client
             {
                 return false;
             }
-            return object.ReferenceEquals(this, other) || (this.Type == other.Type && other.Text == other.Text);
+            return object.ReferenceEquals(this, other) || (this.Type == other.Type && this.Text == other.Text);
         }
 
         public override int GetHashCode()

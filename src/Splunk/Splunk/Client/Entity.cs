@@ -127,11 +127,6 @@ namespace Splunk.Client
             get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; }
         }
 
-        public virtual string Title
-        {
-            get { return this.data.Entry == null ? null : this.data.Entry.Title; }
-        }
-
         public DateTime Updated
         { 
             get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; } 
@@ -283,33 +278,41 @@ namespace Splunk.Client
                 throw new ArgumentException("Expected non-null entry of type AtomEntry.");
             }
 
-            this.data = new DataCache(entry); // must be set before entity.Title
-            dynamic content = entry.Content;
+            // Compute namespace and resource name from entry.Id
 
-            if ((content as ExpandoObject) != null)
+            var path = entry.Id.AbsolutePath.Split('/');
+            ResourceName resourceName;
+
+            if (path.Length < 3)
             {
-                dynamic acl;
-
-                try
-                {
-                    acl = content.Eai.Acl;
-                }
-                catch (RuntimeBinderException e)
-                {
-                    throw new InvalidDataException("", e); // TODO: Diagnostics
-                }
-
-                try
-                {
-                    @namespace = new Namespace(acl.Owner, acl.App);
-                }
-                catch (ArgumentException e)
-                {
-                    throw new InvalidDataException("", e); // TODO: Diagnostics
-                }
+                throw new InvalidDataException(); // TODO: Diagnostics
             }
 
-            var resourceName = new ResourceName(collection, this.Title);
+            switch (path[1])
+            {
+                case "services":
+
+                    @namespace = Namespace.Default;
+                    resourceName = new ResourceName(path[2]);
+                    break;
+
+                case "servicesNS":
+
+                    if (path.Length < 5)
+                    {
+                        throw new InvalidDataException(); // TODO: Diagnostics
+                    }
+
+                    @namespace = new Namespace(user: path[2], app: path[3]);
+                    resourceName = new ResourceName(new ArraySegment<string>(path, 4, path.Length - 4));
+                    break;
+
+                default: throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            // Setup data cache
+
+            this.data = new DataCache(entry);
             base.Initialize(context, @namespace, resourceName, null);
         }
 

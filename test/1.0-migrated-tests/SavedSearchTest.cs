@@ -72,7 +72,7 @@ namespace Splunk.Client.UnitTesting
 
                 // Resource properties
                 //dummyString = savedSearch.Name;
-                dummyString = savedSearch.Title;
+                dummyString = savedSearch.Name;
                 //dummyString = savedSearch.Path;
                 // SavedSearch properties get
                 //dummyString = savedSearch.Actions.Email.AuthPassword;
@@ -185,13 +185,13 @@ namespace Splunk.Client.UnitTesting
             SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
 
             // Ensure test starts in a known good state
-            if (savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0)
+            if (savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0)
             {
                 service.RemoveSavedSearchAsync(savedSearchTitle).Wait();
                 savedSearches.GetAsync().Wait();
             }
 
-            Assert.IsFalse(savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0, this.assertRoot + "#1");
+            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#1");
 
             SavedSearch savedSearch;
             string search = "search index=sdk-tests * earliest=-1m";
@@ -201,11 +201,11 @@ namespace Splunk.Client.UnitTesting
             SavedSearchAttributes attrs = new SavedSearchAttributes() { Search = search };
             service.CreateSavedSearchAsync(savedSearchTitle, attrs).Wait();
             savedSearches.GetAsync().Wait();
-            Assert.IsTrue(savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0, this.assertRoot + "#2");
+            Assert.IsTrue(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#2");
 
             // Read the saved search           
             //savedSearch = savedSearches.Get("sdk-test1");           
-            savedSearch = savedSearches.Where(a => a.Title == savedSearchTitle).SingleOrDefault();
+            savedSearch = savedSearches.Where(a => a.Name == savedSearchTitle).SingleOrDefault();
             Assert.IsTrue(savedSearch.IsVisible, this.assertRoot + "#3");
 
             // CONSIDER: Test some additinal default property values.
@@ -220,7 +220,7 @@ namespace Splunk.Client.UnitTesting
             //savedSearches.("sdk-test1");
             service.RemoveSavedSearchAsync(savedSearchTitle).Wait();
             savedSearches.GetAsync().Wait();
-            Assert.IsFalse(savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0, this.assertRoot + "#5");
+            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#5");
 
             // Create a saved search with some additional arguments
             //savedSearch = savedSearches.Create("sdk-test1", search, new Args("is_visible", false));
@@ -361,7 +361,7 @@ namespace Splunk.Client.UnitTesting
             //savedSearches.Refresh();
             service.RemoveSavedSearchAsync(savedSearchTitle).Wait();
             savedSearches.GetAsync().Wait();
-            Assert.IsFalse(savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0, this.assertRoot + "#66");
+            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#66");
         }
 
         /// <summary>
@@ -375,13 +375,13 @@ namespace Splunk.Client.UnitTesting
             SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
 
             // Ensure test starts in a known good state
-            if (savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0)
+            if (savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0)
             {
                 service.RemoveSavedSearchAsync(savedSearchTitle).Wait();
                 savedSearches.GetAsync().Wait();
             }
 
-            Assert.IsFalse(savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0, this.assertRoot + "#67");
+            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#67");
 
             // Create a saved search
             Job job;
@@ -471,7 +471,7 @@ namespace Splunk.Client.UnitTesting
 
             // Delete the saved search
             service.RemoveSavedSearchAsync(savedSearchTitle).Wait();            
-            Assert.IsFalse(savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0, this.assertRoot + "#68");
+            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#68");
         }
 
         /// <summary>
@@ -485,12 +485,12 @@ namespace Splunk.Client.UnitTesting
             SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
 
             // Ensure test starts in a known good state
-            if (savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0)
+            if (savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0)
             {
                 service.RemoveSavedSearchAsync(savedSearchTitle).Wait();                
             }
 
-            Assert.IsFalse(savedSearches.Where(a => a.Title == savedSearchTitle).Count() > 0, this.assertRoot + "#69");
+            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#69");
 
             string search = "search index=sdk-tests * earliest=-1m";
 
@@ -498,7 +498,7 @@ namespace Splunk.Client.UnitTesting
             SavedSearch savedSearch = service.CreateSavedSearchAsync(savedSearchTitle, new SavedSearchAttributes() { Search = search }).Result;
       
             // Clear the history - even though we have a newly create saved search
-            // its possible there was a previous saved search with the same name
+            // it's possible there was a previous saved search with the same name
             // that had a matching history.
             JobCollection history = savedSearch.GetHistoryAsync().Result;
             foreach (Job job in history)

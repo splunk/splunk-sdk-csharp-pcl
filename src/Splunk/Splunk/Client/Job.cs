@@ -93,11 +93,6 @@ namespace Splunk.Client
             get { return this.Content.GetValue("DiskUsage", Int64Converter.Instance); } // sample value: "86016"
         }
 
-        public override string Title
-        {
-            get { return this.Content.GetValue("Sid", StringConverter.Instance); }
-        }
-
         /// <summary>
         /// Gets a value that indicates the current <see cref="Job"/> dispatch
         /// state.
@@ -237,6 +232,11 @@ namespace Splunk.Client
         public string Keywords
         {
             get { return this.Content.GetValue("Keywords", StringConverter.Instance); } // sample value: "index::_internal"
+        }
+
+        public DateTime LatestTime
+        {
+            get { return this.Content.GetValue("LatestTime", DateTimeConverter.Instance); }
         }
 
         // Messages	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject

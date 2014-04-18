@@ -101,7 +101,7 @@ namespace Splunk.Client.UnitTesting
             dummyBool = job.IsSaved;
             dummyBool = job.IsSavedSearch;
             dummyBool = job.IsZombie;
-            Assert.AreEqual(job.Title, job.Sid, this.assertRoot + "#1");
+            Assert.AreEqual(job.Name, job.Sid, this.assertRoot + "#1");
         }
 
         ///// <summary>

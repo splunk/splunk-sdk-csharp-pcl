@@ -239,10 +239,10 @@ namespace Splunk.Client
         /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
         /// stanza identified by <see cref="stanzaName"/>.
         /// </remarks>
-        public async Task<ConfigurationStanza> UpdateStanzaAsync(string stanzaName)
+        public async Task<ConfigurationStanza> UpdateStanzaAsync(string stanzaName, params Argument[] settings)
         {
             var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
-            await resource.UpdateAsync();
+            await resource.UpdateAsync(settings);
             return resource;
         }
 

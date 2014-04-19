@@ -48,6 +48,7 @@ namespace Splunk.Client
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
+    using System.Xml;
 
     /// <summary>
     /// The <see cref="SearchResultsReader"/> class represents a streaming XML 
@@ -92,7 +93,9 @@ namespace Splunk.Client
         /// Release unmanaged resources.
         /// </summary>
         public void Dispose()
-        { this.Dispose(true); }
+        { 
+            this.Dispose(true); 
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through <see cref="SearchResults"/>
@@ -106,7 +109,8 @@ namespace Splunk.Client
         {
             do
             {
-                yield return SearchResults.CreateAsync(this.response, leaveOpen: true).Result;
+                var results = SearchResults.CreateAsync(this.response, leaveOpen: true).Result;
+                yield return results;
             }
             while (this.response.XmlReader.ReadToFollowingAsync("results").Result);
         }
@@ -120,7 +124,9 @@ namespace Splunk.Client
         /// cref="SearchResultsReader"/>.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
-        { return this.GetEnumerator(); }
+        { 
+            return this.GetEnumerator(); 
+        }
 
         /// <summary>
         /// Pushes <see cref="SearchResults"/> to subscribers and then completes.

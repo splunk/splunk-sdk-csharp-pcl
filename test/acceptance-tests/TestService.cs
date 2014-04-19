@@ -107,7 +107,7 @@ namespace Splunk.Client.UnitTesting
             await defaultStanza.GetAsync(); // because the rest api does not return settings unless you ask for them
             Assert.Equal(3, defaultStanza.Count);
             List<ConfigurationSetting> settings;
-            
+
             settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
             Assert.Equal(1, settings.Count);
             Assert.Equal("1", settings[0].Value);
@@ -146,7 +146,7 @@ namespace Splunk.Client.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
             await service.LoginAsync("admin", "changeme");
-            
+
             var collection = await service.GetConfigurationsAsync();
         }
 
@@ -369,7 +369,7 @@ namespace Splunk.Client.UnitTesting
             await service.LoginAsync("admin", "changeme");
 
             // Create
-            
+
             var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
             var attributes = new SavedSearchAttributes() { Search = "search index=_internal | head 1000" };
 
@@ -377,7 +377,7 @@ namespace Splunk.Client.UnitTesting
             Assert.Equal(true, savedSearch.IsVisible);
 
             // Read
-            
+
             savedSearch = await service.GetSavedSearchAsync(name);
             Assert.Equal(true, savedSearch.IsVisible);
 
@@ -512,7 +512,7 @@ namespace Splunk.Client.UnitTesting
         {
             var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "admin", app: "search"));
             await service.LoginAsync("admin", "changeme");
-            
+
             var jobs = new Job[]
             {
                 await service.StartJobAsync("search index=_internal | head 1000"),
@@ -542,8 +542,29 @@ namespace Splunk.Client.UnitTesting
 
             var job = await service.StartJobAsync("search index=_internal | head 10");
             Assert.NotNull(job);
+
             var results = await job.GetSearchResultsAsync();
-            Assert.NotNull(results);
+
+            Assert.Equal<IEnumerable<string>>(new List<string> 
+                { 
+                    "_bkt",
+                    "_cd",
+                    "_indextime",
+                    "_raw",
+                    "_serial",
+                    "_si",
+                    "_sourcetype",
+                    "_subsecond",
+                    "_time",
+                    "host",
+                    "index",
+                    "linecount",
+                    "source",
+                    "sourcetype",
+                    "splunk_server",
+                 },
+                 results.FieldNames);
+
             var records = new List<Result>(results);
             Assert.Equal(10, records.Count);
         }
@@ -558,10 +579,32 @@ namespace Splunk.Client.UnitTesting
             SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
             var records = new List<Splunk.Client.Result>();
 
-            foreach (var searchResults in reader)
+            foreach (var results in reader)
             {
-                records.AddRange(searchResults);
+                Assert.Equal<IEnumerable<string>>(new List<string> 
+                    { 
+                        "_bkt",
+                        "_cd",
+                        "_indextime",
+                        "_raw",
+                        "_serial",
+                        "_si",
+                        "_sourcetype",
+                        "_subsecond",
+                        "_time",
+                        "host",
+                        "index",
+                        "linecount",
+                        "source",
+                        "sourcetype",
+                        "splunk_server",
+                    },
+                    results.FieldNames);
+
+                records.AddRange(results);
             }
+
+            Assert.Equal(1000, records.Count);
         }
 
         [Trait("class", "Service: Search Jobs")]
@@ -627,7 +670,7 @@ namespace Splunk.Client.UnitTesting
 
             var receiver = service.Receiver;
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var result = await receiver.SendAsync(string.Format("{0:D6} {1} Hello world!", i, DateTime.Now));
             }
@@ -635,13 +678,13 @@ namespace Splunk.Client.UnitTesting
             using (var eventStream = new MemoryStream())
             {
                 var writer = new StreamWriter(eventStream);
-                var task = receiver.SendAsync(eventStream);
 
-                for (int i = 0; i < 10000; i++)
+                for (int i = 0; i < 10; i++)
                 {
-                    await writer.WriteLineAsync(string.Format("{0:D6} {1} Goodbye world!", i, DateTime.Now));
+                    writer.Write(string.Format("{0:D6} {1} Goodbye world!\r\n", i, DateTime.Now));
                 }
 
+                var task = receiver.SendAsync(eventStream);
                 task.Wait();
             }
         }

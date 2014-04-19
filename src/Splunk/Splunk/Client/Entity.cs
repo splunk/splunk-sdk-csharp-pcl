@@ -168,7 +168,7 @@ namespace Splunk.Client
         /// </summary>
         public virtual async Task GetAsync()
         {
-            // TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class
+            //// TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class
 
             // FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
             // into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
@@ -182,10 +182,12 @@ namespace Splunk.Client
             {
                 try
                 {
-                    // Guarantee: unique result because entities have specific namespaces
+                    //// Guarantee: unique result because entities have specific namespaces
 
                     using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
                     {
+                        //// TODO: Use Response.EnsureStatusCode. Is it true that gets always return HttpStatusCode.OK?
+
                         if (response.Message.StatusCode == HttpStatusCode.NoContent)
                         {
                             throw new RequestException(response.Message, new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", this.Namespace, this.ResourceName)));
@@ -237,7 +239,7 @@ namespace Splunk.Client
                             await entry.ReadXmlAsync(reader);
                         }
 
-                        // TODO: Check entry type (?)
+                        //// TODO: Check entry type (?)
                         this.data = new DataCache(entry);
                     }
 

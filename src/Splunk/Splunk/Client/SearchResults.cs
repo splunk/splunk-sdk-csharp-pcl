@@ -88,44 +88,83 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Creates a new <see cref="SearchResults"/> instance asyncrhonously
-        /// using the specified <see cref="XmlReader"/> object and optionally 
+        /// Asynchronously creates a new <see cref="SearchResults"/> instance
+        /// using the specified <see cref="Response"/> object and optionally 
         /// leaves the reader open.
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="leaveOpen"><c>true</c> to leave the reader open after 
+        /// <param name="response">
+        /// An object from which the search results are read. 
+        /// </param>
+        /// <param name="leaveOpen">
+        /// <c>true</c> to leave the <see cref="response"/> object open after 
         /// the <see cref="SearchResults"/> object is disposed; otherwise, 
-        /// <c>false</c>.</param>
-        /// <returns>A <see cref="SearchResults"/> object for streaming Splunk 
-        /// search event records.</returns>
+        /// <c>false</c>.
+        /// </param>
+        /// <returns>
+        /// A <see cref="SearchResults"/> object.
+        /// </returns>
         internal static async Task<SearchResults> CreateAsync(Response response, bool leaveOpen)
         {
-            response.XmlReader.MoveToElement(); // Ensures we're at an element, not an attribute
+            var reader = response.XmlReader;
 
-            if (!response.XmlReader.IsStartElement("results"))
+            reader.MoveToElement(); // Ensures we're at an element, not an attribute
+
+            if (!reader.IsStartElement("results"))
             {
-                if (!await response.XmlReader.ReadToFollowingAsync("results"))
+                if (!await reader.ReadToFollowingAsync("results"))
                 {
                     throw new InvalidDataException();  // TODO: diagnostics
                 }
             }
 
-            var isPreview = XmlConvert.ToBoolean(response.XmlReader["preview"]);
+            var arePreview = XmlConvert.ToBoolean(reader["preview"]);
+
+            foreach (var name in new string[] { "meta", "fieldOrder" })
+            {
+                await reader.ReadAsync();
+
+                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+            }
+
             var fieldNames = new List<string>();
 
-            if (await response.XmlReader.ReadToDescendantAsync("meta"))
+            await reader.ReadEachDescendantAsync("field", async () => 
             {
-                if (await response.XmlReader.ReadToDescendantAsync("fieldOrder"))
+                await reader.ReadAsync();
+                var fieldName = await reader.ReadContentAsStringAsync();
+                fieldNames.Add(fieldName);
+            });
+
+            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "fieldOrder"))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            await reader.ReadAsync();
+
+            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "meta"))
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            await reader.ReadAsync();
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "messages")
+            {
+                reader.ReadEachDescendantAsync("msg", () => { return Task.FromResult(true); }).Wait();
+
+                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "messages"))
                 {
-                    await response.XmlReader.ReadEachDescendantAsync("field", async () => fieldNames.Add(await response.XmlReader.ReadElementContentAsStringAsync()));
-                    await response.XmlReader.SkipAsync();
+                    throw new InvalidDataException(); // TODO: Diagnostics
                 }
-                await response.XmlReader.SkipAsync();
             }
 
             return new SearchResults(response, leaveOpen)
             {
-                ArePreview = isPreview,
+                ArePreview = arePreview,
                 FieldNames = fieldNames
             };
         }
@@ -180,6 +219,7 @@ namespace Splunk.Client
         {
             return this.GetEnumerator();
         }
+
         /// <summary>
         /// Pushes <see cref="Result"/> objects to observers and then completes.
         /// </summary>
@@ -212,60 +252,35 @@ namespace Splunk.Client
         bool enumerated;
 
         /// <summary>
-        /// Reads the next <see cref="Result"/> in the <see cref=
+        /// Reads the next <see cref="Result"/> in the current <see cref=
         /// "SearchResults"/> stream.
         /// </summary>
         /// <returns>
         /// A <see cref="Result"/> if the next result was read successfully; 
-        /// <code>null</code> if there are no more records to read.
+        /// <c>null</c> if there are no more records to read.
         /// </returns>
         async Task<Result> ReadResultAsync()
         {
-            if (!await this.response.XmlReader.ReadToNextSiblingAsync("result"))
+            var reader = this.response.XmlReader;
+            reader.MoveToElement();
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
             {
-                return null;
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "results")
+                {
+                    return null;
+                }
+
+                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
             }
 
             var result = new Result();
-
-            await this.response.XmlReader.ReadEachDescendantAsync("field", async () =>
-            {
-                var key = this.response.XmlReader["k"];
-
-                if (key == null)
-                {
-                    throw new XmlException("'field' attribute 'k' not found");
-                }
-
-                var fieldDepth = this.response.XmlReader.Depth;
-                var values = new List<string>();
-
-                while (await this.response.XmlReader.ReadAsync())
-                {
-                    if (this.response.XmlReader.Depth == fieldDepth)
-                    {
-                        break;
-                    }
-
-                    Debug.Assert(this.response.XmlReader.Depth > fieldDepth, "The loop should have exited earlier.");
-
-                    if (this.response.XmlReader.IsStartElement("value"))
-                    {
-                        if (await this.response.XmlReader.ReadToDescendantAsync("text"))
-                        {
-                            values.Add(await this.response.XmlReader.ReadElementContentAsStringAsync());
-                        }
-                    }
-                    else if (this.response.XmlReader.IsStartElement("v"))
-                    {
-                        string value = await this.response.XmlReader.ReadOuterXmlAsync();
-                        result.SegmentedRaw = value;
-                        values.Add(value);
-                    }
-                }
-
-                result.Add(key, new Field(values.ToArray()));
-            });
+            await result.ReadXmlAsync(reader);
 
             return result;
         }

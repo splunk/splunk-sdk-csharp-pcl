@@ -890,41 +890,36 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Creates a search <see cref="Job"/>.
+        /// 
         /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
+        /// <param name="args">
+        /// </param>
+        /// <returns>
+        /// An object for reading a stream of <see cref="SearchResults"/>.
+        /// </returns>
         /// <remarks>
-        /// See the <a href="http://goo.gl/vJvIXv">GET search/jobs/export</a> REST API Reference.
+        /// This method uses the  
         /// </remarks>
         public async Task<SearchResultsReader> SearchExportAsync(SearchExportArgs args)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
-            Response response = null;
 
+            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, args);
             try
             {
-                response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, args);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                //// DSN: The search results reader is a stream of SearchResultSet objects. TODO: Explanation...
 
-                // FJR: We should probably return a stream here and keep the parsers separate. That lets someone
-                // else plug in and use their own parser if they really want to. We don't particularly support the
-                // scenario, but it doesn't block the user.
-
-                // DSN: The search results reader is a stream of SearchResultSet objects. TODO: Explanation...
+                //// FJR: We should probably return a stream here and keep the parsers separate. That lets someone
+                //// else plug in and use their own parser if they really want to. We don't particularly support the
+                //// scenario, but it doesn't block the user.
 
                 return await SearchResultsReader.CreateAsync(response); // Transfers response ownership
             }
             catch
             {
-                if (response != null)
-                {
-                    response.Dispose();
-                }
+                response.Dispose();
                 throw;
             }
         }

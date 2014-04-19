@@ -551,11 +551,18 @@ namespace Splunk.Client
         async Task<SearchResults> GetSearchResultsAsync(string endpoint, IEnumerable<Argument> args)
         {
             var resourceName = new ResourceName(this.ResourceName, endpoint);
-
             var response = await this.Context.GetAsync(this.Namespace, resourceName, args);
-            var searchResults = await SearchResults.CreateAsync(response, leaveOpen: false);
 
-            return searchResults;
+            try
+            {
+                var searchResults = await SearchResults.CreateAsync(response, leaveOpen: false);
+                return searchResults;
+            }
+            catch 
+            {
+                response.Dispose();
+                throw;
+            }
         }
 
         async Task PostControlCommandAsync(IEnumerable<Argument> args)

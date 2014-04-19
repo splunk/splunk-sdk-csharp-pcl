@@ -25,6 +25,8 @@ namespace Splunk.Client
     using System.Threading.Tasks;
     using System.Xml;
 
+    //// TODO: Eliminate unused extensions and justify the remainder
+
     internal static class XmlReaderExtensions
     {
         public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<Task> task)
@@ -135,7 +137,7 @@ namespace Splunk.Client
 
             do
             {
-                if (! await reader.SkipSubtree())
+                if (! await reader.SkipSubtreeAsync())
                 {
                     break;
                 }
@@ -151,7 +153,7 @@ namespace Splunk.Client
             return false;
         }
 
-        static async Task<bool> SkipSubtree(this XmlReader reader)
+        static async Task<bool> SkipSubtreeAsync(this XmlReader reader)
         {
             reader.MoveToElement(); // the element we're moving to is guaranteed to be accessible so no need for async
 

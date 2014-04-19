@@ -51,35 +51,35 @@ namespace Splunk.Client
         /// The value to populate in the host field for events from this data input.
         /// </summary>
         [DataMember(Name = "host", EmitDefaultValue = false)]
-        public string host
+        public string Host
         { get; set; }
 
         /// <summary>
         /// A regular expression used to extract the host value from each event.
         /// </summary>
         [DataMember(Name = "host_regex", EmitDefaultValue = false)]
-        public string host_regex
+        public string HostRegex
         { get; set; }
 
         /// <summary>
         /// default	 The index to send events from this input to.
         /// </summary>
         [DataMember(Name = "index", EmitDefaultValue = false)]
-        public string index
+        public string Index
         { get; set; }
 
         /// <summary>
         /// The source value to fill in the metadata for this input's events.
         /// </summary>
         [DataMember(Name = "source", EmitDefaultValue = false)]
-        public string source
+        public string Source
         { get; set; }
 
         /// <summary>
         /// The sourcetype to apply to events from this input.
         /// </summary>
         [DataMember(Name = "sourcetype", EmitDefaultValue = false)]
-        public string sourcetype
+        public string SourceType
         { get; set; }
 
         #endregion

@@ -67,7 +67,7 @@ namespace Splunk.Client
             {
                 content.Headers.Add("x-splunk-input-mode", "streaming");
 
-                using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, content, args))
+                using (var response = await this.Context.PostAsync(this.Namespace, StreamReceiver, content, args))
                 {
                     await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 }
@@ -95,16 +95,23 @@ namespace Splunk.Client
         {
             using (var content = new StringContent(eventText))
             {
-                using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, content, args))
+                using (var response = await this.Context.PostAsync(this.Namespace, SimpleReceiver, content, args))
                 {
                     await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                     var reader = response.XmlReader;
+
+                    await reader.ReadAsync();
+
+                    if (reader.NodeType != XmlNodeType.XmlDeclaration)
+                    {
+                        throw new InvalidDataException(); // TODO: diagnostics
+                    }
 
                     foreach (var name in new string[] { "response", "results", "result" })
                     {
                         await reader.ReadAsync();
 
-                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "results"))
+                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
                         {
                             throw new InvalidDataException(); // TODO: diagnostics
                         }
@@ -115,7 +122,7 @@ namespace Splunk.Client
 
                     foreach (var name in new string[] { "result", "results", "response" })
                     {
-                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "results"))
+                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
                         {
                             throw new InvalidDataException(); // TODO: diagnostics
                         }
@@ -132,6 +139,9 @@ namespace Splunk.Client
         #region Privates/internals
 
         internal static readonly ResourceName ClassResourceName = new ResourceName("receivers");
+
+        static readonly ResourceName SimpleReceiver = new ResourceName(ClassResourceName, "simple");
+        static readonly ResourceName StreamReceiver = new ResourceName(ClassResourceName, "stream");
 
         #endregion
     }

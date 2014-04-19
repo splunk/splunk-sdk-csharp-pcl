@@ -19,6 +19,7 @@ namespace Splunk.Client.UnitTesting
     using Splunk.Client;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
@@ -616,6 +617,34 @@ namespace Splunk.Client.UnitTesting
             service.Server.RestartAsync().Wait();
         }
 #endif
+
+        [Trait("class", "Service: System")]
+        [Fact]
+        public async Task CanSendEvents()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            await service.LoginAsync("admin", "changeme");
+
+            var receiver = service.Receiver;
+
+            for (int i = 0; i < 10000; i++)
+            {
+                var result = await receiver.SendAsync(string.Format("{0:D6} {1} Hello world!", i, DateTime.Now));
+            }
+
+            using (var eventStream = new MemoryStream())
+            {
+                var writer = new StreamWriter(eventStream);
+                var task = receiver.SendAsync(eventStream);
+
+                for (int i = 0; i < 10000; i++)
+                {
+                    await writer.WriteLineAsync(string.Format("{0:D6} {1} Goodbye world!", i, DateTime.Now));
+                }
+
+                task.Wait();
+            }
+        }
 
         #endregion
 

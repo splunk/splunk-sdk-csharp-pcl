@@ -77,7 +77,7 @@ namespace Splunk.Client
                 reader.MoveToElement();
             }
 
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "entry"))
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }

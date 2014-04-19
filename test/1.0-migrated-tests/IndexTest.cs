@@ -425,10 +425,10 @@ namespace Splunk.Client.UnitTesting
             const string Host = "test-host";
             var args = new ReceiverArgs
             {
-                index = indexName,
-                host = Host,
-                source = Source,
-                //sourceType = SourceType,
+                Index = indexName,
+                Host = Host,
+                Source = Source,
+                SourceType = SourceType,
             };
 
             //var receiver = service.GetReceiver();

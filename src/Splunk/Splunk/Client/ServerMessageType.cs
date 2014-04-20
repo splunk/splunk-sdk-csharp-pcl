@@ -21,36 +21,24 @@ namespace Splunk.Client
     /// <summary>
     /// 
     /// </summary>
-    public enum MessageType
+    public enum ServerMessageType
     {
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "DEBUG")]
-        Debug, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "INFO")]
-        Information, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "WARN")]
-        Warning, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "ERROR")]
+        [EnumMember(Value = "error")]
         Error,
 
         /// <summary>
         /// 
         /// </summary>
-        [EnumMember(Value = "FATAL")]
-        Fatal
+        [EnumMember(Value = "info")]
+        Information, 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        [EnumMember(Value = "warn")]
+        Warning
     }
 }

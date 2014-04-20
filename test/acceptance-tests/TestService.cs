@@ -622,6 +622,55 @@ namespace Splunk.Client.UnitTesting
 
         #region System
 
+        [Trait("class", "Service: Server")]
+        [Fact]
+        public async Task CanCrudServerMessages()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            await service.LoginAsync("admin", "changeme");
+
+            //// Create
+
+            var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+
+            var messages = new ServerMessage[]
+            {
+                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageType.Information), ServerMessageType.Information, "some message text"),
+                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageType.Warning), ServerMessageType.Warning, "some message text"),
+                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageType.Error), ServerMessageType.Error, "some message text"),
+            };
+
+            //// Read
+
+            var messageCollection = await service.Server.GetMessagesAsync();
+
+            foreach (var message in messages)
+            {
+                var messageCopy = await service.Server.GetMessageAsync(message.Name);
+                Assert.Contains<ServerMessage>(message, messageCollection);
+                await message.GetAsync();
+            }
+
+            //// Delete (there is no update)
+
+            foreach (var message in messageCollection)
+            {
+                if (message.Name.StartsWith("delete-me-"))
+                {
+                    await message.RemoveAsync();
+                }
+            }
+
+            //// Verify delete
+
+            await messageCollection.GetAsync();
+
+            foreach (var message in messageCollection)
+            {
+                Assert.False(message.Name.StartsWith("delete-me-"));
+            }
+        }
+
         [Trait("class", "Service: System")]
         [Fact]
         public async Task CanGetServerInfo()
@@ -650,16 +699,15 @@ namespace Splunk.Client.UnitTesting
             Version version = serverInfo.Version;
         }
 
-#if false
         [Trait("class", "Service: Server")]
         [Fact]
-        public void CanRestartServer()
+        public async Task CanRestartServer()
         {
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            service.LoginAsync("admin", "changeme").Wait();
-            service.Server.RestartAsync().Wait();
+            await service.LoginAsync("admin", "changeme");
+            await service.Server.RestartAsync(millisecondsDelay: 60000);
+            await service.LoginAsync("admin", "changeme");
         }
-#endif
 
         [Trait("class", "Service: System")]
         [Fact]

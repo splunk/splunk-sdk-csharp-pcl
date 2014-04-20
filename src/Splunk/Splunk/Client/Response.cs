@@ -14,9 +14,11 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
+//// TODO:
+//// [ ] Contracts
+//// [ ] Documentation
+//// [ ] Ensure that Response.EnsureStatusCodeAsync is used instead of
+////     throwing RequestException or its derivatives directly.
 
 namespace Splunk.Client
 {
@@ -57,6 +59,11 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static async Task<Response> CreateAsync(HttpResponseMessage message)
         {
             Contract.Requires(message != null);
@@ -68,11 +75,21 @@ namespace Splunk.Client
             return response;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Dispose()
         { 
             this.Dispose(true); 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expected">
+        /// </param>
+        /// <returns>
+        /// </returns>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected)
         {
             var statusCode = this.Message.StatusCode;
@@ -83,10 +100,12 @@ namespace Splunk.Client
 
                 switch (statusCode)
                 {
-                    case HttpStatusCode.Unauthorized:
-                        throw new AuthenticationFailureException(this.Message, details);
+                    case HttpStatusCode.Forbidden:
+                        throw new UnauthorizedAccessException(this.Message, details);
                     case HttpStatusCode.NotFound:
                         throw new ResourceNotFoundException(this.Message, details);
+                    case HttpStatusCode.Unauthorized:
+                        throw new AuthenticationFailureException(this.Message, details);
                     default:
                         throw new RequestException(this.Message, details);
                 }

@@ -41,6 +41,9 @@ namespace Splunk.Client
             : this(message, (IEnumerable<Message>)messages)
         { }
 
+        private RequestException()
+        { }
+
         #endregion
 
         #region Properties

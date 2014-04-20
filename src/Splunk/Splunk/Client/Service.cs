@@ -136,10 +136,7 @@ namespace Splunk.Client
         {
             using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities))
             {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
                 var feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
@@ -203,10 +200,7 @@ namespace Splunk.Client
 
             using (var response = await this.Context.DeleteAsync(Namespace.Default, resourceName))
             {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
@@ -833,10 +827,7 @@ namespace Splunk.Client
 
             using (var response = await this.Context.PostAsync(this.Namespace, JobCollection.ClassResourceName, args))
             {
-                if (response.Message.StatusCode != HttpStatusCode.Created)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 searchId = await response.XmlReader.ReadResponseElementAsync("sid");
             }
 
@@ -868,10 +859,7 @@ namespace Splunk.Client
         {
             using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(JobCollection.ClassResourceName, searchId), args))
             {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
@@ -951,16 +939,11 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(args != null, "args");
             args.ExecutionMode = ExecutionMode.Oneshot;
 
-            Response response = null;
+            Response response = await this.Context.PostAsync(this.Namespace, JobCollection.ClassResourceName, args);
 
             try
             {
-                response = await this.Context.PostAsync(this.Namespace, JobCollection.ClassResourceName, args);
-
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
                 // FJR: Like export, we should probably return a stream instead of parsing it here.
                 // DSN: The SearchResultsSet class is a stream of Record objects. TODO: Explain
@@ -969,10 +952,7 @@ namespace Splunk.Client
             }
             catch
             {
-                if (response != null)
-                {
-                    response.Dispose();
-                }
+                response.Dispose();
                 throw;
             }
         }

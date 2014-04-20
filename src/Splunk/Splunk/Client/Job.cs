@@ -533,10 +533,7 @@ namespace Splunk.Client
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
             {
-                if (response.Message.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
@@ -571,10 +568,7 @@ namespace Splunk.Client
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
-                if (response.Message.StatusCode != System.Net.HttpStatusCode.OK)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 

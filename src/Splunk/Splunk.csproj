@@ -115,6 +115,8 @@
     <Compile Include="Splunk\Client\AlertComparator.cs" />
     <Compile Include="Splunk\Client\AlertTrack.cs" />
     <Compile Include="Splunk\Client\AlertSeverity.cs" />
+    <Compile Include="Splunk\Client\ServerMessageType.cs" />
+    <Compile Include="Splunk\Client\ServerMessageArgs.cs" />
     <Compile Include="Splunk\Client\ReceiverArgs.cs" />
     <Compile Include="Splunk\Client\Receiver.cs" />
     <Compile Include="Splunk\Client\Index.cs" />
@@ -125,6 +127,8 @@
     <Compile Include="Splunk\Client\IndexArgs.cs" />
     <Compile Include="Splunk\Client\Int64Converter.cs" />
     <Compile Include="Splunk\Client\AuthenticationFailureException.cs" />
+    <Compile Include="Splunk\Client\ServerMessage.cs" />
+    <Compile Include="Splunk\Client\UnauthorizedAccessException.cs" />
     <Compile Include="Splunk\Client\ResourceNotFoundException.cs" />
     <Compile Include="Splunk\Client\Resource.cs" />
     <Compile Include="Splunk\Client\ConfigurationStanza.cs" />

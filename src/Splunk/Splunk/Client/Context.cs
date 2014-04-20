@@ -36,6 +36,7 @@ namespace Splunk.Client
     using System.Linq;
     using System.Net.Http;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -227,7 +228,7 @@ namespace Splunk.Client
         public async Task<Response> DeleteAsync(Namespace @namespace, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Delete, @namespace, resource, null, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Delete, @namespace, resource, null, null, argumentSets);
             return response;
         }
 
@@ -241,7 +242,21 @@ namespace Splunk.Client
         public async Task<Response> GetAsync(Namespace @namespace, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Get, @namespace, resource, null, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Get, @namespace, resource, null, null, argumentSets);
+            return response;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="namespace"></param>
+        /// <param name="resourceName"></param>
+        /// <param name="argumentSets"></param>
+        /// <returns></returns>
+        public async Task<Response> GetAsync(Namespace @namespace, ResourceName resourceName, CancellationToken token, 
+            params IEnumerable<Argument>[] argumentSets)
+        {
+            var response = await this.SendAsync(HttpMethod.Get, @namespace, resourceName, null, token, argumentSets);
             return response;
         }
 
@@ -252,10 +267,11 @@ namespace Splunk.Client
         /// <param name="resource"></param>
         /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<Response> PostAsync(Namespace @namespace, ResourceName resource, 
+        public async Task<Response> PostAsync(Namespace @namespace, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, this.CreateStringContent(argumentSets), null);
+            var content = this.CreateStringContent(argumentSets);
+            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, content, null, null);
             return response;
         }
 
@@ -269,7 +285,7 @@ namespace Splunk.Client
         public async Task<Response> PostAsync(Namespace @namespace, ResourceName resource,
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, content, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, content, null, argumentSets);
             return response;
         }
 
@@ -350,8 +366,8 @@ namespace Splunk.Client
             return stringContent;
         }
 
-        async Task<Response> SendAsync(HttpMethod method, Namespace @namespace, ResourceName resource, HttpContent 
-            content, IEnumerable<Argument>[] argumentSets)
+        async Task<Response> SendAsync(HttpMethod method, Namespace @namespace, ResourceName resource, HttpContent
+            content, CancellationToken? cancellationToken, IEnumerable<Argument>[] argumentSets)
         {
             Contract.Requires<ArgumentNullException>(@namespace != null);
             Contract.Requires<ArgumentNullException>(resource != null);
@@ -364,7 +380,14 @@ namespace Splunk.Client
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
-                HttpResponseMessage response = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+                var completionOption = HttpCompletionOption.ResponseHeadersRead;
+                HttpResponseMessage response;
+
+                response = cancellationToken.HasValue ?
+                    await this.HttpClient.SendAsync(request, completionOption, cancellationToken.Value) :
+                    await this.HttpClient.SendAsync(request, completionOption);
+
                 return await Response.CreateAsync(response);
             }
         }

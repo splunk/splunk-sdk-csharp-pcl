@@ -196,7 +196,7 @@ namespace Splunk.Client
                 case "services":
 
                     @namespace = Namespace.Default;
-                    resourceName = new ResourceName(path[2]);
+                    resourceName = new ResourceName(new ArraySegment<string>(path, 2, path.Length - 2));
                     break;
 
                 case "servicesNS":

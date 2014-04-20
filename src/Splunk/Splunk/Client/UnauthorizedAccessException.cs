@@ -14,43 +14,26 @@
  * under the License.
  */
 
+// TODO: Documentation
+
 namespace Splunk.Client
 {
-    using System.Runtime.Serialization;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
 
     /// <summary>
-    /// 
+    /// The exception that is thrown when a request to access a <see cref=
+    /// "Resource"/> results in <see cref="HttpStatusCode.Forbidden"/>.
     /// </summary>
-    public enum MessageType
+    public sealed class UnauthorizedAccessException : RequestException
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "DEBUG")]
-        Debug, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "INFO")]
-        Information, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "WARN")]
-        Warning, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "ERROR")]
-        Error,
+        #region Constructors
 
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "FATAL")]
-        Fatal
+        internal UnauthorizedAccessException(HttpResponseMessage message, IEnumerable<Message> details)
+            : base(message, details)
+        { }
+
+        #endregion
     }
 }

@@ -24,7 +24,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
 
-    public sealed class ServerMessageCollection : Entity<ServerMessageCollection>, IReadOnlyDictionary<string, string>
+    public sealed class ServerMessageCollection : EntityCollection<ServerMessageCollection, ServerMessage>
     {
         #region Constructors
 
@@ -34,77 +34,6 @@ namespace Splunk.Client
 
         public ServerMessageCollection()
         { }
-
-        #endregion
-
-        #region Properties
-
-        public string this[string key]
-        {
-            get { return (string)((IDictionary<string, object>)this.Content)[key]; }
-        }
-
-        public int Count
-        {
-            get { return ((IDictionary<string, object>)this.Content).Count; }
-        }
-
-        public IEnumerable<string> Keys
-        {
-            get { return ((IDictionary<string, object>)this.Content).Keys;  }
-        }
-
-        public IEnumerable<string> Values
-        {
-            get 
-            { 
-                var values = ((IDictionary<string, object>)this.Content).Values;
-                
-                foreach (var value in values)
-                {
-                    yield return (string)value; 
-                }
-            }
-        }
-
-        #endregion
-
-        #region Methods
-
-        public bool ContainsKey(string key)
-        {
-            return ((IDictionary<string, object>)this.Content).ContainsKey(key);
-        }
-
-        public bool TryGetValue(string key, out string value)
-        {
-            object o;
-            
-            if (((IDictionary<string, object>)this.Content).TryGetValue(key, out o))
-            {
-                value = (string)o;
-                return true;
-            }
-
-            value = null;
-            return false;
-        }
-
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
-        {
-            var dictionary = (IDictionary<string, object>)this.Content;
-
-            foreach (var item in dictionary)
-            {
-                yield return new KeyValuePair<string, string>(item.Key, (string)item.Value);
-            }
-          
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
 
         #endregion
 

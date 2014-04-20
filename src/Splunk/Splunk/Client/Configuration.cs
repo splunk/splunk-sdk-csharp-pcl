@@ -103,10 +103,7 @@ namespace Splunk.Client
 
             using (var response = await this.Context.PostAsync(this.Namespace, ConfigurationCollection.ClassResourceName, args))
             {
-                if (response.Message.StatusCode != HttpStatusCode.Created)
-                {
-                    throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                }
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
             }
         }
 

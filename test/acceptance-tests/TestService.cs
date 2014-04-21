@@ -706,6 +706,7 @@ namespace Splunk.Client.UnitTesting
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             await service.LoginAsync("admin", "changeme");
             await service.Server.RestartAsync(millisecondsDelay: 60000);
+            Assert.Null(service.SessionKey);
             await service.LoginAsync("admin", "changeme");
         }
 

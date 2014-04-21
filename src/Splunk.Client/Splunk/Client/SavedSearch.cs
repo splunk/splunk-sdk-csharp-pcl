@@ -40,7 +40,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initalizes a new instance of the <see cref="SavedSearch"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.

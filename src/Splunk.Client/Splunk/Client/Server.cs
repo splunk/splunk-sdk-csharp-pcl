@@ -15,8 +15,8 @@
  */
 
 //// TODO:
-//// [ ] Contracts
-//// [ ] Documentation
+//// [O] Contracts
+//// [O] Documentation
 //// [ ] Server.RestartAsync should post a restart_required message followed by
 ////     a request to restart the server. It should then poll the server until
 ////     the restart_required message goes away.
@@ -24,6 +24,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -37,6 +38,21 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Server"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="namespace"/> is not specific.
+        /// </exception>
         internal Server(Context context, Namespace @namespace)
             : base(context, @namespace, ClassResourceName)
         { }
@@ -49,10 +65,15 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// 
+        /// Asynchronously creates a <see cref="ServerMessage"/> on the Splunk 
+        /// server represented by the current instance.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">
+        /// Name of the message to create.
+        /// </param>
+        /// <returns>
+        /// An object representing the server message created.
+        /// </returns>
         public async Task<ServerMessage> CreateMessageAsync(string name, ServerMessageSeverity type, string text)
         {
             var resource = new ServerMessage(this.Context, this.Namespace, name);
@@ -61,10 +82,11 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously gets <see cref="ServerInfo"/> from the Splunk server
+        /// represented by the current instance.
         /// </summary>
         /// <returns>
-        /// 
+        /// An object representing information about the Splunk server
         /// </returns>
         public async Task<ServerInfo> GetInfoAsync()
         {
@@ -74,10 +96,19 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously gets a <see cref="ServerMessage"/> from the Splunk 
+        /// server represented by the current instance.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">
+        /// Name of the message to get.
+        /// </param>
+        /// <returns>
+        /// An object representing the server message identified by <see cref=
+        /// "name"/>.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// <see cref="name"/> is <c>null</c> or empty.
+        /// </exception>
         public async Task<ServerMessage> GetMessageAsync(string name)
         {
             var resource = new ServerMessage(this.Context, this.Namespace, name);
@@ -86,9 +117,11 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously gets the <see cref="ServerMessageCollection"/> from 
+        /// the Splunk server represented by the current instance.
         /// </summary>
         /// <returns>
+        /// An object representing the collection of server messages.
         /// </returns>
         public async Task<ServerMessageCollection> GetMessagesAsync()
         {
@@ -98,10 +131,15 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Removes a <see cref="ServerMessage"/> from the Splunk server 
+        /// represented by the current instance.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">
+        /// Name of the <see cref="ServerMessage"/> to remove.
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// <see cref="name"/> is <c>null</c> or empty.
+        /// </exception>
         public async Task RemoveMessageAsync(string name)
         {
             var resource = new ServerMessage(this.Context, this.Namespace, name);
@@ -109,24 +147,34 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Restarts the Splunk server represented by the current instance 
+        /// and then optionally checks for a specified period of time for 
+        /// server availability.
         /// </summary>
         /// <param name="millisecondsDelay">
+        /// The time to wait before canceling the check for server availability.
+        /// The default value is <c>0</c> indicating that no check should be
+        /// made. A value of <c>-1</c> specifies an infinite wait time.
         /// </param>
-        /// <returns>
-        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="millisecondsDelay"/> is less than <c>-1</c>.
+        /// </exception>
         /// <exception cref="AuthenticationFailureException">
+        /// </exception>
+        /// <exception cref="HttpRequestException">
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// </exception>
         public async Task RestartAsync(int millisecondsDelay = 0)
         {
+            Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
+
             using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(this.ResourceName, "restart")))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
             
-            if (millisecondsDelay <= 0)
+            if (millisecondsDelay == 0)
             {
                 return;
             }

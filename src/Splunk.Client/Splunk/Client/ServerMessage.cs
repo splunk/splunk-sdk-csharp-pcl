@@ -16,7 +16,7 @@
 
 //// TODO:
 //// [O] Contracts
-//// [ ] Documentation
+//// [O] Documentation
 //// [X] Property accessors should not throw, but return default value if the underlying field is undefined (?)
 ////     Guaranteed across the code base by ExpandoAdapter.GetValue.
 
@@ -43,7 +43,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object representing a Splunk server session.
+        /// An object identifying a Splunk service namespace.
         /// </param>
         /// <param name="name">
         /// The name of the <see cref="ServerMessage"/>
@@ -54,8 +54,11 @@ namespace Splunk.Client
         /// <exception cref="ArgumentNullException">
         /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
         /// </exception>
-        public ServerMessage(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, new ResourceName(ClassResourceName, name))
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="namespace"/> is not specific.
+        /// </exception>
+        internal ServerMessage(Context context, Namespace @namespace, string name)
+            : base(context, @namespace, ServerMessageCollection.ClassResourceName, name)
         { }
 
         public ServerMessage()
@@ -92,8 +95,9 @@ namespace Splunk.Client
         public async Task CreateAsync(ServerMessageArgs args)
         {
             var name = new Argument[] { new Argument("name", this.Name) };
+            var resourceName = ServerMessageCollection.ClassResourceName;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, ClassResourceName, name, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, name, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 var feed = new AtomFeed();
@@ -115,12 +119,6 @@ namespace Splunk.Client
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
-
-        #endregion
-
-        #region Privates/internals
-
-        internal static readonly ResourceName ClassResourceName = new ResourceName("messages");
 
         #endregion
     }

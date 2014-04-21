@@ -57,18 +57,24 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object representing a Splunk server session.
+        /// An object identifying a Splunk service namespace.
         /// </param>
-        /// <param name="collection">
+        /// <param name="resourceName">
+        /// An object identifying a Splunk resource within <see cref="namespace"/>.
         /// </param>
-        /// <param name="title">
-        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/>, <see cref="namespace"/>, or <see cref=
+        /// "resourceName"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="namespace"/> is not specific.
+        /// </exception>
         protected Resource(Context context, Namespace @namespace, ResourceName resourceName)
         {
             Contract.Requires<ArgumentException>(resourceName != null, "resourceName");
             Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
             Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires(@namespace.IsSpecific);
+            Contract.Requires<ArgumentOutOfRangeException>(@namespace.IsSpecific);
 
             this.Context = context;
             this.Namespace = @namespace;

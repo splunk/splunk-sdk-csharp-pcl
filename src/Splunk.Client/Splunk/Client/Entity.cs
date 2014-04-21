@@ -67,6 +67,14 @@ namespace Splunk.Client
         /// <param name="resourceName">
         /// An object identifying a Splunk resource within <see cref="namespace"/>.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/>, <see cref="namespace"/>, or <see cref=
+        /// "resourceName"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="namespace"/> is not specific.
+        /// </exception>
+
         protected Entity(Context context, Namespace @namespace, ResourceName resourceName)
             : base(context, @namespace, resourceName)
         { }
@@ -86,18 +94,23 @@ namespace Splunk.Client
         /// An object identifying a Splunk resource collection within <see 
         /// cref="namespace"/>.
         /// </param>
-        /// <param name="title">
-        /// The title of a resource within <see cref="collection"/>.
+        /// <param name="entity">
+        /// The name of a resource within <see cref="collection"/>.
         /// </param>
-        protected Entity(Context context, Namespace @namespace, ResourceName collection, string title)
-            : this(context, @namespace, new ResourceName(collection, title))
-        {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(title), "title");
-        }
+        /// <exception cref="ArgumentException">
+        /// <see cref="entity"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/>, <see cref="namespace"/>, or <see cref=
+        /// "collection"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="namespace"/> is not specific.
+        /// </exception>
+        protected Entity(Context context, Namespace @namespace, ResourceName collection, string entity)
+            : this(context, @namespace, new ResourceName(collection, entity))
+        {  }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public Entity()
         {
             this.data = DataCache.Missing;
@@ -266,7 +279,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object representing a Splunk server session.
+        /// An object identifying a Splunk service namespace.
         /// </param>
         /// <param name="collection">
         /// </param>

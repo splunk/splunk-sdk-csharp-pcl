@@ -44,25 +44,30 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="Job"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object representing a Splunk server session.
-        /// </param>
-        /// <param name="collection">
+        /// An object identifying a Splunk service namespace.
         /// </param>
         /// <param name="name">
+        /// Name of the search <see cref="Job"/>.
         /// </param>
+        /// <exception cref="ArgumentException">
+        /// <see cref="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="namespace"/> is not specific.
+        /// </exception>
         internal Job(Context context, Namespace @namespace, string name)
             : base(context, @namespace, JobCollection.ClassResourceName, name)
         { }
 
-        /// <summary>
-        /// 
-        /// </summary>
         public Job()
         { }
 

@@ -22,7 +22,7 @@
 namespace Splunk.Client
 {
     /// <summary>
-    /// Provides a class that represents a Splunk Application resource.
+    /// Provides a class that represents a Splunk application resource.
     /// </summary>
     public class Application : Entity<Application>
     {
@@ -35,14 +35,23 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object representing a Splunk server session.
+        /// An object identifying a Splunk service namespace.
         /// </param>
         /// <param name="collection">
         /// </param>
         /// <param name="name">
         /// </param>
-        internal Application(Context context, Namespace @namespace, ResourceName collection, string name)
-            : base(context, @namespace, collection, name)
+        /// <exception cref="ArgumentException">
+        /// <see cref="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="namespace"/> is not specific.
+        /// </exception>
+        internal Application(Context context, Namespace @namespace, string name)
+            : base(context, @namespace, ApplicationCollection.ClassResourceName, name)
         { }
 
         public Application()

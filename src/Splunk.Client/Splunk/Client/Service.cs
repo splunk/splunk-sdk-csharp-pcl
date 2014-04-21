@@ -40,8 +40,13 @@ namespace Splunk.Client
         /// The context for requests by the new <see cref="Service"/>.
         /// </param>
         /// <param name="namespace">
-        /// The namespace for requests by the new <see cref="Service"/>.
+        /// The namespace for requests by the new <see cref="Service"/>. The
+        /// default value is <c>null</c> indicating that <see cref=
+        /// "Namespace.Default"/> should be used.
         /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/> is <c>null</c>.
+        /// </exception>
         public Service(Context context, Namespace @namespace = null)
         {
             Contract.Requires<ArgumentNullException>(context != null, "context");

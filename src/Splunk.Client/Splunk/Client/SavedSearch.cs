@@ -46,10 +46,20 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object representing a Splunk server session.
+        /// An object identifying a Splunk service namespace.
         /// </param>
         /// <param name="name">
+        /// Name of the <see cref="SavedSearch"/>.
         /// </param>
+        /// <exception cref="ArgumentException">
+        /// <see cref="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <see cref="namespace"/> is not specific.
+        /// </exception>
         internal SavedSearch(Context context, Namespace @namespace, string name)
             : base(context, @namespace, SavedSearchCollection.ClassResourceName, name)
         { }

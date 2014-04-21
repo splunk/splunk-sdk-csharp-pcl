@@ -41,7 +41,7 @@ namespace Splunk.Client
     {
         #region Constructors
 
-        public ServerMessageArgs(ServerMessageType type, string text)
+        public ServerMessageArgs(ServerMessageSeverity type, string text)
         {
             this.Type = type;
             this.Text = text;
@@ -55,7 +55,7 @@ namespace Splunk.Client
         /// Gets or sets the type of a <see cref="ServerMessage"/>.
         /// </summary>
         [DataMember(Name = "severity", IsRequired = true)]
-        public ServerMessageType Type
+        public ServerMessageSeverity Type
         { get; private set; }
 
         /// <summary>

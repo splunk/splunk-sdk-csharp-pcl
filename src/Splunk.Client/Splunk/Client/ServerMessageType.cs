@@ -21,7 +21,7 @@ namespace Splunk.Client
     /// <summary>
     /// 
     /// </summary>
-    public enum ServerMessageType
+    public enum ServerMessageSeverity
     {
         /// <summary>
         /// 

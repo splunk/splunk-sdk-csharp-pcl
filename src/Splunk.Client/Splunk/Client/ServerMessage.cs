@@ -14,23 +14,46 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [O] Property accessors should not throw, but return default value if the underlying field is undefined (?)
+//// TODO:
+//// [O] Contracts
+//// [ ] Documentation
+//// [X] Property accessors should not throw, but return default value if the underlying field is undefined (?)
+////     Guaranteed across the code base by ExpandoAdapter.GetValue.
 
 namespace Splunk.Client
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-
+    
+    /// <summary>
+    /// Provides an object representation of a Splunk server message resource.
+    /// </summary>
     public sealed class ServerMessage : Entity<ServerMessage>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerMessage"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="name">
+        /// The name of the <see cref="ServerMessage"/>
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// <see cref="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// </exception>
         public ServerMessage(Context context, Namespace @namespace, string name)
             : base(context, @namespace, new ResourceName(ClassResourceName, name))
         { }
@@ -42,9 +65,9 @@ namespace Splunk.Client
 
         #region Properties
 
-        public ServerMessageType Severity
+        public ServerMessageSeverity Severity
         {
-            get { return this.Content.GetValue("Severity", EnumConverter<ServerMessageType>.Instance); }
+            get { return this.Content.GetValue("Severity", EnumConverter<ServerMessageSeverity>.Instance); }
         }
 
         public string Text
@@ -61,7 +84,7 @@ namespace Splunk.Client
 
         #region Methods
 
-        public async Task CreateAsync(ServerMessageType type, string text)
+        public async Task CreateAsync(ServerMessageSeverity type, string text)
         {
             await CreateAsync(new ServerMessageArgs(type, text));
         }

@@ -43,8 +43,10 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="context">
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="name">
         /// </param>

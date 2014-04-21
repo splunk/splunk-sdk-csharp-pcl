@@ -635,9 +635,9 @@ namespace Splunk.Client.UnitTesting
 
             var messages = new ServerMessage[]
             {
-                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageType.Information), ServerMessageType.Information, "some message text"),
-                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageType.Warning), ServerMessageType.Warning, "some message text"),
-                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageType.Error), ServerMessageType.Error, "some message text"),
+                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Information), ServerMessageSeverity.Information, "some message text"),
+                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Warning), ServerMessageSeverity.Warning, "some message text"),
+                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Error), ServerMessageSeverity.Error, "some message text"),
             };
 
             //// Read

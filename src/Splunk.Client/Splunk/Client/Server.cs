@@ -14,6 +14,13 @@
  * under the License.
  */
 
+//// TODO:
+//// [ ] Contracts
+//// [ ] Documentation
+//// [ ] Server.RestartAsync should post a restart_required message followed by
+////     a request to restart the server. It should then poll the server until
+////     the restart_required message goes away.
+
 namespace Splunk.Client
 {
     using System;
@@ -46,7 +53,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public async Task<ServerMessage> CreateMessageAsync(string name, ServerMessageType type, string text)
+        public async Task<ServerMessage> CreateMessageAsync(string name, ServerMessageSeverity type, string text)
         {
             var resource = new ServerMessage(this.Context, this.Namespace, name);
             await resource.CreateAsync(type, text);

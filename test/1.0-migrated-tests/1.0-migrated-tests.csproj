@@ -134,9 +134,9 @@
     <None Include="TestKey.snk" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Splunk\Splunk.csproj">
+    <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
-      <Name>Splunk</Name>
+      <Name>Splunk.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\acceptance-tests\acceptance-tests.csproj">
       <Project>{b7c3839f-58f5-4ca9-9317-9655a0bc55d9}</Project>

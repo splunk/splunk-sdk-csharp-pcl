@@ -42,7 +42,14 @@ namespace Splunk.Client
 
         public ResourceName(IEnumerable<string> parts)
         {
-            this.parts = parts.ToArray();
+            this.parts = parts.Select((part, i) =>
+            {
+                if (string.IsNullOrEmpty(part))
+                {
+                    throw new ArgumentException(string.Format("parts[{0}]", i));  // TODO: Diagnostics
+                }
+                return part;
+            }).ToArray();
         }
 
         #endregion

@@ -32,8 +32,10 @@ namespace Splunk.Client
         /// Initializes a new instance of the <see cref="Application"/> class.
         /// </summary>
         /// <param name="context">
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="collection">
         /// </param>

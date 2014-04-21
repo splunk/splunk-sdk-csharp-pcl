@@ -72,9 +72,9 @@
     <Compile Include="AcceptanceTestingSetup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Splunk\Splunk.csproj">
+    <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
-      <Name>Splunk</Name>
+      <Name>Splunk.Client</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

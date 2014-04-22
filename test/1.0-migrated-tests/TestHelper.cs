@@ -253,6 +253,8 @@ namespace Splunk.Client.UnitTesting
             while (!job.IsDone)
             {
                 Thread.Sleep(1000);
+                job.GetAsync().Wait();
+
             }
 
             return job;

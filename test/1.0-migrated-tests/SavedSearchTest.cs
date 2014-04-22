@@ -392,79 +392,81 @@ namespace Splunk.Client.UnitTesting
             savedSearch.DispatchAsync().Wait();
             //job.Cancel();
 
-            //// Dispatch with some additional search options
-            //job = savedSearch.Dispatch(new Args("dispatch.buckets", 100));
-            //this.Wait(job);
+            // Dispatch with some additional search options
+            job = savedSearch.DispatchAsync(new SavedSearchDispatchArgs(){DispatchBuckets= 100}).Result;
+            this.Wait(job);
             //job.Timeline().Close();
             //job.Cancel();
+            job.CancelAsync().Wait();
 
-            //// Dispatch with some additional search options
-            //job = savedSearch.Dispatch(new Args("dispatch.earliest_time", "aaaa"));
-            //this.Wait(job);
+            // Dispatch with some additional search options
+            job = savedSearch.DispatchAsync(new SavedSearchDispatchArgs() { DispatchEarliestTime = "aaaa" }).Result;
+            this.Wait(job);
             //job.Timeline().Close();
-            //job.Cancel();
-
-            //var savedSearchDispatchArgs = new SavedSearchDispatchArgs();
-            //if (this.VersionCompare(service, "6.0") < 0)
-            //{
-            //    savedSearchDispatchArgs.Actions.Email.AuthPassword = "sdk-password";
-            //    savedSearchDispatchArgs.Actions.Email.AuthUsername = "sdk-username";
-            //    savedSearchDispatchArgs.Actions.Email.Bcc = "sdk-bcc@splunk.com";
-            //    savedSearchDispatchArgs.Actions.Email.Cc = "sdk-cc@splunk.com";
-            //    savedSearchDispatchArgs.Actions.Email.Command = "$name1$";
-            //    savedSearchDispatchArgs.Actions.Email.Format = "text";
-            //    savedSearchDispatchArgs.Actions.Email.From = "sdk@splunk.com";
-            //    savedSearchDispatchArgs.Actions.Email.Hostname = "dummy1.host.com";
-            //    savedSearchDispatchArgs.Actions.Email.Inline = true;
-            //    savedSearchDispatchArgs.Actions.Email.MailServer = "splunk.com";
-            //    savedSearchDispatchArgs.Actions.Email.MaxResults = 101;
-            //    savedSearchDispatchArgs.Actions.Email.MaxTime = "10s";
-            //    savedSearchDispatchArgs.Actions.Email.PdfView = "dummy";
-            //    savedSearchDispatchArgs.Actions.Email.ReportPaperOrientation = "landscape";
-            //    savedSearchDispatchArgs.Actions.Email.ReportPaperSize = "letter";
-            //    savedSearchDispatchArgs.Actions.Email.ReportServerEnabled = false;
-            //    savedSearchDispatchArgs.Actions.Email.ReportServerUrl = "splunk.com";
-            //    savedSearchDispatchArgs.Actions.Email.SendPdf = false;
-            //    savedSearchDispatchArgs.Actions.Email.SendResults = false;
-            //    savedSearchDispatchArgs.Actions.Email.Subject = "sdk-subject";
-            //    savedSearchDispatchArgs.Actions.Email.To = "sdk-to@splunk.com";
-            //    savedSearchDispatchArgs.Actions.Email.TrackAlert = false;
-            //    savedSearchDispatchArgs.Actions.Email.Ttl = "61";
-            //    savedSearchDispatchArgs.Actions.Email.UseSsl = false;
-            //    savedSearchDispatchArgs.Actions.Email.UseTls = false;
-            //    savedSearchDispatchArgs.Actions.Email.WidthSortColumns = false;
-            //    savedSearchDispatchArgs.Actions.PopulateLookup.Command = "$name2$";
-            //    savedSearchDispatchArgs.Actions.PopulateLookup.Dest = "dummypath";
-            //    savedSearchDispatchArgs.Actions.PopulateLookup.Hostname = "dummy2.host.com";
-            //    savedSearchDispatchArgs.Actions.PopulateLookup.MaxResults = 102;
-            //    savedSearchDispatchArgs.Actions.PopulateLookup.MaxTime = "20s";
-            //    savedSearchDispatchArgs.Actions.PopulateLookup.TrackAlert = false;
-            //    savedSearchDispatchArgs.Actions.PopulateLookup.Ttl = "62";
-            //    savedSearchDispatchArgs.Actions.Rss.Command = "$name3$";
-            //    savedSearchDispatchArgs.Actions.Rss.Hostname = "dummy3.host.com";
-            //    savedSearchDispatchArgs.Actions.Rss.MaxResults = 103;
-            //    savedSearchDispatchArgs.Actions.Rss.MaxTime = "30s";
-            //    savedSearchDispatchArgs.Actions.Rss.TrackAlert = false;
-            //    savedSearchDispatchArgs.Actions.Rss.Ttl = "63";
-            //    savedSearchDispatchArgs.ActionScriptCommand = "$name4$";
-            //    savedSearchDispatchArgs.ActionScriptFilename = "action_script_filename";
-            //    savedSearchDispatchArgs.ActionScriptHostname = "dummy4.host.com";
-            //    savedSearchDispatchArgs.ActionScriptMaxResults = 104;
-            //    savedSearchDispatchArgs.ActionScriptMaxTime = "40s";
-            //    savedSearchDispatchArgs.ActionScriptTrackAlert = false;
-            //    savedSearchDispatchArgs.ActionScriptTtl = "64";
-            //    savedSearchDispatchArgs.Actions.SummaryIndex.Command = "$name5$";
-            //    savedSearchDispatchArgs.Actions.SummaryIndex.Hostname = "dummy5.host.com";
-            //    savedSearchDispatchArgs.Actions.SummaryIndex.Inline = false;
-            //    savedSearchDispatchArgs.Actions.SummaryIndex.MaxResults = 105;
-            //    savedSearchDispatchArgs.Actions.SummaryIndex.MaxTime = "50s";
-            //    savedSearchDispatchArgs.Actions.SummaryIndex.TrackAlert = false;
-            //    savedSearchDispatchArgs.Actions.SummaryIndex.Ttl = "65";
-            //    savedSearchDispatchArgs.Actions = "rss,email,populate_lookup,script,summary_index";
-            //}
+            job.CancelAsync().Wait();
+                        
+            var savedSearchDispatchArgs = new SavedSearchTemplateArgs();
+            if (this.VersionCompare(service, "6.0") < 0)
+            {
+                
+                //savedSearchDispatchArgs.Email.AuthPassword = "sdk-password";
+                //savedSearchDispatchArgs.Actions.Email.AuthUsername = "sdk-username";
+                //savedSearchDispatchArgs.Actions.Email.Bcc = "sdk-bcc@splunk.com";
+                //savedSearchDispatchArgs.Actions.Email.Cc = "sdk-cc@splunk.com";
+                //savedSearchDispatchArgs.Actions.Email.Command = "$name1$";
+                //savedSearchDispatchArgs.Actions.Email.Format = "text";
+                //savedSearchDispatchArgs.Actions.Email.From = "sdk@splunk.com";
+                //savedSearchDispatchArgs.Actions.Email.Hostname = "dummy1.host.com";
+                //savedSearchDispatchArgs.Actions.Email.Inline = true;
+                //savedSearchDispatchArgs.Actions.Email.MailServer = "splunk.com";
+                //savedSearchDispatchArgs.Actions.Email.MaxResults = 101;
+                //savedSearchDispatchArgs.Actions.Email.MaxTime = "10s";
+                //savedSearchDispatchArgs.Actions.Email.PdfView = "dummy";
+                //savedSearchDispatchArgs.Actions.Email.ReportPaperOrientation = "landscape";
+                //savedSearchDispatchArgs.Actions.Email.ReportPaperSize = "letter";
+                //savedSearchDispatchArgs.Actions.Email.ReportServerEnabled = false;
+                //savedSearchDispatchArgs.Actions.Email.ReportServerUrl = "splunk.com";
+                //savedSearchDispatchArgs.Actions.Email.SendPdf = false;
+                //savedSearchDispatchArgs.Actions.Email.SendResults = false;
+                //savedSearchDispatchArgs.Actions.Email.Subject = "sdk-subject";
+                //savedSearchDispatchArgs.Actions.Email.To = "sdk-to@splunk.com";
+                //savedSearchDispatchArgs.Actions.Email.TrackAlert = false;
+                //savedSearchDispatchArgs.Actions.Email.Ttl = "61";
+                //savedSearchDispatchArgs.Actions.Email.UseSsl = false;
+                //savedSearchDispatchArgs.Actions.Email.UseTls = false;
+                //savedSearchDispatchArgs.Actions.Email.WidthSortColumns = false;
+                //savedSearchDispatchArgs.Actions.PopulateLookup.Command = "$name2$";
+                //savedSearchDispatchArgs.Actions.PopulateLookup.Dest = "dummypath";
+                //savedSearchDispatchArgs.Actions.PopulateLookup.Hostname = "dummy2.host.com";
+                //savedSearchDispatchArgs.Actions.PopulateLookup.MaxResults = 102;
+                //savedSearchDispatchArgs.Actions.PopulateLookup.MaxTime = "20s";
+                //savedSearchDispatchArgs.Actions.PopulateLookup.TrackAlert = false;
+                //savedSearchDispatchArgs.Actions.PopulateLookup.Ttl = "62";
+                //savedSearchDispatchArgs.Actions.Rss.Command = "$name3$";
+                //savedSearchDispatchArgs.Actions.Rss.Hostname = "dummy3.host.com";
+                //savedSearchDispatchArgs.Actions.Rss.MaxResults = 103;
+                //savedSearchDispatchArgs.Actions.Rss.MaxTime = "30s";
+                //savedSearchDispatchArgs.Actions.Rss.TrackAlert = false;
+                //savedSearchDispatchArgs.Actions.Rss.Ttl = "63";
+                //savedSearchDispatchArgs.ActionScriptCommand = "$name4$";
+                //savedSearchDispatchArgs.ActionScriptFilename = "action_script_filename";
+                //savedSearchDispatchArgs.ActionScriptHostname = "dummy4.host.com";
+                //savedSearchDispatchArgs.ActionScriptMaxResults = 104;
+                //savedSearchDispatchArgs.ActionScriptMaxTime = "40s";
+                //savedSearchDispatchArgs.ActionScriptTrackAlert = false;
+                //savedSearchDispatchArgs.ActionScriptTtl = "64";
+                //savedSearchDispatchArgs.Actions.SummaryIndex.Command = "$name5$";
+                //savedSearchDispatchArgs.Actions.SummaryIndex.Hostname = "dummy5.host.com";
+                //savedSearchDispatchArgs.Actions.SummaryIndex.Inline = false;
+                //savedSearchDispatchArgs.Actions.SummaryIndex.MaxResults = 105;
+                //savedSearchDispatchArgs.Actions.SummaryIndex.MaxTime = "50s";
+                //savedSearchDispatchArgs.Actions.SummaryIndex.TrackAlert = false;
+                //savedSearchDispatchArgs.Actions.SummaryIndex.Ttl = "65";
+                //savedSearchDispatchArgs.Actions = "rss,email,populate_lookup,script,summary_index";
+            }
 
             //// Same as the previous dispatch except using custom arg
-            //job = savedSearch.Dispatch(savedSearchDispatchArgs);
+            //job = savedSearch.DispatchAsync(savedSearchDispatchArgs);
             //this.Wait(job);
             //job.Timeline().Close();
             //job.Cancel();
@@ -487,7 +489,8 @@ namespace Splunk.Client.UnitTesting
             // Ensure test starts in a known good state
             if (savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0)
             {
-                service.RemoveSavedSearchAsync(savedSearchTitle).Wait();                
+                service.RemoveSavedSearchAsync(savedSearchTitle).Wait();
+                savedSearches.GetAsync().Wait();
             }
 
             Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#69");
@@ -509,27 +512,27 @@ namespace Splunk.Client.UnitTesting
             history = savedSearch.GetHistoryAsync().Result;
             Assert.AreEqual(0, history.Count, this.assertRoot + "#70");
 
-            //Job job1 = savedSearch.Dispatch();
-            //this.Ready(job1);
-            //history = savedSearch.History();
-            //Assert.AreEqual(1, history.Length, this.assertRoot + "#71");
-            //Assert.IsTrue(this.Contains(history, job1.Sid));
+            Job job1 = savedSearch.DispatchAsync().Result;
+            this.Ready(job1);
+            history = savedSearch.GetHistoryAsync().Result;
+            Assert.AreEqual(1, history.Count, this.assertRoot + "#71");
+            Assert.IsTrue(history.Where(a=>a.Sid==job1.Sid).Count()>0);// this.Contains(history, job1.Sid));
 
-            //Job job2 = savedSearch.Dispatch();
-            //this.Ready(job2);
-            //history = savedSearch.History();
-            //Assert.AreEqual(2, history.Length, this.assertRoot + "#72");
-            //Assert.IsTrue(this.Contains(history, job1.Sid), this.assertRoot + "#73");
-            //Assert.IsTrue(this.Contains(history, job2.Sid), this.assertRoot + "#74");
+            Job job2 = savedSearch.DispatchAsync().Result;
+            this.Ready(job2);
+            history = savedSearch.GetHistoryAsync().Result;
+            Assert.AreEqual(2, history.Count, this.assertRoot + "#72");
+            Assert.IsTrue(history.Where(a=>a.Sid==job1.Sid).Count()>0, this.assertRoot + "#73");
+            Assert.IsTrue(history.Where(a=>a.Sid==job2.Sid).Count()>0, this.assertRoot + "#74");
 
-            //job1.Cancel();
-            //history = savedSearch.History();
-            //Assert.AreEqual(1, history.Length, this.assertRoot + "#75");
-            //Assert.IsTrue(this.Contains(history, job2.Sid), this.assertRoot + "#76");
+            job1.CancelAsync().Wait();
+            history = savedSearch.GetHistoryAsync().Result;
+            Assert.AreEqual(1, history.Count, this.assertRoot + "#75");
+            Assert.IsTrue(history.Where(a=>a.Sid==job2.Sid).Count()>0, this.assertRoot + "#76");
 
-            //job2.Cancel();
-            //history = savedSearch.History();
-            //Assert.AreEqual(0, history.Length, this.assertRoot + "#77");
+            job2.CancelAsync().Wait();
+            history = savedSearch.GetHistoryAsync().Result;
+            Assert.AreEqual(0, history.Count, this.assertRoot + "#77");
 
             //// Delete the saved search
             //savedSearches.Remove("sdk test1");

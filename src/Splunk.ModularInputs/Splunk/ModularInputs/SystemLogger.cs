@@ -18,6 +18,7 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Diagnostics;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// List of log levels for logging functions.
@@ -56,12 +57,41 @@ namespace Splunk.ModularInputs
     /// </summary>
     public static class SystemLogger
     {
+        #region Methods
+
+        /// <summary>
+        /// Convenience method to write log messages to splunkd.log.
+        /// </summary>
+        /// <param name="msg">The message.</param>
+        public static async Task WriteAsync(string msg)
+        {
+            await WriteAsync(LogLevel.Info, msg);
+        }
+
+        /// <summary>
+        /// Convenience method to write log messages to splunkd.log.
+        /// </summary>
+        /// <param name="level">The log level.</param>
+        /// <param name="msg">The message.</param>
+        public static async Task WriteAsync(LogLevel level, string msg)
+        {
+            // Message example:
+            // INFO Script.Run: Reading input definition FATAL Script.Run: Unhandled exception: System.InvalidOperationException: There is an error in XML document (0, 0). ---> System.Xml.XmlException: Root element is missing.     at System.Xml.XmlTextReaderImpl.Throw(Exception e)     at System.Xml.XmlTextReaderImpl.ParseDocumentContent()     at System.Xml.XmlTextReaderImpl.Read()     at System.Xml.XmlTextReader.Read()     at System.Xml.XmlReader.MoveToContent()     at Microsoft.Xml.Serialization.GeneratedAssembly.XmlSerializationReaderInputDefinition.Read9_input()     --- End of inner exception stack trace ---     at System.Xml.Serialization.XmlSerializer.Deserialize(XmlReader xmlReader, String encodingStyle, XmlDeserializationEvents events)     at System.Xml.Serialization.XmlSerializer.Deserialize(TextReader textReader)     at Splunk.ModularInputs.Script.Read(Type type) in c:\Users\Andy\Documents\GitHub\splunk-sdk-csharp\SplunkSDK\ModularInputs\Script.cs:line 187     at Splunk.ModularInputs.Script.Run[T](String[] args) in c:\Users\Andy\Documents\GitHub\splunk-sdk-csharp\SplunkSDK\ModularInputs\Script.cs:line 98
+            var line = string.Format("{0} {1}", GetLevelString(level), msg);
+            await Console.Error.WriteLineAsync(line);
+            await Console.Error.FlushAsync();
+        }
+
+        #endregion
+
+        #region Privates/internals
+
         /// <summary>
         /// Converts a log level into a string.
         /// </summary>
         /// <param name="level">The log level to convert.</param>
         /// <returns>The string representation of the log level.</returns>
-        private static string GetLevelString(LogLevel level)
+        static string GetLevelString(LogLevel level)
         {
             switch (level)
             {
@@ -81,27 +111,6 @@ namespace Splunk.ModularInputs
             }
         }
 
-        /// <summary>
-        /// Convenience method to write log messages to splunkd.log.
-        /// </summary>
-        /// <param name="msg">The message.</param>
-        public static void Write(string msg)
-        {
-            Write(LogLevel.Info, msg);
-        }
-
-        /// <summary>
-        /// Convenience method to write log messages to splunkd.log.
-        /// </summary>
-        /// <param name="level">The log level.</param>
-        /// <param name="msg">The message.</param>
-        public static void Write(LogLevel level, string msg)
-        {
-            // Message example:
-            // INFO Script.Run: Reading input definition FATAL Script.Run: Unhandled exception: System.InvalidOperationException: There is an error in XML document (0, 0). ---> System.Xml.XmlException: Root element is missing.     at System.Xml.XmlTextReaderImpl.Throw(Exception e)     at System.Xml.XmlTextReaderImpl.ParseDocumentContent()     at System.Xml.XmlTextReaderImpl.Read()     at System.Xml.XmlTextReader.Read()     at System.Xml.XmlReader.MoveToContent()     at Microsoft.Xml.Serialization.GeneratedAssembly.XmlSerializationReaderInputDefinition.Read9_input()     --- End of inner exception stack trace ---     at System.Xml.Serialization.XmlSerializer.Deserialize(XmlReader xmlReader, String encodingStyle, XmlDeserializationEvents events)     at System.Xml.Serialization.XmlSerializer.Deserialize(TextReader textReader)     at Splunk.ModularInputs.Script.Read(Type type) in c:\Users\Andy\Documents\GitHub\splunk-sdk-csharp\SplunkSDK\ModularInputs\Script.cs:line 187     at Splunk.ModularInputs.Script.Run[T](String[] args) in c:\Users\Andy\Documents\GitHub\splunk-sdk-csharp\SplunkSDK\ModularInputs\Script.cs:line 98
-            var line = string.Format("{0} {1}", GetLevelString(level), msg);
-            Console.Error.WriteLine(line);
-            Console.Error.Flush();
-        }
+        #endregion
     }
 }

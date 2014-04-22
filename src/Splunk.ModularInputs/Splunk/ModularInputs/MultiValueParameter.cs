@@ -25,27 +25,41 @@ namespace Splunk.ModularInputs
     /// The <see cref="MultiValueParameter"/> class represents a parameter that
     /// contains a multivalue.
     /// </summary>
+    /// <remarks>
+    /// <example>Sample XML</example>
+    /// <code>
+    /// <param_list name="multiValue">
+    ///   <value>value1</value>
+    ///   <value>value2</value>
+    /// </param_list>
+    /// </code>
+    /// </remarks>
     [XmlRoot("param_list")]
     public class MultiValueParameter : ParameterBase
     {
-        //XML Example:
-        //<param_list name="multiValue">
-        //<value>value1</value>
-        //<value>value2</value>
-        //</param_list>
+        #region Properties
+
         /// <summary>
         /// The value of the parameter.
         /// </summary>
         [XmlElement("value")]
         public Value ValueXmlElements { get; set; }
 
+        #endregion
+
+        #region Privates/internals
+
         /// <summary>
         /// Gets the value of the parameter.
         /// </summary>
         internal override ValueBase ValueAsBaseType
         {
-            get { return ValueXmlElements; }
+            get { return this.ValueXmlElements; }
         }
+
+        #endregion
+
+        #region Types
 
         /// <summary>
         /// The <see cref="Value"/> class represents a multivalue.
@@ -56,72 +70,72 @@ namespace Splunk.ModularInputs
             Justification = "Internal class. Pure passthrough.")]
         public class Value : ValueBase, IList<string>
         {
-            private readonly List<string> value = new List<string>();
+            readonly List<string> value = new List<string>();
 
             public int Count
             {
-                get { return value.Count; }
+                get { return this.value.Count; }
             }
 
             public bool IsReadOnly
             {
-                get { return ((ICollection<string>)value).IsReadOnly; }
+                get { return ((ICollection<string>)this.value).IsReadOnly; }
             }
 
             public string this[int index]
             {
-                get { return value[index]; }
+                get { return this.value[index]; }
                 set { this.value[index] = value; }
             }
 
             public int IndexOf(string item)
             {
-                return value.IndexOf(item);
+                return this.value.IndexOf(item);
             }
 
             public void Insert(int index, string item)
             {
-                value.Insert(index, item);
+                this.value.Insert(index, item);
             }
 
             public void RemoveAt(int index)
             {
-                value.RemoveAt(index);
+                this.value.RemoveAt(index);
             }
 
             public void Add(string item)
             {
-                value.Add(item);
+                this.value.Add(item);
             }
 
             public void Clear()
             {
-                value.Clear();
+                this.value.Clear();
             }
 
             public bool Contains(string item)
             {
-                return value.Contains(item);
+                return this.value.Contains(item);
             }
 
             public void CopyTo(string[] array, int arrayIndex)
             {
-                value.CopyTo(array, arrayIndex);
+                this.value.CopyTo(array, arrayIndex);
             }
 
             public bool Remove(string item)
             {
-                return value.Remove(item);
+                return this.value.Remove(item);
             }
 
             public IEnumerator<string> GetEnumerator()
             {
-                return value.GetEnumerator();
+                return this.value.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return GetEnumerator();
+                return this.GetEnumerator();
             }
         }
 
@@ -150,7 +164,7 @@ namespace Splunk.ModularInputs
             /// </returns>
             public override string ToString()
             {
-                return Text;
+                return this.Text;
             }
 
             /// <summary>
@@ -168,5 +182,7 @@ namespace Splunk.ModularInputs
                 return value.ToString();
             }
         }
+
+        #endregion
     }
 }

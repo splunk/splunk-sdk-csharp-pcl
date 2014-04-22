@@ -384,7 +384,6 @@ namespace Splunk.Client.UnitTesting
             Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#67");
 
             // Create a saved search
-            Job job;
             string search = "search index=sdk-tests * earliest=-1m";
             SavedSearch savedSearch = service.CreateSavedSearchAsync(savedSearchTitle, new SavedSearchAttributes() { Search = search }).Result;
             

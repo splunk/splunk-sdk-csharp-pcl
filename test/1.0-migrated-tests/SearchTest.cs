@@ -770,7 +770,6 @@ namespace Splunk.Client.UnitTesting
         [TestMethod]
         public void RemoteServerList()
         {
-            const string ParamName = "remote_server_list";
             var array = "first,second";// new string[] { "first", "second" };
 
             var args1 = new SearchExportArgs("")

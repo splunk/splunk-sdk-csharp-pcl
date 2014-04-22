@@ -1,14 +1,9 @@
 <StyleCopSettings Version="105">
   <GlobalSettings>
     <BooleanProperty Name="ViolationsAsErrors">True</BooleanProperty>
+    <StringProperty Name="LinkedSettingsFile">..\..\splunk-sdk-csharp-pcl.StyleCop</StringProperty>
+    <StringProperty Name="MergeSettingsFiles">Linked</StringProperty>
   </GlobalSettings>
-  <Parsers>
-    <Parser ParserId="StyleCop.CSharp.CsParser">
-      <ParserSettings>
-        <BooleanProperty Name="AnalyzeGeneratedFiles">True</BooleanProperty>
-      </ParserSettings>
-    </Parser>
-  </Parsers>
   <Analyzers>
     <Analyzer AnalyzerId="StyleCop.CSharp.ReadabilityRules">
       <Rules>
@@ -558,16 +553,6 @@
           </RuleSettings>
         </Rule>
         <Rule Name="StaticReadonlyFieldsMustBeginWithUpperCaseLetter">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-      </Rules>
-      <AnalyzerSettings />
-    </Analyzer>
-    <Analyzer AnalyzerId="StyleCop.CSharp.MaintainabilityRules">
-      <Rules>
-        <Rule Name="AccessModifierMustBeDeclared">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>

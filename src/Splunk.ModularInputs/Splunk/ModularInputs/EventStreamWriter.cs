@@ -22,19 +22,23 @@ namespace Splunk.ModularInputs
     using System.Xml;
 
     /// <summary>
-    /// The <see cref="EventStreamWriter"/> class writes an event to stdout
-    /// using the XML streaming mode.
+    /// The <see cref="EventStreamWriter"/> class writes an event to standard
+    /// output using the XML streaming mode.
     /// </summary>
     public class EventStreamWriter : IDisposable
     {
+        #region Constructos
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EventStreamWriter"/>
         /// class.
         /// </summary>
         public EventStreamWriter()
         {
-            xmlWriter.WriteStartElement("stream");
+            this.xmlWriter.WriteStartElement("stream");
         }
+
+        #endregion
 
         #region Methods
 
@@ -53,14 +57,14 @@ namespace Splunk.ModularInputs
             ////     2. Does not work with async writes.
             ////        Forces blocking IO.
 
-            if (xmlWriter == null)
+            if (this.xmlWriter == null)
             {
                 return;
             }
 
-            xmlWriter.WriteEndElement();
-            xmlWriter.Dispose();
-            xmlWriter = null;
+            this.xmlWriter.WriteEndElement();
+            this.xmlWriter.Dispose();
+            this.xmlWriter = null;
         }
 
         /// <summary>
@@ -69,57 +73,60 @@ namespace Splunk.ModularInputs
         /// <param name="eventElement">
         /// An object representing an event element.
         /// </param>
+        /// <remarks>
+        /// <example>Sample event stream</example>
+        /// <code>
+        /// <stream>
+        ///   <event>
+        ///     <index>sdk-tests2</index>
+        ///     <sourcetype>test sourcetype</sourcetype>
+        ///     <source>test source</source>
+        ///     <host>test host</host>
+        ///     <data>Event with all default fields set</data>
+        ///   </event>
+        ///   <event stanza="modular_input:UnitTest2" unbroken="1">
+        ///     <data>Part 1 of channel 2 without a newline </data>
+        ///   </event>
+        /// </stream>
+        /// </code>
+        /// </remarks>
         public async Task WriteEventAsync(EventElement eventElement)
         {
-            //XML Example:
-            //<stream>
-            //  <event>
-            //      <index>sdk-tests2</index>
-            //      <sourcetype>test sourcetype</sourcetype>
-            //      <source>test source</source>
-            //      <host>test host</host>
-            //      <data>Event with all default fields set</data>
-            //  </event>
-            //  <event stanza="modular_input://UnitTest2" unbroken="1">
-            //      <data>Part 1 of channel 2 without a newline </data>
-            //  </event>
-            //</stream>
-
-            await xmlWriter.WriteStartElementAsync(prefix: null, localName: "event", ns: null);
+            await this.xmlWriter.WriteStartElementAsync(prefix: null, localName: "event", ns: null);
             var stanza = eventElement.Stanza;
 
             if (stanza != null)
             {
-                await xmlWriter.WriteAttributeStringAsync(prefix: null, localName: "stanza", ns: null, value: stanza);
+                await this.xmlWriter.WriteAttributeStringAsync(prefix: null, localName: "stanza", ns: null, value: stanza);
             }
 
             if (eventElement.Unbroken)
             {
-                await xmlWriter.WriteAttributeStringAsync(prefix: null, localName: "unbroken", ns: null, value: "1");
+                await this.xmlWriter.WriteAttributeStringAsync(prefix: null, localName: "unbroken", ns: null, value: "1");
             }
 
-            await WriteElementIfNotNullAsync("index", eventElement.Index);
-            await WriteElementIfNotNullAsync("sourcetype", eventElement.SourceType);
-            await WriteElementIfNotNullAsync("source", eventElement.Source);
-            await WriteElementIfNotNullAsync("host", eventElement.Host);
-            await WriteElementIfNotNullAsync("data", eventElement.Data);
+            await this.WriteElementIfNotNullAsync("index", eventElement.Index);
+            await this.WriteElementIfNotNullAsync("sourcetype", eventElement.SourceType);
+            await this.WriteElementIfNotNullAsync("source", eventElement.Source);
+            await this.WriteElementIfNotNullAsync("host", eventElement.Host);
+            await this.WriteElementIfNotNullAsync("data", eventElement.Data);
 
             var time = eventElement.Time;
 
             if (time != null)
             {
-                await xmlWriter.WriteElementStringAsync(prefix: null, localName: "time", ns: null, value: 
-                    ConvertTimeToUtcUnixTimestamp(time.Value));
+                await this.xmlWriter.WriteElementStringAsync(
+                    prefix: null, localName: "time", ns: null, value: ConvertTimeToUtcUnixTimestamp(time.Value));
             }
 
             if (eventElement.Done)
             {
-                await xmlWriter.WriteStartElementAsync(prefix: null, localName: "done", ns: null);
-                await xmlWriter.WriteEndElementAsync();
-                await xmlWriter.FlushAsync();
+                await this.xmlWriter.WriteStartElementAsync(prefix: null, localName: "done", ns: null);
+                await this.xmlWriter.WriteEndElementAsync();
+                await this.xmlWriter.FlushAsync();
             }
 
-            await xmlWriter.WriteEndElementAsync();
+            await this.xmlWriter.WriteEndElementAsync();
         }
 
         #endregion
@@ -136,6 +143,17 @@ namespace Splunk.ModularInputs
         XmlWriter xmlWriter = new XmlTextWriter(Console.Out);
 
         /// <summary>
+        /// Converts a date-time value to Unix UTC timestamp.
+        /// </summary>
+        /// <param name="dateTime">A date-time value.</param>
+        /// <returns>The UTC timestamp.</returns>
+        static string ConvertTimeToUtcUnixTimestamp(DateTime dateTime)
+        {
+            var utcTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Utc);
+            return (utcTime - UnixUtcEpoch).TotalSeconds.ToString();
+        }
+
+        /// <summary>
         /// Asynchronously writes an element if its content is non <c>null</c>.
         /// </summary>
         /// <param name="tag">
@@ -146,23 +164,12 @@ namespace Splunk.ModularInputs
         /// </param>
         async Task WriteElementIfNotNullAsync(string tag, string content)
         {
-            Debug.Assert(tag != null);
+            Debug.Assert(tag != null, "tag == null");
 
             if (content != null)
             {
-                await xmlWriter.WriteElementStringAsync(prefix: null, localName: tag, ns: null, value: content);
+                await this.xmlWriter.WriteElementStringAsync(prefix: null, localName: tag, ns: null, value: content);
             }
-        }
-
-        /// <summary>
-        /// Converts a date-time value to Unix UTC timestamp.
-        /// </summary>
-        /// <param name="dateTime">A date-time value.</param>
-        /// <returns>The UTC timestamp.</returns>
-        static string ConvertTimeToUtcUnixTimestamp(DateTime dateTime)
-        {
-            var utcTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Utc);
-            return (utcTime - UnixUtcEpoch).TotalSeconds.ToString();
         }
 
         #endregion

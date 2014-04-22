@@ -25,13 +25,15 @@ namespace Splunk.ModularInputs
     [XmlRoot("param")]
     public class SingleValueParameter : ParameterBase
     {
-        // XML Example:
-        // <param name="param1">value1</param>
         /// <summary>
         /// The value of the parameter.
         /// </summary>
         /// <remarks>
         /// This value is used for XML serialization and deserialization.
+        /// <example>Sample XML</example>
+        /// <code>
+        /// <param name="param1">value1</param>
+        /// </code>
         /// </remarks>
         [XmlText]
         public string ValueXmlText { get; set; }
@@ -41,7 +43,7 @@ namespace Splunk.ModularInputs
         /// </summary>
         internal override ValueBase ValueAsBaseType
         {
-            get { return new Value(ValueXmlText); }
+            get { return new Value(this.ValueXmlText); }
         }
 
         /// <summary>
@@ -52,7 +54,7 @@ namespace Splunk.ModularInputs
             /// <summary>
             /// The single value.
             /// </summary>
-            private readonly string stringValue;
+            readonly string stringValue;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Value"/> class.
@@ -60,7 +62,7 @@ namespace Splunk.ModularInputs
             /// <param name="value">Value of this type.</param>
             public Value(string value)
             {
-                stringValue = value;
+                this.stringValue = value;
             }
 
             /// <summary>
@@ -79,7 +81,7 @@ namespace Splunk.ModularInputs
             /// <returns>The string value.</returns>
             public override string ToString()
             {
-                return stringValue;
+                return this.stringValue;
             }
         }
     }

@@ -25,28 +25,28 @@ namespace Splunk.ModularInputs
     /// <remarks>
     /// It corresponds to one of the keys that can be defined for an instance
     /// of that modular input in a stanza in inputs.conf.
+    /// <example>Sample XML Argument</example>
+    /// <code>
+    /// <arg name="interval">
+    ///   <description>Polling Interval</description>
+    ///   <validation>is_pos_int('interval')</validation>
+    ///   <data_type>number</data_type>
+    ///   <required_on_edit>false</required_on_edit>
+    ///   <required_on_create>true</required_on_create>
+    /// </arg>
+    /// </code>
     /// </remarks>
     [XmlRoot("arg")]
     public class Argument
     {
-        //XML Example:
-        //<arg name="interval">
-        //  <description>Polling Interval</description>
-        //  <validation>is_pos_int('interval')</validation>
-        //  <data_type>number</data_type>
-        //  <required_on_edit>false</required_on_edit>
-        //  <required_on_create>true</required_on_create>
-        //</arg>
-        
         /// <summary>
-        /// Initializes a new, empty instance of the <see cref="Argument" />
-        /// class.
+        /// Initializes a new instance of the <see cref="Argument" /> class.
         /// </summary>
         public Argument()
         {
             DataType = DataType.String;
-            RequiredOnEdit = false;
-            RequiredOnCreate = true;
+            this.RequiredOnEdit = false;
+            this.RequiredOnCreate = true;
         }
 
         /// <summary>

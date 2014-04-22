@@ -27,26 +27,18 @@ namespace Splunk.ModularInputs
     /// </summary>
     public class ConfigurationItemBase
     {
+        #region Constructors
+        
         /// <summary>
-        /// Parameter in the input definition item.
-        /// </summary>
-        private Dictionary<string, ParameterBase.ValueBase> parameters;
-
-        /// <summary>
-        /// Single value parameters keyed 
-        /// by name in the input definition item.
-        /// </summary>
-        private Dictionary<string, string> singleValueParameters;
-
-        /// <summary>
-        /// Initializes a new instance of the 
-        /// <see cref="ConfigurationItemBase" /> class.
+        /// Initializes a new instance of the <see cref="ConfigurationItemBase"/> class.
         /// </summary>
         internal ConfigurationItemBase()
         {
-            SingleValueParameterXmlElements = new List<SingleValueParameter>();
-            MultiValueParameterXmlElements = new List<MultiValueParameter>();
+            this.SingleValueParameterXmlElements = new List<SingleValueParameter>();
+            this.MultiValueParameterXmlElements = new List<MultiValueParameter>();
         }
+
+        #endregion
 
         /// <summary>
         /// The name of this item.
@@ -69,22 +61,25 @@ namespace Splunk.ModularInputs
         /// <summary>
         /// Single value parameters keyed by name in the item.
         /// </summary>
-        // This method is provided to make it easier to retrieve single value
-        // parameters. It is a much more common case than multi value 
-        // parameters. Splunk auto-generated modular input UI does not
-        // support multi value parameters.
+        /// <remarks>
+        /// This method is provided to make it easier to retrieve single value
+        /// parameters. It is a much more common case than multi value 
+        /// parameters. Splunk auto-generated modular input UI does not
+        /// support multi value parameters.
+        /// </remarks>
         public IDictionary<string, string> SingleValueParameters
         {
             get
             {
-                if (singleValueParameters == null)
+                if (this.singleValueParameters == null)
                 {
-                    singleValueParameters = SingleValueParameterXmlElements
+                    this.singleValueParameters = this.SingleValueParameterXmlElements
                         .ToDictionary(
-                        p => p.Name, 
-                        p => (string) (SingleValueParameter.Value) p.ValueAsBaseType);
+                        p => p.Name,
+                        p => (string)(SingleValueParameter.Value)p.ValueAsBaseType);
                 }
-                return singleValueParameters;
+
+                return this.singleValueParameters;
             }
         }
 
@@ -95,23 +90,39 @@ namespace Splunk.ModularInputs
         {
             get
             {
-                if (parameters == null)
+                if (this.parameters == null)
                 {
                     var list = new List<ParameterBase>();
 
                     list.AddRange(
-                        SingleValueParameterXmlElements.Select(
-                            p => (ParameterBase) p));
+                        this.SingleValueParameterXmlElements.Select(
+                            p => (ParameterBase)p));
 
                     list.AddRange(
-                        MultiValueParameterXmlElements.Select(
-                            p => (ParameterBase) p));
+                        this.MultiValueParameterXmlElements.Select(
+                            p => (ParameterBase)p));
 
-                        parameters = list.ToDictionary(
-                            p => p.Name, p => p.ValueAsBaseType);
+                    this.parameters = list.ToDictionary(
+                        p => p.Name, p => p.ValueAsBaseType);
                 }
-                return parameters;
+
+                return this.parameters;
             }
         }
+
+        #region Privates/internals
+
+        /// <summary>
+        /// Parameter in the input definition item.
+        /// </summary>
+        Dictionary<string, ParameterBase.ValueBase> parameters;
+
+        /// <summary>
+        /// Single value parameters keyed 
+        /// by name in the input definition item.
+        /// </summary>
+        Dictionary<string, string> singleValueParameters;
+
+        #endregion
     }
 }

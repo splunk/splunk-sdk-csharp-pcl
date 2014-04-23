@@ -167,8 +167,8 @@ namespace Splunk.Client.UnitTesting
 
             indexAttributes.BlockSignSize = index.BlockSignSize + 1;
 
-            
-            if (this.VersionCompare(service,"4.3") > 0)
+
+            if (this.VersionCompare(service, "4.3") > 0)
             {
                 indexAttributes.EnableOnlineBucketRepair = !index.EnableOnlineBucketRepair;
                 indexAttributes.MaxBloomBackfillBucketAge = "20d";
@@ -192,11 +192,11 @@ namespace Splunk.Client.UnitTesting
             indexAttributes.ServiceMetaPeriod = index.ServiceMetaPeriod + 1;
             indexAttributes.SyncMeta = !index.SyncMeta;
             indexAttributes.ThrottleCheckPeriod = index.ThrottleCheckPeriod + 1;
-            
+
             //indexAttributes.Update();
             index.UpdateAsync(indexAttributes).Wait();
 
-           // check, then restore using map method
+            // check, then restore using map method
             //index.Refresh();
 
             ClearIndex(service, indexName, index);
@@ -365,7 +365,10 @@ namespace Splunk.Client.UnitTesting
         /// <param name="index">The index object</param>
         private void ClearIndex(Service service, string indexName, Index index)
         {
-            var result = service.SearchOneshotAsync(string.Format("search index={0} * | delete", indexName)).Result;
+            SearchResults result = service.SearchOneshotAsync(string.Format("search index={0} * | delete", indexName)).Result;
+
+            SearchResults result1 = service.SearchOneshotAsync(string.Format("search index={0} * ", indexName)).Result;
+
 
             //StreamReader reader = new StreamReader(stream);
             //string message = reader.ReadToEnd();
@@ -394,13 +397,13 @@ namespace Splunk.Client.UnitTesting
 
             Service service = this.Connect();
             Index index = service.GetIndexAsync(indexName).Result;
-                                    
+
             //index.Enable();
             Assert.False(index.Disabled);
 
             IndexAttributes indexAttributes = GetIndexAttributes(index);
 
-            ClearIndex(service, indexName, index);
+            //ClearIndex(service, indexName, index);
 
             // submit event to index using variable arguments
             //index.Submit(indexAttributes, now + " Hello World. \u0150");
@@ -429,10 +432,13 @@ namespace Splunk.Client.UnitTesting
             };
 
             //var receiver = service.GetReceiver();
+            Receiver receiver = new Receiver();
             //receiver.Submit(args, "Hello World.");
             //receiver.Submit(args, "Goodbye world.");
+            receiver.SendAsync("Hello World.", args).Wait();
+            receiver.SendAsync("Goodbye world.", args).Wait();
             //WaitUntilEventCount(index, 4, 45);
-            //// verify the fields of events in the index matching the args.
+            // verify the fields of events in the index matching the args.
             //using (var stream =
             //    service.Oneshot(
             //        string.Format(
@@ -441,12 +447,24 @@ namespace Splunk.Client.UnitTesting
             //            Host,
             //            Source,
             //            SourceType)))
+
+            SearchResults result = service.SearchOneshotAsync(
+                    string.Format(
+                        "search index={0} host={1} source={2} sourcetype={3}",
+                        indexName,
+                        Host,
+                        Source,
+                        SourceType)).Result;
+
             //using (var reader = new ResultsReaderXml(stream))
             //{
             //    Assert.Equal(2, reader.Count());
             //}
+            Assert.AreEqual(2, result.FieldNames.Count);
+            index.GetAsync().Wait();
+            Assert.AreEqual(2, index.TotalEventCount);
 
-            //ClearIndex(service, indexName, index);
+            ClearIndex(service, indexName, index);
             //index.Clean(180);
             //Assert.Equal(0, index.TotalEventCount, "Expected the total event count to be 0");
         }
@@ -467,22 +485,32 @@ namespace Splunk.Client.UnitTesting
 
             Service service = this.Connect();
             //Receiver receiver = service.GetReceiver();
+            Receiver receiver = new Receiver();
             Index index = service.GetIndexAsync(indexName).Result;
 
             //index.Enable();
             Assert.False(index.Disabled);
 
             IndexAttributes indexAttributes = GetIndexAttributes(index);
-
+            ReceiverArgs receiverArgs = new ReceiverArgs() { index = index.Title, };
             // submit event to default index using variable arguments
             //receiver.Log(indexAttributes, "Hello World. \u0150");
             //receiver.Log(indexAttributes, "Goodbye World. \u0150");
+            receiver.SendAsync("Hello World", receiverArgs).Wait();
+            receiver.SendAsync("Hello World 2", receiverArgs).Wait();
 
             // stream event to default index with variable arguments
             //Stream streamArgs = receiver.Attach(indexAttributes);
             //streamArgs.Write(Encoding.UTF8.GetBytes(" Hello World again. \u0150\r\n"));
             //streamArgs.Write(Encoding.UTF8.GetBytes(" Goodbye World again.\u0150\r\n"));
             //streamArgs.Close();
+
+            UnicodeEncoding uniEncoding = new UnicodeEncoding();
+            byte[] inputString = uniEncoding.GetBytes("stream hello world ");
+            MemoryStream stream = new MemoryStream();
+            stream.Write(inputString, 0, inputString.Length);
+            receiver.SendAsync(stream, receiverArgs).Wait();
+            stream.Close();
         }
     }
 }

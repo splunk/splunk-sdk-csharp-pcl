@@ -501,6 +501,7 @@ namespace Splunk.Client.UnitTesting
             // it's possible there was a previous saved search with the same name
             // that had a matching history.
             JobCollection history = savedSearch.GetHistoryAsync().Result;
+            Console.WriteLine("history job count=" + history.Count);
             foreach (Job job in history)
             {
                 job.CancelAsync().Wait();                

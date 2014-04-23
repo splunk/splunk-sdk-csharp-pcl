@@ -219,6 +219,19 @@ namespace Splunk.ModularInputs
         #region Privates/internals
 
         /// <summary>
+        /// Serializes this object to XML output. Used by unit tests.
+        /// </summary>
+        /// <param name="object">An object to serialize.</param>
+        /// <returns>The XML string.</returns>
+        internal static string Serialize(object @object)
+        {
+            var x = new XmlSerializer(@object.GetType());
+            var sw = new StringWriter();
+            x.Serialize(sw, @object);
+            return sw.ToString();
+        }
+
+        /// <summary>
         /// Writes an exception as a <see cref="LogLevel.Info"/> event to the
         /// splunkd log.
         /// </summary>
@@ -257,19 +270,6 @@ namespace Splunk.ModularInputs
         {
             var x = new XmlSerializer(type);
             return x.Deserialize(Console.In);
-        }
-
-        /// <summary>
-        /// Serializes this object to XML output. Used by unit tests.
-        /// </summary>
-        /// <param name="object">An object to serialize.</param>
-        /// <returns>The XML string.</returns>
-        internal static string Serialize(object @object)
-        {
-            var x = new XmlSerializer(@object.GetType());
-            var sw = new StringWriter();
-            x.Serialize(sw, @object);
-            return sw.ToString();
         }
 
         #endregion

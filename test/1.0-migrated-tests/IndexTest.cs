@@ -96,7 +96,7 @@ namespace Splunk.Client.UnitTesting
                 dummyString = idx.ColdPathExpanded;
                 dummyString = idx.ColdToFrozenDir;
                 dummyString = idx.ColdToFrozenScript;
-                //dummyBool = idx.CompressRawdata;
+                dummyBool = idx.CompressRawData;
                 dummyInt = idx.CurrentDBSizeMB;
                 dummyString = idx.DefaultDatabase;
                 dummyBool = idx.EnableRealtimeSearch;
@@ -120,16 +120,16 @@ namespace Splunk.Client.UnitTesting
                 dummyString = idx.MemPoolMB;
                 dummyString = idx.MinRawFileSyncSecs;
                 dummyTime = idx.MinTime;
-                //dummyInt = idx.NumBloomfilters;
-                //dummyInt = idx.NumHotBuckets;
-                //dummyInt = idx.NumWarmBuckets;
+                dummyInt = idx.NumBloomFilters;
+                dummyInt = idx.NumHotBuckets;
+                dummyInt = idx.NumWarmBuckets;
                 dummyInt = idx.PartialServiceMetaPeriod;
                 dummyInt = idx.QuarantineFutureSecs;
                 dummyInt = idx.QuarantinePastSecs;
                 dummyInt = idx.RawChunkSizeBytes;
                 dummyInt = idx.RotatePeriodInSecs;
                 dummyInt = idx.ServiceMetaPeriod;
-                //dummyString = idx.SuppressBannerList;
+                dummyString = idx.SuppressBannerList;
                 bool sync = idx.Sync;
                 dummyBool = idx.SyncMeta;
                 dummyString = idx.ThawedPath;
@@ -193,7 +193,6 @@ namespace Splunk.Client.UnitTesting
             indexAttributes.SyncMeta = !index.SyncMeta;
             indexAttributes.ThrottleCheckPeriod = index.ThrottleCheckPeriod + 1;
 
-            //indexAttributes.Update();
             index.UpdateAsync(indexAttributes).Wait();
 
             // check, then restore using map method
@@ -366,9 +365,6 @@ namespace Splunk.Client.UnitTesting
         private void ClearIndex(Service service, string indexName, Index index)
         {
             SearchResults result = service.SearchOneshotAsync(string.Format("search index={0} * | delete", indexName)).Result;
-
-            SearchResults result1 = service.SearchOneshotAsync(string.Format("search index={0} * ", indexName)).Result;
-
 
             //StreamReader reader = new StreamReader(stream);
             //string message = reader.ReadToEnd();

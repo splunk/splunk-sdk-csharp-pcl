@@ -76,6 +76,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="ConfTest.cs" />
     <Compile Include="IndexTest.cs" />
+    <Compile Include="MessageTest.cs" />
     <Compile Include="SavedSearchTest.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -22,8 +22,8 @@ namespace Splunk.Examples.Authenticate
     using Splunk.Client;
 
     /// <summary>
-    /// An example program to authenticate to the server 
-    /// and print the received token.
+    /// An example program to authenticate to the server and print the received
+    /// token.
     /// </summary>
     public class Program
     {

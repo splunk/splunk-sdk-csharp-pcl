@@ -22,49 +22,45 @@ namespace Splunk.ModularInputs
     using System.Xml;
 
     /// <summary>
-    /// The <see cref="EventStreamWriter"/> class writes an event to standard
+    /// The <see cref="EventStreamWriter"/> class writes events to standard
     /// output using the XML streaming mode.
     /// </summary>
     public class EventStreamWriter : IDisposable
     {
-        #region Constructos
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EventStreamWriter"/>
         /// class.
         /// </summary>
         public EventStreamWriter()
-        {
-            this.xmlWriter.WriteStartElement("stream");
-        }
+        { }
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Writes the last end tag and releases resources.
+        /// Releases the resources used by the current <see cref=
+        /// "EventStreamWriter"/>.
         /// </summary>
+        /// <remarks>
+        /// This method writes the closing <![CDATA[</stream>]]> element
+        /// synchronously, if it is outstanding. Best practice is to write the
+        /// closing <![CDATA[</stream>]]> element asynchronously using
+        /// <see cref="EventStreamWriter.WriteEndAsync"/>.
+        /// </remarks>
         public void Dispose()
         {
-            //// TODO: 
-            //// [ ] Correct this bad practice.
-            ////     1. Dispose must never throw, but xmlWriter may throw.
-            ////        Rationale for not throwing: Dispose is typically called 
-            ////        from a finally block; explicitly or implicitly when 
-            ////        leaving the scope of a using statement. If Dispose 
-            ////        throws, the original exception will be lost; not good.
-            ////     2. Does not work with async writes.
-            ////        Forces blocking IO.
-
-            if (this.xmlWriter == null)
-            {
-                return;
-            }
-
-            this.xmlWriter.WriteEndElement();
+            //// The XmlTextWriter IDisposable implementation writes all unwritten 
+            //// end elements and--like all good IDisposable implementations--can
+            //// be called many times. Hence, we let it do all the work.
             this.xmlWriter.Dispose();
-            this.xmlWriter = null;
+        }
+
+        public async Task WriteEndAsync()
+        {
+            await this.xmlWriter.WriteEndElementAsync();
         }
 
         /// <summary>
@@ -92,6 +88,11 @@ namespace Splunk.ModularInputs
         /// </remarks>
         public async Task WriteEventAsync(EventElement eventElement)
         {
+            if (this.xmlWriter.WriteState == WriteState.Start)
+            {
+                await this.xmlWriter.WriteStartElementAsync(prefix: null, localName: "stream", ns: null);
+            }
+
             await this.xmlWriter.WriteStartElementAsync(prefix: null, localName: "event", ns: null);
             var stanza = eventElement.Stanza;
 

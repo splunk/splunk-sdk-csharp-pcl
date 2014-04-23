@@ -49,33 +49,29 @@ namespace Splunk.ModularInputs
         #region Methods
 
         /// <summary>
-        /// Performs the action specified by the <c>args</c> parameter.
+        /// Asynchronously performs the action specified by the <see cref=
+        /// "args"/> parameter.
         /// </summary>
-        /// <remarks>
-        /// <para>
-        /// If the <c>args</c> are not in the supported set of values,
-        /// the method will do nothing and return a non-zero code (for
-        /// instance, "1"), without raising an exception.
-        /// </para>
-        /// <para>
-        /// Any exceptions and internal progress messages when executing this
-        /// method will be logged to the splunkd log.
-        /// </para>
-        /// </remarks>
         /// <typeparam name="T">
         /// The application-derived type of the <see cref="Script"/>. It must
         /// have a constructor without a parameter.
         /// </typeparam>
         /// <param name="args">
         /// Command-line arguments provided by Splunk when it invokes the
-        /// modular input script (that is, executable). An application should
-        /// pass the <c>args</c> of the <c>Main</c> method (that
-        /// is, the executable entry point) into this method.
+        /// modular input program. Implementers should pass the arguments to
+        /// the main method of this program as the value of this parameter.
         /// </param>
         /// <returns>
-        /// Exit code, which should be used as the return value of the 
-        /// <c>Main</c> method. A value of <c>0</c> indicates success.
+        /// A value which should be used as the exit code from the modular
+        /// input program. A value of <c>0</c> indicates success. A non-zero
+        /// value indicates failure.
         /// </returns>
+        /// <remarks>
+        /// If the <see cref="args"/> are not in the supported set of values,
+        /// the method will do nothing and return a non-zero value. Any 
+        /// exceptions and internal progress messages encountered during 
+        /// execution are written to the splunkd log file.
+        /// </remarks>
         public static async Task<int> RunAsync<T>(string[] args) where T : Script, new()
         {
             try
@@ -133,8 +129,7 @@ namespace Splunk.ModularInputs
 
                         if (script.Validate(validationItems, out errorMessage))
                         {
-                            // Validation succeeded.
-                            return 0;
+                            return 0; // Validation succeeded
                         }
                     }
                     catch (Exception e)
@@ -156,8 +151,7 @@ namespace Splunk.ModularInputs
                 LogExceptionAsync(e).Wait();
             }
 
-            // Return code indicating a failure.
-            // '1' has no special meaning other than it is non zero.
+            // The value one indicates failure, but has no specific meaning
             return 1;
         }
 
@@ -225,11 +219,41 @@ namespace Splunk.ModularInputs
         #region Privates/internals
 
         /// <summary>
+        /// Writes an exception as a <see cref="LogLevel.Info"/> event to the
+        /// splunkd log.
+        /// </summary>
+        /// <param name="e">
+        /// The <see cref="Exception"/> to write.
+        /// </param>
+        static async Task LogExceptionAsync(Exception e)
+        {
+            //// The splunkd logger identifies each line of text as a new log entry, but the stack trace is a
+            //// multi-line entry. Hence, we replace newlines with the string " | ".
+            var full = e.ToString();
+            full = full.Replace(Environment.NewLine, " | ");
+            await LogAsync(string.Format("Unhandled exception: {0}", full), LogLevel.Fatal);
+        }
+
+        /// <summary>
+        /// Writes a message to the splunkd log.
+        /// </summary>
+        /// <param name="message">
+        /// A message.
+        /// </param>
+        /// <param name="level">Log level. The default value is 
+        /// <c>LogLevel.Info</c>.
+        /// </param>
+        static async Task LogAsync(string message, LogLevel level = LogLevel.Info)
+        {
+            await SystemLogger.WriteAsync(level, "Script.Run: " + message);
+        }
+
+        /// <summary>
         /// Reads standard input and returns the parsed XML input.
         /// </summary>
         /// <param name="type">Type of object to parse.</param>
         /// <returns>An object.</returns>
-        internal static object Read(Type type)
+        static object Read(Type type)
         {
             var x = new XmlSerializer(type);
             return x.Deserialize(Console.In);
@@ -246,32 +270,6 @@ namespace Splunk.ModularInputs
             var sw = new StringWriter();
             x.Serialize(sw, @object);
             return sw.ToString();
-        }
-
-        /// <summary>
-        /// Writes an exception as a <c>LogLevel.Info</c> event into the
-        /// splunkd log.
-        /// </summary>
-        /// <param name="e">An exception.</param>
-        static async Task LogExceptionAsync(Exception e)
-        {
-            // splunkd log breaks up events with newlines, which will split
-            // stack trace. Replace them with double space.
-            var full = e.ToString();
-            full = full.Replace(Environment.NewLine, "  ");
-            await LogAsync(string.Format("Unhandled exception: {0}", full), LogLevel.Fatal);
-        }
-
-        /// <summary>
-        /// Writes a message into the splunkd log.
-        /// </summary>
-        /// <param name="msg">A message.</param>
-        /// <param name="level">Log level. The default value is 
-        /// <c>LogLevel.Info</c>.
-        /// </param>
-        static async Task LogAsync(string msg, LogLevel level = LogLevel.Info)
-        {
-            await SystemLogger.WriteAsync(level, "Script.Run: " + msg);
         }
 
         #endregion

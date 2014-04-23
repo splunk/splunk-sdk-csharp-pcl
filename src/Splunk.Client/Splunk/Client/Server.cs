@@ -131,6 +131,21 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Asynchronously gets the <see cref="ServerSettings"/> from the Splunk 
+        /// server represented by the current instance.
+        /// </summary>
+        /// <returns>
+        /// An object representing the server settings from the Splunk server
+        /// represented by the current instance.
+        /// </returns>
+        public async Task<ServerSettings> GetSettingsAsync()
+        {
+            var resource = new ServerSettings(this.Context, this.Namespace);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
         /// Removes a <see cref="ServerMessage"/> from the Splunk server 
         /// represented by the current instance.
         /// </summary>
@@ -222,6 +237,25 @@ namespace Splunk.Client
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously updates the <see cref="ServerSettings"/> on the 
+        /// Splunk server represented by the current instance.
+        /// </summary>
+        /// <param name="values">
+        /// An object representing the updated server setting values.
+        /// </param>
+        /// <returns>
+        /// An object representing the updated server settings on the Splunk 
+        /// server represented by the current instance.
+        /// </returns>
+        public async Task<ServerSettings> UpdateSettingsAsync(ServerSettingValues values)
+        {
+            var resource = new ServerSettings(this.Context, this.Namespace);
+            await resource.UpdateAsync(values);
+            return resource;
+        }
+
 
         #endregion
 

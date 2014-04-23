@@ -21,13 +21,12 @@ namespace Splunk.Client.UnitTesting
     using System;
     using System.Collections.Generic;
     using System.Net;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Splunk.Client;
+    using Xunit;
 
     /// <summary>
     /// This class tests all the Splunk Service methods.
     /// </summary>
-    [TestClass]
     public class ServiceTest : TestHelper
     {
         /// <summary>
@@ -101,7 +100,7 @@ namespace Splunk.Client.UnitTesting
             dummyBool = job.IsSaved;
             dummyBool = job.IsSavedSearch;
             dummyBool = job.IsZombie;
-            Assert.AreEqual(job.Name, job.Sid, this.assertRoot + "#1");
+            Assert.Equal(job.Name, job.Sid);
         }
 
         ///// <summary>
@@ -110,7 +109,7 @@ namespace Splunk.Client.UnitTesting
         ///// <param name="response">The repsonse message</param>
         //private void CheckResponse(ResponseMessage response)
         //{
-        //    Assert.AreEqual(200, response.Status, this.assertRoot + "#2");
+        //    Assert.Equal(200, response.Status, this.assertRoot + "#2");
         //    try
         //    {
         //        // Make sure we can at least load the Atom response
@@ -126,7 +125,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Checks the getters in the Job class
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void JobTest()
         {
             Service service = this.Connect();
@@ -141,7 +141,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test the expected service capabilities.
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void ServiceCapabilities()
         {
             Service service = this.Connect();
@@ -168,14 +169,15 @@ namespace Splunk.Client.UnitTesting
             string[] capStrings = caps.Select(a => (string)a).ToArray();
             foreach (string name in expected)
             {
-                Assert.IsTrue(this.Contains(capStrings, name), this.assertRoot + "#3");
+                Assert.True(this.Contains(capStrings, name), this.assertRoot + "#3");
             }
         }
 
         ///// <summary>
         ///// Test naked HTTP get
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void ServiceGet()
         //{
         //    Service service = this.Connect();
@@ -202,7 +204,7 @@ namespace Splunk.Client.UnitTesting
         //    }
         //    catch (WebException ex)
         //    {
-        //        Assert.AreEqual(404, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#4");
+        //        Assert.Equal(404, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#4");
         //        return;
         //    }
 
@@ -212,7 +214,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests the getting of service info (there are no set arguments)
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void ServiceInfo()
         {
             Service service = Connect();
@@ -245,7 +248,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test login
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void ServiceLogin()
         {
             //ResponseMessage response;
@@ -258,16 +262,16 @@ namespace Splunk.Client.UnitTesting
             {
                 //response = service.Get("/services/authentication/users");
                 config = service.GetConfigurationsAsync().Result;
-                Assert.Fail("Expected HttpException");
+                Assert.True(false, "Expected HttpException");
             }
             catch (WebException ex)
             {
-                Assert.AreEqual(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#6");
+                Assert.Equal(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode());
             }
             catch (Exception e)
             {
                 //TODO, if dev fix the aggregate exception issue, should only catch the above exception
-                Assert.IsTrue(e.InnerException.Message.Contains("401"));
+                Assert.True(e.InnerException.Message.Contains("401"));
             }
 
             // Logged in, request should succeed
@@ -275,7 +279,7 @@ namespace Splunk.Client.UnitTesting
             //response = service.Get("/services/authentication/users");
             //this.CheckResponse(response);
             config = service.GetConfigurationsAsync().Result;
-            Assert.IsNotNull(config, "get null return");
+            Assert.NotNull(config);
 
             //// Logout, the request should fail with a 401
             service.LogoffAsync().Wait();
@@ -283,23 +287,24 @@ namespace Splunk.Client.UnitTesting
             {
                 //response = service.Get("/services/authentication/users");
                 config = service.GetConfigurationsAsync().Result;    
-                Assert.Fail("Expected HttpException");
+                Assert.True(false, "Expected HttpException");
             }
             catch (WebException ex)
             {
-                Assert.AreEqual(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode(), this.assertRoot + "#6");
+                Assert.Equal(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode());
             }
             catch (Exception e)
             {
                 //TODO, if dev fix the aggregate exception issue, should only catch the above exception
-                Assert.IsTrue(e.InnerException.Message.Contains("401"));
+                Assert.True(e.InnerException.Message.Contains("401"));
             }
         }
 
         ///// <summary>
         ///// Test setters and getters
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void ServiceSettersGetters()
         //{
         //    // The individual classes test most of the set/get methods,
@@ -313,29 +318,29 @@ namespace Splunk.Client.UnitTesting
         //    // entity.setMethod(value)
         //    // entity.Method() --> gets value.
         //    settings.Host = "sdk-host";
-        //    Assert.AreEqual("sdk-host", settings.Host, this.assertRoot + "#8");
+        //    Assert.Equal("sdk-host", settings.Host, this.assertRoot + "#8");
 
         //    // make sure posts arguments are merged
         //    // entity.setMethod(value)
         //    // entity.update(args.create("key2", value2))
         //    settings.Host = "sdk-host2";
         //    settings.Update(new Dictionary<string, object>(Args.Create("minFreeSpace", 500)));
-        //    Assert.AreEqual("sdk-host2", settings.Host, this.assertRoot + "#9");
-        //    Assert.AreEqual(500, settings.MinFreeSpace, this.assertRoot + "#10");
+        //    Assert.Equal("sdk-host2", settings.Host, this.assertRoot + "#9");
+        //    Assert.Equal(500, settings.MinFreeSpace, this.assertRoot + "#10");
 
         //    // make sure live posts argument take precedents over setters
         //    // entity.setMethod(value)
         //    // entity.update(args.create("samekey", value2))
         //    settings.MinFreeSpace = 600;
         //    settings.Update(new Dictionary<string, object>(Args.Create("minFreeSpace", 700)));
-        //    Assert.AreEqual(700, settings.MinFreeSpace, this.assertRoot + "#11");
+        //    Assert.Equal(700, settings.MinFreeSpace, this.assertRoot + "#11");
 
         //    // Restore original
         //    settings.Host = originalHost;
         //    settings.MinFreeSpace = originalMinSpace;
         //    settings.Update();
-        //    Assert.AreEqual(settings.MinFreeSpace, originalMinSpace, this.assertRoot + "#12");
-        //    Assert.AreEqual(settings.Host, originalHost, this.assertRoot + "#13");
+        //    Assert.Equal(settings.MinFreeSpace, originalMinSpace, this.assertRoot + "#12");
+        //    Assert.Equal(settings.Host, originalHost, this.assertRoot + "#13");
         //}
     }
 }

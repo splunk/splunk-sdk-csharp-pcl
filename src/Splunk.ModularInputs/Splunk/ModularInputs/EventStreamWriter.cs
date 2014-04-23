@@ -22,45 +22,45 @@ namespace Splunk.ModularInputs
     using System.Xml;
 
     /// <summary>
-    /// The <see cref="EventStreamWriter"/> class writes an event to stdout
-    /// using the XML streaming mode.
+    /// The <see cref="EventStreamWriter"/> class writes events to standard
+    /// output using the XML streaming mode.
     /// </summary>
     public class EventStreamWriter : IDisposable
     {
+        #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EventStreamWriter"/>
         /// class.
         /// </summary>
         public EventStreamWriter()
-        {
-            xmlWriter.WriteStartElement("stream");
-        }
+        { }
+
+        #endregion
 
         #region Methods
 
         /// <summary>
-        /// Writes the last end tag and releases resources.
+        /// Releases the resources used by the current <see cref=
+        /// "EventStreamWriter"/>.
         /// </summary>
+        /// <remarks>
+        /// This method writes the closing <![CDATA[</stream>]]> element
+        /// synchronously, if it is outstanding. Best practice is to write the
+        /// closing <![CDATA[</stream>]]> element asynchronously using
+        /// <see cref="EventStreamWriter.WriteEndAsync"/>.
+        /// </remarks>
         public void Dispose()
         {
-            //// TODO: 
-            //// [ ] Correct this bad practice.
-            ////     1. Dispose must never throw, but xmlWriter may throw.
-            ////        Rationale for not throwing: Dispose is typically called 
-            ////        from a finally block; explicitly or implicitly when 
-            ////        leaving the scope of a using statement. If Dispose 
-            ////        throws, the original exception will be lost; not good.
-            ////     2. Does not work with async writes.
-            ////        Forces blocking IO.
+            //// The XmlTextWriter IDisposable implementation writes all unwritten 
+            //// end elements and--like all good IDisposable implementations--can
+            //// be called many times. Hence, we let it do all the work.
+            this.xmlWriter.Dispose();
+        }
 
-            if (xmlWriter == null)
-            {
-                return;
-            }
-
-            xmlWriter.WriteEndElement();
-            xmlWriter.Dispose();
-            xmlWriter = null;
+        public async Task WriteEndAsync()
+        {
+            await this.xmlWriter.WriteEndElementAsync();
         }
 
         /// <summary>
@@ -69,57 +69,65 @@ namespace Splunk.ModularInputs
         /// <param name="eventElement">
         /// An object representing an event element.
         /// </param>
+        /// <remarks>
+        /// <example>Sample event stream</example>
+        /// <code>
+        /// <stream>
+        ///   <event>
+        ///     <index>sdk-tests2</index>
+        ///     <sourcetype>test sourcetype</sourcetype>
+        ///     <source>test source</source>
+        ///     <host>test host</host>
+        ///     <data>Event with all default fields set</data>
+        ///   </event>
+        ///   <event stanza="modular_input:UnitTest2" unbroken="1">
+        ///     <data>Part 1 of channel 2 without a newline </data>
+        ///   </event>
+        /// </stream>
+        /// </code>
+        /// </remarks>
         public async Task WriteEventAsync(EventElement eventElement)
         {
-            //XML Example:
-            //<stream>
-            //  <event>
-            //      <index>sdk-tests2</index>
-            //      <sourcetype>test sourcetype</sourcetype>
-            //      <source>test source</source>
-            //      <host>test host</host>
-            //      <data>Event with all default fields set</data>
-            //  </event>
-            //  <event stanza="modular_input://UnitTest2" unbroken="1">
-            //      <data>Part 1 of channel 2 without a newline </data>
-            //  </event>
-            //</stream>
+            if (this.xmlWriter.WriteState == WriteState.Start)
+            {
+                await this.xmlWriter.WriteStartElementAsync(prefix: null, localName: "stream", ns: null);
+            }
 
-            await xmlWriter.WriteStartElementAsync(prefix: null, localName: "event", ns: null);
+            await this.xmlWriter.WriteStartElementAsync(prefix: null, localName: "event", ns: null);
             var stanza = eventElement.Stanza;
 
             if (stanza != null)
             {
-                await xmlWriter.WriteAttributeStringAsync(prefix: null, localName: "stanza", ns: null, value: stanza);
+                await this.xmlWriter.WriteAttributeStringAsync(prefix: null, localName: "stanza", ns: null, value: stanza);
             }
 
             if (eventElement.Unbroken)
             {
-                await xmlWriter.WriteAttributeStringAsync(prefix: null, localName: "unbroken", ns: null, value: "1");
+                await this.xmlWriter.WriteAttributeStringAsync(prefix: null, localName: "unbroken", ns: null, value: "1");
             }
 
-            await WriteElementIfNotNullAsync("index", eventElement.Index);
-            await WriteElementIfNotNullAsync("sourcetype", eventElement.SourceType);
-            await WriteElementIfNotNullAsync("source", eventElement.Source);
-            await WriteElementIfNotNullAsync("host", eventElement.Host);
-            await WriteElementIfNotNullAsync("data", eventElement.Data);
+            await this.WriteElementIfNotNullAsync("index", eventElement.Index);
+            await this.WriteElementIfNotNullAsync("sourcetype", eventElement.SourceType);
+            await this.WriteElementIfNotNullAsync("source", eventElement.Source);
+            await this.WriteElementIfNotNullAsync("host", eventElement.Host);
+            await this.WriteElementIfNotNullAsync("data", eventElement.Data);
 
             var time = eventElement.Time;
 
             if (time != null)
             {
-                await xmlWriter.WriteElementStringAsync(prefix: null, localName: "time", ns: null, value: 
-                    ConvertTimeToUtcUnixTimestamp(time.Value));
+                await this.xmlWriter.WriteElementStringAsync(
+                    prefix: null, localName: "time", ns: null, value: ConvertTimeToUtcUnixTimestamp(time.Value));
             }
 
             if (eventElement.Done)
             {
-                await xmlWriter.WriteStartElementAsync(prefix: null, localName: "done", ns: null);
-                await xmlWriter.WriteEndElementAsync();
-                await xmlWriter.FlushAsync();
+                await this.xmlWriter.WriteStartElementAsync(prefix: null, localName: "done", ns: null);
+                await this.xmlWriter.WriteEndElementAsync();
+                await this.xmlWriter.FlushAsync();
             }
 
-            await xmlWriter.WriteEndElementAsync();
+            await this.xmlWriter.WriteEndElementAsync();
         }
 
         #endregion
@@ -136,6 +144,17 @@ namespace Splunk.ModularInputs
         XmlWriter xmlWriter = new XmlTextWriter(Console.Out);
 
         /// <summary>
+        /// Converts a date-time value to Unix UTC timestamp.
+        /// </summary>
+        /// <param name="dateTime">A date-time value.</param>
+        /// <returns>The UTC timestamp.</returns>
+        static string ConvertTimeToUtcUnixTimestamp(DateTime dateTime)
+        {
+            var utcTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Utc);
+            return (utcTime - UnixUtcEpoch).TotalSeconds.ToString();
+        }
+
+        /// <summary>
         /// Asynchronously writes an element if its content is non <c>null</c>.
         /// </summary>
         /// <param name="tag">
@@ -146,23 +165,12 @@ namespace Splunk.ModularInputs
         /// </param>
         async Task WriteElementIfNotNullAsync(string tag, string content)
         {
-            Debug.Assert(tag != null);
+            Debug.Assert(tag != null, "tag == null");
 
             if (content != null)
             {
-                await xmlWriter.WriteElementStringAsync(prefix: null, localName: tag, ns: null, value: content);
+                await this.xmlWriter.WriteElementStringAsync(prefix: null, localName: tag, ns: null, value: content);
             }
-        }
-
-        /// <summary>
-        /// Converts a date-time value to Unix UTC timestamp.
-        /// </summary>
-        /// <param name="dateTime">A date-time value.</param>
-        /// <returns>The UTC timestamp.</returns>
-        static string ConvertTimeToUtcUnixTimestamp(DateTime dateTime)
-        {
-            var utcTime = TimeZoneInfo.ConvertTime(dateTime, TimeZoneInfo.Utc);
-            return (utcTime - UnixUtcEpoch).TotalSeconds.ToString();
         }
 
         #endregion

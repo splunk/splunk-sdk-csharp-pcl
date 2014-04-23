@@ -21,20 +21,14 @@ namespace Splunk.Client.UnitTesting
     using System.Linq;
     using System.Text;
     using System.Threading;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Splunk.Client;
+    using Xunit;
 
     /// <summary>
     /// Tests the Index class
     /// </summary>
-    [TestClass]
     public class IndexTest : TestHelper
     {
-        /// <summary>
-        /// The assert root
-        /// </summary>
-        private static string assertRoot = "Index assert: ";
-
         /// <summary>
         /// Polls the index until wither time runs down, or the event count
         /// matches the desired value.
@@ -56,13 +50,14 @@ namespace Splunk.Client.UnitTesting
                 }
             }
 
-            Assert.Fail("Count did not reach the expected in alloted time.");
+            Assert.True(false, "Count did not reach the expected in alloted time.");
         }
 
         /// <summary>
         /// Tests the basic getters and setters of index
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void IndexAccessors()
         {
             string indexName = "sdk-tests2";
@@ -161,8 +156,7 @@ namespace Splunk.Client.UnitTesting
                 indexes.CreateIndexAsync(indexName, new IndexArgs("", "", ""), new IndexAttributes()).Wait();
             }
 
-
-            Assert.IsNotNull(indexes.GetIndexAsync(indexName).Result, assertRoot + "#1");
+            Assert.NotNull(indexes.GetIndexAsync(indexName).Result);
 
             Index index = indexes.GetIndexAsync(indexName).Result;
 
@@ -208,7 +202,7 @@ namespace Splunk.Client.UnitTesting
             ClearIndex(service, indexName, index);
 
             //index.Disable();            
-            Assert.IsTrue(index.Disabled);
+            Assert.True(index.Disabled);
 
             this.SplunkRestart();
 
@@ -217,7 +211,7 @@ namespace Splunk.Client.UnitTesting
             //user = service.GetUsers().Get("admin");
 
             //index.Enable();
-            Assert.IsFalse(index.Disabled);
+            Assert.False(index.Disabled);
 
             //// Restore original roles
             //user.Roles = roles;
@@ -261,7 +255,8 @@ namespace Splunk.Client.UnitTesting
         /// Tests submitting and streaming events to an index 
         /// and also removing all events from the index
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void IndexEvents()
         {
             string indexName = "sdk-tests2";
@@ -279,7 +274,7 @@ namespace Splunk.Client.UnitTesting
                 //index.Clean(20);
             }
 
-            Assert.AreEqual(0, index.TotalEventCount, assertRoot + "#1");
+            Assert.Equal(0, index.TotalEventCount);
 
             ClearIndex(service, indexName, index);
 
@@ -299,7 +294,7 @@ namespace Splunk.Client.UnitTesting
 
             ClearIndex(service, indexName, index);
             //index.Clean(180);
-            Assert.AreEqual(0, index.TotalEventCount, assertRoot + "#6");
+            Assert.Equal(0, index.TotalEventCount);
 
             string filename;
             if (info.OSName.Equals("Windows"))
@@ -335,7 +330,8 @@ namespace Splunk.Client.UnitTesting
         /// Tests submitting and streaming events to a default index 
         /// and also removing all events from the index
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void DefaultIndex()
         {
             string indexName = "main";
@@ -348,7 +344,7 @@ namespace Splunk.Client.UnitTesting
             //Receiver receiver = service.GetReceiver();
             //Index index = service.GetIndexes().Get(indexName);
             //index.Enable();
-            //Assert.IsFalse(index.Disabled);
+            //Assert.False(index.Disabled);
 
             //// submit events to default index
             //receiver.Log(now + " Hello World. \u0150");
@@ -386,7 +382,8 @@ namespace Splunk.Client.UnitTesting
         /// Tests submitting and streaming events to an index given the indexAttributes argument
         /// and also removing all events from the index
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void IndexArgs()
         {
             string indexName = "sdk-tests2";
@@ -399,7 +396,7 @@ namespace Splunk.Client.UnitTesting
             Index index = service.GetIndexAsync(indexName).Result;
                                     
             //index.Enable();
-            Assert.IsFalse(index.Disabled);
+            Assert.False(index.Disabled);
 
             IndexAttributes indexAttributes = GetIndexAttributes(index);
 
@@ -446,19 +443,20 @@ namespace Splunk.Client.UnitTesting
             //            SourceType)))
             //using (var reader = new ResultsReaderXml(stream))
             //{
-            //    Assert.AreEqual(2, reader.Count());
+            //    Assert.Equal(2, reader.Count());
             //}
 
             //ClearIndex(service, indexName, index);
             //index.Clean(180);
-            //Assert.AreEqual(0, index.TotalEventCount, "Expected the total event count to be 0");
+            //Assert.Equal(0, index.TotalEventCount, "Expected the total event count to be 0");
         }
 
         /// <summary>
         /// Test submitting and streaming to a default index given the indexAttributes argument
         /// and also removing all events from the index
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void DefaultIndexArgs()
         {
             string indexName = "main";
@@ -472,7 +470,7 @@ namespace Splunk.Client.UnitTesting
             Index index = service.GetIndexAsync(indexName).Result;
 
             //index.Enable();
-            Assert.IsFalse(index.Disabled);
+            Assert.False(index.Disabled);
 
             IndexAttributes indexAttributes = GetIndexAttributes(index);
 

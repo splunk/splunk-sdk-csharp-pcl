@@ -28,11 +28,6 @@ namespace Splunk.Client.UnitTesting
     public class SavedSearchTest : TestHelper
     {
         /// <summary>
-        /// The assert root string
-        /// </summary>
-        private string assertRoot = "Saved Search assert: ";
-
-        /// <summary>
         /// Returns a value indicating whether a specific Job SID exists
         /// in the job history.
         /// </summary>

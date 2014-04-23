@@ -118,8 +118,7 @@ namespace Splunk.ModularInputs
         Dictionary<string, ParameterBase.ValueBase> parameters;
 
         /// <summary>
-        /// Single value parameters keyed 
-        /// by name in the input definition item.
+        /// Single value parameters keyed by name in the input definition item.
         /// </summary>
         Dictionary<string, string> singleValueParameters;
 

@@ -30,11 +30,6 @@ namespace Splunk.Client.UnitTesting
     public class IndexTest : TestHelper
     {
         /// <summary>
-        /// The assert root
-        /// </summary>
-        private static string assertRoot = "Index assert: ";
-
-        /// <summary>
         /// Polls the index until wither time runs down, or the event count
         /// matches the desired value.
         /// </summary>

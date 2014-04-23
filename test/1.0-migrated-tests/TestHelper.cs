@@ -21,10 +21,11 @@ namespace Splunk.Client.UnitTesting
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     using Splunk.Client;
     using Splunk.Client.UnitTesting;
+
+    using Xunit;
 
     /// <summary>
     /// TODO: Update summary.
@@ -108,7 +109,7 @@ namespace Splunk.Client.UnitTesting
             //}
 
             //apps = service.GetApplicationsAsync().Result;
-            //Assert.IsFalse(apps.ContainsKey(name), this.assertRoot + "#1");
+            //Assert.False(apps.ContainsKey(name), this.assertRoot + "#1");
 
             //apps.Create(name);
             this.SplunkRestart();
@@ -116,7 +117,7 @@ namespace Splunk.Client.UnitTesting
             service = this.Connect();
 
             apps = service.GetApplicationsAsync().Result;
-            //Assert.IsTrue(apps.ContainsKey(name), this.assertRoot + "#2");
+            //Assert.True(apps.ContainsKey(name), this.assertRoot + "#2");
         }
 
         /// <summary>
@@ -138,7 +139,7 @@ namespace Splunk.Client.UnitTesting
             //}
 
             //apps = service.GetAppsAsync().Result;
-            //Assert.IsFalse(apps.ContainsKey(name), this.assertRoot + "#3");
+            //Assert.False(apps.ContainsKey(name), this.assertRoot + "#3");
         }
 
         /// <summary>
@@ -226,7 +227,7 @@ namespace Splunk.Client.UnitTesting
                 }
             }
 
-            Assert.IsTrue(restarted, this.assertRoot + "#5");
+            Assert.True(restarted, this.assertRoot + "#5");
         }
 
         /// <summary>

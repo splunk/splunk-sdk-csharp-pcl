@@ -24,13 +24,12 @@ namespace Splunk.Client.UnitTesting
     using System.IO;
     using System.Net;
     using System.Text.RegularExpressions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Splunk.Client;
+    using Xunit;
 
     /// <summary>
     /// This is the search test class
     /// </summary>
-    [TestClass]
     public class SearchTest : TestHelper
     {
         /// <summary>
@@ -116,7 +115,8 @@ namespace Splunk.Client.UnitTesting
         /// Tests the basic create job, wait for it to finish, close the stream
         /// and cancel (clean up) the job on the server. Try with optional args too.
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void Search()
         {
             Service service = Connect();
@@ -137,7 +137,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Verify that segmentation is defaulted to 'none' and can be changed.
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void SegmentationWithExport()
         //{
         //    VerifySegmentation(
@@ -147,7 +148,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Verify that segmentation is defaulted to 'none' and can be changed.
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void SegmentationWithOneshot()
         //{
         //    VerifySegmentation(
@@ -157,7 +159,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Verify that segmentation is defaulted to 'none' and can be changed.
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void SegmentationWithJobResults()
         //{
         //    SegmentationWithJob(
@@ -167,7 +170,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Verify that segmentation is defaulted to 'none' and can be changed.
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void SegmentationWithJobResultsPreview()
         //{
         //    SegmentationWithJob(
@@ -177,7 +181,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Verify that segmentation is defaulted to 'none' and can be changed.
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void SegmentationWithJobEvents()
         //{
         //    SegmentationWithJob(
@@ -223,7 +228,7 @@ namespace Splunk.Client.UnitTesting
 
         //    if (segmentationDefaultEffective)
         //    {
-        //        Assert.AreEqual(0, countSgWithDefault);
+        //        Assert.Equal(0, countSgWithDefault);
         //    }
 
         //    var args = new Args
@@ -241,7 +246,7 @@ namespace Splunk.Client.UnitTesting
 
         //    if (!segmentationDefaultEffective)
         //    {
-        //        Assert.AreEqual(
+        //        Assert.Equal(
         //            countSgWithDefault,
         //            countSgWithSegmentationRaw);
         //    }
@@ -268,7 +273,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests the result from a bad search argument.
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void BadOutputMode()
         {
             var service = Connect();
@@ -299,7 +305,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Tests the result from a bad search argument.
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //[ExpectedException(typeof(WebException),
         //  "Bad argument should cause Splunk to return http 400: Bad Request")]
         //public void BadTruncateMode()
@@ -315,7 +322,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void JobSearchMode()
         {
             var service = Connect();
@@ -323,11 +331,11 @@ namespace Splunk.Client.UnitTesting
 
             jobArgs.SearchMode = SearchMode.Normal;
             Job job = service.StartJobAsync(jobArgs).Result;
-            Assert.IsNotNull(job, "#1");
+            Assert.NotNull(job);
 
             jobArgs.SearchMode = SearchMode.Realtime;
             job.UpdateJobArgs(jobArgs).Wait();
-            Assert.IsNotNull(job, "#2");
+            Assert.NotNull(job);
 
             //try
             //{
@@ -338,7 +346,7 @@ namespace Splunk.Client.UnitTesting
             //}
             //catch (Exception e)
             //{
-            //    Assert.IsTrue(e.InnerException.Message.Contains("400"));
+            //    Assert.True(e.InnerException.Message.Contains("400"));
             //}
 
             job.CancelAsync().Wait();
@@ -347,7 +355,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void JobExecutionMode()
         {
             var service = Connect();
@@ -356,19 +365,19 @@ namespace Splunk.Client.UnitTesting
             jobArgs.ExecutionMode = ExecutionMode.Blocking;
 
             Job job = service.StartJobAsync(jobArgs).Result;
-            Assert.IsNotNull(job, "#1");
+            Assert.NotNull(job);
 
             jobArgs.ExecutionMode = ExecutionMode.None;
             job.UpdateJobArgs(jobArgs).Wait();
-            Assert.IsNotNull(job, "#2");
+            Assert.NotNull(job);
 
             jobArgs.ExecutionMode = ExecutionMode.Normal;
             job.UpdateJobArgs(jobArgs).Wait();
-            Assert.IsNotNull(job, "#3");
+            Assert.NotNull(job);
 
             jobArgs.ExecutionMode = ExecutionMode.Oneshot;
             job.UpdateJobArgs(jobArgs).Wait();
-            Assert.IsNotNull(job, "#3");
+            Assert.NotNull(job);
 
             job.CancelAsync().Wait();
         }
@@ -376,9 +385,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests the result from a bad search argument.
         /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(WebException),
-          "Bad argument should cause Splunk to return http 400: Bad Request")]
+        [Trait("class", "Service")]
+        [Fact]
         public void BadSearchModeExport()
         {
             var service = Connect();
@@ -387,8 +395,7 @@ namespace Splunk.Client.UnitTesting
             //jobArgs.SearchMode = SearchMode.Realtime;
 
             Job job = service.StartJobAsync(jobArgs).Result;
-            Assert.IsNotNull(job, "#1");
-
+            Assert.NotNull(job);
 
             job.CancelAsync().Wait();
         }
@@ -396,7 +403,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Tests the result from a bad search argument.
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //[ExpectedException(typeof(WebException),
         //  "Bad argument should cause Splunk to return http 400: Bad Request")]
         //public void BadOutputModeExport()
@@ -409,7 +417,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Tests all output modes for Job.Results
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void JobResultsOutputModeArgument()
         //{
         //    var type = typeof(JobResultsArgs.OutputModeEnum);
@@ -430,7 +439,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Unittest for DVPL-2678, make sure the result stream can be read through.
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void JobResultStream()
         //{
         //    var cli = SplunkSDKHelper.Command.Splunk("search");
@@ -505,7 +515,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Tests all output modes for Job.ResultsPreview
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void JobResultsPreviewOutputModeArgument()
         //{
         //    var type = typeof(SearchResultsArgs);
@@ -526,7 +537,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Tests all output modes for Job.Events
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void JobEventsOutputModeArgument()
         //{
         //    var type = typeof(JobEventsArgs.OutputModeEnum);
@@ -574,7 +586,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests all output modes for Job.Events
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void JobEventsTruncationModeArgument()
         {
             var type = typeof(TruncationMode);
@@ -595,7 +608,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests all search modes
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void JobSearchModeArgument()
         {
             var type = typeof(SearchMode);
@@ -615,7 +629,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void ExportSearchModeArgument()
         {
             var type = typeof(SearchMode);
@@ -634,7 +649,8 @@ namespace Splunk.Client.UnitTesting
         ///// <summary>
         ///// Tests all search modes for export
         ///// </summary>
-        //[TestMethod]
+        //[Trait("class", "Service")]
+        //[Fact]
         //public void ExportOutputModeArgument()
         //{
         //    var type = typeof(JobExportArgs.OutputModeEnum);
@@ -653,7 +669,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void ExportTruncationModeArgument()
         {
             var type = typeof(TruncationMode);
@@ -669,7 +686,8 @@ namespace Splunk.Client.UnitTesting
                 });
         }
 
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void JobRefreshTest()
         {
             var cli = Command.Splunk("search");
@@ -694,7 +712,7 @@ namespace Splunk.Client.UnitTesting
 
                 if (stopwatch.Elapsed > max)
                 {
-                    Assert.Fail("the job is not finished within expected time {0} seconds", max.TotalSeconds);
+                    Assert.False(true, string.Format("The job is not finished within expected time {0} seconds", max.TotalSeconds));
                 }
             }
 
@@ -767,7 +785,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests RemoteServerList property
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void RemoteServerList()
         {
             var array = "first,second";// new string[] { "first", "second" };
@@ -777,14 +796,14 @@ namespace Splunk.Client.UnitTesting
                     RemoteServerList = array,
                 };
 
-            Assert.AreEqual("first,second", args1.RemoteServerList);
+            Assert.Equal("first,second", args1.RemoteServerList);
 
             var args2 = new JobArgs("")
             {
                 RemoteServerList = array,
             };
 
-            Assert.AreEqual("first,second", args2.RemoteServerList);
+            Assert.Equal("first,second", args2.RemoteServerList);
         }
     }
 }

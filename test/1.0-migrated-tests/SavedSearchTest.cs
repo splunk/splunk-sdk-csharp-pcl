@@ -17,15 +17,14 @@
 namespace Splunk.Client.UnitTesting
 {
     using System;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Splunk.Client;
     using System.Linq.Expressions;
     using System.Linq;
+    using Xunit;
 
     /// <summary>
     /// Tests saved searches
     /// </summary>
-    [TestClass]
     public class SavedSearchTest : TestHelper
     {
         /// <summary>
@@ -55,7 +54,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Touch test properties
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void SavedSearches()
         {
             Service service = this.Connect();
@@ -176,7 +176,8 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test Saved Search Create Read Update and Delete.
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void SavedSearchesCRUD()
         {
             Service service = this.Connect();
@@ -191,7 +192,7 @@ namespace Splunk.Client.UnitTesting
                 savedSearches.GetAsync().Wait();
             }
 
-            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#1");
+            Assert.False(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0);
 
             SavedSearch savedSearch;
             string search = "search index=sdk-tests * earliest=-1m";
@@ -201,12 +202,12 @@ namespace Splunk.Client.UnitTesting
             SavedSearchAttributes attrs = new SavedSearchAttributes() { Search = search };
             service.CreateSavedSearchAsync(savedSearchTitle, attrs).Wait();
             savedSearches.GetAsync().Wait();
-            Assert.IsTrue(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#2");
+            Assert.True(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0);
 
             // Read the saved search           
             //savedSearch = savedSearches.Get("sdk-test1");           
             savedSearch = savedSearches.Where(a => a.Name == savedSearchTitle).SingleOrDefault();
-            Assert.IsTrue(savedSearch.IsVisible, this.assertRoot + "#3");
+            Assert.True(savedSearch.IsVisible);
 
             // CONSIDER: Test some additinal default property values.
 
@@ -214,18 +215,18 @@ namespace Splunk.Client.UnitTesting
             // pulling them from the existing object
             savedSearch.UpdateAsync(new SavedSearchAttributes() { IsVisible = false }, null, null).Wait();
             //savedSearch.Refresh();
-            Assert.IsFalse(savedSearch.IsVisible, this.assertRoot + "#4");
+            Assert.False(savedSearch.IsVisible);
 
             // Delete the saved search            
             //savedSearches.("sdk-test1");
             service.RemoveSavedSearchAsync(savedSearchTitle).Wait();
             savedSearches.GetAsync().Wait();
-            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#5");
+            Assert.False(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0);
 
             // Create a saved search with some additional arguments
             //savedSearch = savedSearches.Create("sdk-test1", search, new Args("is_visible", false));
             savedSearch = service.CreateSavedSearchAsync(savedSearchTitle, new SavedSearchAttributes() { Search = search, IsVisible = false }).Result;
-            Assert.IsFalse(savedSearch.IsVisible, this.assertRoot + "#6");
+            Assert.False(savedSearch.IsVisible);
 
             // set email params
             attrs = new SavedSearchAttributes();
@@ -292,82 +293,83 @@ namespace Splunk.Client.UnitTesting
             savedSearch.UpdateAsync(attrs, null, null).Wait();
 
             // check
-            //Assert.IsTrue(savedSearch.IsActionEmail, this.assertRoot + "#7");
-            //Assert.IsTrue(savedSearch.IsActionPopulateLookup, this.assertRoot + "#8");
-            //Assert.IsTrue(savedSearch.IsActionRss, this.assertRoot + "#9");
-            //Assert.IsTrue(savedSearch.IsActionScript, this.assertRoot + "#10");
-            //Assert.IsTrue(savedSearch.IsActionsSummaryIndex, this.assertRoot + "#11");
+            //Assert.True(savedSearch.IsActionEmail);
+            //Assert.True(savedSearch.IsActionPopulateLookup);
+            //Assert.True(savedSearch.IsActionRss);
+            //Assert.True(savedSearch.IsActionScript);
+            //Assert.True(savedSearch.IsActionsSummaryIndex);
 
-            //Assert.AreEqual("sdk-password", savedSearch.Actions.Email.AuthPassword, this.assertRoot + "#12");
-            //Assert.AreEqual("sdk-username", savedSearch.Actions.Email.AuthUsername, this.assertRoot + "#13");
-            //Assert.AreEqual("sdk-bcc@splunk.com", savedSearch.Actions.Email.Bcc, this.assertRoot + "#14");
-            //Assert.AreEqual("sdk-cc@splunk.com", savedSearch.Actions.Email.Cc, this.assertRoot + "#15");
-            Assert.AreEqual("$name1$", savedSearch.Actions.Email.Command, this.assertRoot + "#16");
-            Assert.AreEqual(EmailFormat.Plain, savedSearch.Actions.Email.Format, this.assertRoot + "#17");
-            Assert.AreEqual("sdk@splunk.com", savedSearch.Actions.Email.From, this.assertRoot + "#18");
-            //Assert.AreEqual("dummy1.host.com", savedSearch.Actions.Email.Hostname, this.assertRoot + "#19");
-            Assert.IsTrue(savedSearch.Actions.Email.Inline, this.assertRoot + "#20");
-            //Assert.AreEqual("splunk.com", savedSearch.Actions.Email.MailServer, this.assertRoot + "#21");
-            Assert.AreEqual(101, savedSearch.Actions.Email.MaxResults, this.assertRoot + "#22");
-            Assert.AreEqual("10s", savedSearch.Actions.Email.MaxTime, this.assertRoot + "#23");
-            //Assert.AreEqual("dummy", savedSearch.Actions.Email.PdfView, this.assertRoot + "#24");
-            //Assert.AreEqual("*", savedSearch.Actions.Email.PreProcessResults, this.assertRoot + "#25");
-            Assert.AreEqual(PaperOrientation.Landscape, savedSearch.Actions.Email.ReportPaperOrientation, this.assertRoot + "#26");
-            Assert.AreEqual(PaperSize.Letter, savedSearch.Actions.Email.ReportPaperSize, this.assertRoot + "#27");
-            Assert.IsFalse(savedSearch.Actions.Email.ReportServerEnabled, this.assertRoot + "#28");
-            //Assert.AreEqual("splunk.com", savedSearch.Actions.Email.ReportServerUrl, this.assertRoot + "#29");
-            Assert.IsFalse(savedSearch.Actions.Email.SendPdf, this.assertRoot + "#30");
-            Assert.IsFalse(savedSearch.Actions.Email.SendResults, this.assertRoot + "#31");
-            Assert.AreEqual("sdk-subject", savedSearch.Actions.Email.Subject, this.assertRoot + "#32");
-            //Assert.AreEqual("sdk-to@splunk.com", savedSearch.Actions.Email.To, this.assertRoot + "#33");
-            Assert.IsFalse(savedSearch.Actions.Email.TrackAlert, this.assertRoot + "#34");
-            Assert.AreEqual("61", savedSearch.Actions.Email.Ttl, this.assertRoot + "#35");
-            Assert.IsFalse(savedSearch.Actions.Email.UseSsl, this.assertRoot + "#36");
-            Assert.IsFalse(savedSearch.Actions.Email.UseTls, this.assertRoot + "#37");
-            Assert.IsFalse(savedSearch.Actions.Email.WidthSortColumns, this.assertRoot + "#38");
-            Assert.AreEqual("$name2$", savedSearch.Actions.PopulateLookup.Command, this.assertRoot + "#39");
-            //Assert.AreEqual("dummypath", savedSearch.Actions.PopulateLookup.Dest, this.assertRoot + "#40");
-            //Assert.AreEqual("dummy2.host.com", savedSearch.Actions.PopulateLookup.Hostname, this.assertRoot + "#41");
-            Assert.AreEqual(102, savedSearch.Actions.PopulateLookup.MaxResults, this.assertRoot + "#42");
-            Assert.AreEqual("20s", savedSearch.Actions.PopulateLookup.MaxTime, this.assertRoot + "#43");
-            Assert.IsFalse(savedSearch.Actions.PopulateLookup.TrackAlert, this.assertRoot + "#44");
-            Assert.AreEqual("62", savedSearch.Actions.PopulateLookup.Ttl, this.assertRoot + "#45");
-            Assert.AreEqual("$name3$", savedSearch.Actions.Rss.Command, this.assertRoot + "#46");
-            //Assert.AreEqual("dummy3.host.com", savedSearch.Actions.Rss.Hostname, this.assertRoot + "#47");
-            Assert.AreEqual(103, savedSearch.Actions.Rss.MaxResults, this.assertRoot + "#48");
-            Assert.AreEqual("30s", savedSearch.Actions.Rss.MaxTime, this.assertRoot + "#49");
-            Assert.IsFalse(savedSearch.Actions.Rss.TrackAlert, this.assertRoot + "#50");
-            Assert.AreEqual("63", savedSearch.Actions.Rss.Ttl, this.assertRoot + "#51");
-            //Assert.AreEqual("$name4$", savedSearch.ActionScriptCommand, this.assertRoot + "#52");
+            //Assert.Equal("sdk-password", savedSearch.Actions.Email.AuthPassword);
+            //Assert.Equal("sdk-username", savedSearch.Actions.Email.AuthUsername);
+            //Assert.Equal("sdk-bcc@splunk.com", savedSearch.Actions.Email.Bcc);
+            //Assert.Equal("sdk-cc@splunk.com", savedSearch.Actions.Email.Cc);
+            Assert.Equal("$name1$", savedSearch.Actions.Email.Command);
+            Assert.Equal(EmailFormat.Plain, savedSearch.Actions.Email.Format);
+            Assert.Equal("sdk@splunk.com", savedSearch.Actions.Email.From);
+            //Assert.Equal("dummy1.host.com", savedSearch.Actions.Email.Hostname);
+            Assert.True(savedSearch.Actions.Email.Inline);
+            //Assert.Equal("splunk.com", savedSearch.Actions.Email.MailServer);
+            Assert.Equal(101, savedSearch.Actions.Email.MaxResults);
+            Assert.Equal("10s", savedSearch.Actions.Email.MaxTime);
+            //Assert.Equal("dummy", savedSearch.Actions.Email.PdfView);
+            //Assert.Equal("*", savedSearch.Actions.Email.PreProcessResults);
+            Assert.Equal(PaperOrientation.Landscape, savedSearch.Actions.Email.ReportPaperOrientation);
+            Assert.Equal(PaperSize.Letter, savedSearch.Actions.Email.ReportPaperSize);
+            Assert.False(savedSearch.Actions.Email.ReportServerEnabled);
+            //Assert.Equal("splunk.com", savedSearch.Actions.Email.ReportServerUrl);
+            Assert.False(savedSearch.Actions.Email.SendPdf);
+            Assert.False(savedSearch.Actions.Email.SendResults);
+            Assert.Equal("sdk-subject", savedSearch.Actions.Email.Subject);
+            //Assert.Equal("sdk-to@splunk.com", savedSearch.Actions.Email.To);
+            Assert.False(savedSearch.Actions.Email.TrackAlert);
+            Assert.Equal("61", savedSearch.Actions.Email.Ttl);
+            Assert.False(savedSearch.Actions.Email.UseSsl);
+            Assert.False(savedSearch.Actions.Email.UseTls);
+            Assert.False(savedSearch.Actions.Email.WidthSortColumns);
+            Assert.Equal("$name2$", savedSearch.Actions.PopulateLookup.Command);
+            //Assert.Equal("dummypath", savedSearch.Actions.PopulateLookup.Dest);
+            //Assert.Equal("dummy2.host.com", savedSearch.Actions.PopulateLookup.Hostname);
+            Assert.Equal(102, savedSearch.Actions.PopulateLookup.MaxResults);
+            Assert.Equal("20s", savedSearch.Actions.PopulateLookup.MaxTime);
+            Assert.False(savedSearch.Actions.PopulateLookup.TrackAlert);
+            Assert.Equal("62", savedSearch.Actions.PopulateLookup.Ttl);
+            Assert.Equal("$name3$", savedSearch.Actions.Rss.Command);
+            //Assert.Equal("dummy3.host.com", savedSearch.Actions.Rss.Hostname);
+            Assert.Equal(103, savedSearch.Actions.Rss.MaxResults);
+            Assert.Equal("30s", savedSearch.Actions.Rss.MaxTime);
+            Assert.False(savedSearch.Actions.Rss.TrackAlert);
+            Assert.Equal("63", savedSearch.Actions.Rss.Ttl);
+            //Assert.Equal("$name4$", savedSearch.ActionScriptCommand);
 
-            //Assert.AreEqual(ActionScriptFilename, savedSearch.ActionScriptFilename);
+            //Assert.Equal(ActionScriptFilename, savedSearch.ActionScriptFilename);
 
-            //Assert.AreEqual("dummy4.host.com", savedSearch.ActionScriptHostname, this.assertRoot + "#53");
-            //Assert.AreEqual(104, savedSearch.ActionScriptMaxResults, this.assertRoot + "#54");
-            //Assert.AreEqual("40s", savedSearch.ActionScriptMaxTime, this.assertRoot + "#55");
-            //Assert.IsFalse(savedSearch.ActionScriptTrackAlert, this.assertRoot + "#56");
-            //Assert.AreEqual("64", savedSearch.ActionScriptTtl, this.assertRoot + "#57");
-            Assert.AreEqual("default", savedSearch.Actions.SummaryIndex.Name, this.assertRoot + "#58");
-            Assert.AreEqual("$name5$", savedSearch.Actions.SummaryIndex.Command, this.assertRoot + "#59");
-            //Assert.AreEqual("dummy5.host.com", savedSearch.Actions.SummaryIndex.Hostname, this.assertRoot + "#60");
-            Assert.IsFalse(savedSearch.Actions.SummaryIndex.Inline, this.assertRoot + "#61");
-            Assert.AreEqual(105, savedSearch.Actions.SummaryIndex.MaxResults, this.assertRoot + "#62");
-            Assert.AreEqual("50s", savedSearch.Actions.SummaryIndex.MaxTime, this.assertRoot + "#63");
-            Assert.IsFalse(savedSearch.Actions.SummaryIndex.TrackAlert, this.assertRoot + "#64");
-            Assert.AreEqual("65", savedSearch.Actions.SummaryIndex.Ttl, this.assertRoot + "#65");
+            //Assert.Equal("dummy4.host.com", savedSearch.ActionScriptHostname);
+            //Assert.Equal(104, savedSearch.ActionScriptMaxResults);
+            //Assert.Equal("40s", savedSearch.ActionScriptMaxTime);
+            //Assert.False(savedSearch.ActionScriptTrackAlert);
+            //Assert.Equal("64", savedSearch.ActionScriptTtl);
+            Assert.Equal("default", savedSearch.Actions.SummaryIndex.Name);
+            Assert.Equal("$name5$", savedSearch.Actions.SummaryIndex.Command);
+            //Assert.Equal("dummy5.host.com", savedSearch.Actions.SummaryIndex.Hostname);
+            Assert.False(savedSearch.Actions.SummaryIndex.Inline);
+            Assert.Equal(105, savedSearch.Actions.SummaryIndex.MaxResults);
+            Assert.Equal("50s", savedSearch.Actions.SummaryIndex.MaxTime);
+            Assert.False(savedSearch.Actions.SummaryIndex.TrackAlert);
+            Assert.Equal("65", savedSearch.Actions.SummaryIndex.Ttl);
 
             // Delete the saved search - using alternative method
             //savedSearch.Remove();
             //savedSearches.Refresh();
             service.RemoveSavedSearchAsync(savedSearchTitle).Wait();
             savedSearches.GetAsync().Wait();
-            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#66");
+            Assert.False(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0);
         }
 
         /// <summary>
         /// Test saved search dispatch
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void SavedSearchDispatch()
         {
             Service service = this.Connect();
@@ -381,14 +383,14 @@ namespace Splunk.Client.UnitTesting
                 savedSearches.GetAsync().Wait();
             }
 
-            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#67");
+            Assert.False(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0);
 
             // Create a saved search
             string search = "search index=sdk-tests * earliest=-1m";
             SavedSearch savedSearch = service.CreateSavedSearchAsync(savedSearchTitle, new SavedSearchAttributes() { Search = search }).Result;
             
             // Dispatch the saved search and wait for results.
-            savedSearch.DispatchAsync().Wait();
+            Job job = savedSearch.DispatchAsync().Result;
             //job.Cancel();
 
             // Dispatch with some additional search options
@@ -472,13 +474,14 @@ namespace Splunk.Client.UnitTesting
 
             // Delete the saved search
             service.RemoveSavedSearchAsync(savedSearchTitle).Wait();            
-            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#68");
+            Assert.False(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0);
         }
 
         /// <summary>
         /// Test saved search history
         /// </summary>
-        [TestMethod]
+        [Trait("class", "Service")]
+        [Fact]
         public void SavedSearchHistory()
         {
             Service service = this.Connect();
@@ -492,7 +495,7 @@ namespace Splunk.Client.UnitTesting
                 savedSearches.GetAsync().Wait();
             }
 
-            Assert.IsFalse(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0, this.assertRoot + "#69");
+            Assert.False(savedSearches.Where(a => a.Name == savedSearchTitle).Count() > 0);
 
             string search = "search index=sdk-tests * earliest=-1m";
 
@@ -509,33 +512,33 @@ namespace Splunk.Client.UnitTesting
             }
 
             history = savedSearch.GetHistoryAsync().Result;
-            Assert.AreEqual(0, history.Count, this.assertRoot + "#70");
+            Assert.Equal(0, history.Count);
 
             Job job1 = savedSearch.DispatchAsync().Result;
             this.Ready(job1);
             history = savedSearch.GetHistoryAsync().Result;
-            Assert.AreEqual(1, history.Count, this.assertRoot + "#71");
-            Assert.IsTrue(history.Where(a=>a.Sid==job1.Sid).Count()>0);// this.Contains(history, job1.Sid));
+            Assert.Equal(1, history.Count);
+            Assert.True(history.Where(a=>a.Sid==job1.Sid).Count()>0);// this.Contains(history, job1.Sid));
 
             Job job2 = savedSearch.DispatchAsync().Result;
             this.Ready(job2);
             history = savedSearch.GetHistoryAsync().Result;
-            Assert.AreEqual(2, history.Count, this.assertRoot + "#72");
-            Assert.IsTrue(history.Where(a=>a.Sid==job1.Sid).Count()>0, this.assertRoot + "#73");
-            Assert.IsTrue(history.Where(a=>a.Sid==job2.Sid).Count()>0, this.assertRoot + "#74");
+            Assert.Equal(2, history.Count);
+            Assert.True(history.Where(a=>a.Sid==job1.Sid).Count()>0);
+            Assert.True(history.Where(a=>a.Sid==job2.Sid).Count()>0);
 
             job1.CancelAsync().Wait();
             history = savedSearch.GetHistoryAsync().Result;
-            Assert.AreEqual(1, history.Count, this.assertRoot + "#75");
-            Assert.IsTrue(history.Where(a=>a.Sid==job2.Sid).Count()>0, this.assertRoot + "#76");
+            Assert.Equal(1, history.Count);
+            Assert.True(history.Where(a=>a.Sid==job2.Sid).Count()>0);
 
             job2.CancelAsync().Wait();
             history = savedSearch.GetHistoryAsync().Result;
-            Assert.AreEqual(0, history.Count, this.assertRoot + "#77");
+            Assert.Equal(0, history.Count);
 
             //// Delete the saved search
             //savedSearches.Remove("sdk test1");
-            //Assert.IsFalse(savedSearches.ContainsKey("sdk test1"), this.assertRoot + "#78");
+            //Assert.False(savedSearches.ContainsKey("sdk test1"));
         }
     }
 }

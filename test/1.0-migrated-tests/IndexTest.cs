@@ -460,9 +460,9 @@ namespace Splunk.Client.UnitTesting
             //{
             //    Assert.Equal(2, reader.Count());
             //}
-            Assert.AreEqual(2, result.FieldNames.Count);
+            Assert.Equal(2, result.FieldNames.Count);
             index.GetAsync().Wait();
-            Assert.AreEqual(2, index.TotalEventCount);
+            Assert.Equal(2, index.TotalEventCount);
 
             ClearIndex(service, indexName, index);
             //index.Clean(180);
@@ -492,7 +492,7 @@ namespace Splunk.Client.UnitTesting
             Assert.False(index.Disabled);
 
             IndexAttributes indexAttributes = GetIndexAttributes(index);
-            ReceiverArgs receiverArgs = new ReceiverArgs() { index = index.Title, };
+            ReceiverArgs receiverArgs = new ReceiverArgs() { Index = index.Name, };
             // submit event to default index using variable arguments
             //receiver.Log(indexAttributes, "Hello World. \u0150");
             //receiver.Log(indexAttributes, "Goodbye World. \u0150");

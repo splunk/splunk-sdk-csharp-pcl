@@ -671,6 +671,89 @@ namespace Splunk.Client.UnitTesting
             }
         }
 
+        [Trait("class", "Service: Server")]
+        [Fact]
+        public async Task CanCrudServerSettings()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            await service.LoginAsync("admin", "changeme");
+
+            //// Get
+
+            var originalSettings = await service.Server.GetSettingsAsync();
+
+            //// Update
+
+            var values = new ServerSettingValues()
+            {
+                EnableSplunkWebSsl = !originalSettings.EnableSplunkWebSsl,
+                Host = originalSettings.Host,
+                HttpPort = originalSettings.HttpPort + 1,
+                ManagementHostPort = originalSettings.ManagementHostPort,
+                MinFreeSpace = originalSettings.MinFreeSpace - 1,
+                Pass4SymmetricKey = originalSettings.Pass4SymmetricKey + "-update",
+                ServerName = originalSettings.ServerName,
+                SessionTimeout = "2h",
+                SplunkDB = originalSettings.SplunkDB,
+                StartWebServer = !originalSettings.StartWebServer,
+                TrustedIP = originalSettings.TrustedIP
+            };
+
+            var updatedSettings = await service.Server.UpdateSettingsAsync(values);
+
+            Assert.Equal(values.EnableSplunkWebSsl, updatedSettings.EnableSplunkWebSsl);
+            Assert.Equal(values.Host, updatedSettings.Host);
+            Assert.Equal(values.HttpPort, updatedSettings.HttpPort);
+            Assert.Equal(values.ManagementHostPort, updatedSettings.ManagementHostPort);
+            Assert.Equal(values.MinFreeSpace, updatedSettings.MinFreeSpace);
+            Assert.Equal(values.Pass4SymmetricKey, updatedSettings.Pass4SymmetricKey);
+            Assert.Equal(values.ServerName, updatedSettings.ServerName);
+            Assert.Equal(values.SessionTimeout, updatedSettings.SessionTimeout);
+            Assert.Equal(values.SplunkDB, updatedSettings.SplunkDB);
+            Assert.Equal(values.StartWebServer, updatedSettings.StartWebServer);
+            Assert.Equal(values.TrustedIP, updatedSettings.TrustedIP);
+
+            //// Restart the server because it's required following a settings update
+
+            await service.Server.RestartAsync(60000);
+            await service.LoginAsync("admin", "changeme");
+
+            //// Restore
+
+            values = new ServerSettingValues()
+            {
+                EnableSplunkWebSsl = originalSettings.EnableSplunkWebSsl,
+                Host = originalSettings.Host,
+                HttpPort = originalSettings.HttpPort,
+                ManagementHostPort = originalSettings.ManagementHostPort,
+                MinFreeSpace = originalSettings.MinFreeSpace,
+                Pass4SymmetricKey = originalSettings.Pass4SymmetricKey,
+                ServerName = originalSettings.ServerName,
+                SessionTimeout = originalSettings.SessionTimeout,
+                SplunkDB = originalSettings.SplunkDB,
+                StartWebServer = originalSettings.StartWebServer,
+                TrustedIP = originalSettings.TrustedIP
+            };
+
+            updatedSettings = await service.Server.UpdateSettingsAsync(values);
+
+            Assert.Equal(values.EnableSplunkWebSsl, originalSettings.EnableSplunkWebSsl);
+            Assert.Equal(values.Host, originalSettings.Host);
+            Assert.Equal(values.HttpPort, originalSettings.HttpPort);
+            Assert.Equal(values.ManagementHostPort, originalSettings.ManagementHostPort);
+            Assert.Equal(values.MinFreeSpace, originalSettings.MinFreeSpace);
+            Assert.Equal(values.Pass4SymmetricKey, originalSettings.Pass4SymmetricKey);
+            Assert.Equal(values.ServerName, originalSettings.ServerName);
+            Assert.Equal(values.SessionTimeout, originalSettings.SessionTimeout);
+            Assert.Equal(values.SplunkDB, originalSettings.SplunkDB);
+            Assert.Equal(values.StartWebServer, originalSettings.StartWebServer);
+            Assert.Equal(values.TrustedIP, originalSettings.TrustedIP);
+
+            //// Restart the server because it's required following a settings update
+
+            await service.Server.RestartAsync(60000);
+        }
+
         [Trait("class", "Service: System")]
         [Fact]
         public async Task CanGetServerInfo()

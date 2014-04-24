@@ -209,12 +209,22 @@ namespace Splunk.Client
         /// <param name="values">
         /// An object representing the updated server setting values.
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// </returns>
         public async Task UpdateAsync(ServerSettingValues values)
         {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, values))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+
+                if (feed.Entries.Count != 1)
+                {
+                    throw new InvalidDataException();  // TODO: Diagnostics
+                }
+
+                this.Data = new DataCache(feed.Entries[0]);
             }
         }
 

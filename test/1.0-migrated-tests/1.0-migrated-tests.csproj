@@ -85,9 +85,6 @@
     <Compile Include="TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\Results\4.3.5\results-preview.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Data\Results\5.0.2\results-empty.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -103,22 +100,6 @@
     <Content Include="Data\Results\resultsExport.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="ModularInputs\Data\Events.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModularInputs\Data\Scheme.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="ModularInputs\Data\InputDefinition.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModularInputs\Data\ValidationItems.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ModularInputs\Data\ValidationErrorMessage.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -142,9 +123,6 @@
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>Splunk.Client</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

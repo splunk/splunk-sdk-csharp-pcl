@@ -33,7 +33,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// <summary>
         ///     Input file folder
         /// </summary>
-        private const string TestDataFolder = @"ModularInputs\Data";
+        private const string TestDataFolder = @"Data\ModularInputs";
 
         /// <summary>
         ///     Input file containing input definition
@@ -122,35 +122,35 @@ namespace Splunk.ModularInputs.UnitTesting
         public async Task ErrorHandling()
         {
             using (var consoleIn = new StringReader(string.Empty))
-            using (var consoleError = new StringWriter())
             {
-                SetConsoleIn(consoleIn);
-                Console.SetError(consoleError);
-                int exitCode = await Script.RunAsync<TestScript>(new string[] { });
+                using (var consoleError = new StringWriter())
+                {
+                    SetConsoleIn(consoleIn);
+                    Console.SetError(consoleError);
+                    int exitCode = await Script.RunAsync<TestScript>(new string[] { });
 
-                // There will be an exception due to missing input definition in 
-                // (redirected) console stdin.      
-                var error = consoleError.ToString();
+                    // There will be an exception due to missing input definition in 
+                    // (redirected) console stdin.      
+                    var error = consoleError.ToString();
 
-                // Verify that an exception is logged with level FATAL.
-                Assert.True(error.Contains(
-                    "FATAL Script.Run: Unhandled exception:"));
+                    // Verify that an exception is logged with level FATAL.
+                    Assert.Contains("FATAL Script.Run: Unhandled exception:", error);
 
-                // Verify that the exception is what we expect.
-                Assert.True(error.Contains("Root element is missing"));
+                    // Verify that the exception is what we expect.
+                    Assert.Contains("Root element is missing", error);
 
-                // Verify that an info level message is logged properly.
-                Assert.True(error.Contains("INFO Script.Run: Reading input definition"));
+                    // Verify that an info level message is logged properly.
+                    Assert.Contains("INFO Script.Run: Reading input definition", error);
 
-                // Verify that the logged exception does not span more than one line
-                // Splunk breaks up events using new lines for splunkd log.
-                var lines = error.Split(
-                    new[] { Environment.NewLine },
-                    StringSplitOptions.RemoveEmptyEntries);
+                    // Verify that the logged exception does not span more than one line
+                    // Splunk breaks up events using new lines for splunkd log.
+                    var lines = error.Split(
+                        new[] { Environment.NewLine },
+                        StringSplitOptions.RemoveEmptyEntries);
 
-                Assert.Equal(2, lines.Length);
-
-                Assert.NotEqual(0, exitCode);
+                    Assert.Equal(2, lines.Length);
+                    Assert.NotEqual(0, exitCode);
+                }
             }
         }
 

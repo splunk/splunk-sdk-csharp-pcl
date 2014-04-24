@@ -135,14 +135,14 @@ namespace Splunk.ModularInputs
 
         #region Privates/internals
 
-        static readonly DateTime UnixUtcEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings()
+        internal static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings()
         {
-            Async = true
+            Async = true,
+            ConformanceLevel = ConformanceLevel.Fragment
         };
 
-        XmlWriter xmlWriter = new XmlTextWriter(Console.Out);
+        static readonly DateTime UnixUtcEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        XmlWriter xmlWriter = XmlWriter.Create(Console.Out, XmlWriterSettings);
 
         /// <summary>
         /// Converts a date-time value to Unix UTC timestamp.

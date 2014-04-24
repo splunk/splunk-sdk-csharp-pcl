@@ -46,15 +46,16 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <remarks>
         /// This method writes the closing <![CDATA[</stream>]]> element
-        /// synchronously, if it is outstanding. Best practice is to write the
-        /// closing <![CDATA[</stream>]]> element asynchronously using
-        /// <see cref="EventStreamWriter.WriteEndAsync"/>.
+        /// synchronously, if it is outstanding, but best practice is to
+        /// write this element asynchronously beforehand by calling <see cref=
+        /// "EventStreamWriter.WriteEndAsync"/>.
         /// </remarks>
         public void Dispose()
         {
-            //// The XmlTextWriter IDisposable implementation writes all unwritten 
-            //// end elements and--like all good IDisposable implementations--can
-            //// be called many times. Hence, we let it do all the work.
+            //// The XmlTextWriter class's IDisposable implementation writes 
+            //// all unwritten end elements and--like all good IDisposable 
+            //// implementations--can be called many times. Hence, we let it 
+            //// do all the work.
             this.xmlWriter.Dispose();
         }
 

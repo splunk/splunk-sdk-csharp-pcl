@@ -256,7 +256,6 @@ namespace Splunk.Client
             return resource;
         }
 
-
         #endregion
 
         #region Privates/internals

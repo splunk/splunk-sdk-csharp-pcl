@@ -25,7 +25,7 @@ namespace Splunk.ModularInputs
     /// The <see cref="EventStreamWriter"/> class writes events to standard
     /// output using the XML streaming mode.
     /// </summary>
-    public class EventStreamWriter : IDisposable
+    public sealed class EventStreamWriter : IDisposable
     {
         #region Constructors
 

@@ -82,6 +82,7 @@
     </Compile>
     <Compile Include="SearchTest.cs" />
     <Compile Include="ServiceTest.cs" />
+    <Compile Include="SettingsTest.cs" />
     <Compile Include="TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>

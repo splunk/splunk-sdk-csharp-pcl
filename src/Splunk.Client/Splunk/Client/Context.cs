@@ -341,7 +341,7 @@ namespace Splunk.Client
                     from args in argumentSets
                     where args != null
                     from arg in args
-                    select string.Join("=", Uri.EscapeUriString(arg.Name), Uri.EscapeUriString(arg.Value.ToString())));
+                    select string.Join("=", Uri.EscapeDataString(arg.Name), Uri.EscapeDataString(arg.Value.ToString())));
 
                 if (query.Length > 0)
                 {

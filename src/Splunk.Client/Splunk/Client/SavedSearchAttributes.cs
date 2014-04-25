@@ -1054,7 +1054,7 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the time format Splunk should use to
+        /// Gets or sets a value specifying the time format Splunk should use
         /// for the earliest and latest times of a search.
         /// </summary>
         /// <remarks>
@@ -1085,7 +1085,7 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating Whether a <see cref="SavedSearch"/>
+        /// Gets or sets a value indicating whether a <see cref="SavedSearch"/>
         /// is to be run on a schedule.
         /// </summary>
         /// <remarks>
@@ -1127,7 +1127,7 @@ namespace Splunk.Client
         /// <remarks>
         /// The default value is <c>true</c>. The scheduler bases its 
         /// determination of the next scheduled <see cref="SavedSearch"/> run
-        /// time on the current time. If this value is <c>false</c>, the 
+        /// time or the current time. If this value is <c>false</c>, the 
         /// scheduler bases its determination of the next scheduled <see cref=
         /// "SavedSearch"/> on the last run time. This is called continuous 
         /// scheduling. 

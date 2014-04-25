@@ -13,7 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>22455d9b</NuGetPackageImportStamp>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
     <StyleCopOverrideSettingsFile>Settings.StyleCop</StyleCopOverrideSettingsFile>
@@ -115,6 +116,7 @@
     <Compile Include="Splunk\Client\AlertComparator.cs" />
     <Compile Include="Splunk\Client\AlertTrack.cs" />
     <Compile Include="Splunk\Client\AlertSeverity.cs" />
+    <Compile Include="Splunk\Client\UnixDateTimeConverter.cs" />
     <Compile Include="Splunk\Client\ServerSettingValues.cs" />
     <Compile Include="Splunk\Client\ServerSettings.cs" />
     <Compile Include="Splunk\Client\ServerMessageType.cs" />

@@ -365,40 +365,82 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudSavedSearch()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089/*, new Namespace(user: "nobody", app: "search")*/);
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089/*, new Namespace(user: "nobody", app: "search")*/))
+            {
+                await service.LoginAsync("admin", "changeme");
 
-            // Create
+                //// Create
 
-            var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
-            var attributes = new SavedSearchAttributes() { Search = "search index=_internal | head 1000" };
+                var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
 
-            var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
-            Assert.Equal(true, savedSearch.IsVisible);
+                var originalAttributes = new SavedSearchAttributes()
+                {
+                    Search = "search index=_internal | head 1000",
+                    CronSchedule = "00 * * * *", // on the hour
+                    IsScheduled = true,
+                    IsVisible = false
+                };
 
-            // Read
+                var savedSearch = await service.CreateSavedSearchAsync(name, originalAttributes);
 
-            savedSearch = await service.GetSavedSearchAsync(name);
-            Assert.Equal(true, savedSearch.IsVisible);
+                Assert.Equal(originalAttributes.Search, savedSearch.Search);
+                Assert.Equal(originalAttributes.CronSchedule, savedSearch.CronSchedule);
+                Assert.Equal(originalAttributes.IsScheduled, savedSearch.IsScheduled);
+                Assert.Equal(originalAttributes.IsVisible, savedSearch.IsVisible);
 
-            // Update
+                //// Read
 
-            attributes.IsVisible = false;
-            attributes.ActionEmailBcc = "ljiang@splunk.com";
-            attributes.ActionEmailCC = "dnoble@splunk.com";
-            attributes.ActionEmailFrom = "fross@splunk.com";
-            attributes.ActionEmailTo = "gblock@splunk.com, ineeman@splunk.com";
+                savedSearch = await service.GetSavedSearchAsync(name);
+                Assert.Equal(false, savedSearch.IsVisible);
 
-            savedSearch = await service.UpdateSavedSearchAsync(name, attributes);
-            Assert.Equal(false, savedSearch.IsVisible);
-            Assert.Equal("ljiang@splunk.com", savedSearch.Actions.Email.Bcc);
-            Assert.Equal("dnoble@splunk.com", savedSearch.Actions.Email.CC);
-            Assert.Equal("fross@splunk.com", savedSearch.Actions.Email.From);
-            Assert.Equal("gblock@splunk.com, ineeman@splunk.com", savedSearch.Actions.Email.To);
+                //// Read schedule
+                
+                var dateTime = DateTime.Now;
+                var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
 
-            // Delete
+                Assert.Equal(48, schedule.Count);
 
-            await savedSearch.RemoveAsync();
+                var expected = dateTime.AddMinutes(60);
+                expected = expected.Date.AddHours(expected.Hour);
+
+                Assert.Equal(expected, schedule[0]); 
+
+                //// Update
+
+                var updatedAttributes = new SavedSearchAttributes()
+                {
+                    ActionEmailBcc = "user1@splunk.com",
+                    ActionEmailCC = "user2@splunk.com",
+                    ActionEmailFrom = "user3@splunk.com",
+                    ActionEmailTo = "user4@splunk.com, user5@splunk.com",
+                    IsVisible = true
+                };
+
+                savedSearch = await service.UpdateSavedSearchAsync(name, updatedAttributes);
+
+                Assert.Equal(updatedAttributes.ActionEmailBcc, savedSearch.Actions.Email.Bcc);
+                Assert.Equal(updatedAttributes.ActionEmailCC, savedSearch.Actions.Email.CC);
+                Assert.Equal(updatedAttributes.ActionEmailFrom, savedSearch.Actions.Email.From);
+                Assert.Equal(updatedAttributes.ActionEmailTo, savedSearch.Actions.Email.To);
+                Assert.Equal(updatedAttributes.IsVisible, savedSearch.IsVisible);
+
+                //// Update schedule
+
+                dateTime = DateTime.Now;
+
+                //// TODO: Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
+                //// saved searches right away. Are we using the right time format?
+
+                //// TODO: Figure out how to parse or--more likely--complain that savedSearch.NextScheduledTime uses
+                //// timezone names like "Pacific"
+
+                await savedSearch.ScheduleAsync(dateTime.AddMinutes(15)); // Does not return anything but status
+                await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
+
+                //// Delete
+
+                await savedSearch.RemoveAsync();
+            }
         }
 
         [Trait("class", "Service: Saved Searches")]

@@ -99,24 +99,23 @@ namespace Splunk.Client.UnitTesting
 
             ApplicationCollection apps = service.GetApplicationsAsync(new ApplicationCollectionArgs()).Result;
 
-            //if(apps.Select(a => a.ResourceName.Title == name).Single()!=null)
-            ////if (apps.GetAsync(name))
-            //{
-            //    service.re
-            //    apps.Remove(name);
-            //    this.SplunkRestart();
-            //    service = this.Connect();
-            //}
+            if(apps.Any(a => a.ResourceName.Title == name))
+            {
+                //service.
+                //apps.Remove(name);
+                //this.SplunkRestart();
+                //service = this.Connect();
+            }
 
-            //apps = service.GetApplicationsAsync().Result;
-            //Assert.False(apps.ContainsKey(name), this.assertRoot + "#1");
+            apps.GetAsync().Wait();
+            //Assert.False(apps.Any(a => a.ResourceName.Title == name), this.assertRoot + "#1");
 
             //apps.Create(name);
-            this.SplunkRestart();
+            //this.SplunkRestart();
 
-            service = this.Connect();
+            //service = this.Connect();
 
-            apps = service.GetApplicationsAsync().Result;
+            //apps = service.GetApplicationsAsync().Result;
             //Assert.True(apps.ContainsKey(name), this.assertRoot + "#2");
         }
 

@@ -428,11 +428,13 @@ namespace Splunk.Client.UnitTesting
 
                 dateTime = DateTime.Now;
 
-                //// TODO: Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
+                //// TODO: 
+                //// Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
                 //// saved searches right away. Are we using the right time format?
 
-                //// TODO: Figure out how to parse or--more likely--complain that savedSearch.NextScheduledTime uses
-                //// timezone names like "Pacific"
+                //// TODO: 
+                //// Figure out how to parse or--more likely--complain that savedSearch.NextScheduledTime uses
+                //// timezone names like "Pacific Daylight Time".
 
                 await savedSearch.ScheduleAsync(dateTime.AddMinutes(15)); // Does not return anything but status
                 await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));

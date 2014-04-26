@@ -37,56 +37,6 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Methods
-
-        public Index CreateIndex(string name, IndexArgs args, IndexAttributes attributes)
-        {
-            return this.CreateIndexAsync(name, args, attributes).Result;
-        }
-
-        public async Task<Index> CreateIndexAsync(string name, IndexArgs args, IndexAttributes attributes)
-        {
-            var entity = new Index(this.Context, this.Namespace, name);
-            await entity.CreateAsync(args, attributes);
-            return entity;
-        }
-
-        public Index GetIndex(string name)
-        {
-            return this.GetIndexAsync(name).Result;
-        }
-
-        public async Task<Index> GetIndexAsync(string name)
-        {
-            var entity = new Index(this.Context, this.Namespace, name);
-            await entity.GetAsync();
-            return entity;
-        }
-
-        public void RemoveIndex(string name)
-        {
-            this.RemoveIndexAsync(name).Wait();
-        }
-
-        public async Task RemoveIndexAsync(string name)
-        {
-            var entity = new Index(this.Context, this.Namespace, name);
-            await entity.RemoveAsync();
-        }
-
-        public void UpdateIndex(string name, IndexAttributes attributes)
-        {
-            this.UpdateIndexAsync(name, attributes).Wait();
-        }
-
-        public async Task UpdateIndexAsync(string name, IndexAttributes attributes)
-        {
-            var entity = new Index(this.Context, this.Namespace, name);
-            await entity.UpdateAsync(attributes);
-        }
-
-        #endregion
-
         #region Privates/internals
 
         internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");

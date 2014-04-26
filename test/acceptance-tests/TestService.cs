@@ -22,6 +22,7 @@ namespace Splunk.Client.UnitTesting
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Web.Security;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -36,6 +37,42 @@ namespace Splunk.Client.UnitTesting
         }
 
         #region Access Control
+
+        [Trait("class", "Service: Saved Searches")]
+        [Fact]
+        public async Task CanCrudStoragePasswords()
+        {
+            using (var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default))
+            {
+                var name = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
+                var realm = new string[] { null, "splunk.com" };
+                var storagePasswords = new List<StoragePassword>(50);
+
+                await service.LoginAsync("admin", "changeme");
+
+                for (int i = 0; i < 50; i++)
+                {
+                    var storagePassword = await service.CreateStoragePasswordAsync(name + i, "foobar", realm[i % 2]);
+                    var password = Membership.GeneratePassword(15, 2);
+                    await storagePassword.UpdateAsync(password);
+
+                    Assert.Equal(password, storagePassword.ClearPassword);
+
+                    storagePasswords.Add(storagePassword);
+                }
+
+                var collection = await service.GetStoragePasswordsAsync(new StoragePasswordCollectionArgs()
+                {
+                    Count = 0
+                });
+
+                for (int i = 0; i < 50; i++)
+                {
+                    Assert.Contains(storagePasswords[i], collection);
+                    await storagePasswords[i].RemoveAsync();
+                }
+            }
+        }
 
         [Trait("class", "Service: Access Control")]
         [Fact]
@@ -869,5 +906,11 @@ namespace Splunk.Client.UnitTesting
 
         public void SetFixture(AcceptanceTestingSetup data)
         { }
+
+        #region Privates/internals
+
+        static readonly Namespace TestNamespace = new Namespace("nobody", "search");
+
+        #endregion
     }
 }

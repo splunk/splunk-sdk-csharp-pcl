@@ -23,22 +23,22 @@ namespace Splunk.Client
     /// Provides a class that represents a collection of Splunk Application
     /// resources.
     /// </summary>
-    public class ApplicationCollection : EntityCollection<ApplicationCollection, Application>
+    public class StoragePasswordCollection : EntityCollection<StoragePasswordCollection, StoragePassword>
     {
         #region Constructors
 
-        internal ApplicationCollection(Context context, Namespace @namespace, ApplicationCollectionArgs args = null)
+        internal StoragePasswordCollection(Context context, Namespace @namespace, StoragePasswordCollectionArgs args = null)
             : base(context, @namespace, ClassResourceName, args)
         { }
 
-        public ApplicationCollection()
+        public StoragePasswordCollection()
         { }
 
         #endregion
 
         #region Privates/internals
 
-        internal static readonly ResourceName ClassResourceName = new ResourceName("apps", "local");
+        internal static readonly ResourceName ClassResourceName = new ResourceName("storage", "passwords");
 
         #endregion
     }

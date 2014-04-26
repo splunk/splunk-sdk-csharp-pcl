@@ -24,7 +24,8 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving <see cref="Application"/> entries.
+    /// Provides the arguments required for retrieving <see cref="StoragePassword"/> 
+    /// entries.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
@@ -51,11 +52,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value specifying the maximum number of <see cref=
-        /// "Application"/> entries to return.
+        /// "StoragePassword"/> entries to return.
         /// </summary>
         /// <remarks>
         /// If the value of <c>Count</c> is set to zero, then all <see cref=
-        /// "Application"/> entries are returned. The default value is 30.
+        /// "StoragePassword"/> entries are returned. The default value is 30.
         /// </remarks>
         [DataMember(Name = "count", EmitDefaultValue = false)]
         [DefaultValue(30)]
@@ -64,7 +65,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value specifying the first result (inclusive) from 
-        /// which to begin returning <see cref="Application"/> entries.
+        /// which to begin returning <see cref="StoragePassword"/> entries.
         /// </summary>
         /// <remarks>
         /// This value is zero-based and cannot be negative. The default value
@@ -76,21 +77,21 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a search expression to filter <see cref="Application"/> 
+        /// Gets or sets a search expression to filter <see cref="StoragePassword"/> 
         /// entries. 
         /// </summary>
         /// <remarks>
         /// Use this expression to filter the entries returned based on <see
-        /// cref="Application"/> properties.
+        /// cref="StoragePassword"/> properties.
         /// </remarks>
         [DataMember(Name = "search", EmitDefaultValue = false)]
         [DefaultValue(null)]
-        public string Search // TODO: Good search example for App
+        public string Search // TODO: Good search example
         { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to sort returned <see cref=
-        /// "Application"/>entries in ascending or descending order.
+        /// "StoragePassword"/> entries in ascending or descending order.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortDirection.Ascending"/>.
@@ -114,7 +115,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-        /// cref="Application"/> entries.
+        /// cref="StoragePassword"/> entries.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortMode.Automatic"/>.

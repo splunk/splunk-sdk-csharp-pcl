@@ -140,30 +140,33 @@ namespace Splunk.Client.UnitTesting
                 dummyBool = idx.IsInternal;
             }
 
+
             try
             {
-                var x = service.GetIndexAsync(indexName).Result;
+                var x = indexes.GetIndexAsync(indexName).Result;
 
-                if (service.GetIndexAsync(indexName).Result == null)
+                if (indexes.GetIndexAsync(indexName).Result == null)
                 {
-                    service.CreateIndexAsync(indexName, new IndexArgs("", "", ""), new IndexAttributes()).Wait();
+                    indexes.CreateIndexAsync(indexName, new IndexArgs("", "", ""), new IndexAttributes()).Wait();
                     //indexes.Refresh();
                 }
             }
             catch (Exception e)
             {
-                service.CreateIndexAsync(indexName, new IndexArgs("", "", ""), new IndexAttributes()).Wait();
+                indexes.CreateIndexAsync(indexName, new IndexArgs("", "", ""), new IndexAttributes()).Wait();
             }
 
-            Assert.NotNull(service.GetIndexAsync(indexName).Result);
+            Assert.NotNull(indexes.GetIndexAsync(indexName).Result);
 
-            Index index = service.GetIndexAsync(indexName).Result;
+            Index index = indexes.GetIndexAsync(indexName).Result;
 
             IndexAttributes indexAttributes = GetIndexAttributes(index);
 
             // use setters to update most
 
+
             indexAttributes.BlockSignSize = index.BlockSignSize + 1;
+
 
             if (this.VersionCompare(service, "4.3") > 0)
             {

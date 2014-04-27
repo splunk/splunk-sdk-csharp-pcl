@@ -142,8 +142,8 @@ namespace Splunk.Client
         /// </remarks>
         public async Task<StoragePassword> CreateStoragePasswordAsync(string name, string password, string realm = null)
         {
-            var resource = new StoragePassword(this.Context, this.Namespace, name);
-            await resource.CreateAsync(password, realm);
+            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
+            await resource.CreateAsync(password);
             return resource;
         }
 

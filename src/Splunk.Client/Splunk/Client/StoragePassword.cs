@@ -25,9 +25,13 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Linq;
     using System.Net;
+    using System.Text;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -46,8 +50,11 @@ namespace Splunk.Client
         /// <param name="namespace">
         /// An object identifying a Splunk service namespace.
         /// </param>
-        /// <param name="name">
+        /// <param name="username">
         /// Username associated with the <see cref="StoragePassword"/>.
+        /// </param>
+        /// <param name="username">
+        /// Realm associated with the <see cref="StoragePassword"/>.
         /// </param>
         /// <exception cref="ArgumentException">
         /// <see cref="name"/> is <c>null</c> or empty.
@@ -58,9 +65,11 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        internal StoragePassword(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, StoragePasswordCollection.ClassResourceName, name)
-        { }
+        internal StoragePassword(Context context, Namespace @namespace, string username, string realm = "")
+            : base(context, @namespace, StoragePasswordCollection.ClassResourceName, CreateNameFromRealmAndUsername(realm ?? "", username))
+        {
+            Contract.Requires<ArgumentNullException>(username != null);
+        }
 
         public StoragePassword()
         { }
@@ -144,18 +153,20 @@ namespace Splunk.Client
         /// storage/passwords</a> endpoint to create the <see cref=
         /// "StoragePassword"/> represented by the current instance.
         /// </remarks>
-        public async Task CreateAsync(string password, string realm = null)
+        public async Task CreateAsync(string password)
         {
-            var resourceName = StoragePasswordCollection.ClassResourceName;
+            string realm, username;
+            ParseRealmAndUsernameFromName(this.Name, out realm, out username);
 
-            var attributes = new StoragePasswordAttributes() 
-            { 
-                Username = this.Name,
+            var attributes = new StoragePasswordAttributes()
+            {
+                Username = username,
                 Password = password,
-                Realm = realm 
+                Realm = realm
             };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, attributes))
+            using (var response = await this.Context.PostAsync(
+                this.Namespace, StoragePasswordCollection.ClassResourceName, attributes))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 await this.UpdateDataAsync(response);
@@ -216,6 +227,59 @@ namespace Splunk.Client
         #endregion
 
         #region Privates/internals
+
+        static string CreateNameFromRealmAndUsername(string realm, string username)
+        {
+            var parts = new string[] { realm, username };
+            var builder = new StringBuilder();
+
+            foreach (var part in parts)
+            {
+                foreach (var c in part)
+                {
+                    if (c == ':')
+                    {
+                        builder.Append('\\');
+                    }
+
+                    builder.Append(c);
+                }
+
+                builder.Append(':');
+            }
+
+            return builder.ToString();
+        }
+
+        static void ParseRealmAndUsernameFromName(string name, out string realm, out string username)
+        {
+            var builder = new StringBuilder();
+            var parts = new List<string>(3);
+            int last = name.Length - 1;
+
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (name[i] == ':')
+                {
+                    parts.Add(builder.ToString());
+                    builder.Clear();
+                    continue;
+                }
+                
+                if (i < last && name[i] == '\\' && name[i + 1] == ':')
+                {
+                    builder.Append(':');
+                    i++;
+                    continue;
+                }
+
+                builder.Append(name[i]);
+            }
+
+            Debug.Assert(builder.Length == 0 && parts.Count == 2 && parts[1].Length > 0);
+            realm = parts[0];
+            username = parts[1];
+        }
 
         async Task UpdateDataAsync(Response response)
         {

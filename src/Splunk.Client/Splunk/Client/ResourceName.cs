@@ -106,7 +106,7 @@ namespace Splunk.Client
 
             var pair = this.parts
                 .Zip(other.parts, (p1, p2) => new { ThisPart = p1, OtherPart = p2 })
-                .First(p => p.ThisPart != p.OtherPart);
+                .FirstOrDefault(p => p.ThisPart != p.OtherPart);
 
             if (pair == null)
             {

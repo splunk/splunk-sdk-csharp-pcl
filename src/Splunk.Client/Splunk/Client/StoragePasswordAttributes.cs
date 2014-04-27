@@ -68,7 +68,7 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the username for a <see cref="StoragePasssword"/>.
+        /// Gets or sets the username for a <see cref="StoragePassword"/>.
         /// </summary>
         [DataMember(Name = "name", IsRequired = true)]
         public string Username

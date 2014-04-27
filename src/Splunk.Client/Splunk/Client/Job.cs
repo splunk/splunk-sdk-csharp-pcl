@@ -126,6 +126,9 @@ namespace Splunk.Client
             get { return this.Content.GetValue("DropCount", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the access control lists for the current <see cref="Job"/>.
+        /// </summary>
         public Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }

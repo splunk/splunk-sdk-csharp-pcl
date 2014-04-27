@@ -117,6 +117,7 @@
     <Compile Include="Splunk\Client\AlertTrack.cs" />
     <Compile Include="Splunk\Client\AlertSeverity.cs" />
     <Compile Include="Splunk\Client\StoragePassword.cs" />
+    <Compile Include="Splunk\Client\ApplicationAttributes.cs" />
     <Compile Include="Splunk\Client\StoragePasswordCollection.cs" />
     <Compile Include="Splunk\Client\StoragePasswordAttributes.cs" />
     <Compile Include="Splunk\Client\StoragePasswordCollectionArgs.cs" />

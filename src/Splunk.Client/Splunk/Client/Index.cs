@@ -110,6 +110,9 @@ namespace Splunk.Client
             get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the access control lists for the current <see cref="Index"/>.
+        /// </summary>
         public Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }

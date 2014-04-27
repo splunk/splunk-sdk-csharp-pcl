@@ -45,6 +45,10 @@ namespace Splunk.Client
             get { return this.Content.GetValue("Build", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the access control lists for the current <see cref=
+        /// "ServerInfo"/>.
+        /// </summary>
         public Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }

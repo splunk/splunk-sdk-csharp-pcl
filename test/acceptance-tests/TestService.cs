@@ -44,7 +44,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudStoragePasswords()
         {
-            foreach (var ns in new Namespace[] { Namespace.Default, new Namespace("admin", "search"), new Namespace("nobody", "search") })
+            foreach (var ns in TestNamespaces)
             {
                 using (var service = new Service(Scheme.Https, "localhost", 8089, ns))
                 {
@@ -122,12 +122,41 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Applications")]
         [Fact]
-        public async Task CanGetApps()
+        public async Task CanCrudApplications()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
+            foreach (var ns in TestNamespaces)
+            {
+                using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+                {
+                    await service.LoginAsync("admin", "changeme");
+                    Assert.NotNull(service.SessionKey);
 
-            var collection = await service.GetApplicationsAsync();
+                    var collection = await service.GetApplicationsAsync();
+
+                    foreach (var application in collection)
+                    {
+                        var value = String.Join("\n",
+                            string.Format("ApplicationAuthor = {0}", application.ApplicationAuthor),
+                            string.Format("Author = {0}", application.Author),
+                            string.Format("CheckForUpdates = {0}", application.CheckForUpdates),
+                            string.Format("Configured = {0}", application.Configured),
+                            string.Format("Description = {0}", application.Description),
+                            string.Format("Disabled = {0}", application.Disabled),
+                            string.Format("Eai = {0}", application.Eai),
+                            string.Format("Id = {0}", application.Id),
+                            string.Format("Label = {0}", application.Label),
+                            string.Format("Links = {0}", application.Links),
+                            string.Format("Name = {0}", application.Name),
+                            string.Format("Namespace = {0}", application.Namespace),
+                            string.Format("Published = {0}", application.Published),
+                            string.Format("ResourceName = {0}", application.ResourceName),
+                            string.Format("StateChangeRequiresRestart = {0}", application.StateChangeRequiresRestart),
+                            string.Format("Updated = {0}", application.Updated),
+                            string.Format("Version = {0}", application.Version),
+                            string.Format("Visible = {0}", application.Visible));
+                    }
+                }
+            }
         }
 
         #endregion
@@ -925,7 +954,10 @@ namespace Splunk.Client.UnitTesting
 
         #region Privates/internals
 
-        static readonly Namespace TestNamespace = new Namespace("nobody", "search");
+        static readonly IReadOnlyList<Namespace> TestNamespaces = new Namespace[] 
+        { 
+            Namespace.Default, new Namespace("admin", "search"), new Namespace("nobody", "search") 
+        };
 
         #endregion
     }

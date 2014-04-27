@@ -15,15 +15,31 @@
  */
 
 // TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [ ] Properties & Methods
+// [O] Contracts
+// [O] Documentation
+// [O] Properties & Methods
 
 namespace Splunk.Client
 {
+    using System.Net;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Provides a class that represents a Splunk application resource.
     /// </summary>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///   <a href="http://goo.gl/OsgrYx">Apps and add-ons: an introduction</a>
+    /// </description></item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/1txQUG">Package your app or add-on</a>
+    /// </description></item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/a7HqRp">REST API Reference: Applications</a>
+    /// </description></item>
+    /// </remarks>
     public class Application : Entity<Application>
     {
         #region Constructors
@@ -56,6 +72,205 @@ namespace Splunk.Client
 
         public Application()
         { }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the username of the splunk.com account for publishing the
+        /// current <see cref="Application"/> to Splunkbase.
+        /// </summary>
+        public string ApplicationAuthor
+        {
+            get { return this.Content.GetValue("Author", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether Splunk should check Splunkbase
+        /// for updates to the current <see cref="Application"/>.
+        /// </summary>
+        public bool CheckForUpdates
+        {
+            get { return this.Content.GetValue("CheckForUpdates", BooleanConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether custom setup has been performed
+        /// on the current <see cref="Application"/>.
+        /// </summary>
+        public bool Configured
+        {
+            get { return this.Content.GetValue("Configured", BooleanConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the short explanatory string displayed underneath the title of
+        /// the current <see cref="Application"/> in Launcher.
+        /// </summary>
+        public string Description
+        {
+            get { return this.Content.GetValue("Description", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the current <see cref="Application"/>
+        /// is disabled.
+        /// </summary>
+        public bool Disabled
+        {
+            get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the access control lists for the current <see cref=
+        /// "Appliciation"/>.
+        /// </summary>
+        public Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the name of the current <see cref="Application"/> for display 
+        /// in the Splunk GUI and Launcher.
+        /// </summary>
+        public string Label
+        {
+            get { return this.Content.GetValue("Label", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether objects contained in the 
+        /// current <see cref="Application"/> should be reloaded.
+        /// </summary>
+        public bool Refresh
+        {
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether changing the state of the 
+        /// current <see cref="Application"/> always requires restarting 
+        /// Splunk.
+        /// </summary>
+        /// <remarks>
+        /// A value of <c>true</c> indicates that a state change always 
+        /// requires a restart. A value of <c>false</c> indicates that modifying 
+        /// state may or may not require a restart depending on what state
+        /// has been changed. A value of <c>false</c> does not indicate that a 
+        /// restart will never be required to effect a state change. State 
+        /// changes include enabling or disabling an <see cref="Application"/>.
+        /// </remarks>
+        public bool StateChangeRequiresRestart
+        {
+            get { return this.Content.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the version string for the current <see cref="Application"/>.
+        /// </summary>
+        /// <remarks>
+        /// Version strings are a number followed by a sequence of numbers or 
+        /// dots. Pre-release versions may append a space and a single-word 
+        /// suffix like "beta2".
+        /// <example>Examples</example>
+        /// <code>
+        /// "1.2"
+        /// "11.0.34"
+        /// "2.0 beta"
+        /// "1.3 beta2"
+        /// "1.0 b2"
+        /// "12.4 alpha"
+        /// "11.0.34.234.254"
+        /// </code>
+        /// </remarks>
+        public string Version
+        {
+            get { return this.Content.GetValue("Version", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates if the current <see cref="Application"/> 
+        /// is visible and navigable from Splunk Web.
+        /// </summary>
+        public bool Visible
+        {
+            get { return this.Content.GetValue("Visible", BooleanConverter.Instance); }
+        }
+        
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Asynchronously creates the application represented by the current
+        /// instance.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local</a> endpoint to create the current <see cref=
+        /// "Application"/>.
+        /// </remarks>
+        public async Task CreateFromPackageAsync(string path, ApplicationAttributes attributes = null, 
+            string name = null, bool update = false)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously creates the application represented by the current
+        /// instance.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local</a> endpoint to create the current <see cref=
+        /// "Application"/>.
+        /// </remarks>
+        public async Task CreateFromTemplateAsync(string template, ApplicationAttributes attributes = null)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously removes the application represented by the current
+        /// instance.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/fIQOrK">DELETE 
+        /// apps/local/{name}</a> endpoint to remove the current <see cref=
+        /// "Application"/>.
+        /// </remarks>
+        public async Task RemoveAsync()
+        {
+            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously updates the attributes of the application represented 
+        /// by the current instance.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/dKraaR">POST 
+        /// apps/local/{name}</a> endpoint to update the attributes of the 
+        /// current <see cref="Application"/>.
+        /// </remarks>
+        public async Task UpdateAsync(ApplicationAttributes attributes)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
 
         #endregion
     }

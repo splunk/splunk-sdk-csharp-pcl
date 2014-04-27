@@ -265,6 +265,7 @@ namespace Splunk.Client
             using (var response = await this.Context.DeleteAsync(Namespace.Default, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                this.SessionKey = null;
             }
         }
 

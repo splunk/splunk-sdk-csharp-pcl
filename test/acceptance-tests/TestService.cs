@@ -32,8 +32,10 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public void CanConstruct()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            Assert.Equal(service.ToString(), "https://localhost:8089/services");
+            using (var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default))
+            {
+                Assert.Equal(service.ToString(), "https://localhost:8089/services");
+            }
         }
 
         #region Access Control
@@ -46,21 +48,14 @@ namespace Splunk.Client.UnitTesting
             {
                 using (var service = new Service(Scheme.Https, "localhost", 8089, ns))
                 {
+                    await service.LoginAsync("admin", "changeme");
+                    Assert.NotNull(service.SessionKey);
+
+                    //// Create and change the password for 50 StoragePassword instances
+
                     var name = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
                     var realm = new string[] { null, "splunk.com", "splunk:com" };
                     var storagePasswords = new List<StoragePassword>(50);
-
-                    await service.LoginAsync("admin", "changeme");
-
-                    var originalCollection = await service.GetStoragePasswordsAsync(new StoragePasswordCollectionArgs()
-                    {
-                        Count = 0
-                    });
-
-                    foreach (var storagePassword in originalCollection)
-                    {
-                        await storagePassword.RemoveAsync();
-                    }
 
                     for (int i = 0; i < 50; i++)
                     {
@@ -73,10 +68,14 @@ namespace Splunk.Client.UnitTesting
                         storagePasswords.Add(storagePassword);
                     }
 
+                    //// Fetch the entire collection of StoragePassword instances
+
                     var collection = await service.GetStoragePasswordsAsync(new StoragePasswordCollectionArgs()
                     {
                         Count = 0
                     });
+
+                    //// Verify and then remove each of the StoragePassword instances we created
 
                     for (int i = 0; i < 50; i++)
                     {
@@ -89,27 +88,31 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Access Control")]
         [Fact]
-        public async Task CanLogin()
+        public async Task CanLoginAndLogoff()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default))
+            {
+                await service.LoginAsync("admin", "changeme");
+                Assert.NotNull(service.SessionKey);
 
-            Assert.NotNull(service.SessionKey);
+                await service.LogoffAsync();
+                Assert.Null(service.SessionKey);
 
-            try
-            {
-                await service.LoginAsync("admin", "bad-password");
-                Assert.False(true, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, "no exception"));
-            }
-            catch (AuthenticationFailureException e)
-            {
-                Assert.Equal(e.StatusCode, HttpStatusCode.Unauthorized);
-                Assert.Equal(e.Details.Count, 1);
-                Assert.Equal(e.Details[0], new Message(MessageType.Warning, "Login failed"));
-            }
-            catch (Exception e)
-            {
-                Assert.True(false, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, e.GetType().FullName));
+                try
+                {
+                    await service.LoginAsync("admin", "bad-password");
+                    Assert.False(true, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, "no exception"));
+                }
+                catch (AuthenticationFailureException e)
+                {
+                    Assert.Equal(e.StatusCode, HttpStatusCode.Unauthorized);
+                    Assert.Equal(e.Details.Count, 1);
+                    Assert.Equal(e.Details[0], new Message(MessageType.Warning, "Login failed"));
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, e.GetType().FullName));
+                }
             }
         }
 

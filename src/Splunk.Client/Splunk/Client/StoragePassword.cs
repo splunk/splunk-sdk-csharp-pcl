@@ -17,7 +17,7 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
-//// [O] Properties & Methods
+//// [X] Properties & Methods
 //// [ ] What HttpStatusCode does Splunk return when a session key expires?
 //// [ ] What exception should Args throw when a required property is omitted: 
 ////     ArgumentException or SerializationException as it does right now?
@@ -37,6 +37,17 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a class that represents a Splunk storage password resource.
     /// </summary>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///   <a href="http://goo.gl/wAcSfp">Splunk>Blogs: Storing Encrypted Credentials</a>
+    /// </description></item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/HTRSVu">REST API Reference: storage/passwords</a>
+    /// </description></item>
+    /// </list>
+    /// </remarks>
     public class StoragePassword : Entity<StoragePassword>
     {
         #region Constructors
@@ -66,7 +77,8 @@ namespace Splunk.Client
         /// <see cref="namespace"/> is not specific.
         /// </exception>
         internal StoragePassword(Context context, Namespace @namespace, string username, string realm = "")
-            : base(context, @namespace, StoragePasswordCollection.ClassResourceName, CreateNameFromRealmAndUsername(realm ?? "", username))
+            : base(context, @namespace, StoragePasswordCollection.ClassResourceName, CreateNameFromRealmAndUsername(
+            realm ?? "", username))
         {
             Contract.Requires<ArgumentNullException>(username != null);
         }

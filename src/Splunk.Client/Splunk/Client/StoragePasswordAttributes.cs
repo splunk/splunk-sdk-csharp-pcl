@@ -14,8 +14,8 @@
  * under the License.
  */
 
-// TODO:
-// [O] Documentation
+//// TODO:
+//// [X] Documentation
 
 namespace Splunk.Client
 {
@@ -26,18 +26,18 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving <see cref="StoragePassword"/> 
-    /// entries.
+    /// Provides the arguments required for creating <see cref="StoragePassword"/> 
+    /// resources.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/pqZJco">REST API: GET apps/local</a>
+    ///   <a href="http://goo.gl/JgyIeN">REST API Reference: POST storage/passwords</a>
     /// </description></item>
     /// </list>
     /// </remarks>
-    internal sealed class StoragePasswordAttributes : Args<StoragePasswordAttributes>
+    sealed class StoragePasswordAttributes : Args<StoragePasswordAttributes>
     {
         #region Constructors
 
@@ -67,8 +67,6 @@ namespace Splunk.Client
         public string Realm
         { get; set; }
 
-        #endregion
-
         /// <summary>
         /// Gets or sets the username for a <see cref="StoragePasssword"/>.
         /// </summary>
@@ -76,5 +74,6 @@ namespace Splunk.Client
         public string Username
         { get; set; }
 
+        #endregion
     }
 }

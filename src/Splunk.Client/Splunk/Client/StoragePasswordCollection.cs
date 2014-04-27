@@ -14,19 +14,35 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
+//// TODO:
+//// [X] Contracts
+//// [O] Documentation
+//// [ ] Seal all Args types
+//// [ ] Eliminate EntityCollection<TEntityCollection, TEntity>.Args and settle on a pagination strategy, the whole 
+////     point to this property.
 
 namespace Splunk.Client
 {
     /// <summary>
-    /// Provides a class that represents a collection of Splunk Application
-    /// resources.
+    /// Provides a class that represents a collection of Splunk <see cref=
+    /// "StoragePassword"/> resources.
     /// </summary>
     public class StoragePasswordCollection : EntityCollection<StoragePasswordCollection, StoragePassword>
     {
         #region Constructors
 
+        /// <summary>
+        /// Intializes an new instance of the <see cref="StoragePasswordCollection"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
+        /// </param>
+        /// <param name="args">
+        /// </param>
         internal StoragePasswordCollection(Context context, Namespace @namespace, StoragePasswordCollectionArgs args = null)
             : base(context, @namespace, ClassResourceName, args)
         { }

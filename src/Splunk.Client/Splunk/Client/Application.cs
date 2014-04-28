@@ -21,6 +21,7 @@
 
 namespace Splunk.Client
 {
+    using System.IO;
     using System.Net;
     using System.Threading.Tasks;
 
@@ -53,9 +54,8 @@ namespace Splunk.Client
         /// <param name="namespace">
         /// An object identifying a Splunk service namespace.
         /// </param>
-        /// <param name="collection">
-        /// </param>
         /// <param name="name">
+        /// The name of this application.
         /// </param>
         /// <exception cref="ArgumentException">
         /// <see cref="name"/> is <c>null</c> or empty.
@@ -213,11 +213,23 @@ namespace Splunk.Client
         /// "Application"/>.
         /// </remarks>
         public async Task CreateFromPackageAsync(string path, ApplicationAttributes attributes = null, 
-            string name = null, bool update = false)
+            bool update = false)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            //// TODO: Support auth and/or session parameters
+
+            var args = new Argument[]
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                new Argument("explicit_appname", this.Name),
+                new Argument("filename", "1"),
+                new Argument("name", path)
+            };
+
+            var resourceName = ApplicationCollection.ClassResourceName;
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await this.UpdateDataAsync(response);
             }
         }
 
@@ -232,10 +244,77 @@ namespace Splunk.Client
         /// </remarks>
         public async Task CreateFromTemplateAsync(string template, ApplicationAttributes attributes = null)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            var args = new Argument[]
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                new Argument("filename", "0"),
+                new Argument("name", template)
+            };
+
+            var resourceName = ApplicationCollection.ClassResourceName;
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await this.UpdateDataAsync(response);
             }
+        }
+
+        /// <summary>
+        /// Asynchronously gets setup information for the current <see cref=
+        /// "Application"/>.
+        /// </summary>
+        /// <returns>
+        /// An object containing setup information for the current <see cref=
+        /// "Application"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/mUT9gU">GET 
+        /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
+        /// "ApplicationSetupInfo"/> instance it returns.
+        /// </remarks>
+        public async Task<ApplicationSetupInfo> GetSetupInfoAsync()
+        {
+            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, this.Name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously gets update information for the current <see cref=
+        /// "Application"/>.
+        /// </summary>
+        /// <returns>
+        /// An object containing update information for the current <see cref=
+        /// "Application"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/mrbtRj">GET 
+        /// apps/local/{name}/update</a> endpoint to construct the <see cref=
+        /// "ApplicationUpdateInfo"/> instance it returns.
+        /// </remarks>
+        public async Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
+        {
+            var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, this.Name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously archives the current <see cref="Application"/>.
+        /// </summary>
+        /// <returns>
+        /// An object containing information about the newly created archive.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/DJkT7S">GET 
+        /// apps/local/{name}/package</a> endpoint to create an archive of the 
+        /// current <see cref="Application"/>.
+        /// </remarks>
+        public async Task<ApplicationArchiveInfo> PackageAsync()
+        {
+            var resource = new ApplicationArchiveInfo(this.Context, this.Namespace, this.Name);
+            await resource.GetAsync();
+            return resource;
         }
 
         /// <summary>

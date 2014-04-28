@@ -314,6 +314,115 @@ namespace Splunk.Client
         #region Applications
 
         /// <summary>
+        /// Asynchronously creates an application from an application package.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the application to create.
+        /// </param>
+        /// <returns>
+        /// An object representing the application created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local</a> endpoint to construct the <see cref="Application"/>
+        /// object it returns.
+        /// </remarks>
+        public async Task<Application> CreateApplicationFromPackageAsync(string name, string path, 
+            ApplicationAttributes attributes = null, bool update = false)
+        {
+            var resource = new Application(this.Context, this.Namespace, name);
+            await resource.CreateFromPackageAsync(path, attributes, update);
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously creates an application from an application template.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the application to create.
+        /// </param>
+        /// <returns>
+        /// An object representing the application created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local</a> endpoint to construct the <see cref=
+        /// "Application"/> object it returns.
+        /// </remarks>
+        public async Task<Application> CreateApplicationFromTemplateAsync(string name, string template, 
+            ApplicationAttributes attributes = null)
+        {
+            var resource = new Application(this.Context, this.Namespace, name);
+            await resource.CreateFromTemplateAsync(template, attributes);
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves an <see cref="Application"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the application to retrieve.
+        /// </param>
+        /// <returns>
+        /// An object representing the application retrieved.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">GET 
+        /// apps/local/{name}</a> endpoint to construct the <see cref=
+        /// "Application"/> object it returns.
+        /// </remarks>
+        public async Task<Application> GetApplication(string name)
+        {
+            var resource = new Application(this.Context, this.Namespace, name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves setup information for an <see cref=
+        /// "Application"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the application for which to retrieve setup information.
+        /// </param>
+        /// <returns>
+        /// An object representing the setup information retrieved.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">GET 
+        /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
+        /// "ApplicationSetupInfo"/> object it returns.
+        /// </remarks>
+        public async Task<ApplicationSetupInfo> GetApplicationSetupInfo(string name)
+        {
+            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves update information for an <see cref=
+        /// "Application"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the application for which to retrieve update information.
+        /// </param>
+        /// <returns>
+        /// An object representing the update information retrieved.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">GET 
+        /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
+        /// "ApplicationUpdateInfo"/> object it returns.
+        /// </remarks>
+        public async Task<ApplicationSetupInfo> GetApplicationUpdateInfo(string name)
+        {
+            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
         /// Asynchronously retrieves a collection of installed applications.
         /// </summary>
         /// <param name="args">
@@ -333,6 +442,73 @@ namespace Splunk.Client
             var collection = new ApplicationCollection(this.Context, this.Namespace, args);
             await collection.GetAsync();
             return collection;
+        }
+
+        /// <summary>
+        /// Asynchronously creates an application archive.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the application to be archived.
+        /// </param>
+        /// <returns>
+        /// An object containing information about the archive created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">GET 
+        /// apps/local/{name}/package</a> endpoint to create an archive of the
+        /// application identified by <see cref="name"/> and construct the <see 
+        /// cref="ApplicationArchiveInfo"/> object it returns.
+        /// </remarks>
+        public async Task<ApplicationArchiveInfo> PackageApplication(string name)
+        {
+            //// TODO: Should this method be named CreateApplicationArchive?
+
+            var resource = new ApplicationArchiveInfo(this.Context, this.Namespace, name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously removes an <see cref="Application"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the application to remove.
+        /// </param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">DELETE 
+        /// apps/local/{name}</a> endpoint to remove the <see cref=
+        /// "Application"/> object identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task RemoveApplicationAsync(string name)
+        {
+            var resource = new Application(this.Context, this.Namespace, name);
+            await resource.RemoveAsync();
+        }
+
+        /// <summary>
+        /// Asynchronously updates the attributes of an <see cref="Application"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the application to update.
+        /// </param>
+        /// <param name="attributes">
+        /// New attributes for the application identified by <see cref=
+        /// "name"/>.
+        /// </param>
+        /// <returns>
+        /// An object representing the application that was updated.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local/{name}</a> endpoint to update the <see cref=
+        /// "Application"/> object identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task<Application> UpdateApplicationAsync(string name, ApplicationAttributes attributes)
+        {
+            var resource = new Application(this.Context, this.Namespace, name);
+            await resource.RemoveAsync();
+            return resource;
         }
 
         #endregion

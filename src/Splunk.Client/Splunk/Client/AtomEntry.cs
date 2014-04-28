@@ -332,6 +332,9 @@ namespace Splunk.Client
                         case "display.visualizations.charting.chart":
                             name += ".Type";
                             break;
+                        case "update.checksum.type":
+                            name = "update.checksum_type";
+                            break;
                     }
 
                     string[] names = name.Split(':', '.');

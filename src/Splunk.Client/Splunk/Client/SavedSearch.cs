@@ -411,23 +411,6 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Privates/internals
-
-        async Task UpdateDataAsync(Response response)
-        {
-            var feed = new AtomFeed();
-            await feed.ReadXmlAsync(response.XmlReader);
-
-            if (feed.Entries.Count != 1)
-            {
-                throw new InvalidDataException();  // TODO: Diagnostics
-            }
-
-            this.Data = new DataCache(feed.Entries[0]);
-        }
-        
-        #endregion
-
         #region Types
 
         public class Action_t : ExpandoAdapter<Action_t>

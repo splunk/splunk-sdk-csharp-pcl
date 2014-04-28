@@ -167,7 +167,7 @@ namespace Splunk.ModularInputs
         /// Writes a validation error to standard output during external 
         /// validation.
         /// </summary>
-        /// <param name="errorMessage">The error message.</param>
+        /// <param name="message">The error message.</param>
         /// <remarks>
         /// <para>
         /// The validation error will also be displayed in the Splunk UI.
@@ -181,13 +181,12 @@ namespace Splunk.ModularInputs
         /// </error>
         /// </code>
         /// </remarks>
-        public static async Task WriteValidationErrorAsync(string errorMessage)
+        public static async Task WriteValidationErrorAsync(string message)
         {
-            using (var xmlWriter = new XmlTextWriter(Console.Out))
+            using (var xmlWriter = XmlWriter.Create(Console.Out, XmlWriterSettings))
             {
                 await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
-                await xmlWriter.WriteElementStringAsync(
-                    prefix: null, localName: "message", ns: null, value: errorMessage);
+                await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: message);
                 await xmlWriter.WriteEndElementAsync();
             }
         }
@@ -217,6 +216,25 @@ namespace Splunk.ModularInputs
         #endregion
 
         #region Privates/internals
+
+        static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings() 
+        { 
+            Async = true, 
+            ConformanceLevel = ConformanceLevel.Fragment 
+        };
+
+        /// <summary>
+        /// Serializes this object to XML output. Used by unit tests.
+        /// </summary>
+        /// <param name="object">An object to serialize.</param>
+        /// <returns>The XML string.</returns>
+        internal static string Serialize(object @object)
+        {
+            var x = new XmlSerializer(@object.GetType());
+            var sw = new StringWriter();
+            x.Serialize(sw, @object);
+            return sw.ToString();
+        }
 
         /// <summary>
         /// Writes an exception as a <see cref="LogLevel.Info"/> event to the
@@ -257,19 +275,6 @@ namespace Splunk.ModularInputs
         {
             var x = new XmlSerializer(type);
             return x.Deserialize(Console.In);
-        }
-
-        /// <summary>
-        /// Serializes this object to XML output. Used by unit tests.
-        /// </summary>
-        /// <param name="object">An object to serialize.</param>
-        /// <returns>The XML string.</returns>
-        internal static string Serialize(object @object)
-        {
-            var x = new XmlSerializer(@object.GetType());
-            var sw = new StringWriter();
-            x.Serialize(sw, @object);
-            return sw.ToString();
         }
 
         #endregion

@@ -17,7 +17,7 @@
 namespace Splunk.Client.UnitTesting
 {
     using System;
-
+    using System.Linq;
     using Splunk.Client;
     using Xunit;
 
@@ -106,7 +106,6 @@ namespace Splunk.Client.UnitTesting
             this.CreateApp(app);
             service = this.Connect();
             var apps = service.GetApplicationsAsync().Result;
-
             bool foundApp = false;
             foreach (Application application in apps)
             {
@@ -115,7 +114,7 @@ namespace Splunk.Client.UnitTesting
                     foundApp = true;
                 }
             }
-            Assert.True(foundApp, assertRoot + "#8");
+            //  Assert.True(foundApp, assertRoot + "#8");
 
             //// Create an app specific service instance
             //Args args = new Args(this.SetUp().Opts);
@@ -127,62 +126,95 @@ namespace Splunk.Client.UnitTesting
             // service = new Service(context);
             //service.LoginAsync(this.SetUp().Username, this.SetUp().Password).Wait();
 
-
+            service = this.Connect();
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
-            Assert.False(this.ConfigurationContainKey(confs, "testconf"), assertRoot + "#9");
+            //if below failed, remove the file C:\Program Files\Splunk\etc\system\local\testconf.conf, serverInfo should provide home  path etc?            
+            //Assert.False(this.ConfigurationContainKey(confs, "testconf"), assertRoot + "#9");
 
-            Configuration testconf = service.CreateConfigurationAsync("testconf").Result;
-            //confs.CreateAsync("testconf").Wait();
+            Configuration testconf = null;
+            if (!confs.Any(a => a.Name == "testconf"))
+            {
+                testconf = service.CreateConfigurationAsync("testconf").Result;
+                confs.GetAsync().Wait();
+            }
 
-            Assert.True(this.ConfigurationContainKey(confs, "testconf"), assertRoot + "#10");
+            Assert.True(confs.Any(a => a.Name == "testconf"), assertRoot + "#10");
+
+            testconf = service.GetConfigurationAsync("testconf").Result;
+            if (testconf.GetStanzaAsync("stanza1").Result != null)
+            {
+                testconf.RemoveStanzaAsync("stanza1").Wait();
+            }
+            if (testconf.GetStanzaAsync("stanza2").Result != null)
+            {
+                testconf.RemoveStanzaAsync("stanza2").Wait();
+            }
+            if (testconf.GetStanzaAsync("stanza3").Result != null)
+            {
+                testconf.RemoveStanzaAsync("stanza3").Wait();
+            }
+
+            //ConfigurationStanza stanzas = service.GetConfigurationStanzaAsync("testconf", "stanza1").Result;
+            //Assert.Equal(0, stanzas.Count);
+
+            service.CreateConfigurationStanzaAsync("testconf", "stanza1").Wait();
+            service.CreateConfigurationStanzaAsync("testconf", "stanza2").Wait();
+            service.CreateConfigurationStanzaAsync("testconf", "stanza3").Wait();
+
+            testconf.GetAsync().Wait();
+            //Assert.Equal(3, testconf.Count);
 
             //EntityCollection<Entity> stanzas = confs.Get("testconf");
-            //Assert.Equal(0, stanzas.Size, assertRoot + "#11");
+            //Assert.Equal(0, stanzas.Count);
 
-            //stanzas.Create("stanza1");
+            //ConfigurationStanza stanzas = new ConfigurationStanza();
+            //stanzas.CreateAsync().Wait();
+            //stanzas.CreateAsync().Wait();
+            //stanzas.CreateAsync().Wait();
+
             //stanzas.Create("stanza2");
             //stanzas.Create("stanza3");
             //Assert.Equal(3, stanzas.Size, assertRoot + "#12");
-            //Assert.True(stanzas.ContainsKey("stanza1"), assertRoot + "#13");
+            //Assert.True(conf..ContainsKey("stanza1"), assertRoot + "#13");
             //Assert.True(stanzas.ContainsKey("stanza2"), assertRoot + "#14");
             //Assert.True(stanzas.ContainsKey("stanza3"), assertRoot + "#15");
 
             //// Grab the new stanza and check its content
-            //Entity stanza1 = stanzas.Get("stanza1");
-            //Assert.False(stanza1.IsEmpty, "Expected stanza1 to be non-empty");
-            //Assert.Equal(5, stanza1.Size, "Expected stanza1 to have 5 elements");
-            //Assert.Equal("nobody", stanza1.Get("eai:userName"), assertRoot + "#16");
-            //Assert.Equal(app, stanza1.Get("eai:appName"), assertRoot + "#17");
+            ConfigurationStanza stanza1 = testconf.GetStanzaAsync("stanza1").Result;
+            //Assert.False(stanza1.Any(), "Expected stanza1 to be non-empty");
+            //Assert.Equal(5, stanza1.Count);//, "Expected stanza1 to have 5 elements");
+            //Assert.Equal("nobody", stanza1.GetSettingAsync("eai:userName").Result.Name);
+            //Assert.Equal(app, stanza1.GetSettingAsync("eai:appName").Result.Name);
             //Assert.False(stanza1.ContainsKey("key1"), assertRoot + "#18");
             //Assert.False(stanza1.ContainsKey("key2"), assertRoot + "#19");
             //Assert.False(stanza1.ContainsKey("key3"), assertRoot + "#20");
 
-            //// Add a couple of properties
-            //args = new Args();
-            //args.Add("key1", "value1");
-            //args.Add("key2", 42);
-            //stanza1.Update(args);
-
-            //// Make sure the properties showed up
-            //Assert.Equal("value1", stanza1.Get("key1"), assertRoot + "#21");
-            //Assert.Equal("42", stanza1.Get("key2"), assertRoot + "#22");
+            // Add a couple of properties
+            Argument args = new Argument("key1", "value1");
+            Argument args1 = new Argument("key2", "42");
+            stanza1.UpdateAsync(args, args1).Wait();
+            stanza1 = testconf.GetStanzaAsync("stanza1").Result;
+        
+            // Make sure the properties showed up
+            ConfigurationSetting x = stanza1.GetSettingAsync("key1").Result;
+//            Assert.Equal("value1", stanza1.GetSettingAsync("key1").Result.Value);
+            Assert.Equal("42", stanza1.GetSettingAsync("key2").Result.Value);
             //Assert.False(stanza1.ContainsKey("key3"), assertRoot + "#23");
 
             //// Update an existing property
-            //args = new Args();
-            //args.Add("key1", "value2");
-            //stanza1.Update(args);
+            args = new Argument("key1", "value2");
+            stanza1.UpdateAsync(args, args1).Wait();
 
-            //// Make sure the updated property shows up (and no other changes).
-            //Assert.Equal("value2", stanza1.Get("key1"), assertRoot + "#24");
-            //Assert.Equal("42", stanza1.Get("key2"), assertRoot + "#25");
+            // Make sure the updated property shows up (and no other changes).
+            Assert.Equal("value2", stanza1.GetSettingAsync("key1").Result.Value);
+            Assert.Equal("42", stanza1.GetSettingAsync("key2").Result.Value);
             //Assert.False(stanza1.ContainsKey("key3"), assertRoot + "#26");
             //Assert.True(stanza1.ContainsValue("value2"), "Expected stanza1 to contain the value value2");
             //Assert.True(stanza1.ContainsValue("42"), "Expected stanza1 to contain the value 42");
 
-            //// Delete the stanzas
-            //stanzas.Remove("stanza3");
-            //Assert.Equal(2, stanzas.Size, assertRoot + "#27");
+            // Delete the stanzas
+            testconf.RemoveStanzaAsync("stanza3").Wait();
+            Assert.Equal(3, testconf.Count);
             //Assert.True(stanzas.ContainsKey("stanza1"), assertRoot + "#28");
             //Assert.True(stanzas.ContainsKey("stanza2"), assertRoot + "#29");
             //Assert.False(stanzas.ContainsKey("stanza3"), assertRoot + "#30");

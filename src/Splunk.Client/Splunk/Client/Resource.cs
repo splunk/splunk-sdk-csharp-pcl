@@ -169,7 +169,7 @@ namespace Splunk.Client
                 return 0;
             }
 
-            return this.ToString().CompareTo(other.ToString());
+            return this.ResourceName.CompareTo(other.ResourceName);
         }
 
         protected internal virtual void Initialize(Context context, AtomEntry entry)
@@ -270,7 +270,7 @@ namespace Splunk.Client
                 return true;
             }
 
-            bool result = this.ToString() == other.ToString();
+            bool result = this.ResourceName == other.ResourceName;
             return result;
         }
 

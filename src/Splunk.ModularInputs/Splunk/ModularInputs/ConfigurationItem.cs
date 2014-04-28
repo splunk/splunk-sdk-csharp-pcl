@@ -24,6 +24,5 @@ namespace Splunk.ModularInputs
     /// </summary>
     [XmlRoot("item")]
     public class ConfigurationItem : ConfigurationItemBase
-    {
-    }
+    { }
 }

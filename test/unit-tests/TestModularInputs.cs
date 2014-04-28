@@ -13,25 +13,27 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Splunk.ModularInputs;
-
-namespace UnitTests
+namespace Splunk.ModularInputs.UnitTesting
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+    using System.Threading.Tasks;
+
+    using Splunk.ModularInputs;
+
+    using Xunit;
+
     /// <summary>
-    ///     Test classes in Splunk.ModularInputs namespace
+    /// Test classes in Splunk.ModularInputs namespace
     /// </summary>
-    [TestClass]
-    public class ModularInputsTest
+    public class TestModularInputs
     {
         /// <summary>
         ///     Input file folder
         /// </summary>
-        private const string TestDataFolder = @"ModularInputs\Data";
+        private const string TestDataFolder = @"Data\ModularInputs";
 
         /// <summary>
         ///     Input file containing input definition
@@ -61,14 +63,14 @@ namespace UnitTests
         /// <summary>
         ///     Test returning scheme through stdout
         /// </summary>
-        [TestMethod]
-        [DeploymentItem(TestDataFolder)]
-        public void OutputScheme()
+        [Trait("class", "Splunk.ModularInputs")]
+        [Fact]
+        public async Task OutputScheme()
         {
             using (var consoleOut = new StringWriter())
             {
                 Console.SetOut(consoleOut);
-                Script.Run<TestScript>(new[] {"--scheme"});
+                await Script.RunAsync<TestScript>(new[] { "--scheme" });
                 AssertEqualWithExpectedFile(SchemeFilePath, consoleOut.ToString());
             }
         }
@@ -76,79 +78,79 @@ namespace UnitTests
         /// <summary>
         ///     Test getting validation info from stdin and return validation error through stdout.
         /// </summary>
-        [TestMethod]
-        [DeploymentItem(TestDataFolder)]
-        public void ExternalValidation()
+        [Trait("class", "Splunk.ModularInputs")]
+        [Fact]
+        public async Task ExternalValidation()
         {
-
             using (var consoleIn = ReadFileFromDataFolderAsReader(ValidationItemsFilePath))
             using (var consoleOut = new StringWriter())
             {
                 SetConsoleIn(consoleIn);
                 Console.SetOut(consoleOut);
 
-                var exitCode = Script.Run<TestScript>(new[] { "--validate-arguments" });
+                int exitCode = await Script.RunAsync<TestScript>(new[] { "--validate-arguments" });
 
                 AssertEqualWithExpectedFile(ValidationErrorMessageFilePath, consoleOut.ToString());
-
-                Assert.AreNotEqual(0, exitCode);
+                Assert.NotEqual(0, exitCode);
             }
         }
-        
 
         /// <summary>
         ///     Test getting validation info from stdin
         /// </summary>
-        [TestMethod]
-        [DeploymentItem(TestDataFolder)]
-        public void StreamEvents()
+        [Trait("class", "Splunk.ModularInputs")]
+        [Fact]
+        public async Task StreamEvents()
         {
             using (var consoleIn = ReadFileFromDataFolderAsReader(InputDefinitionFilePath))
-            using (var consoleOut = new StringWriter())
             {
-                SetConsoleIn(consoleIn);
-                Console.SetOut(consoleOut);
-                Script.Run<TestScript>(new string[] {});
-                AssertEqualWithExpectedFile(EventsFilePath, consoleOut.ToString());
+                using (var consoleOut = new StringWriter())
+                {
+                    SetConsoleIn(consoleIn);
+                    Console.SetOut(consoleOut);
+                    await Script.RunAsync<TestScript>(new string[] { });
+                    AssertEqualWithExpectedFile(EventsFilePath, consoleOut.ToString());
+                }
             }
         }
 
         /// <summary>
         ///     Test error handling and logging
         /// </summary>
-        [TestMethod]
-        public void ErrorHandling()
+        [Trait("class", "Splunk.ModularInputs")]
+        [Fact]
+        public async Task ErrorHandling()
         {
             using (var consoleIn = new StringReader(string.Empty))
-            using (var consoleError = new StringWriter())
             {
-                SetConsoleIn(consoleIn);
-                Console.SetError(consoleError);
-                var exitCode = Script.Run<TestScript>(new string[] {});
+                using (var consoleError = new StringWriter())
+                {
+                    SetConsoleIn(consoleIn);
+                    Console.SetError(consoleError);
+                    int exitCode = await Script.RunAsync<TestScript>(new string[] { });
 
-                // There will be an exception due to missing input definition in 
-                // (redirected) console stdin.      
-                var error = consoleError.ToString();
+                    // There will be an exception due to missing input definition in 
+                    // (redirected) console stdin.      
+                    var error = consoleError.ToString();
 
-                // Verify that an exception is logged with level FATAL.
-                Assert.IsTrue(error.Contains(
-                    "FATAL Script.Run: Unhandled exception:"));
+                    // Verify that an exception is logged with level FATAL.
+                    Assert.Contains("FATAL Script.Run: Unhandled exception:", error);
 
-                // Verify that the exception is what we expect.
-                Assert.IsTrue(error.Contains("Root element is missing"));
+                    // Verify that the exception is what we expect.
+                    Assert.Contains("Root element is missing", error);
 
-                // Verify that an info level message is logged properly.
-                Assert.IsTrue(error.Contains("INFO Script.Run: Reading input definition"));
+                    // Verify that an info level message is logged properly.
+                    Assert.Contains("INFO Script.Run: Reading input definition", error);
 
-                // Verify that the logged exception does not span more than one line
-                // Splunk breaks up events using new lines for splunkd log.
-                var lines = error.Split(
-                    new[] {Environment.NewLine},
-                    StringSplitOptions.RemoveEmptyEntries);
+                    // Verify that the logged exception does not span more than one line
+                    // Splunk breaks up events using new lines for splunkd log.
+                    var lines = error.Split(
+                        new[] { Environment.NewLine },
+                        StringSplitOptions.RemoveEmptyEntries);
 
-                Assert.AreEqual(2, lines.Length);
-
-                Assert.AreNotEqual(0, exitCode);
+                    Assert.Equal(2, lines.Length);
+                    Assert.NotEqual(0, exitCode);
+                }
             }
         }
 
@@ -162,7 +164,7 @@ namespace UnitTests
             string actual)
         {
             var expected = ReadFileFromDataFolderAsString(expectedFilePath);
-            Assert.AreEqual(expected, actual);
+            Assert.Equal(expected, actual);
         }
 
         /// <summary>
@@ -192,14 +194,14 @@ namespace UnitTests
         /// <returns>A full path</returns>
         private static string GetDataFilePath(string relativePath)
         {
-            return Directory.GetCurrentDirectory() + @"\" + relativePath;
+            return TestDataFolder + @"\" + relativePath;
         }
 
         /// <summary>
         ///     Write events using EventStreamWriter
         /// </summary>
         // This method can be used by manual testing thus is public 
-        public static void WriteEvents()
+        public static async Task WriteEvents()
         {
             using (var writer = new EventStreamWriter())
             {
@@ -211,35 +213,35 @@ namespace UnitTests
                         Source = "test source",
                     };
 
-                WriteEventData(
+                await WriteEventData(
                     writer,
                     eventTemplate,
                     "Event with all default fields set");
 
-                WriteEventData(
+                await WriteEventData(
                     writer,
                     eventTemplate,
                     "Letter O with double acute: \u0150");
 
                 eventTemplate.Unbroken = true;
 
-                WriteEventData(
+                await WriteEventData(
                     writer,
                     eventTemplate,
                     "Part 1 of an unbroken event ");
 
-                WriteEventData(
+                await WriteEventData(
                     writer,
                     eventTemplate,
                     "Part 2 of an unbroken event ending with newline" + Environment.NewLine);
 
-                WriteEventDone(
+                await WriteEventDone(
                     writer,
                     eventTemplate);
 
                 eventTemplate.Unbroken = false;
 
-                WriteEventData(
+                await WriteEventData(
                     writer,
                     eventTemplate,
                     "Event after done key");
@@ -247,9 +249,9 @@ namespace UnitTests
                 var timedEvent = eventTemplate;
                 timedEvent.Time = new DateTime(2013, 1, 1, 0, 0, 0, 1, DateTimeKind.Utc);
                 timedEvent.Data = "Event with fixed time";
-                writer.Write(timedEvent);
+                await writer.WriteEventAsync(timedEvent);
 
-                WriteMultiplex(writer);
+                await WriteMultiplex(writer);
             }
         }
 
@@ -257,7 +259,7 @@ namespace UnitTests
         ///     Write for multiple stanzas
         /// </summary>
         /// <param name="writer">An event writer</param>
-        private static void WriteMultiplex(EventStreamWriter writer)
+        private static async Task WriteMultiplex(EventStreamWriter writer)
         {
             var eventTemplate1 = new EventElement
                 {
@@ -271,17 +273,17 @@ namespace UnitTests
                     Unbroken = true,
                 };
 
-            WriteEventDataLine(writer, eventTemplate1, "Part 1 of channel 1 with a newline");
-            WriteEventData(writer, eventTemplate2, "Part 1 of channel 2 without a newline ");
+            await WriteEventDataLine(writer, eventTemplate1, "Part 1 of channel 1 with a newline");
+            await WriteEventData(writer, eventTemplate2, "Part 1 of channel 2 without a newline ");
 
             // Mark the first channel done.
-            WriteEventDone(writer, eventTemplate1);
+            await WriteEventDone(writer, eventTemplate1);
 
-            WriteEventDataLine(writer, eventTemplate1, "Part 2 of channel 1 with a newline");
-            WriteEventDataLine(writer, eventTemplate2, "Part 2 of channel 2 with a newline");
+            await WriteEventDataLine(writer, eventTemplate1, "Part 2 of channel 1 with a newline");
+            await WriteEventDataLine(writer, eventTemplate2, "Part 2 of channel 2 with a newline");
 
             // Mark the second channel done.
-            WriteEventDone(writer, eventTemplate2);
+            await WriteEventDone(writer, eventTemplate2);
         }
 
         /// <summary>
@@ -289,12 +291,12 @@ namespace UnitTests
         /// </summary>
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
-        private static void WriteEventDone(EventStreamWriter writer, EventElement eventTemplate)
+        private static async Task WriteEventDone(EventStreamWriter writer, EventElement eventTemplate)
         {
             var @event = eventTemplate;
             @event.Unbroken = false;
             @event.Done = true;
-            writer.Write(@event);
+            await writer.WriteEventAsync(@event);
         }
 
         /// <summary>
@@ -303,12 +305,12 @@ namespace UnitTests
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
         /// <param name="eventData">Event data</param>
-        private static void WriteEventDataLine(
+        private static async Task WriteEventDataLine(
             EventStreamWriter writer,
             EventElement eventTemplate,
             string eventData)
         {
-            WriteEventData(
+            await WriteEventData(
                 writer,
                 eventTemplate,
                 eventData + Environment.NewLine);
@@ -320,11 +322,11 @@ namespace UnitTests
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
         /// <param name="eventData">Event data</param>
-        private static void WriteEventData(EventStreamWriter writer, EventElement eventTemplate, string eventData)
+        private static async Task WriteEventData(EventStreamWriter writer, EventElement eventTemplate, string eventData)
         {
             var @event = eventTemplate;
             @event.Data = eventData;
-            writer.Write(@event);
+            await writer.WriteEventAsync(@event);
         }
 
         /// <summary>
@@ -393,7 +395,7 @@ namespace UnitTests
             ///     Perform test verifications and stream events.
             /// </summary>
             /// <param name="inputDefinition">Input definition</param>
-            public override void StreamEvents(InputDefinition inputDefinition)
+            public override async Task StreamEventsAsync(InputDefinition inputDefinition)
             {
                 // Verify every part of the input definition is received 
                 // parsed, and later recontructed correctly.
@@ -406,23 +408,22 @@ namespace UnitTests
 
                 // Test full parameter dictionary.
                 var parameterValue = stanza.Parameters[parameterName];
-                var singleValue = (SingleValueParameter.Value) parameterValue;
-                Assert.AreEqual("value22", singleValue);
+                var singleValue = (SingleValueParameter.Value)parameterValue;
+                Assert.Equal("value22", singleValue);
 
                 // Test single value parameter dictionary.
                 var stringValue = stanza.SingleValueParameters[parameterName];
-                Assert.AreEqual("value22", stringValue);
+                Assert.Equal("value22", stringValue);
 
                 // Test the dictionary for multi value parameter.
                 stanza = inputDefinition.Stanzas["foobar://bbb"];
                 parameterValue = stanza.Parameters["multiValue2"];
 
-                var multiValue = (MultiValueParameter.Value) parameterValue;
+                var multiValue = (MultiValueParameter.Value)parameterValue;
                 var elementInMultiValue = multiValue[1];
-                Assert.AreEqual("value4", elementInMultiValue);
+                Assert.Equal("value4", elementInMultiValue);
 
-                // Stanza property can't be used since there are
-                // more than one.
+                // Stanza property can't be used since there are more than one.
                 stanza = null;
                 try
                 {
@@ -430,13 +431,11 @@ namespace UnitTests
                 }
                 catch (InvalidOperationException e)
                 {
-                    Assert.IsTrue(e.Message.Contains(
-                        "Use Stanzas property instead"));
+                    Assert.True(e.Message.Contains("Use Stanzas property instead"));
                 }
-                Assert.IsNull(stanza);
 
-                // Write events through EventStreamWriter.
-                WriteEvents();
+                Assert.Null(stanza);
+                await WriteEvents();
             }
 
             /// <summary>
@@ -449,8 +448,8 @@ namespace UnitTests
             {
                 // Test the dictionary for single value parameter.
                 var item = validationItems.Item;
-                string stringParamValue = (SingleValueParameter.Value) item.Parameters["disabled"];
-                Assert.AreEqual("0", stringParamValue);
+                string stringParamValue = (SingleValueParameter.Value)item.Parameters["disabled"];
+                Assert.Equal("0", stringParamValue);
 
                 var reconstructed = Serialize(validationItems);
                 AssertEqualWithExpectedFile(ValidationItemsFilePath, reconstructed);

@@ -106,6 +106,10 @@ namespace Splunk.Client
             get { return this.Content.GetValue("Display", Display_t.Converter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the access control lists for the current <see cref=
+        /// "SavedSearch"/>.
+        /// </summary>
         public Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
@@ -131,6 +135,11 @@ namespace Splunk.Client
             get { return this.Content.GetValue("MaxConcurrent", Int32Converter.Instance); }
         }
 
+        public DateTime NextScheduledTime
+        {
+            get { return this.Content.GetValue("NextScheduledTime", DateTimeConverter.Instance); }
+        }
+
         public bool RealtimeSchedule
         {
             get { return this.Content.GetValue("RealtimeSchedule", BooleanConverter.Instance); }
@@ -154,6 +163,11 @@ namespace Splunk.Client
         public bool RunOnStartup
         {
             get { return this.Content.GetValue("RunOnStartup", BooleanConverter.Instance); }
+        }
+
+        public IReadOnlyList<DateTime> ScheduledTimes
+        {
+            get { return this.Content.GetValue("ScheduledTimes", CollectionConverter<DateTime, List<DateTime>, UnixDateTimeConverter>.Instance); }
         }
 
         public string Search
@@ -291,13 +305,27 @@ namespace Splunk.Client
         /// saved/searches/{name}</a> endpoint to remove the saved search
         /// represented by the current instance.
         /// </remarks>
-        public async Task GetScheduledTimesAsync(string earliestTime, string latestTime)
+        public async Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(DateTime earliestTime, DateTime latestTime)
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            var resourceName = new ResourceName(this.ResourceName, "scheduled_times");
+            var dateTime = DateTime.Now;
+            
+            var min = (long)(earliestTime - dateTime).TotalSeconds;
+            var max = (long)(latestTime - dateTime).TotalSeconds;
+
+            var args = new Argument[] 
+            {
+                new Argument("earliest_time", min.ToString("+#;-#;0")),
+                new Argument("latest_time", max.ToString("+#;-#;0"))
+            };
+
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 await this.UpdateDataAsync(response);
             }
+
+            return this.ScheduledTimes;
         }
 
         /// <summary>
@@ -331,13 +359,13 @@ namespace Splunk.Client
         /// saved/searches/{name}/reschedule</a> endpoint to reschedule the 
         /// saved search represented by the current instance.
         /// </remarks>
-        public async Task RescheduleAsync(string scheduleTime = null)
+        public async Task ScheduleAsync(DateTime? scheduleTime = null)
         {
             var resourceName = new ResourceName(this.ResourceName, "reschedule");
             
             Argument[] args = scheduleTime == null ? null : new Argument[] 
             { 
-                new Argument("schedule_time", scheduleTime) 
+                new Argument("schedule_time", scheduleTime.Value.ToString("u")) //string.Format("{0:s}Z", scheduleTime.Value.ToUniversalTime()))
             };
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args) )
@@ -368,7 +396,6 @@ namespace Splunk.Client
         /// saved/searches{name}</a> endpoint to update the saved search
         /// represented by the current instance.
         /// </remarks>
-
         public async Task UpdateAsync(SavedSearchAttributes attributes = null, SavedSearchDispatchArgs dispatchArgs = 
             null, SavedSearchTemplateArgs templateArgs = null)
         {

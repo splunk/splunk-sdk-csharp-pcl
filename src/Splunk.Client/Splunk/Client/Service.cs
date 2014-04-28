@@ -14,11 +14,13 @@
  * under the License.
  */
 
-// TODO:
-// [O] Contracts
-// [O] Documentation
-// [ ] Consider schema validation from schemas stored as resources.
-//     See [XmlReaderSettings.Schemas Property](http://goo.gl/Syvj4V)
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+//// [ ] Consider schema validation from schemas stored as resources.
+////     See [XmlReaderSettings.Schemas Property](http://goo.gl/Syvj4V)
+//// [ ] Strong type and tests for Service.GetCapabilities
+
 
 namespace Splunk.Client
 {
@@ -128,21 +130,39 @@ namespace Splunk.Client
         #region Access Control
 
         /// <summary>
+        /// Asynchronously creates a new storage password.
+        /// </summary>
+        /// <returns>
+        /// An object representing the storage password created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/JgyIeN">POST 
+        /// storage/passwords</a> endpoint to construct the <see cref=
+        /// "StoragePassword"/> it returns.
+        /// </remarks>
+        public async Task<StoragePassword> CreateStoragePasswordAsync(string name, string password, string realm = null)
+        {
+            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
+            await resource.CreateAsync(password);
+            return resource;
+        }
+
+        /// <summary>
         /// Asynchronously retrieves the list of all Splunk system capabilities.
         /// </summary>
         /// <returns>
+        /// An object representing the list of all Splunk system capabilities.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/kgTKvM">GET 
-        /// authorization/capabilities</a> endpoint to construct a 
-        /// of available capabilities.
+        /// authorization/capabilities</a> endpoint to construct a list of all 
+        /// Splunk system capabilities.
         /// </remarks>
         public async Task<dynamic> GetCapabilitiesAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-
                 var feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
 
@@ -156,6 +176,45 @@ namespace Splunk.Client
 
                 return capabilities;
             }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves a storage password.
+        /// </summary>
+        /// <param name="name">
+        /// Username identifying the storage password to be retrieved.
+        /// </param>
+        /// <returns>
+        /// An object representing the storage password retrieved.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/HL3c0T">GET 
+        /// storage/passwords/{name}</a> endpoint to construct the <see cref=
+        /// "StoragePassword"/> it returns.
+        /// </remarks>
+        public async Task<StoragePassword> GetStoragePasswordAsync(string name)
+        {
+            var resource = new StoragePassword(this.Context, this.Namespace, name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves a collection of storage passwords.
+        /// </summary>
+        /// <returns>
+        /// An object representing the collection of storage passwords retrieved.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/XhebMI">GET 
+        /// storage/passwords</a> endpoint to construct the <see cref=
+        /// "StoragePasswordCollection"/> it returns.
+        /// </remarks>
+        public async Task<StoragePasswordCollection> GetStoragePasswordsAsync(StoragePasswordCollectionArgs args = null)
+        {
+            var resource = new StoragePasswordCollection(this.Context, this.Namespace, args);
+            await resource.GetAsync();
+            return resource;
         }
 
         /// <summary>
@@ -206,7 +265,48 @@ namespace Splunk.Client
             using (var response = await this.Context.DeleteAsync(Namespace.Default, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                this.SessionKey = null;
             }
+        }
+
+        /// <summary>
+        /// Asynchronously removes a storage password.
+        /// </summary>
+        /// <param name="name">
+        /// Username identifying the storage password to be removed.
+        /// </param>
+        /// <returns>
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/JGm0JP">DELETE 
+        /// storage/passwords/{name}</a> endpoint to remove the <see cref=
+        /// storage password identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task RemoveStoragePasswordAsync(string name)
+        {
+            var resource = new StoragePassword(this.Context, this.Namespace, name);
+            await resource.RemoveAsync();
+        }
+
+        /// <summary>
+        /// Asynchronously updates a storage password.
+        /// </summary>
+        /// <param name="name">
+        /// Username identifying the storage password to be updated.
+        /// </param>
+        /// <returns>
+        /// An object representing the updated storage password.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/HL3c0T">POST 
+        /// storage/passwords/{name}</a> endpoint to update the storage
+        /// password identified by <see cref="name"/>.
+        /// </remarks>
+        public async Task<StoragePassword> UpdateStoragePasswordAsync(string name, string password)
+        {
+            var resource = new StoragePassword(this.Context, this.Namespace, name);
+            await resource.UpdateAsync(password);
+            return resource;
         }
 
         #endregion

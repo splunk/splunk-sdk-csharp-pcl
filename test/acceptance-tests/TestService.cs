@@ -22,6 +22,7 @@ namespace Splunk.Client.UnitTesting
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Web.Security;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -31,35 +32,87 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public void CanConstruct()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            Assert.Equal(service.ToString(), "https://localhost:8089/services");
+            using (var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default))
+            {
+                Assert.Equal(service.ToString(), "https://localhost:8089/services");
+            }
         }
 
         #region Access Control
 
+        [Trait("class", "Service: Saved Searches")]
+        [Fact]
+        public async Task CanCrudStoragePasswords()
+        {
+            foreach (var ns in TestNamespaces)
+            {
+                using (var service = new Service(Scheme.Https, "localhost", 8089, ns))
+                {
+                    await service.LoginAsync("admin", "changeme");
+                    Assert.NotNull(service.SessionKey);
+
+                    //// Create and change the password for 50 StoragePassword instances
+
+                    var name = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
+                    var realm = new string[] { null, "splunk.com", "splunk:com" };
+                    var storagePasswords = new List<StoragePassword>(50);
+
+                    for (int i = 0; i < 50; i++)
+                    {
+                        var storagePassword = await service.CreateStoragePasswordAsync(name + i, "foobar", realm[i % realm.Length]);
+                        var password = Membership.GeneratePassword(15, 2);
+                        await storagePassword.UpdateAsync(password);
+
+                        Assert.Equal(password, storagePassword.ClearPassword);
+
+                        storagePasswords.Add(storagePassword);
+                    }
+
+                    //// Fetch the entire collection of StoragePassword instances
+
+                    var collection = await service.GetStoragePasswordsAsync(new StoragePasswordCollectionArgs()
+                    {
+                        Count = 0
+                    });
+
+                    //// Verify and then remove each of the StoragePassword instances we created
+
+                    for (int i = 0; i < 50; i++)
+                    {
+                        Assert.Contains(storagePasswords[i], collection);
+                        await storagePasswords[i].RemoveAsync();
+                    }
+                }
+            }
+        }
+
         [Trait("class", "Service: Access Control")]
         [Fact]
-        public async Task CanLogin()
+        public async Task CanLoginAndLogoff()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default))
+            {
+                await service.LoginAsync("admin", "changeme");
+                Assert.NotNull(service.SessionKey);
 
-            Assert.NotNull(service.SessionKey);
+                await service.LogoffAsync();
+                Assert.Null(service.SessionKey);
 
-            try
-            {
-                await service.LoginAsync("admin", "bad-password");
-                Assert.False(true, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, "no exception"));
-            }
-            catch (AuthenticationFailureException e)
-            {
-                Assert.Equal(e.StatusCode, HttpStatusCode.Unauthorized);
-                Assert.Equal(e.Details.Count, 1);
-                Assert.Equal(e.Details[0], new Message(MessageType.Warning, "Login failed"));
-            }
-            catch (Exception e)
-            {
-                Assert.True(false, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, e.GetType().FullName));
+                try
+                {
+                    await service.LoginAsync("admin", "bad-password");
+                    Assert.False(true, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, "no exception"));
+                }
+                catch (AuthenticationFailureException e)
+                {
+                    Assert.Equal(e.StatusCode, HttpStatusCode.Unauthorized);
+                    Assert.Equal(e.Details.Count, 1);
+                    Assert.Equal(e.Details[0], new Message(MessageType.Warning, "Login failed"));
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, e.GetType().FullName));
+                }
             }
         }
 
@@ -69,12 +122,41 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Applications")]
         [Fact]
-        public async Task CanGetApps()
+        public async Task CanCrudApplications()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
+            foreach (var ns in TestNamespaces)
+            {
+                using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+                {
+                    await service.LoginAsync("admin", "changeme");
+                    Assert.NotNull(service.SessionKey);
 
-            var collection = await service.GetApplicationsAsync();
+                    var collection = await service.GetApplicationsAsync();
+
+                    foreach (var application in collection)
+                    {
+                        var value = String.Join("\n",
+                            string.Format("ApplicationAuthor = {0}", application.ApplicationAuthor),
+                            string.Format("Author = {0}", application.Author),
+                            string.Format("CheckForUpdates = {0}", application.CheckForUpdates),
+                            string.Format("Configured = {0}", application.Configured),
+                            string.Format("Description = {0}", application.Description),
+                            string.Format("Disabled = {0}", application.Disabled),
+                            string.Format("Eai = {0}", application.Eai),
+                            string.Format("Id = {0}", application.Id),
+                            string.Format("Label = {0}", application.Label),
+                            string.Format("Links = {0}", application.Links),
+                            string.Format("Name = {0}", application.Name),
+                            string.Format("Namespace = {0}", application.Namespace),
+                            string.Format("Published = {0}", application.Published),
+                            string.Format("ResourceName = {0}", application.ResourceName),
+                            string.Format("StateChangeRequiresRestart = {0}", application.StateChangeRequiresRestart),
+                            string.Format("Updated = {0}", application.Updated),
+                            string.Format("Version = {0}", application.Version),
+                            string.Format("Visible = {0}", application.Visible));
+                    }
+                }
+            }
         }
 
         #endregion
@@ -365,40 +447,84 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudSavedSearch()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089/*, new Namespace(user: "nobody", app: "search")*/);
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089/*, new Namespace(user: "nobody", app: "search")*/))
+            {
+                await service.LoginAsync("admin", "changeme");
 
-            // Create
+                //// Create
 
-            var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
-            var attributes = new SavedSearchAttributes() { Search = "search index=_internal | head 1000" };
+                var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
 
-            var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
-            Assert.Equal(true, savedSearch.IsVisible);
+                var originalAttributes = new SavedSearchAttributes()
+                {
+                    Search = "search index=_internal | head 1000",
+                    CronSchedule = "00 * * * *", // on the hour
+                    IsScheduled = true,
+                    IsVisible = false
+                };
 
-            // Read
+                var savedSearch = await service.CreateSavedSearchAsync(name, originalAttributes);
 
-            savedSearch = await service.GetSavedSearchAsync(name);
-            Assert.Equal(true, savedSearch.IsVisible);
+                Assert.Equal(originalAttributes.Search, savedSearch.Search);
+                Assert.Equal(originalAttributes.CronSchedule, savedSearch.CronSchedule);
+                Assert.Equal(originalAttributes.IsScheduled, savedSearch.IsScheduled);
+                Assert.Equal(originalAttributes.IsVisible, savedSearch.IsVisible);
 
-            // Update
+                //// Read
 
-            attributes.IsVisible = false;
-            attributes.ActionEmailBcc = "ljiang@splunk.com";
-            attributes.ActionEmailCC = "dnoble@splunk.com";
-            attributes.ActionEmailFrom = "fross@splunk.com";
-            attributes.ActionEmailTo = "gblock@splunk.com, ineeman@splunk.com";
+                savedSearch = await service.GetSavedSearchAsync(name);
+                Assert.Equal(false, savedSearch.IsVisible);
 
-            savedSearch = await service.UpdateSavedSearchAsync(name, attributes);
-            Assert.Equal(false, savedSearch.IsVisible);
-            Assert.Equal("ljiang@splunk.com", savedSearch.Actions.Email.Bcc);
-            Assert.Equal("dnoble@splunk.com", savedSearch.Actions.Email.CC);
-            Assert.Equal("fross@splunk.com", savedSearch.Actions.Email.From);
-            Assert.Equal("gblock@splunk.com, ineeman@splunk.com", savedSearch.Actions.Email.To);
+                //// Read schedule
+                
+                var dateTime = DateTime.Now;
+                var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
 
-            // Delete
+                Assert.Equal(48, schedule.Count);
 
-            await savedSearch.RemoveAsync();
+                var expected = dateTime.AddMinutes(60);
+                expected = expected.Date.AddHours(expected.Hour);
+
+                Assert.Equal(expected, schedule[0]); 
+
+                //// Update
+
+                var updatedAttributes = new SavedSearchAttributes()
+                {
+                    ActionEmailBcc = "user1@splunk.com",
+                    ActionEmailCC = "user2@splunk.com",
+                    ActionEmailFrom = "user3@splunk.com",
+                    ActionEmailTo = "user4@splunk.com, user5@splunk.com",
+                    IsVisible = true
+                };
+
+                savedSearch = await service.UpdateSavedSearchAsync(name, updatedAttributes);
+
+                Assert.Equal(updatedAttributes.ActionEmailBcc, savedSearch.Actions.Email.Bcc);
+                Assert.Equal(updatedAttributes.ActionEmailCC, savedSearch.Actions.Email.CC);
+                Assert.Equal(updatedAttributes.ActionEmailFrom, savedSearch.Actions.Email.From);
+                Assert.Equal(updatedAttributes.ActionEmailTo, savedSearch.Actions.Email.To);
+                Assert.Equal(updatedAttributes.IsVisible, savedSearch.IsVisible);
+
+                //// Update schedule
+
+                dateTime = DateTime.Now;
+
+                //// TODO: 
+                //// Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
+                //// saved searches right away. Are we using the right time format?
+
+                //// TODO: 
+                //// Figure out how to parse or--more likely--complain that savedSearch.NextScheduledTime uses
+                //// timezone names like "Pacific Daylight Time".
+
+                await savedSearch.ScheduleAsync(dateTime.AddMinutes(15)); // Does not return anything but status
+                await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
+
+                //// Delete
+
+                await savedSearch.RemoveAsync();
+            }
         }
 
         [Trait("class", "Service: Saved Searches")]
@@ -671,6 +797,89 @@ namespace Splunk.Client.UnitTesting
             }
         }
 
+        [Trait("class", "Service: Server")]
+        [Fact]
+        public async Task CanCrudServerSettings()
+        {
+            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
+            await service.LoginAsync("admin", "changeme");
+
+            //// Get
+
+            var originalSettings = await service.Server.GetSettingsAsync();
+
+            //// Update
+
+            var values = new ServerSettingValues()
+            {
+                EnableSplunkWebSsl = !originalSettings.EnableSplunkWebSsl,
+                Host = originalSettings.Host,
+                HttpPort = originalSettings.HttpPort + 1,
+                ManagementHostPort = originalSettings.ManagementHostPort,
+                MinFreeSpace = originalSettings.MinFreeSpace - 1,
+                Pass4SymmetricKey = originalSettings.Pass4SymmetricKey + "-update",
+                ServerName = originalSettings.ServerName,
+                SessionTimeout = "2h",
+                SplunkDB = originalSettings.SplunkDB,
+                StartWebServer = !originalSettings.StartWebServer,
+                TrustedIP = originalSettings.TrustedIP
+            };
+
+            var updatedSettings = await service.Server.UpdateSettingsAsync(values);
+
+            Assert.Equal(values.EnableSplunkWebSsl, updatedSettings.EnableSplunkWebSsl);
+            Assert.Equal(values.Host, updatedSettings.Host);
+            Assert.Equal(values.HttpPort, updatedSettings.HttpPort);
+            Assert.Equal(values.ManagementHostPort, updatedSettings.ManagementHostPort);
+            Assert.Equal(values.MinFreeSpace, updatedSettings.MinFreeSpace);
+            Assert.Equal(values.Pass4SymmetricKey, updatedSettings.Pass4SymmetricKey);
+            Assert.Equal(values.ServerName, updatedSettings.ServerName);
+            Assert.Equal(values.SessionTimeout, updatedSettings.SessionTimeout);
+            Assert.Equal(values.SplunkDB, updatedSettings.SplunkDB);
+            Assert.Equal(values.StartWebServer, updatedSettings.StartWebServer);
+            Assert.Equal(values.TrustedIP, updatedSettings.TrustedIP);
+
+            //// Restart the server because it's required following a settings update
+
+            await service.Server.RestartAsync(60000);
+            await service.LoginAsync("admin", "changeme");
+
+            //// Restore
+
+            values = new ServerSettingValues()
+            {
+                EnableSplunkWebSsl = originalSettings.EnableSplunkWebSsl,
+                Host = originalSettings.Host,
+                HttpPort = originalSettings.HttpPort,
+                ManagementHostPort = originalSettings.ManagementHostPort,
+                MinFreeSpace = originalSettings.MinFreeSpace,
+                Pass4SymmetricKey = originalSettings.Pass4SymmetricKey,
+                ServerName = originalSettings.ServerName,
+                SessionTimeout = originalSettings.SessionTimeout,
+                SplunkDB = originalSettings.SplunkDB,
+                StartWebServer = originalSettings.StartWebServer,
+                TrustedIP = originalSettings.TrustedIP
+            };
+
+            updatedSettings = await service.Server.UpdateSettingsAsync(values);
+
+            Assert.Equal(values.EnableSplunkWebSsl, originalSettings.EnableSplunkWebSsl);
+            Assert.Equal(values.Host, originalSettings.Host);
+            Assert.Equal(values.HttpPort, originalSettings.HttpPort);
+            Assert.Equal(values.ManagementHostPort, originalSettings.ManagementHostPort);
+            Assert.Equal(values.MinFreeSpace, originalSettings.MinFreeSpace);
+            Assert.Equal(values.Pass4SymmetricKey, originalSettings.Pass4SymmetricKey);
+            Assert.Equal(values.ServerName, originalSettings.ServerName);
+            Assert.Equal(values.SessionTimeout, originalSettings.SessionTimeout);
+            Assert.Equal(values.SplunkDB, originalSettings.SplunkDB);
+            Assert.Equal(values.StartWebServer, originalSettings.StartWebServer);
+            Assert.Equal(values.TrustedIP, originalSettings.TrustedIP);
+
+            //// Restart the server because it's required following a settings update
+
+            await service.Server.RestartAsync(60000);
+        }
+
         [Trait("class", "Service: System")]
         [Fact]
         public async Task CanGetServerInfo()
@@ -742,5 +951,14 @@ namespace Splunk.Client.UnitTesting
 
         public void SetFixture(AcceptanceTestingSetup data)
         { }
+
+        #region Privates/internals
+
+        static readonly IReadOnlyList<Namespace> TestNamespaces = new Namespace[] 
+        { 
+            Namespace.Default, new Namespace("admin", "search"), new Namespace("nobody", "search") 
+        };
+
+        #endregion
     }
 }

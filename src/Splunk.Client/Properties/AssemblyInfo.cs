@@ -14,31 +14,31 @@
  * under the License.
  */
 
-using System.Resources;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// General Information
+//// General Information
 
 [assembly: AssemblyProduct("splunk-sdk-csharp-pcl")]
-[assembly: AssemblyTitle("splunk-sdk-csharp-pcl")]
+[assembly: AssemblyTitle("Splunk.Client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Splunk Inc.")]
+[assembly: AssemblyCompany("Splunk, Inc.")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("Splunk®")]
 [assembly: AssemblyCulture("")]
-[assembly: NeutralResourcesLanguage("en")]
+[assembly: NeutralResourcesLanguage("en-US")]
 
-// Operational information
+//// Operational information
 
 [assembly: ComVisible(false)]
 
 [assembly: InternalsVisibleTo("acceptance-tests")]
 [assembly: InternalsVisibleTo("unit-tests")]
 
-// Version information
+//// Version information
 
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]

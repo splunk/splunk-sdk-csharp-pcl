@@ -97,18 +97,25 @@ namespace Splunk.Client
             if (statusCode != expected)
             {
                 var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
+                RequestException requestException;
 
                 switch (statusCode)
                 {
                     case HttpStatusCode.Forbidden:
-                        throw new UnauthorizedAccessException(this.Message, details);
+                        requestException = new UnauthorizedAccessException(this.Message, details);
+                        break;
                     case HttpStatusCode.NotFound:
-                        throw new ResourceNotFoundException(this.Message, details);
+                        requestException = new ResourceNotFoundException(this.Message, details);
+                        break;
                     case HttpStatusCode.Unauthorized:
-                        throw new AuthenticationFailureException(this.Message, details);
+                        requestException = new AuthenticationFailureException(this.Message, details);
+                        break;
                     default:
-                        throw new RequestException(this.Message, details);
+                        requestException = new RequestException(this.Message, details);
+                        break;
                 }
+
+                throw requestException;
             }
         }
 

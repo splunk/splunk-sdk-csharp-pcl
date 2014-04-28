@@ -25,7 +25,7 @@ namespace Splunk.ModularInputs
     /// The <see cref="EventStreamWriter"/> class writes events to standard
     /// output using the XML streaming mode.
     /// </summary>
-    public class EventStreamWriter : IDisposable
+    public sealed class EventStreamWriter : IDisposable
     {
         #region Constructors
 
@@ -46,15 +46,16 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <remarks>
         /// This method writes the closing <![CDATA[</stream>]]> element
-        /// synchronously, if it is outstanding. Best practice is to write the
-        /// closing <![CDATA[</stream>]]> element asynchronously using
-        /// <see cref="EventStreamWriter.WriteEndAsync"/>.
+        /// synchronously, if it is outstanding, but best practice is to
+        /// write this element asynchronously beforehand by calling <see cref=
+        /// "EventStreamWriter.WriteEndAsync"/>.
         /// </remarks>
         public void Dispose()
         {
-            //// The XmlTextWriter IDisposable implementation writes all unwritten 
-            //// end elements and--like all good IDisposable implementations--can
-            //// be called many times. Hence, we let it do all the work.
+            //// The XmlTextWriter class's IDisposable implementation writes 
+            //// all unwritten end elements and--like all good IDisposable 
+            //// implementations--can be called many times. Hence, we let it 
+            //// do all the work.
             this.xmlWriter.Dispose();
         }
 
@@ -134,14 +135,14 @@ namespace Splunk.ModularInputs
 
         #region Privates/internals
 
-        static readonly DateTime UnixUtcEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings()
+        internal static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings()
         {
-            Async = true
+            Async = true,
+            ConformanceLevel = ConformanceLevel.Fragment
         };
 
-        XmlWriter xmlWriter = new XmlTextWriter(Console.Out);
+        static readonly DateTime UnixUtcEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        XmlWriter xmlWriter = XmlWriter.Create(Console.Out, XmlWriterSettings);
 
         /// <summary>
         /// Converts a date-time value to Unix UTC timestamp.

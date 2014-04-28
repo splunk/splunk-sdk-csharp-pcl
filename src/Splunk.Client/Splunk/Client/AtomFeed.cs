@@ -214,7 +214,7 @@ namespace Splunk.Client
                             continue;
                         }
 
-                        while (reader.NodeType == XmlNodeType.Element && reader.Name == "msg")
+                        while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:msg")
                         {
                             string value = reader.GetAttribute("type");
 
@@ -258,7 +258,7 @@ namespace Splunk.Client
                         this.Pagination = new Pagination(this.Pagination.ItemsPerPage, this.Pagination.StartIndex, totalResults);
                         break;
 
-                    default: throw new InvalidDataException(); // TODO: Diagnostics
+                    default: throw new InvalidDataException(string.Format("Found invalid data while decoding: {0}", reader));
                 }
             }
 

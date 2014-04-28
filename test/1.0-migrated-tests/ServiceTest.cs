@@ -68,10 +68,9 @@ namespace Splunk.Client.UnitTesting
             dummyString = job.Keywords;
             //dummyString = job.Label;
 
-
             if (this.VersionCompare(service, "6.0") < 0)
             {
-                //dummyDateTime = job.LatestTime;
+                dummyDateTime = job.LatestTime;
             }
 
             dummyInt = job.NumPreviews;
@@ -83,7 +82,7 @@ namespace Splunk.Client.UnitTesting
             dummyInt = job.ResultPreviewCount;
             dummyDouble = job.RunDuration;
             dummyInt = job.ScanCount;
-            //dummyString = job.Search;
+            dummyString = job.EventSearch;// Search;
             //dummyString = job.SearchEarliestTime;
             //dummyString = job.SearchLatestTime;
             //dummyList = job.SearchProviders;

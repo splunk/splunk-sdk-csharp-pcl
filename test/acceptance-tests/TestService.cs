@@ -177,7 +177,6 @@ namespace Splunk.Client.UnitTesting
                     Assert.True(File.Exists(path));
 
                     var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
-                    var md5sum = "41ceb202053794cfec54b8d28f78d83c";
 
                     //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
                     //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
@@ -189,7 +188,7 @@ namespace Splunk.Client.UnitTesting
                     ////    await twitterApplicationUpdateInfo.GetAsync();
                     ////    Assert.NotNull(twitterApplicationUpdateInfo.Update);
                     ////    Assert.Equal("2.3.1", twitterApplicationUpdateInfo.Version);
-                    ////    Assert.Equal(md5sum, twitterApplicationUpdateInfo.Checksum);
+                    ////    Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Checksum);
                     ////    // other asserts on the contents of the update
                     
                     Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
@@ -202,7 +201,11 @@ namespace Splunk.Client.UnitTesting
                     Assert.Equal("2.3.1", twitterApplication.Version);
                     Assert.Equal(true, twitterApplication.Visible);
 
-                    await twitterApplication.GetAsync();
+                    await twitterApplication.UpdateAsync(new ApplicationAttributes { Version = "2.3.0" });
+                    await twitterApplication.GetAsync(); // because POST apps/local/{name} does not return new data
+
+                    Assert.Equal("2.3.0", twitterApplication.Version);
+
                     var twitterApplicationSetupInfo = await twitterApplication.GetSetupInfoAsync();
                     var twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
 
@@ -264,6 +267,16 @@ namespace Splunk.Client.UnitTesting
                     Assert.Equal(false, templatedApplication.StateChangeRequiresRestart);
                     Assert.Equal(updateAttributes.Version, templatedApplication.Version);
                     Assert.Equal(updateAttributes.Visible, templatedApplication.Visible);
+
+                    Assert.False(twitterApplication.Disabled);
+
+                    await templatedApplication.DisableAsync();
+                    await templatedApplication.GetAsync(); // because POST apps/local/{name} does not return new data
+                    Assert.True(templatedApplication.Disabled);
+
+                    await templatedApplication.EnableAsync();
+                    await templatedApplication.GetAsync(); // because POST apps/local/{name} does not return new data
+                    Assert.False(templatedApplication.Disabled);
 
                     var templatedApplicationArchiveInfo = await templatedApplication.PackageAsync();
                     Assert.True(File.Exists(templatedApplicationArchiveInfo.Path));
@@ -378,145 +391,147 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetIndexes()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-            var collection = service.GetIndexesAsync().Result;
-
-            foreach (var entity in collection)
+            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
             {
-                await entity.GetAsync();
+                await service.LoginAsync("admin", "changeme");
+                var collection = service.GetIndexesAsync().Result;
 
-                Assert.Equal(entity.ToString(), entity.Id.ToString());
+                foreach (var entity in collection)
+                {
+                    await entity.GetAsync();
 
-                Assert.DoesNotThrow(() => { bool value = entity.AssureUTF8; });
-                Assert.DoesNotThrow(() => { string value = entity.BlockSignatureDatabase; });
-                Assert.DoesNotThrow(() => { int value = entity.BlockSignSize; });
-                Assert.DoesNotThrow(() => { int value = entity.BloomFilterTotalSizeKB; });
-                Assert.DoesNotThrow(() => { string value = entity.BucketRebuildMemoryHint; });
-                Assert.DoesNotThrow(() => { string value = entity.ColdPath; });
-                Assert.DoesNotThrow(() => { string value = entity.ColdPathExpanded; });
-                Assert.DoesNotThrow(() => { string value = entity.ColdToFrozenDir; });
-                Assert.DoesNotThrow(() => { string value = entity.ColdToFrozenScript; });
-                Assert.DoesNotThrow(() => { int value = entity.CurrentDBSizeMB; });
-                Assert.DoesNotThrow(() => { string value = entity.DefaultDatabase; });
-                Assert.DoesNotThrow(() => { bool value = entity.Disabled; });
-                Assert.DoesNotThrow(() => { Eai value = entity.Eai; });
-                Assert.DoesNotThrow(() => { bool value = entity.EnableOnlineBucketRepair; });
-                Assert.DoesNotThrow(() => { bool value = entity.EnableRealtimeSearch; });
-                Assert.DoesNotThrow(() => { int value = entity.FrozenTimePeriodInSecs; });
-                Assert.DoesNotThrow(() => { string value = entity.HomePath; });
-                Assert.DoesNotThrow(() => { string value = entity.HomePathExpanded; });
-                Assert.DoesNotThrow(() => { string value = entity.IndexThreads; });
-                Assert.DoesNotThrow(() => { bool value = entity.IsInternal; });
-                Assert.DoesNotThrow(() => { bool value = entity.IsReady; });
-                Assert.DoesNotThrow(() => { bool value = entity.IsVirtual; });
-                Assert.DoesNotThrow(() => { long value = entity.LastInitSequenceNumber; });
-                Assert.DoesNotThrow(() => { long value = entity.LastInitTime; });
-                Assert.DoesNotThrow(() => { string value = entity.MaxBloomBackfillBucketAge; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxBucketSizeCacheEntries; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxConcurrentOptimizes; });
-                Assert.DoesNotThrow(() => { string value = entity.MaxDataSize; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxHotBuckets; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxHotIdleSecs; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxHotSpanSecs; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxMemMB; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxMetaEntries; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxRunningProcessGroups; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxRunningProcessGroupsLowPriority; });
-                Assert.DoesNotThrow(() => { DateTime value = entity.MaxTime; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxTimeUnreplicatedNoAcks; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxTimeUnreplicatedWithAcks; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxTotalDataSizeMB; });
-                Assert.DoesNotThrow(() => { int value = entity.MaxWarmDBCount; });
-                Assert.DoesNotThrow(() => { string value = entity.MemPoolMB; });
-                Assert.DoesNotThrow(() => { string value = entity.MinRawFileSyncSecs; });
-                Assert.DoesNotThrow(() => { DateTime value = entity.MinTime; });
-                Assert.DoesNotThrow(() => { int value = entity.PartialServiceMetaPeriod; });
-                Assert.DoesNotThrow(() => { int value = entity.ProcessTrackerServiceInterval; });
-                Assert.DoesNotThrow(() => { int value = entity.QuarantineFutureSecs; });
-                Assert.DoesNotThrow(() => { int value = entity.QuarantinePastSecs; });
-                Assert.DoesNotThrow(() => { int value = entity.RawChunkSizeBytes; });
-                Assert.DoesNotThrow(() => { int value = entity.RepFactor; });
-                Assert.DoesNotThrow(() => { int value = entity.RotatePeriodInSecs; });
-                Assert.DoesNotThrow(() => { int value = entity.ServiceMetaPeriod; });
-                Assert.DoesNotThrow(() => { bool value = entity.ServiceOnlyAsNeeded; });
-                Assert.DoesNotThrow(() => { int value = entity.ServiceSubtaskTimingPeriod; });
-                Assert.DoesNotThrow(() => { string value = entity.SummaryHomePathExpanded; });
-                Assert.DoesNotThrow(() => { bool value = entity.Sync; });
-                Assert.DoesNotThrow(() => { bool value = entity.SyncMeta; });
-                Assert.DoesNotThrow(() => { string value = entity.ThawedPath; });
-                Assert.DoesNotThrow(() => { string value = entity.ThawedPathExpanded; });
-                Assert.DoesNotThrow(() => { int value = entity.ThrottleCheckPeriod; });
-                Assert.DoesNotThrow(() => { long value = entity.TotalEventCount; });
-                Assert.DoesNotThrow(() => { string value = entity.TStatsHomePath; });
-                Assert.DoesNotThrow(() => { string value = entity.TStatsHomePathExpanded; });
+                    Assert.Equal(entity.ToString(), entity.Id.ToString());
 
-                var sameEntity = await service.GetIndexAsync(entity.ResourceName.Title);
+                    Assert.DoesNotThrow(() => { bool value = entity.AssureUTF8; });
+                    Assert.DoesNotThrow(() => { string value = entity.BlockSignatureDatabase; });
+                    Assert.DoesNotThrow(() => { int value = entity.BlockSignSize; });
+                    Assert.DoesNotThrow(() => { int value = entity.BloomFilterTotalSizeKB; });
+                    Assert.DoesNotThrow(() => { string value = entity.BucketRebuildMemoryHint; });
+                    Assert.DoesNotThrow(() => { string value = entity.ColdPath; });
+                    Assert.DoesNotThrow(() => { string value = entity.ColdPathExpanded; });
+                    Assert.DoesNotThrow(() => { string value = entity.ColdToFrozenDir; });
+                    Assert.DoesNotThrow(() => { string value = entity.ColdToFrozenScript; });
+                    Assert.DoesNotThrow(() => { int value = entity.CurrentDBSizeMB; });
+                    Assert.DoesNotThrow(() => { string value = entity.DefaultDatabase; });
+                    Assert.DoesNotThrow(() => { bool value = entity.Disabled; });
+                    Assert.DoesNotThrow(() => { Eai value = entity.Eai; });
+                    Assert.DoesNotThrow(() => { bool value = entity.EnableOnlineBucketRepair; });
+                    Assert.DoesNotThrow(() => { bool value = entity.EnableRealtimeSearch; });
+                    Assert.DoesNotThrow(() => { int value = entity.FrozenTimePeriodInSecs; });
+                    Assert.DoesNotThrow(() => { string value = entity.HomePath; });
+                    Assert.DoesNotThrow(() => { string value = entity.HomePathExpanded; });
+                    Assert.DoesNotThrow(() => { string value = entity.IndexThreads; });
+                    Assert.DoesNotThrow(() => { bool value = entity.IsInternal; });
+                    Assert.DoesNotThrow(() => { bool value = entity.IsReady; });
+                    Assert.DoesNotThrow(() => { bool value = entity.IsVirtual; });
+                    Assert.DoesNotThrow(() => { long value = entity.LastInitSequenceNumber; });
+                    Assert.DoesNotThrow(() => { long value = entity.LastInitTime; });
+                    Assert.DoesNotThrow(() => { string value = entity.MaxBloomBackfillBucketAge; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxBucketSizeCacheEntries; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxConcurrentOptimizes; });
+                    Assert.DoesNotThrow(() => { string value = entity.MaxDataSize; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxHotBuckets; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxHotIdleSecs; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxHotSpanSecs; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxMemMB; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxMetaEntries; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxRunningProcessGroups; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxRunningProcessGroupsLowPriority; });
+                    Assert.DoesNotThrow(() => { DateTime value = entity.MaxTime; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxTimeUnreplicatedNoAcks; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxTimeUnreplicatedWithAcks; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxTotalDataSizeMB; });
+                    Assert.DoesNotThrow(() => { int value = entity.MaxWarmDBCount; });
+                    Assert.DoesNotThrow(() => { string value = entity.MemPoolMB; });
+                    Assert.DoesNotThrow(() => { string value = entity.MinRawFileSyncSecs; });
+                    Assert.DoesNotThrow(() => { DateTime value = entity.MinTime; });
+                    Assert.DoesNotThrow(() => { int value = entity.PartialServiceMetaPeriod; });
+                    Assert.DoesNotThrow(() => { int value = entity.ProcessTrackerServiceInterval; });
+                    Assert.DoesNotThrow(() => { int value = entity.QuarantineFutureSecs; });
+                    Assert.DoesNotThrow(() => { int value = entity.QuarantinePastSecs; });
+                    Assert.DoesNotThrow(() => { int value = entity.RawChunkSizeBytes; });
+                    Assert.DoesNotThrow(() => { int value = entity.RepFactor; });
+                    Assert.DoesNotThrow(() => { int value = entity.RotatePeriodInSecs; });
+                    Assert.DoesNotThrow(() => { int value = entity.ServiceMetaPeriod; });
+                    Assert.DoesNotThrow(() => { bool value = entity.ServiceOnlyAsNeeded; });
+                    Assert.DoesNotThrow(() => { int value = entity.ServiceSubtaskTimingPeriod; });
+                    Assert.DoesNotThrow(() => { string value = entity.SummaryHomePathExpanded; });
+                    Assert.DoesNotThrow(() => { bool value = entity.Sync; });
+                    Assert.DoesNotThrow(() => { bool value = entity.SyncMeta; });
+                    Assert.DoesNotThrow(() => { string value = entity.ThawedPath; });
+                    Assert.DoesNotThrow(() => { string value = entity.ThawedPathExpanded; });
+                    Assert.DoesNotThrow(() => { int value = entity.ThrottleCheckPeriod; });
+                    Assert.DoesNotThrow(() => { long value = entity.TotalEventCount; });
+                    Assert.DoesNotThrow(() => { string value = entity.TStatsHomePath; });
+                    Assert.DoesNotThrow(() => { string value = entity.TStatsHomePathExpanded; });
 
-                Assert.Equal(entity.ResourceName, sameEntity.ResourceName);
+                    var sameEntity = await service.GetIndexAsync(entity.ResourceName.Title);
 
-                Assert.Equal(entity.AssureUTF8, sameEntity.AssureUTF8);
-                Assert.Equal(entity.BlockSignatureDatabase, sameEntity.BlockSignatureDatabase);
-                Assert.Equal(entity.BlockSignSize, sameEntity.BlockSignSize);
-                Assert.Equal(entity.BloomFilterTotalSizeKB, sameEntity.BloomFilterTotalSizeKB);
-                Assert.Equal(entity.BucketRebuildMemoryHint, sameEntity.BucketRebuildMemoryHint);
-                Assert.Equal(entity.ColdPath, sameEntity.ColdPath);
-                Assert.Equal(entity.ColdPathExpanded, sameEntity.ColdPathExpanded);
-                Assert.Equal(entity.ColdToFrozenDir, sameEntity.ColdToFrozenDir);
-                Assert.Equal(entity.ColdToFrozenScript, sameEntity.ColdToFrozenScript);
-                Assert.Equal(entity.CurrentDBSizeMB, sameEntity.CurrentDBSizeMB);
-                Assert.Equal(entity.DefaultDatabase, sameEntity.DefaultDatabase);
-                Assert.Equal(entity.Disabled, sameEntity.Disabled);
-                // Assert.Equal(entity.Eai, sameEntity.Eai); // TODO: verify this property setting (?)
-                Assert.Equal(entity.EnableOnlineBucketRepair, sameEntity.EnableOnlineBucketRepair);
-                Assert.Equal(entity.EnableRealtimeSearch, sameEntity.EnableRealtimeSearch);
-                Assert.Equal(entity.FrozenTimePeriodInSecs, sameEntity.FrozenTimePeriodInSecs);
-                Assert.Equal(entity.HomePath, sameEntity.HomePath);
-                Assert.Equal(entity.HomePathExpanded, sameEntity.HomePathExpanded);
-                Assert.Equal(entity.IndexThreads, sameEntity.IndexThreads);
-                Assert.Equal(entity.IsInternal, sameEntity.IsInternal);
-                Assert.Equal(entity.IsReady, sameEntity.IsReady);
-                Assert.Equal(entity.IsVirtual, sameEntity.IsVirtual);
-                Assert.Equal(entity.LastInitSequenceNumber, sameEntity.LastInitSequenceNumber);
-                Assert.Equal(entity.LastInitTime, sameEntity.LastInitTime);
-                Assert.Equal(entity.MaxBloomBackfillBucketAge, sameEntity.MaxBloomBackfillBucketAge);
-                Assert.Equal(entity.MaxBucketSizeCacheEntries, sameEntity.MaxBucketSizeCacheEntries);
-                Assert.Equal(entity.MaxConcurrentOptimizes, sameEntity.MaxConcurrentOptimizes);
-                Assert.Equal(entity.MaxDataSize, sameEntity.MaxDataSize);
-                Assert.Equal(entity.MaxHotBuckets, sameEntity.MaxHotBuckets);
-                Assert.Equal(entity.MaxHotIdleSecs, sameEntity.MaxHotIdleSecs);
-                Assert.Equal(entity.MaxHotSpanSecs, sameEntity.MaxHotSpanSecs);
-                Assert.Equal(entity.MaxMemMB, sameEntity.MaxMemMB);
-                Assert.Equal(entity.MaxMetaEntries, sameEntity.MaxMetaEntries);
-                Assert.Equal(entity.MaxRunningProcessGroups, sameEntity.MaxRunningProcessGroups);
-                Assert.Equal(entity.MaxRunningProcessGroupsLowPriority, sameEntity.MaxRunningProcessGroupsLowPriority);
-                Assert.Equal(entity.MaxTime, sameEntity.MaxTime);
-                Assert.Equal(entity.MaxTimeUnreplicatedNoAcks, sameEntity.MaxTimeUnreplicatedNoAcks);
-                Assert.Equal(entity.MaxTimeUnreplicatedWithAcks, sameEntity.MaxTimeUnreplicatedWithAcks);
-                Assert.Equal(entity.MaxTotalDataSizeMB, sameEntity.MaxTotalDataSizeMB);
-                Assert.Equal(entity.MaxWarmDBCount, sameEntity.MaxWarmDBCount);
-                Assert.Equal(entity.MemPoolMB, sameEntity.MemPoolMB);
-                Assert.Equal(entity.MinRawFileSyncSecs, sameEntity.MinRawFileSyncSecs);
-                Assert.Equal(entity.MinTime, sameEntity.MinTime);
-                Assert.Equal(entity.PartialServiceMetaPeriod, sameEntity.PartialServiceMetaPeriod);
-                Assert.Equal(entity.ProcessTrackerServiceInterval, sameEntity.ProcessTrackerServiceInterval);
-                Assert.Equal(entity.QuarantineFutureSecs, sameEntity.QuarantineFutureSecs);
-                Assert.Equal(entity.QuarantinePastSecs, sameEntity.QuarantinePastSecs);
-                Assert.Equal(entity.RawChunkSizeBytes, sameEntity.RawChunkSizeBytes);
-                Assert.Equal(entity.RepFactor, sameEntity.RepFactor);
-                Assert.Equal(entity.RotatePeriodInSecs, sameEntity.RotatePeriodInSecs);
-                Assert.Equal(entity.ServiceMetaPeriod, sameEntity.ServiceMetaPeriod);
-                Assert.Equal(entity.ServiceOnlyAsNeeded, sameEntity.ServiceOnlyAsNeeded);
-                Assert.Equal(entity.ServiceSubtaskTimingPeriod, sameEntity.ServiceSubtaskTimingPeriod);
-                Assert.Equal(entity.SummaryHomePathExpanded, sameEntity.SummaryHomePathExpanded);
-                Assert.Equal(entity.Sync, sameEntity.Sync);
-                Assert.Equal(entity.SyncMeta, sameEntity.SyncMeta);
-                Assert.Equal(entity.ThawedPath, sameEntity.ThawedPath);
-                Assert.Equal(entity.ThawedPathExpanded, sameEntity.ThawedPathExpanded);
-                Assert.Equal(entity.ThrottleCheckPeriod, sameEntity.ThrottleCheckPeriod);
-                Assert.Equal(entity.TotalEventCount, sameEntity.TotalEventCount);
-                Assert.Equal(entity.TStatsHomePath, sameEntity.TStatsHomePath);
-                Assert.Equal(entity.TStatsHomePathExpanded, sameEntity.TStatsHomePathExpanded);
+                    Assert.Equal(entity.ResourceName, sameEntity.ResourceName);
+
+                    Assert.Equal(entity.AssureUTF8, sameEntity.AssureUTF8);
+                    Assert.Equal(entity.BlockSignatureDatabase, sameEntity.BlockSignatureDatabase);
+                    Assert.Equal(entity.BlockSignSize, sameEntity.BlockSignSize);
+                    Assert.Equal(entity.BloomFilterTotalSizeKB, sameEntity.BloomFilterTotalSizeKB);
+                    Assert.Equal(entity.BucketRebuildMemoryHint, sameEntity.BucketRebuildMemoryHint);
+                    Assert.Equal(entity.ColdPath, sameEntity.ColdPath);
+                    Assert.Equal(entity.ColdPathExpanded, sameEntity.ColdPathExpanded);
+                    Assert.Equal(entity.ColdToFrozenDir, sameEntity.ColdToFrozenDir);
+                    Assert.Equal(entity.ColdToFrozenScript, sameEntity.ColdToFrozenScript);
+                    Assert.Equal(entity.CurrentDBSizeMB, sameEntity.CurrentDBSizeMB);
+                    Assert.Equal(entity.DefaultDatabase, sameEntity.DefaultDatabase);
+                    Assert.Equal(entity.Disabled, sameEntity.Disabled);
+                    // Assert.Equal(entity.Eai, sameEntity.Eai); // TODO: verify this property setting (?)
+                    Assert.Equal(entity.EnableOnlineBucketRepair, sameEntity.EnableOnlineBucketRepair);
+                    Assert.Equal(entity.EnableRealtimeSearch, sameEntity.EnableRealtimeSearch);
+                    Assert.Equal(entity.FrozenTimePeriodInSecs, sameEntity.FrozenTimePeriodInSecs);
+                    Assert.Equal(entity.HomePath, sameEntity.HomePath);
+                    Assert.Equal(entity.HomePathExpanded, sameEntity.HomePathExpanded);
+                    Assert.Equal(entity.IndexThreads, sameEntity.IndexThreads);
+                    Assert.Equal(entity.IsInternal, sameEntity.IsInternal);
+                    Assert.Equal(entity.IsReady, sameEntity.IsReady);
+                    Assert.Equal(entity.IsVirtual, sameEntity.IsVirtual);
+                    Assert.Equal(entity.LastInitSequenceNumber, sameEntity.LastInitSequenceNumber);
+                    Assert.Equal(entity.LastInitTime, sameEntity.LastInitTime);
+                    Assert.Equal(entity.MaxBloomBackfillBucketAge, sameEntity.MaxBloomBackfillBucketAge);
+                    Assert.Equal(entity.MaxBucketSizeCacheEntries, sameEntity.MaxBucketSizeCacheEntries);
+                    Assert.Equal(entity.MaxConcurrentOptimizes, sameEntity.MaxConcurrentOptimizes);
+                    Assert.Equal(entity.MaxDataSize, sameEntity.MaxDataSize);
+                    Assert.Equal(entity.MaxHotBuckets, sameEntity.MaxHotBuckets);
+                    Assert.Equal(entity.MaxHotIdleSecs, sameEntity.MaxHotIdleSecs);
+                    Assert.Equal(entity.MaxHotSpanSecs, sameEntity.MaxHotSpanSecs);
+                    Assert.Equal(entity.MaxMemMB, sameEntity.MaxMemMB);
+                    Assert.Equal(entity.MaxMetaEntries, sameEntity.MaxMetaEntries);
+                    Assert.Equal(entity.MaxRunningProcessGroups, sameEntity.MaxRunningProcessGroups);
+                    Assert.Equal(entity.MaxRunningProcessGroupsLowPriority, sameEntity.MaxRunningProcessGroupsLowPriority);
+                    Assert.Equal(entity.MaxTime, sameEntity.MaxTime);
+                    Assert.Equal(entity.MaxTimeUnreplicatedNoAcks, sameEntity.MaxTimeUnreplicatedNoAcks);
+                    Assert.Equal(entity.MaxTimeUnreplicatedWithAcks, sameEntity.MaxTimeUnreplicatedWithAcks);
+                    Assert.Equal(entity.MaxTotalDataSizeMB, sameEntity.MaxTotalDataSizeMB);
+                    Assert.Equal(entity.MaxWarmDBCount, sameEntity.MaxWarmDBCount);
+                    Assert.Equal(entity.MemPoolMB, sameEntity.MemPoolMB);
+                    Assert.Equal(entity.MinRawFileSyncSecs, sameEntity.MinRawFileSyncSecs);
+                    Assert.Equal(entity.MinTime, sameEntity.MinTime);
+                    Assert.Equal(entity.PartialServiceMetaPeriod, sameEntity.PartialServiceMetaPeriod);
+                    Assert.Equal(entity.ProcessTrackerServiceInterval, sameEntity.ProcessTrackerServiceInterval);
+                    Assert.Equal(entity.QuarantineFutureSecs, sameEntity.QuarantineFutureSecs);
+                    Assert.Equal(entity.QuarantinePastSecs, sameEntity.QuarantinePastSecs);
+                    Assert.Equal(entity.RawChunkSizeBytes, sameEntity.RawChunkSizeBytes);
+                    Assert.Equal(entity.RepFactor, sameEntity.RepFactor);
+                    Assert.Equal(entity.RotatePeriodInSecs, sameEntity.RotatePeriodInSecs);
+                    Assert.Equal(entity.ServiceMetaPeriod, sameEntity.ServiceMetaPeriod);
+                    Assert.Equal(entity.ServiceOnlyAsNeeded, sameEntity.ServiceOnlyAsNeeded);
+                    Assert.Equal(entity.ServiceSubtaskTimingPeriod, sameEntity.ServiceSubtaskTimingPeriod);
+                    Assert.Equal(entity.SummaryHomePathExpanded, sameEntity.SummaryHomePathExpanded);
+                    Assert.Equal(entity.Sync, sameEntity.Sync);
+                    Assert.Equal(entity.SyncMeta, sameEntity.SyncMeta);
+                    Assert.Equal(entity.ThawedPath, sameEntity.ThawedPath);
+                    Assert.Equal(entity.ThawedPathExpanded, sameEntity.ThawedPathExpanded);
+                    Assert.Equal(entity.ThrottleCheckPeriod, sameEntity.ThrottleCheckPeriod);
+                    Assert.Equal(entity.TotalEventCount, sameEntity.TotalEventCount);
+                    Assert.Equal(entity.TStatsHomePath, sameEntity.TStatsHomePath);
+                    Assert.Equal(entity.TStatsHomePathExpanded, sameEntity.TStatsHomePathExpanded);
+                }
             }
         }
 
@@ -524,34 +539,43 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudIndex()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-
-            var indexName = string.Format("delete-me-{0:N}", Guid.NewGuid());
-            Index index;
-
-            // Create
-
-            index = await service.CreateIndexAsync(indexName, new IndexArgs());
-            Assert.Equal(true, index.EnableOnlineBucketRepair);
-
-            // Read
-
-            index = await service.GetIndexAsync(indexName);
-
-            // Update
-
-            var indexAttributes = new IndexAttributes()
+            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
             {
-                EnableOnlineBucketRepair = false
-            };
+                await service.LoginAsync("admin", "changeme");
 
-            await index.UpdateAsync(indexAttributes);
-            Assert.Equal(false, index.EnableOnlineBucketRepair);
+                var indexName = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                Index index;
 
-            // Delete
+                //// Create
 
-            await service.RemoveIndexAsync(indexName);
+                index = await service.CreateIndexAsync(indexName);
+                Assert.Equal(true, index.EnableOnlineBucketRepair);
+
+                //// Read
+
+                index = await service.GetIndexAsync(indexName);
+
+                //// Update
+
+                var attributes = new IndexAttributes()
+                {
+                    EnableOnlineBucketRepair = false
+                };
+
+                await index.UpdateAsync(attributes);
+                Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
+                Assert.False(index.Disabled);
+
+                await index.DisableAsync();
+                Assert.True(index.Disabled);
+
+                await index.EnableAsync();
+                Assert.False(index.Disabled);
+
+                //// Delete
+
+                await service.RemoveIndexAsync(indexName);
+            }
         }
 
         #endregion

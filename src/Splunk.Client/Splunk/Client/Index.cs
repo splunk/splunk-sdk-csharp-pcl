@@ -14,17 +14,19 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [ ] Properties & Methods
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+//// [X] Properties & Methods
 
 namespace Splunk.Client
 {
     using System;
+    using System.ComponentModel;
     using System.IO;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -92,7 +94,7 @@ namespace Splunk.Client
 
         public bool CompressRawData
         {
-            get { return this.Content.GetValue("compressRawdata", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("CompressRawdata", BooleanConverter.Instance); }
         }
 
         public int CurrentDBSizeMB
@@ -372,6 +374,10 @@ namespace Splunk.Client
             get { return this.Content.GetValue("SyncMeta", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the path to the resurrected databases for the current <see 
+        /// cref="Index"/>.
+        /// </summary>
         public string ThawedPath
         {
             get { return this.Content.GetValue("ThawedPath", StringConverter.Instance); }
@@ -406,45 +412,79 @@ namespace Splunk.Client
 
         #region Methods
 
-        public async Task CreateAsync(string coldPath, string homePath, string thawedPath, IndexAttributes attributes = null)
+        /// <summary>
+        /// Asyncrhonously creates the index represented by the current index
+        /// </summary>
+        /// <param name="coldPath">
+        /// Location for storing the cold databases for the current <see cref=
+        /// "Index"/>. A value of <c>null</c> or <c>""</c> specifies that the 
+        /// cold databases should be stored at the default location.
+        /// </param>
+        /// <param name="homePath">
+        /// Location for storing the hot and warm buckets for the current 
+        /// index. A value of <c>null</c> or <c>""</c> specifies that the hot
+        /// and warm buckets should be stored at the default location.
+        /// </param>
+        /// <param name="thawedPath">
+        /// Location for storing the resurrected databases for the current <see
+        /// cref="Index"/>. A value of <c>null</c> or <c>""</c> specifies that 
+        /// the resurrected databases should be stored at the default location.
+        /// </param>
+        /// <param name="attributes">
+        /// Attributes to set on the newly created index.
+        /// </param>
+        /// <returns></returns>
+        public async Task CreateAsync(string coldPath = null, string homePath = null, string thawedPath = null, 
+            IndexAttributes attributes = null)
         {
-            await this.CreateAsync(new IndexArgs(coldPath, homePath, thawedPath), attributes);
-        }
+            var resourceName = IndexCollection.ClassResourceName;
 
-        public async Task CreateAsync(IndexArgs create, IndexAttributes attributes)
-        {
-            using (var response = await this.Context.PostAsync(this.Namespace, IndexCollection.ClassResourceName,
-                new Argument[] { new Argument("name", this.ResourceName.Title) },
-                create, attributes))
+            var args = new CreationArgs() 
+            { 
+                Name = this.Name, ColdPath = coldPath, HomePath = homePath, ThawedPath = thawedPath 
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                AtomFeed feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
-
-                if (feed.Entries.Count > 1)
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics
-                }
-
-                this.Data = new DataCache(feed.Entries[0]);
+                await this.UpdateDataAsync(response);
             }
         }
 
         /// <summary>
-        /// Removes a configuration stanza.
+        /// Asynchronously disables the current <see cref="Index"/>.
         /// </summary>
-        /// <param name="stanzaName">
-        /// Name of a configuration stanza in the current <see cref=
-        /// "Configuration"/>.
-        /// </param>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE 
-        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration 
-        /// stanza identified by <see cref="stanzaName"/>.
+        /// This method uses the POST data/indexes/{name}/disable </a> endpoint 
+        /// to disable the current <see cref="Index"/>.
         /// </remarks>
-        public void Remove()
+        public async Task DisableAsync()
         {
-            this.RemoveAsync().Wait();
+            var resourceName = new ResourceName(this.ResourceName, "disable");
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await this.UpdateDataAsync(response);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously enables the current <see cref="Index"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the POST data/indexes/{name}/enable </a> endpoint 
+        /// to enable the current <see cref="Index"/>.
+        /// </remarks>
+        public async Task EnableAsync()
+        {
+            var resourceName = new ResourceName(this.ResourceName, "enable");
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await this.UpdateDataAsync(response);
+            }
         }
 
         /// <summary>
@@ -452,12 +492,13 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/hCc1xe">DELETE 
-        /// data/indexes/{name} </a> endpoint to remove the index represented 
-        /// by this instance. 
+        /// data/indexes/{name} </a> endpoint to remove the current
+        /// <see cref="Index"/>.
         /// <para>
         /// <b>Caution:</b> This operation fully removes the index, not just 
-        /// the data contained in it. The index's data directories indexes.conf
-        /// stanzas are also deleted.</para>
+        /// the data contained in it. The index's data directories and 
+        /// <a href="http://goo.gl/e4c81J">indexes.conf</a> stanzas are also 
+        /// deleted.</para>
         /// </remarks>
         public async Task RemoveAsync()
         {
@@ -501,6 +542,81 @@ namespace Splunk.Client
         #region Privates/internals
 
         internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");
+
+        #endregion
+
+        #region Types
+
+        public class CreationArgs : Args<CreationArgs>
+        {
+            #region Properties
+
+            /// <summary>
+            /// Gets or sets a name for an index.
+            /// </summary>
+            /// <remarks>
+            /// This value is required.
+            /// </remarks>
+            [DataMember(Name = "name", IsRequired = true)]
+            public string Name
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets the absolute path for the cold databases of an 
+            /// index.
+            /// </summary>
+            /// <remarks>
+            /// <para>
+            /// The path must be readable and writable. The path may be defined
+            /// in terms of a volume definition. The default value is <c>""</c>
+            /// indicating that the cold databases should be stored at the 
+            /// default location.</para>
+            /// <para>
+            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
+            /// <see cref="ColdPath"/>.</para>
+            /// </remarks>
+            [DataMember(Name = "coldPath")]
+            [DefaultValue("")]
+            public string ColdPath
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets an absolute path that contains the hot and warm 
+            /// buckets for an index.
+            /// </summary>
+            /// <remarks>
+            /// The specified path must be readable and writable. The default 
+            /// value is <c>""</c> indicating that the hot and warm buckets
+            /// should be stored at the default location.</para>
+            /// <para>
+            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
+            /// <see cref="HomePath"/>.</para>
+            /// </remarks>
+            [DataMember(Name = "homePath")]
+            [DefaultValue("")]
+            public string HomePath
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets an absolute path that contains the thawed 
+            /// (resurrected) databases for an index.
+            /// </summary>
+            /// <remarks>
+            /// The path must be readable and writable. The path cannot be 
+            /// defined in terms of a volume definition. The default value is 
+            /// <c>""</c> indicating that resurrected databases should be 
+            /// stored at the default location.
+            /// <para>
+            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
+            /// <see cref="ThawedPath"/>.</para>
+            /// </remarks>
+            [DataMember(Name = "thawedPath")]
+            [DefaultValue("")]
+            public string ThawedPath
+            { get; set; }
+
+            #endregion
+        }
 
         #endregion
     }

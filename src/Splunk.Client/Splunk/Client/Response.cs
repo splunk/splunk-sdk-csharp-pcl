@@ -79,44 +79,46 @@ namespace Splunk.Client
         /// 
         /// </summary>
         public void Dispose()
-        { 
-            this.Dispose(true); 
+        {
+            this.Dispose(true);
         }
 
         /// <summary>
-        /// 
+        /// Throws a <see cref="RequestException"/> if the current <see cref=
+        /// "Response.Message.StatusCode"/> is different than <see cref=
+        /// "expected"/>.
         /// </summary>
         /// <param name="expected">
+        /// The expected <see cref="HttpStatusCode"/>.
         /// </param>
-        /// <returns>
-        /// </returns>
+        /// <returns></returns>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected)
         {
             var statusCode = this.Message.StatusCode;
 
-            if (statusCode != expected)
+            if (statusCode == expected)
+                return;
+
+            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
+            RequestException requestException;
+
+            switch (statusCode)
             {
-                var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
-                RequestException requestException;
-
-                switch (statusCode)
-                {
-                    case HttpStatusCode.Forbidden:
-                        requestException = new UnauthorizedAccessException(this.Message, details);
-                        break;
-                    case HttpStatusCode.NotFound:
-                        requestException = new ResourceNotFoundException(this.Message, details);
-                        break;
-                    case HttpStatusCode.Unauthorized:
-                        requestException = new AuthenticationFailureException(this.Message, details);
-                        break;
-                    default:
-                        requestException = new RequestException(this.Message, details);
-                        break;
-                }
-
-                throw requestException;
+                case HttpStatusCode.Forbidden:
+                    requestException = new UnauthorizedAccessException(this.Message, details);
+                    break;
+                case HttpStatusCode.NotFound:
+                    requestException = new ResourceNotFoundException(this.Message, details);
+                    break;
+                case HttpStatusCode.Unauthorized:
+                    requestException = new AuthenticationFailureException(this.Message, details);
+                    break;
+                default:
+                    requestException = new RequestException(this.Message, details);
+                    break;
             }
+
+            throw requestException;
         }
 
         #endregion
@@ -143,7 +145,7 @@ namespace Splunk.Client
                 this.Message.Dispose();
                 this.XmlReader.Dispose();
                 this.disposed = true;
-                
+
                 GC.SuppressFinalize(this);
             }
         }

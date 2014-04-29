@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>localapps</title>
+  <id>https://localhost:8089/servicesNS/nobody/search/apps/local</id>
+  <updated>2014-04-29T08:47:12-07:00</updated>
+  <generator build="204106" version="6.0.3"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <link href="/servicesNS/nobody/search/apps/local/_new" rel="create"/>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:itemsPerPage>30</opensearch:itemsPerPage>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <s:messages/>
+  <entry>
+    <title>twitter2</title>
+    <id>https://localhost:8089/servicesNS/nobody/twitter2/apps/local/twitter2</id>
+    <updated>2014-04-29T08:47:12-07:00</updated>
+    <link href="/servicesNS/nobody/twitter2/apps/local/twitter2" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/twitter2/apps/local/twitter2/setup" rel="edit"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="/data/inputs/script/.%5Cbin%5Cstream_tweets.py/enabled">0</s:key>
+        <s:key name="/data/inputs/script/.%5Cbin%5Cstream_tweets.py/interval">60</s:key>
+        <s:key name="/storage/passwords/_new/name"></s:key>
+        <s:key name="/storage/passwords/_new/password"></s:key>
+        <s:key name="/storage/passwords/_new/realm"></s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">twitter2</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="eai:attributes">
+          <s:dict>
+            <s:key name="optionalFields">
+              <s:list/>
+            </s:key>
+            <s:key name="requiredFields">
+              <s:list/>
+            </s:key>
+            <s:key name="wildcardFields">
+              <s:list>
+                <s:item>.*</s:item>
+                <s:item>.*</s:item>
+              </s:list>
+            </s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="eai:setup"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<SetupInfo>
+  <block title="Welcome to the Splunk-Twitter Connector app">
+    <text><![CDATA[
+To start indexing Twitter's sample stream please:<br/><br/>
+<strong>
+1. Provide OAuth settings for the Twitter application you will use for streaming.<br/>
+2. Enable the Twitter scripted input.<br/>
+</strong>
+<br/>
+The Twitter application you use for streaming requires read-only access. You can
+access your applications or create a new read-only application <a href="https://dev.twitter.com/apps">here</a>.
+You will need a Twitter account to create an application. You can create a new account
+<a href="https://twitter.com/account/new">here</a>.<br/><br>
+If you wish to run the Tweet Locations search, you will need to install the
+<a href="http://splunk-base.splunk.com/apps/22365/google-maps">Google Maps</a>
+app.
+        ]]]]><![CDATA[></text>
+  </block>
+  <block title="Add Twitter application OAuth settings" endpoint="storage/passwords" entity="_new">
+    <input field="realm" id="/storage/passwords/_new/realm">
+      <label>Consumer key</label>
+      <type>text</type>
+    </input>
+    <input field="name" id="/storage/passwords/_new/name">
+      <label>Access token</label>
+      <type>text</type>
+    </input>
+    <input field="password" id="/storage/passwords/_new/password">
+      <label>Consumer secret and access token secret, colon separated</label>
+      <type>password</type>
+    </input>
+  </block>
+  <block title="Edit Twitter application OAuth secrets" endpoint="admin/passwords" eai_strict="false" entity="*"/>
+  <block title="Enable Twitter scripted input" enabled="in-windows" endpoint="data/inputs/script" entity=".%5Cbin%5Cstream_tweets.py">
+    <input field="interval" id="/data/inputs/script/.%5Cbin%5Cstream_tweets.py/interval">
+      <label>Restart Interval (sec)</label>
+      <type>text</type>
+    </input>
+    <input field="enabled" id="/data/inputs/script/.%5Cbin%5Cstream_tweets.py/enabled">
+      <label>Enable</label>
+      <type>bool</type>
+    </input>
+  </block>
+</SetupInfo>
+]]></s:key>
+      </s:dict>
+    </content>
+  </entry>
+</feed>

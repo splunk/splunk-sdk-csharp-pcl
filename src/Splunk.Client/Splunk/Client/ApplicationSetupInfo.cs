@@ -41,6 +41,14 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
+        /// Gets the 
+        /// </summary>
+        public Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether to to reload the objects contained 
         /// in the locally installed application.
         /// </summary>

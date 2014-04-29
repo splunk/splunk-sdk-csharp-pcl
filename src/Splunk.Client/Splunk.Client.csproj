@@ -111,7 +111,8 @@
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Splunk\Client\Acl.cs" />
+    <Compile Include="Splunk\Client\EaiAttributes.cs" />
+    <Compile Include="Splunk\Client\EaiAcl.cs" />
     <Compile Include="Splunk\Client\AlertType.cs" />
     <Compile Include="Splunk\Client\AlertComparator.cs" />
     <Compile Include="Splunk\Client\AlertTrack.cs" />
@@ -158,7 +159,6 @@
     <Compile Include="Splunk\Client\JobCollection.cs" />
     <Compile Include="Splunk\Client\Argument.cs" />
     <Compile Include="Splunk\Client\ApplicationCollectionArgs.cs" />
-    <Compile Include="Splunk\Client\PermissionsConverter.cs" />
     <Compile Include="Splunk\Client\Eai.cs" />
     <Compile Include="Splunk\Client\ExpandoAdapter.cs" />
     <Compile Include="Splunk\Client\JobCollectionArgs.cs" />

@@ -41,6 +41,25 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
+        /// Gets the access control lists for the current instance.
+        /// </summary>
+        public Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the properties of the update.
+        /// </summary>
+        /// <remarks>
+        /// A value of <c>null</c> indicates that no update is available.
+        /// </remarks>
+        public Update_t Update
+        {
+            get { return this.Content.GetValue("Update", Update_t.Converter.Instance); }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether to to reload the objects contained 
         /// in the locally installed application.
         /// </summary>
@@ -53,8 +72,11 @@ namespace Splunk.Client
 
         #region Types
 
-        public class Update : ExpandoAdapter
+        public class Update_t : ExpandoAdapter<Update_t>
         {
+            public Update_t()
+            {  }
+
             /// <summary>
             /// Get the name of the application.
             /// </summary>
@@ -76,7 +98,7 @@ namespace Splunk.Client
             /// </summary>
             public string Checksum
             {
-                get { return this.GetValue("checksum", StringConverter.Instance); }
+                get { return this.GetValue("Checksum", StringConverter.Instance); }
             }
 
             /// <summary>
@@ -124,6 +146,7 @@ namespace Splunk.Client
                 get { return this.GetValue("Version", StringConverter.Instance); }
             }
         }
+
         #endregion
     }
 }

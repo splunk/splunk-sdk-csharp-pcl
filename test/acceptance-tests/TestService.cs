@@ -178,7 +178,19 @@ namespace Splunk.Client.UnitTesting
 
                     var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
                     var md5sum = "41ceb202053794cfec54b8d28f78d83c";
-                    var sha512sum = "1563722b029d8c5dfc6dd777e8efcb18dd7dbe2191f1731ee24ee5b11e75a7559d7cf9cd84ad6ac964b78164610c1e9cc3d20646596a299bdca9b5d98be0faca";
+
+                    //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
+                    //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
+                    //// We might check that there is no update info for 2.3.1:
+                    ////    Assert.Null(twitterApplicationUpdateInfo.Update);
+                    //// Then change the version number to 2.3.0:
+                    ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
+                    //// Finally:
+                    ////    await twitterApplicationUpdateInfo.GetAsync();
+                    ////    Assert.NotNull(twitterApplicationUpdateInfo.Update);
+                    ////    Assert.Equal("2.3.1", twitterApplicationUpdateInfo.Version);
+                    ////    Assert.Equal(md5sum, twitterApplicationUpdateInfo.Checksum);
+                    ////    // other asserts on the contents of the update
                     
                     Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
                     Assert.Equal(true, twitterApplication.CheckForUpdates);
@@ -963,7 +975,7 @@ namespace Splunk.Client.UnitTesting
             var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             var serverInfo = await service.Server.GetInfoAsync();
 
-            Acl acl = serverInfo.Eai.Acl;
+            EaiAcl acl = serverInfo.Eai.Acl;
             Permissions permissions = acl.Permissions;
             int build = serverInfo.Build;
             string cpuArchitecture = serverInfo.CpuArchitecture;

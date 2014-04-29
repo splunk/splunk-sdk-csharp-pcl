@@ -30,14 +30,14 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a class that represents a Splunk ACL.
     /// </summary>
-    public sealed class Acl : ExpandoAdapter<Acl>
+    public sealed class EaiAcl : ExpandoAdapter<EaiAcl>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Acl"/> class.
+        /// Initializes a new instance of the <see cref="EaiAcl"/> class.
         /// </summary>
-        public Acl()
+        public EaiAcl()
         { }
 
         #endregion
@@ -66,7 +66,7 @@ namespace Splunk.Client
 
         public Permissions Permissions
         {
-            get { return this.GetValue("Perms", PermissionsConverter.Instance); }
+            get { return this.GetValue("Perms", Permissions.Converter.Instance); }
         }
 
         public bool Removable

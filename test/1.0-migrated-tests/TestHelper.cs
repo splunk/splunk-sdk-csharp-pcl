@@ -26,6 +26,7 @@ namespace Splunk.Client.UnitTesting
     using Splunk.Client.UnitTesting;
 
     using Xunit;
+    using System.Diagnostics;
 
     /// <summary>
     /// TODO: Update summary.
@@ -61,9 +62,17 @@ namespace Splunk.Client.UnitTesting
         /// <returns>The service</returns>
         public Service Connect()
         {
-            //var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
             var service = new Service(Scheme.Https, this.command.Host, this.command.Port, Namespace.Default);
             service.LoginAsync(this.command.Username, this.command.Password).Wait();
+
+            return service;
+        }
+
+        public Service Connect(Namespace ns)
+        {
+            var service = new Service(Scheme.Https, this.command.Host, this.command.Port, ns);
+            service.LoginAsync(this.command.Username, this.command.Password).Wait();
+
             return service;
         }
 
@@ -104,22 +113,13 @@ namespace Splunk.Client.UnitTesting
                 service.RemoveApplicationAsync(name).Wait();
                 this.SplunkRestart();
                 service = this.Connect();
-                apps.GetAsync().Wait();
+                apps = service.GetApplicationsAsync().Result;
             }
 
             Assert.False(apps.Any(a => a.ResourceName.Title == name), this.assertRoot + "#1");
 
             //apps.Create(name);
-            try
-            {
-                service.CreateApplicationFromTemplateAsync(name, "sample_app").Wait();
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e);
-
-                throw;
-            }
+            service.CreateApplicationAsync(name, "sample_app").Wait();
 
             this.SplunkRestart();
 
@@ -164,11 +164,11 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Restarts splunk with a default 3 minute restart time check.
         /// </summary>
-        public void SplunkRestart()
+        public void  SplunkRestart()
         {
-            // If not specified, use 3 minutes (in milliseconds) as default
+            // If not specified, use 5 minutes (in milliseconds) as default
             // restart timeout.
-            this.SplunkRestart(3 * 60 * 1000);
+            this.SplunkRestart(5 * 60 * 1000);
         }
 
         /// <summary>
@@ -179,64 +179,14 @@ namespace Splunk.Client.UnitTesting
         /// <param name="millisecondTimeout">The number of milliseconds</param>
         public void SplunkRestart(int millisecondTimeout)
         {
-            bool restarted = false;
+            Stopwatch watch = new Stopwatch();
 
             Service service = this.Connect();
+            watch.Start();
+            service.Server.RestartAsync(-1).Wait();
+            watch.Stop();
 
-            service.Server.RestartAsync().Wait();
-
-            // Sniff the management port. We expect the port to be up for a short
-            // while, and then no conection
-            int totalTime = 0;
-
-            //// Server is back up, wait until socket no longer accepted.
-            //while (totalTime < millisecondTimeout)
-            //{
-            //    try
-            //    {
-            //        Socket socket = service.Open(service.Port);
-            //        socket.Close();
-            //        Thread.Sleep(10);
-            //        totalTime += 10;
-            //    }
-            //    catch (Exception)
-            //    {
-            //        break;
-            //    }
-            //}
-
-            //// server down, wait until socket accepted.
-            //while (totalTime < millisecondTimeout)
-            //{
-            //    try
-            //    {
-            //        Socket socket = service.Open(service.Port);
-            //        socket.Close();
-            //        break;
-            //    }
-            //    catch (Exception)
-            //    {
-            //        Thread.Sleep(10);
-            //        totalTime += 10;
-            //    }
-            //}
-
-            while (totalTime < millisecondTimeout)
-            {
-                try
-                {
-                    this.Connect();
-                    restarted = true;
-                    break;
-                }
-                catch (Exception)
-                {
-                    Thread.Sleep(100);
-                    totalTime += 100;
-                }
-            }
-
-            Assert.True(restarted, this.assertRoot + "#5");
+            Console.WriteLine("spend {0}s to restart server", watch.Elapsed.TotalSeconds);
         }
 
         /// <summary>
@@ -272,21 +222,12 @@ namespace Splunk.Client.UnitTesting
 
         public int VersionCompare(Service service, string versionToCompare)
         {
-            int major = service.Server.GetInfoAsync().Result.Version.Major;
-            int minor = service.Server.GetInfoAsync().Result.Version.Minor;
-            float version = major + minor / 10;
-            float inputVersion = float.Parse(versionToCompare);
+            Version info = service.Server.GetInfoAsync().Result.Version;
+            string version = info.ToString();
+            //oat inputVersion = float.Parse(versionToCompare);
 
-            if (version < inputVersion)
-            {
-                return -1;
-            }
-            if (version == inputVersion)
-            {
-                return 0;
-            }
-
-            return 1;
+            return (string.Compare(version, versionToCompare));
+            
         }
     }
 }

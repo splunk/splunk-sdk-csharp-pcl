@@ -107,24 +107,21 @@ namespace Splunk.Client.UnitTesting
             service = this.Connect();
             var apps = service.GetApplicationsAsync().Result;
             Assert.True(apps.Any(a => a.ResourceName.Title == app), assertRoot + "#8");
-
-            //// Create an app specific service instance
+            
+            Namespace ns=new Namespace(owner,app);
+            // Create an app specific service instance
             //Args args = new Args(this.SetUp().Opts);
             //args.Add("app", app);
             //args.Add("owner", owner);
 
-            //Context context=new Context(Scheme.Https,"host",8089);
-            //context.ap
-            //service = new Service(Scheme.Https, this.command.Host, this.command.Port, Namespace.);
-            //service.LoginAsync(this.command.Username, this.command.Password).Wait();
-         
+            service = this.Connect(ns);         
             //service = Service.Connect(args);
 
             //Context context = new Context(Scheme.Https, this.SetUp().Host, this.SetUp().Port);
             //service = new Service(context);
             //service.LoginAsync(this.SetUp().Username, this.SetUp().Password).Wait();
 
-            service = this.Connect();
+            //service = this.Connect();
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
             //if below failed, remove the file C:\Program Files\Splunk\etc\system\local\testconf.conf, serverInfo should provide home  path etc?            
             //Assert.False(this.ConfigurationContainKey(confs, "testconf"), assertRoot + "#9");

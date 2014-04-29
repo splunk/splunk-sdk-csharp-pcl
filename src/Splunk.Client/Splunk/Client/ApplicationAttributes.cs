@@ -66,14 +66,6 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets a value that indicates whether Splunk should check Splunkbase
-        /// for updates to an <see cref="Application"/>.
-        /// </summary>
-        [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
-        public bool? CheckForUpdates
-        { get; set; }
-
-        /// <summary>
         /// Gets or sets a value that indicates whether custom setup has been 
         /// performed on an <see cref="Application"/>.
         /// </summary>
@@ -106,6 +98,7 @@ namespace Splunk.Client
         /// "FISMA Compliance"
         /// </code>
         /// </remarks>
+        [DataMember(Name = "label", EmitDefaultValue = false)]
         public string Label
         { get; set; }
 
@@ -128,6 +121,7 @@ namespace Splunk.Client
         /// "11.0.34.234.254"
         /// </code>
         /// </remarks>
+        [DataMember(Name = "version", EmitDefaultValue = false)]
         public string Version
         { get; set; }
 
@@ -139,7 +133,8 @@ namespace Splunk.Client
         /// Visible apps require at least one view that is available from 
         /// Splunk Web.
         /// </remarks>
-        public bool Visible
+        [DataMember(Name = "visible", EmitDefaultValue = false)]
+        public bool? Visible
         { get; set; }
 
         #endregion

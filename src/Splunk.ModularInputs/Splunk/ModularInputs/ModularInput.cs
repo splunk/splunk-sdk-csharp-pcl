@@ -24,7 +24,7 @@ namespace Splunk.ModularInputs
     using System.Xml.Serialization;
 
     /// <summary>
-    /// The <see cref="Script"/> class represents the functionality of a
+    /// The <see cref="ModularInput"/> class represents the functionality of a
     /// modular input script (that is, an executable).
     /// </summary>
     /// <remarks>
@@ -34,7 +34,7 @@ namespace Splunk.ModularInputs
     /// methods. It can optionally override the <see cref="Validate"/> method.
     /// </para>
     /// </remarks>
-    public abstract class Script
+    public abstract class ModularInput
     {
         #region Properties
 
@@ -53,7 +53,7 @@ namespace Splunk.ModularInputs
         /// "args"/> parameter.
         /// </summary>
         /// <typeparam name="T">
-        /// The application-derived type of the <see cref="Script"/>. It must
+        /// The application-derived type of the <see cref="ModularInput"/>. It must
         /// have a constructor without a parameter.
         /// </typeparam>
         /// <param name="args">
@@ -72,7 +72,7 @@ namespace Splunk.ModularInputs
         /// exceptions and internal progress messages encountered during 
         /// execution are written to the splunkd log file.
         /// </remarks>
-        public static async Task<int> RunAsync<T>(string[] args) where T : Script, new()
+        public static async Task<int> RunAsync<T>(string[] args) where T : ModularInput, new()
         {
             try
             {
@@ -172,7 +172,7 @@ namespace Splunk.ModularInputs
         /// <para>
         /// The validation error will also be displayed in the Splunk UI.
         /// Normally an application does not need to call this method.
-        /// It will be called by <see cref="Script.Run{T}"/> automatically.
+        /// It will be called by <see cref="ModularInput.Run{T}"/> automatically.
         /// </para>
         /// <example>Sample error message</example>
         /// <code>

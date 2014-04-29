@@ -21,7 +21,10 @@
 
 namespace Splunk.Client
 {
+    using System.ComponentModel;
+    using System.IO;
     using System.Net;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -53,9 +56,8 @@ namespace Splunk.Client
         /// <param name="namespace">
         /// An object identifying a Splunk service namespace.
         /// </param>
-        /// <param name="collection">
-        /// </param>
         /// <param name="name">
+        /// The name of this application.
         /// </param>
         /// <exception cref="ArgumentException">
         /// <see cref="name"/> is <c>null</c> or empty.
@@ -212,12 +214,22 @@ namespace Splunk.Client
         /// apps/local</a> endpoint to create the current <see cref=
         /// "Application"/>.
         /// </remarks>
-        public async Task CreateFromPackageAsync(string path, ApplicationAttributes attributes = null, 
-            string name = null, bool update = false)
+        public async Task Install(string path, bool update = false)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            var resourceName = ApplicationCollection.ClassResourceName;
+
+            var args = new CreationArgs()
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                ExplicitApplicationName = this.Name,
+                Filename = true,
+                Name = path,
+                Update = update
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await this.UpdateDataAsync(response);
             }
         }
 
@@ -230,12 +242,81 @@ namespace Splunk.Client
         /// apps/local</a> endpoint to create the current <see cref=
         /// "Application"/>.
         /// </remarks>
-        public async Task CreateFromTemplateAsync(string template, ApplicationAttributes attributes = null)
+        public async Task CreateAsync(string template, ApplicationAttributes attributes = null)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            var resourceName = ApplicationCollection.ClassResourceName;
+
+            var args = new CreationArgs()
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                ExplicitApplicationName = this.Name,
+                Filename = false,
+                Name = this.Name,
+                Template = template
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await this.UpdateDataAsync(response);
             }
+        }
+
+        /// <summary>
+        /// Asynchronously gets setup information for the current <see cref=
+        /// "Application"/>.
+        /// </summary>
+        /// <returns>
+        /// An object containing setup information for the current <see cref=
+        /// "Application"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/mUT9gU">GET 
+        /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
+        /// "ApplicationSetupInfo"/> instance it returns.
+        /// </remarks>
+        public async Task<ApplicationSetupInfo> GetSetupInfoAsync()
+        {
+            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, this.Name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously gets update information for the current <see cref=
+        /// "Application"/>.
+        /// </summary>
+        /// <returns>
+        /// An object containing update information for the current <see cref=
+        /// "Application"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/mrbtRj">GET 
+        /// apps/local/{name}/update</a> endpoint to construct the <see cref=
+        /// "ApplicationUpdateInfo"/> instance it returns.
+        /// </remarks>
+        public async Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
+        {
+            var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, this.Name);
+            await resource.GetAsync();
+            return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously archives the current <see cref="Application"/>.
+        /// </summary>
+        /// <returns>
+        /// An object containing information about the newly created archive.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/DJkT7S">GET 
+        /// apps/local/{name}/package</a> endpoint to create an archive of the 
+        /// current <see cref="Application"/>.
+        /// </remarks>
+        public async Task<ApplicationArchiveInfo> PackageAsync()
+        {
+            var resource = new ApplicationArchiveInfo(this.Context, this.Namespace, this.Name);
+            await resource.GetAsync();
+            return resource;
         }
 
         /// <summary>
@@ -259,17 +340,64 @@ namespace Splunk.Client
         /// Asynchronously updates the attributes of the application represented 
         /// by the current instance.
         /// </summary>
+        /// <param name="attributes">
+        /// New attributes for the current <see cref="Application"/> instance.
+        /// </param>
+        /// <param name="checkForUpdates">
+        /// A value of <c>true</c>, if Splunk should check Splunkbase for 
+        /// updates to the current <see cref="Application"/> instance.
+        /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/dKraaR">POST 
         /// apps/local/{name}</a> endpoint to update the attributes of the 
-        /// current <see cref="Application"/>.
+        /// current <see cref="Application"/> and optionally check for
+        /// updates on Splunkbase.
         /// </remarks>
-        public async Task UpdateAsync(ApplicationAttributes attributes)
+        public async Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
+        }
+
+        #endregion
+
+        #region Types
+
+        class CreationArgs : Args<CreationArgs>
+        {
+            [DataMember(Name = "explicit_appname", IsRequired = true)]
+            public string ExplicitApplicationName
+            { get; set; }
+
+            [DataMember(Name = "filename", IsRequired = true)]
+            public bool? Filename
+            { get; set; }
+
+            [DataMember(Name = "name", IsRequired = true)]
+            public string Name
+            { get; set; }
+
+            [DataMember(Name = "template", EmitDefaultValue = true)]
+            public string Template
+            { get; set; }
+
+            [DataMember(Name = "update", EmitDefaultValue = false)]
+            public bool? Update
+            { get; set; }
+        }
+
+        class UpdateArgs : Args<UpdateArgs>
+        {
+            /// <summary>
+            /// Gets a value that indicates whether Splunk should check Splunkbase
+            /// for updates to an <see cref="Application"/>.
+            /// </summary>
+            [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
+            [DefaultValue(false)]
+            public bool CheckForUpdates
+            { get; set; }
         }
 
         #endregion

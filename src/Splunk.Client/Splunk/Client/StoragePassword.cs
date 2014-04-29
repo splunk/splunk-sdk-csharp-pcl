@@ -293,19 +293,6 @@ namespace Splunk.Client
             username = parts[1];
         }
 
-        async Task UpdateDataAsync(Response response)
-        {
-            var feed = new AtomFeed();
-            await feed.ReadXmlAsync(response.XmlReader);
-
-            if (feed.Entries.Count != 1)
-            {
-                throw new InvalidDataException();  // TODO: Diagnostics
-            }
-
-            this.Data = new DataCache(feed.Entries[0]);
-        }
-
         #endregion
     }
 }

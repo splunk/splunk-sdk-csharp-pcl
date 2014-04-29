@@ -54,7 +54,7 @@
     <Compile Include="Splunk\ModularInputs\MultiValueParameter.cs" />
     <Compile Include="Splunk\ModularInputs\ParameterBase.cs" />
     <Compile Include="Splunk\ModularInputs\Scheme.cs" />
-    <Compile Include="Splunk\ModularInputs\Script.cs" />
+    <Compile Include="Splunk\ModularInputs\ModularInput.cs" />
     <Compile Include="Splunk\ModularInputs\SingleValueParameter.cs" />
     <Compile Include="Splunk\ModularInputs\Stanza.cs" />
     <Compile Include="Splunk\ModularInputs\SystemLogger.cs" />

@@ -98,7 +98,7 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Override <see cref="Script.Validate"/> to perform the validation.
+        /// Override <see cref="ModularInput.Validate"/> to perform the validation.
         /// </para>
         /// <para>
         /// This property's default value is true.

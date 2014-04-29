@@ -33,32 +33,32 @@ namespace Splunk.ModularInputs.UnitTesting
         /// <summary>
         ///     Input file folder
         /// </summary>
-        private const string TestDataFolder = @"Data\ModularInputs";
+        const string TestDataFolder = @"Data\ModularInputs";
 
         /// <summary>
         ///     Input file containing input definition
         /// </summary>
-        private const string InputDefinitionFilePath = "InputDefinition.xml";
+        const string InputDefinitionFilePath = "InputDefinition.xml";
 
         /// <summary>
         ///     Input file containing validation items
         /// </summary>
-        private const string ValidationItemsFilePath = "ValidationItems.xml";
+        const string ValidationItemsFilePath = "ValidationItems.xml";
 
         /// <summary>
         ///     Input file containing expected validation error message.
         /// </summary>
-        private const string ValidationErrorMessageFilePath = "ValidationErrorMessage.xml";
+        const string ValidationErrorMessageFilePath = "ValidationErrorMessage.xml";
 
         /// <summary>
         ///     Input file containing scheme
         /// </summary>
-        private const string SchemeFilePath = "Scheme.xml";
+        const string SchemeFilePath = "Scheme.xml";
 
         /// <summary>
         ///     Input file containing events
         /// </summary>
-        private const string EventsFilePath = "Events.xml";
+        const string EventsFilePath = "Events.xml";
 
         /// <summary>
         ///     Test returning scheme through stdout
@@ -70,7 +70,7 @@ namespace Splunk.ModularInputs.UnitTesting
             using (var consoleOut = new StringWriter())
             {
                 Console.SetOut(consoleOut);
-                await Script.RunAsync<TestScript>(new[] { "--scheme" });
+                await ModularInput.RunAsync<TestScript>(new[] { "--scheme" });
                 AssertEqualWithExpectedFile(SchemeFilePath, consoleOut.ToString());
             }
         }
@@ -88,7 +88,7 @@ namespace Splunk.ModularInputs.UnitTesting
                 SetConsoleIn(consoleIn);
                 Console.SetOut(consoleOut);
 
-                int exitCode = await Script.RunAsync<TestScript>(new[] { "--validate-arguments" });
+                int exitCode = await ModularInput.RunAsync<TestScript>(new[] { "--validate-arguments" });
 
                 AssertEqualWithExpectedFile(ValidationErrorMessageFilePath, consoleOut.ToString());
                 Assert.NotEqual(0, exitCode);
@@ -108,7 +108,7 @@ namespace Splunk.ModularInputs.UnitTesting
                 {
                     SetConsoleIn(consoleIn);
                     Console.SetOut(consoleOut);
-                    await Script.RunAsync<TestScript>(new string[] { });
+                    await ModularInput.RunAsync<TestScript>(new string[] { });
                     AssertEqualWithExpectedFile(EventsFilePath, consoleOut.ToString());
                 }
             }
@@ -127,7 +127,7 @@ namespace Splunk.ModularInputs.UnitTesting
                 {
                     SetConsoleIn(consoleIn);
                     Console.SetError(consoleError);
-                    int exitCode = await Script.RunAsync<TestScript>(new string[] { });
+                    int exitCode = await ModularInput.RunAsync<TestScript>(new string[] { });
 
                     // There will be an exception due to missing input definition in 
                     // (redirected) console stdin.      
@@ -159,7 +159,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// </summary>
         /// <param name="expectedFilePath">Relative file path</param>
         /// <param name="actual">Data to check</param>
-        private static void AssertEqualWithExpectedFile(
+        static void AssertEqualWithExpectedFile(
             string expectedFilePath,
             string actual)
         {
@@ -172,7 +172,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// </summary>
         /// <param name="relativePath">Relative path to the resource</param>
         /// <returns>Resource content</returns>
-        private static string ReadFileFromDataFolderAsString(string relativePath)
+        static string ReadFileFromDataFolderAsString(string relativePath)
         {
             return File.ReadAllText(GetDataFilePath(relativePath));
         }
@@ -182,7 +182,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// </summary>
         /// <param name="relativePath">Relative path to the resource</param>
         /// <returns>Resource content</returns>
-        private static TextReader ReadFileFromDataFolderAsReader(string relativePath)
+        static TextReader ReadFileFromDataFolderAsReader(string relativePath)
         {
             return File.OpenText(GetDataFilePath(relativePath));
         }
@@ -192,7 +192,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// </summary>
         /// <param name="relativePath">Relative path to the data folder.</param>
         /// <returns>A full path</returns>
-        private static string GetDataFilePath(string relativePath)
+        static string GetDataFilePath(string relativePath)
         {
             return TestDataFolder + @"\" + relativePath;
         }
@@ -259,7 +259,7 @@ namespace Splunk.ModularInputs.UnitTesting
         ///     Write for multiple stanzas
         /// </summary>
         /// <param name="writer">An event writer</param>
-        private static async Task WriteMultiplex(EventStreamWriter writer)
+        static async Task WriteMultiplex(EventStreamWriter writer)
         {
             var eventTemplate1 = new EventElement
                 {
@@ -291,7 +291,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// </summary>
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
-        private static async Task WriteEventDone(EventStreamWriter writer, EventElement eventTemplate)
+        static async Task WriteEventDone(EventStreamWriter writer, EventElement eventTemplate)
         {
             var @event = eventTemplate;
             @event.Unbroken = false;
@@ -305,7 +305,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
         /// <param name="eventData">Event data</param>
-        private static async Task WriteEventDataLine(
+        static async Task WriteEventDataLine(
             EventStreamWriter writer,
             EventElement eventTemplate,
             string eventData)
@@ -322,7 +322,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
         /// <param name="eventData">Event data</param>
-        private static async Task WriteEventData(EventStreamWriter writer, EventElement eventTemplate, string eventData)
+        static async Task WriteEventData(EventStreamWriter writer, EventElement eventTemplate, string eventData)
         {
             var @event = eventTemplate;
             @event.Data = eventData;
@@ -333,7 +333,7 @@ namespace Splunk.ModularInputs.UnitTesting
         ///     Redirect console in
         /// </summary>
         /// <param name="target">Destination of the redirection</param>
-        private static void SetConsoleIn(TextReader target)
+        static void SetConsoleIn(TextReader target)
         {
             // Must set Console encoding to be UTF8. Otherwise, Script.Run
             // will call the setter of OutputEncoding which results in
@@ -346,7 +346,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// <summary>
         ///     Run the scripts and validate the results.
         /// </summary>
-        private class TestScript : Script
+        class TestScript : ModularInput
         {
             /// <summary>
             ///     Scheme used by the test

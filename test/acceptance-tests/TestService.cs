@@ -127,7 +127,7 @@ namespace Splunk.Client.UnitTesting
         {
             foreach (var ns in TestNamespaces)
             {
-                using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+                using (var service = new Service(Scheme.Https, "localhost", 8089, ns))
                 {
                     await service.LoginAsync("admin", "changeme");
                     Assert.NotNull(service.SessionKey);
@@ -220,7 +220,7 @@ namespace Splunk.Client.UnitTesting
 
                     var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
 
-                    var attributes = new ApplicationAttributes()
+                    var creationAttributes = new ApplicationAttributes()
                     {
                         ApplicationAuthor = "Splunk",
                         Configured = true,
@@ -230,17 +230,44 @@ namespace Splunk.Client.UnitTesting
                         Visible = true
                     };
 
-                    var templatedApplication = await service.CreateApplicationAsync(name, "barebones", attributes);
+                    var templatedApplication = await service.CreateApplicationAsync(name, "barebones", creationAttributes);
 
-                    Assert.Equal(attributes.ApplicationAuthor, templatedApplication.ApplicationAuthor);
+                    Assert.Equal(creationAttributes.ApplicationAuthor, templatedApplication.ApplicationAuthor);
                     Assert.Equal(true, templatedApplication.CheckForUpdates);
-                    Assert.Equal(attributes.Configured, templatedApplication.Configured);
-                    Assert.Equal(attributes.Description, templatedApplication.Description);
-                    Assert.Equal(attributes.Label, templatedApplication.Label);
+                    Assert.Equal(creationAttributes.Configured, templatedApplication.Configured);
+                    Assert.Equal(creationAttributes.Description, templatedApplication.Description);
+                    Assert.Equal(creationAttributes.Label, templatedApplication.Label);
                     Assert.Equal(false, templatedApplication.Refresh);
                     Assert.Equal(false, templatedApplication.StateChangeRequiresRestart);
-                    Assert.Equal(attributes.Version, templatedApplication.Version);
-                    Assert.Equal(attributes.Visible, templatedApplication.Visible);
+                    Assert.Equal(creationAttributes.Version, templatedApplication.Version);
+                    Assert.Equal(creationAttributes.Visible, templatedApplication.Visible);
+
+                    var updateAttributes = new ApplicationAttributes()
+                    {
+                        ApplicationAuthor = "Splunk, Inc.",
+                        Configured = true,
+                        Description = "This app update confirms that an app can be updated from a template",
+                        Label = name,
+                        Version = "2.0.1",
+                        Visible = true
+                    };
+
+                    await templatedApplication.UpdateAsync(updateAttributes, checkForUpdates: true);
+                    await templatedApplication.GetAsync(); // Because UpdateAsync doesn't return the updated entity
+
+                    Assert.Equal(updateAttributes.ApplicationAuthor, templatedApplication.ApplicationAuthor);
+                    Assert.Equal(true, templatedApplication.CheckForUpdates);
+                    Assert.Equal(updateAttributes.Configured, templatedApplication.Configured);
+                    Assert.Equal(updateAttributes.Description, templatedApplication.Description);
+                    Assert.Equal(updateAttributes.Label, templatedApplication.Label);
+                    Assert.Equal(false, templatedApplication.Refresh);
+                    Assert.Equal(false, templatedApplication.StateChangeRequiresRestart);
+                    Assert.Equal(updateAttributes.Version, templatedApplication.Version);
+                    Assert.Equal(updateAttributes.Visible, templatedApplication.Visible);
+
+                    var templatedApplicationArchiveInfo = await templatedApplication.PackageAsync();
+                    Assert.True(File.Exists(templatedApplicationArchiveInfo.Path));
+                    File.Delete(templatedApplicationArchiveInfo.Path);
 
                     await templatedApplication.RemoveAsync();
                 }
@@ -1044,7 +1071,9 @@ namespace Splunk.Client.UnitTesting
 
         static readonly IReadOnlyList<Namespace> TestNamespaces = new Namespace[] 
         { 
-            Namespace.Default, new Namespace("admin", "search"), new Namespace("nobody", "search") 
+            Namespace.Default, 
+            new Namespace("admin", "search"), 
+            new Namespace("nobody", "search"),
         };
 
         #endregion

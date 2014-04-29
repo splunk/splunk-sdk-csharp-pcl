@@ -327,11 +327,10 @@ namespace Splunk.Client
         /// apps/local</a> endpoint to construct the <see cref="Application"/>
         /// object it returns.
         /// </remarks>
-        public async Task<Application> CreateApplicationFromPackageAsync(string name, string path, 
-            ApplicationAttributes attributes = null, bool update = false)
+        public async Task<Application> InstallApplicationAsync(string name, string path, bool update = false)
         {
             var resource = new Application(this.Context, this.Namespace, name);
-            await resource.CreateFromPackageAsync(path, attributes, update);
+            await resource.Install(path, update);
             return resource;
         }
 
@@ -349,11 +348,11 @@ namespace Splunk.Client
         /// apps/local</a> endpoint to construct the <see cref=
         /// "Application"/> object it returns.
         /// </remarks>
-        public async Task<Application> CreateApplicationFromTemplateAsync(string name, string template, 
+        public async Task<Application> CreateApplicationAsync(string name, string template, 
             ApplicationAttributes attributes = null)
         {
             var resource = new Application(this.Context, this.Namespace, name);
-            await resource.CreateFromTemplateAsync(template, attributes);
+            await resource.CreateAsync(template, attributes);
             return resource;
         }
 
@@ -371,7 +370,7 @@ namespace Splunk.Client
         /// apps/local/{name}</a> endpoint to construct the <see cref=
         /// "Application"/> object it returns.
         /// </remarks>
-        public async Task<Application> GetApplication(string name)
+        public async Task<Application> GetApplicationAsync(string name)
         {
             var resource = new Application(this.Context, this.Namespace, name);
             await resource.GetAsync();
@@ -393,7 +392,7 @@ namespace Splunk.Client
         /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
         /// "ApplicationSetupInfo"/> object it returns.
         /// </remarks>
-        public async Task<ApplicationSetupInfo> GetApplicationSetupInfo(string name)
+        public async Task<ApplicationSetupInfo> GetApplicationSetupInfoAsync(string name)
         {
             var resource = new ApplicationSetupInfo(this.Context, this.Namespace, name);
             await resource.GetAsync();
@@ -415,7 +414,7 @@ namespace Splunk.Client
         /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
         /// "ApplicationUpdateInfo"/> object it returns.
         /// </remarks>
-        public async Task<ApplicationSetupInfo> GetApplicationUpdateInfo(string name)
+        public async Task<ApplicationSetupInfo> GetApplicationUpdateInfoAsync(string name)
         {
             var resource = new ApplicationSetupInfo(this.Context, this.Namespace, name);
             await resource.GetAsync();

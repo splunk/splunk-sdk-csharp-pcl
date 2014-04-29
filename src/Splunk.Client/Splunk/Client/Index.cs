@@ -472,7 +472,7 @@ namespace Splunk.Client
         /// cref="IndexAttributes"/>.
         /// </summary>
         /// <param name="attributes">
-        /// New attributes for the current <see cref="Index"/>instance.
+        /// New attributes for the current <see cref="Index"/> instance.
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/n3S22S">POST 

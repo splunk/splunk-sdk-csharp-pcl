@@ -176,100 +176,15 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Refreshes the cached state of the current <see cref=
-        /// "Entity&lt;TEntity&gt;"/>.
+        /// Refreshes the cached state of the current <see cref="Entity<TEntity>"/>.
         /// </summary>
         public virtual async Task GetAsync()
         {
-            //// TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class
-
-            // FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
-            // into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
-            // as of Splunk 6, getting a 200 and content back does not imply you have all the fields. For pivot
-            // support, they're now shoving fields in as they become ready, so you have to wait until the dispatchState
-            // field of the Atom entry reaches a certain point.
-
-            RequestException requestException = null;
-
-            for (int i = 3; i > 0; --i)
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
-                try
-                {
-                    //// Guarantee: unique result because entities have specific namespaces
-
-                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
-                    {
-                        //// TODO: Use Response.EnsureStatusCode. Is it true that gets always return HttpStatusCode.OK?
-
-                        if (response.Message.StatusCode == HttpStatusCode.NoContent)
-                        {
-                            throw new RequestException(response.Message, new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", this.Namespace, this.ResourceName)));
-                        }
-
-                        if (!response.Message.IsSuccessStatusCode)
-                        {
-                            throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                        }
-
-                        var reader = response.XmlReader;
-                        await reader.ReadAsync();
-
-                        if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                        {
-                            await response.XmlReader.ReadAsync();
-                        }
-
-                        if (reader.NodeType != XmlNodeType.Element)
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
-                        AtomEntry entry;
-
-                        if (reader.Name == "feed")
-                        {
-                            AtomFeed feed = new AtomFeed();
-
-                            await feed.ReadXmlAsync(reader);
-                            int count = feed.Entries.Count;
-
-                            foreach (var feedEntry in feed.Entries)
-                            {
-                                string id = feedEntry.Title;
-                                id.Trim();
-                            }
-
-                            if (feed.Entries.Count != 1)
-                            {
-                                throw new InvalidDataException(); // TODO: Diagnostics
-                            }
-
-                            entry = feed.Entries[0];
-                        }
-                        else
-                        {
-                            entry = new AtomEntry();
-                            await entry.ReadXmlAsync(reader);
-                        }
-
-                        //// TODO: Check entry type (?)
-                        this.data = new DataCache(entry);
-                    }
-
-                    return;
-                }
-                catch (RequestException e)
-                {
-                    if (e.StatusCode != System.Net.HttpStatusCode.NoContent)
-                    {
-                        throw;
-                    }
-                    requestException = e;
-                }
-                await Task.Delay(500);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await this.UpdateDataAsync(response);
             }
-
-            throw requestException;
         }
 
         /// <summary>

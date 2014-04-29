@@ -22,8 +22,9 @@ namespace Splunk.Client.UnitTesting
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Web.Security;
+    using System.Reflection;
     using System.Threading.Tasks;
+    using System.Web.Security;
     using Xunit;
 
     public class TestService : IUseFixture<AcceptanceTestingSetup>
@@ -135,26 +136,101 @@ namespace Splunk.Client.UnitTesting
 
                     foreach (var application in collection)
                     {
-                        var value = String.Join("\n",
-                            string.Format("ApplicationAuthor = {0}", application.ApplicationAuthor),
-                            string.Format("Author = {0}", application.Author),
-                            string.Format("CheckForUpdates = {0}", application.CheckForUpdates),
-                            string.Format("Configured = {0}", application.Configured),
-                            string.Format("Description = {0}", application.Description),
-                            string.Format("Disabled = {0}", application.Disabled),
-                            string.Format("Eai = {0}", application.Eai),
-                            string.Format("Id = {0}", application.Id),
-                            string.Format("Label = {0}", application.Label),
-                            string.Format("Links = {0}", application.Links),
-                            string.Format("Name = {0}", application.Name),
-                            string.Format("Namespace = {0}", application.Namespace),
-                            string.Format("Published = {0}", application.Published),
-                            string.Format("ResourceName = {0}", application.ResourceName),
-                            string.Format("StateChangeRequiresRestart = {0}", application.StateChangeRequiresRestart),
-                            string.Format("Updated = {0}", application.Updated),
-                            string.Format("Version = {0}", application.Version),
-                            string.Format("Visible = {0}", application.Visible));
+                        string value;
+
+                        Assert.DoesNotThrow(() => value = string.Format("ApplicationAuthor = {0}", application.ApplicationAuthor));
+                        Assert.DoesNotThrow(() => value = string.Format("Author = {0}", application.Author));
+                        Assert.DoesNotThrow(() => value = string.Format("CheckForUpdates = {0}", application.CheckForUpdates));
+                        Assert.DoesNotThrow(() => value = string.Format("Configured = {0}", application.Configured));
+                        Assert.DoesNotThrow(() => value = string.Format("Description = {0}", application.Description));
+                        Assert.DoesNotThrow(() => value = string.Format("Disabled = {0}", application.Disabled));
+                        Assert.DoesNotThrow(() => value = string.Format("Eai = {0}", application.Eai));
+                        Assert.DoesNotThrow(() => value = string.Format("Id = {0}", application.Id));
+                        Assert.DoesNotThrow(() => value = string.Format("Label = {0}", application.Label));
+                        Assert.DoesNotThrow(() => value = string.Format("Links = {0}", application.Links));
+                        Assert.DoesNotThrow(() => value = string.Format("Name = {0}", application.Name));
+                        Assert.DoesNotThrow(() => value = string.Format("Namespace = {0}", application.Namespace));
+                        Assert.DoesNotThrow(() => value = string.Format("Published = {0}", application.Published));
+                        Assert.DoesNotThrow(() => value = string.Format("ResourceName = {0}", application.ResourceName));
+                        Assert.DoesNotThrow(() => value = string.Format("StateChangeRequiresRestart = {0}", application.StateChangeRequiresRestart));
+                        Assert.DoesNotThrow(() => value = string.Format("Updated = {0}", application.Updated));
+                        Assert.DoesNotThrow(() => value = string.Format("Version = {0}", application.Version));
+                        Assert.DoesNotThrow(() => value = string.Format("Visible = {0}", application.Visible));
+
+                        if (application.Name == "twitter2")
+                        {
+                            await application.RemoveAsync();
+
+                            try
+                            {
+                                await application.GetAsync();
+                                Assert.False(true, "Expected ResourceNotFoundException");
+                            }
+                            catch (ResourceNotFoundException)
+                            { }
+                        }
                     }
+
+                    //// Install, update, and remove the Splunk App for Twitter Data, version 2.3.1
+
+                    var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_231.spl");
+                    Assert.True(File.Exists(path));
+
+                    var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
+                    var md5sum = "41ceb202053794cfec54b8d28f78d83c";
+                    var sha512sum = "1563722b029d8c5dfc6dd777e8efcb18dd7dbe2191f1731ee24ee5b11e75a7559d7cf9cd84ad6ac964b78164610c1e9cc3d20646596a299bdca9b5d98be0faca";
+                    
+                    Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
+                    Assert.Equal(true, twitterApplication.CheckForUpdates);
+                    Assert.Equal(false, twitterApplication.Configured);
+                    Assert.Equal("This application indexes Twitter's sample stream.", twitterApplication.Description);
+                    Assert.Equal("Splunk-Twitter Connector", twitterApplication.Label);
+                    Assert.Equal(false, twitterApplication.Refresh);
+                    Assert.Equal(false, twitterApplication.StateChangeRequiresRestart);
+                    Assert.Equal("2.3.1", twitterApplication.Version);
+                    Assert.Equal(true, twitterApplication.Visible);
+
+                    await twitterApplication.GetAsync();
+                    var twitterApplicationSetupInfo = await twitterApplication.GetSetupInfoAsync();
+                    var twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
+
+                    await twitterApplication.RemoveAsync();
+
+                    try
+                    {
+                        await twitterApplication.GetAsync();
+                        Assert.False(true, "Expected ResourceNotFoundException");
+                    }
+                    catch (ResourceNotFoundException)
+                    { }
+
+                    //// Create an app from one of the built-in templates
+
+                    var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+
+                    var attributes = new ApplicationAttributes()
+                    {
+                        ApplicationAuthor = "Splunk",
+                        Configured = true,
+                        Description = "This app confirms that an app can be created from a template",
+                        Label = "Test that app can be created from a template",
+                        Version = "2.0.0",
+                        Visible = true
+                    };
+
+                    var templatedApplication = await service.CreateApplicationAsync(name, "barebones", attributes);
+
+                    Assert.Equal("Splunk", templatedApplication.ApplicationAuthor);
+                    Assert.Equal(true, templatedApplication.CheckForUpdates);
+                    Assert.Equal(true, templatedApplication.Configured);
+                    Assert.Equal("This app confirms that an app can be created from a template", templatedApplication.Description);
+                    Assert.Equal("Test that app can be created from a template", templatedApplication.Label);
+                    Assert.Equal(false, templatedApplication.Refresh);
+                    Assert.Equal(false, templatedApplication.StateChangeRequiresRestart);
+                    Assert.Equal("2.0.0", templatedApplication.Version);
+                    Assert.Equal(true, templatedApplication.Visible);
+
+                    await templatedApplication.RemoveAsync();
                 }
             }
         }
@@ -476,7 +552,7 @@ namespace Splunk.Client.UnitTesting
                 Assert.Equal(false, savedSearch.IsVisible);
 
                 //// Read schedule
-                
+
                 var dateTime = DateTime.Now;
                 var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
 
@@ -485,7 +561,7 @@ namespace Splunk.Client.UnitTesting
                 var expected = dateTime.AddMinutes(60);
                 expected = expected.Date.AddHours(expected.Hour);
 
-                Assert.Equal(expected, schedule[0]); 
+                Assert.Equal(expected, schedule[0]);
 
                 //// Update
 

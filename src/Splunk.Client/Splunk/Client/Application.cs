@@ -21,8 +21,10 @@
 
 namespace Splunk.Client
 {
+    using System.ComponentModel;
     using System.IO;
     using System.Net;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -212,21 +214,19 @@ namespace Splunk.Client
         /// apps/local</a> endpoint to create the current <see cref=
         /// "Application"/>.
         /// </remarks>
-        public async Task CreateFromPackageAsync(string path, ApplicationAttributes attributes = null, 
-            bool update = false)
+        public async Task Install(string path, bool update = false)
         {
-            //// TODO: Support auth and/or session parameters
-
-            var args = new Argument[]
-            {
-                new Argument("explicit_appname", this.Name),
-                new Argument("filename", "1"),
-                new Argument("name", path)
-            };
-
             var resourceName = ApplicationCollection.ClassResourceName;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
+            var args = new CreationArgs()
+            {
+                ExplicitApplicationName = this.Name,
+                Filename = true,
+                Name = path,
+                Update = update
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 await this.UpdateDataAsync(response);
@@ -242,15 +242,16 @@ namespace Splunk.Client
         /// apps/local</a> endpoint to create the current <see cref=
         /// "Application"/>.
         /// </remarks>
-        public async Task CreateFromTemplateAsync(string template, ApplicationAttributes attributes = null)
+        public async Task CreateAsync(string template, ApplicationAttributes attributes = null)
         {
-            var args = new Argument[]
-            {
-                new Argument("filename", "0"),
-                new Argument("name", template)
-            };
-
             var resourceName = ApplicationCollection.ClassResourceName;
+
+            var args = new CreationArgs()
+            {
+                ExplicitApplicationName = this.Name,
+                Filename = false,
+                Name = template
+            };
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
             {
@@ -338,17 +339,60 @@ namespace Splunk.Client
         /// Asynchronously updates the attributes of the application represented 
         /// by the current instance.
         /// </summary>
+        /// <param name="attributes">
+        /// New attributes for the current <see cref="Application"/> instance.
+        /// </param>
+        /// <param name="checkForUpdates">
+        /// A value of <c>true</c>, if Splunk should check Splunkbase for 
+        /// updates to the current <see cref="Application"/> instance.
+        /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/dKraaR">POST 
         /// apps/local/{name}</a> endpoint to update the attributes of the 
-        /// current <see cref="Application"/>.
+        /// current <see cref="Application"/> and optionally check for
+        /// updates on Splunkbase.
         /// </remarks>
-        public async Task UpdateAsync(ApplicationAttributes attributes)
+        public async Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
+        }
+
+        #endregion
+
+        #region Types
+
+        class CreationArgs : Args<CreationArgs>
+        {
+            [DataMember(Name = "explicit_appname", IsRequired = true)]
+            public string ExplicitApplicationName
+            { get; set; }
+
+            [DataMember(Name = "filename", IsRequired = true)]
+            public bool? Filename
+            { get; set; }
+
+            [DataMember(Name = "name", IsRequired = true)]
+            public string Name
+            { get; set; }
+
+            [DataMember(Name = "update", EmitDefaultValue = false)]
+            public bool? Update
+            { get; set; }
+        }
+
+        class UpdateArgs : Args<UpdateArgs>
+        {
+            /// <summary>
+            /// Gets a value that indicates whether Splunk should check Splunkbase
+            /// for updates to an <see cref="Application"/>.
+            /// </summary>
+            [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
+            [DefaultValue(false)]
+            public bool CheckForUpdates
+            { get; set; }
         }
 
         #endregion

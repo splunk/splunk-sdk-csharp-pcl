@@ -15,7 +15,7 @@
  */
 
 // TODO:
-// [ ] Synchronization strategy
+// [X] Synchronization strategy
 // [X] Settable SessionKey
 // [X] Dead code removal
 // [X] Contracts
@@ -156,16 +156,16 @@ namespace Splunk.Client
         /// Subclasses should implement the disposable pattern as follows:
         /// <list type="bullet">
         /// <item><description>
-        ///     Override this method and call it from the override.
-        ///     </description></item>
+        ///   Override this method and call it from the override.
+        /// </description></item>
         /// <item><description>
-        ///     Provide a finalizer, if needed, and call this method from it.
-        ///     </description></item>
+        ///   Provide a finalizer, if needed, and call this method from it.
+        /// </description></item>
         /// <item><description>
-        ///     To help ensure that resources are always cleaned up 
-        ///     appropriately, ensure that the override is callable multiple
-        ///     times without throwing an exception.
-        ///     </description></item>
+        ///   To help ensure that resources are always cleaned up 
+        ///   appropriately, ensure that the override is callable multiple
+        ///   times without throwing an exception.
+        /// </description></item>
         /// </list>
         /// There is no performance benefit in overriding this method on types
         /// that use only managed resources (such as arrays) because they are 
@@ -221,9 +221,12 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="namespace"></param>
-        /// <param name="resource"></param>
-        /// <param name="argumentSets"></param>
+        /// <param name="namespace">
+        /// </param>
+        /// <param name="resource">
+        /// </param>
+        /// <param name="argumentSets">
+        /// </param>
         /// <returns></returns>
         public async Task<Response> DeleteAsync(Namespace @namespace, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
@@ -236,9 +239,12 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="namespace"></param>
-        /// <param name="resource"></param>
-        /// <param name="argumentSets"></param>
+        /// <param name="namespace">
+        /// </param>
+        /// <param name="resource">
+        /// </param>
+        /// <param name="argumentSets">
+        /// </param>
         /// <returns></returns>
         public async Task<Response> GetAsync(Namespace @namespace, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)

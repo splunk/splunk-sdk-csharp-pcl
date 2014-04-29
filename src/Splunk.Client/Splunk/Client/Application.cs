@@ -250,7 +250,8 @@ namespace Splunk.Client
             {
                 ExplicitApplicationName = this.Name,
                 Filename = false,
-                Name = template
+                Name = this.Name,
+                Template = template
             };
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
@@ -376,6 +377,10 @@ namespace Splunk.Client
 
             [DataMember(Name = "name", IsRequired = true)]
             public string Name
+            { get; set; }
+
+            [DataMember(Name = "template", EmitDefaultValue = true)]
+            public string Template
             { get; set; }
 
             [DataMember(Name = "update", EmitDefaultValue = false)]

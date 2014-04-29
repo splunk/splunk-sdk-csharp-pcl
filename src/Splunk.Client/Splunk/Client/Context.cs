@@ -328,6 +328,7 @@ namespace Splunk.Client
                 {
                     throw new ObjectDisposedException(this.ToString());
                 }
+
                 return this.httpClient;
             }
         }

@@ -213,22 +213,22 @@ namespace Splunk.Client.UnitTesting
                         ApplicationAuthor = "Splunk",
                         Configured = true,
                         Description = "This app confirms that an app can be created from a template",
-                        Label = "Test that app can be created from a template",
+                        Label = name,
                         Version = "2.0.0",
                         Visible = true
                     };
 
                     var templatedApplication = await service.CreateApplicationAsync(name, "barebones", attributes);
 
-                    Assert.Equal("Splunk", templatedApplication.ApplicationAuthor);
+                    Assert.Equal(attributes.ApplicationAuthor, templatedApplication.ApplicationAuthor);
                     Assert.Equal(true, templatedApplication.CheckForUpdates);
-                    Assert.Equal(true, templatedApplication.Configured);
-                    Assert.Equal("This app confirms that an app can be created from a template", templatedApplication.Description);
-                    Assert.Equal("Test that app can be created from a template", templatedApplication.Label);
+                    Assert.Equal(attributes.Configured, templatedApplication.Configured);
+                    Assert.Equal(attributes.Description, templatedApplication.Description);
+                    Assert.Equal(attributes.Label, templatedApplication.Label);
                     Assert.Equal(false, templatedApplication.Refresh);
                     Assert.Equal(false, templatedApplication.StateChangeRequiresRestart);
-                    Assert.Equal("2.0.0", templatedApplication.Version);
-                    Assert.Equal(true, templatedApplication.Visible);
+                    Assert.Equal(attributes.Version, templatedApplication.Version);
+                    Assert.Equal(attributes.Visible, templatedApplication.Visible);
 
                     await templatedApplication.RemoveAsync();
                 }

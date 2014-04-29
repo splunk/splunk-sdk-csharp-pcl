@@ -106,24 +106,22 @@ namespace Splunk.Client.UnitTesting
             this.CreateApp(app);
             service = this.Connect();
             var apps = service.GetApplicationsAsync().Result;
-            bool foundApp = false;
-            foreach (Application application in apps)
-            {
-                if (application.ResourceName.Title == app)
-                {
-                    foundApp = true;
-                }
-            }
-            //  Assert.True(foundApp, assertRoot + "#8");
+            Assert.True(apps.Any(a => a.ResourceName.Title == app), assertRoot + "#8");
 
             //// Create an app specific service instance
             //Args args = new Args(this.SetUp().Opts);
             //args.Add("app", app);
             //args.Add("owner", owner);
+
+            //Context context=new Context(Scheme.Https,"host",8089);
+            //context.ap
+            //service = new Service(Scheme.Https, this.command.Host, this.command.Port, Namespace.);
+            //service.LoginAsync(this.command.Username, this.command.Password).Wait();
+         
             //service = Service.Connect(args);
 
             //Context context = new Context(Scheme.Https, this.SetUp().Host, this.SetUp().Port);
-            // service = new Service(context);
+            //service = new Service(context);
             //service.LoginAsync(this.SetUp().Username, this.SetUp().Password).Wait();
 
             service = this.Connect();

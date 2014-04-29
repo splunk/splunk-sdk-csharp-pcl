@@ -27,10 +27,9 @@ namespace Splunk.Client
     /// <summary>
     /// Provides access to read/write permissions.
     /// </summary>
-    public class Permissions : ExpandoAdapter
+    public sealed class Permissions : ExpandoAdapter<Permissions>
     {
-        internal Permissions(ExpandoObject expandoObject)
-            :base(expandoObject)
+        public Permissions()
         { }
 
         public ISet<string> Read

@@ -30,9 +30,19 @@ namespace Splunk.Client
         public Eai()
         { }
 
-        public Acl Acl
+        public EaiAcl Acl
         {
-            get { return this.GetValue("Acl", Acl.Converter.Instance); }
+            get { return this.GetValue("Acl", EaiAcl.Converter.Instance); }
+        }
+
+        public EaiAttributes Attributes
+        {
+            get { return this.GetValue("Attributes", EaiAttributes.Converter.Instance); }
+        }
+        
+        public string Setup
+        {
+            get { return this.GetValue("Setup", StringConverter.Instance); }
         }
     }
 }

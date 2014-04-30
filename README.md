@@ -29,8 +29,8 @@ Version 2.0 introduces new modern APIs that leverage the latest .NET platform ad
 * Support for multiple platforms - The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx).
 
 Below is an example of a simple normal search:
-<pre><code>
-csharp
+
+```csharp
 using Splunk.Client;
 
 var service = new Service(Scheme.Https, "localhost", 8089));
@@ -49,7 +49,8 @@ foreach (var record in searchResults)
 {
     Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
 }
-</code></pre>
+```
+
 ## Supported platforms
 
 .NET 4.5, PCL (Windows 8.1, Windows Phone 8.1, iOS (via Xamarin.iOS), Android (via Xamarin.Android)

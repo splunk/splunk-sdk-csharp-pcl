@@ -14,44 +14,37 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Check for HTTP Status Code 204 (No Content) and empty atoms in 
-//     Resource<TResource>.UpdateAsync.
-//
-// [O] Contracts
-//
-// [O] Documentation
-//
-// [X] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
-//     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
-//
-// [X] Remove Resource<TResource>.Invalidate method
-//     FJR: This gets called when we set the record value. Add a comment saying what it's
-//     supposed to do when it's overridden.
-//     DSN: I've adopted an alternative method for getting strongly-typed values. See, for
-//     example, Job.DispatchState or ServerInfo.Guid.
+//// TODO:
+//// [O] Contracts
+////
+//// [O] Documentation
+////
+//// [X] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
+////     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
+////
+//// [X] Remove Resource<TResource>.Invalidate method
+////     FJR: This gets called when we set the record value. Add a comment saying what it's
+////     supposed to do when it's overridden.
+////     DSN: I've adopted an alternative method for getting strongly-typed values. See, for
+////     example, Job.DispatchState or ServerInfo.Guid.
 
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// 
     /// </summary>
     /// <typeparam name="TResource"></typeparam>
-    public abstract class Resource<TResource> : IComparable, IComparable<Resource<TResource>>, 
+    public abstract class Resource<TResource> : IComparable, IComparable<Resource<TResource>>,
         IEquatable<Resource<TResource>> where TResource : Resource<TResource>, new()
     {
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new <see cref="Resource"/> instance.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -84,8 +77,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "Resource<TResource>"/> class.
         /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public Resource()
         { }
 
@@ -172,6 +170,73 @@ namespace Splunk.Client
             return this.ResourceName.CompareTo(other.ResourceName);
         }
 
+        /// <summary>
+        /// Determines whether the specified <see cref=
+        /// "Resource<TResource>"/> refers to the same resource as the
+        /// current one.
+        /// </summary>
+        /// <param name="other">
+        /// The <see cref="Resource<TResource>"/> to compare with the current
+        /// one.
+        /// </param>
+        /// <returns>
+        /// A value of <c>true</c> if the two instances represent the same
+        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object other)
+        {
+            return this.Equals(other as Resource<TResource>);
+        }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="Resource&lt;TResource&gt;"/>
+        /// refers to the same resource as the current one.
+        /// </summary>
+        /// <param name="other">
+        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the current
+        /// instance.
+        /// </param>
+        /// <returns>
+        /// A value of <c>true</c> if the two instances represent the same
+        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(Resource<TResource> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (object.ReferenceEquals(this, other))
+            {
+                return true;
+            }
+
+            bool result = this.ResourceName.Equals(other.ResourceName);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// Hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        /// <summary>
+        /// Initializes the current <see cref="Resource"/>.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="entry">
+        /// An object representing a Splunk atom entry response.
+        /// </param>
+        /// </remarks>
         protected internal virtual void Initialize(Context context, AtomEntry entry)
         {
             Contract.Requires<ArgumentNullException>(context != null);
@@ -226,63 +291,6 @@ namespace Splunk.Client
             this.ResourceName = resourceName;
 
             this.initialized = true;
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref=
-        /// "Resource&lt;TResource&gt;"/> refers to the same resource as the
-        /// current one.
-        /// </summary>
-        /// <param name="other">
-        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the current
-        /// instance.
-        /// </param>
-        /// <returns>
-        /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool Equals(object other)
-        {
-            return this.Equals(other as Resource<TResource>);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="Resource&lt;TResource&gt;"/>
-        /// refers to the same resource as the current one.
-        /// </summary>
-        /// <param name="other">
-        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the current
-        /// instance.
-        /// </param>
-        /// <returns>
-        /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Equals(Resource<TResource> other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (object.ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            bool result = this.ResourceName == other.ResourceName;
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        /// <returns>
-        /// Hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </returns>
-        public override int GetHashCode()
-        {
-            return this.ToString().GetHashCode();
         }
 
         /// <summary>

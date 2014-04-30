@@ -78,16 +78,6 @@ namespace Splunk.Client
     {
         #region Constructors
 
-        public AtomEntry(AtomEntry other, dynamic content)
-        {
-            this.Author = other.Author;
-            this.Content = content;
-            this.Id = other.Id;
-            this.Links = other.Links;
-            this.Title = other.Title;
-            this.Updated = other.Updated;
-        }
-
         public AtomEntry()
         { }
 

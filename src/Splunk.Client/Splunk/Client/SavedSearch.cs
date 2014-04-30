@@ -64,6 +64,14 @@ namespace Splunk.Client
             : base(context, @namespace, SavedSearchCollection.ClassResourceName, name)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "SavedSearch"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public SavedSearch()
         { }
 
@@ -73,37 +81,37 @@ namespace Splunk.Client
 
         public Action_t Actions
         {
-            get { return this.Content.GetValue("Action", Action_t.Converter.Instance); }
+            get { return this.GetValue("Action", Action_t.Converter.Instance); }
         }
 
         public Alert_t Alert
         {
-            get { return this.Content.GetValue("Alert", Alert_t.Converter.Instance); }
+            get { return this.GetValue("Alert", Alert_t.Converter.Instance); }
         }
 
         public AutoSummarize_t AutoSummarize
         {
-            get { return this.Content.GetValue("AutoSummarize", AutoSummarize_t.Converter.Instance); }
+            get { return this.GetValue("AutoSummarize", AutoSummarize_t.Converter.Instance); }
         }
 
         public string CronSchedule
         {
-            get { return this.Content.GetValue("CronSchedule", StringConverter.Instance); }
+            get { return this.GetValue("CronSchedule", StringConverter.Instance); }
         }
 
         public string Description
         {
-            get { return this.Content.GetValue("Description", StringConverter.Instance); }
+            get { return this.GetValue("Description", StringConverter.Instance); }
         }
 
         public Dispatch_t Dispatch
         {
-            get { return this.Content.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
+            get { return this.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
         }
 
         public Display_t Display
         {
-            get { return this.Content.GetValue("Display", Display_t.Converter.Instance); }
+            get { return this.GetValue("Display", Display_t.Converter.Instance); }
         }
 
         /// <summary>
@@ -112,67 +120,67 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         public bool IsDisabled
         {
-            get { return this.Content.GetValue("IsDisabled", BooleanConverter.Instance); }
+            get { return this.GetValue("IsDisabled", BooleanConverter.Instance); }
         }
 
         public bool IsScheduled
         {
-            get { return this.Content.GetValue("IsScheduled", BooleanConverter.Instance); }
+            get { return this.GetValue("IsScheduled", BooleanConverter.Instance); }
         }
 
         public bool IsVisible
         {
-            get { return this.Content.GetValue("IsVisible", BooleanConverter.Instance); }
+            get { return this.GetValue("IsVisible", BooleanConverter.Instance); }
         }
 
         public int MaxConcurrent
         {
-            get { return this.Content.GetValue("MaxConcurrent", Int32Converter.Instance); }
+            get { return this.GetValue("MaxConcurrent", Int32Converter.Instance); }
         }
 
         public DateTime NextScheduledTime
         {
-            get { return this.Content.GetValue("NextScheduledTime", DateTimeConverter.Instance); }
+            get { return this.GetValue("NextScheduledTime", DateTimeConverter.Instance); }
         }
 
         public bool RealtimeSchedule
         {
-            get { return this.Content.GetValue("RealtimeSchedule", BooleanConverter.Instance); }
+            get { return this.GetValue("RealtimeSchedule", BooleanConverter.Instance); }
         }
 
         public Request_t Request
         {
-            get { return this.Content.GetValue("Request", Request_t.Converter.Instance); }
+            get { return this.GetValue("Request", Request_t.Converter.Instance); }
         }
 
         public bool RestartOnSearchPeerAdd
         {
-            get { return this.Content.GetValue("RestartOnSearchpeerAdd", BooleanConverter.Instance); }
+            get { return this.GetValue("RestartOnSearchpeerAdd", BooleanConverter.Instance); }
         }
 
         public string QualifiedSearch
         {
-            get { return this.Content.GetValue("QualifiedSearch", StringConverter.Instance); }
+            get { return this.GetValue("QualifiedSearch", StringConverter.Instance); }
         }
 
         public bool RunOnStartup
         {
-            get { return this.Content.GetValue("RunOnStartup", BooleanConverter.Instance); }
+            get { return this.GetValue("RunOnStartup", BooleanConverter.Instance); }
         }
 
         public IReadOnlyList<DateTime> ScheduledTimes
         {
-            get { return this.Content.GetValue("ScheduledTimes", CollectionConverter<DateTime, List<DateTime>, UnixDateTimeConverter>.Instance); }
+            get { return this.GetValue("ScheduledTimes", CollectionConverter<DateTime, List<DateTime>, UnixDateTimeConverter>.Instance); }
         }
 
         public string Search
         {
-            get { return this.Content.GetValue("Search", StringConverter.Instance); }
+            get { return this.GetValue("Search", StringConverter.Instance); }
         }
 
         #endregion
@@ -207,7 +215,7 @@ namespace Splunk.Client
                 args, attributes, dispatchArgs, templateArgs))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 
@@ -264,7 +272,7 @@ namespace Splunk.Client
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 
@@ -322,7 +330,7 @@ namespace Splunk.Client
             using (var response = await this.Context.GetAsync(this.Namespace, resourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
 
             return this.ScheduledTimes;
@@ -405,7 +413,7 @@ namespace Splunk.Client
                 dispatchArgs, templateArgs))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 

@@ -170,7 +170,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Releases unmanaged resources.
+        /// Releases all disposable resources used by the current <see cref=
+        /// "SearchResults"/>.
         /// </summary>
         public void Dispose()
         {

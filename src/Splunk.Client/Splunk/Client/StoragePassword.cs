@@ -83,6 +83,14 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(username != null);
         }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "StoragePassword"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public StoragePassword()
         { }
 
@@ -96,7 +104,7 @@ namespace Splunk.Client
         /// </summary>
         public string ClearPassword
         {
-            get { return this.Content.GetValue("ClearPassword", StringConverter.Instance); }
+            get { return this.GetValue("ClearPassword", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -105,7 +113,7 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -114,7 +122,7 @@ namespace Splunk.Client
         /// </summary>
         public string EncryptedPassword
         {
-            get { return this.Content.GetValue("EncrPassword", StringConverter.Instance); }
+            get { return this.GetValue("EncrPassword", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -125,7 +133,7 @@ namespace Splunk.Client
         /// </remarks>
         public string Password
         {
-            get { return this.Content.GetValue("Password", StringConverter.Instance); }
+            get { return this.GetValue("Password", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -134,7 +142,7 @@ namespace Splunk.Client
         /// </summary>
         public string Realm
         {
-            get { return this.Content.GetValue("Realm", StringConverter.Instance); }
+            get { return this.GetValue("Realm", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -143,7 +151,7 @@ namespace Splunk.Client
         /// </summary>
         public string Username
         {
-            get { return this.Content.GetValue("Username", StringConverter.Instance); }
+            get { return this.GetValue("Username", StringConverter.Instance); }
         }
 
         #endregion
@@ -181,7 +189,7 @@ namespace Splunk.Client
                 this.Namespace, StoragePasswordCollection.ClassResourceName, attributes))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 
@@ -232,7 +240,7 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 

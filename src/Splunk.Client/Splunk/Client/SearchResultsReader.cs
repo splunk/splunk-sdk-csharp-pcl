@@ -90,11 +90,16 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Release unmanaged resources.
+        /// Releases all disposable resources used by the current <see cref=
+        /// "SearchResultsReader"/>.
         /// </summary>
         public void Dispose()
-        { 
-            this.Dispose(true); 
+        {
+            if (this.disposed)
+                return;
+
+            this.response.Dispose();
+            this.disposed = true;
         }
 
         /// <summary>
@@ -152,16 +157,6 @@ namespace Splunk.Client
 
         readonly Response response;
         bool disposed;
-
-        void Dispose(bool disposing)
-        {
-            if (disposing && !this.disposed)
-            {
-                this.response.Dispose();
-                this.disposed = true;
-                GC.SuppressFinalize(this);
-            }
-        }
 
         #endregion
     }

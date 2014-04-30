@@ -37,6 +37,14 @@ namespace Splunk.Client
             : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName))
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ConfigurationStanza"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public ConfigurationStanza()
         { }
 

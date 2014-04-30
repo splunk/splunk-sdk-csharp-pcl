@@ -25,6 +25,14 @@ namespace Splunk.Client
             : base(context, @namespace, ClassResourceName, args)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "SavedSearchCollection"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public SavedSearchCollection()
         { }
 

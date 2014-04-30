@@ -59,6 +59,10 @@ namespace Splunk.ModularInputs
             this.xmlWriter.Dispose();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task WriteEndAsync()
         {
             await this.xmlWriter.WriteEndElementAsync();

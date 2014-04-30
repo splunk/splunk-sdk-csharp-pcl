@@ -137,13 +137,13 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Releases all resources used by the <see cref="Context"/>.
+        /// Releases all disposable resources used by the current <see cref=
+        /// "Context"/>.
         /// </summary>
         /// <remarks>
-        /// Do not override this method. Override 
-        /// <see cref="Context.Dispose(bool disposing)"/> instead.
+        /// Do not override this method. Override <see cref="Context.Dispose(bool disposing)"/> 
+        /// instead.
         /// </remarks>
-
         public void Dispose()
         {
             this.Dispose(true);

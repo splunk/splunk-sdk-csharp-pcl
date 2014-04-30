@@ -40,6 +40,17 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityCollection<TCollection, TEntity>"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// </param>
+        /// <param name="namespace">
+        /// </param>
+        /// <param name="resource">
+        /// </param>
+        /// <param name="args">
+        /// </param>
         internal EntityCollection(Context context, Namespace @namespace, ResourceName resource, IEnumerable<Argument> 
             args = null)
             : base(context, @namespace, resource)
@@ -47,6 +58,14 @@ namespace Splunk.Client
             this.args = args;
         }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "EntityCollection<TCollection, TEntity>"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public EntityCollection()
         { }
 

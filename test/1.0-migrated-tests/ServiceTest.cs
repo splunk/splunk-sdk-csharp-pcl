@@ -131,7 +131,7 @@ namespace Splunk.Client.UnitTesting
             Service service = this.Connect();
             String query = "Search * | head 10";
 
-            Job job = service.StartJobAsync(query).Result;
+            Job job = service.CreateJobAsync(query).Result;
             this.CheckJob(job, service);
             // summary of job
             //job.Summary().Close();

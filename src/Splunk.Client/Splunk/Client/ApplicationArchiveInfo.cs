@@ -21,9 +21,6 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Threading.Tasks;
 
     public sealed class ApplicationArchiveInfo : Entity<ApplicationArchiveInfo>
     {
@@ -33,6 +30,14 @@ namespace Splunk.Client
             : base(context, @namespace, new ResourceName(ApplicationCollection.ClassResourceName, name, "package"))
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ApplicationArchiveInfo"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public ApplicationArchiveInfo()
         { }
 
@@ -46,7 +51,7 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -59,7 +64,7 @@ namespace Splunk.Client
         /// </remarks>
         public string ApplicationName
         {
-            get { return this.Content.GetValue("Name", StringConverter.Instance); }
+            get { return this.GetValue("Name", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -68,7 +73,7 @@ namespace Splunk.Client
         /// </summary>
         public string Path
         {
-            get { return this.Content.GetValue("Path", StringConverter.Instance); }
+            get { return this.GetValue("Path", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -77,7 +82,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Refresh
         {
-            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -86,7 +91,7 @@ namespace Splunk.Client
         /// </summary>
         public Uri Uri
         {
-            get { return this.Content.GetValue("Url", UriConverter.Instance); }
+            get { return this.GetValue("Url", UriConverter.Instance); }
         }
 
         #endregion

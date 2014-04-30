@@ -61,6 +61,14 @@ namespace Splunk.Client
             : base(context, @namespace, ServerMessageCollection.ClassResourceName, name)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ServerMessage"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public ServerMessage()
         { }
 
@@ -70,17 +78,17 @@ namespace Splunk.Client
 
         public ServerMessageSeverity Severity
         {
-            get { return this.Content.GetValue("Severity", EnumConverter<ServerMessageSeverity>.Instance); }
+            get { return this.GetValue("Severity", EnumConverter<ServerMessageSeverity>.Instance); }
         }
 
         public string Text
         {
-            get { return this.Content.GetValue("Message", StringConverter.Instance); }
+            get { return this.GetValue("Message", StringConverter.Instance); }
         }
 
         public long TimeCreatedEpochSecs
         {
-            get { return this.Content.GetValue("TimeCreatedEpochSecs", Int64Converter.Instance); }
+            get { return this.GetValue("TimeCreatedEpochSecs", Int64Converter.Instance); }
         }
 
         #endregion
@@ -100,15 +108,7 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, name, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
-
-                if (feed.Entries.Count != 1)
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
-                this.Data = new DataCache(feed.Entries[0]);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 

@@ -295,90 +295,95 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudConfiguration() // no delete operation is available
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
 
-            var fileName = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var fileName = string.Format("delete-me-{0:N}", Guid.NewGuid());
 
-            //// Create
+                //// Create
 
-            var configuration = await service.CreateConfigurationAsync(fileName);
+                var configuration = await service.CreateConfigurationAsync(fileName);
 
-            //// Read
+                //// Read
 
-            configuration = await service.GetConfigurationAsync(fileName);
+                configuration = await service.GetConfigurationAsync(fileName);
 
-            //// Update the default stanza through a ConfigurationStanza object
+                //// Update the default stanza through a ConfigurationStanza object
 
-            var defaultStanza = await configuration.UpdateStanzaAsync("default", new Argument("foo", "1"), new Argument("bar", "2"));
-            await defaultStanza.UpdateAsync(new Argument("bar", "3"), new Argument("foobar", "4"));
-            await defaultStanza.UpdateSettingAsync("foobar", "5");
+                var defaultStanza = await configuration.UpdateStanzaAsync("default", new Argument("foo", "1"), new Argument("bar", "2"));
+                await defaultStanza.UpdateAsync(new Argument("bar", "3"), new Argument("foobar", "4"));
+                await defaultStanza.UpdateSettingAsync("foobar", "5");
 
-            await defaultStanza.GetAsync(); // because the rest api does not return settings unless you ask for them
-            Assert.Equal(3, defaultStanza.Count);
-            List<ConfigurationSetting> settings;
+                await defaultStanza.GetAsync(); // because the rest api does not return settings unless you ask for them
+                Assert.Equal(3, defaultStanza.Count);
+                List<ConfigurationSetting> settings;
 
-            settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
-            Assert.Equal(1, settings.Count);
-            Assert.Equal("1", settings[0].Value);
+                settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
+                Assert.Equal(1, settings.Count);
+                Assert.Equal("1", settings[0].Value);
 
-            settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "bar").ToList();
-            Assert.Equal(1, settings.Count);
-            Assert.Equal("3", settings[0].Value);
+                settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "bar").ToList();
+                Assert.Equal(1, settings.Count);
+                Assert.Equal("3", settings[0].Value);
 
-            settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foobar").ToList();
-            Assert.Equal(1, settings.Count);
-            Assert.Equal("5", settings[0].Value);
+                settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foobar").ToList();
+                Assert.Equal(1, settings.Count);
+                Assert.Equal("5", settings[0].Value);
 
-            //// Create, read, update, and delete a stanza through the Service object
+                //// Create, read, update, and delete a stanza through the Service object
 
-            await service.CreateConfigurationStanzaAsync(fileName, "stanza");
+                await service.CreateConfigurationStanzaAsync(fileName, "stanza");
 
-            await service.UpdateConfigurationSettingsAsync(fileName, "stanza", new Argument("foo", "1"), new Argument("bar", "2"));
-            await service.UpdateConfigurationSettingAsync(fileName, "stanza", "bar", "3");
+                await service.UpdateConfigurationSettingsAsync(fileName, "stanza", new Argument("foo", "1"), new Argument("bar", "2"));
+                await service.UpdateConfigurationSettingAsync(fileName, "stanza", "bar", "3");
 
-            var stanza = await service.GetConfigurationStanzaAsync(fileName, "stanza");
+                var stanza = await service.GetConfigurationStanzaAsync(fileName, "stanza");
 
-            settings = stanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
-            Assert.Equal(1, settings.Count);
-            Assert.Equal("1", settings[0].Value);
+                settings = stanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
+                Assert.Equal(1, settings.Count);
+                Assert.Equal("1", settings[0].Value);
 
-            settings = stanza.Select(setting => setting).Where(setting => setting.Name == "bar").ToList();
-            Assert.Equal(1, settings.Count);
-            Assert.Equal("3", settings[0].Value);
+                settings = stanza.Select(setting => setting).Where(setting => setting.Name == "bar").ToList();
+                Assert.Equal(1, settings.Count);
+                Assert.Equal("3", settings[0].Value);
 
-            await service.RemoveConfigurationStanzaAsync(fileName, "stanza");
+                await service.RemoveConfigurationStanzaAsync(fileName, "stanza");
+            }
         }
 
         [Trait("class", "Service: Configuration")]
         [Fact]
         public async Task CanGetConfigurations()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-
-            var collection = await service.GetConfigurationsAsync();
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
+                var collection = await service.GetConfigurationsAsync();
+            }
         }
 
         [Trait("class", "Service: Configuration")]
         [Fact]
         public async Task CanReadConfigurations()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-
-            //// Read the entire configuration system
-
-            var configurations = await service.GetConfigurationsAsync();
-
-            foreach (var configuration in configurations)
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
-                await configuration.GetAsync();
+                await service.LoginAsync("admin", "changeme");
 
-                foreach (ConfigurationStanza stanza in configuration)
+                //// Read the entire configuration system
+
+                var configurations = await service.GetConfigurationsAsync();
+
+                foreach (var configuration in configurations)
                 {
-                    Assert.NotNull(stanza);
-                    await stanza.GetAsync();
+                    await configuration.GetAsync();
+
+                    foreach (ConfigurationStanza stanza in configuration)
+                    {
+                        Assert.NotNull(stanza);
+                        await stanza.GetAsync();
+                    }
                 }
             }
         }
@@ -670,77 +675,87 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanDispatchSavedSearch()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
 
-            Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
-            SearchResults searchResults = await job.GetSearchResultsAsync();
+                Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
+                SearchResults searchResults = await job.GetSearchResultsAsync();
 
-            var records = new List<Splunk.Client.Result>(searchResults);
+                var records = new List<Splunk.Client.Result>(searchResults);
+            }
         }
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
         public async Task CanGetSavedSearchHistory()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
 
-            var attributes = new SavedSearchAttributes() { Search = "search index=_internal * earliest=-1m" };
-            var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
-            var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
+                var attributes = new SavedSearchAttributes() { Search = "search index=_internal * earliest=-1m" };
+                var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
 
-            var jobHistory = await savedSearch.GetHistoryAsync();
-            Assert.Equal(0, jobHistory.Count);
+                var jobHistory = await savedSearch.GetHistoryAsync();
+                Assert.Equal(0, jobHistory.Count);
 
-            Job job1 = await savedSearch.DispatchAsync();
+                Job job1 = await savedSearch.DispatchAsync();
 
-            jobHistory = await savedSearch.GetHistoryAsync();
-            Assert.Equal(1, jobHistory.Count);
-            Assert.Equal(job1.Id, jobHistory[0].Id);
-            Assert.Equal(job1.Name, jobHistory[0].Name);
-            Assert.Equal(job1.Namespace, jobHistory[0].Namespace);
-            Assert.Equal(job1.ResourceName, jobHistory[0].ResourceName);
+                jobHistory = await savedSearch.GetHistoryAsync();
+                Assert.Equal(1, jobHistory.Count);
+                Assert.Equal(job1, jobHistory[0]);
+                Assert.Equal(job1.Name, jobHistory[0].Name);
+                Assert.Equal(job1.ResourceName, jobHistory[0].ResourceName);
+                Assert.Equal(job1.Sid, jobHistory[0].Sid);
 
-            Job job2 = await savedSearch.DispatchAsync();
+                Job job2 = await savedSearch.DispatchAsync();
 
-            jobHistory = await savedSearch.GetHistoryAsync();
-            Assert.Equal(2, jobHistory.Count);
-            Assert.Equal(1, jobHistory.Select(job => job).Where(job => job.Id.Equals(job1.Id)).Count());
-            Assert.Equal(1, jobHistory.Select(job => job).Where(job => job.Id.Equals(job2.Id)).Count());
+                jobHistory = await savedSearch.GetHistoryAsync();
+                Assert.Equal(2, jobHistory.Count);
+                Assert.Equal(1, jobHistory.Select(job => job).Where(job => job.Equals(job1)).Count());
+                Assert.Equal(1, jobHistory.Select(job => job).Where(job => job.Equals(job2)).Count());
 
-            await job1.CancelAsync();
+                await job1.CancelAsync();
 
-            jobHistory = await savedSearch.GetHistoryAsync();
-            Assert.Equal(1, jobHistory.Count);
-            Assert.Equal(job2.Id, jobHistory[0].Id);
+                jobHistory = await savedSearch.GetHistoryAsync();
+                Assert.Equal(1, jobHistory.Count);
+                Assert.Equal(job2, jobHistory[0]);
+                Assert.Equal(job2.Name, jobHistory[0].Name);
+                Assert.Equal(job2.ResourceName, jobHistory[0].ResourceName);
+                Assert.Equal(job2.Sid, jobHistory[0].Sid);
 
-            await job2.CancelAsync();
+                await job2.CancelAsync();
 
-            jobHistory = await savedSearch.GetHistoryAsync();
-            Assert.Equal(0, jobHistory.Count);
+                jobHistory = await savedSearch.GetHistoryAsync();
+                Assert.Equal(0, jobHistory.Count);
 
-            await savedSearch.RemoveAsync();
+                await savedSearch.RemoveAsync();
+            }
         }
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
         public async Task CanGetSavedSearches()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
 
-            var collection = await service.GetSavedSearchesAsync();
+                var collection = await service.GetSavedSearchesAsync();
+            }
         }
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
         public async Task CanUpdateSavedSearch()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-
-            await service.UpdateSavedSearchAsync("Errors in the last 24 hours", new SavedSearchAttributes() { IsVisible = false });
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
+                await service.UpdateSavedSearchAsync("Errors in the last 24 hours", new SavedSearchAttributes() { IsVisible = false });
+            }
         }
 
         #endregion
@@ -751,50 +766,54 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetJob()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-            Job job1 = null, job2 = null;
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
+                Job job1 = null, job2 = null;
 
-            job1 = await service.StartJobAsync("search index=_internal | head 100");
-            await job1.GetSearchResultsAsync();
-            await job1.GetSearchResultsEventsAsync();
-            await job1.GetSearchResultsPreviewAsync();
+                job1 = await service.CreateJobAsync("search index=_internal | head 100");
+                await job1.GetSearchResultsAsync();
+                await job1.GetSearchResultsEventsAsync();
+                await job1.GetSearchResultsPreviewAsync();
 
-            job2 = await service.GetJobAsync(job1.ResourceName.Title);
-            Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
-            Assert.Equal(job1.Name, job1.ResourceName.Title);
-            Assert.Equal(job1.Name, job2.Name);
-            Assert.Equal(job1.Sid, job1.Name);
-            Assert.Equal(job1.Sid, job2.Sid);
-            Assert.Equal(job1.Id, job2.Id);
+                job2 = await service.GetJobAsync(job1.ResourceName.Title);
+                Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
+                Assert.Equal(job1.Name, job1.ResourceName.Title);
+                Assert.Equal(job1.Name, job2.Name);
+                Assert.Equal(job1.Sid, job1.Name);
+                Assert.Equal(job1.Sid, job2.Sid);
+                Assert.Equal(job1.Id, job2.Id);
 
-            Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
+                Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
+            }
         }
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
         public async Task CanGetJobs()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "admin", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-
-            var jobs = new Job[]
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
-                await service.StartJobAsync("search index=_internal | head 1000"),
-                await service.StartJobAsync("search index=_internal | head 1000"),
-                await service.StartJobAsync("search index=_internal | head 1000"),
-                await service.StartJobAsync("search index=_internal | head 1000"),
-                await service.StartJobAsync("search index=_internal | head 1000"),
-            };
+                await service.LoginAsync("admin", "changeme");
 
-            JobCollection collection = null;
-            Assert.DoesNotThrow(() => collection = service.GetJobsAsync().Result);
-            Assert.NotNull(collection);
-            Assert.Equal(collection.ToString(), collection.Id.ToString());
+                var jobs = new Job[]
+                {
+                    await service.CreateJobAsync("search index=_internal | head 1000"),
+                    await service.CreateJobAsync("search index=_internal | head 1000"),
+                    await service.CreateJobAsync("search index=_internal | head 1000"),
+                    await service.CreateJobAsync("search index=_internal | head 1000"),
+                    await service.CreateJobAsync("search index=_internal | head 1000"),
+                };
 
-            foreach (var job in jobs)
-            {
-                Assert.Contains(job, collection, EqualityComparer<Job>.Default);
+                JobCollection collection = null;
+                Assert.DoesNotThrow(() => collection = service.GetJobsAsync().Result);
+                Assert.NotNull(collection);
+                Assert.Equal(collection.ToString(), collection.Id.ToString());
+
+                foreach (var job in jobs)
+                {
+                    Assert.Contains(job, collection, EqualityComparer<Job>.Default);
+                }
             }
         }
 
@@ -802,15 +821,16 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanStartSearch()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
 
-            var job = await service.StartJobAsync("search index=_internal | head 10");
-            Assert.NotNull(job);
+                var job = await service.CreateJobAsync("search index=_internal | head 10");
+                Assert.NotNull(job);
 
-            var results = await job.GetSearchResultsAsync();
+                var results = await job.GetSearchResultsAsync();
 
-            Assert.Equal<IEnumerable<string>>(new List<string> 
+                Assert.Equal<IEnumerable<string>>(new List<string> 
                 { 
                     "_bkt",
                     "_cd",
@@ -828,25 +848,27 @@ namespace Splunk.Client.UnitTesting
                     "sourcetype",
                     "splunk_server",
                  },
-                 results.FieldNames);
+                     results.FieldNames);
 
-            var records = new List<Result>(results);
-            Assert.Equal(10, records.Count);
+                var records = new List<Result>(results);
+                Assert.Equal(10, records.Count);
+            }
         }
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
         public async Task CanStartSearchExport()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
-
-            SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
-            var records = new List<Splunk.Client.Result>();
-
-            foreach (var results in reader)
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
-                Assert.Equal<IEnumerable<string>>(new List<string> 
+                await service.LoginAsync("admin", "changeme");
+
+                SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
+                var records = new List<Splunk.Client.Result>();
+
+                foreach (var results in reader)
+                {
+                    Assert.Equal<IEnumerable<string>>(new List<string> 
                     { 
                         "_bkt",
                         "_cd",
@@ -864,23 +886,26 @@ namespace Splunk.Client.UnitTesting
                         "sourcetype",
                         "splunk_server",
                     },
-                    results.FieldNames);
+                        results.FieldNames);
 
-                records.AddRange(results);
+                    records.AddRange(results);
+                }
+
+                Assert.Equal(1000, records.Count);
             }
-
-            Assert.Equal(1000, records.Count);
         }
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
         public async Task CanStartSearchOneshot()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
 
-            SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
-            var records = new List<Splunk.Client.Result>(searchResults);
+                SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
+                var records = new List<Splunk.Client.Result>(searchResults);
+            }
         }
 
         #endregion
@@ -891,48 +916,50 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudServerMessages()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
-
-            //// Create
-
-            var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
-
-            var messages = new ServerMessage[]
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
-                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Information), ServerMessageSeverity.Information, "some message text"),
-                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Warning), ServerMessageSeverity.Warning, "some message text"),
-                await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Error), ServerMessageSeverity.Error, "some message text"),
-            };
+                await service.LoginAsync("admin", "changeme");
 
-            //// Read
+                //// Create
 
-            var messageCollection = await service.Server.GetMessagesAsync();
+                var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
 
-            foreach (var message in messages)
-            {
-                var messageCopy = await service.Server.GetMessageAsync(message.Name);
-                Assert.Contains<ServerMessage>(message, messageCollection);
-                await message.GetAsync();
-            }
-
-            //// Delete (there is no update)
-
-            foreach (var message in messageCollection)
-            {
-                if (message.Name.StartsWith("delete-me-"))
+                var messages = new ServerMessage[]
                 {
-                    await message.RemoveAsync();
+                    await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Information), ServerMessageSeverity.Information, "some message text"),
+                    await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Warning), ServerMessageSeverity.Warning, "some message text"),
+                    await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Error), ServerMessageSeverity.Error, "some message text"),
+                };
+
+                //// Read
+
+                var messageCollection = await service.Server.GetMessagesAsync();
+
+                foreach (var message in messages)
+                {
+                    var messageCopy = await service.Server.GetMessageAsync(message.Name);
+                    Assert.Contains<ServerMessage>(message, messageCollection);
+                    await message.GetAsync();
                 }
-            }
 
-            //// Verify delete
+                //// Delete (there is no update)
 
-            await messageCollection.GetAsync();
+                foreach (var message in messageCollection)
+                {
+                    if (message.Name.StartsWith("delete-me-"))
+                    {
+                        await message.RemoveAsync();
+                    }
+                }
 
-            foreach (var message in messageCollection)
-            {
-                Assert.False(message.Name.StartsWith("delete-me-"));
+                //// Verify delete
+
+                await messageCollection.GetAsync();
+
+                foreach (var message in messageCollection)
+                {
+                    Assert.False(message.Name.StartsWith("delete-me-"));
+                }
             }
         }
 
@@ -940,149 +967,157 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudServerSettings()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
-
-            //// Get
-
-            var originalSettings = await service.Server.GetSettingsAsync();
-
-            //// Update
-
-            var values = new ServerSettingValues()
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
-                EnableSplunkWebSsl = !originalSettings.EnableSplunkWebSsl,
-                Host = originalSettings.Host,
-                HttpPort = originalSettings.HttpPort + 1,
-                ManagementHostPort = originalSettings.ManagementHostPort,
-                MinFreeSpace = originalSettings.MinFreeSpace - 1,
-                Pass4SymmetricKey = originalSettings.Pass4SymmetricKey + "-update",
-                ServerName = originalSettings.ServerName,
-                SessionTimeout = "2h",
-                SplunkDB = originalSettings.SplunkDB,
-                StartWebServer = !originalSettings.StartWebServer,
-                TrustedIP = originalSettings.TrustedIP
-            };
+                await service.LoginAsync("admin", "changeme");
 
-            var updatedSettings = await service.Server.UpdateSettingsAsync(values);
+                //// Get
 
-            Assert.Equal(values.EnableSplunkWebSsl, updatedSettings.EnableSplunkWebSsl);
-            Assert.Equal(values.Host, updatedSettings.Host);
-            Assert.Equal(values.HttpPort, updatedSettings.HttpPort);
-            Assert.Equal(values.ManagementHostPort, updatedSettings.ManagementHostPort);
-            Assert.Equal(values.MinFreeSpace, updatedSettings.MinFreeSpace);
-            Assert.Equal(values.Pass4SymmetricKey, updatedSettings.Pass4SymmetricKey);
-            Assert.Equal(values.ServerName, updatedSettings.ServerName);
-            Assert.Equal(values.SessionTimeout, updatedSettings.SessionTimeout);
-            Assert.Equal(values.SplunkDB, updatedSettings.SplunkDB);
-            Assert.Equal(values.StartWebServer, updatedSettings.StartWebServer);
-            Assert.Equal(values.TrustedIP, updatedSettings.TrustedIP);
+                var originalSettings = await service.Server.GetSettingsAsync();
 
-            //// Restart the server because it's required following a settings update
+                //// Update
 
-            await service.Server.RestartAsync(60000);
-            await service.LoginAsync("admin", "changeme");
+                var values = new ServerSettingValues()
+                {
+                    EnableSplunkWebSsl = !originalSettings.EnableSplunkWebSsl,
+                    Host = originalSettings.Host,
+                    HttpPort = originalSettings.HttpPort + 1,
+                    ManagementHostPort = originalSettings.ManagementHostPort,
+                    MinFreeSpace = originalSettings.MinFreeSpace - 1,
+                    Pass4SymmetricKey = originalSettings.Pass4SymmetricKey + "-update",
+                    ServerName = originalSettings.ServerName,
+                    SessionTimeout = "2h",
+                    SplunkDB = originalSettings.SplunkDB,
+                    StartWebServer = !originalSettings.StartWebServer,
+                    TrustedIP = originalSettings.TrustedIP
+                };
 
-            //// Restore
+                var updatedSettings = await service.Server.UpdateSettingsAsync(values);
 
-            values = new ServerSettingValues()
-            {
-                EnableSplunkWebSsl = originalSettings.EnableSplunkWebSsl,
-                Host = originalSettings.Host,
-                HttpPort = originalSettings.HttpPort,
-                ManagementHostPort = originalSettings.ManagementHostPort,
-                MinFreeSpace = originalSettings.MinFreeSpace,
-                Pass4SymmetricKey = originalSettings.Pass4SymmetricKey,
-                ServerName = originalSettings.ServerName,
-                SessionTimeout = originalSettings.SessionTimeout,
-                SplunkDB = originalSettings.SplunkDB,
-                StartWebServer = originalSettings.StartWebServer,
-                TrustedIP = originalSettings.TrustedIP
-            };
+                Assert.Equal(values.EnableSplunkWebSsl, updatedSettings.EnableSplunkWebSsl);
+                Assert.Equal(values.Host, updatedSettings.Host);
+                Assert.Equal(values.HttpPort, updatedSettings.HttpPort);
+                Assert.Equal(values.ManagementHostPort, updatedSettings.ManagementHostPort);
+                Assert.Equal(values.MinFreeSpace, updatedSettings.MinFreeSpace);
+                Assert.Equal(values.Pass4SymmetricKey, updatedSettings.Pass4SymmetricKey);
+                Assert.Equal(values.ServerName, updatedSettings.ServerName);
+                Assert.Equal(values.SessionTimeout, updatedSettings.SessionTimeout);
+                Assert.Equal(values.SplunkDB, updatedSettings.SplunkDB);
+                Assert.Equal(values.StartWebServer, updatedSettings.StartWebServer);
+                Assert.Equal(values.TrustedIP, updatedSettings.TrustedIP);
 
-            updatedSettings = await service.Server.UpdateSettingsAsync(values);
+                //// Restart the server because it's required following a settings update
 
-            Assert.Equal(values.EnableSplunkWebSsl, originalSettings.EnableSplunkWebSsl);
-            Assert.Equal(values.Host, originalSettings.Host);
-            Assert.Equal(values.HttpPort, originalSettings.HttpPort);
-            Assert.Equal(values.ManagementHostPort, originalSettings.ManagementHostPort);
-            Assert.Equal(values.MinFreeSpace, originalSettings.MinFreeSpace);
-            Assert.Equal(values.Pass4SymmetricKey, originalSettings.Pass4SymmetricKey);
-            Assert.Equal(values.ServerName, originalSettings.ServerName);
-            Assert.Equal(values.SessionTimeout, originalSettings.SessionTimeout);
-            Assert.Equal(values.SplunkDB, originalSettings.SplunkDB);
-            Assert.Equal(values.StartWebServer, originalSettings.StartWebServer);
-            Assert.Equal(values.TrustedIP, originalSettings.TrustedIP);
+                await service.Server.RestartAsync();
+                await service.LoginAsync("admin", "changeme");
 
-            //// Restart the server because it's required following a settings update
+                //// Restore
 
-            await service.Server.RestartAsync(60000);
+                values = new ServerSettingValues()
+                {
+                    EnableSplunkWebSsl = originalSettings.EnableSplunkWebSsl,
+                    Host = originalSettings.Host,
+                    HttpPort = originalSettings.HttpPort,
+                    ManagementHostPort = originalSettings.ManagementHostPort,
+                    MinFreeSpace = originalSettings.MinFreeSpace,
+                    Pass4SymmetricKey = originalSettings.Pass4SymmetricKey,
+                    ServerName = originalSettings.ServerName,
+                    SessionTimeout = originalSettings.SessionTimeout,
+                    SplunkDB = originalSettings.SplunkDB,
+                    StartWebServer = originalSettings.StartWebServer,
+                    TrustedIP = originalSettings.TrustedIP
+                };
+
+                updatedSettings = await service.Server.UpdateSettingsAsync(values);
+
+                Assert.Equal(values.EnableSplunkWebSsl, originalSettings.EnableSplunkWebSsl);
+                Assert.Equal(values.Host, originalSettings.Host);
+                Assert.Equal(values.HttpPort, originalSettings.HttpPort);
+                Assert.Equal(values.ManagementHostPort, originalSettings.ManagementHostPort);
+                Assert.Equal(values.MinFreeSpace, originalSettings.MinFreeSpace);
+                Assert.Equal(values.Pass4SymmetricKey, originalSettings.Pass4SymmetricKey);
+                Assert.Equal(values.ServerName, originalSettings.ServerName);
+                Assert.Equal(values.SessionTimeout, originalSettings.SessionTimeout);
+                Assert.Equal(values.SplunkDB, originalSettings.SplunkDB);
+                Assert.Equal(values.StartWebServer, originalSettings.StartWebServer);
+                Assert.Equal(values.TrustedIP, originalSettings.TrustedIP);
+
+                //// Restart the server because it's required following a settings update
+
+                await service.Server.RestartAsync();
+            }
         }
 
         [Trait("class", "Service: System")]
         [Fact]
         public async Task CanGetServerInfo()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            var serverInfo = await service.Server.GetInfoAsync();
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                var info = await service.Server.GetInfoAsync();
 
-            EaiAcl acl = serverInfo.Eai.Acl;
-            Permissions permissions = acl.Permissions;
-            int build = serverInfo.Build;
-            string cpuArchitecture = serverInfo.CpuArchitecture;
-            Guid guid = serverInfo.Guid;
-            bool isFree = serverInfo.IsFree;
-            bool isRealtimeSearchEnabled = serverInfo.IsRealtimeSearchEnabled;
-            bool isTrial = serverInfo.IsTrial;
-            IReadOnlyList<string> licenseKeys = serverInfo.LicenseKeys;
-            IReadOnlyList<string> licenseLabels = serverInfo.LicenseLabels;
-            string licenseSignature = serverInfo.LicenseSignature;
-            LicenseState licenseState = serverInfo.LicenseState;
-            Guid masterGuid = serverInfo.MasterGuid;
-            ServerMode mode = serverInfo.Mode;
-            string osBuild = serverInfo.OSBuild;
-            string osName = serverInfo.OSName;
-            string osVersion = serverInfo.OSVersion;
-            string serverName = serverInfo.ServerName;
-            Version version = serverInfo.Version;
+                EaiAcl acl = info.Eai.Acl;
+                Permissions permissions = acl.Permissions;
+                int build = info.Build;
+                string cpuArchitecture = info.CpuArchitecture;
+                Guid guid = info.Guid;
+                bool isFree = info.IsFree;
+                bool isRealtimeSearchEnabled = info.IsRealtimeSearchEnabled;
+                bool isTrial = info.IsTrial;
+                IReadOnlyList<string> licenseKeys = info.LicenseKeys;
+                IReadOnlyList<string> licenseLabels = info.LicenseLabels;
+                string licenseSignature = info.LicenseSignature;
+                LicenseState licenseState = info.LicenseState;
+                Guid masterGuid = info.MasterGuid;
+                ServerMode mode = info.Mode;
+                string osBuild = info.OSBuild;
+                string osName = info.OSName;
+                string osVersion = info.OSVersion;
+                string serverName = info.ServerName;
+                Version version = info.Version;
+            }
         }
 
         [Trait("class", "Service: Server")]
         [Fact]
         public async Task CanRestartServer()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
-            await service.Server.RestartAsync(millisecondsDelay: 60000);
-            Assert.Null(service.SessionKey);
-            await service.LoginAsync("admin", "changeme");
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
+                await service.Server.RestartAsync(millisecondsDelay: 60000);
+                Assert.Null(service.SessionKey);
+                await service.LoginAsync("admin", "changeme");
+            }
         }
 
         [Trait("class", "Service: System")]
         [Fact]
         public async Task CanSendEvents()
         {
-            var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default);
-            await service.LoginAsync("admin", "changeme");
-
-            var receiver = service.Receiver;
-
-            for (int i = 0; i < 10; i++)
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
-                var result = await receiver.SendAsync(string.Format("{0:D6} {1} Hello world!", i, DateTime.Now));
-            }
+                await service.LoginAsync("admin", "changeme");
 
-            using (var eventStream = new MemoryStream())
-            {
-                var writer = new StreamWriter(eventStream);
+                var receiver = service.Receiver;
 
                 for (int i = 0; i < 10; i++)
                 {
-                    writer.Write(string.Format("{0:D6} {1} Goodbye world!\r\n", i, DateTime.Now));
+                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} Hello world!", i, DateTime.Now));
                 }
 
-                var task = receiver.SendAsync(eventStream);
-                task.Wait();
+                using (var eventStream = new MemoryStream())
+                {
+                    var writer = new StreamWriter(eventStream);
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        writer.Write(string.Format("{0:D6} {1} Goodbye world!\r\n", i, DateTime.Now));
+                    }
+
+                    var task = receiver.SendAsync(eventStream);
+                    task.Wait();
+                }
             }
         }
 

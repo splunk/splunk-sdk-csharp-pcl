@@ -1091,9 +1091,9 @@ namespace Splunk.Client
         /// search/jobs</a> endpoint to start a job to execute the specified
         /// <see cref="search"/> language string in <see cref="mode"/>.
         /// </remarks>
-        public async Task<Job> StartJobAsync(string search, ExecutionMode mode = ExecutionMode.Normal)
+        public async Task<Job> CreateJobAsync(string search, ExecutionMode mode = ExecutionMode.Normal)
         {
-            return await this.StartJobAsync(new JobArgs(search) { ExecutionMode = mode });
+            return await this.CreateJobAsync(new JobArgs(search) { ExecutionMode = mode });
         }
 
         /// <summary>
@@ -1110,7 +1110,7 @@ namespace Splunk.Client
         /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
         /// specified by <see cref="args"/>.
         /// </remarks>
-        public async Task<Job> StartJobAsync(JobArgs args)
+        public async Task<Job> CreateJobAsync(JobArgs args)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
             Contract.Requires<ArgumentNullException>(args.Search != null, "args.Search");
@@ -1298,7 +1298,6 @@ namespace Splunk.Client
             {
                 this.Context.Dispose();
                 this.disposed = true;
-                GC.SuppressFinalize(this);
             }
         }
 

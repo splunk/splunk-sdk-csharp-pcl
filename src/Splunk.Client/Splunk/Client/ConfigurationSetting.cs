@@ -41,6 +41,14 @@ namespace Splunk.Client
             : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName), keyName)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ConfigurationSetting"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public ConfigurationSetting()
         { }
 
@@ -53,7 +61,7 @@ namespace Splunk.Client
         /// </summary>
         public string Value 
         {
-            get { return this.Content.GetValue("Value", StringConverter.Instance); }
+            get { return this.GetValue("Value", StringConverter.Instance); }
         }
 
         #endregion
@@ -74,10 +82,11 @@ namespace Splunk.Client
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                
                 var reader = new StreamReader(response.Stream);
                 var content = await reader.ReadToEndAsync();
 
-                this.Data = new DataCache(new AtomEntry(this.Data.Entry, content.Length == 0 ? null : content));
+                this.Snapshot = new EntitySnapshot(this.Snapshot, content.Length == 0 ? null : content);
             }
         }
 

@@ -53,6 +53,14 @@ namespace Splunk.Client
             : base(context, @namespace, ClassResourceName)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ServerSettings"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public ServerSettings()
         { }
 
@@ -65,7 +73,7 @@ namespace Splunk.Client
         /// </summary>
         public string SplunkDB
         {
-            get { return this.Content.GetValue("SplunkDb", StringConverter.Instance); }
+            get { return this.GetValue("SplunkDb", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -73,7 +81,7 @@ namespace Splunk.Client
         /// </summary>
         public string SplunkHome
         {
-            get { return this.Content.GetValue("SplunkHome", StringConverter.Instance); }
+            get { return this.GetValue("SplunkHome", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -87,7 +95,7 @@ namespace Splunk.Client
         /// </remarks>
         public bool EnableSplunkWebSsl
         {
-            get { return this.Content.GetValue("EnableSplunkWebSSL", BooleanConverter.Instance); }
+            get { return this.GetValue("EnableSplunkWebSSL", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -96,7 +104,7 @@ namespace Splunk.Client
         /// </summary>
         public string Host
         {
-            get { return this.Content.GetValue("Host", StringConverter.Instance); }
+            get { return this.GetValue("Host", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -104,7 +112,7 @@ namespace Splunk.Client
         /// </summary>
         public int HttpPort
         {
-            get { return this.Content.GetValue("Httpport", Int32Converter.Instance); }
+            get { return this.GetValue("Httpport", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -113,7 +121,7 @@ namespace Splunk.Client
         /// </summary>
         public int ManagementHostPort
         {
-            get { return this.Content.GetValue("MgmtHostPort", Int32Converter.Instance); }
+            get { return this.GetValue("MgmtHostPort", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -133,7 +141,7 @@ namespace Splunk.Client
         /// </remarks>
         public int MinFreeSpace
         {
-            get { return this.Content.GetValue("MinFreeSpace", Int32Converter.Instance); }
+            get { return this.GetValue("MinFreeSpace", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -143,7 +151,7 @@ namespace Splunk.Client
         /// </summary>
         public string Pass4SymmetricKey
         {
-            get { return this.Content.GetValue("Pass4SymmKey", StringConverter.Instance); }
+            get { return this.GetValue("Pass4SymmKey", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -155,7 +163,7 @@ namespace Splunk.Client
         /// </remarks>
         public string ServerName
         {
-            get { return this.Content.GetValue("ServerName", StringConverter.Instance); }
+            get { return this.GetValue("ServerName", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -172,7 +180,7 @@ namespace Splunk.Client
         /// </remarks>
         public string SessionTimeout
         {
-            get { return this.Content.GetValue("SessionTimeout", StringConverter.Instance); }
+            get { return this.GetValue("SessionTimeout", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -183,7 +191,7 @@ namespace Splunk.Client
         /// </remarks>
         public bool StartWebServer
         {
-            get { return this.Content.GetValue("Startwebserver", BooleanConverter.Instance); }
+            get { return this.GetValue("Startwebserver", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -195,7 +203,7 @@ namespace Splunk.Client
         /// </remarks>
         public string TrustedIP
         {
-            get { return this.Content.GetValue("TrustedIP", StringConverter.Instance); }
+            get { return this.GetValue("TrustedIP", StringConverter.Instance); }
         }
 
         #endregion
@@ -216,15 +224,7 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, values))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
-
-                if (feed.Entries.Count != 1)
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
-                this.Data = new DataCache(feed.Entries[0]);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 

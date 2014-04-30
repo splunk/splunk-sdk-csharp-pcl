@@ -33,6 +33,14 @@ namespace Splunk.Client
             : base(context, @namespace, new ResourceName(ApplicationCollection.ClassResourceName, name, "setup"))
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ApplicationSetupInfo"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public ApplicationSetupInfo()
         { }
 
@@ -45,7 +53,7 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -54,7 +62,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Refresh
         {
-            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         #endregion

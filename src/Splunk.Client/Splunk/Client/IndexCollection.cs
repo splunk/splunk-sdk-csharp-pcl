@@ -32,6 +32,14 @@ namespace Splunk.Client
             : base(context, @namespace, ClassResourceName)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "IndexCollection"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public IndexCollection()
         { }
 

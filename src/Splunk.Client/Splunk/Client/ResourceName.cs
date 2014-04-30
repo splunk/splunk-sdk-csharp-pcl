@@ -169,6 +169,26 @@ namespace Splunk.Client
             return new ResourceName(parts.Take(parts.Count - 1));
         }
 
+        public static bool operator ==(ResourceName a, ResourceName b)
+        {
+            if (object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            if ((object)a == null || (object)b == null)
+            {
+                return false;
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(ResourceName a, ResourceName b)
+        {
+            return !(a == b);
+        }
+
         /// <summary>
         /// Converts the value of the current <see cref="Namespace"/> to its
         /// equivalent string representation.

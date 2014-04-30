@@ -33,6 +33,14 @@ namespace Splunk.Client
             : base(context, @namespace, ClassResourceName)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ServerInfo"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public ServerInfo()
         { }
 
@@ -42,7 +50,7 @@ namespace Splunk.Client
 
         public int Build
         {
-            get { return this.Content.GetValue("Build", Int32Converter.Instance); }
+            get { return this.GetValue("Build", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -51,7 +59,7 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -59,42 +67,42 @@ namespace Splunk.Client
         /// </summary>
         public Guid Guid
         {
-            get { return this.Content.GetValue("Guid", GuidConverter.Instance); }
+            get { return this.GetValue("Guid", GuidConverter.Instance); }
         }
 
         public bool IsFree
         {
-            get { return this.Content.GetValue("IsFree", BooleanConverter.Instance); }
+            get { return this.GetValue("IsFree", BooleanConverter.Instance); }
         }
 
         public bool IsRealtimeSearchEnabled
         {
-            get { return this.Content.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
+            get { return this.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
         }
 
         public bool IsTrial
         {
-            get { return this.Content.GetValue("IsTrial", BooleanConverter.Instance); }
+            get { return this.GetValue("IsTrial", BooleanConverter.Instance); }
         }
 
         public IReadOnlyList<string> LicenseKeys
         {
-            get { return this.Content.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get { return this.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
         public IReadOnlyList<string> LicenseLabels
         {
-            get { return this.Content.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get { return this.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
         public string LicenseSignature
         {
-            get { return this.Content.GetValue("LicenseSignature", StringConverter.Instance); }
+            get { return this.GetValue("LicenseSignature", StringConverter.Instance); }
         }
 
         public LicenseState LicenseState
         {
-            get { return this.Content.GetValue("LicenseState", EnumConverter<LicenseState>.Instance); }
+            get { return this.GetValue("LicenseState", EnumConverter<LicenseState>.Instance); }
         }
 
         /// <summary>
@@ -103,42 +111,42 @@ namespace Splunk.Client
         /// </summary>
         public Guid MasterGuid
         {
-            get { return this.Content.GetValue("MasterGuid", GuidConverter.Instance); }
+            get { return this.GetValue("MasterGuid", GuidConverter.Instance); }
         }
 
         public ServerMode Mode
         {
-            get { return this.Content.GetValue("Mode", EnumConverter<ServerMode>.Instance); }
+            get { return this.GetValue("Mode", EnumConverter<ServerMode>.Instance); }
         }
 
         public string OSBuild
         {
-            get { return this.Content.GetValue("OsBuild", StringConverter.Instance); }
+            get { return this.GetValue("OsBuild", StringConverter.Instance); }
         }
 
         public string OSName
         {
-            get { return this.Content.GetValue("OsName", StringConverter.Instance); }
+            get { return this.GetValue("OsName", StringConverter.Instance); }
         }
 
         public string OSVersion
         {
-            get { return this.Content.GetValue("OsVersion", StringConverter.Instance); }
+            get { return this.GetValue("OsVersion", StringConverter.Instance); }
         }
 
         public string CpuArchitecture
         {
-            get { return this.Content.GetValue("CpuArch", StringConverter.Instance); }
+            get { return this.GetValue("CpuArch", StringConverter.Instance); }
         }
 
         public string ServerName
         {
-            get { return this.Content.GetValue("ServerName", StringConverter.Instance); }
+            get { return this.GetValue("ServerName", StringConverter.Instance); }
         }
 
         public Version Version
         {
-            get { return this.Content.GetValue("Version", VersionConverter.Instance); }
+            get { return this.GetValue("Version", VersionConverter.Instance); }
         }
 
         #endregion

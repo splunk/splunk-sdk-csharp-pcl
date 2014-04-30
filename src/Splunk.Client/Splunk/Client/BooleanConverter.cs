@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -28,25 +28,12 @@ namespace Splunk.Client
     /// </summary>
     sealed class BooleanConverter : ValueConverter<Boolean>
     {
-        #region Constructors
-
-        static BooleanConverter()
-        {
-            Instance = new BooleanConverter();
-        }
-
-        #endregion
-
-        #region Properties
+        #region Fields
 
         /// <summary>
-        /// Gets a default <see cref="BooleanConverter"/> instance for converting 
-        /// strings to <see cref="Boolean"/> values
+        /// The default <see cref="BooleanConverter"/> instance.
         /// </summary>
-        public static BooleanConverter Instance
-        { 
-            get; private set; 
-        }
+        public static readonly BooleanConverter Instance = new BooleanConverter();
 
         #endregion
 

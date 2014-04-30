@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -28,14 +28,25 @@ namespace Splunk.Client
     /// </summary>
     sealed class DoubleConverter : ValueConverter<Double>
     {
-        static DoubleConverter()
-        {
-            Instance = new DoubleConverter();
-        }
+        /// <summary>
+        /// The default <see cref="DoubleConverter"/> instance.
+        /// </summary>
+        public static readonly DoubleConverter Instance = new DoubleConverter();
 
-        public static DoubleConverter Instance
-        { get; private set; }
-
+        /// <summary>
+        /// Converts the string representation of the <see cref="input"/> 
+        /// object to a <see cref="Double"/> value.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The <see cref="input"/> does not represent a <see cref="Double"/>
+        /// value.
+        /// </exception>
         public override Double Convert(object input)
         {
             var x = input as Double?;

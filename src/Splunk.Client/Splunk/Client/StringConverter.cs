@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -27,14 +27,22 @@ namespace Splunk.Client
     /// </summary>
     sealed class StringConverter : ValueConverter<String>
     {
-        static StringConverter()
-        {
-            Instance = new StringConverter();
-        }
+        /// <summary>
+        /// The default <see cref="StringConverter"/> instance.
+        /// </summary>
 
-        public static StringConverter Instance
-        { get; private set; }
+        public static readonly StringConverter Instance = new StringConverter();
 
+        /// <summary>
+        /// Converts the <see cref="input"/> object to a <see cref="String"/> 
+        /// value.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
         public override String Convert(object input)
         {
             return input.ToString();

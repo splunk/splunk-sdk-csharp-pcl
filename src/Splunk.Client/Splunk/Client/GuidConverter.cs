@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -28,14 +28,25 @@ namespace Splunk.Client
     /// </summary>
     sealed class GuidConverter : ValueConverter<Guid>
     {
-        static GuidConverter()
-        {
-            Instance = new GuidConverter();
-        }
+        /// <summary>
+        /// The default <see cref="GuidConverter"/> instance.
+        /// </summary>
+        public static readonly GuidConverter Instance = new GuidConverter();
 
-        public static GuidConverter Instance
-        { get; private set; }
-
+        /// <summary>
+        /// Converts the string representation of the <see cref="input"/> 
+        /// object to a <see cref="Guid"/>.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The <see cref="input"/> does not represent a <see cref="Guid"/>
+        /// value.
+        /// </exception>
         public override Guid Convert(object input)
         {
             var x = input as Guid?;

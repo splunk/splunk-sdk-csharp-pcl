@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -58,9 +58,25 @@ namespace Splunk.Client
             OutputConversionTable = outputConversionTable;
         }
 
-        public static EnumConverter<TEnum> Instance
-        { get; private set; }
+        /// <summary>
+        /// The default <see cref="EnumConverter"/> instance.
+        /// </summary>
+        public static readonly EnumConverter<TEnum> Instance;
 
+        /// <summary>
+        /// Converts the string representation of the <see cref="input"/> 
+        /// object to a <see cref="TEnum"/> value.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The <see cref="input"/> does not represent a <see cref="TEnum"/>
+        /// value.
+        /// </exception>
         public override TEnum Convert(object input)
         {
             var x = input as TEnum?;

@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -30,14 +30,25 @@ namespace Splunk.Client
     /// </summary>
     sealed class UnixDateTimeConverter : ValueConverter<DateTime>
     {
-        static UnixDateTimeConverter()
-        {
-            Instance = new UnixDateTimeConverter();
-        }
+        /// <summary>
+        /// The default <see cref="UnixDateTimeConverter"/> instance.
+        /// </summary>
+        public static readonly UnixDateTimeConverter Instance = new UnixDateTimeConverter();
 
-        public static UnixDateTimeConverter Instance
-        { get; private set; }
-
+        /// <summary>
+        /// Converts the string representation of a <see cref="input"/> Unix 
+        /// time value to a <see cref="DateTime"/> value.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The <see cref="input"/> does not represent a <see cref="DateTime"/>
+        /// value.
+        /// </exception>
         public override DateTime Convert(object input)
         {
             var x = input as DateTime?;

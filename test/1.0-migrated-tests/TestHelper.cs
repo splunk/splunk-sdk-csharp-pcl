@@ -135,20 +135,18 @@ namespace Splunk.Client.UnitTesting
         /// <param name="name">The app name</param>
         public void RemoveApp(string name)
         {
-            //EntityCollection<App> apps;
+            Service service = this.Connect();
 
-            //Service service = this.Connect();
+            ApplicationCollection apps = service.GetApplicationsAsync().Result;
+            if (apps.Any(a => a.Name == name))
+            {
+                service.RemoveApplicationAsync(name).Wait();
+                this.SplunkRestart();
+                service = this.Connect();
+            }
 
-            //apps = service.GetAppsAsync().Result;
-            //if (apps.ContainsKey(name))
-            //{
-            //    apps.Remove(name);
-            //    this.SplunkRestart();
-            //    service = this.Connect();
-            //}
-
-            //apps = service.GetAppsAsync().Result;
-            //Assert.False(apps.ContainsKey(name), this.assertRoot + "#3");
+            apps = service.GetApplicationsAsync().Result;
+            Assert.False(apps.Any(a => a.Name == name), this.assertRoot + "#3");
         }
 
         /// <summary>
@@ -164,26 +162,13 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Restarts splunk with a default 3 minute restart time check.
         /// </summary>
-        public void  SplunkRestart()
-        {
-            // If not specified, use 5 minutes (in milliseconds) as default
-            // restart timeout.
-            this.SplunkRestart(5 * 60 * 1000);
-        }
-
-        /// <summary>
-        /// Restarts splunk -- If the restart (i.e. splunk is back up) does
-        /// not happen by the time the millisecond timeout counts down, an
-        /// the assertion that the service is back up will throw an exception.
-        /// </summary>
-        /// <param name="millisecondTimeout">The number of milliseconds</param>
-        public void SplunkRestart(int millisecondTimeout)
+        public void SplunkRestart()
         {
             Stopwatch watch = new Stopwatch();
 
             Service service = this.Connect();
             watch.Start();
-            service.Server.RestartAsync(-1).Wait();
+            service.Server.RestartAsync(10 * 60 * 1000).Wait();
             watch.Stop();
 
             Console.WriteLine("spend {0}s to restart server", watch.Elapsed.TotalSeconds);

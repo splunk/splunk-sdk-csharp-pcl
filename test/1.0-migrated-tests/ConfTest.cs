@@ -124,30 +124,13 @@ namespace Splunk.Client.UnitTesting
             //service = this.Connect();
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
             //if below failed, remove the file C:\Program Files\Splunk\etc\system\local\testconf.conf, serverInfo should provide home  path etc?            
-            //Assert.False(this.ConfigurationContainKey(confs, "testconf"), assertRoot + "#9");
+            Assert.False(confs.Any(a => a.Name == "testconf"), assertRoot + "#9");
 
-            Configuration testconf = null;
-            if (!confs.Any(a => a.Name == "testconf"))
-            {
-                testconf = service.CreateConfigurationAsync("testconf").Result;
-                confs.GetAsync().Wait();
-            }
-
+            Configuration testconf = service.CreateConfigurationAsync("testconf").Result;
+            confs.GetAsync().Wait();
             Assert.True(confs.Any(a => a.Name == "testconf"), assertRoot + "#10");
 
-            testconf = service.GetConfigurationAsync("testconf").Result;
-            if (testconf.GetStanzaAsync("stanza1").Result != null)
-            {
-                testconf.RemoveStanzaAsync("stanza1").Wait();
-            }
-            if (testconf.GetStanzaAsync("stanza2").Result != null)
-            {
-                testconf.RemoveStanzaAsync("stanza2").Wait();
-            }
-            if (testconf.GetStanzaAsync("stanza3").Result != null)
-            {
-                testconf.RemoveStanzaAsync("stanza3").Wait();
-            }
+            testconf = service.GetConfigurationAsync("testconf").Result;            
 
             //ConfigurationStanza stanzas = service.GetConfigurationStanzaAsync("testconf", "stanza1").Result;
             //Assert.Equal(0, stanzas.Count);
@@ -157,22 +140,12 @@ namespace Splunk.Client.UnitTesting
             service.CreateConfigurationStanzaAsync("testconf", "stanza3").Wait();
 
             testconf.GetAsync().Wait();
-            //Assert.Equal(3, testconf.Count);
+            Assert.Equal(4, testconf.Count);
+            Assert.NotNull(testconf.GetStanzaAsync("stanza1").Result.Name);
+            Assert.NotNull(testconf.GetStanzaAsync("stanza2").Result.Name);
+            Assert.NotNull(testconf.GetStanzaAsync("stanza3").Result.Name);
 
             //EntityCollection<Entity> stanzas = confs.Get("testconf");
-            //Assert.Equal(0, stanzas.Count);
-
-            //ConfigurationStanza stanzas = new ConfigurationStanza();
-            //stanzas.CreateAsync().Wait();
-            //stanzas.CreateAsync().Wait();
-            //stanzas.CreateAsync().Wait();
-
-            //stanzas.Create("stanza2");
-            //stanzas.Create("stanza3");
-            //Assert.Equal(3, stanzas.Size, assertRoot + "#12");
-            //Assert.True(conf..ContainsKey("stanza1"), assertRoot + "#13");
-            //Assert.True(stanzas.ContainsKey("stanza2"), assertRoot + "#14");
-            //Assert.True(stanzas.ContainsKey("stanza3"), assertRoot + "#15");
 
             //// Grab the new stanza and check its content
             ConfigurationStanza stanza1 = testconf.GetStanzaAsync("stanza1").Result;
@@ -226,8 +199,8 @@ namespace Splunk.Client.UnitTesting
             //Assert.False(stanzas.ContainsKey("stanza2"), assertRoot + "#37");
             //Assert.False(stanzas.ContainsKey("stanza3"), assertRoot + "#38");
 
-            //// Cleanup after ourselves
-            //this.RemoveApp(app);
+            // Cleanup after ourselves
+            this.RemoveApp(app);
         }
     }
 }

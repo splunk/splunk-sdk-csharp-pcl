@@ -26,7 +26,7 @@ Version 2.0 introduces new modern APIs that leverage the latest .NET platform ad
 * Async - All APIs are 100% asynchronous supporting the new [async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) features.
 * All APIs follow .NET guidelines and abide by FxCop and StyleCop rules.
 * Reactive Extensions - Splunk Enterprise query results implement [IObservable<T>](http://msdn.microsoft.com/library/dd990377), allowing usage with the [.NET Reactive Extensions](http://msdn.microsoft.com/data/gg577610).
-* Support for multiple platforms - The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx).
+* Support for cross-platform development - The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx).
 
 Below is an example of a simple normal search:
 

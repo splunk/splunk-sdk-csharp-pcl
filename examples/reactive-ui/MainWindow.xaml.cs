@@ -48,7 +48,7 @@ namespace Splunk.Client.Examples.ReactiveUI
             var service = ((App)App.Current).Service;
             await service.LoginAsync("admin", "changeme");
 
-            Job job = await service.StartJobAsync(this.SearchCommand.Text);
+            Job job = await service.CreateJobAsync(this.SearchCommand.Text);
             SearchResults results = await job.GetSearchResultsAsync();
         }
     }

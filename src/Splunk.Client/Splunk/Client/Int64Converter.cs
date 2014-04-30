@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -28,14 +28,25 @@ namespace Splunk.Client
     /// </summary>
     sealed class Int64Converter : ValueConverter<Int64>
     {
-        static Int64Converter()
-        {
-            Instance = new Int64Converter();
-        }
+        /// <summary>
+        /// The default <see cref="Int64Converter"/> instance.
+        /// </summary>
+        public static readonly Int64Converter Instance = new Int64Converter();
 
-        public static Int64Converter Instance
-        { get; private set; }
-
+        /// <summary>
+        /// Converts the string representation of the <see cref="input"/> 
+        /// object to a <see cref="Int64"/> value.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The <see cref="input"/> does not represent a <see cref="Int64"/>
+        /// value.
+        /// </exception>
         public override Int64 Convert(object input)
         {
             var x = input as Int64?;

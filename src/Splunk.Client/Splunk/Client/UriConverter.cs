@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -29,14 +29,24 @@ namespace Splunk.Client
     /// </summary>
     sealed class UriConverter : ValueConverter<Uri>
     {
-        static UriConverter()
-        {
-            Instance = new UriConverter();
-        }
+        /// <summary>
+        /// The default <see cref="UriConverter"/> instance.
+        /// </summary>
+        public static readonly UriConverter Instance = new UriConverter();
 
-        public static UriConverter Instance
-        { get; private set; }
-
+        /// <summary>
+        /// Converts the string representation of the <see cref="input"/> 
+        /// object to a <see cref="Uri"/> instance.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The <see cref="input"/> does not represent a <see cref="Uri"/>.
+        /// </exception>
         public override Uri Convert(object input)
         {
             var value = input as Uri;

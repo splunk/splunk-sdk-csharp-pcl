@@ -105,7 +105,7 @@ namespace Splunk.Client.Examples
                 LatestTime = "rt",
             };
 
-            Job job = await service.StartJobAsync(jobArgs);
+            Job job = await service.CreateJobAsync(jobArgs);
 
 
             //this sleep should be removed if DVPL-4503 is fixed.

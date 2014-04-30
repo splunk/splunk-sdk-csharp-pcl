@@ -57,6 +57,14 @@ namespace Splunk.Client
             : base(context, @namespace, ClassResourceName)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "Server"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public Server()
         { }
 
@@ -168,8 +176,10 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="millisecondsDelay">
         /// The time to wait before canceling the check for server availability.
-        /// The default value is <c>0</c> indicating that no check should be
-        /// made. A value of <c>-1</c> specifies an infinite wait time.
+        /// The default value is <c>60000</c> indicating that the check for
+        /// server avaialability will continue for up to 60 seconds. A value
+        /// of <c>0</c> specifices that no check should be made. A value of 
+        /// <c>-1</c> specifies an infinite wait time.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="millisecondsDelay"/> is less than <c>-1</c>.
@@ -180,7 +190,7 @@ namespace Splunk.Client
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// </exception>
-        public async Task RestartAsync(int millisecondsDelay = 0)
+        public async Task RestartAsync(int millisecondsDelay = 60000)
         {
             Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
 

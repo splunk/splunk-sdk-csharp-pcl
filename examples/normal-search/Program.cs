@@ -57,7 +57,7 @@ namespace Splunk.Client.Examples
 
             //// Search : Pull model (foreach loop => IEnumerable)
 
-            Job job = await service.StartJobAsync("search index=_internal | head 10");
+            Job job = await service.CreateJobAsync("search index=_internal | head 10");
             SearchResults searchResults;
 
             using (searchResults = await job.GetSearchResultsAsync())
@@ -78,7 +78,7 @@ namespace Splunk.Client.Examples
 
             //// Search : Push model (by way of subscription to search result records => IObservable)
 
-            job = await service.StartJobAsync("search index=_internal | head 10");
+            job = await service.CreateJobAsync("search index=_internal | head 10");
 
             using (searchResults = await job.GetSearchResultsAsync())
             {
@@ -136,7 +136,7 @@ namespace Splunk.Client.Examples
 
             //// Search : Results preview
 
-            job = await service.StartJobAsync("search index=_internal | head 10000");
+            job = await service.CreateJobAsync("search index=_internal | head 10000");
             do
             {
                 using (searchResults = await job.GetSearchResultsPreviewAsync(new SearchResultsArgs() { Count = 0 }))
@@ -177,7 +177,7 @@ namespace Splunk.Client.Examples
             await service.LoginAsync("admin", "changeme");
 
             Console.WriteLine("Blocking search");
-            job = await service.StartJobAsync("search index=_internal | head 10", ExecutionMode.Blocking);
+            job = await service.CreateJobAsync("search index=_internal | head 10", ExecutionMode.Blocking);
 
             using (searchResults = await job.GetSearchResultsAsync())
             {

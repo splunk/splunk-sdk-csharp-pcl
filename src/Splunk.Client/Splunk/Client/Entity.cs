@@ -113,7 +113,7 @@ namespace Splunk.Client
 
         public Entity()
         {
-            this.data = DataCache.Missing;
+            this.snapshot = EntitySnapshot.Missing;
         }
 
         #endregion
@@ -122,51 +122,38 @@ namespace Splunk.Client
 
         public string Author
         { 
-            get { return this.data.Entry == null ? null : this.data.Entry.Author; }
+            get { return this.Snapshot.Author; }
         }
 
         public Uri Id
         { 
-            get { return this.data.Entry == null ? null : this.data.Entry.Id; } 
+            get { return this.Snapshot.Id; } 
         }
 
         public IReadOnlyDictionary<string, Uri> Links
         { 
-            get { return this.data.Entry == null ? null : this.data.Entry.Links; } 
+            get { return this.Snapshot.Links; } 
         }
 
         public DateTime Published
         {
-            get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; }
+            get { return this.Snapshot.Published; }
         }
 
         public DateTime Updated
         { 
-            get { return this.data.Entry == null ? DateTime.MinValue : this.data.Entry.Updated; } 
+            get { return this.Snapshot.Updated; }
         }
 
         #region Protected properties
 
         /// <summary>
-        /// Gets the <see cref="ExpandoAdapter"/> representing the content of
-        /// the current <see cref="Entity<TEntity>"/>.
-        /// </summary>
-        /// <remarks>
-        /// Use this property to map content elements to strongly typed 
-        /// properties.
-        /// </remarks>
-        protected ExpandoAdapter Content
-        {
-            get { return this.data.Adapter; }
-        }
-
-        /// <summary>
         /// 
         /// </summary>
-        protected DataCache Data
+        protected EntitySnapshot Snapshot
         {
-            get { return this.data; }
-            set { this.data = value; }
+            get { return this.snapshot; }
+            set { this.snapshot = value; }
         }
 
         #endregion
@@ -183,8 +170,13 @@ namespace Splunk.Client
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
+        }
+
+        protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
+        {
+            return this.Snapshot.Adapter.GetValue(name, valueConverter);
         }
 
         /// <summary>
@@ -202,11 +194,11 @@ namespace Splunk.Client
         /// </param>
         protected internal override void Initialize(Context context, AtomEntry entry)
         {
-            this.data = new DataCache(entry);
+            this.snapshot = new EntitySnapshot(entry);
             base.Initialize(context, entry);
         }
 
-        protected async Task UpdateDataAsync(Response response)
+        protected async Task UpdateSnapshotAsync(Response response)
         {
             var feed = new AtomFeed();
             await feed.ReadXmlAsync(response.XmlReader);
@@ -216,63 +208,14 @@ namespace Splunk.Client
                 throw new InvalidDataException();  // TODO: Diagnostics
             }
 
-            this.Data = new DataCache(feed.Entries[0]);
+            this.Snapshot = new EntitySnapshot(feed.Entries[0]);
         }
 
         #endregion
 
         #region Privates
 
-        volatile DataCache data;
-
-        #endregion
-
-        #region Types
-
-        protected sealed class DataCache
-        {
-            public DataCache(AtomEntry entry)
-            {
-                if (entry.Content == null)
-                {
-                    this.adapter = ExpandoAdapter.Empty;
-                }
-                else
-                {
-                    dynamic content = entry.Content as ExpandoObject;
-                    
-                    if (content == null)
-                    {
-                        content = new ExpandoObject();
-                        content.Value = entry.Content;
-                    }
-
-                    this.adapter = new ExpandoAdapter(content);
-                }
-
-                this.entry = entry;
-            }
-
-            DataCache()
-            {
-                this.adapter = ExpandoAdapter.Empty;
-            }
-
-            public static readonly DataCache Missing = new DataCache();
-
-            public ExpandoAdapter Adapter
-            { 
-                get { return this.adapter; } 
-            }
-
-            public AtomEntry Entry
-            { 
-                get { return this.entry; } 
-            }
-
-            readonly ExpandoAdapter adapter;
-            readonly AtomEntry entry;
-        }
+        volatile EntitySnapshot snapshot;
 
         #endregion
     }

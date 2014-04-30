@@ -108,7 +108,7 @@ namespace Splunk.Client.UnitTesting
         private Job RunWait(Service service, JobArgs jobArgs)
         {
 
-            return service.StartJobAsync(jobArgs).Result;
+            return service.CreateJobAsync(jobArgs).Result;
         }
 
         /// <summary>
@@ -124,9 +124,9 @@ namespace Splunk.Client.UnitTesting
             //Job job;
             JobArgs jobArgs = new JobArgs(Query);
 
-            service.StartJobAsync(jobArgs).Wait();
+            service.CreateJobAsync(jobArgs).Wait();
             //jobArgs.e="csv"
-            service.StartJobAsync(jobArgs).Wait();
+            service.CreateJobAsync(jobArgs).Wait();
 
 
             //this.RunWait(service, Query);
@@ -284,7 +284,7 @@ namespace Splunk.Client.UnitTesting
             Job job = null;
             try
             {
-                job = service.StartJobAsync(jobArgs).Result;
+                job = service.CreateJobAsync(jobArgs).Result;
             }
             catch (Exception e)
             {
@@ -330,7 +330,7 @@ namespace Splunk.Client.UnitTesting
             JobArgs jobArgs = new JobArgs(Query);
 
             jobArgs.SearchMode = SearchMode.Normal;
-            Job job = service.StartJobAsync(jobArgs).Result;
+            Job job = service.CreateJobAsync(jobArgs).Result;
             Assert.NotNull(job);
 
             jobArgs.SearchMode = SearchMode.Realtime;
@@ -364,7 +364,7 @@ namespace Splunk.Client.UnitTesting
             
             jobArgs.ExecutionMode = ExecutionMode.Blocking;
 
-            Job job = service.StartJobAsync(jobArgs).Result;
+            Job job = service.CreateJobAsync(jobArgs).Result;
             Assert.NotNull(job);
 
             jobArgs.ExecutionMode = ExecutionMode.None;
@@ -394,7 +394,7 @@ namespace Splunk.Client.UnitTesting
             
             //jobArgs.SearchMode = SearchMode.Realtime;
 
-            Job job = service.StartJobAsync(jobArgs).Result;
+            Job job = service.CreateJobAsync(jobArgs).Result;
             Assert.NotNull(job);
 
             job.CancelAsync().Wait();
@@ -696,7 +696,7 @@ namespace Splunk.Client.UnitTesting
 
             var service = new Service(Scheme.Https, "localhost", 8089);
             service.LoginAsync("admin", "changeme").Wait();
-            var job = service.StartJobAsync((string)cli.Opts["search"]).Result;
+            var job = service.CreateJobAsync((string)cli.Opts["search"]).Result;
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();

@@ -120,6 +120,7 @@
     <Compile Include="Splunk\Client\ApplicationUpdateInfo.cs" />
     <Compile Include="Splunk\Client\ApplicationSetupInfo.cs" />
     <Compile Include="Splunk\Client\ApplicationArchiveInfo.cs" />
+    <Compile Include="Splunk\Client\EntitySnapshot.cs" />
     <Compile Include="Splunk\Client\StoragePassword.cs" />
     <Compile Include="Splunk\Client\ApplicationAttributes.cs" />
     <Compile Include="Splunk\Client\StoragePasswordCollection.cs" />
@@ -219,7 +220,6 @@
     <Compile Include="Splunk\Client\Observable.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

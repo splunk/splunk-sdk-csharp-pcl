@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -29,8 +29,25 @@ namespace Splunk.Client
     /// </summary>
     sealed class VersionConverter : ValueConverter<Version>
     {
+        /// <summary>
+        /// The default <see cref="VersionConverter"/> instance.
+        /// </summary>
         public static readonly VersionConverter Instance = new VersionConverter();
 
+        /// <summary>
+        /// Converts the string representation of the <see cref="input"/> 
+        /// object to a <see cref="Version"/> instance.
+        /// </summary>
+        /// <param name="input">
+        /// The object to convert.
+        /// </param>
+        /// <returns>
+        /// Result of the conversion.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The <see cref="input"/> does not represent a <see cref="Version"/>
+        /// instance.
+        /// </exception>
         public override Version Convert(object input)
         {
             var value = input as Version;

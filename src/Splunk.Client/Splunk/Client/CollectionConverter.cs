@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -27,8 +27,8 @@ namespace Splunk.Client
     using System.Linq;
 
     /// <summary>
-    /// Provides a converter to convert an <see cref="IEnumerable"/> object to a
-    /// collection.
+    /// Provides a converter to convert an <see cref="IEnumerable"/> object to 
+    /// a collection.
     /// </summary>
     /// <typeparam name="TValue">
     /// The type of the values in the collection.
@@ -50,8 +50,10 @@ namespace Splunk.Client
             ValueConverter = new TConverter();
         }
 
-        public static CollectionConverter<TValue, TCollection, TConverter> Instance
-        { get; private set; }
+        /// <summary>
+        /// The default <see cref="CollectionConverter"/> instance.
+        /// </summary>
+        public static readonly CollectionConverter<TValue, TCollection, TConverter> Instance;
 
         public override TCollection Convert(object input)
         {

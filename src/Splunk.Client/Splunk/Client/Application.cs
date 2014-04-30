@@ -72,6 +72,14 @@ namespace Splunk.Client
             : base(context, @namespace, ApplicationCollection.ClassResourceName, name)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "Application"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public Application()
         { }
 
@@ -85,7 +93,7 @@ namespace Splunk.Client
         /// </summary>
         public string ApplicationAuthor
         {
-            get { return this.Content.GetValue("Author", StringConverter.Instance); }
+            get { return this.GetValue("Author", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -94,7 +102,7 @@ namespace Splunk.Client
         /// </summary>
         public bool CheckForUpdates
         {
-            get { return this.Content.GetValue("CheckForUpdates", BooleanConverter.Instance); }
+            get { return this.GetValue("CheckForUpdates", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -103,7 +111,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Configured
         {
-            get { return this.Content.GetValue("Configured", BooleanConverter.Instance); }
+            get { return this.GetValue("Configured", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -112,7 +120,7 @@ namespace Splunk.Client
         /// </summary>
         public string Description
         {
-            get { return this.Content.GetValue("Description", StringConverter.Instance); }
+            get { return this.GetValue("Description", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -121,7 +129,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Disabled
         {
-            get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
+            get { return this.GetValue("Disabled", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -130,7 +138,7 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -139,7 +147,7 @@ namespace Splunk.Client
         /// </summary>
         public string Label
         {
-            get { return this.Content.GetValue("Label", StringConverter.Instance); }
+            get { return this.GetValue("Label", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -148,7 +156,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Refresh
         {
-            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -166,7 +174,7 @@ namespace Splunk.Client
         /// </remarks>
         public bool StateChangeRequiresRestart
         {
-            get { return this.Content.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
+            get { return this.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -189,7 +197,7 @@ namespace Splunk.Client
         /// </remarks>
         public string Version
         {
-            get { return this.Content.GetValue("Version", StringConverter.Instance); }
+            get { return this.GetValue("Version", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -198,7 +206,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Visible
         {
-            get { return this.Content.GetValue("Visible", BooleanConverter.Instance); }
+            get { return this.GetValue("Visible", BooleanConverter.Instance); }
         }
         
         #endregion
@@ -229,7 +237,7 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 
@@ -331,7 +339,7 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateDataAsync(response);
+                await this.UpdateSnapshotAsync(response);
             }
         }
 

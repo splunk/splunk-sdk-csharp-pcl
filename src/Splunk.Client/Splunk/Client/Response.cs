@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a class that represents a Splunk service response.
     /// </summary>
-    public class Response : IDisposable
+    public sealed class Response : IDisposable
     {
         #region Constructors
 
@@ -76,11 +76,17 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Releases all disposable resources used by the current <see cref=
+        /// "Response"/>.
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            if (!this.disposed)
+            {
+                this.Message.Dispose();
+                this.XmlReader.Dispose();
+                this.disposed = true;
+            }
         }
 
         /// <summary>
@@ -137,18 +143,6 @@ namespace Splunk.Client
 
         HttpResponseMessage message;
         bool disposed;
-
-        void Dispose(bool disposing)
-        {
-            if (disposing && !this.disposed)
-            {
-                this.Message.Dispose();
-                this.XmlReader.Dispose();
-                this.disposed = true;
-
-                GC.SuppressFinalize(this);
-            }
-        }
 
         #endregion
     }

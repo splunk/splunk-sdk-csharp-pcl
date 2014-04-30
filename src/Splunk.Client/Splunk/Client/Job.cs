@@ -70,6 +70,14 @@ namespace Splunk.Client
             : base(context, @namespace, JobCollection.ClassResourceName, name)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "Job"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public Job()
         { }
 
@@ -79,27 +87,27 @@ namespace Splunk.Client
 
         public bool CanSummarize
         {
-            get { return this.Content.GetValue("CanSummarize", BooleanConverter.Instance); }
+            get { return this.GetValue("CanSummarize", BooleanConverter.Instance); }
         }
 
         public DateTime CursorTime
         {
-            get { return this.Content.GetValue("CursorTime", DateTimeConverter.Instance); }
+            get { return this.GetValue("CursorTime", DateTimeConverter.Instance); }
         }
 
         public int DefaultSaveTTL
         {
-            get { return this.Content.GetValue("DefaultSaveTTL", Int32Converter.Instance); }
+            get { return this.GetValue("DefaultSaveTTL", Int32Converter.Instance); }
         }
 
         public int DefaultTTL
         {
-            get { return this.Content.GetValue("DefaultTTL", Int32Converter.Instance); }
+            get { return this.GetValue("DefaultTTL", Int32Converter.Instance); }
         }
 
         public long DiskUsage
         {
-            get { return this.Content.GetValue("DiskUsage", Int64Converter.Instance); } // sample value: "86016"
+            get { return this.GetValue("DiskUsage", Int64Converter.Instance); } // sample value: "86016"
         }
 
         /// <summary>
@@ -115,17 +123,17 @@ namespace Splunk.Client
         /// </remarks>
         public DispatchState DispatchState
         {
-            get { return this.Content.GetValue("DispatchState", EnumConverter<DispatchState>.Instance); }
+            get { return this.GetValue("DispatchState", EnumConverter<DispatchState>.Instance); }
         }
 
         public double DoneProgress
         {
-            get { return this.Content.GetValue("DoneProgress", DoubleConverter.Instance); }
+            get { return this.GetValue("DoneProgress", DoubleConverter.Instance); }
         }
 
         public long DropCount
         {
-            get { return this.Content.GetValue("DropCount", Int64Converter.Instance); }
+            get { return this.GetValue("DropCount", Int64Converter.Instance); }
         }
 
         /// <summary>
@@ -133,197 +141,197 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         public DateTime EarliestTime
         {
-            get { return this.Content.GetValue("EarliestTime", DateTimeConverter.Instance); }
+            get { return this.GetValue("EarliestTime", DateTimeConverter.Instance); }
         }
 
         public long EventAvailableCount
         {
-            get { return this.Content.GetValue("EventAvailableCount", Int64Converter.Instance); }
+            get { return this.GetValue("EventAvailableCount", Int64Converter.Instance); }
         }
 
         public long EventCount
         {
-            get { return this.Content.GetValue("EventCount", Int64Converter.Instance); }
+            get { return this.GetValue("EventCount", Int64Converter.Instance); }
         }
 
         public int EventFieldCount
         {
-            get { return this.Content.GetValue("EventFieldCount", Int32Converter.Instance); }
+            get { return this.GetValue("EventFieldCount", Int32Converter.Instance); }
         }
 
         public bool EventIsStreaming
         {
-            get { return this.Content.GetValue("EventIsStreaming", BooleanConverter.Instance); } // sample value: "1"
+            get { return this.GetValue("EventIsStreaming", BooleanConverter.Instance); } // sample value: "1"
         }
 
         public bool EventIsTruncated
         {
-            get { return this.Content.GetValue("EventIsTruncated", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("EventIsTruncated", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public string EventSearch
         {
-            get { return this.Content.GetValue("EventSearch", StringConverter.Instance); } // sample value: "search index=_internal  | head 10"
+            get { return this.GetValue("EventSearch", StringConverter.Instance); } // sample value: "search index=_internal  | head 10"
         }
 
         public SortDirection EventSorting
         {
-            get { return this.Content.GetValue("EventSorting", EnumConverter<SortDirection>.Instance); }
+            get { return this.GetValue("EventSorting", EnumConverter<SortDirection>.Instance); }
         }
 
         public long IndexEarliestTime
         {
-            get { return this.Content.GetValue("IndexEarliestTime", Int64Converter.Instance); } // sample value: "1396566178"
+            get { return this.GetValue("IndexEarliestTime", Int64Converter.Instance); } // sample value: "1396566178"
         }
 
         public long IndexLatestTime
         {
-            get { return this.Content.GetValue("IndexLatestTime", Int64Converter.Instance); } // sample value: "1396566183"
+            get { return this.GetValue("IndexLatestTime", Int64Converter.Instance); } // sample value: "1396566183"
         }
 
         public bool IsBatchModeSearch
         {
-            get { return this.Content.GetValue("IsBatchModeSearch", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsBatchModeSearch", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsDone
         {
-            get { return this.Content.GetValue("IsDone", BooleanConverter.Instance); } // sample value: "1"
+            get { return this.GetValue("IsDone", BooleanConverter.Instance); } // sample value: "1"
         }
 
         public bool IsFailed
         {
-            get { return this.Content.GetValue("IsFailed", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsFailed", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsFinalized
         {
-            get { return this.Content.GetValue("IsFinalized", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsFinalized", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsPaused
         {
-            get { return this.Content.GetValue("IsPaused", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsPaused", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsPreviewEnabled
         {
-            get { return this.Content.GetValue("IsPreviewEnabled", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsPreviewEnabled", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsRealTimeSearch
         {
-            get { return this.Content.GetValue("IsRealTimeSearch", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsRealTimeSearch", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsRemoteTimeline
         {
-            get { return this.Content.GetValue("IsRemoteTimeline", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsRemoteTimeline", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsSaved
         {
-            get { return this.Content.GetValue("IsSaved", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsSaved", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsSavedSearch
         {
-            get { return this.Content.GetValue("IsSavedSearch", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsSavedSearch", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public bool IsZombie
         {
-            get { return this.Content.GetValue("IsZombie", BooleanConverter.Instance); } // sample value: "0"
+            get { return this.GetValue("IsZombie", BooleanConverter.Instance); } // sample value: "0"
         }
 
         public string Keywords
         {
-            get { return this.Content.GetValue("Keywords", StringConverter.Instance); } // sample value: "index::_internal"
+            get { return this.GetValue("Keywords", StringConverter.Instance); } // sample value: "index::_internal"
         }
 
         public DateTime LatestTime
         {
-            get { return this.Content.GetValue("LatestTime", DateTimeConverter.Instance); }
+            get { return this.GetValue("LatestTime", DateTimeConverter.Instance); }
         }
 
         // Messages	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
 
         public string NormalizedSearch
         {
-            get { return this.Content.GetValue("NormalizedSearch", StringConverter.Instance); } 
+            get { return this.GetValue("NormalizedSearch", StringConverter.Instance); } 
         }
 
         public int NumPreviews
         {
-            get { return this.Content.GetValue("NumPreviews", Int32Converter.Instance); }
+            get { return this.GetValue("NumPreviews", Int32Converter.Instance); }
         }
 
         // Performance	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
 
         public int Pid
         {
-            get { return this.Content.GetValue("Pid", Int32Converter.Instance); } // sample value: "1692"
+            get { return this.GetValue("Pid", Int32Converter.Instance); } // sample value: "1692"
         }
 
         public int Priority
         {
-            get { return this.Content.GetValue("Priority", Int32Converter.Instance); } // sample value: "5"
+            get { return this.GetValue("Priority", Int32Converter.Instance); } // sample value: "5"
         }
 
         public string RemoteSearch
         {
-            get { return this.Content.GetValue("RemoteSearch", StringConverter.Instance); }
+            get { return this.GetValue("RemoteSearch", StringConverter.Instance); }
         }
 
         // Request	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
 
         public long ResultCount
         {
-            get { return this.Content.GetValue("ResultCount", Int64Converter.Instance); }
+            get { return this.GetValue("ResultCount", Int64Converter.Instance); }
         }
 
         public bool ResultIsStreaming
         {
-            get { return this.Content.GetValue("ResultIsStreaming", BooleanConverter.Instance); }
+            get { return this.GetValue("ResultIsStreaming", BooleanConverter.Instance); }
         }
 
         public long ResultPreviewCount
         {
-            get { return this.Content.GetValue("ResultPreviewCount", Int64Converter.Instance); }
+            get { return this.GetValue("ResultPreviewCount", Int64Converter.Instance); }
         }
 
         public double RunDuration
         {
-            get { return this.Content.GetValue("RunDuration", DoubleConverter.Instance); } // sample value: "0.220000"
+            get { return this.GetValue("RunDuration", DoubleConverter.Instance); } // sample value: "0.220000"
         }
 
         // Runtime	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
 
         public long ScanCount
         {
-            get { return this.Content.GetValue("ScanCount", Int64Converter.Instance); }
+            get { return this.GetValue("ScanCount", Int64Converter.Instance); }
         }
 
         //	SearchProviders	{System.Collections.Generic.List<object>}	System.Collections.Generic.List`1[System.Object]
 
         public string Sid
         {
-            get { return this.Data.Entry.Title; }
+            get { return this.Name; }
         }
 
         public int StatusBuckets
         {
-            get { return this.Content.GetValue("StatusBuckets", Int32Converter.Instance); }
+            get { return this.GetValue("StatusBuckets", Int32Converter.Instance); }
         }
 
         public long Ttl
         {
-            get { return this.Content.GetValue("Ttl", Int64Converter.Instance); }
+            get { return this.GetValue("Ttl", Int64Converter.Instance); }
         }
 
         #endregion
@@ -404,7 +412,7 @@ namespace Splunk.Client
                             await entry.ReadXmlAsync(reader);
                         }
 
-                        this.Data = new DataCache(entry);
+                        this.Snapshot = new EntitySnapshot(entry);
                     }
 
                     return;

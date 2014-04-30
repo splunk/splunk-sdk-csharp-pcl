@@ -16,12 +16,12 @@
 
 namespace Splunk.Client.UnitTesting
 {
-    using System;
-
     using Splunk.Client;
 
+    using System;
     using System.Linq.Expressions;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Xunit;
 
@@ -463,66 +463,72 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public void SavedSearchHistory()
+        public async Task SavedSearchHistory()
         {
-            Service service = this.Connect();
-            string savedSearchTitle = "sdk-test1";
-            SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
-
-            // Ensure test starts in a known good state
-            if (savedSearches.Any(a => a.Name == savedSearchTitle))
+            using (var service = this.Connect())
             {
-                service.RemoveSavedSearchAsync(savedSearchTitle).Wait();
-                savedSearches.GetAsync().Wait();
+                string savedSearchTitle = "sdk-test1";
+
+                SavedSearchCollection savedSearches = await service.GetSavedSearchesAsync(
+                    new SavedSearchCollectionArgs { Count = 0 });
+
+                // Ensure test starts in a known good state
+
+                if (savedSearches.Any(a => a.Name == savedSearchTitle))
+                {
+                    await service.RemoveSavedSearchAsync(savedSearchTitle);
+                    await savedSearches.GetAsync();
+                }
+
+                Assert.False(savedSearches.Any(a => a.Name == savedSearchTitle));
+                string search = "search index=sdk-tests * earliest=-1m";
+
+                // Create a saved search
+
+                SavedSearch savedSearch = await service.CreateSavedSearchAsync(savedSearchTitle, 
+                    new SavedSearchAttributes() { Search = search });
+
+                // Clear the history - even though we have a newly create saved search
+                // it's possible there was a previous saved search with the same name
+                // that had a matching history.
+
+                JobCollection history = await savedSearch.GetHistoryAsync();
+                
+                foreach (Job job in history)
+                {
+                    await job.CancelAsync();
+                }
+
+                history = await savedSearch.GetHistoryAsync();
+                Assert.Equal(0, history.Count);
+
+                Job job1 = await savedSearch.DispatchAsync();
+                this.Ready(job1);
+                history = await savedSearch.GetHistoryAsync();
+                Assert.Equal(1, history.Count);
+                Assert.True(history.Any(a => a.Sid == job1.Sid)); // this.Contains(history, job1.Sid));
+
+                Job job2 = await savedSearch.DispatchAsync();
+                this.Ready(job2);
+                history = await savedSearch.GetHistoryAsync();
+                Assert.Equal(2, history.Count);
+                Assert.True(history.Any(a => a.Sid == job1.Sid));
+                Assert.True(history.Any(a => a.Sid == job2.Sid));
+
+                await job1.CancelAsync();
+                history = await savedSearch.GetHistoryAsync();
+                Assert.Equal(1, history.Count);
+                Assert.True(history.Any(a => a.Sid == job2.Sid));
+
+                await job2.CancelAsync();
+                history = await savedSearch.GetHistoryAsync();
+                Assert.Equal(0, history.Count);
+
+                //// Delete the saved search
+                await service.RemoveSavedSearchAsync("sdk-test1");
+                await savedSearches.GetAsync();
+                Assert.False(savedSearches.Any(a => a.Name == "sdk-test1"));
             }
-
-            Assert.False(savedSearches.Any(a => a.Name == savedSearchTitle));
-
-            string search = "search index=sdk-tests * earliest=-1m";
-
-            // Create a saved search
-            SavedSearch savedSearch =
-                service.CreateSavedSearchAsync(savedSearchTitle, new SavedSearchAttributes() { Search = search }).Result;
-
-            // Clear the history - even though we have a newly create saved search
-            // it's possible there was a previous saved search with the same name
-            // that had a matching history.
-            JobCollection history = savedSearch.GetHistoryAsync().Result;
-            Console.WriteLine("history job count=" + history.Count);
-            foreach (Job job in history)
-            {
-                job.CancelAsync().Wait();
-            }
-
-            history = savedSearch.GetHistoryAsync().Result;
-            Assert.Equal(0, history.Count);
-
-            Job job1 = savedSearch.DispatchAsync().Result;
-            this.Ready(job1);
-            history = savedSearch.GetHistoryAsync().Result;
-            Assert.Equal(1, history.Count);
-            Assert.True(history.Any(a => a.Sid == job1.Sid)); // this.Contains(history, job1.Sid));
-
-            Job job2 = savedSearch.DispatchAsync().Result;
-            this.Ready(job2);
-            history = savedSearch.GetHistoryAsync().Result;
-            Assert.Equal(2, history.Count);
-            Assert.True(history.Any(a => a.Sid == job1.Sid));
-            Assert.True(history.Any(a => a.Sid == job2.Sid));
-
-            job1.CancelAsync().Wait();
-            history = savedSearch.GetHistoryAsync().Result;
-            Assert.Equal(1, history.Count);
-            Assert.True(history.Any(a => a.Sid == job2.Sid));
-
-            job2.CancelAsync().Wait();
-            history = savedSearch.GetHistoryAsync().Result;
-            Assert.Equal(0, history.Count);
-
-            //// Delete the saved search
-            service.RemoveSavedSearchAsync("sdk test1").Wait();
-            savedSearches.GetAsync().Wait();
-            Assert.False(savedSearches.Any(a => a.Name == "sdk test1"));
         }
     }
 }

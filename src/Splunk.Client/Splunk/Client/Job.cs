@@ -313,17 +313,17 @@ namespace Splunk.Client
 
         public string Sid
         {
-            get { return this.Content.GetValue("Sid", StringConverter.Instance); } // sample value: "1396566184.230"
+            get { return this.Data.Entry.Title; }
         }
 
         public int StatusBuckets
         {
-            get { return this.Content.GetValue("StatusBuckets", Int32Converter.Instance); } // sample value: "0"
+            get { return this.Content.GetValue("StatusBuckets", Int32Converter.Instance); }
         }
 
         public long Ttl
         {
-            get { return this.Content.GetValue("Ttl", Int64Converter.Instance); } // sample value: "599"
+            get { return this.Content.GetValue("Ttl", Int64Converter.Instance); }
         }
 
         #endregion

@@ -206,35 +206,7 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates the application represented by the current
-        /// instance.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to create the current <see cref=
-        /// "Application"/>.
-        /// </remarks>
-        public async Task Install(string path, bool update = false)
-        {
-            var resourceName = ApplicationCollection.ClassResourceName;
-
-            var args = new CreationArgs()
-            {
-                ExplicitApplicationName = this.Name,
-                Filename = true,
-                Name = path,
-                Update = update
-            };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateDataAsync(response);
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously creates the application represented by the current
+        /// Asynchronously creates the current <see cref="Application"/>.
         /// instance.
         /// </summary>
         /// <remarks>
@@ -258,6 +230,40 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 await this.UpdateDataAsync(response);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously disables the current <see cref="Application"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the POST apps/local/{name}/disable </a> endpoint 
+        /// to disable the current <see cref="Application"/>.
+        /// </remarks>
+        public async Task DisableAsync()
+        {
+            var resourceName = new ResourceName(this.ResourceName, "disable");
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously enables the current <see cref="Application"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the POST apps/local/{name}/enable </a> endpoint 
+        /// to enable the current <see cref="Index"/>.
+        /// </remarks>
+        public async Task EnableAsync()
+        {
+            var resourceName = new ResourceName(this.ResourceName, "enable");
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
@@ -299,6 +305,34 @@ namespace Splunk.Client
             var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, this.Name);
             await resource.GetAsync();
             return resource;
+        }
+
+        /// <summary>
+        /// Asynchronously creates the application represented by the current
+        /// instance.
+        /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local</a> endpoint to create the current <see cref=
+        /// "Application"/>.
+        /// </remarks>
+        public async Task InstallAsync(string path, bool update = false)
+        {
+            var resourceName = ApplicationCollection.ClassResourceName;
+
+            var args = new CreationArgs()
+            {
+                ExplicitApplicationName = this.Name,
+                Filename = true,
+                Name = path,
+                Update = update
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await this.UpdateDataAsync(response);
+            }
         }
 
         /// <summary>

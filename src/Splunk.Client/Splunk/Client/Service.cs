@@ -330,7 +330,7 @@ namespace Splunk.Client
         public async Task<Application> InstallApplicationAsync(string name, string path, bool update = false)
         {
             var resource = new Application(this.Context, this.Namespace, name);
-            await resource.Install(path, update);
+            await resource.InstallAsync(path, update);
             return resource;
         }
 
@@ -715,8 +715,23 @@ namespace Splunk.Client
         /// <param name="name">
         /// Name of the index to create.
         /// </param>
-        /// <param name="args">
-        /// Specification of the index create.
+        /// <param name="coldPath">
+        /// Location for storing the cold databases for the index identified by
+        /// <see cref="name"/>. A value of <c>null</c> or <c>""</c> specifies 
+        /// that the cold databases should be stored at the default location.
+        /// </param>
+        /// <param name="homePath">
+        /// Location for storing the hot and warm buckets for the index 
+        /// identified by <see cref="name"/>. A value of <c>null</c> or <c>""
+        /// </c> specifies that the hot and warm buckets should be stored at 
+        /// the default location.
+        /// </param>
+        /// <param name="thawedPath">
+        /// <summary>
+        /// Specifies the absolute path for storing the resurrected databases 
+        /// for the index identified by <see cref="name"/>. A value of <c>null
+        /// </c> or <c>""</c> specifies that the resurrected databases should 
+        /// be stored at the default location.
         /// </param>
         /// <param name="attributes">
         /// Attributes to set on the newly created index.
@@ -729,10 +744,11 @@ namespace Splunk.Client
         /// data/indexes</a> endpoint to create the <see cref="Index"/> object
         /// it returns.
         /// </remarks>
-        public async Task<Index> CreateIndexAsync(string name, IndexArgs args, IndexAttributes attributes = null)
+        public async Task<Index> CreateIndexAsync(string name, string coldPath = null, string homePath = null, 
+            string thawedPath = null, IndexAttributes attributes = null)
         {
             var entity = new Index(this.Context, this.Namespace, name);
-            await entity.CreateAsync(args, attributes);
+            await entity.CreateAsync(coldPath, homePath, thawedPath, attributes);
             return entity;
         }
 

@@ -16,12 +16,13 @@
 
 namespace Splunk.Client.UnitTesting
 {
+    using Splunk.Client;
     using System;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading;
-    using Splunk.Client;
+    using System.Threading.Tasks;
     using Xunit;
 
     /// <summary>
@@ -58,7 +59,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public void IndexAccessors()
+        public async Task IndexAccessors()
         {
             string indexName = "sdk-tests2";
             Service service = Connect();
@@ -67,7 +68,7 @@ namespace Splunk.Client.UnitTesting
                          string.Format("{0}{1} ", offset.Offset.Hours.ToString("D2"),
                              offset.Offset.Minutes.ToString("D2"));
 
-            ServerInfo info = service.Server.GetInfoAsync().Result;
+            ServerInfo info = await service.Server.GetInfoAsync();
 
             //// set can_delete if not set, so we can delete events from the index.
             //User user = service.GetUsers().Get("admin");
@@ -81,7 +82,8 @@ namespace Splunk.Client.UnitTesting
             //    user.Update();
             //}
 
-            IndexCollection indexes = service.GetIndexesAsync().Result;
+            IndexCollection indexes = await service.GetIndexesAsync();
+
             foreach (Index idx in indexes)
             {
                 int dummyInt;
@@ -140,30 +142,25 @@ namespace Splunk.Client.UnitTesting
                 dummyBool = idx.IsInternal;
             }
 
+            Index index = null;
 
             try
             {
-                var x = service.GetIndexAsync(indexName).Result;
-
-                if (service.GetIndexAsync(indexName).Result == null)
-                {
-                    service.CreateIndexAsync(indexName, new IndexArgs("", "", ""), new IndexAttributes()).Wait();
-                    //indexes.Refresh();
-                }
+                index = await service.GetIndexAsync(indexName);
             }
-            catch (Exception e)
+            catch (Splunk.Client.ResourceNotFoundException)
+            { }
+
+            if (index == null)
             {
-                service.CreateIndexAsync(indexName, new IndexArgs("", "", ""), new IndexAttributes()).Wait();
+                index = await service.CreateIndexAsync(indexName);
             }
 
-            Assert.NotNull(service.GetIndexAsync(indexName).Result);
+            await service.GetIndexAsync(indexName);
 
-            Index index = service.GetIndexAsync(indexName).Result;
-
-            IndexAttributes indexAttributes = GetIndexAttributes(index);
+            var indexAttributes = GetIndexAttributes(index);
 
             // use setters to update most
-
 
             indexAttributes.BlockSignSize = index.BlockSignSize + 1;
 
@@ -193,12 +190,12 @@ namespace Splunk.Client.UnitTesting
             indexAttributes.SyncMeta = !index.SyncMeta;
             indexAttributes.ThrottleCheckPeriod = index.ThrottleCheckPeriod + 1;
 
-            index.UpdateAsync(indexAttributes).Wait();
+            await index.UpdateAsync(indexAttributes);
 
             // check, then restore using map method
             //index.Refresh();
 
-            ClearIndex(service, indexName, index);
+            await ClearIndex(service, indexName, index);
 
             //index.Disable();            
             Assert.True(index.Disabled);
@@ -206,7 +203,7 @@ namespace Splunk.Client.UnitTesting
             this.SplunkRestart();
 
             service = this.Connect();
-            index = service.GetIndexAsync(indexName).Result;
+            index = await service.GetIndexAsync(indexName);
             //user = service.GetUsers().Get("admin");
 
             //index.Enable();
@@ -256,7 +253,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public void IndexEvents()
+        public async Task IndexEvents()
         {
             string indexName = "sdk-tests2";
             DateTimeOffset offset = new DateTimeOffset(DateTime.Now);
@@ -265,8 +262,8 @@ namespace Splunk.Client.UnitTesting
                              offset.Offset.Minutes.ToString("D2"));
 
             Service service = this.Connect();
-            ServerInfo info = service.Server.GetInfoAsync().Result;
-            Index index = service.GetIndexAsync(indexName).Result;
+            ServerInfo info = await service.Server.GetInfoAsync();
+            Index index = await service.GetIndexAsync(indexName);
 
             if (index.TotalEventCount > 0)
             {
@@ -275,14 +272,14 @@ namespace Splunk.Client.UnitTesting
 
             Assert.Equal(0, index.TotalEventCount);
 
-            ClearIndex(service, indexName, index);
+            await ClearIndex(service, indexName, index);
 
             // submit events to index
             //index.Submit(now + " Hello World. \u0150");
             //index.Submit(now + " Goodbye world. \u0150");
             //WaitUntilEventCount(index, 2, 45);
 
-            ClearIndex(service, indexName, index);
+            await ClearIndex(service, indexName, index);
 
             //// stream events to index
             //Stream stream = index.Attach();
@@ -291,7 +288,7 @@ namespace Splunk.Client.UnitTesting
             //stream.Close();
             WaitUntilEventCount(index, 2, 45);
 
-            ClearIndex(service, indexName, index);
+            await ClearIndex(service, indexName, index);
             //index.Clean(180);
             Assert.Equal(0, index.TotalEventCount);
 
@@ -322,7 +319,7 @@ namespace Splunk.Client.UnitTesting
             //    throw new Exception("File " + filename + "failed to upload: Exception -> " + e.Message);
             //}
 
-            ClearIndex(service, indexName, index);
+            await ClearIndex(service, indexName, index);
         }
 
         /// <summary>
@@ -362,9 +359,9 @@ namespace Splunk.Client.UnitTesting
         /// <param name="service">A service</param>
         /// <param name="indexName">The index name</param>
         /// <param name="index">The index object</param>
-        private void ClearIndex(Service service, string indexName, Index index)
+        private async Task ClearIndex(Service service, string indexName, Index index)
         {
-            SearchResults result = service.SearchOneshotAsync(string.Format("search index={0} * | delete", indexName)).Result;
+            SearchResults result = await service.SearchOneshotAsync(string.Format("search index={0} * | delete", indexName));
 
             //StreamReader reader = new StreamReader(stream);
             //string message = reader.ReadToEnd();
@@ -383,7 +380,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public void IndexArgs()
+        public async Task IndexArgs()
         {
             string indexName = "sdk-tests2";
             DateTimeOffset offset = new DateTimeOffset(DateTime.Now);
@@ -392,7 +389,7 @@ namespace Splunk.Client.UnitTesting
                              offset.Offset.Minutes.ToString("D2"));
 
             Service service = this.Connect();
-            Index index = service.GetIndexAsync(indexName).Result;
+            Index index = await service.GetIndexAsync(indexName);
 
             //index.Enable();
             Assert.False(index.Disabled);
@@ -406,7 +403,7 @@ namespace Splunk.Client.UnitTesting
             //index.Submit(indexAttributes, now + " Goodbye World. \u0150");
             //WaitUntilEventCount(index, 2, 45);
 
-            ClearIndex(service, indexName, index);
+            await ClearIndex(service, indexName, index);
 
             // stream event to index with variable arguments
             //Stream streamArgs = index.Attach(indexAttributes);
@@ -431,8 +428,8 @@ namespace Splunk.Client.UnitTesting
             Receiver receiver = new Receiver();
             //receiver.Submit(args, "Hello World.");
             //receiver.Submit(args, "Goodbye world.");
-            receiver.SendAsync("Hello World.", args).Wait();
-            receiver.SendAsync("Goodbye world.", args).Wait();
+            await receiver.SendAsync("Hello World.", args);
+            await receiver.SendAsync("Goodbye world.", args);
             //WaitUntilEventCount(index, 4, 45);
             // verify the fields of events in the index matching the args.
             //using (var stream =
@@ -444,23 +441,23 @@ namespace Splunk.Client.UnitTesting
             //            Source,
             //            SourceType)))
 
-            SearchResults result = service.SearchOneshotAsync(
+            SearchResults result = await service.SearchOneshotAsync(
                     string.Format(
                         "search index={0} host={1} source={2} sourcetype={3}",
                         indexName,
                         Host,
                         Source,
-                        SourceType)).Result;
+                        SourceType));
 
             //using (var reader = new ResultsReaderXml(stream))
             //{
             //    Assert.Equal(2, reader.Count());
             //}
             Assert.Equal(2, result.FieldNames.Count);
-            index.GetAsync().Wait();
+            await index.GetAsync();
             Assert.Equal(2, index.TotalEventCount);
 
-            ClearIndex(service, indexName, index);
+            await ClearIndex(service, indexName, index);
             //index.Clean(180);
             //Assert.Equal(0, index.TotalEventCount, "Expected the total event count to be 0");
         }
@@ -471,7 +468,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public void DefaultIndexArgs()
+        public async Task DefaultIndexArgs()
         {
             string indexName = "main";
             DateTimeOffset offset = new DateTimeOffset(DateTime.Now);
@@ -482,7 +479,7 @@ namespace Splunk.Client.UnitTesting
             Service service = this.Connect();
             //Receiver receiver = service.GetReceiver();
             Receiver receiver = new Receiver();
-            Index index = service.GetIndexAsync(indexName).Result;
+            Index index = await service.GetIndexAsync(indexName);
 
             //index.Enable();
             Assert.False(index.Disabled);
@@ -492,8 +489,8 @@ namespace Splunk.Client.UnitTesting
             // submit event to default index using variable arguments
             //receiver.Log(indexAttributes, "Hello World. \u0150");
             //receiver.Log(indexAttributes, "Goodbye World. \u0150");
-            receiver.SendAsync("Hello World", receiverArgs).Wait();
-            receiver.SendAsync("Hello World 2", receiverArgs).Wait();
+            await receiver.SendAsync("Hello World", receiverArgs);
+            await receiver.SendAsync("Hello World 2", receiverArgs);
 
             // stream event to default index with variable arguments
             //Stream streamArgs = receiver.Attach(indexAttributes);
@@ -505,7 +502,7 @@ namespace Splunk.Client.UnitTesting
             byte[] inputString = uniEncoding.GetBytes("stream hello world ");
             MemoryStream stream = new MemoryStream();
             stream.Write(inputString, 0, inputString.Length);
-            receiver.SendAsync(stream, receiverArgs).Wait();
+            await receiver.SendAsync(stream, receiverArgs);
             stream.Close();
         }
     }

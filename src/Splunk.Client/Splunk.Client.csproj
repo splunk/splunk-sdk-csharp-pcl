@@ -137,7 +137,6 @@
     <Compile Include="Splunk\Client\IndexCollection.cs" />
     <Compile Include="Splunk\Client\ConfigurationSetting.cs" />
     <Compile Include="Splunk\Client\IndexAttributes.cs" />
-    <Compile Include="Splunk\Client\IndexArgs.cs" />
     <Compile Include="Splunk\Client\Int64Converter.cs" />
     <Compile Include="Splunk\Client\AuthenticationFailureException.cs" />
     <Compile Include="Splunk\Client\ServerMessage.cs" />
@@ -220,6 +219,7 @@
     <Compile Include="Splunk\Client\Observable.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

@@ -71,9 +71,9 @@ namespace Splunk.Client.Examples.Search
             }
 
             //Use JobArgs to define the search
-            JobArgs args = new JobArgs()
+            JobArgs args = new JobArgs
             {
-                AutoCancel = 0,
+                AutoCancel = 0
             };
 
             using (SearchResults searchResults = await service.SearchOneshotAsync("search index=_internal | head 5", args))
@@ -98,15 +98,16 @@ namespace Splunk.Client.Examples.Search
             await service.LoginAsync("admin", "changeme");
 
             // Realtime window is 5 minutes
-            var jobArgs = new JobArgs()
+            string query = "search index=_internal";
+
+            var jobArgs = new JobArgs
             {
                 SearchMode = SearchMode.Realtime,
                 EarliestTime = "rt-5m",
                 LatestTime = "rt",
             };
 
-            Job job = await service.CreateJobAsync("search index=_internal", jobArgs);
-
+            Job job = await service.CreateJobAsync(query, jobArgs);
 
             //this sleep should be removed if DVPL-4503 is fixed.
             //Thread.Sleep(5000);

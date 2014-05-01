@@ -178,18 +178,7 @@ namespace Splunk.Client.UnitTesting
 
                     var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
 
-                    //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
-                    //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
-                    //// We might check that there is no update info for 2.3.1:
-                    ////    Assert.Null(twitterApplicationUpdateInfo.Update);
-                    //// Then change the version number to 2.3.0:
-                    ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
-                    //// Finally:
-                    ////    await twitterApplicationUpdateInfo.GetAsync();
-                    ////    Assert.NotNull(twitterApplicationUpdateInfo.Update);
-                    ////    Assert.Equal("2.3.1", twitterApplicationUpdateInfo.Version);
-                    ////    Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Checksum);
-                    ////    // other asserts on the contents of the update
+                    // other asserts on the contents of the update
                     
                     Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
                     Assert.Equal(true, twitterApplication.CheckForUpdates);
@@ -200,6 +189,18 @@ namespace Splunk.Client.UnitTesting
                     Assert.Equal(false, twitterApplication.StateChangeRequiresRestart);
                     Assert.Equal("2.3.0", twitterApplication.Version);
                     Assert.Equal(true, twitterApplication.Visible);
+
+                    //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
+                    //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
+                    //// We might check that there is no update info for 2.3.1:
+                    ////    Assert.Null(twitterApplicationUpdateInfo.Update);
+                    //// Then change the version number to 2.3.0:
+                    ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
+                    //// Finally:
+                    //// ApplicationUpdateInfo twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
+                    //// Assert.NotNull(twitterApplicationUpdateInfo.Update);
+                    //// Assert.True(string.Compare(twitterApplicationUpdateInfo.Update.Version, "2.3.0") == 1, "expect the newer twitter app info");
+                    //// Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Update.Checksum);
 
                     var twitterApplicationSetupInfo = await twitterApplication.GetSetupInfoAsync();
                     var twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();

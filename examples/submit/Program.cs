@@ -82,8 +82,8 @@ namespace Splunk.Examples.Submit
                 ReceiverArgs args = new ReceiverArgs()
                 {
                     Index = indexName,
-                    Source = source,
-                    SourceType = sourceType,
+                    //Source = source,
+                    //SourceType = sourceType,
                 };
 
                 await receiver.SendAsync("Hello World.", args);

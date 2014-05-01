@@ -14,22 +14,50 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
+//// TODO:
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     /// <summary>
-    /// 
+    /// Represents a collection of Splunk search jobs.
     /// </summary>
     public class JobCollection : EntityCollection<JobCollection, Job>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JobCollection"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
+        /// </param>
+        /// <param name="args">
+        /// Arguments for retrieving the <see cref="JobCollection"/>.
+        /// </param>
         internal JobCollection(Context context, Namespace @namespace, JobCollectionArgs args = null)
             : base(context, @namespace, ClassResourceName, args)
         { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JobCollection"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
+        /// </param>
+        /// <remarks>
+        /// This constructor is used by the <see cref="SavedSearch.GetHistoryAsync"/>
+        /// method to retrieve the collection of jobs created from a saved
+        /// search.
+        /// </remarks>
         internal JobCollection(Context context, Namespace @namespace, ResourceName resourceName)
             : base(context, @namespace, resourceName)
         { }

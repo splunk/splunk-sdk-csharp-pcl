@@ -82,7 +82,7 @@ namespace Splunk.Client
 
         #endregion
 
-        #region privates
+        #region Privates
 
         HashSet<Argument> set;
 
@@ -161,11 +161,6 @@ namespace Splunk.Client
         public bool Remove(Argument item)
         {
             return this.set.Remove(item);
-        }
-
-        IEnumerator<Argument> IEnumerable<Argument>.GetEnumerator()
-        {
-            throw new NotImplementedException();
         }
     }
 }

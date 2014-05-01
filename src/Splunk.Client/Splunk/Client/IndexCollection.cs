@@ -14,20 +14,30 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
+//// TODO:
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a class that represents a collection of Splunk data indexes.
+    /// Represents a collection of Splunk data indexes.
     /// </summary>
     public class IndexCollection : EntityCollection<IndexCollection, Index>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IndexCollection"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
+        /// </param>
         internal IndexCollection(Context context, Namespace @namespace)
             : base(context, @namespace, ClassResourceName)
         { }

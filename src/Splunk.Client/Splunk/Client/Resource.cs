@@ -35,9 +35,11 @@ namespace Splunk.Client
     using System.IO;
 
     /// <summary>
-    /// 
+    /// Provides a base class for representing a Splunk resource.
     /// </summary>
-    /// <typeparam name="TResource"></typeparam>
+    /// <typeparam name="TResource">
+    /// The resource type inheriting from this class.
+    /// </typeparam>
     public abstract class Resource<TResource> : IComparable, IComparable<Resource<TResource>>,
         IEquatable<Resource<TResource>> where TResource : Resource<TResource>, new()
     {

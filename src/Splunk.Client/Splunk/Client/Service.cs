@@ -1038,6 +1038,7 @@ namespace Splunk.Client
         public async Task<Job> CreateJobAsync(string search, JobArgs args = null)
         {
             Contract.Requires<ArgumentNullException>(search != null);
+            Contract.Requires<ArgumentOutOfRangeException>(args == null || args.ExecutionMode != ExecutionMode.Oneshot);
 
             // FJR: Also check that it's not export, which also won't return a job.
             // DSN: JobArgs does not include SearchExportArgs
@@ -1198,6 +1199,11 @@ namespace Splunk.Client
                 new Argument("search", search),
                 new Argument("exec_mode", "oneshot")
             };
+
+            if (args != null)
+            {
+                args.ExecutionMode = null;
+            }
 
             Response response = await this.Context.PostAsync(this.Namespace, resourceName, command, args);
 

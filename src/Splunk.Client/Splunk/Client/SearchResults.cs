@@ -174,9 +174,7 @@ namespace Splunk.Client
             };
         }
 
-        IDisposable connection = Disposable.Empty;
-        IConnectableObservable<Result> observableResult = null;
-
+        IObservable<Result> observableResult = null;
         public IObservable<Result> AsObservable()
         {
             // NB: Because this result is inherently *live data*, we
@@ -185,13 +183,13 @@ namespace Splunk.Client
             // and another subscriber having a different set of data)
             if (observableResult != null) return observableResult;
 
-            observableResult = Observable.Defer(() => ReadResultAsync().ToObservable())
+            observableResult = Observable.Defer(() => ReadResultAsync().ToObservable ())
                 .Repeat()
                 .TakeWhile(x => x != null)
                 .Finally(() => this.Dispose())
-                .Publish();
+                .Publish()
+                .RefCount();
 
-            connection = observableResult.Connect();
             return observableResult;
         }
 
@@ -201,8 +199,6 @@ namespace Splunk.Client
         /// </summary>
         public void Dispose()
         {
-            Interlocked.Exchange(ref connection, Disposable.Empty).Dispose();
-
             if (!this.disposed)
             {
                 this.response.Dispose();

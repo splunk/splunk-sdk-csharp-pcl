@@ -83,7 +83,9 @@
     <Compile Include="SavedSearchTest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SearchTest.cs" />
+    <Compile Include="SearchTest.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="ServiceTest.cs" />
     <Compile Include="SettingsTest.cs" />
     <Compile Include="TestHelper.cs" />

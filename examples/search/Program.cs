@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Client.Examples
+namespace Splunk.Client.Examples.Search
 {
     using System;
     using System.Net;

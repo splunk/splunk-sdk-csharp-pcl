@@ -815,10 +815,21 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanStartSearch()
+        public async Task CanCreateJobAndGetResults()
         {
             using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
+                var searchCommands = new
+                {
+                    SearchCommand = "search index=_internal",
+                    JobArgs = new JobArgs()
+                        {
+                            SearchMode = SearchMode.Realtime,
+                            EarliestTime = "rt-5m",
+                            LatestTime = "rt"
+                        }
+                };
+
                 await service.LoginAsync("admin", "changeme");
 
                 var job = await service.CreateJobAsync("search index=_internal | head 10");
@@ -908,9 +919,9 @@ namespace Splunk.Client.UnitTesting
                 await service.LoginAsync("admin", "changeme");
                 await service.CreateIndexAsync(indexName);
 
-                foreach (var searchCommand in searchCommands)
+                foreach (var command in searchCommands)
                 {
-                    var searchResults = await service.SearchOneshotAsync(new JobArgs(searchCommand) { MaxCount = 100000 });
+                    var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
                     var records = new List<Splunk.Client.Result>(searchResults);
                 }
             }

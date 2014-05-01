@@ -20,7 +20,7 @@ namespace Splunk.Client
 
     /// <summary>
     /// Specifies the condition under which the alert actions of a <see cref=
-    /// "SavedSearch"/> are triggered..
+    /// "SavedSearch"/> are triggered.
     /// </summary>
     public enum AlertType
     {

@@ -337,8 +337,13 @@ namespace Splunk.Client
         #endregion
 
         /// <summary>
-        /// Refreshes the cached state of the current <see cref="Entity<TEntity>"/>.
+        /// Updates the cached state of the current <see cref="Job"/>.
         /// </summary>
+        /// /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SFqSPI">GET 
+        /// search/jobs/{search_id}</a> endpoint to update the cached 
+        /// cached state of the current <see cref="Job"/>.
+        /// </remarks>
         public override async Task GetAsync()
         {
             //// TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class

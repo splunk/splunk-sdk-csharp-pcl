@@ -26,35 +26,26 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for starting a new search job.
+    /// Provides arguments for creating a search <see cref="Job"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>.
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class JobArgs : Args<JobArgs>
     {
         #region Constructors
 
-        public JobArgs(string search)
-        {
-            Contract.Requires<ArgumentNullException>(search != null, "search");
-            this.Search = search;
-        }
+        public JobArgs()
+        { }
 
         #endregion
 
         #region Properties
-
-        [DataMember(Name = "search", IsRequired = true)]
-        public string Search
-        { get; private set; }
 
         [DataMember(Name = "auto_cancel", EmitDefaultValue = false)]
         [DefaultValue(0)]

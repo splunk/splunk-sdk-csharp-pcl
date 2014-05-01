@@ -105,10 +105,10 @@ namespace Splunk.Client.UnitTesting
         /// <param name="service">The service</param>
         /// <param name="jobArgs">The args</param>
         /// <returns>The job</returns>
-        private Job RunWait(Service service, JobArgs jobArgs)
+        private Job RunWait(Service service, string search, JobArgs args)
         {
 
-            return service.CreateJobAsync(jobArgs).Result;
+            return service.CreateJobAsync(search, args).Result;
         }
 
         /// <summary>
@@ -122,11 +122,11 @@ namespace Splunk.Client.UnitTesting
             Service service = Connect();
 
             //Job job;
-            JobArgs jobArgs = new JobArgs(Query);
 
-            service.CreateJobAsync(jobArgs).Wait();
+            service.CreateJobAsync(Query).Wait();
+            //JobArgs jobArgs = new JobArgs();
             //jobArgs.e="csv"
-            service.CreateJobAsync(jobArgs).Wait();
+            //service.CreateJobAsync(jobArgs).Wait();
 
 
             //this.RunWait(service, Query);
@@ -278,13 +278,13 @@ namespace Splunk.Client.UnitTesting
         public void BadOutputMode()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs( "invalidpart" + Query);
+            var search = "invalidpart" + Query;
             //jobArgs.outuputMode = badOutputMode;
 
             Job job = null;
             try
             {
-                job = service.CreateJobAsync(jobArgs).Result;
+                job = service.CreateJobAsync(search).Result;
             }
             catch (Exception e)
             {
@@ -327,10 +327,10 @@ namespace Splunk.Client.UnitTesting
         public void JobSearchMode()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs(Query);
+            JobArgs jobArgs = new JobArgs();
 
             jobArgs.SearchMode = SearchMode.Normal;
-            Job job = service.CreateJobAsync(jobArgs).Result;
+            Job job = service.CreateJobAsync(Query, jobArgs).Result;
             Assert.NotNull(job);
 
             jobArgs.SearchMode = SearchMode.Realtime;
@@ -360,15 +360,11 @@ namespace Splunk.Client.UnitTesting
         public void JobExecutionMode()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs(Query);
+            JobArgs jobArgs = new JobArgs();
             
             jobArgs.ExecutionMode = ExecutionMode.Blocking;
 
-            Job job = service.CreateJobAsync(jobArgs).Result;
-            Assert.NotNull(job);
-
-            jobArgs.ExecutionMode = ExecutionMode.None;
-            job.UpdateJobArgs(jobArgs).Wait();
+            Job job = service.CreateJobAsync(Query, jobArgs).Result;
             Assert.NotNull(job);
 
             jobArgs.ExecutionMode = ExecutionMode.Normal;
@@ -390,11 +386,11 @@ namespace Splunk.Client.UnitTesting
         public void BadSearchModeExport()
         {
             var service = Connect();
-            JobArgs jobArgs = new JobArgs(Query);
+            JobArgs jobArgs = new JobArgs();
             
             //jobArgs.SearchMode = SearchMode.Realtime;
 
-            Job job = service.CreateJobAsync(jobArgs).Result;
+            Job job = service.CreateJobAsync(Query, jobArgs).Result;
             Assert.NotNull(job);
 
             job.CancelAsync().Wait();
@@ -570,12 +566,12 @@ namespace Splunk.Client.UnitTesting
         {
             var service = Connect();
 
-            JobArgs jobArgs = new JobArgs(Query);
+            JobArgs jobArgs = new JobArgs();
             ForEachEnum(
                 enumType,
                 (@enum) =>
                 {
-                    var job = this.RunWait(service, jobArgs);
+                    var job = this.RunWait(service, Query, jobArgs);
 
                     jobFunction(job, @enum);
 
@@ -613,11 +609,11 @@ namespace Splunk.Client.UnitTesting
         public void JobSearchModeArgument()
         {
             var type = typeof(SearchMode);
-            JobArgs jobArgs = new JobArgs(Query);
+            JobArgs jobArgs = new JobArgs();
             
             RunJobForEachEnum(
                 type,
-                (mode) => new JobArgs(Query)
+                (mode) => new JobArgs()
                     {
                         SearchMode =
                             (SearchMode)Enum.Parse(
@@ -757,6 +753,7 @@ namespace Splunk.Client.UnitTesting
                 {
                     var job = this.RunWait(
                         service,
+                        Query,
                         getJobArgs(@enum));
 
                     job.CancelAsync().Wait();
@@ -798,7 +795,7 @@ namespace Splunk.Client.UnitTesting
 
             Assert.Equal("first,second", args1.RemoteServerList);
 
-            var args2 = new JobArgs("")
+            var args2 = new JobArgs()
             {
                 RemoteServerList = array,
             };

@@ -14,19 +14,30 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
+//// TODO:
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     /// <summary>
-    /// Provides a class that represents a collection of Splunk Application
-    /// resources.
+    /// Represents a collection of Splunk applications.
     /// </summary>
     public class ApplicationCollection : EntityCollection<ApplicationCollection, Application>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationCollection"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
+        /// </param>
+        /// <param name="args">
+        /// </param>
         internal ApplicationCollection(Context context, Namespace @namespace, ApplicationCollectionArgs args = null)
             : base(context, @namespace, ClassResourceName, args)
         { }

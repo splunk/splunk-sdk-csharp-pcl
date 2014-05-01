@@ -15,11 +15,15 @@
  */
 
 
-// TODO:
-// [O] Contracts
-// [O] Documentation
-// [ ] Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
-//     See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom.
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+//// [X] Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
+////     See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom.
+//// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
+////     method (?) args does NOT belong on the constructor. One difficulty:
+////     not all collections take arguments. Examples: ConfigurationCollection
+////     and IndexCollection.
 
 namespace Splunk.Client
 {
@@ -30,11 +34,15 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// 
+    /// Provides a base class for representing a collection of Splunk entities.
     /// </summary>
-    /// <typeparam name="TCollection"></typeparam>
-    /// <typeparam name="TEntity"></typeparam>
-    public class EntityCollection<TCollection, TEntity> : Resource<TCollection>, IReadOnlyList<TEntity> 
+    /// <typeparam name="TCollection">
+    /// The entity collection type inheriting from this class.
+    /// </typeparam>
+    /// <typeparam name="TEntity">
+    /// The type of the entity in <see cref="TCollection"/>.
+    /// </typeparam>
+    public abstract class EntityCollection<TCollection, TEntity> : Resource<TCollection>, IReadOnlyList<TEntity> 
         where TCollection : EntityCollection<TCollection, TEntity>, new() 
         where TEntity : Resource<TEntity>, new()
     {
@@ -44,10 +52,10 @@ namespace Splunk.Client
         /// Initializes a new instance of the <see cref="EntityCollection<TCollection, TEntity>"/> class.
         /// </summary>
         /// <param name="context">
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// </param>
-        /// <param name="resource">
+        /// An object identifying a Splunk service namespace.
         /// </param>
         /// <param name="args">
         /// </param>

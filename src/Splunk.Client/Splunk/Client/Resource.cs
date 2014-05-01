@@ -93,13 +93,13 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the <see cref="Context"/> instance for the current <see cref=
-        /// "Resource&lt;TResource&gt;"/>.
+        /// "Resource<TResource>"/>.
         /// </summary>
         public Context Context
         { get; internal set; }
 
         /// <summary>
-        /// Gets the name of the current <see cref="Resource&lt;TResource&gt;"/>.
+        /// Gets the name of the current <see cref="Resource<TResource>"/>.
         /// </summary>
         public string Name
         {
@@ -108,14 +108,14 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the namespace containing the current <see cref=
-        /// "Resource&lt;TResource&gt;"/>.
+        /// "Resource<TResource>"/>.
         /// </summary>
         public Namespace Namespace
         { get; private set; }
 
         /// <summary>
         /// Gets the resource name of the current <see cref=
-        /// "Resource&lt;TResource&gt;"/>.
+        /// "Resource<TResource>"/>.
         /// </summary>
         public ResourceName ResourceName
         { get; private set; }
@@ -126,7 +126,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Compares the specified object with the current <see cref=
-        /// "Resource&lt;TResource&gt;"/> instance and indicates whether the 
+        /// "Resource<TResource>"/> instance and indicates whether the 
         /// identity of the current instance precedes, follows, or appears in 
         /// the same position in the sort order as the specified object.
         /// </summary>
@@ -143,7 +143,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Compares the specified <see cref="Resource&lt;TResource&gt;"/> with 
+        /// Compares the specified <see cref="Resource<TResource>"/> with 
         /// the current instance and indicates whether the identity of the 
         /// current instance precedes, follows, or appears in the same position
         /// in the sort order as the specified instance.
@@ -181,7 +181,7 @@ namespace Splunk.Client
         /// </param>
         /// <returns>
         /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
+        /// <see cref="Resource<TResource>"/>; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object other)
         {
@@ -189,16 +189,16 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Resource&lt;TResource&gt;"/>
+        /// Determines whether the specified <see cref="Resource<TResource>"/>
         /// refers to the same resource as the current one.
         /// </summary>
         /// <param name="other">
-        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the current
+        /// The <see cref="Resource<TResource>"/> to compare with the current
         /// instance.
         /// </param>
         /// <returns>
         /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
+        /// <see cref="Resource<TResource>"/>; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Resource<TResource> other)
         {
@@ -217,10 +217,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns the hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
+        /// Returns the hash code for the current <see cref="Resource<TResource>"/>.
         /// </summary>
         /// <returns>
-        /// Hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
+        /// Hash code for the current <see cref="Resource<TResource>"/>.
         /// </returns>
         public override int GetHashCode()
         {
@@ -295,11 +295,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets a string identifying the current <see cref=
-        /// "Resource&lt;TResource&gt;"/>.
+        /// "Resource<TResource>"/>.
         /// </summary>
         /// <returns>
         /// A string representing the identity of the current <see cref=
-        /// "Resource&lt;TResource&gt;"/>.
+        /// "Resource<TResource>"/>.
         /// </returns>
         public override string ToString()
         {

@@ -29,26 +29,22 @@ namespace Splunk.Client
         [Fact]
         void CanConstruct()
         {
-            var expectedArguments = new Argument[]
-            {
-                new Argument("search", "some unchecked search string")
-            };
             string[] expectedString = new string[] {
-                "auto_cancel=0; auto_finalize_ec=0; auto_pause=0; earliest_time=null; enable_lookups=t; exec_mode=normal; force_bundle_replication=f; id=null; index_earliest=null; index_latest=null; latest_time=null; max_count=10000; max_time=0; namespace=null; now=null; reduce_freq=0; reload_macros=t; remote_server_list=null; reuse_max_seconds_ago=0; rf=null; rt_blocking=f; rt_indexfilter=f; rt_maxblocksecs=60; rt_queue_size=10000; search=null; search_listener=null; search_mode=normal; spawn_process=t; status_buckets=0; sync_bundle_replication=f; time_format=null; timeout=86400",
-                "auto_cancel=0; auto_finalize_ec=0; auto_pause=0; earliest_time=null; enable_lookups=t; exec_mode=normal; force_bundle_replication=f; id=null; index_earliest=null; index_latest=null; latest_time=null; max_count=10000; max_time=0; namespace=null; now=null; reduce_freq=0; reload_macros=t; remote_server_list=null; reuse_max_seconds_ago=0; rf=null; rt_blocking=f; rt_indexfilter=f; rt_maxblocksecs=60; rt_queue_size=10000; search=some unchecked search string; search_listener=null; search_mode=normal; spawn_process=t; status_buckets=0; sync_bundle_replication=f; time_format=null; timeout=86400"
+                "auto_cancel=0; auto_finalize_ec=0; auto_pause=0; earliest_time=null; enable_lookups=t; exec_mode=normal; force_bundle_replication=f; id=null; index_earliest=null; index_latest=null; latest_time=null; max_count=10000; max_time=0; namespace=null; now=null; reduce_freq=0; reload_macros=t; remote_server_list=null; reuse_max_seconds_ago=0; rf=null; rt_blocking=f; rt_indexfilter=f; rt_maxblocksecs=60; rt_queue_size=10000; search_listener=null; search_mode=normal; spawn_process=t; status_buckets=0; sync_bundle_replication=f; time_format=null; timeout=86400",
+                "auto_cancel=0; auto_finalize_ec=0; auto_pause=0; earliest_time=null; enable_lookups=t; exec_mode=normal; force_bundle_replication=f; id=null; index_earliest=null; index_latest=null; latest_time=null; max_count=10000; max_time=0; namespace=null; now=null; reduce_freq=0; reload_macros=t; remote_server_list=null; reuse_max_seconds_ago=0; rf=null; rt_blocking=f; rt_indexfilter=f; rt_maxblocksecs=60; rt_queue_size=10000; search_listener=null; search_mode=normal; spawn_process=t; status_buckets=0; sync_bundle_replication=f; time_format=null; timeout=86400"
             };
-            string search = "some unchecked search string";
 
-            var args = new JobArgs(search);
+            var args = new JobArgs();
+            
             Assert.Equal(expectedString[1], args.ToString());
-            Assert.Equal(expectedArguments, args);
+            Assert.Equal(0, args.Count());
         }
 
         [Trait("class", "Args")]
         [Fact]
         void CanSetEveryValue()
         {
-            var args = new JobArgs("some_unchecked_string")
+            var args = new JobArgs()
             {
                 AutoCancel = 1,
                 AutoFinalizeEventCount = 2,
@@ -109,7 +105,6 @@ namespace Splunk.Client
                 "rt_indexfilter=t; " +
                 "rt_maxblocksecs=6; " +
                 "rt_queue_size=7; " +
-                "search=some_unchecked_string; " +
                 "search_listener=some_unchecked_string; " +
                 "search_mode=realtime; " +
                 "spawn_process=f; " +
@@ -146,7 +141,6 @@ namespace Splunk.Client
                     new Argument("rt_indexfilter", "t"),
                     new Argument("rt_maxblocksecs", "6"),
                     new Argument("rt_queue_size", "7"),
-                    new Argument("search", "some_unchecked_string"),
                     new Argument("search_listener", "some_unchecked_string"),
                     new Argument("search_mode", "realtime"),
                     new Argument("spawn_process", "f"),

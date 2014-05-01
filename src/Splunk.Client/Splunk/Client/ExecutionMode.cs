@@ -24,11 +24,6 @@ namespace Splunk.Client
     public enum ExecutionMode
     {
         /// <summary>
-        /// No sort direction is set.
-        /// </summary>
-        None,
-
-        /// <summary>
         /// Specifies an asynchronous <see cref="Job"/>.
         /// </summary> 
         /// <remarks>
@@ -43,18 +38,12 @@ namespace Splunk.Client
         /// <see cref="job"/> is complete.
         /// </summary>
         [EnumMember(Value = "blocking")]
-        Blocking, 
+        Blocking,
 
         /// <summary>
-        /// Specifies that search results should be returned when the job is 
-        /// complete.
+        /// Specifies that a Search ID (SID) should be returned when the 
+        /// <see cref="job"/> is complete.
         /// </summary>
-        /// <remarks>
-        /// In this case you can specify the format for the output (for example, 
-        /// JSON output) using the OutputMode parameter as described in <a href=
-        /// "http://goo.gl/vJvIXv">GET search/jobs/export</a>. Default format for
-        /// output is XML.
-        /// </remarks>
         [EnumMember(Value = "oneshot")]
         Oneshot
     }

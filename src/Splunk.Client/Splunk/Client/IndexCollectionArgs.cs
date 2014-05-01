@@ -29,11 +29,9 @@ namespace Splunk.Client
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class IndexCollectionArgs : Args<IndexCollectionArgs>

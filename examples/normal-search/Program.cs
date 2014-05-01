@@ -177,7 +177,7 @@ namespace Splunk.Client.Examples
             await service.LoginAsync("admin", "changeme");
 
             Console.WriteLine("Blocking search");
-            job = await service.CreateJobAsync("search index=_internal | head 10", ExecutionMode.Blocking);
+            job = await service.CreateJobAsync("search index=_internal | head 10", new JobArgs() { ExecutionMode = ExecutionMode.Blocking });
 
             using (searchResults = await job.GetSearchResultsAsync())
             {

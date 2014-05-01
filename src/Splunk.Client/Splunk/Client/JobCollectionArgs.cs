@@ -36,13 +36,6 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class JobCollectionArgs : Args<JobCollectionArgs>
     {
-        #region Constructors
-
-        public JobCollectionArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

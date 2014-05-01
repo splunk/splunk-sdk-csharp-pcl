@@ -41,13 +41,6 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class SavedSearchAttributes : Args<SavedSearchAttributes>
     {
-        #region Constructors
-
-        public SavedSearchAttributes()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

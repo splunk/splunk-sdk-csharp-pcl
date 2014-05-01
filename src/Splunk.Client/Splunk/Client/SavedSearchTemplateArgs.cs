@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
-// [ ] Diagnostics
+//// TODO:
+//// [ ] Documentation
+//// [ ] Diagnostics
 
 namespace Splunk.Client
 {
@@ -26,17 +26,25 @@ namespace Splunk.Client
     using System.Linq;
 
     /// <summary>
-    /// 
+    /// Provides custom arguments to a <see cref="SavedSearch"/>.
     /// </summary>
     public sealed class SavedSearchTemplateArgs : ISet<Argument>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SavedSearchTemplateArgs"/>
+        /// class.
+        /// </summary>
         public SavedSearchTemplateArgs()
         {
             this.set = new HashSet<Argument>();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SavedSearchTemplateArgs"/>
+        /// class from a collection of <see cref="Argument"/> values.
+        /// </summary>
         public SavedSearchTemplateArgs(IEnumerable<Argument> collection)
         {
             Contract.Requires<ArgumentNullException>(collection != null, "collection");

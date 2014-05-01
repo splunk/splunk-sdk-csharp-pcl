@@ -42,13 +42,6 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class SavedSearchDispatchArgs : Args<SavedSearchDispatchArgs>
     {
-        #region Constructors
-
-        public SavedSearchDispatchArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

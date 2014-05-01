@@ -27,6 +27,7 @@ namespace Splunk.Client
     using System.IO;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
     
     /// <summary>
@@ -97,15 +98,16 @@ namespace Splunk.Client
 
         public async Task CreateAsync(ServerMessageSeverity type, string text)
         {
-            await CreateAsync(new ServerMessageArgs(type, text));
-        }
-
-        public async Task CreateAsync(ServerMessageArgs args)
-        {
-            var name = new Argument[] { new Argument("name", this.Name) };
             var resourceName = ServerMessageCollection.ClassResourceName;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, name, args))
+            var args = new CreationArgs
+            {
+                Name = this.Name,
+                Type = type,
+                Text = this.Text
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 await this.UpdateSnapshotAsync(response);
@@ -118,6 +120,49 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
+        }
+
+        #endregion
+
+        #region Types
+
+        /// <summary>
+        /// Provides arguments for creating a new <see cref="ServerMessage"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para><b>References:</b></para>
+        /// <list type="number">
+        /// <item><description>
+        ///   <a href="http://goo.gl/WlDoZx">REST API Reference: POST messages</a>.
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        public class CreationArgs : Args<CreationArgs>
+        {
+            #region Properties
+
+            /// <summary>
+            /// Gets or sets the name of a <see cref="ServerMessage"/>.
+            /// </summary>
+            [DataMember(Name = "name", IsRequired = true)]
+            public string Name
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets the type of a <see cref="ServerMessage"/>.
+            /// </summary>
+            [DataMember(Name = "severity", IsRequired = true)]
+            public ServerMessageSeverity Type
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets the text of a <see cref="ServerMessage"/>.
+            /// </summary>
+            [DataMember(Name = "value", IsRequired = true)]
+            public string Text
+            { get; set; }
+
+            #endregion
         }
 
         #endregion

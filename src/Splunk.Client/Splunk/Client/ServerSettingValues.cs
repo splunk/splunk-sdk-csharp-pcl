@@ -26,31 +26,19 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for starting a new search job.
+    /// Provides arguments for updating Splunk <see cref="Server"/> setting
+    /// values.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class ServerSettingValues : Args<ServerSettingValues>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServerSettingValues"/>
-        /// class.
-        /// </summary>
-        public ServerSettingValues()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

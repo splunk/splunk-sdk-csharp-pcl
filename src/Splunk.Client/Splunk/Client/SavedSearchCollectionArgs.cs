@@ -37,17 +37,6 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class SavedSearchCollectionArgs : Args<SavedSearchCollectionArgs>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SavedSearchCollectionArgs"/> 
-        /// class.
-        /// </summary>
-        public SavedSearchCollectionArgs()
-        { }
- 
-        #endregion
-
         #region Properties
 
         /// <summary>

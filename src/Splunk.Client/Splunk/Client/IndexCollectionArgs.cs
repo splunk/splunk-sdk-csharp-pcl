@@ -24,25 +24,18 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for starting a new search job.
+    /// Provides arguments for retrieving an <see cref="IndexCollection"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
+    ///   <a href="http://goo.gl/qVZ6wJ">REST API Reference: GET data/indexes</a>.
     /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class IndexCollectionArgs : Args<IndexCollectionArgs>
     {
-        #region Constructors
-
-        public IndexCollectionArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

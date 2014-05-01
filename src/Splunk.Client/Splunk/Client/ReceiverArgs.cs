@@ -24,27 +24,18 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for starting a new search job.
+    /// Provides arguments for sending events to a Splunk <see cref="Receiver"/>
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
+    /// <item><description>
     ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
-    ///     </description>
-    /// </item>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class ReceiverArgs : Args<ReceiverArgs>
     {
-        #region Constructors
-
-        public ReceiverArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

@@ -268,44 +268,72 @@ namespace Splunk.Client
             {
                 formatter = new Formatter { Format = formatter.Format, IsCollection = true };
             }
-            else if (info.IsEnum)
-            {
-                var map = new Dictionary<int, string>();
-
-                foreach (var value in Enum.GetValues(type))
-                {
-                    string name = Enum.GetName(type, value);
-                    FieldInfo field = type.GetRuntimeField(name);
-                    var enumMember = field.GetCustomAttribute<EnumMemberAttribute>();
-
-                    map[(int)value] = enumMember == null ? name : enumMember.Value;
-                }
-
-                formatter = new Formatter { 
-                    Format = (object value) => 
-                    {
-                        string name;
-
-                        if (map.TryGetValue((int)value, out name))
-                        {
-                            return name;
-                        }
-                        throw new ArgumentException(string.Format("{0}.{1}: {2}", typeof(TArgs).Name, propertyName, value));
-                    },
-                    IsCollection = container != null
-                };
-            }
-            else if (container != null)
-            {
-                formatter = new Formatter { Format = FormatString, IsCollection = true };
-            }
             else
             {
-                return null;
+                var enumType = GetEnum(type, info);
+                
+                if (enumType != null)
+                {
+                    //// TODO: we should add two items to formatters: 
+                    //// formatters.Add(enumType, formatter)
+                    //// formatters.Add(info.IsEnum ? typeof(Nullable<>).MakeGenericType(type), formatter)
+
+                    var map = new Dictionary<int, string>();
+
+                    foreach (var value in Enum.GetValues(enumType))
+                    {
+                        string name = Enum.GetName(enumType, value);
+                        FieldInfo field = enumType.GetRuntimeField(name);
+                        var enumMember = field.GetCustomAttribute<EnumMemberAttribute>();
+
+                        map[(int)value] = enumMember == null ? name : enumMember.Value;
+                    }
+
+                    formatter = new Formatter
+                    {
+                        Format = (object value) =>
+                        {
+                            string name;
+
+                            if (map.TryGetValue((int)value, out name))
+                            {
+                                return name;
+                            }
+                            throw new ArgumentException(string.Format("{0}.{1}: {2}", typeof(TArgs).Name, propertyName, value));
+                        },
+                        IsCollection = container != null
+                    };
+                }
+                else if (container != null)
+                {
+                    formatter = new Formatter { Format = FormatString, IsCollection = true };
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             formatters.Add(container ?? type, formatter);
             return formatter;
+        }
+
+        static Type GetEnum(Type type, TypeInfo info)
+        {
+            if (info.IsEnum)
+            {
+                return type;
+            }
+
+            type = Nullable.GetUnderlyingType(type);
+
+            if (type == null)
+            {
+                return null;
+            }
+
+            info = type.GetTypeInfo();
+            return info.IsEnum ? type : null;
         }
 
         #endregion

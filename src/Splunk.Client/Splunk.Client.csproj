@@ -130,7 +130,6 @@
     <Compile Include="Splunk\Client\ServerSettingValues.cs" />
     <Compile Include="Splunk\Client\ServerSettings.cs" />
     <Compile Include="Splunk\Client\ServerMessageType.cs" />
-    <Compile Include="Splunk\Client\ServerMessageArgs.cs" />
     <Compile Include="Splunk\Client\ReceiverArgs.cs" />
     <Compile Include="Splunk\Client\Receiver.cs" />
     <Compile Include="Splunk\Client\Index.cs" />

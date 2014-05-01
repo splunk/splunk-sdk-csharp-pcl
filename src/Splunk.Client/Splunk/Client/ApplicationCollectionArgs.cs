@@ -24,7 +24,7 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving <see cref="Application"/> entries.
+    /// Provides arguments for retrieving an <see cref="ApplicationCollection"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
@@ -36,17 +36,6 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class ApplicationCollectionArgs : Args<ApplicationCollectionArgs>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationCollectionArgs"/> 
-        /// class.
-        /// </summary>
-        public ApplicationCollectionArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

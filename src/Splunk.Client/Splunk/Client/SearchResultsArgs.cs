@@ -21,27 +21,18 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving transformed search results.
+    /// Provides arguments for retrieving transformed <see cref="SearchResults"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/QFga96">REST API Reference: GET search/jobs/{search_id}/results</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/QFga96">REST API Reference: GET search/jobs/{search_id}/results</a>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class SearchResultsArgs : Args<SearchResultsArgs>
     {
-        #region Constructors
-
-        public SearchResultsArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

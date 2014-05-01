@@ -24,7 +24,7 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the attributes of a Splunk data <see cref="Index"/>.
+    /// Provides arguments for setting the attributes of an <see cref="Index"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
@@ -39,17 +39,6 @@ namespace Splunk.Client
     /// </remarks>
     public class IndexAttributes : Args<IndexAttributes>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Intializes a new instance of the <see cref="IndexAttributes"/>
-        /// class.
-        /// </summary>
-        public IndexAttributes()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

@@ -39,17 +39,6 @@ namespace Splunk.Client
     /// </remarks>
     sealed class StoragePasswordAttributes : Args<StoragePasswordAttributes>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StoragePasswordAttributes"/> 
-        /// class.
-        /// </summary>
-        public StoragePasswordAttributes()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

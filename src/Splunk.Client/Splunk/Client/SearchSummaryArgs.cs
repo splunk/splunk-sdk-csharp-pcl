@@ -24,28 +24,18 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving a search <see cref=
-    /// "Job"/> summary.
+    /// Provides arguments for retrieving a search <see cref="Job"/> summary.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/rfH6qN">REST API Reference: GET search/jobs/{search_id}/summary</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/rfH6qN">REST API Reference: GET search/jobs/{search_id}/summary</a>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class SearchSummaryArgs : Args<SearchSummaryArgs>
     {
-        #region Constructors
-
-        public SearchSummaryArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

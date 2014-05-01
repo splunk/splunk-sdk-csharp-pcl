@@ -26,35 +26,23 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for creating and updating the attributes
-    /// of <see cref="Application"/> resources.
+    /// Provides arguments for setting the attributes of an <see cref=
+    /// "Application"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/dKraaR">REST API Reference: POST 
-    ///   apps/local</a>
+    ///   <a href="http://goo.gl/dKraaR">REST API Reference: POST apps/local</a>.
     /// </description></item>
     /// <item><description>
     ///   <a href="http://goo.gl/dKraaR">REST API Reference: POST 
-    ///   apps/local/{name}</a>
+    ///   apps/local/{name}</a>.
     /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class ApplicationAttributes : Args<ApplicationAttributes>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationAttributes"/> 
-        /// class.
-        /// </summary>
-        public ApplicationAttributes()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

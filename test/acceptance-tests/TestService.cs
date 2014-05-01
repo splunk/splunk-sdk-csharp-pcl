@@ -173,7 +173,7 @@ namespace Splunk.Client.UnitTesting
 
                     //// Install, update, and remove the Splunk App for Twitter Data, version 2.3.1
 
-                    var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_231.spl");
+                    var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
                     Assert.True(File.Exists(path));
 
                     var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
@@ -198,13 +198,8 @@ namespace Splunk.Client.UnitTesting
                     Assert.Equal("Splunk-Twitter Connector", twitterApplication.Label);
                     Assert.Equal(false, twitterApplication.Refresh);
                     Assert.Equal(false, twitterApplication.StateChangeRequiresRestart);
-                    Assert.Equal("2.3.1", twitterApplication.Version);
-                    Assert.Equal(true, twitterApplication.Visible);
-
-                    await twitterApplication.UpdateAsync(new ApplicationAttributes { Version = "2.3.0" });
-                    await twitterApplication.GetAsync(); // because POST apps/local/{name} does not return new data
-
                     Assert.Equal("2.3.0", twitterApplication.Version);
+                    Assert.Equal(true, twitterApplication.Visible);
 
                     var twitterApplicationSetupInfo = await twitterApplication.GetSetupInfoAsync();
                     var twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
@@ -897,14 +892,26 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanStartSearchOneshot()
+        public async Task CanSearchOneshot()
         {
             using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
-                await service.LoginAsync("admin", "changeme");
+                var indexName = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
 
-                SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
-                var records = new List<Splunk.Client.Result>(searchResults);
+                var searchCommands = new string[] 
+                {
+                    string.Format("search index={0} * | delete", indexName),
+                    "search index=_internal | head 100"
+                };
+
+                await service.LoginAsync("admin", "changeme");
+                await service.CreateIndexAsync(indexName);
+
+                foreach (var searchCommand in searchCommands)
+                {
+                    var searchResults = await service.SearchOneshotAsync(new JobArgs(searchCommand) { MaxCount = 100000 });
+                    var records = new List<Splunk.Client.Result>(searchResults);
+                }
             }
         }
 

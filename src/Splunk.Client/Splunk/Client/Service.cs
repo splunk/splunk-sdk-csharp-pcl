@@ -1240,11 +1240,8 @@ namespace Splunk.Client
             try
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-
-                // FJR: Like export, we should probably return a stream instead of parsing it here.
-                // DSN: The SearchResultsSet class is a stream of Record objects. TODO: Explain
-
-                return await SearchResults.CreateAsync(response, leaveOpen: false); // Transfers response ownership
+                var stream = await SearchResults.CreateAsync(response, leaveOpen: false); // Transfers response ownership
+                return stream;
             }
             catch
             {

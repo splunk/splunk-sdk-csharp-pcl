@@ -94,6 +94,9 @@ namespace Splunk.Client
             return new SearchResultsReader(response);
         }
 
+        readonly Response response;
+        bool disposed;
+
         /// <summary>
         /// Releases all disposable resources used by the current <see cref=
         /// "SearchResultsReader"/>.
@@ -164,23 +167,6 @@ namespace Splunk.Client
                 .RefCount();
 
             return observableResult;
-        }
-
-        #endregion
-
-        #region Privates
-
-        readonly Response response;
-        bool disposed;
-
-        void Dispose(bool disposing)
-        {
-            if (disposing && !this.disposed)
-            {
-                this.response.Dispose();
-                this.disposed = true;
-                GC.SuppressFinalize(this);
-            }
         }
 
         #endregion

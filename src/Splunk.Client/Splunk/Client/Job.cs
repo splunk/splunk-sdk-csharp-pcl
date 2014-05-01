@@ -288,7 +288,10 @@ namespace Splunk.Client
             get { return this.GetValue("RemoteSearch", StringConverter.Instance); }
         }
 
-        // Request	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+        public Request_t Request
+        {
+            get { return this.GetValue("Request", Request_t.Converter.Instance);  }
+        }
 
         public long ResultCount
         {
@@ -698,6 +701,23 @@ namespace Splunk.Client
             {
                 await this.GetAsync();
                 await Task.Delay(500);
+            }
+        }
+
+        #endregion
+
+        #region Types
+
+        public class Request_t : ExpandoAdapter<Request_t>
+        {
+            public string Id
+            {
+                get { return this.GetValue("Id", StringConverter.Instance); }
+            }
+
+            public string Search
+            {
+                get { return this.GetValue("Search", StringConverter.Instance); }
             }
         }
 

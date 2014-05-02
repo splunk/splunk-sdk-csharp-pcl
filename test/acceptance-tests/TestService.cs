@@ -828,27 +828,8 @@ namespace Splunk.Client.UnitTesting
                         EarliestTime = "rt-5m",
                         LatestTime = "rt",
                         MaxTime = 10000
-                    }
-                },
-                new
-                {
-                    Command = "search index=_internal | head 10",
-                    JobArgs = new JobArgs()
-                }
-            };
-
-            using (var service = new Service(Scheme.Https, "localhost", 8089))
-            {
-                await service.LoginAsync("admin", "changeme");
-
-                foreach (var search in searches)
-                {
-                    var job = await service.CreateJobAsync(search.Command, search.JobArgs);
-                    Assert.NotNull(job);
-
-                    var results = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
-
-                    Assert.Equal<IEnumerable<string>>(new List<string> 
+                    },
+                    ExpectedFieldNames = new List<string>
                     {
                         "_bkt",
                         "_cd",
@@ -866,9 +847,44 @@ namespace Splunk.Client.UnitTesting
                         "source",
                         "sourcetype",
                         "splunk_server",
-                    },
-                    results.FieldNames);
+                    }
+                },
+                new
+                {
+                    Command = "search index=_internal | head 10",
+                    JobArgs = new JobArgs(),
+                    ExpectedFieldNames = new List<string>
+                    {
+                        "_bkt",
+                        "_cd",
+                        "_indextime",
+                        "_raw",
+                        "_serial",
+                        "_si",
+                        "_sourcetype",
+                        "_subsecond",
+                        "_time",
+                        "host",
+                        "index",
+                        "linecount",
+                        "source",
+                        "sourcetype",
+                        "splunk_server",
+                    }
+                }
+            };
 
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                foreach (var search in searches)
+                {
+                    var job = await service.CreateJobAsync(search.Command, search.JobArgs);
+                    Assert.NotNull(job);
+
+                    var results = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
+                    Assert.Equal<IEnumerable<string>>(search.ExpectedFieldNames, results.FieldNames); 
                     var records = new List<Result>(results);
                     // Assert.Equal(10, records.Count);
                 }

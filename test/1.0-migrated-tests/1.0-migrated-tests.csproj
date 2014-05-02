@@ -13,7 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <RootNamespace/>
     <RunCodeAnalysis>False</RunCodeAnalysis>
-    <StyleCopEnabled>False</StyleCopEnabled>
+    <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
+    <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

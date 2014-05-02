@@ -60,6 +60,8 @@ namespace Splunk.Sdk.UnitTesting
             string dummyString;
             bool dummyBool;
             int dummyInt;
+            long dummyLong;
+
             Service service = Connect();
 
             ApplicationCollection apps = service.GetApplicationsAsync().Result;
@@ -97,11 +99,11 @@ namespace Splunk.Sdk.UnitTesting
                     dummyString = applicationUpdate.Update.Checksum;
                     dummyString = applicationUpdate.Update.ChecksumType;
                     dummyString = applicationUpdate.Update.HomePage;
-                    dummyString = applicationUpdate.Update.Size;
+                    dummyLong = applicationUpdate.Update.Size;
                     dummyString = applicationUpdate.Update.ApplicationName;
                     Uri uri = applicationUpdate.Update.ApplicationUri;
                     dummyString = applicationUpdate.Update.Version;
-                    dummyString = applicationUpdate.Update.ImplicitIdRequired;
+                    dummyBool = applicationUpdate.Update.ImplicitIdRequired;
                 }
             }
 

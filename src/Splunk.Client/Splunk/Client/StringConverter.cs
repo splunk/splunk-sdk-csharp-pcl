@@ -30,7 +30,6 @@ namespace Splunk.Client
         /// <summary>
         /// The default <see cref="StringConverter"/> instance.
         /// </summary>
-
         public static readonly StringConverter Instance = new StringConverter();
 
         /// <summary>

@@ -182,6 +182,7 @@ namespace Splunk.Client.UnitTesting
 
             // Delete the stanzas
             testconf.RemoveStanzaAsync("stanza3").Wait();
+            testconf.GetAsync().Wait(); // because remove gives no data back
             Assert.Equal(3, testconf.Count);
             //Assert.True(stanzas.ContainsKey("stanza1"), assertRoot + "#28");
             //Assert.True(stanzas.ContainsKey("stanza2"), assertRoot + "#29");

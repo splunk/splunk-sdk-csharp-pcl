@@ -14,7 +14,7 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>22455d9b</NuGetPackageImportStamp>
-    <RootNamespace/>
+    <RootNamespace />
     <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
     <StyleCopOverrideSettingsFile>Splunk.Client.StyleCop</StyleCopOverrideSettingsFile>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>

@@ -63,6 +63,36 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
+        /// Gets a named item from the underlying <see cref="ExpandoObject"/>"/>.
+        /// </summary>
+        /// <typeparam name="TValue">
+        /// The type of value to return.
+        /// </typeparam>
+        /// </param>
+        /// <param name="name">
+        /// The name of the item to be returned.
+        /// </param>
+        /// <returns>
+        /// A dynamic value.
+        /// </returns>
+        public dynamic GetValue(string name)
+        {
+            Contract.Requires<ArgumentNullException>(name != null);
+
+            if (this.ExpandoObject == null)
+            {
+                throw new InvalidOperationException(); // TODO: diagnostics
+            }
+
+            var dictionary = (IDictionary<string, object>)this.ExpandoObject;
+            
+            object value;
+            dictionary.TryGetValue(name, out value);
+            
+            return value;
+        }
+
+        /// <summary>
         /// Gets a named item from the underlying <see cref="ExpandoObject"/>"/>
         /// and applies a <see cref="ValueConverter"/>.
         /// </summary>

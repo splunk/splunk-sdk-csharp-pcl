@@ -273,7 +273,7 @@ namespace Splunk.Client
 
         public dynamic Performance
         {
-            get { return this.Snapshot == null ? null : ((dynamic)this.Snapshot.Adapter.ExpandoObject).Performance; }
+            get { return this.GetValue("Performance"); }
         }
 
         public int Pid
@@ -293,7 +293,7 @@ namespace Splunk.Client
 
         public dynamic Request
         {
-            get { return this.Snapshot == null ? null : ((dynamic)this.Snapshot.Adapter.ExpandoObject).Request; }
+            get { return this.GetValue("Request"); }
         }
 
         public long ResultCount

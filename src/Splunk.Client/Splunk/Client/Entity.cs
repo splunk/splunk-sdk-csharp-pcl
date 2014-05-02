@@ -54,7 +54,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity&lt;TEntity&gt;"/> 
+        /// Initializes a new instance of the <see cref="Entity<TEntity>"/> 
         /// class as specified by <see cref="context"/>, <see cref="namespace"/>
         /// and "<see cref="resourceName"/>.
         /// </summary>
@@ -74,13 +74,12 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-
         protected Entity(Context context, Namespace @namespace, ResourceName resourceName)
             : base(context, @namespace, resourceName)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity&lt;TEntity&gt;"/> 
+        /// Initializes a new instance of the <see cref="Entity<TEntity>"/> 
         /// class as specified by <see cref="context"/>, <see cref="namespace"/>,
         /// and resource <see cref="collection"/> and <see cref="title"/>.
         /// </summary>
@@ -109,12 +108,10 @@ namespace Splunk.Client
         /// </exception>
         protected Entity(Context context, Namespace @namespace, ResourceName collection, string entity)
             : this(context, @namespace, new ResourceName(collection, entity))
-        {  }
+        { }
 
         public Entity()
-        {
-            this.snapshot = EntitySnapshot.Missing;
-        }
+        { }
 
         #endregion
 
@@ -174,6 +171,11 @@ namespace Splunk.Client
             }
         }
 
+        protected dynamic GetValue(string name)
+        {
+            return this.Snapshot.Adapter.GetValue(name);
+        }
+
         protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
             return this.Snapshot.Adapter.GetValue(name, valueConverter);
@@ -215,7 +217,7 @@ namespace Splunk.Client
 
         #region Privates
 
-        volatile EntitySnapshot snapshot;
+        volatile EntitySnapshot snapshot = EntitySnapshot.Missing;
 
         #endregion
     }

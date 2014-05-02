@@ -70,39 +70,10 @@ namespace Splunk.Client
             Contract.Requires(message != null);
 
             var response = new Response(message);
+            
             response.Stream = await message.Content.ReadAsStreamAsync();
-
-#if false
-            StreamReader reader = null;
-
-            try
-            {
-                reader = new StreamReader(response.Stream, Encoding.UTF8, false, 128, leaveOpen: true);
-
-                int value;
-                do 
-                {
-                    value = reader.Peek();
-                    
-                    if (value == -1)
-                    {
-                        break;
-                    }
-                }
-                while (char.IsWhiteSpace((char)value));
-            }
-            catch
-            {
-                if (reader != null)
-                {
-                    reader.Dispose();
-                }
-
-                throw;
-            }
-
-#endif
             response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
+
             return response;
         }
 

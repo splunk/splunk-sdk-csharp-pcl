@@ -25,6 +25,9 @@ namespace Splunk.Client
     using System.Net;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class ApplicationUpdateInfo : Entity<ApplicationUpdateInfo>
     {
         #region Constructors
@@ -133,17 +136,17 @@ namespace Splunk.Client
             /// <remarks>
             /// Splunk uses application IDs to help identify them during updates.
             /// </remarks>
-            public string ImplicitIdRequired
+            public bool ImplicitIdRequired
             {
-                get { return this.GetValue("ImplicitIdRequired", StringConverter.Instance); }
+                get { return this.GetValue("ImplicitIdRequired", BooleanConverter.Instance); }
             }
 
             /// <summary>
             /// Get the size of the application update.
             /// </summary>
-            public string Size
+            public long Size
             {
-                get { return this.GetValue("Size", StringConverter.Instance); }
+                get { return this.GetValue("Size", Int64Converter.Instance); }
             }
 
             /// <summary>

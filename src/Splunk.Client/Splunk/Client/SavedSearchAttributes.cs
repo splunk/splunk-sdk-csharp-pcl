@@ -50,7 +50,6 @@ namespace Splunk.Client
         /// This value is required.
         /// </remarks>
         [DataMember(Name = "search", EmitDefaultValue = false)]
-        [DefaultValue(null)]
         public string Search
         { get; set; }
 
@@ -62,8 +61,23 @@ namespace Splunk.Client
         /// No actions are enabled by default.
         /// </remarks>
         [DataMember(Name = "actions", EmitDefaultValue = false)]
-        [DefaultValue(null)]
         public string Actions
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the password for authenticating with the SMTP server
+        /// for the e-mail action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        [DataMember(Name = "action.email.auth_password", EmitDefaultValue = false)]
+        public string ActionEmailAuthPassword
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the username for authenticating with the SMTP server
+        /// for the e-mail action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        [DataMember(Name = "action.email.auth_username", EmitDefaultValue = false)]
+        public string ActionEmailAuthUsername
         { get; set; }
 
         /// <summary>
@@ -71,7 +85,6 @@ namespace Splunk.Client
         /// recipients for the e-mail action of a <see cref="SavedSearch"/>.
         /// </summary>
         [DataMember(Name = "action.email.bcc", EmitDefaultValue = false)]
-        [DefaultValue(null)]
         public string ActionEmailBcc
         { get; set; }
 

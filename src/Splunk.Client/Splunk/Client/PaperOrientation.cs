@@ -24,13 +24,15 @@ namespace Splunk.Client
     public enum PaperOrientation
     {
         /// <summary>
-        /// Height of the display area is greater than the width.
-        /// </summary>
-        Portrait,
-
-        /// <summary>
         /// Height of the display area is less than the width.
         /// </summary>
-        Landscape
+        [EnumMember(Value = "landscape")]
+        Landscape,
+
+        /// <summary>
+        /// Height of the display area is greater than the width.
+        /// </summary>
+        [EnumMember(Value = "portrait")]
+        Portrait
     }
 }

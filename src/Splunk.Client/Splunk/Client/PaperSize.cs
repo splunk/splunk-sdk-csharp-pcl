@@ -19,43 +19,50 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Specifies the paper size of a report.
+    /// Specifies the paper size of a PDF report.
     /// </summary>
     public enum PaperSize
     {
         /// <summary>
         /// 8.5 × 11 inches.
         /// </summary>
+        [EnumMember(Value = "letter")]
         Letter,
 
         /// <summary>
         /// 420 x 594 millimeters.
         /// </summary>
+        [EnumMember(Value = "A2")]
         A2,
 
         /// <summary>
         /// 297 x 420 millimeters.
         /// </summary>
+        [EnumMember(Value = "A3")]
         A3,
 
         /// <summary>
         /// 210 x 297 millimeters.
         /// </summary>
+        [EnumMember(Value = "A4")]
         A4,
 
         /// <summary>
         /// 148 x 210 millimeters.
         /// </summary>
+        [EnumMember(Value = "A5")]
         A5,
 
         /// <summary>
         /// 17 × 11 inches.
         /// </summary>
+        [EnumMember(Value = "ledger")]
         Ledger,
 
         /// <summary>
         /// 8.5 × 14 inches.
         /// </summary>
+        [EnumMember(Value = "legal")]
         Legal
     }
 }

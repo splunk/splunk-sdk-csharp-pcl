@@ -31,7 +31,7 @@ namespace Splunk.Client
         {
             var attributes = new SavedSearchAttributes();
 
-            Assert.Equal("action.email.bcc=null; action.email.cc=null; action.email.command=null; action.email.format=null; action.email.from=null; action.email.inline=null; action.email.mailserver=null; action.email.maxresults=null; action.email.maxtime=null; action.email.reportCIDFontList=null; action.email.reportIncludeSplunkLogo=null; action.email.reportPaperOrientation=null; action.email.reportPaperSize=null; action.email.reportServerEnabled=null; action.email.sendpdf=null; action.email.sendresults=null; action.email.subject=null; action.email.to=null; action.email.track_alert=null; action.email.ttl=null; action.email.use_ssl=null; action.email.use_tls=null; action.email.width_sort_columns=null; action.populate_lookup.command=null; action.populate_lookup.dest=null; action.populate_lookup.hostname=null; action.populate_lookup.maxresults=null; action.populate_lookup.maxtime=null; action.populate_lookup.track_alert=null; action.populate_lookup.ttl=null; action.rss.command=null; action.rss.maxresults=null; action.rss.maxtime=null; action.rss.track_alert=null; action.rss.ttl=null; action.script.command=null; action.script.filename=null; action.script.hostname=null; action.script.maxresults=null; action.script.maxtime=null; action.script.track_alert=null; action.script.ttl=null; action.summary_index.command=null; action.summary_index.inline=null; action.summary_index.maxresults=null; action.summary_index.maxtime=null; action.summary_index.name=null; action.summary_index.track_alert=null; action.summary_index.ttl=null; actions=null; alert.digest_mode=null; alert.expires=null; alert.severity=null; alert.track=null; alert_comparator=null; alert_condition=null; alert_threshold=null; alert_type=null; auto_summarize=null; auto_summarize.command=null; auto_summarize.cron_schedule=null; auto_summarize.dispatch.time_format=null; auto_summarize.dispatch.ttl=null; auto_summarize.max_disabled_buckets=null; auto_summarize.max_summary_ratio=null; auto_summarize.max_summary_size=null; auto_summarize.max_time=null; auto_summarize.suspend_period=null; cron_schedule=null; description=null; disabled=null; dispatch.buckets=null; dispatch.earliest_time=null; dispatch.latest_time=null; dispatch.lookups=null; dispatch.max_count=null; dispatch.max_time=null; dispatch.reduce_freq=null; dispatch.rt_backfill=null; dispatch.spawn_process=null; dispatch.time_format=null; is_scheduled=null; is_visible=null; max_concurrent=null; realtime_schedule=null; restart_on_searchpeer_add=null; run_on_startup=null; search=null",
+            Assert.Equal("action.email.auth_password=null; action.email.auth_username=null; action.email.bcc=null; action.email.cc=null; action.email.command=null; action.email.format=null; action.email.from=null; action.email.inline=null; action.email.mailserver=null; action.email.maxresults=null; action.email.maxtime=null; action.email.reportCIDFontList=null; action.email.reportIncludeSplunkLogo=null; action.email.reportPaperOrientation=null; action.email.reportPaperSize=null; action.email.reportServerEnabled=null; action.email.sendpdf=null; action.email.sendresults=null; action.email.subject=null; action.email.to=null; action.email.track_alert=null; action.email.ttl=null; action.email.use_ssl=null; action.email.use_tls=null; action.email.width_sort_columns=null; action.populate_lookup.command=null; action.populate_lookup.dest=null; action.populate_lookup.hostname=null; action.populate_lookup.maxresults=null; action.populate_lookup.maxtime=null; action.populate_lookup.track_alert=null; action.populate_lookup.ttl=null; action.rss.command=null; action.rss.maxresults=null; action.rss.maxtime=null; action.rss.track_alert=null; action.rss.ttl=null; action.script.command=null; action.script.filename=null; action.script.hostname=null; action.script.maxresults=null; action.script.maxtime=null; action.script.track_alert=null; action.script.ttl=null; action.summary_index.command=null; action.summary_index.inline=null; action.summary_index.maxresults=null; action.summary_index.maxtime=null; action.summary_index.name=null; action.summary_index.track_alert=null; action.summary_index.ttl=null; actions=null; alert.digest_mode=null; alert.expires=null; alert.severity=null; alert.track=null; alert_comparator=null; alert_condition=null; alert_threshold=null; alert_type=null; auto_summarize=null; auto_summarize.command=null; auto_summarize.cron_schedule=null; auto_summarize.dispatch.time_format=null; auto_summarize.dispatch.ttl=null; auto_summarize.max_disabled_buckets=null; auto_summarize.max_summary_ratio=null; auto_summarize.max_summary_size=null; auto_summarize.max_time=null; auto_summarize.suspend_period=null; cron_schedule=null; description=null; disabled=null; dispatch.buckets=null; dispatch.earliest_time=null; dispatch.latest_time=null; dispatch.lookups=null; dispatch.max_count=null; dispatch.max_time=null; dispatch.reduce_freq=null; dispatch.rt_backfill=null; dispatch.spawn_process=null; dispatch.time_format=null; is_scheduled=null; is_visible=null; max_concurrent=null; realtime_schedule=null; restart_on_searchpeer_add=null; run_on_startup=null; search=null",
                 attributes.ToString());
             Assert.Equal(new List<Argument>(), attributes);
         }
@@ -42,6 +42,8 @@ namespace Splunk.Client
         {
             var attributes = new SavedSearchAttributes()
             {
+                ActionEmailAuthPassword = "some-unchecked-string",
+                ActionEmailAuthUsername = "some-unchecked-string",
                 ActionEmailBcc = "some-unchecked-string",
                 ActionEmailCC = "some-unchecked-string",
                 ActionEmailCommand = "some-unchecked-string",
@@ -134,10 +136,12 @@ namespace Splunk.Client
             };
 
             Assert.Equal(
+                "action.email.auth_password=some-unchecked-string; " +
+                "action.email.auth_username=some-unchecked-string; " +
                 "action.email.bcc=some-unchecked-string; " +
                 "action.email.cc=some-unchecked-string; " +
                 "action.email.command=some-unchecked-string; " +
-                "action.email.format=Html; " +
+                "action.email.format=html; " +
                 "action.email.from=some-unchecked-string; " +
                 "action.email.inline=some-unchecked-string; " +
                 "action.email.mailserver=some-unchecked-string; " +
@@ -145,8 +149,8 @@ namespace Splunk.Client
                 "action.email.maxtime=some-unchecked-string; " +
                 "action.email.reportCIDFontList=some-unchecked-string; " +
                 "action.email.reportIncludeSplunkLogo=t; " +
-                "action.email.reportPaperOrientation=Landscape; " +
-                "action.email.reportPaperSize=Ledger; " +
+                "action.email.reportPaperOrientation=landscape; " +
+                "action.email.reportPaperSize=ledger; " +
                 "action.email.reportServerEnabled=t; " +
                 "action.email.sendpdf=t; " +
                 "action.email.sendresults=t; " +
@@ -186,12 +190,12 @@ namespace Splunk.Client
                 "actions=some-unchecked-string; " +
                 "alert.digest_mode=t; " +
                 "alert.expires=some-unchecked-string; " +
-                "alert.severity=Warning; " +
-                "alert.track=Automatic; " +
-                "alert_comparator=GreaterThan; " +
+                "alert.severity=3; " +
+                "alert.track=auto; " +
+                "alert_comparator=greater than; " +
                 "alert_condition=some-unchecked-string; " +
                 "alert_threshold=some-unchecked-string; " +
-                "alert_type=Always; " +
+                "alert_type=always; " +
                 "auto_summarize=t; " +
                 "auto_summarize.command=some-unchecked-string; " +
                 "auto_summarize.cron_schedule=some-unchecked-string; " +
@@ -226,10 +230,12 @@ namespace Splunk.Client
 
             Assert.Equal(new List<Argument> 
                 {
+                    new Argument("action.email.auth_password", "some-unchecked-string"),
+                    new Argument("action.email.auth_username", "some-unchecked-string"),
                     new Argument("action.email.bcc", "some-unchecked-string"),
                     new Argument("action.email.cc", "some-unchecked-string"),
                     new Argument("action.email.command", "some-unchecked-string"),
-                    new Argument("action.email.format", "Html"),
+                    new Argument("action.email.format", "html"),
                     new Argument("action.email.from", "some-unchecked-string"),
                     new Argument("action.email.inline", "some-unchecked-string"),
                     new Argument("action.email.mailserver", "some-unchecked-string"),
@@ -237,8 +243,8 @@ namespace Splunk.Client
                     new Argument("action.email.maxtime", "some-unchecked-string"),
                     new Argument("action.email.reportCIDFontList", "some-unchecked-string"),
                     new Argument("action.email.reportIncludeSplunkLogo", "t"),
-                    new Argument("action.email.reportPaperOrientation", "Landscape"),
-                    new Argument("action.email.reportPaperSize", "Ledger"),
+                    new Argument("action.email.reportPaperOrientation", "landscape"),
+                    new Argument("action.email.reportPaperSize", "ledger"),
                     new Argument("action.email.reportServerEnabled", "t"),
                     new Argument("action.email.sendpdf", "t"),
                     new Argument("action.email.sendresults", "t"),
@@ -278,12 +284,12 @@ namespace Splunk.Client
                     new Argument("actions", "some-unchecked-string"),
                     new Argument("alert.digest_mode", "t"),
                     new Argument("alert.expires", "some-unchecked-string"),
-                    new Argument("alert.severity", "Warning"),
-                    new Argument("alert.track", "Automatic"),
-                    new Argument("alert_comparator", "GreaterThan"),
+                    new Argument("alert.severity", "3"),
+                    new Argument("alert.track", "auto"),
+                    new Argument("alert_comparator", "greater than"),
                     new Argument("alert_condition", "some-unchecked-string"),
                     new Argument("alert_threshold", "some-unchecked-string"),
-                    new Argument("alert_type", "Always"),
+                    new Argument("alert_type", "always"),
                     new Argument("auto_summarize", "t"),
                     new Argument("auto_summarize.command", "some-unchecked-string"),
                     new Argument("auto_summarize.cron_schedule", "some-unchecked-string"),

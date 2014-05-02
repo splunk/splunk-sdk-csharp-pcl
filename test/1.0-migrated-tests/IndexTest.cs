@@ -18,6 +18,7 @@ namespace Splunk.Client.UnitTesting
 {
     using Splunk.Client;
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -37,11 +38,11 @@ namespace Splunk.Client.UnitTesting
         /// <param name="index">The index</param>
         /// <param name="value">The desired event count value</param>
         /// <param name="seconds">The number seconds to poll</param>
-        private static void WaitUntilEventCount(Index index, int value, int seconds)
+        private async static void WaitUntilEventCount(Index index, int value, int seconds)
         {
             while (seconds > 0)
             {
-                Thread.Sleep(1000); // 1000ms (1 second sleep)
+                await Task.Delay(1000); // 1000ms (1 second sleep)
                 seconds = seconds - 1;
                 //index.Refresh();
                 var count = index.TotalEventCount;
@@ -69,6 +70,12 @@ namespace Splunk.Client.UnitTesting
                              offset.Offset.Minutes.ToString("D2"));
 
             ServerInfo info = await service.Server.GetInfoAsync();
+
+            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
+            {
+                await service.RemoveIndexAsync(indexName);
+                await service.CreateIndexAsync(indexName);
+            }
 
             //// set can_delete if not set, so we can delete events from the index.
             //User user = service.GetUsers().Get("admin");
@@ -263,7 +270,7 @@ namespace Splunk.Client.UnitTesting
             Service service = this.Connect();
             ServerInfo info = await service.Server.GetInfoAsync();
 
-            if((await service.GetIndexesAsync()).Any(a=>a.Name==indexName))
+            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
             {
                 await service.RemoveIndexAsync(indexName);
                 await service.CreateIndexAsync(indexName);
@@ -345,6 +352,13 @@ namespace Splunk.Client.UnitTesting
 
             Service service = this.Connect();
             Receiver receiver = service.Receiver;
+
+            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
+            {
+                await service.RemoveIndexAsync(indexName);
+                await service.CreateIndexAsync(indexName);
+            }
+
             Index index = await service.GetIndexAsync(indexName);
             await index.EnableAsync();
             Assert.False(index.Disabled);
@@ -403,6 +417,13 @@ namespace Splunk.Client.UnitTesting
                              offset.Offset.Minutes.ToString("D2"));
 
             Service service = this.Connect();
+
+            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
+            {
+                await service.RemoveIndexAsync(indexName);
+                await service.CreateIndexAsync(indexName);
+            }
+
             Index index = await service.GetIndexAsync(indexName);
 
             //index.Enable();
@@ -439,7 +460,7 @@ namespace Splunk.Client.UnitTesting
             };
 
             //var receiver = service.GetReceiver();
-            Receiver receiver = new Receiver();
+            Receiver receiver = service.Receiver;
             //receiver.Submit(args, "Hello World.");
             //receiver.Submit(args, "Goodbye world.");
             await receiver.SendAsync("Hello World.", args);
@@ -467,8 +488,18 @@ namespace Splunk.Client.UnitTesting
             //{
             //    Assert.Equal(2, reader.Count());
             //}
-            Assert.Equal(2, result.FieldNames.Count);
-            await index.GetAsync();
+            Assert.Equal(14, result.FieldNames.Count);
+
+            Stopwatch watch=new Stopwatch();
+            watch.Start();
+
+            while (watch.Elapsed < new TimeSpan(0, 0, 60) || index.TotalEventCount < 2)
+            {
+                await Task.Delay(1000);
+                await index.GetAsync();
+            }
+
+            Console.WriteLine("sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
             Assert.Equal(2, index.TotalEventCount);
 
             await ClearIndex(service, indexName, index);
@@ -491,9 +522,23 @@ namespace Splunk.Client.UnitTesting
                              offset.Offset.Minutes.ToString("D2"));
 
             Service service = this.Connect();
+
+            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
+            {
+                await service.RemoveIndexAsync(indexName);
+                await service.CreateIndexAsync(indexName);
+            }
+
             //Receiver receiver = service.GetReceiver();
             Receiver receiver = new Receiver();
+            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
+            {
+                await service.RemoveIndexAsync(indexName);
+                await service.CreateIndexAsync(indexName);
+            }
+
             Index index = await service.GetIndexAsync(indexName);
+
 
             //index.Enable();
             Assert.False(index.Disabled);

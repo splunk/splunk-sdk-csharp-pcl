@@ -271,7 +271,10 @@ namespace Splunk.Client
             get { return this.GetValue("NumPreviews", Int32Converter.Instance); }
         }
 
-        // Performance	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+        public dynamic Performance
+        {
+            get { return this.Snapshot == null ? null : ((dynamic)this.Snapshot.Adapter.ExpandoObject).Performance; }
+        }
 
         public int Pid
         {
@@ -313,7 +316,10 @@ namespace Splunk.Client
             get { return this.GetValue("RunDuration", DoubleConverter.Instance); }
         }
 
-        // Runtime	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+        public Runtime_t Runtime
+        {
+            get { return this.GetValue("Runtime", Runtime_t.Converter.Instance); }
+        }
 
         public long ScanCount
         {
@@ -717,6 +723,22 @@ namespace Splunk.Client
             }
         }
 
+        #endregion
+
+        #region Types
+
+        public class Runtime_t : ExpandoAdapter<Runtime_t>
+        {
+            public bool AutoCancel
+            {
+                get { return this.GetValue("AutoCancel", BooleanConverter.Instance); }
+            }
+
+            public bool AutoPause
+            {
+                get { return this.GetValue("AutoPause", BooleanConverter.Instance); }
+            }
+        }
         #endregion
     }
 }

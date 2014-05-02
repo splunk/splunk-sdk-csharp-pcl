@@ -14,6 +14,9 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Documentation
+
 namespace Splunk.Client
 {
     using System.Collections.Generic;
@@ -21,27 +24,18 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving transformed search results.
+    /// Provides arguments for retrieving a <see cref="JobCollection"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/OWTUws">REST API Reference: GET search/jobs/{search_id}/results</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/ja2Sev">REST API Reference: GET search/jobs</a>.
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class JobCollectionArgs : Args<JobCollectionArgs>
     {
-        #region Constructors
-
-        public JobCollectionArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

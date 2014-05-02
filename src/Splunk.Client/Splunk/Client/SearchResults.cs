@@ -105,9 +105,43 @@ namespace Splunk.Client
         /// </returns>
         internal static async Task<SearchResults> CreateAsync(Response response, bool leaveOpen)
         {
+            var fieldNames = new List<string>();
+            var arePreview = false;
+
             var reader = response.XmlReader;
 
-            reader.MoveToElement(); // Ensures we're at an element, not an attribute
+            if (reader.ReadState == ReadState.Initial)
+            {
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                {
+                    try
+                    {
+                        await reader.ReadAsync();
+                    }
+                    catch (XmlException)
+                    {
+                        //// When nothing follows the XmlDeclaration the reader
+                        //// fails to detect EOF on the response stream, does
+                        //// not update the current XmlNode, and then throws an 
+                        //// XmlException because it thinks the XmlNode appears
+                        //// on a line other than the first. We catch that here.
+
+                        reader.Dispose();
+
+                        return new SearchResults(response, leaveOpen)
+                        {
+                            ArePreview = false,
+                            FieldNames = fieldNames
+                        };
+                    }
+                }
+            }
+            else
+            {
+                reader.MoveToElement(); // Ensures we're at an element, not an attribute
+            }
 
             if (!reader.IsStartElement("results"))
             {
@@ -117,7 +151,7 @@ namespace Splunk.Client
                 }
             }
 
-            var arePreview = XmlConvert.ToBoolean(reader["preview"]);
+            arePreview = XmlConvert.ToBoolean(reader["preview"]);
 
             foreach (var name in new string[] { "meta", "fieldOrder" })
             {
@@ -128,8 +162,6 @@ namespace Splunk.Client
                     throw new InvalidDataException(); // TODO: Diagnostics
                 }
             }
-
-            var fieldNames = new List<string>();
 
             await reader.ReadEachDescendantAsync("field", async () => 
             {
@@ -263,6 +295,20 @@ namespace Splunk.Client
         async Task<Result> ReadResultAsync()
         {
             var reader = this.response.XmlReader;
+
+            switch (reader.ReadState)
+            {
+                case ReadState.Closed:
+                case ReadState.EndOfFile:
+                    return null;
+
+                case ReadState.Interactive:
+                    break;
+
+                default:
+                    throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
             reader.MoveToElement();
 
             if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))

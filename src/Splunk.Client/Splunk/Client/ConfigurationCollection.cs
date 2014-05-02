@@ -14,17 +14,26 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
+//// TODO:
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     /// <summary>
-    /// Provides a class that represents a collection of Splunk <see cref=
-    /// "Configuration"/> files.
+    /// Represents a collection of Splunk <see cref="Configuration"/> files.
     /// </summary>
     public class ConfigurationCollection : EntityCollection<ConfigurationCollection, Configuration>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationCollection"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="namespace">
+        /// An object identifying a Splunk service namespace.
+        /// </param>
         internal ConfigurationCollection(Context context, Namespace @namespace)
             : base(context, @namespace, ClassResourceName)
         { }

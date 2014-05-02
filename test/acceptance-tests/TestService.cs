@@ -173,23 +173,12 @@ namespace Splunk.Client.UnitTesting
 
                     //// Install, update, and remove the Splunk App for Twitter Data, version 2.3.1
 
-                    var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_231.spl");
+                    var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
                     Assert.True(File.Exists(path));
 
                     var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
 
-                    //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
-                    //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
-                    //// We might check that there is no update info for 2.3.1:
-                    ////    Assert.Null(twitterApplicationUpdateInfo.Update);
-                    //// Then change the version number to 2.3.0:
-                    ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
-                    //// Finally:
-                    ////    await twitterApplicationUpdateInfo.GetAsync();
-                    ////    Assert.NotNull(twitterApplicationUpdateInfo.Update);
-                    ////    Assert.Equal("2.3.1", twitterApplicationUpdateInfo.Version);
-                    ////    Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Checksum);
-                    ////    // other asserts on the contents of the update
+                    // other asserts on the contents of the update
                     
                     Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
                     Assert.Equal(true, twitterApplication.CheckForUpdates);
@@ -198,13 +187,20 @@ namespace Splunk.Client.UnitTesting
                     Assert.Equal("Splunk-Twitter Connector", twitterApplication.Label);
                     Assert.Equal(false, twitterApplication.Refresh);
                     Assert.Equal(false, twitterApplication.StateChangeRequiresRestart);
-                    Assert.Equal("2.3.1", twitterApplication.Version);
+                    Assert.Equal("2.3.0", twitterApplication.Version);
                     Assert.Equal(true, twitterApplication.Visible);
 
-                    await twitterApplication.UpdateAsync(new ApplicationAttributes { Version = "2.3.0" });
-                    await twitterApplication.GetAsync(); // because POST apps/local/{name} does not return new data
-
-                    Assert.Equal("2.3.0", twitterApplication.Version);
+                    //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
+                    //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
+                    //// We might check that there is no update info for 2.3.1:
+                    ////    Assert.Null(twitterApplicationUpdateInfo.Update);
+                    //// Then change the version number to 2.3.0:
+                    ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
+                    //// Finally:
+                    //// ApplicationUpdateInfo twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
+                    //// Assert.NotNull(twitterApplicationUpdateInfo.Update);
+                    //// Assert.True(string.Compare(twitterApplicationUpdateInfo.Update.Version, "2.3.0") == 1, "expect the newer twitter app info");
+                    //// Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Update.Checksum);
 
                     var twitterApplicationSetupInfo = await twitterApplication.GetSetupInfoAsync();
                     var twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
@@ -819,39 +815,79 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanStartSearch()
+        public async Task CanCreateJobAndGetResults()
         {
+            var searches = new[]
+            {
+                new
+                {
+                    Command = "search index=_internal",
+                    JobArgs = new JobArgs
+                    {
+                        SearchMode = SearchMode.Realtime,
+                        EarliestTime = "rt-5m",
+                        LatestTime = "rt",
+                        MaxTime = 10000
+                    },
+                    ExpectedFieldNames = new List<string>
+                    {
+                        "_bkt",
+                        "_cd",
+                        "_confstr",
+                        "_indextime",
+                        "_raw",
+                        "_serial",
+                        "_si",
+                        "_sourcetype",
+                        "_subsecond",
+                        "_time",
+                        "host",
+                        "index",
+                        "linecount",
+                        "source",
+                        "sourcetype",
+                        "splunk_server",
+                    }
+                },
+                new
+                {
+                    Command = "search index=_internal | head 10",
+                    JobArgs = new JobArgs(),
+                    ExpectedFieldNames = new List<string>
+                    {
+                        "_bkt",
+                        "_cd",
+                        "_indextime",
+                        "_raw",
+                        "_serial",
+                        "_si",
+                        "_sourcetype",
+                        "_subsecond",
+                        "_time",
+                        "host",
+                        "index",
+                        "linecount",
+                        "source",
+                        "sourcetype",
+                        "splunk_server",
+                    }
+                }
+            };
+
             using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
                 await service.LoginAsync("admin", "changeme");
 
-                var job = await service.CreateJobAsync("search index=_internal | head 10");
-                Assert.NotNull(job);
+                foreach (var search in searches)
+                {
+                    var job = await service.CreateJobAsync(search.Command, search.JobArgs);
+                    Assert.NotNull(job);
 
-                var results = await job.GetSearchResultsAsync();
-
-                Assert.Equal<IEnumerable<string>>(new List<string> 
-                { 
-                    "_bkt",
-                    "_cd",
-                    "_indextime",
-                    "_raw",
-                    "_serial",
-                    "_si",
-                    "_sourcetype",
-                    "_subsecond",
-                    "_time",
-                    "host",
-                    "index",
-                    "linecount",
-                    "source",
-                    "sourcetype",
-                    "splunk_server",
-                 },
-                     results.FieldNames);
-
-                var records = new List<Result>(results);
-                Assert.Equal(10, records.Count);
+                    var results = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
+                    Assert.Equal<IEnumerable<string>>(search.ExpectedFieldNames, results.FieldNames); 
+                    var records = new List<Result>(results);
+                    // Assert.Equal(10, records.Count);
+                }
             }
         }
 
@@ -897,14 +933,26 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanStartSearchOneshot()
+        public async Task CanSearchOneshot()
         {
             using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
-                await service.LoginAsync("admin", "changeme");
+                var indexName = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
 
-                SearchResults searchResults = await service.SearchOneshotAsync(new JobArgs("search index=_internal | head 100") { MaxCount = 100000 });
-                var records = new List<Splunk.Client.Result>(searchResults);
+                var searchCommands = new string[] 
+                {
+                    string.Format("search index={0} * | delete", indexName),
+                    "search index=_internal | head 100"
+                };
+
+                await service.LoginAsync("admin", "changeme");
+                await service.CreateIndexAsync(indexName);
+
+                foreach (var command in searchCommands)
+                {
+                    var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
+                    var records = new List<Splunk.Client.Result>(searchResults);
+                }
             }
         }
 

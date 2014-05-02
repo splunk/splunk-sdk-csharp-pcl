@@ -27,6 +27,7 @@ namespace Splunk.Client
     using System.IO;
     using System.Net;
     using System.Net.Http;
+    using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -70,8 +71,38 @@ namespace Splunk.Client
 
             var response = new Response(message);
             response.Stream = await message.Content.ReadAsStreamAsync();
-            response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
 
+#if false
+            StreamReader reader = null;
+
+            try
+            {
+                reader = new StreamReader(response.Stream, Encoding.UTF8, false, 128, leaveOpen: true);
+
+                int value;
+                do 
+                {
+                    value = reader.Peek();
+                    
+                    if (value == -1)
+                    {
+                        break;
+                    }
+                }
+                while (char.IsWhiteSpace((char)value));
+            }
+            catch
+            {
+                if (reader != null)
+                {
+                    reader.Dispose();
+                }
+
+                throw;
+            }
+
+#endif
+            response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
             return response;
         }
 
@@ -84,7 +115,12 @@ namespace Splunk.Client
             if (!this.disposed)
             {
                 this.Message.Dispose();
-                this.XmlReader.Dispose();
+
+                if (this.XmlReader != null) // because it's possible to be disposed before this.XmlReader is created
+                {
+                    this.XmlReader.Dispose();
+                }
+
                 this.disposed = true;
             }
         }

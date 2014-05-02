@@ -89,21 +89,26 @@ namespace Splunk.Sdk.UnitTesting
                 }
                 dummyBool = app.Visible;
                 dummyBool = app.StateChangeRequiresRestart;
+
                 ApplicationUpdateInfo applicationUpdate = app.GetUpdateInfoAsync().Result;
-                //dummyString = applicationUpdate.Checksum;
-                //dummyString = applicationUpdate.ChecksumType;
-                //dummyString = applicationUpdate.Homepage;
-                //dummyInt = applicationUpdate.UpdateSize;
-                //dummyString = applicationUpdate.UpdateName;
-                //dummyString = applicationUpdate.AppUrl;
-                //dummyString = applicationUpdate.Version;
-                //dummyBool = applicationUpdate.IsImplicitIdRequired;
+
+                if (applicationUpdate.Update != null)
+                {
+                    dummyString = applicationUpdate.Update.Checksum;
+                    dummyString = applicationUpdate.Update.ChecksumType;
+                    dummyString = applicationUpdate.Update.HomePage;
+                    dummyString = applicationUpdate.Update.Size;
+                    dummyString = applicationUpdate.Update.ApplicationName;
+                    Uri uri = applicationUpdate.Update.ApplicationUri;
+                    dummyString = applicationUpdate.Update.Version;
+                    dummyString = applicationUpdate.Update.ImplicitIdRequired;
+                }
             }
 
             if (apps.Any(a => a.Name == "sdk-tests"))
             {
 
-                service = this.CleanApp("sdk-tests", service);             
+                service = this.CleanApp("sdk-tests", service);
             }
 
             apps = service.GetApplicationsAsync().Result;
@@ -145,6 +150,8 @@ namespace Splunk.Sdk.UnitTesting
             attr.Description = "new description";
             attr.Label = "new label";
             attr.Visible = false;
+            attr.Version = "1.5";
+
             if (this.VersionCompare(service, "5.0") < 0)
             {
                 //app2.IsManageable = false;
@@ -158,7 +165,11 @@ namespace Splunk.Sdk.UnitTesting
             Assert.Equal("new description", app2.Description);
             Assert.Equal("new label", app2.Label);
             Assert.False(app2.Visible, assertRoot + "#11");
-            //Assert.Equal("5.0.0", app2.Version);
+            Assert.Equal("1.5", app2.Version);
+
+            ApplicationUpdateInfo appUpdate = app2.GetUpdateInfoAsync().Result;
+            Assert.NotNull(appUpdate.Eai.Acl);
+
 
             // archive (package) the application
             ApplicationArchiveInfo appArchive = app2.PackageAsync().Result;
@@ -166,7 +177,6 @@ namespace Splunk.Sdk.UnitTesting
             Assert.True(appArchive.Path.Length > 0, assertRoot + "#14");
             Assert.True(appArchive.Uri.AbsolutePath.Length > 0, assertRoot + "#15");
 
-            ApplicationUpdateInfo appUpdate = app2.GetUpdateInfoAsync().Result;
             //ApplicationUpdate appUpdate = app2.AppUpdate();
             //Assert.True(appUpdate.ContainsKey("eai:acl"), assertRoot + "#16");
 

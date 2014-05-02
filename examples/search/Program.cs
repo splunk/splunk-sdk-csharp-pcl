@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Client.Examples
+namespace Splunk.Client.Examples.Search
 {
     using System;
     using System.Net;
@@ -71,12 +71,12 @@ namespace Splunk.Client.Examples
             }
 
             //Use JobArgs to define the search
-            JobArgs args = new JobArgs("search index=_internal | head 5")
+            JobArgs args = new JobArgs
             {
-                AutoCancel = 0,
+                AutoCancel = 0
             };
 
-            using (SearchResults searchResults = await service.SearchOneshotAsync(args))
+            using (SearchResults searchResults = await service.SearchOneshotAsync("search index=_internal | head 5", args))
             {
                 foreach (Result record in searchResults)
                 {
@@ -98,15 +98,16 @@ namespace Splunk.Client.Examples
             await service.LoginAsync("admin", "changeme");
 
             // Realtime window is 5 minutes
-            var jobArgs = new JobArgs("search index=_internal")
+            string query = "search index=_internal";
+
+            var jobArgs = new JobArgs
             {
                 SearchMode = SearchMode.Realtime,
                 EarliestTime = "rt-5m",
                 LatestTime = "rt",
             };
 
-            Job job = await service.CreateJobAsync(jobArgs);
-
+            Job job = await service.CreateJobAsync(query, jobArgs);
 
             //this sleep should be removed if DVPL-4503 is fixed.
             //Thread.Sleep(5000);

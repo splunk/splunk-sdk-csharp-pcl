@@ -19,8 +19,6 @@ namespace Splunk.Sdk.UnitTesting
     using Splunk.Client;
     using Splunk.Client.UnitTesting;
 
-    using StyleCop;
-
     using Xunit;
 
     /// <summary>

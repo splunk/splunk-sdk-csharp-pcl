@@ -24,8 +24,7 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving <see cref="StoragePassword"/> 
-    /// entries.
+    /// Provides arguments for retrieving a <see cref="StoragePasswordCollection"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
@@ -37,17 +36,6 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class StoragePasswordCollectionArgs : Args<StoragePasswordCollectionArgs>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StoragePasswordCollectionArgs"/> 
-        /// class.
-        /// </summary>
-        public StoragePasswordCollectionArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

@@ -14,8 +14,8 @@
  * under the License.
  */
 
-// TODO:
-// [ ]  Documentation
+//// TODO:
+//// [O]  Documentation
 
 namespace Splunk.Client
 {
@@ -24,29 +24,21 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for creating or updating the attributes
-    /// of a data <see cref="Index"/>.
+    /// Provides arguments for setting the attributes of an <see cref="Index"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/L6GlMC">REST API Reference: POST 
-    ///     data/indexes</a>
-    ///     <a href="http://goo.gl/r5rZ7i">REST API Reference: POST 
-    ///     data/indexes/{name}</a>
+    ///   <a href="http://goo.gl/L6GlMC">REST API Reference: POST data/indexes</a>.
+    /// </item></description>
+    /// <item><description>
+    ///   <a href="http://goo.gl/r5rZ7i">REST API Reference: POST data/indexes/{name}</a>.
     /// </description></item>
     /// </list>
     /// </remarks>
     public class IndexAttributes : Args<IndexAttributes>
     {
-        #region Constructors
-
-        public IndexAttributes()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

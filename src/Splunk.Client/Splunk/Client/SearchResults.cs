@@ -25,6 +25,11 @@ namespace Splunk.Client
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Reactive.Disposables;
+    using System.Reactive.Linq;
+    using System.Reactive.Subjects;
+    using System.Reactive.Threading.Tasks;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -32,7 +37,7 @@ namespace Splunk.Client
     /// The <see cref="SearchResults"/> class represents a stream of Splunk 
     /// search events.
     /// </summary>
-    public sealed class SearchResults : Observable<Result>, IDisposable, IEnumerable<Result>
+    public sealed class SearchResults : IDisposable, IEnumerable<Result>
     {
         #region Constructors
 
@@ -201,6 +206,25 @@ namespace Splunk.Client
             };
         }
 
+        IObservable<Result> observableResult = null;
+        public IObservable<Result> AsObservable()
+        {
+            // NB: Because this result is inherently *live data*, we
+            // can't return a Cold Observable. Stop us from ending up
+            // with skewed data (i.e. one subscriber having some data
+            // and another subscriber having a different set of data)
+            if (observableResult != null) return observableResult;
+
+            observableResult = Observable.Defer(() => ReadResultAsync().ToObservable ())
+                .Repeat()
+                .TakeWhile(x => x != null)
+                .Finally(() => this.Dispose())
+                .Publish()
+                .RefCount();
+
+            return observableResult;
+        }
+
         /// <summary>
         /// Releases all disposable resources used by the current <see cref=
         /// "SearchResults"/>.
@@ -251,29 +275,6 @@ namespace Splunk.Client
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Pushes <see cref="Result"/> objects to observers and then completes.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing this asychronous operation.
-        /// </returns>
-        override protected async Task PushObservations()
-        {
-            if (this.enumerated)
-            {
-                throw new InvalidOperationException(); // TODO: diagnostics
-            }
-
-            this.enumerated = true;
-
-            for (Result record; (record = await this.ReadResultAsync()) != null; )
-            { 
-                this.OnNext(record); 
-            }
-
-            this.OnCompleted();
         }
 
         #endregion

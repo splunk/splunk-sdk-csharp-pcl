@@ -47,6 +47,11 @@ namespace Splunk.Client
     using System.Collections;
     using System.Collections.Generic;
     using System.IO;
+    using System.Reactive.Disposables;
+    using System.Reactive.Linq;
+    using System.Reactive.Subjects;
+    using System.Reactive.Threading.Tasks;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -54,7 +59,7 @@ namespace Splunk.Client
     /// The <see cref="SearchResultsReader"/> class represents a streaming XML 
     /// reader for Splunk <see cref="SearchResults"/>.
     /// </summary>
-    public sealed class SearchResultsReader : Observable<SearchResults>, IDisposable, IEnumerable<SearchResults>
+    public sealed class SearchResultsReader : IDisposable, IEnumerable<SearchResults>
     {
         #region Constructors
 
@@ -88,6 +93,9 @@ namespace Splunk.Client
 
             return new SearchResultsReader(response);
         }
+
+        readonly Response response;
+        bool disposed;
 
         /// <summary>
         /// Releases all disposable resources used by the current <see cref=
@@ -133,30 +141,33 @@ namespace Splunk.Client
             return this.GetEnumerator(); 
         }
 
-        /// <summary>
-        /// Pushes <see cref="SearchResults"/> to subscribers and then completes.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/>
-        /// </returns>
-        override protected async Task PushObservations()
+
+        IObservable<SearchResults> observableResult = null;
+        public IObservable<SearchResults> AsObservable()
         {
-            do
+            // NB: Because this result is inherently *live data*, we
+            // can't return a Cold Observable. Stop us from ending up
+            // with skewed data (i.e. one subscriber having some data
+            // and another subscriber having a different set of data)
+            if (observableResult != null) return observableResult;
+
+            var readOneItem = Observable.Defer(() => Observable.StartAsync(async () =>
             {
-                var searchResults = await SearchResults.CreateAsync(this.response, leaveOpen: true);
-                this.OnNext(searchResults);
-            }
-            while (await this.response.XmlReader.ReadToFollowingAsync("results"));
+                var ret = await SearchResults.CreateAsync(this.response, leaveOpen: true);
+                await this.response.XmlReader.ReadToFollowingAsync("results");
 
-            this.OnCompleted();
+                return ret;
+            }));
+
+            observableResult = readOneItem
+                .Repeat()
+                .TakeWhile(x => x != null)
+                .Finally(() => this.Dispose ())
+                .Publish()
+                .RefCount();
+
+            return observableResult;
         }
-
-        #endregion
-
-        #region Privates
-
-        readonly Response response;
-        bool disposed;
 
         #endregion
     }

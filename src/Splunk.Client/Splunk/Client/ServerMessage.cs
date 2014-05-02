@@ -104,7 +104,7 @@ namespace Splunk.Client
             {
                 Name = this.Name,
                 Type = type,
-                Text = this.Text
+                Text = text
             };
 
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))

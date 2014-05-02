@@ -281,8 +281,8 @@ namespace Splunk.Client.UnitTesting
             Assert.True(savedSearch.Actions.Script != null);
             Assert.True(savedSearch.Actions.SummaryIndex != null);
 
-            //Assert.Equal("sdk-password", savedSearch.Actions.Email.AuthPassword);
-            //Assert.Equal("sdk-username", savedSearch.Actions.Email.AuthUsername);
+            Assert.Equal("sdk-password", savedSearch.Actions.Email.AuthPassword);
+            Assert.Equal("sdk-username", savedSearch.Actions.Email.AuthUsername);
             Assert.Equal("sdk-bcc@splunk.com", savedSearch.Actions.Email.Bcc);
             Assert.Equal("sdk-cc@splunk.com", savedSearch.Actions.Email.CC);
             Assert.Equal("$name1$", savedSearch.Actions.Email.Command);
@@ -388,9 +388,8 @@ namespace Splunk.Client.UnitTesting
 
             SavedSearchTemplateArgs savedSearchTemplateArgs = new SavedSearchTemplateArgs();
             
-            if (this.VersionCompare(service, "6.0") < 0)
-            {
-                
+            //if (this.VersionCompare(service, "6.0") < 0)
+            {                
                 savedSearchTemplateArgs.Add(new Argument("action.email.authpassword ", "sdk-password"));
                 savedSearchTemplateArgs.Add(new Argument("action.email.authusername ", "sdk-username"));
                 savedSearchTemplateArgs.Add(new Argument("action.email.bcc ", "sdk-bcc@splunk.com"));

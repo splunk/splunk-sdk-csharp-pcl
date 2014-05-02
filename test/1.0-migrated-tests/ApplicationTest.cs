@@ -97,11 +97,11 @@ namespace Splunk.Sdk.UnitTesting
                     dummyString = applicationUpdate.Update.Checksum;
                     dummyString = applicationUpdate.Update.ChecksumType;
                     dummyString = applicationUpdate.Update.HomePage;
-                    dummyString = applicationUpdate.Update.Size;
+                    long size = applicationUpdate.Update.Size;
                     dummyString = applicationUpdate.Update.ApplicationName;
                     Uri uri = applicationUpdate.Update.ApplicationUri;
                     dummyString = applicationUpdate.Update.Version;
-                    dummyString = applicationUpdate.Update.ImplicitIdRequired;
+                    dummyBool = applicationUpdate.Update.ImplicitIdRequired;
                 }
             }
 

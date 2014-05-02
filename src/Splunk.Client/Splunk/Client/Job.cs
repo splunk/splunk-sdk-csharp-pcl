@@ -288,9 +288,9 @@ namespace Splunk.Client
             get { return this.GetValue("RemoteSearch", StringConverter.Instance); }
         }
 
-        public Request_t Request
+        public dynamic Request
         {
-            get { return this.GetValue("Request", Request_t.Converter.Instance);  }
+            get { return this.Snapshot == null ? null : ((dynamic)this.Snapshot.Adapter.ExpandoObject).Request; }
         }
 
         public long ResultCount
@@ -320,7 +320,15 @@ namespace Splunk.Client
             get { return this.GetValue("ScanCount", Int64Converter.Instance); }
         }
 
-        //	SearchProviders	{System.Collections.Generic.List<object>}	System.Collections.Generic.List`1[System.Object]
+        public string Search
+        {
+            get { return this.Snapshot == null ? null : this.Snapshot.Title; }
+        }
+
+        public IReadOnlyList<string> SearchProviders
+        {
+            get { return this.GetValue("SearchProviders", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+        }
 
         public string Sid
         {
@@ -706,23 +714,6 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
-        }
-
-        #endregion
-
-        #region Types
-
-        public class Request_t : ExpandoAdapter<Request_t>
-        {
-            public string Id
-            {
-                get { return this.GetValue("Id", StringConverter.Instance); }
-            }
-
-            public string Search
-            {
-                get { return this.GetValue("Search", StringConverter.Instance); }
             }
         }
 

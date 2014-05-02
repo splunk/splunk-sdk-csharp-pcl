@@ -52,7 +52,7 @@ namespace Splunk.Client
             entry.ReadXmlAsync(reader).Wait();
         }
 
-        static readonly string AtomFeedPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "AtomFeed.xml"));
+        static readonly string AtomFeedPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "Client", "AtomFeed.xml"));
 
         static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()
         {

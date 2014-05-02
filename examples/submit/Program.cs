@@ -32,17 +32,16 @@ namespace Splunk.Examples.Submit
     {
         static Program()
         {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
-            // 1. Instantiate a WebRequestHandler
-            // 2. Set its ServerCertificateValidationCallback
-            // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
+            //// TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
+            //// 1. Instantiate a WebRequestHandler
+            //// 2. Set its ServerCertificateValidationCallback
+            //// 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
 
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;
             };
         }
-
 
         static void Main(string[] args)
         {
@@ -82,8 +81,8 @@ namespace Splunk.Examples.Submit
                 ReceiverArgs args = new ReceiverArgs()
                 {
                     Index = indexName,
-                    //Source = source,
-                    //SourceType = sourceType,
+                    ////Source = source,
+                    ////SourceType = sourceType,
                 };
 
                 await receiver.SendAsync("Hello World.", args);
@@ -93,8 +92,8 @@ namespace Splunk.Examples.Submit
                     string.Format(
                         "search index={0}",// source={2} sourcetype={3}",
                         indexName
-                        //source,
-                        //sourceType
+                        ////source,
+                        ////sourceType
                         )).Result;
 
                 Console.WriteLine(results);              

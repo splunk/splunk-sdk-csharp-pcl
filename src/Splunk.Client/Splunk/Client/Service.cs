@@ -1035,7 +1035,8 @@ namespace Splunk.Client
         /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
         /// specified by <see cref="args"/>.
         /// </remarks>
-        public async Task<Job> CreateJobAsync(string search, JobArgs args = null)
+        public async Task<Job> CreateJobAsync(string search, JobArgs args = null, 
+            DispatchState requiredState = DispatchState.Running)
         {
             Contract.Requires<ArgumentNullException>(search != null);
             Contract.Requires<ArgumentOutOfRangeException>(args == null || args.ExecutionMode != ExecutionMode.Oneshot);
@@ -1063,7 +1064,9 @@ namespace Splunk.Client
             // that we can probably make that a little slicker, but let's talk about how.
 
             Job job = new Job(this.Context, this.Namespace, name: searchId);
+
             await job.GetAsync();
+            await job.TransitionAsync(requiredState);
 
             return job;
         }

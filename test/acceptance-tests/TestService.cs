@@ -822,17 +822,18 @@ namespace Splunk.Client.UnitTesting
                 new
                 {
                     Command = "search index=_internal",
-                    JobArgs = new JobArgs()
+                    JobArgs = new JobArgs
                     {
                         SearchMode = SearchMode.Realtime,
                         EarliestTime = "rt-5m",
-                        LatestTime = "rt"
+                        LatestTime = "rt",
+                        MaxTime = 10000
                     }
                 },
                 new
                 {
                     Command = "search index=_internal | head 10",
-                    JobArgs = (JobArgs)null
+                    JobArgs = new JobArgs()
                 }
             };
 
@@ -848,9 +849,10 @@ namespace Splunk.Client.UnitTesting
                     var results = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
 
                     Assert.Equal<IEnumerable<string>>(new List<string> 
-                    { 
+                    {
                         "_bkt",
                         "_cd",
+                        "_confstr",
                         "_indextime",
                         "_raw",
                         "_serial",

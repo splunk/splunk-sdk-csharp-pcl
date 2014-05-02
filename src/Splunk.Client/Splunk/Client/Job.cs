@@ -641,6 +641,20 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="requiredState"></param>
+        /// <returns></returns>
+        public async Task TransitionAsync(DispatchState requiredState)
+        {
+            while (this.DispatchState < requiredState)
+            {
+                await this.GetAsync();
+                await Task.Delay(500);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         public async Task UnsaveAsync()
         {
@@ -692,15 +706,6 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
-        }
-
-        async Task TransitionAsync(DispatchState requiredState)
-        {
-            while (this.DispatchState < requiredState)
-            {
-                await this.GetAsync();
-                await Task.Delay(500);
             }
         }
 

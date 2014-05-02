@@ -271,7 +271,10 @@ namespace Splunk.Client
             get { return this.GetValue("NumPreviews", Int32Converter.Instance); }
         }
 
-        // Performance	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+        public dynamic Performance
+        {
+            get { return this.Snapshot == null ? null : ((dynamic)this.Snapshot.Adapter.ExpandoObject).Performance; }
+        }
 
         public int Pid
         {
@@ -288,9 +291,9 @@ namespace Splunk.Client
             get { return this.GetValue("RemoteSearch", StringConverter.Instance); }
         }
 
-        public Request_t Request
+        public dynamic Request
         {
-            get { return this.GetValue("Request", Request_t.Converter.Instance);  }
+            get { return this.Snapshot == null ? null : ((dynamic)this.Snapshot.Adapter.ExpandoObject).Request; }
         }
 
         public long ResultCount
@@ -313,14 +316,25 @@ namespace Splunk.Client
             get { return this.GetValue("RunDuration", DoubleConverter.Instance); }
         }
 
-        // Runtime	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
+        public Runtime_t Runtime
+        {
+            get { return this.GetValue("Runtime", Runtime_t.Converter.Instance); }
+        }
 
         public long ScanCount
         {
             get { return this.GetValue("ScanCount", Int64Converter.Instance); }
         }
 
-        //	SearchProviders	{System.Collections.Generic.List<object>}	System.Collections.Generic.List`1[System.Object]
+        public string Search
+        {
+            get { return this.Snapshot == null ? null : this.Snapshot.Title; }
+        }
+
+        public IReadOnlyList<string> SearchProviders
+        {
+            get { return this.GetValue("SearchProviders", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+        }
 
         public string Sid
         {
@@ -713,19 +727,18 @@ namespace Splunk.Client
 
         #region Types
 
-        public class Request_t : ExpandoAdapter<Request_t>
+        public class Runtime_t : ExpandoAdapter<Runtime_t>
         {
-            public string Id
+            public bool AutoCancel
             {
-                get { return this.GetValue("Id", StringConverter.Instance); }
+                get { return this.GetValue("AutoCancel", BooleanConverter.Instance); }
             }
 
-            public string Search
+            public bool AutoPause
             {
-                get { return this.GetValue("Search", StringConverter.Instance); }
+                get { return this.GetValue("AutoPause", BooleanConverter.Instance); }
             }
         }
-
         #endregion
     }
 }

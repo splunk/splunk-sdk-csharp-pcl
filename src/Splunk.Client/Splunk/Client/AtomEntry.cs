@@ -14,49 +14,50 @@
  * under the License.
  */
 
-// TODO:
-//
-// [ ] Consider IValueConverter as an alternative to As<data-type> methods
-//     in this class as well as in the Field class
-//
-//     Idea: A single set of value converters for all Splunk data types 
-//     providing consistent conversion, manipulation, and presentation on 
-//     all Portable Class Library platforms with consideration for 
-//     CultureInfo.
-//
-//     Selling point: One of the handy things you can do with data binding 
-//     in WPF and Silverlight is convert the data as you pull it from the 
-//     data source. The interface used for doing this is IValueConverter.
-//     It is part of the Portable Class Library profile and available on 
-//     all current Windows platforms as well as Xamarin (?)
-//
-//     Note: TypeConverter, an alternative to IValueConverter, is not
-//     part of the Portable Class Library profile because it is not 
-//     implemented for Windows Store apps.
-//
-//     References:
-//     1. [IValueConverter in WPF data binding](http://goo.gl/wHBov)
-//     2. [IValueConverter Class](http://goo.gl/Dep0VT)
-//     3. [ValueConversionAttribute Class](http://goo.gl/0aKer9)
-//
-// [O] Improve error handling. Bad data should in an element should 
-//     produce diagnostic field-oriented error messages via 
-//     InvalidDataException.
-//
-// [ ] Identify optional properties and sensible default values, if
-//     they're missing.
-//
-// [ ] Check AtomEntry properties against splunk-sdk-csharp-1.0.X
-//
-// [X] Either drop or improve AtomEntry.NormalizePropertyName
-//     Improved AtomEntry.NormalizePropertyName since we do not have
-//     known serialization requirements; just deserialization.
-//
-// [O] Contracts
-//
-// [ ] Documentation
-//
-// [ ] Use NameTable in AtomEntry and AtomFeed
+//// TODO:
+////
+//// [ ] Consider IValueConverter as an alternative to As<data-type> methods
+////     in the Field class
+////
+////     Idea: A single set of value converters for all Splunk data types 
+////     providing consistent conversion, manipulation, and presentation on 
+////     all Portable Class Library platforms with consideration for 
+////     CultureInfo.
+////
+////     Selling point: One of the handy things you can do with data binding 
+////     in WPF and Silverlight is convert the data as you pull it from the 
+////     data source. The interface used for doing this is IValueConverter.
+////     It is part of the Portable Class Library profile and available on 
+////     all current Windows platforms as well as Xamarin (?)
+////
+////     Note: 
+////     Neither IValueConveter or TypeConverter, an alternative to 
+////     IValueConverter, is part of the Portable Class Library profile because 
+////     it is not implemented for Windows Store apps.
+////
+////     References:
+////     1. [IValueConverter in WPF data binding](http://goo.gl/wHBov)
+////     2. [IValueConverter Class](http://goo.gl/Dep0VT)
+////     3. [ValueConversionAttribute Class](http://goo.gl/0aKer9)
+////
+//// [O] Improve error handling. Bad data should in an element should 
+////     produce diagnostic field-oriented error messages via 
+////     InvalidDataException.
+////
+//// [ ] Identify optional properties and sensible default values, if
+////     they're missing.
+////
+//// [ ] Check AtomEntry properties against splunk-sdk-csharp-1.0.X
+////
+//// [X] Either drop or improve AtomEntry.NormalizePropertyName
+////     Improved AtomEntry.NormalizePropertyName since we do not have
+////     known serialization requirements; just deserialization.
+////
+//// [O] Contracts
+////
+//// [ ] Documentation
+////
+//// [ ] Use NameTable in AtomEntry and AtomFeed
 
 namespace Splunk.Client
 {

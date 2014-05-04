@@ -44,7 +44,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
         /// The name of the <see cref="ServerMessage"/>
@@ -68,7 +68,26 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use one of these
+        /// methods to obtain a <see cref="ServerMessage"/> instance:
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Server.CreateMessageAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates a new <see cref="ServerMessage"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Server.GetMessageAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves an existing <see cref="ServerMessage"/>.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public ServerMessage()
         { }

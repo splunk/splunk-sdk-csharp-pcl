@@ -47,7 +47,56 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use one of these
+        /// methods to obtain a <see cref="ConfigurationStanza"/> instance:
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Configuration.GetSettingAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves an existing <see cref="ConfigurationSetting"/>
+        ///   in the current <see cref="Configuration"/> file.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Configuration.UpdateSettingAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates or updates a <see cref="ConfigurationSetting"/>
+        ///   in the current <see cref="Configuration"/> file.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="ConfigurationStanza.GetSettingAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves an existing <see cref="ConfigurationSetting"/>
+        ///   in the current <see cref="ConfigurationStanza"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="ConfigurationStanza.UpdateSettingAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates or updates a <see cref="ConfigurationSetting"/> 
+        ///   in the current <see cref="ConfigurationStanza"/>
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.GetConfigurationSettingAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves a <see cref="ConfigurationSetting"/> 
+        ///   identified by configuration file, stanza, and setting name.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.UpdateConfigurationSettingAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates or updates a <see cref="ConfigurationSetting"/> 
+        ///   identified by configuration file, stanza, and setting name.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public ConfigurationSetting()
         { }

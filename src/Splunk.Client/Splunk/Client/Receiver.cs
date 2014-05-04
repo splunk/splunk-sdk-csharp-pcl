@@ -49,7 +49,8 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code.  Use the <see cref=
+        /// "Service.Receiver"/> property to access a <see cref="Receiver"/>.
         /// </remarks>
         public Receiver()
         { }

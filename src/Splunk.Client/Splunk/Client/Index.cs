@@ -46,7 +46,26 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use one of these
+        /// methods to obtain an <see cref="Index"/> instance:
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Service.CreateIndexAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates a new <see cref="Index"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.GetIndexAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves an existing index.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public Index()
         { }

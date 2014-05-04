@@ -39,7 +39,28 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. The <see cref=
+        /// "ApplicationSetupInfo"/> class is an information object
+        /// returned by these methods.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Application.GetSetupInfoAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves setup information for the current <see 
+        ///   cref="Application"/>.
+        /// </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.GetApplicationSetupInfoAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves setup information for an <see cref=
+        ///   "Application"/> identified by name.
+        ///   </description>
+        /// </item>
         /// </remarks>
         public ApplicationSetupInfo()
         { }

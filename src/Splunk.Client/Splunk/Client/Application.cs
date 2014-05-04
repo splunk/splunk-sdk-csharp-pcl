@@ -54,7 +54,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
         /// The name of this application.
@@ -78,7 +78,33 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use one of these
+        /// methods to obtain an <see cref="Application"/> instance:
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Service.CreateApplicationAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates a new Splunk application from a template.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.GetApplicationAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves an existing Splunk application.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.InstallApplicationAsync"/></term>
+        ///   <description>
+        ///   Asynchronously installs a new Splunk application from an archive 
+        ///   file.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public Application()
         { }
@@ -276,8 +302,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously gets setup information for the current <see cref=
-        /// "Application"/>.
+        /// Asynchronously retrieves setup information for the current <see 
+        /// cref="Application"/>.
         /// </summary>
         /// <returns>
         /// An object containing setup information for the current <see cref=

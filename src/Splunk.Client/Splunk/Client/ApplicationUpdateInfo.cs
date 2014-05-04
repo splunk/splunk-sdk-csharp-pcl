@@ -42,7 +42,28 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. The <see cref=
+        /// "ApplicationUpdateInfo"/> class is an information object
+        /// returned by these methods.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Application.GetUpdateInfoAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves update information for the current <see 
+        ///   cref="Application"/>.
+        /// </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.GetApplicationUpdateInfoAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves update information for an <see cref=
+        ///   "Application"/> identified by name.
+        ///   </description>
+        /// </item>
         /// </remarks>
         public ApplicationUpdateInfo()
         { }

@@ -43,7 +43,49 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use one of these
+        /// methods to obtain a <see cref="ConfigurationStanza"/> instance:
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Configuration.CreateStanzaAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates a new <see cref="ConfigurationStanza"/>
+        ///   in the current <see cref="Configuration"/> file.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Configuration.GetStanzaAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves an existing <see cref="ConfigurationStanza"/>
+        ///   in the current <see cref="Configuration"/> file.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Configuration.UpdateStanzaAsync"/></term>
+        ///   <description>
+        ///   Asynchronously updates an existing <see cref="ConfigurationStanza"/>
+        ///   in the current <see cref="Configuration"/> file.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.CreateConfigurationStanzaAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates a <see cref="ConfigurationStanza"/> 
+        ///   identified by configuration file and stanza name.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.GetConfigurationStanzaAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves a <see cref="ConfigurationStanza"/> 
+        ///   identified by configuration file and stanza name.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public ConfigurationStanza()
         { }

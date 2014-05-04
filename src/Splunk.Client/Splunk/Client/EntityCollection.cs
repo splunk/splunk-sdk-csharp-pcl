@@ -55,7 +55,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="args">
         /// </param>
@@ -72,7 +72,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. 
         /// </remarks>
         public EntityCollection()
         { }

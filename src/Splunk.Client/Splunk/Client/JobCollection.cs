@@ -34,7 +34,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="args">
         /// Arguments for retrieving the <see cref="JobCollection"/>.
@@ -51,7 +51,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <remarks>
         /// This constructor is used by the <see cref="SavedSearch.GetHistoryAsync"/>
@@ -68,7 +68,9 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use <see cref=
+        /// "Service.GetJobsAsync"/> to asynchronously retrieve a collection of
+        /// running Splunk jobs.
         /// </remarks>
         public JobCollection()
         { }

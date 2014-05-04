@@ -314,27 +314,6 @@ namespace Splunk.Client
         #region Applications
 
         /// <summary>
-        /// Asynchronously creates an application from an application package.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the application to create.
-        /// </param>
-        /// <returns>
-        /// An object representing the application created.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to construct the <see cref="Application"/>
-        /// object it returns.
-        /// </remarks>
-        public async Task<Application> InstallApplicationAsync(string name, string path, bool update = false)
-        {
-            var resource = new Application(this.Context, this.Namespace, name);
-            await resource.InstallAsync(path, update);
-            return resource;
-        }
-
-        /// <summary>
         /// Asynchronously creates an application from an application template.
         /// </summary>
         /// <param name="name">
@@ -378,8 +357,30 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Asynchronously retrieves a collection of installed applications.
+        /// </summary>
+        /// <param name="args">
+        /// Specification of the collection of applications to retrieve.
+        /// </param>
+        /// <returns>
+        /// An object representing the collection of installed applications
+        /// specified by <see cref="args"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/iiCmcY">GET apps/local</a> 
+        /// endpoint to construct the <see cref="ApplicationCollection"/> object
+        /// it returns.
+        /// </remarks>
+        public async Task<ApplicationCollection> GetApplicationsAsync(ApplicationCollectionArgs args = null)
+        {
+            var collection = new ApplicationCollection(this.Context, this.Namespace, args);
+            await collection.GetAsync();
+            return collection;
+        }
+
+        /// <summary>
         /// Asynchronously retrieves setup information for an <see cref=
-        /// "Application"/>.
+        /// "Application"/> identified by name.
         /// </summary>
         /// <param name="name">
         /// Name of the application for which to retrieve setup information.
@@ -414,33 +415,32 @@ namespace Splunk.Client
         /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
         /// "ApplicationUpdateInfo"/> object it returns.
         /// </remarks>
-        public async Task<ApplicationSetupInfo> GetApplicationUpdateInfoAsync(string name)
+        public async Task<ApplicationUpdateInfo> GetApplicationUpdateInfoAsync(string name)
         {
-            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, name);
+            var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, name);
             await resource.GetAsync();
             return resource;
         }
 
         /// <summary>
-        /// Asynchronously retrieves a collection of installed applications.
+        /// Asynchronously creates an application from an application package.
         /// </summary>
-        /// <param name="args">
-        /// Specification of the collection of applications to retrieve.
+        /// <param name="name">
+        /// Name of the application to create.
         /// </param>
         /// <returns>
-        /// An object representing the collection of installed applications
-        /// specified by <see cref="args"/>.
+        /// An object representing the application created.
         /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/iiCmcY">GET apps/local</a> 
-        /// endpoint to construct the <see cref="ApplicationCollection"/> object
-        /// it returns.
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local</a> endpoint to construct the <see cref="Application"/>
+        /// object it returns.
         /// </remarks>
-        public async Task<ApplicationCollection> GetApplicationsAsync(ApplicationCollectionArgs args = null)
+        public async Task<Application> InstallApplicationAsync(string name, string path, bool update = false)
         {
-            var collection = new ApplicationCollection(this.Context, this.Namespace, args);
-            await collection.GetAsync();
-            return collection;
+            var resource = new Application(this.Context, this.Namespace, name);
+            await resource.InstallAsync(path, update);
+            return resource;
         }
 
         /// <summary>
@@ -675,10 +675,13 @@ namespace Splunk.Client
         /// update the configuration setting identified by <see cref=
         /// "fileName"/>, <see cref="stanzaName"/>, and <see cref="keyName"/>.
         /// </remarks>
-        public async Task UpdateConfigurationSettingAsync(string fileName, string stanzaName, string keyName, string value)
+        public async Task<ConfigurationSetting> UpdateConfigurationSettingAsync(string fileName, string stanzaName, 
+            string keyName, string value)
         {
-            ConfigurationSetting setting = new ConfigurationSetting(this.Context, this.Namespace, fileName, stanzaName, keyName);
-            await setting.UpdateAsync(value);
+            ConfigurationSetting resource = new ConfigurationSetting(this.Context, this.Namespace, fileName, 
+                stanzaName, keyName);
+            await resource.UpdateAsync(value);
+            return resource;
         }
 
         /// <summary>

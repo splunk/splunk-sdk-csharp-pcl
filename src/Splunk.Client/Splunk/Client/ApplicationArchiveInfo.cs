@@ -36,7 +36,28 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. The <see cref=
+        /// "ApplicationArchiveInfo"/> class is an information object
+        /// returned by these methods.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Application.PackageApplicationAsync"/></term>
+        ///   <description>
+        ///   Asychronously packages an existing Splunk application into an 
+        ///   archive file.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.PackageApplicationAsync"/></term>
+        ///   <description>
+        ///   Asychronously packages an existing Splunk application into an 
+        ///   archive file.
+        ///   </description>
+        /// </item>
         /// </remarks>
         public ApplicationArchiveInfo()
         { }

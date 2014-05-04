@@ -38,7 +38,9 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use <see cref=
+        /// "Server.GetMessages"/> to asynchronously retrieve the collection
+        /// of messages from a Splunk server.
         /// </remarks>
         public ServerMessageCollection()
         { }

@@ -41,7 +41,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
@@ -59,7 +59,28 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use one of these
+        /// methods to obtain a <see cref="ServerSettings"/> instance:
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Server.GetServerSettingsAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves <see cref="ServerSettings"/> from the 
+        ///   Splunk server represented by the current instance.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.UpdateSettingsAsync"/></term>
+        ///   <description>
+        ///   Asynchronously updates <see cref="ServerSettings"/> on the Splunk 
+        ///   server represented by the current instance.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public ServerSettings()
         { }

@@ -45,7 +45,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
@@ -63,7 +63,8 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use the <see cref=
+        /// "Service.Server"/> property to access a <see cref="Server"/>.
         /// </remarks>
         public Server()
         { }
@@ -125,8 +126,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously gets the <see cref="ServerMessageCollection"/> from 
-        /// the Splunk server represented by the current instance.
+        /// Asynchronously retrieves the <see cref="ServerMessageCollection"/> 
+        /// from the Splunk server represented by the current instance.
         /// </summary>
         /// <returns>
         /// An object representing the collection of server messages.
@@ -139,8 +140,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously gets the <see cref="ServerSettings"/> from the Splunk 
-        /// server represented by the current instance.
+        /// Asynchronously retrieves <see cref="ServerSettings"/> from the 
+        /// Splunk server represented by the current instance.
         /// </summary>
         /// <returns>
         /// An object representing the server settings from the Splunk server
@@ -249,8 +250,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously updates the <see cref="ServerSettings"/> on the 
-        /// Splunk server represented by the current instance.
+        /// Asynchronously updates <see cref="ServerSettings"/> on the Splunk 
+        /// server represented by the current instance.
         /// </summary>
         /// <param name="values">
         /// An object representing the updated server setting values.

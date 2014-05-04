@@ -31,7 +31,9 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. Use <see cref=
+        /// "Service.GetSavedSearchesAsync"/> to asynchronously retrieve a 
+        /// collection of saved searches from Splunk.
         /// </remarks>
         public SavedSearchCollection()
         { }

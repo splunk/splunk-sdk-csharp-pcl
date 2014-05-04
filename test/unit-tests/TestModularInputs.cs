@@ -33,7 +33,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// <summary>
         ///     Input file folder
         /// </summary>
-        const string TestDataFolder = @"Data\ModularInputs";
+        static readonly string TestDataFolder = Path.Combine("Data", "ModularInputs");
 
         /// <summary>
         ///     Input file containing input definition

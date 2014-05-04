@@ -64,8 +64,8 @@ namespace Splunk.Examples.Submit
 
             Console.WriteLine("create a  index");
             string indexName = "user-index";
-            string source = "*\\splunkd.log";
-            string sourceType = "splunkd";
+            //string source = "*\\splunkd.log";
+            //string sourceType = "splunkd";
 
             if (service.GetIndexesAsync().Result.Any(a => a.Name == indexName))
             {

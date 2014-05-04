@@ -194,7 +194,7 @@ namespace Splunk.ModularInputs.UnitTesting
         /// <returns>A full path</returns>
         static string GetDataFilePath(string relativePath)
         {
-            return TestDataFolder + @"\" + relativePath;
+            return Path.Combine(TestDataFolder, relativePath);
         }
 
         /// <summary>

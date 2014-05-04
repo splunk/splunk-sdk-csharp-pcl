@@ -318,6 +318,17 @@ namespace Splunk.Client
             await reader.ReadAsync();
         }
 
+        /// <summary>
+        /// Gets a string representation for the current <see cref="AtomEntry"/>.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="AtomEntry"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Updated={3})", this.Title, this.Author, this.Id, this.Updated);
+        }
+
         #endregion
     }
 }

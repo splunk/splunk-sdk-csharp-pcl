@@ -51,21 +51,21 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// The <see cref="SearchResultsReader"/> class represents a streaming XML 
-    /// reader for Splunk <see cref="SearchResults"/>.
+    /// The <see cref="SearchExportStream"/> class represents a streaming XML 
+    /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
-    public sealed class SearchResultsReader : Observable<SearchResults>, IDisposable, IEnumerable<SearchResults>
+    public sealed class SearchExportStream : Observable<SearchResultStream>, IDisposable, IEnumerable<SearchResultStream>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SearchResultsReader"/> class.
+        /// Initializes a new instance of the <see cref="SearchExportStream"/> class.
         /// This is a base contructor that should not be used directly.
         /// </summary>
         /// <param name="stream">
         /// The underlying <see cref="Stream"/>.
         /// </param>
-        SearchResultsReader(Response response)
+        SearchExportStream(Response response)
         {
             this.response = response;
         }
@@ -74,7 +74,7 @@ namespace Splunk.Client
 
         #region Methods
 
-        internal static async Task<SearchResultsReader> CreateAsync(Response response)
+        internal static async Task<SearchExportStream> CreateAsync(Response response)
         {
             response.XmlReader.MoveToElement(); // ensures we're at an element, not an attribute
 
@@ -86,12 +86,12 @@ namespace Splunk.Client
                 }
             }
 
-            return new SearchResultsReader(response);
+            return new SearchExportStream(response);
         }
 
         /// <summary>
         /// Releases all disposable resources used by the current <see cref=
-        /// "SearchResultsReader"/>.
+        /// "SearchExportStream"/>.
         /// </summary>
         public void Dispose()
         {
@@ -103,30 +103,30 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through <see cref="SearchResults"/>
+        /// Returns an enumerator that iterates through <see cref="SearchResultStream"/>
         /// synchronously.
         /// </summary>
         /// <returns>
-        /// A <see cref="SearchResults"/> enumerator structure for the current <see 
-        /// cref="SearchResultsReader"/>.
+        /// A <see cref="SearchResultStream"/> enumerator structure for the current <see 
+        /// cref="SearchExportStream"/>.
         /// </returns>
-        public IEnumerator<SearchResults> GetEnumerator()
+        public IEnumerator<SearchResultStream> GetEnumerator()
         {
             do
             {
-                var results = SearchResults.CreateAsync(this.response, leaveOpen: true).Result;
+                var results = SearchResultStream.CreateAsync(this.response, leaveOpen: true).Result;
                 yield return results;
             }
             while (this.response.XmlReader.ReadToFollowingAsync("results").Result);
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through <see cref="SearchResults"/>
+        /// Returns an enumerator that iterates through <see cref="SearchResultStream"/>
         /// synchronously.
         /// </summary>
         /// <returns>
-        /// A <see cref="SearchResults"/> enumerator structure for the current <see 
-        /// cref="SearchResultsReader"/>.
+        /// A <see cref="SearchResultStream"/> enumerator structure for the current <see 
+        /// cref="SearchExportStream"/>.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         { 
@@ -134,7 +134,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Pushes <see cref="SearchResults"/> to subscribers and then completes.
+        /// Pushes <see cref="SearchResultStream"/> to subscribers and then completes.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/>
@@ -143,7 +143,7 @@ namespace Splunk.Client
         {
             do
             {
-                var searchResults = await SearchResults.CreateAsync(this.response, leaveOpen: true);
+                var searchResults = await SearchResultStream.CreateAsync(this.response, leaveOpen: true);
                 this.OnNext(searchResults);
             }
             while (await this.response.XmlReader.ReadToFollowingAsync("results"));

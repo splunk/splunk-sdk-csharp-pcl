@@ -21,7 +21,7 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides arguments for retrieving transformed <see cref="SearchResults"/>.
+    /// Provides arguments for retrieving transformed <see cref="SearchResultStream"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>

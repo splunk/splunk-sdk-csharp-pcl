@@ -118,6 +118,8 @@
     <Compile Include="Splunk\Client\ApplicationSetupInfo.cs" />
     <Compile Include="Splunk\Client\ApplicationArchiveInfo.cs" />
     <Compile Include="Splunk\Client\EntitySnapshot.cs" />
+    <Compile Include="Splunk\Client\ArgumentSet.cs" />
+    <Compile Include="Splunk\Client\CustomJobArgs.cs" />
     <Compile Include="Splunk\Client\StoragePassword.cs" />
     <Compile Include="Splunk\Client\ApplicationAttributes.cs" />
     <Compile Include="Splunk\Client\StoragePasswordCollection.cs" />
@@ -202,12 +204,12 @@
     <Compile Include="Splunk\Client\JobArgs.cs" />
     <Compile Include="Splunk\Client\Message.cs" />
     <Compile Include="Splunk\Client\MessageType.cs" />
-    <Compile Include="Splunk\Client\SearchResultsReader.cs" />
+    <Compile Include="Splunk\Client\SearchExportStream.cs" />
     <Compile Include="Splunk\Client\Namespace.cs" />
-    <Compile Include="Splunk\Client\Result.cs" />
+    <Compile Include="Splunk\Client\SearchResult.cs" />
     <Compile Include="Splunk\Client\RequestException.cs" />
     <Compile Include="Splunk\Client\ResourceName.cs" />
-    <Compile Include="Splunk\Client\SearchResults.cs" />
+    <Compile Include="Splunk\Client\SearchResultStream.cs" />
     <Compile Include="Splunk\Client\Scheme.cs" />
     <Compile Include="Splunk\Client\SearchMode.cs" />
     <Compile Include="Splunk\Client\Service.cs" />

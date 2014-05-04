@@ -113,7 +113,7 @@ namespace Splunk.Client
         /// <remarks>
         /// The delimiter must be determined empirically based on the search
         /// string and the data format of the index. The delimiter can 
-        /// differ between fields in the same <see cref="Result"/>.
+        /// differ between fields in the same <see cref="SearchResult"/>.
         /// <para>
         /// If the underlying <see cref="ResultsReader"/> object has 
         /// no delimiter, the original array of values is returned. 

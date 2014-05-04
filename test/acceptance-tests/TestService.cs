@@ -676,9 +676,9 @@ namespace Splunk.Client.UnitTesting
                 await service.LoginAsync("admin", "changeme");
 
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
-                SearchResults searchResults = await job.GetSearchResultsAsync();
+                SearchResultStream searchResults = await job.GetSearchResultsAsync();
 
-                var records = new List<Splunk.Client.Result>(searchResults);
+                var records = new List<Splunk.Client.SearchResult>(searchResults);
             }
         }
 
@@ -885,7 +885,7 @@ namespace Splunk.Client.UnitTesting
 
                     var results = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
                     Assert.Equal<IEnumerable<string>>(search.ExpectedFieldNames, results.FieldNames); 
-                    var records = new List<Result>(results);
+                    var records = new List<SearchResult>(results);
                     // Assert.Equal(10, records.Count);
                 }
             }
@@ -899,8 +899,8 @@ namespace Splunk.Client.UnitTesting
             {
                 await service.LoginAsync("admin", "changeme");
 
-                SearchResultsReader reader = await service.SearchExportAsync(new SearchExportArgs("search index=_internal | head 1000") { Count = 0 });
-                var records = new List<Splunk.Client.Result>();
+                SearchExportStream reader = await service.StartSearchExportAsync("search index=_internal | head 1000", new SearchExportArgs() { Count = 0 });
+                var records = new List<Splunk.Client.SearchResult>();
 
                 foreach (var results in reader)
                 {
@@ -951,7 +951,7 @@ namespace Splunk.Client.UnitTesting
                 foreach (var command in searchCommands)
                 {
                     var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
-                    var records = new List<Splunk.Client.Result>(searchResults);
+                    var records = new List<Splunk.Client.SearchResult>(searchResults);
                 }
             }
         }

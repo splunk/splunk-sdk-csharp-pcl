@@ -26,13 +26,9 @@ namespace Splunk.Client
     using System.Xml;
     
     /// <summary>
-    /// The <see cref="Result"/> class wraps an individual event or result that
-    /// was returned by the <see cref="ResultsReader"/> class.
-    /// An event maps each field name to an instance of
-    /// <see cref="Result.FieldValue"/> class, which is a list of zero of more
-    /// values.
+    /// Represents a single record on a <see cref="SearchResultStream"/>.
     /// </summary>
-    public class Result : Dictionary<string, Field>
+    public class SearchResult : Dictionary<string, Field>
     {
         /// <summary>
         /// Gets the XML markup for the <c>_raw</c> field value.

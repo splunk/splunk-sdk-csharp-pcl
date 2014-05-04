@@ -38,20 +38,7 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class SearchExportArgs : Args<SearchExportArgs>
     {
-        #region Constructors
-
-        public SearchExportArgs(string search)
-        {
-            this.Search = search;
-        }
-
-        #endregion
-
         #region Properties
-
-        [DataMember(Name = "search", IsRequired = true)]
-        public string Search
-        { get; private set; }
 
         [DataMember(Name = "auto_cancel", EmitDefaultValue = false)]
         [DefaultValue(0)]

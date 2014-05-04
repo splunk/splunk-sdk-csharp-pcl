@@ -24,6 +24,6 @@ namespace Splunk.Client.Examples.ReactiveUI
     static class Subject
     {
         static readonly Subject<double> RecordRate = new Subject<double>();
-        static readonly Subject<Result> Records = new Subject<Result>();
+        static readonly Subject<SearchResult> Records = new Subject<SearchResult>();
     }
 }

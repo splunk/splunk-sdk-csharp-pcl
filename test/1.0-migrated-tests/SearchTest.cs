@@ -562,7 +562,7 @@ namespace Splunk.Client.UnitTesting
         /// </param>
         private void RunJobFuntionForEachEnum(
             Type enumType,
-            Func<Job, string, SearchResults> jobFunction)
+            Func<Job, string, SearchResultStream> jobFunction)
         {
             var service = Connect();
 
@@ -632,8 +632,9 @@ namespace Splunk.Client.UnitTesting
             var type = typeof(SearchMode);
 
             RunExportForEachEnum(
+                Query,
                 type,
-                (mode) => new SearchExportArgs(Query)
+                (mode) => new SearchExportArgs()
                 {                    
                     SearchMode =
                         (SearchMode)Enum.Parse(
@@ -672,8 +673,9 @@ namespace Splunk.Client.UnitTesting
             var type = typeof(TruncationMode);
 
             RunExportForEachEnum(
+                Query,
                 type,
-                (mode) => new SearchExportArgs(Query)
+                (mode) => new SearchExportArgs()
                 {
                     TruncationMode =
                         (TruncationMode)Enum.Parse(
@@ -723,6 +725,7 @@ namespace Splunk.Client.UnitTesting
         /// The funtion to get arguments to run a job.
         /// </param>
         private void RunExportForEachEnum(
+            string search,
             Type enumType,
             Func<string, SearchExportArgs> getJobExportArgs)
         {
@@ -730,7 +733,7 @@ namespace Splunk.Client.UnitTesting
 
             ForEachEnum(
                 enumType,
-                (@enum) => service.SearchExportAsync(
+                (@enum) => service.StartSearchExportAsync(search,
                     getJobExportArgs(@enum)).Wait());
         }
 
@@ -788,7 +791,7 @@ namespace Splunk.Client.UnitTesting
         {
             var array = "first,second";// new string[] { "first", "second" };
 
-            var args1 = new SearchExportArgs("")
+            var args1 = new SearchExportArgs()
                 {
                     RemoteServerList = array,
                 };

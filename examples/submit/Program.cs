@@ -88,7 +88,7 @@ namespace Splunk.Examples.Submit
                 await receiver.SendAsync("Hello World.", args);
                 await receiver.SendAsync("Goodbye world.", args);
 
-                SearchResults results = service.SearchOneshotAsync(
+                SearchResultStream results = service.SearchOneshotAsync(
                     string.Format(
                         "search index={0}",// source={2} sourcetype={3}",
                         indexName

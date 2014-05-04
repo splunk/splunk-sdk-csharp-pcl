@@ -353,10 +353,13 @@ namespace Splunk.Client
 
         #endregion
 
+        #region Methods for getting, removing, and updating
+
         /// <summary>
         /// Updates the cached state of the current <see cref="Job"/>.
         /// </summary>
-        /// /// <remarks>
+        /// <returns></returns>
+        /// <remarks>
         /// This method uses the <a href="http://goo.gl/SFqSPI">GET 
         /// search/jobs/{search_id}</a> endpoint to update the cached 
         /// cached state of the current <see cref="Job"/>.
@@ -453,6 +456,15 @@ namespace Splunk.Client
             throw requestException;
         }
 
+        /// <summary>
+        /// Removes the current <see cref="Job"/>.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SFqSPI">DELETE 
+        /// search/jobs/{search_id}</a> endpoint to remove the current <see 
+        /// cref="Job"/>.
+        /// </remarks>
         public async Task RemoveAsync()
         {
             using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
@@ -461,6 +473,25 @@ namespace Splunk.Client
             }
         }
 
+        /// <summary>
+        /// Updates custom arguments to the current <see cref="Job"/>.
+        /// </summary>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/bL4tFk">POST 
+        /// search/jobs/{search_id}</a> endpoint to update custom arguments to
+        /// the current <see cref="Job"/>.
+        /// </remarks>
+        public async Task UpdateAsync(CustomJobArgs args)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        #endregion
+
         #region Methods for retrieving search results
 
         /// <summary>
@@ -468,7 +499,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResults> GetSearchResultsAsync(SearchResultsArgs args = null)
+        public async Task<SearchResultStream> GetSearchResultsAsync(SearchResultsArgs args = null)
         {
             await this.TransitionAsync(DispatchState.Done);
 
@@ -481,7 +512,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResults> GetSearchResultsEventsAsync(SearchEventArgs args = null)
+        public async Task<SearchResultStream> GetSearchResultsEventsAsync(SearchEventArgs args = null)
         {
             await this.TransitionAsync(DispatchState.Done);
 
@@ -494,7 +525,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResults> GetSearchResultsPreviewAsync(SearchResultsArgs args = null)
+        public async Task<SearchResultStream> GetSearchResultsPreviewAsync(SearchResultsArgs args = null)
         {
             await this.TransitionAsync(DispatchState.Running);
 
@@ -696,14 +727,14 @@ namespace Splunk.Client
 
         #region Privates
 
-        async Task<SearchResults> GetSearchResultsAsync(string endpoint, IEnumerable<Argument> args)
+        async Task<SearchResultStream> GetSearchResultsAsync(string endpoint, IEnumerable<Argument> args)
         {
             var resourceName = new ResourceName(this.ResourceName, endpoint);
             var response = await this.Context.GetAsync(this.Namespace, resourceName, args);
 
             try
             {
-                var searchResults = await SearchResults.CreateAsync(response, leaveOpen: false);
+                var searchResults = await SearchResultStream.CreateAsync(response, leaveOpen: false);
                 return searchResults;
             }
             catch 

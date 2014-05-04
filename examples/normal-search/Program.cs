@@ -58,7 +58,7 @@ namespace Splunk.Client.Examples
             //// Search : Pull model (foreach loop => IEnumerable)
 
             Job job = await service.CreateJobAsync("search index=_internal | head 10");
-            SearchResults searchResults;
+            SearchResultStream searchResults;
 
             using (searchResults = await job.GetSearchResultsAsync())
             {
@@ -106,9 +106,9 @@ namespace Splunk.Client.Examples
 
             //// Search : Export
 
-            SearchResultsReader searchResultsReader;
+            SearchExportStream searchResultsReader;
 
-            using (searchResultsReader = service.SearchExportAsync("search index=_internal | head 100").Result)
+            using (searchResultsReader = service.StartSearchExportAsync("search index=_internal | head 100").Result)
             {
                 int recordNumber = 0;
                 int setNumber = 0;
@@ -168,7 +168,7 @@ namespace Splunk.Client.Examples
 
         static async void Other()
         {
-            SearchResults searchResults;
+            SearchResultStream searchResults;
             Job job;
 
             //// Login
@@ -187,7 +187,7 @@ namespace Splunk.Client.Examples
                 }
             }
 
-            using (var searchResultsReader = await service.SearchExportAsync("search index=_internal | head 100000"))
+            using (var searchResultsReader = await service.StartSearchExportAsync("search index=_internal | head 100000"))
             {
                 Console.WriteLine("Begin: Service.SearchExportAsync: Asyncrhonous use case");
                 int recordNumber = 0;

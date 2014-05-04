@@ -26,26 +26,26 @@ namespace Splunk.Client
     using System.Linq;
 
     /// <summary>
-    /// Provides custom arguments to a <see cref="SavedSearch"/>.
+    /// Provides custom arguments to a <see cref="Job"/>.
     /// </summary>
-    public sealed class SavedSearchTemplateArgs : ArgumentSet
+    public sealed class CustomJobArgs : ArgumentSet
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SavedSearchTemplateArgs"/>
+        /// Initializes a new instance of the <see cref="CustomJobArgs"/>
         /// class.
         /// </summary>
-        public SavedSearchTemplateArgs()
-            : base("args.")
+        public CustomJobArgs()
+            : base("custom.")
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SavedSearchTemplateArgs"/>
+        /// Initializes a new instance of the <see cref="CustomJobArgs"/>
         /// class from a collection of <see cref="Argument"/> values.
         /// </summary>
-        public SavedSearchTemplateArgs(IEnumerable<Argument> collection)
-            : base(collection, "args.")
+        public CustomJobArgs(IEnumerable<Argument> collection)
+            : base(collection, "custom.")
         { }
 
         #endregion

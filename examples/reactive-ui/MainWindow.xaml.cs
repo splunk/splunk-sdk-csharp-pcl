@@ -49,7 +49,7 @@ namespace Splunk.Client.Examples.ReactiveUI
             await service.LoginAsync("admin", "changeme");
 
             Job job = await service.CreateJobAsync(this.SearchCommand.Text);
-            SearchResults results = await job.GetSearchResultsAsync();
+            SearchResultStream results = await job.GetSearchResultsAsync();
         }
     }
 }

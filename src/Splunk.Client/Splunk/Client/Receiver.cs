@@ -99,7 +99,7 @@ namespace Splunk.Client
         /// receivers/simple</a> endpoint to obtain the <see cref="Result"/>
         /// that it returns.
         /// </remarks>
-        public async Task<Result> SendAsync(string eventText, ReceiverArgs args = null)
+        public async Task<SearchResult> SendAsync(string eventText, ReceiverArgs args = null)
         {
             using (var content = new StringContent(eventText))
             {
@@ -125,7 +125,7 @@ namespace Splunk.Client
                         }
                     }
 
-                    var result = new Result();
+                    var result = new SearchResult();
                     await result.ReadXmlAsync(reader);
 
                     foreach (var name in new string[] { "result", "results", "response" })

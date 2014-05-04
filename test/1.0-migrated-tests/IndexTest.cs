@@ -389,7 +389,7 @@ namespace Splunk.Client.UnitTesting
         /// <param name="index">The index object</param>
         private async Task ClearIndex(Service service, string indexName, Index index)
         {
-            SearchResults result = await service.SearchOneshotAsync(string.Format("search index={0} * | delete", indexName));
+            SearchResultStream result = await service.SearchOneshotAsync(string.Format("search index={0} * | delete", indexName));
 
             //StreamReader reader = new StreamReader(stream);
             //string message = reader.ReadToEnd();
@@ -476,7 +476,7 @@ namespace Splunk.Client.UnitTesting
             //            Source,
             //            SourceType)))
 
-            SearchResults result = await service.SearchOneshotAsync(
+            SearchResultStream result = await service.SearchOneshotAsync(
                     string.Format(
                         "search index={0} host={1} source={2} sourcetype={3}",
                         indexName,

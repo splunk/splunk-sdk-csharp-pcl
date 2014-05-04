@@ -62,9 +62,9 @@ namespace Splunk.Client.Examples.Search
             await service.LoginAsync("admin", "changeme");
 
             // Simple oneshot search
-            using (SearchResults searchResults = await service.SearchOneshotAsync("search index=_internal | head 5"))
+            using (SearchResultStream searchResults = await service.SearchOneshotAsync("search index=_internal | head 5"))
             {
-                foreach (Result record in searchResults)
+                foreach (SearchResult record in searchResults)
                 {
                     Console.WriteLine(record);
                 }
@@ -76,9 +76,9 @@ namespace Splunk.Client.Examples.Search
                 AutoCancel = 0
             };
 
-            using (SearchResults searchResults = await service.SearchOneshotAsync("search index=_internal | head 5", args))
+            using (SearchResultStream searchResults = await service.SearchOneshotAsync("search index=_internal | head 5", args))
             {
-                foreach (Result record in searchResults)
+                foreach (SearchResult record in searchResults)
                 {
                     Console.WriteLine(record);
                 }
@@ -115,7 +115,7 @@ namespace Splunk.Client.Examples.Search
             {
                 System.Console.WriteLine("============================= Snapshot {0}=================================", i);
 
-                using (SearchResults searchResults = await job.GetSearchResultsPreviewAsync())
+                using (SearchResultStream searchResults = await job.GetSearchResultsPreviewAsync())
                 {
                     System.Diagnostics.Debug.Assert(!searchResults.AreFinal);
                     System.Console.WriteLine("searchResults count:{0}", searchResults.Count());

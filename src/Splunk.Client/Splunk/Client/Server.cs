@@ -32,7 +32,7 @@ namespace Splunk.Client
     using System.Xml.Linq;
 
     /// <summary>
-    /// 
+    /// Provides an object representation of a Splunk server.
     /// </summary>
     public class Server : Entity<Server>
     {
@@ -44,7 +44,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -53,8 +53,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        internal Server(Context context, Namespace @namespace)
-            : base(context, @namespace, ClassResourceName)
+        internal Server(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>

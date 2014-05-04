@@ -29,8 +29,8 @@ namespace Splunk.Client
     {
         #region Constructors
 
-        public ServerInfo(Context context, Namespace @namespace)
-            : base(context, @namespace, ClassResourceName)
+        public ServerInfo(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>

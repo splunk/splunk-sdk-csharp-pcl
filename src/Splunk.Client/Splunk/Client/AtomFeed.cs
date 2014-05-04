@@ -26,7 +26,7 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// Provides an object representation of a Splunk Atom feed.
+    /// Provides an object representation of a Splunk Atom Feed response.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -42,6 +42,9 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of an <see cref="AtomFeed"/>
+        /// </summary>
         public AtomFeed()
         { }
 
@@ -49,30 +52,57 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Author
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyList<AtomEntry> Entries
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Version GeneratorVersion
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Uri Id
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyDictionary<string, Uri> Links
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyList<Message> Messages
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Pagination Pagination
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Title
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Updated
         { get; private set; }
 
@@ -80,6 +110,13 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// Asynchronously reads XML data into the current <see cref="AtomFeed"/>.
+        /// </summary>
+        /// <param name="reader">
+        /// The reader from which to read.
+        /// </param>
+        /// <returns></returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");

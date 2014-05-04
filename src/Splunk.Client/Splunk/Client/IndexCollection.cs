@@ -35,11 +35,11 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        internal IndexCollection(Context context, Namespace @namespace)
-            : base(context, @namespace, ClassResourceName)
+        internal IndexCollection(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>

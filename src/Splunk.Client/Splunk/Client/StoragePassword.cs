@@ -35,7 +35,7 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a class that represents a Splunk storage password resource.
+    /// Provides an object representation of a Splunk storage password
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
@@ -58,7 +58,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="username">
@@ -76,8 +76,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        internal StoragePassword(Context context, Namespace @namespace, string username, string realm = "")
-            : base(context, @namespace, StoragePasswordCollection.ClassResourceName, CreateNameFromRealmAndUsername(
+        internal StoragePassword(Context context, Namespace ns, string username, string realm = "")
+            : base(context, ns, StoragePasswordCollection.ClassResourceName, CreateNameFromRealmAndUsername(
             realm ?? "", username))
         {
             Contract.Requires<ArgumentNullException>(username != null);

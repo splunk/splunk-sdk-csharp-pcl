@@ -26,8 +26,8 @@ namespace Splunk.Client
     {
         #region Constructors
 
-        internal ApplicationArchiveInfo(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, new ResourceName(ApplicationCollection.ClassResourceName, name, "package"))
+        internal ApplicationArchiveInfo(Context context, Namespace ns, string name)
+            : base(context, ns, new ResourceName(ApplicationCollection.ClassResourceName, name, "package"))
         { }
 
         /// <summary>

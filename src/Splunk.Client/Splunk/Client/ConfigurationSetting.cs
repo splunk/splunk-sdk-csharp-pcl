@@ -30,15 +30,15 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// 
+    /// Provides an object representation of a Splunk configuration setting.
     /// </summary>
     public class ConfigurationSetting : Entity<ConfigurationSetting>
     {
         #region Constructors
 
-        internal ConfigurationSetting(Context context, Namespace @namespace, string fileName, string stanzaName, 
+        internal ConfigurationSetting(Context context, Namespace ns, string fileName, string stanzaName, 
             string keyName)
-            : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName), keyName)
+            : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName), keyName)
         { }
 
         /// <summary>

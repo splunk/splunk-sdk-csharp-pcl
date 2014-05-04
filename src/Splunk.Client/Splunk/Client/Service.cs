@@ -31,6 +31,9 @@ namespace Splunk.Client
     using System.Net;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class Service : IDisposable
     {
         #region Constructors
@@ -41,7 +44,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// The context for requests by the new <see cref="Service"/>.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// The namespace for requests by the new <see cref="Service"/>. The
         /// default value is <c>null</c> indicating that <see cref=
         /// "Namespace.Default"/> should be used.
@@ -49,12 +52,12 @@ namespace Splunk.Client
         /// <exception cref="ArgumentNullException">
         /// <see cref="context"/> is <c>null</c>.
         /// </exception>
-        public Service(Context context, Namespace @namespace = null)
+        public Service(Context context, Namespace ns = null)
         {
             Contract.Requires<ArgumentNullException>(context != null, "context");
 
             this.context = context;
-            this.@namespace = @namespace ?? Namespace.Default;
+            this.ns = ns ?? Namespace.Default;
             this.receiver = new Receiver(context, this.Namespace);
             this.server = new Server(context, this.Namespace);
         }
@@ -71,11 +74,11 @@ namespace Splunk.Client
         /// <param name="port">
         /// The port for the new <see cref="Service"/>.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// The namespace for requests issue by the new <see cref="Service"/>.
         /// </param>
-        public Service(Scheme scheme, string host, int port, Namespace @namespace = null)
-            : this(new Context(scheme, host, port), @namespace)
+        public Service(Scheme scheme, string host, int port, Namespace ns = null)
+            : this(new Context(scheme, host, port), ns)
         { }
 
         #endregion
@@ -95,7 +98,7 @@ namespace Splunk.Client
         /// </summary>
         public Namespace Namespace
         {
-            get { return this.@namespace; }
+            get { return this.ns; }
         }
 
         /// <summary>
@@ -1301,7 +1304,7 @@ namespace Splunk.Client
         static readonly ResourceName SearchJobsExport = new ResourceName("search", "jobs", "export");
         
         readonly Context context;
-        readonly Namespace @namespace;
+        readonly Namespace ns;
         readonly Receiver receiver;
         readonly Server server;
 

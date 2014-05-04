@@ -77,8 +77,8 @@ namespace Splunk.Client
     {
         #region Constructors
 
-        internal Configuration(Context context, Namespace @namespace, string fileName)
-            : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName))
+        internal Configuration(Context context, Namespace ns, string fileName)
+            : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName))
         { }
 
         /// <summary>

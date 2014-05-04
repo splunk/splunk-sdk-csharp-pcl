@@ -20,7 +20,7 @@
 namespace Splunk.Client
 {
     /// <summary>
-    /// Represents a collection of Splunk applications.
+    /// Provides an object representation of a collection of Splunk applications.
     /// </summary>
     public class ApplicationCollection : EntityCollection<ApplicationCollection, Application>
     {
@@ -33,13 +33,13 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="args">
         /// </param>
-        internal ApplicationCollection(Context context, Namespace @namespace, ApplicationCollectionArgs args = null)
-            : base(context, @namespace, ClassResourceName, args)
+        internal ApplicationCollection(Context context, Namespace ns, ApplicationCollectionArgs args = null)
+            : base(context, ns, ClassResourceName, args)
         { }
 
         /// <summary>

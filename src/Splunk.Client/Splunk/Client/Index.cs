@@ -36,8 +36,8 @@ namespace Splunk.Client
     {
         #region Constructors
 
-        internal Index(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ClassResourceName, name)
+        internal Index(Context context, Namespace ns, string name)
+            : base(context, ns, ClassResourceName, name)
         { }
 
         /// <summary>

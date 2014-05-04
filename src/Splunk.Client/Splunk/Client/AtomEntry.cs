@@ -73,7 +73,16 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// 
+    /// Provides an object representation of an individual entry in a Splunk 
+    /// Atom Feed response.
+    /// <para>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///     <a href="http://goo.gl/YVTE9l">REST API: Atom Feed responses</a>
+    /// </description></item>
+    /// </list>
+    /// </para>
     /// </summary>
     public sealed class AtomEntry
     {
@@ -86,24 +95,45 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Author
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public dynamic Content
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Uri Id
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyDictionary<string, Uri> Links
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Published
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Title
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Updated
         { get; private set; }
 
@@ -111,6 +141,13 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// Asynchronously reads XML data into the current <see cref="AtomEntry"/>.
+        /// </summary>
+        /// <param name="reader">
+        /// The reader from which to read.
+        /// </param>
+        /// <returns></returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");

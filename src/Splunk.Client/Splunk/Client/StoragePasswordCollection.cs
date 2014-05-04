@@ -24,8 +24,8 @@
 namespace Splunk.Client
 {
     /// <summary>
-    /// Provides a class that represents a collection of Splunk <see cref=
-    /// "StoragePassword"/> resources.
+    /// Provides an object representation of a collection of Splunk storage
+    /// passwords.
     /// </summary>
     public class StoragePasswordCollection : EntityCollection<StoragePasswordCollection, StoragePassword>
     {
@@ -38,13 +38,13 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="args">
         /// </param>
-        internal StoragePasswordCollection(Context context, Namespace @namespace, StoragePasswordCollectionArgs args = null)
-            : base(context, @namespace, ClassResourceName, args)
+        internal StoragePasswordCollection(Context context, Namespace ns, StoragePasswordCollectionArgs args = null)
+            : base(context, ns, ClassResourceName, args)
         { }
 
         /// <summary>

@@ -20,7 +20,7 @@
 namespace Splunk.Client
 {
     /// <summary>
-    /// Represents a collection of Splunk search jobs.
+    /// Provides an object representation of a collection of Splunk search jobs.
     /// </summary>
     public class JobCollection : EntityCollection<JobCollection, Job>
     {
@@ -33,14 +33,14 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="args">
         /// Arguments for retrieving the <see cref="JobCollection"/>.
         /// </param>
-        internal JobCollection(Context context, Namespace @namespace, JobCollectionArgs args = null)
-            : base(context, @namespace, ClassResourceName, args)
+        internal JobCollection(Context context, Namespace ns, JobCollectionArgs args = null)
+            : base(context, ns, ClassResourceName, args)
         { }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <remarks>
@@ -58,8 +58,8 @@ namespace Splunk.Client
         /// method to retrieve the collection of jobs created from a saved
         /// search.
         /// </remarks>
-        internal JobCollection(Context context, Namespace @namespace, ResourceName resourceName)
-            : base(context, @namespace, resourceName)
+        internal JobCollection(Context context, Namespace ns, ResourceName resourceName)
+            : base(context, ns, resourceName)
         { }
 
         /// <summary>

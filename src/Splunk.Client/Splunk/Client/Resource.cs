@@ -35,7 +35,7 @@ namespace Splunk.Client
     using System.IO;
 
     /// <summary>
-    /// Provides a base class for representing a Splunk resource.
+    /// Provides a base class for representing a Splunk resource as an object.
     /// </summary>
     /// <typeparam name="TResource">
     /// The resource type inheriting from this class.
@@ -51,7 +51,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resourceName">
@@ -64,15 +64,15 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        protected Resource(Context context, Namespace @namespace, ResourceName resourceName)
+        protected Resource(Context context, Namespace ns, ResourceName resourceName)
         {
             Contract.Requires<ArgumentException>(resourceName != null, "resourceName");
-            Contract.Requires<ArgumentNullException>(@namespace != null, "namespace");
+            Contract.Requires<ArgumentNullException>(ns != null, "namespace");
             Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires<ArgumentOutOfRangeException>(@namespace.IsSpecific);
+            Contract.Requires<ArgumentOutOfRangeException>(ns.IsSpecific);
 
             this.Context = context;
-            this.Namespace = @namespace;
+            this.Namespace = ns;
             this.ResourceName = resourceName;
 
             this.initialized = true;
@@ -263,14 +263,14 @@ namespace Splunk.Client
                 path[i] = Uri.UnescapeDataString(path[i]);
             }
 
-            Namespace @namespace;
+            Namespace ns;
             ResourceName resourceName;
 
             switch (path[1])
             {
                 case "services":
 
-                    @namespace = Namespace.Default;
+                    ns = Namespace.Default;
                     resourceName = new ResourceName(new ArraySegment<string>(path, 2, path.Length - 2));
                     break;
 
@@ -281,7 +281,7 @@ namespace Splunk.Client
                         throw new InvalidDataException(); // TODO: Diagnostics
                     }
 
-                    @namespace = new Namespace(user: path[2], app: path[3]);
+                    ns = new Namespace(user: path[2], app: path[3]);
                     resourceName = new ResourceName(new ArraySegment<string>(path, 4, path.Length - 4));
                     break;
 
@@ -289,7 +289,7 @@ namespace Splunk.Client
             }
 
             this.Context = context;
-            this.Namespace = @namespace;
+            this.Namespace = ns;
             this.ResourceName = resourceName;
 
             this.initialized = true;

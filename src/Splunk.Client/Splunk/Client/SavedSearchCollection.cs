@@ -21,8 +21,8 @@ namespace Splunk.Client
 {
     public class SavedSearchCollection : EntityCollection<SavedSearchCollection, SavedSearch>
     {
-        internal SavedSearchCollection(Context context, Namespace @namespace, SavedSearchCollectionArgs args = null)
-            : base(context, @namespace, ClassResourceName, args)
+        internal SavedSearchCollection(Context context, Namespace ns, SavedSearchCollectionArgs args = null)
+            : base(context, ns, ClassResourceName, args)
         { }
 
         /// <summary>

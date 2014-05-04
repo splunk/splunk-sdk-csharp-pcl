@@ -29,8 +29,8 @@ namespace Splunk.Client
     {
         #region Constructors
 
-        internal ApplicationSetupInfo(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, new ResourceName(ApplicationCollection.ClassResourceName, name, "setup"))
+        internal ApplicationSetupInfo(Context context, Namespace ns, string name)
+            : base(context, ns, new ResourceName(ApplicationCollection.ClassResourceName, name, "setup"))
         { }
 
         /// <summary>

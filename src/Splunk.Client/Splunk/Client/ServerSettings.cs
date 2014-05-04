@@ -28,7 +28,7 @@ namespace Splunk.Client
     using System.Threading.Tasks;
     
     /// <summary>
-    /// Provides an object representation of a Splunk server message resource.
+    /// Provides an object representation of a Splunk server message.
     /// </summary>
     public sealed class ServerSettings : Entity<ServerSettings>
     {
@@ -40,7 +40,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <exception cref="ArgumentNullException">
@@ -49,8 +49,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        internal ServerSettings(Context context, Namespace @namespace)
-            : base(context, @namespace, ClassResourceName)
+        internal ServerSettings(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>

@@ -54,14 +54,14 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="args">
         /// </param>
-        internal EntityCollection(Context context, Namespace @namespace, ResourceName resource, IEnumerable<Argument> 
+        internal EntityCollection(Context context, Namespace ns, ResourceName resource, IEnumerable<Argument> 
             args = null)
-            : base(context, @namespace, resource)
+            : base(context, ns, resource)
         {
             this.args = args;
         }
@@ -128,10 +128,14 @@ namespace Splunk.Client
         #region IReadOnlyList<TEntity> properties
 
         /// <summary>
-        /// 
+        /// Gets the entity at the specified <see cref="index"/>.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        /// <param name="index">
+        /// The zero-based index of the entity to get.
+        /// </param>
+        /// <returns>
+        /// An object representing the entity at <see cref="index"/>.
+        /// </returns>
         public TEntity this[int index]
         {
             get
@@ -145,7 +149,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the number of entites in this <see cref="EntityCollection"/>.
+        /// Gets the number of entites in the current <see cref="EntityCollection"/>.
         /// </summary>
         public int Count
         {
@@ -167,12 +171,23 @@ namespace Splunk.Client
 
         #region Request-related methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="entry"></param>
         protected internal override void Initialize(Context context, AtomEntry entry)
         {
             this.data = new DataCache(entry);
             base.Initialize(context, entry);
         }
 
+        /// <summary>
+        /// Asynchronously retrieves a fresh copy of the entities in the 
+        /// current <see cref="EntityCollection"/> that contains all changes
+        /// to it since it was last retrieved.
+        /// </summary>
+        /// <returns></returns>
         public virtual async Task GetAsync()
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
@@ -189,6 +204,25 @@ namespace Splunk.Client
 
         #region IReadOnlyList<TEntity> methods
 
+        /// <summary>
+        /// Gets an enumerator that iterates through the current <see cref=
+        /// "EntityCollection"/>.
+        /// </summary>
+        /// <returns>
+        /// An object for iterating through the current <see cref="EntityCollection"/>.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an enumerator that iterates through the current <see cref=
+        /// "EntityCollection"/>.
+        /// </summary>
+        /// <returns>
+        /// An object for iterating through the current <see cref="EntityCollection"/>.
+        /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {
             if (this.data == null)
@@ -196,11 +230,6 @@ namespace Splunk.Client
                 throw new InvalidOperationException();
             }
             return this.data.Entities.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
         }
 
         #endregion

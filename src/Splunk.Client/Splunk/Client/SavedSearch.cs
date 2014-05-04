@@ -33,7 +33,7 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// 
+    /// Provides an object representation of a Splunk saved search.
     /// </summary>
     public sealed class SavedSearch : Entity<SavedSearch>
     {
@@ -45,7 +45,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
@@ -60,8 +60,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        internal SavedSearch(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, SavedSearchCollection.ClassResourceName, name)
+        internal SavedSearch(Context context, Namespace ns, string name)
+            : base(context, ns, SavedSearchCollection.ClassResourceName, name)
         { }
 
         /// <summary>

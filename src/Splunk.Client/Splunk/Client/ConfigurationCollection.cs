@@ -20,7 +20,7 @@
 namespace Splunk.Client
 {
     /// <summary>
-    /// Represents a collection of Splunk <see cref="Configuration"/> files.
+    /// Represents a collection of Splunk configuration files.
     /// </summary>
     public class ConfigurationCollection : EntityCollection<ConfigurationCollection, Configuration>
     {
@@ -31,11 +31,11 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        internal ConfigurationCollection(Context context, Namespace @namespace)
-            : base(context, @namespace, ClassResourceName)
+        internal ConfigurationCollection(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>

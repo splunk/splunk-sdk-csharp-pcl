@@ -53,11 +53,11 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
-        /// The name of this application.
+        /// The name of the <see cref="Application"/>.
         /// </param>
         /// <exception cref="ArgumentException">
         /// <see cref="name"/> is <c>null</c> or empty.
@@ -68,8 +68,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        internal Application(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ApplicationCollection.ClassResourceName, name)
+        internal Application(Context context, Namespace ns, string name)
+            : base(context, ns, ApplicationCollection.ClassResourceName, name)
         { }
 
         /// <summary>

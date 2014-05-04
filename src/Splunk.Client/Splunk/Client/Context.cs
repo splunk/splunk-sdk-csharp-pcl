@@ -221,81 +221,81 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// </param>
         /// <param name="resource">
         /// </param>
         /// <param name="argumentSets">
         /// </param>
         /// <returns></returns>
-        public async Task<Response> DeleteAsync(Namespace @namespace, ResourceName resource,
+        public async Task<Response> DeleteAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Delete, @namespace, resource, null, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, token, argumentSets);
             return response;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// </param>
         /// <param name="resource">
         /// </param>
         /// <param name="argumentSets">
         /// </param>
         /// <returns></returns>
-        public async Task<Response> GetAsync(Namespace @namespace, ResourceName resource,
+        public async Task<Response> GetAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Get, @namespace, resource, null, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets);
             return response;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="namespace"></param>
+        /// <param name="ns"></param>
         /// <param name="resourceName"></param>
         /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<Response> GetAsync(Namespace @namespace, ResourceName resourceName, CancellationToken token, 
+        public async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token, 
             params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Get, @namespace, resourceName, null, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets);
             return response;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="namespace"></param>
+        /// <param name="ns"></param>
         /// <param name="resource"></param>
         /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<Response> PostAsync(Namespace @namespace, ResourceName resource,
+        public async Task<Response> PostAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
             var content = this.CreateStringContent(argumentSets);
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, content, token, null);
+            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, null);
             return response;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="namespace"></param>
+        /// <param name="ns"></param>
         /// <param name="resource"></param>
         /// <param name="parameterSets"></param>
         /// <returns></returns>
-        public async Task<Response> PostAsync(Namespace @namespace, ResourceName resource,
+        public async Task<Response> PostAsync(Namespace ns, ResourceName resource,
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Post, @namespace, resource, content, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets);
             return response;
         }
 
@@ -333,12 +333,12 @@ namespace Splunk.Client
             }
         }
 
-        Uri CreateServiceUri(Namespace @namespace, ResourceName name, params IEnumerable<Argument>[] argumentSets)
+        Uri CreateServiceUri(Namespace ns, ResourceName name, params IEnumerable<Argument>[] argumentSets)
         {
             var builder = new StringBuilder(this.ToString());
 
             builder.Append("/");
-            builder.Append(@namespace.ToUriString());
+            builder.Append(ns.ToUriString());
             builder.Append("/");
             builder.Append(name.ToUriString());
 
@@ -377,13 +377,13 @@ namespace Splunk.Client
             return stringContent;
         }
 
-        async Task<Response> SendAsync(HttpMethod method, Namespace @namespace, ResourceName resource, HttpContent
+        async Task<Response> SendAsync(HttpMethod method, Namespace ns, ResourceName resource, HttpContent
             content, CancellationToken cancellationToken, IEnumerable<Argument>[] argumentSets)
         {
-            Contract.Requires<ArgumentNullException>(@namespace != null);
+            Contract.Requires<ArgumentNullException>(ns != null);
             Contract.Requires<ArgumentNullException>(resource != null);
 
-            var serviceUri = this.CreateServiceUri(@namespace, resource, argumentSets);
+            var serviceUri = this.CreateServiceUri(ns, resource, argumentSets);
 
             using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
             {

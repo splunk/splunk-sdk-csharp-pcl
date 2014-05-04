@@ -39,7 +39,7 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// 
+    /// Provides an object representation of a Splunk search job.
     /// </summary>
     public sealed class Job : Entity<Job>
     {
@@ -51,7 +51,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
@@ -66,8 +66,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        internal Job(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, JobCollection.ClassResourceName, name)
+        internal Job(Context context, Namespace ns, string name)
+            : base(context, ns, JobCollection.ClassResourceName, name)
         { }
 
         /// <summary>
@@ -389,7 +389,9 @@ namespace Splunk.Client
         #region Methods for getting, removing, and updating
 
         /// <summary>
-        /// Updates the cached state of the current <see cref="Job"/>.
+        /// Asynchronously retrieves a fresh copy of the current <see cref=
+        /// "Job"/> that contains all changes to it since it was last 
+        /// retrieved.
         /// </summary>
         /// <returns></returns>
         /// <remarks>

@@ -43,7 +43,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
@@ -58,8 +58,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        internal ServerMessage(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ServerMessageCollection.ClassResourceName, name)
+        internal ServerMessage(Context context, Namespace ns, string name)
+            : base(context, ns, ServerMessageCollection.ClassResourceName, name)
         { }
 
         /// <summary>

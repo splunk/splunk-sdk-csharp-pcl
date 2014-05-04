@@ -26,15 +26,14 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a class that represents a stanza within a Splunk <see cref=
-    /// "Configuration"/> file.
+    /// Provides an object representation of a Splunk configuration stanza.
     /// </summary>
     public class ConfigurationStanza : EntityCollection<ConfigurationStanza, ConfigurationSetting>
     {
         #region Constructors
 
-        internal ConfigurationStanza(Context context, Namespace @namespace, string fileName, string stanzaName)
-            : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName))
+        internal ConfigurationStanza(Context context, Namespace ns, string fileName, string stanzaName)
+            : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName))
         { }
 
         /// <summary>

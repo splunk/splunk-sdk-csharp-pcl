@@ -28,8 +28,8 @@ namespace Splunk.Client
     {
         #region Constructors
 
-        public ServerMessageCollection(Context context, Namespace @namespace)
-            : base(context, @namespace, ClassResourceName)
+        public ServerMessageCollection(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>

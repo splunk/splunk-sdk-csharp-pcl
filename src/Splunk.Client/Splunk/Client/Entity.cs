@@ -61,7 +61,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resourceName">
@@ -74,8 +74,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        protected Entity(Context context, Namespace @namespace, ResourceName resourceName)
-            : base(context, @namespace, resourceName)
+        protected Entity(Context context, Namespace ns, ResourceName resourceName)
+            : base(context, ns, resourceName)
         { }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="collection">
@@ -106,8 +106,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <see cref="namespace"/> is not specific.
         /// </exception>
-        protected Entity(Context context, Namespace @namespace, ResourceName collection, string entity)
-            : this(context, @namespace, new ResourceName(collection, entity))
+        protected Entity(Context context, Namespace ns, ResourceName collection, string entity)
+            : this(context, ns, new ResourceName(collection, entity))
         { }
 
         public Entity()
@@ -160,8 +160,11 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Refreshes the cached state of the current <see cref="Entity<TEntity>"/>.
+        /// Asynchronously retrieves a fresh copy of the current <see cref=
+        /// "Entity"/> that contains all changes to it since it was last 
+        /// retrieved.
         /// </summary>
+        /// <returns></returns>
         public virtual async Task GetAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
@@ -187,7 +190,7 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
+        /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="collection">

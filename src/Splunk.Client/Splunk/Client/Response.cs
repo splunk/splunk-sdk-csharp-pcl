@@ -32,7 +32,7 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// Provides a class that represents a Splunk service response.
+    /// Represents a Splunk service response.
     /// </summary>
     public sealed class Response : IDisposable
     {

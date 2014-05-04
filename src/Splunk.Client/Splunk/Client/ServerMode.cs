@@ -14,32 +14,29 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
+//// TODO:
+//// [X] Documentation
 
 namespace Splunk.Client
 {
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Specifies whether or not a Splunk server instance is a dedicated
+    /// forwarder.
     /// </summary>
     public enum ServerMode
     {
         /// <summary>
-        /// 
+        /// The Splunk server is a normal instance.
         /// </summary>
-        None,
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        [EnumMember(Value = "Dedicated Forwarder")]
-        DedicatedForwarder,
+        [EnumMember(Value = "normal")]
+        Normal,
 
         /// <summary>
-        /// 
+        /// The Splunk server is a dedicated forwarder.
         /// </summary>
-        Normal
+        [EnumMember(Value = "dedicated forwarder")]
+        DedicatedForwarder
     }
 }

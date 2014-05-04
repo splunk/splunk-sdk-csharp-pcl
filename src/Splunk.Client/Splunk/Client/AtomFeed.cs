@@ -14,7 +14,9 @@
  * under the License.
  */
 
-// [ ] TODO: AtomFeed: Add properties, not just entries.
+//// TODO:
+//// [X] AtomFeed: Add properties, not just entries.
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -53,25 +55,28 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the author of the Atom Feed.
         /// </summary>
+        /// <remarks>
+        /// <c>"Splunk"</c> is the author of all responses.
+        /// </remarks>
         public string Author
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the list of results returned from the endpoint.
         /// </summary>
         public IReadOnlyList<AtomEntry> Entries
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the version of the Atom Feed generator.
         /// </summary>
         public Version GeneratorVersion
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the Splunk management URI for accessing the endpoint.
         /// </summary>
         public Uri Id
         { get; private set; }
@@ -83,25 +88,31 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the list of info, warning, or error messages associated with 
+        /// the operation. 
         /// </summary>
+        /// <remarks>
+        /// Not all responses from an endpoint produce messages.
+        /// </remarks>
         public IReadOnlyList<Message> Messages
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the list of pagination attributes for the response to a GET 
+        /// operation.
         /// </summary>
         public Pagination Pagination
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the human readable name of the endpoint, typically derived 
+        /// from the last node of the endpoint. 
         /// </summary>
         public string Title
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the date this endpoint was implemented in Splunk.
         /// </summary>
         public DateTime Updated
         { get; private set; }

@@ -22,6 +22,13 @@ namespace Splunk.Client
 {
     using System;
 
+    /// <summary>
+    /// Provides information about an application archive produced by Splunk.
+    /// </summary>
+    /// <remarks>
+    /// You can produce an application archive using the <see cref=
+    /// "Application.PackageAsync"/> method.
+    /// </remarks>
     public sealed class ApplicationArchiveInfo : Entity<ApplicationArchiveInfo>
     {
         #region Constructors

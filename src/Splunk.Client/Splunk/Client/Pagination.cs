@@ -27,8 +27,17 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public struct Pagination
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="itemsPerPage"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="totalResults"></param>
         public Pagination(int itemsPerPage, int startIndex, int totalResults)
         {
             Contract.Requires<ArgumentOutOfRangeException>(itemsPerPage >= 0, "itemsPerPage < 0");
@@ -48,16 +57,38 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// Gets the number of entries returned by an operation.
+        /// </summary>
+        /// <remarks>
+        /// The maximum number of entries returned by a GET operation on an
+        /// entity collection is specified by the <c>count</c> parameter. The 
+        /// default value of the <c>count</c> parameter is 30. This property
+        /// gets the actual number of entries received.
+        /// </remarks>
         public int ItemsPerPage
         {
             get { return this.itemsPerPage;  }
         }
 
+        /// <summary>
+        /// Gets the offset of the first entry returned.
+        /// </summary>
+        /// <remarks>
+        /// Use the offset parameter in a GET operation on an entity collection
+        /// to override the default value of <c>0</c> which specifies that the
+        /// first <see cref="ItemsPerPage"/> items in the entity collection
+        /// should be returned.
+        /// </remarks>
         public int StartIndex
         {
             get { return this.startIndex; }
         }
 
+        /// <summary>
+        /// Gets the total number of entries that can be returned for an 
+        /// operation.
+        /// </summary>
         public int TotalResults
         {
             get { return this.totalResults; }

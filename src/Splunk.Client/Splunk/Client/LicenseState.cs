@@ -14,28 +14,24 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
+//// TODO:
+//// [X] Documentation
 
 namespace Splunk.Client
 {
     /// <summary>
-    /// 
+    /// Specifies the state of the license installed on a Splunk server 
+    /// instance.
     /// </summary>
     public enum LicenseState
     {
         /// <summary>
-        /// 
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// 
+        /// The license is expired.
         /// </summary>
         Expired,
 
         /// <summary>
-        /// 
+        /// The license is in force.
         /// </summary>
         OK
     }

@@ -15,21 +15,31 @@
  */
 
 // TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [O] Property accessors should not throw, but return default value if the underlying field is undefined (?)
-// [X] Property accessors should throw InvalidOperationException when this ServerInfo.Record is null.
+// [X] Contracts
+// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Provides information about a Splunk server instance.
+    /// </summary>
     public sealed class ServerInfo : Entity<ServerInfo>
     {
         #region Constructors
 
-        public ServerInfo(Context context, Namespace ns)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerInfo"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        internal ServerInfo(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
         { }
 
@@ -50,14 +60,24 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// Gets the build number for the Splunk server instance.
+        /// </summary>
         public int Build
         {
             get { return this.GetValue("Build", Int32Converter.Instance); }
         }
 
         /// <summary>
-        /// Gets the access control lists for the current <see cref=
-        /// "ServerInfo"/>.
+        /// Gets CPU architecture information for the computer hosting splunkd.
+        /// </summary>
+        public string CpuArchitecture
+        {
+            get { return this.GetValue("CpuArch", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the access control lists for the Splunk server instance.
         /// </summary>
         public Eai Eai
         {
@@ -65,43 +85,69 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the <see cref="Guid"/> identifying the current Splunk server instance.
+        /// Gets the <see cref="Guid"/> identifying the Splunk server instance.
         /// </summary>
         public Guid Guid
         {
             get { return this.GetValue("Guid", GuidConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the server instance is running 
+        /// under a free license.
+        /// </summary>
         public bool IsFree
         {
             get { return this.GetValue("IsFree", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the server instance is realtime
+        /// search enabled.
+        /// </summary>
         public bool IsRealtimeSearchEnabled
         {
             get { return this.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the server instance is running 
+        /// under a trial license.
+        /// </summary>
         public bool IsTrial
         {
             get { return this.GetValue("IsTrial", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the list of license keys installed on the server instance.
+        /// </summary>
         public IReadOnlyList<string> LicenseKeys
         {
             get { return this.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
+        /// <summary>
+        /// Gets the list of labels for the license keys installed on the
+        /// server instance.
+        /// </summary>
         public IReadOnlyList<string> LicenseLabels
         {
             get { return this.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
+        /// <summary>
+        /// Gets the has signature for the license keys installed on the server
+        /// instance.
+        /// </summary>
         public string LicenseSignature
         {
             get { return this.GetValue("LicenseSignature", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the status of the licenses installed on the serve instance.
+        /// </summary>
         public LicenseState LicenseState
         {
             get { return this.GetValue("LicenseState", EnumConverter<LicenseState>.Instance); }
@@ -109,43 +155,57 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the <see cref="Guid"/> identifying the license master for the 
-        /// current Splunk server instance.
+        /// Splunk server instance.
         /// </summary>
         public Guid MasterGuid
         {
             get { return this.GetValue("MasterGuid", GuidConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets a value that specifies whether the Splunk server is a dedicated 
+        /// forwarder or a normal instance.
+        /// </summary>
         public ServerMode Mode
         {
             get { return this.GetValue("Mode", EnumConverter<ServerMode>.Instance); }
         }
 
+        /// <summary>
+        /// Gets build information for the operating system running splunkd.
+        /// </summary>
         public string OSBuild
         {
             get { return this.GetValue("OsBuild", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the name of the operating system running splunkd.
+        /// </summary>
         public string OSName
         {
             get { return this.GetValue("OsName", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets version information for the operating system running splunkd.
+        /// </summary>
         public string OSVersion
         {
             get { return this.GetValue("OsVersion", StringConverter.Instance); }
         }
 
-        public string CpuArchitecture
-        {
-            get { return this.GetValue("CpuArch", StringConverter.Instance); }
-        }
-
+        /// <summary>
+        /// Gets the fully qualified name of the Splunk server instance.
+        /// </summary>
         public string ServerName
         {
             get { return this.GetValue("ServerName", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the version of the Splunk server instance.
+        /// </summary>
         public Version Version
         {
             get { return this.GetValue("Version", VersionConverter.Instance); }

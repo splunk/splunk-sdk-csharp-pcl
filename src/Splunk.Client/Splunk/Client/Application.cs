@@ -28,7 +28,7 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a class that represents a Splunk application resource.
+    /// Provides a class for managing Splunk applications.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
@@ -342,13 +342,20 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously creates the application represented by the current
-        /// instance.
+        /// Asynchronously installs an application from a Splunk application
+        /// archive file.
         /// </summary>
+        /// <param name="path">
+        /// Specifies the location of a Splunk application archive file.
+        /// </param>
+        /// <param name="update">
+        /// <c>true</c> if Splunk should allow the installation to update an
+        /// existing application. The default value is <c>false</c>.
+        /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to create the current <see cref=
-        /// "Application"/>.
+        /// apps/local</a> endpoint to install the application from the archive
+        /// file on <see cref="path"/>.
         /// </remarks>
         public async Task InstallAsync(string path, bool update = false)
         {

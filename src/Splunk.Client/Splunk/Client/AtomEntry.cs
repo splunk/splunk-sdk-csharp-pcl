@@ -16,48 +16,20 @@
 
 //// TODO:
 ////
-//// [ ] Consider IValueConverter as an alternative to As<data-type> methods
-////     in the Field class
-////
-////     Idea: A single set of value converters for all Splunk data types 
-////     providing consistent conversion, manipulation, and presentation on 
-////     all Portable Class Library platforms with consideration for 
-////     CultureInfo.
-////
-////     Selling point: One of the handy things you can do with data binding 
-////     in WPF and Silverlight is convert the data as you pull it from the 
-////     data source. The interface used for doing this is IValueConverter.
-////     It is part of the Portable Class Library profile and available on 
-////     all current Windows platforms as well as Xamarin (?)
-////
-////     Note: 
-////     Neither IValueConveter or TypeConverter, an alternative to 
-////     IValueConverter, is part of the Portable Class Library profile because 
-////     it is not implemented for Windows Store apps.
-////
-////     References:
-////     1. [IValueConverter in WPF data binding](http://goo.gl/wHBov)
-////     2. [IValueConverter Class](http://goo.gl/Dep0VT)
-////     3. [ValueConversionAttribute Class](http://goo.gl/0aKer9)
-////
-//// [O] Improve error handling. Bad data should in an element should 
-////     produce diagnostic field-oriented error messages via 
-////     InvalidDataException.
-////
-//// [ ] Identify optional properties and sensible default values, if
-////     they're missing.
-////
-//// [ ] Check AtomEntry properties against splunk-sdk-csharp-1.0.X
-////
-//// [X] Either drop or improve AtomEntry.NormalizePropertyName
+//// [O] Either drop or improve AtomEntry.NormalizePropertyName
 ////     Improved AtomEntry.NormalizePropertyName since we do not have
 ////     known serialization requirements; just deserialization.
 ////
 //// [O] Contracts
 ////
-//// [ ] Documentation
+//// [O] Documentation
 ////
-//// [ ] Use NameTable in AtomEntry and AtomFeed
+//// [ ] Performance: NameTable could make in AtomEntry.ReadXmlAsync and 
+////     AtomFeed.ReadXmlAsync significantly faster.
+////
+//// [ ] Synchronization: AtomFeed.ReadXmlAsync and AtomEntry.ReadXmlAsync can
+////     be called more than once. (In practice these methods are never called
+////     move than once.)
 
 namespace Splunk.Client
 {
@@ -79,7 +51,12 @@ namespace Splunk.Client
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/YVTE9l">REST API: Atom Feed responses</a>
+    ///     <a href="http://goo.gl/TDthxd">REST API Reference Manual: Accessing
+    ///     Splunk resources</a>.
+    /// </description></item>
+    /// <item><description>
+    ///     <a href="http://goo.gl/YVTE9l">REST API Reference Manual: Atom Feed
+    ///     responses</a>.
     /// </description></item>
     /// </list>
     /// </para>
@@ -88,6 +65,9 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AtomEntry"/> class.
+        /// </summary>
         public AtomEntry()
         { }
 
@@ -96,25 +76,39 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the owner of the resource represented by the current <see 
+        /// cref="AtomEntry">, as defined in the access control list.
         /// </summary>
+        /// <remarks>
+        /// This value can be <c>"system"</c>, <c>"nobody"</c> or some specific
+        /// user name. Refer to <a href="http://goo.gl/iTpzO0">Access control 
+        /// lists for Splunk objects</a> in the section on <a href=
+        /// "http://goo.gl/TDthxd">Accessing Splunk resources</a>.
+        /// </remarks>
         public string Author
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets a dynamic object representing the content returned by the 
+        /// operation for an entry.
         /// </summary>
+        /// <remarks>
+        /// Splunk typically returns content as dictionaries with key/value 
+        /// pairs that list properties of the entry. However, content can be
+        /// returned as a list of values or as plain text.
+        /// </remarks>
         public dynamic Content
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the Splunk management URI for accessing the endpoint for 
+        /// accessing the current <see cref="AtomEntry"/>.
         /// </summary>
         public Uri Id
         { get; private set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public IReadOnlyDictionary<string, Uri> Links
         { get; private set; }
@@ -126,13 +120,16 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the human readable name for the current <see cref="AtomEntry"/>.
         /// </summary>
+        /// <remarks>
+        /// This value varies depending on the endpoint.
+        /// </remarks>
         public string Title
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the date/time this entry was last updated in Splunk.
         /// </summary>
         public DateTime Updated
         { get; private set; }

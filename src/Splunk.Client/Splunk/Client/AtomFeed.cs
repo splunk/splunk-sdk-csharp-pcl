@@ -319,14 +319,14 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets a string representation for the current <see cref="AtomEntry"/>.
+        /// Gets a string representation for the current <see cref="AtomFeed"/>.
         /// </summary>
         /// <returns>
-        /// A string representation of the current <see cref="AtomEntry"/>.
+        /// A string representation of the current <see cref="AtomFeed"/>.
         /// </returns>
         public override string ToString()
         {
-            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Updated={3})", this.Title, this.Author, this.Id, this.Updated);
+            return string.Format("AtomFeed(Title={0}, Author={1}, Id={2}, Updated={3})", this.Title, this.Author, this.Id, this.Updated);
         }
 
         #endregion

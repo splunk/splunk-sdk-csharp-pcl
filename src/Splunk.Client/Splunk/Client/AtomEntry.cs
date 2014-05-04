@@ -256,10 +256,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets a string representation for the current <see cref="AtomFeed"/>.
+        /// Gets a string representation for the current <see cref="AtomEntry"/>.
         /// </summary>
         /// <returns>
-        /// A string representation of the current <see cref="AtomFeed"/>.
+        /// A string representation of the current <see cref="AtomEntry"/>.
         /// </returns>
         public override string ToString()
         {

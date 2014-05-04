@@ -34,21 +34,25 @@ namespace Splunk.Client
         None,
 
         /// <summary>
+        /// 
         /// </summary>
         [EnumMember(Value = "drops by")]
         DropsBy,
         
         /// <summary>
+        /// 
         /// </summary>
         [EnumMember(Value = "drops by perc")]
         DropsByPercent,
 
         /// <summary>
+        /// 
         /// </summary>
         [EnumMember(Value = "equal to")]
         Equal,
 
         /// <summary>
+        /// 
         /// </summary>
         [EnumMember(Value = "greater than")]
         GreaterThan,
@@ -59,11 +63,13 @@ namespace Splunk.Client
         LessThan,
 
         /// <summary>
+        /// 
         /// </summary>
         [EnumMember(Value = "rises by")]
         RisesBy,
 
         /// <summary>
+        /// 
         /// </summary>
         [EnumMember(Value = "rises by perc")]
         RisesByPercent

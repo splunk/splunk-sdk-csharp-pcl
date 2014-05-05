@@ -16,7 +16,6 @@
     <NuGetPackageImportStamp>22455d9b</NuGetPackageImportStamp>
     <RootNamespace />
     <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
-    <StyleCopOverrideSettingsFile>Splunk.Client.StyleCop</StyleCopOverrideSettingsFile>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <WarningLevel>4</WarningLevel>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>

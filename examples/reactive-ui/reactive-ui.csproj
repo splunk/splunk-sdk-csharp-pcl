@@ -16,7 +16,6 @@
     <RootNamespace/>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
-    <StyleCopOverrideSettingsFile>reactive-ui.StyleCop</StyleCopOverrideSettingsFile>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

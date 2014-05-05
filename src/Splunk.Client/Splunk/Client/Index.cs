@@ -36,6 +36,12 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="ns"></param>
+        /// <param name="name"></param>
         internal Index(Context context, Namespace ns, string name)
             : base(context, ns, ClassResourceName, name)
         { }
@@ -74,66 +80,105 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool AssureUTF8
         {
             get { return this.GetValue("AssureUTF8", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int BlockSignSize
         {
             get { return this.GetValue("BlockSignSize", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string BlockSignatureDatabase
         {
             get { return this.GetValue("BlockSignatureDatabase", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int BloomFilterTotalSizeKB
         {
             get { return this.GetValue("BloomfilterTotalSizeKB", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string BucketRebuildMemoryHint
         {
             get { return this.GetValue("BucketRebuildMemoryHint", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ColdPath
         {
             get { return this.GetValue("ColdPath", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ColdPathExpanded
         {
             get { return this.GetValue("ColdPathExpanded", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ColdToFrozenDir
         {
             get { return this.GetValue("ColdToFrozenDir", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ColdToFrozenScript
         {
             get { return this.GetValue("ColdToFrozenScript", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool CompressRawData
         {
             get { return this.GetValue("CompressRawdata", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int CurrentDBSizeMB
         {
             get { return this.GetValue("CurrentDBSizeMB", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string DefaultDatabase
         {
             get { return this.GetValue("DefaultDatabase", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Disabled
         {
             get { return this.GetValue("Disabled", BooleanConverter.Instance); }
@@ -147,151 +192,241 @@ namespace Splunk.Client
             get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool EnableOnlineBucketRepair
         {
             get { return this.GetValue("EnableOnlineBucketRepair", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool EnableRealtimeSearch
         {
             get { return this.GetValue("EnableRealtimeSearch", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int FrozenTimePeriodInSecs
         {
             get { return this.GetValue("FrozenTimePeriodInSecs", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string HomePath
         {
             get { return this.GetValue("HomePath", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string HomePathExpanded
         {
             get { return this.GetValue("HomePathExpanded", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string IndexThreads
         {
             get { return this.GetValue("IndexThreads", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsInternal
         {
             get { return this.GetValue("IsInternal", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsReady
         {
             get { return this.GetValue("IsReady", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsVirtual
         {
             get { return this.GetValue("IsVirtual", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long LastInitSequenceNumber
         {
             get { return this.GetValue("LastInitSequenceNumber", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long LastInitTime
         {
             get { return this.GetValue("LastInitTime", Int64Converter.Instance); }
         }
-
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public string MaxBloomBackfillBucketAge
         {
             get { return this.GetValue("MaxBloomBackfillBucketAge", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxBucketSizeCacheEntries
         {
             get { return this.GetValue("MaxBucketSizeCacheEntries", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxConcurrentOptimizes
         {
             get { return this.GetValue("MaxConcurrentOptimizes", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string MaxDataSize
         {
             get { return this.GetValue("MaxDataSize", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxHotBuckets
         {
             get { return this.GetValue("MaxHotBuckets", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxHotIdleSecs
         {
             get { return this.GetValue("MaxHotIdleSecs", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxHotSpanSecs
         {
             get { return this.GetValue("MaxHotSpanSecs", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxMemMB
         {
             get { return this.GetValue("MaxMemMB", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxMetaEntries
         {
             get { return this.GetValue("MaxMetaEntries", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxRunningProcessGroups
         {
             get { return this.GetValue("MaxRunningProcessGroups", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxRunningProcessGroupsLowPriority
         {
             get { return this.GetValue("MaxRunningProcessGroupsLowPriority", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime MaxTime
         {
             get { return this.GetValue("MaxTime", DateTimeConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxTimeUnreplicatedNoAcks
         {
             get { return this.GetValue("MaxTimeUnreplicatedNoAcks", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxTimeUnreplicatedWithAcks
         {
             get { return this.GetValue("MaxTimeUnreplicatedWithAcks", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxTotalDataSizeMB
         {
             get { return this.GetValue("MaxTotalDataSizeMB", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxWarmDBCount
         {
             get { return this.GetValue("MaxWarmDBCount", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string MemPoolMB
         {
             get { return this.GetValue("MemPoolMB", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string MinRawFileSyncSecs
         {
             get { return this.GetValue("MinRawFileSyncSecs", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime MinTime
         {
             get { return this.GetValue("MinTime", DateTimeConverter.Instance); }
@@ -324,56 +459,89 @@ namespace Splunk.Client
             get { return this.GetValue("NumWarmBuckets", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int PartialServiceMetaPeriod
         {
             get { return this.GetValue("PartialServiceMetaPeriod", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int ProcessTrackerServiceInterval
         {
             get { return this.GetValue("ProcessTrackerServiceInterval", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int QuarantineFutureSecs
         {
             get { return this.GetValue("QuarantineFutureSecs", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int QuarantinePastSecs
         {
             get { return this.GetValue("QuarantinePastSecs", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int RawChunkSizeBytes
         {
             get { return this.GetValue("RawChunkSizeBytes", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int RepFactor
         {
             get { return this.GetValue("RepFactor", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int RotatePeriodInSecs
         {
             get { return this.GetValue("RotatePeriodInSecs", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int ServiceMetaPeriod
         {
             get { return this.GetValue("ServiceMetaPeriod", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool ServiceOnlyAsNeeded
         {
             get { return this.GetValue("ServiceOnlyAsNeeded", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int ServiceSubtaskTimingPeriod
         {
             get { return this.GetValue("ServiceSubtaskTimingPeriod", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string SummaryHomePathExpanded
         {
             get { return this.GetValue("SummaryHomePathExpanded", StringConverter.Instance); }
@@ -391,11 +559,17 @@ namespace Splunk.Client
             get { return this.GetValue("SuppressBannerList", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Sync
         {
             get { return this.GetValue("Sync", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool SyncMeta
         {
             get { return this.GetValue("SyncMeta", BooleanConverter.Instance); }
@@ -410,26 +584,41 @@ namespace Splunk.Client
             get { return this.GetValue("ThawedPath", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ThawedPathExpanded
         {
             get { return this.GetValue("ThawedPathExpanded", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int ThrottleCheckPeriod
         {
             get { return this.GetValue("ThrottleCheckPeriod", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long TotalEventCount
         {
             get { return this.GetValue("TotalEventCount", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string TStatsHomePath
         {
             get { return this.GetValue("TstatsHomePath", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string TStatsHomePathExpanded
         {
             get { return this.GetValue("TstatsHomePathExpanded", StringConverter.Instance); }

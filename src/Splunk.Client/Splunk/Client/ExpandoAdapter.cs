@@ -34,12 +34,19 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="expandoObject"></param>
         public ExpandoAdapter(ExpandoObject expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
             this.ExpandoObject = expandoObject;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected ExpandoAdapter()
         { }
 
@@ -53,10 +60,11 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         internal ExpandoObject ExpandoObject
-        {
-            get; set; // TODO: Synchronization
-        }
+        { get; set; }
                             
         #endregion
 
@@ -228,6 +236,9 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ExpandoAdapter()
         { }
 

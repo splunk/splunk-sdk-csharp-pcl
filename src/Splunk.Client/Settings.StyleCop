@@ -1,0 +1,9 @@
+<StyleCopSettings Version="105">
+  <GlobalSettings>
+    <CollectionProperty Name="RecognizedWords">
+      <Value>Splunk</Value>
+      <Value>Splunkbase</Value>
+      <Value>splunkd</Value>
+    </CollectionProperty>
+  </GlobalSettings>
+</StyleCopSettings>

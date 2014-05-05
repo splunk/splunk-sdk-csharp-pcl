@@ -44,16 +44,25 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
 		public IReadOnlyList<string> OptionalFields
         {
             get { return this.GetValue("OptionalFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
 		public IReadOnlyList<string> RequiredFields
         {
             get { return this.GetValue("RequiredFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
 		public IReadOnlyList<string> WildcardFields
         {
             get { return this.GetValue("WildcardFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }

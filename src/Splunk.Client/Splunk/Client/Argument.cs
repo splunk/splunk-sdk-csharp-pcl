@@ -31,7 +31,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Intializes a new instance of the <see cref="Argument"/> class.
+        /// Initializes a new instance of the <see cref="Argument"/> class.
         /// </summary>
         /// <param name="name">
         /// Parameter name.

@@ -44,36 +44,57 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool CanList
         {
             get { return this.GetValue("CanList", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool CanWrite
         {
             get { return this.GetValue("CanWrite", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
         public bool Modifiable
         {
             get { return this.GetValue("Modifiable", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Owner
         {
             get { return this.GetValue("Owner", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Permissions Permissions
         {
             get { return this.GetValue("Perms", Permissions.Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool Removable
         {
             get { return this.GetValue("Removable", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
 		public SharingMode Sharing
         {
             get { return this.GetValue("Sharing", EnumConverter<SharingMode>.Instance); }

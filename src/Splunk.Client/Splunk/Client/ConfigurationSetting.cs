@@ -118,7 +118,7 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchrononously retrieves the value of the current <see cref=
+        /// Asynchronously retrieves the value of the current <see cref=
         /// "ConfigurationSetting"/>.
         /// </summary>
         /// <remarks>

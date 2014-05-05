@@ -27,22 +27,42 @@ namespace Splunk.Client
     /// </summary>
     public class Eai : ExpandoAdapter<Eai>
     {
+        #region Constructors
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Eai"/> class.
+        /// </summary>
         public Eai()
         { }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// 
+        /// </summary>
         public EaiAcl Acl
         {
             get { return this.GetValue("Acl", EaiAcl.Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public EaiAttributes Attributes
         {
             get { return this.GetValue("Attributes", EaiAttributes.Converter.Instance); }
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string Setup
         {
             get { return this.GetValue("Setup", StringConverter.Instance); }
         }
+
+        #endregion
     }
 }

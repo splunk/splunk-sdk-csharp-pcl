@@ -146,7 +146,7 @@ namespace Splunk.Client
         /// Name of a configuration setting in <see cref="stanzaName"/>.
         /// </param>
         /// <returns>
-        /// An object representing the configuration setting identifed by <see 
+        /// An object representing the configuration setting identified by <see 
         /// cref="stanzaName"/> and <see cref="keyName"/>.
         /// </returns>
         /// <remarks>
@@ -212,7 +212,7 @@ namespace Splunk.Client
         /// Name of the configuration stanza to be retrieved.
         /// </param>
         /// <returns>
-        /// An object representing the configuration stanza identifed by <see 
+        /// An object representing the configuration stanza identified by <see 
         /// cref="stanzaName"/>.
         /// </returns>
         /// <remarks>

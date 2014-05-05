@@ -68,8 +68,10 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="name"></param>
+        /// <param name="reader">
+        /// </param>
+        /// <param name="name">
+        /// </param>
         /// <returns></returns>
         public static async Task<string> ReadResponseElementAsync(this XmlReader reader, string name)
         {

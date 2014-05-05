@@ -190,58 +190,100 @@ namespace Splunk.Client
         public string Namespace
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "now", EmitDefaultValue = false)]
         public string Now
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "reduce_freq", EmitDefaultValue = false)]
         public int? ReduceFrequency
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "reload_macros", EmitDefaultValue = false)]
         public bool? ReloadMacros
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "remote_server_list", EmitDefaultValue = false)]
         public string RemoteServerList
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rf", EmitDefaultValue = false)]
         public IReadOnlyList<string> RequiredFieldList
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "reuse_max_seconds_ago", EmitDefaultValue = false)]
         public int? ReuseMaxSecondsAgo
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rt_blocking", EmitDefaultValue = false)]
         public bool? RealTimeBlocking
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rt_indexfilter", EmitDefaultValue = false)]
         public bool? RealTimeIndexFilter
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rt_maxblocksecs", EmitDefaultValue = false)]
         public int? RealTimeMaxBlockSeconds
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rt_queue_size", EmitDefaultValue = false)]
         public int? RealTimeQueueSize
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "search_listener", EmitDefaultValue = false)]
         public string SearchListener
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "search_mode", EmitDefaultValue = false)]
         public SearchMode? SearchMode
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "spawn_process", EmitDefaultValue = false)]
         public bool? SpawnProcess
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "status_buckets", EmitDefaultValue = false)]
         public int? StatusBuckets
         { get; set; }
@@ -257,10 +299,16 @@ namespace Splunk.Client
         public bool? SyncBundleReplication
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "time_format", EmitDefaultValue = false)]
         public string TimeFormat
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "timeout", EmitDefaultValue = false)]
         public int? Timeout
         { get; set; }

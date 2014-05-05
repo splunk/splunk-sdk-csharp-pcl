@@ -59,16 +59,25 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ArgumentPrefix
         {
             get { return this.argumentPrefix; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Count
         { 
             get { return this.set.Count; } 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsReadOnly
         { 
             get { return false; } 
@@ -78,16 +87,66 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Clear()
         {
             this.set.Clear();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool Add(Argument item)
         {
-            return this.GetEnumerator();
+            return this.set.Add(item);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        void ICollection<Argument>.Add(Argument item)
+        {
+            this.set.Add(item);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool Contains(Argument item)
+        {
+            return this.set.Contains(item);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="index"></param>
+        public void CopyTo(Argument[] array, int index)
+        {
+            this.set.CopyTo(array, index);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        public void ExceptWith(IEnumerable<Argument> other)
+        {
+            this.set.ExceptWith(other);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<Argument> GetEnumerator()
         {
             if (this.argumentPrefix == null)
@@ -106,81 +165,116 @@ namespace Splunk.Client
             }
         }
 
-        public override string ToString()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return string.Join("; ", from arg in this select arg.ToString());
+            return this.GetEnumerator();
         }
 
-        public bool Add(Argument item)
-        {
-            return this.set.Add(item);
-        }
-
-        void ICollection<Argument>.Add(Argument item)
-        {
-            this.set.Add(item);
-        }
-
-        public bool Contains(Argument item)
-        {
-            return this.set.Contains(item);
-        }
-
-        public void CopyTo(Argument[] array, int index)
-        {
-            this.set.CopyTo(array, index);
-        }
-
-        public void ExceptWith(IEnumerable<Argument> other)
-        {
-            this.set.ExceptWith(other);
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
         public void IntersectWith(IEnumerable<Argument> other)
         {
             this.set.IntersectWith(other);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool IsProperSubsetOf(IEnumerable<Argument> other)
         {
             return this.IsProperSubsetOf(other);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool IsProperSupersetOf(IEnumerable<Argument> other)
         {
             return this.IsProperSupersetOf(other);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool IsSubsetOf(IEnumerable<Argument> other)
         {
             return this.set.IsSubsetOf(other);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool IsSupersetOf(IEnumerable<Argument> other)
         {
             return this.set.IsSupersetOf(other);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Overlaps(IEnumerable<Argument> other)
         {
             return this.set.Overlaps(other);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Remove(Argument item)
         {
             return this.set.Remove(item);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool SetEquals(IEnumerable<Argument> other)
         {
             return this.SetEquals(other);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
         public void SymmetricExceptWith(IEnumerable<Argument> other)
         {
             this.set.SymmetricExceptWith(other);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return string.Join("; ", from arg in this select arg.ToString());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
         public void UnionWith(IEnumerable<Argument> other)
         {
             this.set.UnionWith(other);

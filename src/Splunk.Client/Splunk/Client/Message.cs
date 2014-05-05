@@ -232,6 +232,10 @@ namespace Splunk.Client
             return hash;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return string.Concat(this.Type.ToString(), ": ", this.Text);

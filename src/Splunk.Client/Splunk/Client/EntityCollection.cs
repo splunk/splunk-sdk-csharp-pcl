@@ -149,7 +149,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the number of entites in the current <see cref="EntityCollection"/>.
+        /// Gets the number of entities in the current <see cref="EntityCollection"/>.
         /// </summary>
         public int Count
         {

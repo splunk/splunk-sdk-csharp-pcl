@@ -32,7 +32,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Intializes a new instance of the <see cref="EntitySnapshot"/> class.
+        /// Initializes a new instance of the <see cref="EntitySnapshot"/> class.
         /// </summary>
         /// <param name="entry">
         /// An object representing a Splunk entity atom entry.
@@ -66,6 +66,13 @@ namespace Splunk.Client
             this.updated = entry.Updated;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntitySnapshot"/> class.
+        /// </summary>
+        /// <param name="other">
+        /// </param>
+        /// <param name="content">
+        /// </param>
         public EntitySnapshot(EntitySnapshot other, dynamic content)
         {
             Contract.Requires<ArgumentNullException>(other != null);
@@ -107,43 +114,67 @@ namespace Splunk.Client
         #endregion
 
         #region Fields
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly EntitySnapshot Missing = new EntitySnapshot();
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ExpandoAdapter Adapter
         {
             get { return this.adapter; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Author
         {
             get { return this.author; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Uri Id
         {
             get { return this.id; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyDictionary<string, Uri> Links
         {
             get { return this.links; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Published
         {
             get { return this.published; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Title
         {
             get { return this.title; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Updated
         {
             get { return this.updated; }

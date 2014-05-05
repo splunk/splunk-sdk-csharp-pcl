@@ -118,26 +118,41 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool CanSummarize
         {
             get { return this.GetValue("CanSummarize", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime CursorTime
         {
             get { return this.GetValue("CursorTime", DateTimeConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int DefaultSaveTTL
         {
             get { return this.GetValue("DefaultSaveTTL", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int DefaultTTL
         {
             get { return this.GetValue("DefaultTTL", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long DiskUsage
         {
             get { return this.GetValue("DiskUsage", Int64Converter.Instance); } // sample value: "86016"
@@ -159,11 +174,17 @@ namespace Splunk.Client
             get { return this.GetValue("DispatchState", EnumConverter<DispatchState>.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public double DoneProgress
         {
             get { return this.GetValue("DoneProgress", DoubleConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long DropCount
         {
             get { return this.GetValue("DropCount", Int64Converter.Instance); }
@@ -177,56 +198,89 @@ namespace Splunk.Client
             get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime EarliestTime
         {
             get { return this.GetValue("EarliestTime", DateTimeConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long EventAvailableCount
         {
             get { return this.GetValue("EventAvailableCount", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long EventCount
         {
             get { return this.GetValue("EventCount", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int EventFieldCount
         {
             get { return this.GetValue("EventFieldCount", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool EventIsStreaming
         {
             get { return this.GetValue("EventIsStreaming", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool EventIsTruncated
         {
             get { return this.GetValue("EventIsTruncated", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string EventSearch
         {
             get { return this.GetValue("EventSearch", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public SortDirection EventSorting
         {
             get { return this.GetValue("EventSorting", EnumConverter<SortDirection>.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long IndexEarliestTime
         {
             get { return this.GetValue("IndexEarliestTime", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long IndexLatestTime
         {
             get { return this.GetValue("IndexLatestTime", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsBatchModeSearch
         {
             get { return this.GetValue("IsBatchModeSearch", BooleanConverter.Instance); }
@@ -267,26 +321,41 @@ namespace Splunk.Client
             get { return this.GetValue("IsRemoteTimeline", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsSaved
         {
             get { return this.GetValue("IsSaved", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsSavedSearch
         {
             get { return this.GetValue("IsSavedSearch", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsZombie
         {
             get { return this.GetValue("IsZombie", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Keywords
         {
             get { return this.GetValue("Keywords", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime LatestTime
         {
             get { return this.GetValue("LatestTime", DateTimeConverter.Instance); }
@@ -294,91 +363,145 @@ namespace Splunk.Client
 
         // Messages	{System.Dynamic.ExpandoObject}	System.Dynamic.ExpandoObject
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string NormalizedSearch
         {
             get { return this.GetValue("NormalizedSearch", StringConverter.Instance); } 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int NumPreviews
         {
             get { return this.GetValue("NumPreviews", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public dynamic Performance
         {
             get { return this.GetValue("Performance"); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Pid
         {
             get { return this.GetValue("Pid", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Priority
         {
             get { return this.GetValue("Priority", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string RemoteSearch
         {
             get { return this.GetValue("RemoteSearch", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public dynamic Request
         {
             get { return this.GetValue("Request"); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long ResultCount
         {
             get { return this.GetValue("ResultCount", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool ResultIsStreaming
         {
             get { return this.GetValue("ResultIsStreaming", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long ResultPreviewCount
         {
             get { return this.GetValue("ResultPreviewCount", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public double RunDuration
         {
             get { return this.GetValue("RunDuration", DoubleConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Runtime_t Runtime
         {
             get { return this.GetValue("Runtime", Runtime_t.Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long ScanCount
         {
             get { return this.GetValue("ScanCount", Int64Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Search
         {
             get { return this.Snapshot == null ? null : this.Snapshot.Title; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyList<string> SearchProviders
         {
             get { return this.GetValue("SearchProviders", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Sid
         {
             get { return this.Name; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int StatusBuckets
         {
             get { return this.GetValue("StatusBuckets", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long Ttl
         {
             get { return this.GetValue("Ttl", Int64Converter.Instance); }

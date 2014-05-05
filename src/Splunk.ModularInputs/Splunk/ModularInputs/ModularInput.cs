@@ -17,6 +17,7 @@
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
@@ -49,17 +50,16 @@ namespace Splunk.ModularInputs
         #region Methods
 
         /// <summary>
-        /// Asynchronously performs the action specified by the <see cref=
-        /// "args"/> parameter.
+        /// Performs the action specified by the <see cref="args"/> parameter.
         /// </summary>
         /// <typeparam name="T">
-        /// The application-derived type of the <see cref="ModularInput"/>. It must
-        /// have a constructor without a parameter.
+        /// The application-derived type of the <see cref="ModularInput"/>. It
+        /// must have a parameterless constructor.
         /// </typeparam>
         /// <param name="args">
         /// Command-line arguments provided by Splunk when it invokes the
         /// modular input program. Implementers should pass the arguments to
-        /// the main method of this program as the value of this parameter.
+        /// the main method of the program as the value of this parameter.
         /// </param>
         /// <returns>
         /// A value which should be used as the exit code from the modular
@@ -76,8 +76,6 @@ namespace Splunk.ModularInputs
         {
             try
             {
-                var utf8 = new UTF8Encoding();
-
                 //// Console default is OEM text encoding, which is not handled by Splunk,
                 //// resulting in loss of chars such as O with double acute (\u0150)
                 //// Splunk's default is UTF8.
@@ -89,20 +87,34 @@ namespace Splunk.ModularInputs
 
                 if (!(Console.InputEncoding is UTF8Encoding))
                 {
-                    Console.InputEncoding = utf8;
+                    Console.InputEncoding = Encoding.UTF8;
                 }
 
-                // Below will set both stdout and stderr.
-                Console.OutputEncoding = utf8;
-
+                Console.OutputEncoding = Encoding.UTF8; // sets stderr and stdout
                 var script = new T();
 
                 if (args.Length == 0)
                 {
-                    await LogAsync("Reading input definition");
-                    var inputDefinition = (InputDefinition)Read(typeof(InputDefinition));
-                    await LogAsync("Calling StreamEvents");
-                    await script.StreamEventsAsync(inputDefinition);
+                    await LogAsync("Reading input definitions.");
+                    var eventStreams = new List<Task>();
+
+                    for (int i = 1; Console.In.Peek() != -1; i++)
+                    {
+                        var inputDefinition = (InputDefinition)Read(typeof(InputDefinition));
+                        await LogAsync(string.Format("Starting event stream {0}.", i));
+                        eventStreams.Add(script.StreamEventsAsync(inputDefinition));
+                    }
+
+                    if (eventStreams.Count == 0)
+                    {
+                        var message = "No input definitions could be read from the standard input stream.";
+                        throw new InvalidDataException(message);
+                    }
+
+                    await Task.Factory.ContinueWhenAll(eventStreams.ToArray(), 
+                        (tasks) => EventWriter.CompleteAdding(),
+                        TaskContinuationOptions.LongRunning);
+
                     return 0;
                 }
 

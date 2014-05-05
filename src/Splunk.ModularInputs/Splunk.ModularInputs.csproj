@@ -13,7 +13,7 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <ErrorReport>prompt</ErrorReport>
     <FileAlignment>512</FileAlignment>
-    <RootNamespace/>
+    <RootNamespace />
     <RunCodeAnalysis>True</RunCodeAnalysis>
     <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
@@ -46,10 +46,11 @@
     <Compile Include="Splunk\ModularInputs\Argument.cs" />
     <Compile Include="Splunk\ModularInputs\ConfigurationItem.cs" />
     <Compile Include="Splunk\ModularInputs\ConfigurationItemBase.cs" />
+    <Compile Include="Splunk\ModularInputs\EventWriter.cs" />
     <Compile Include="Splunk\ModularInputs\StreamingMode.cs" />
     <Compile Include="Splunk\ModularInputs\DataType.cs" />
     <Compile Include="Splunk\ModularInputs\EventElement.cs" />
-    <Compile Include="Splunk\ModularInputs\EventStreamWriter.cs" />
+    <Compile Include="Splunk\ModularInputs\EventStream.cs" />
     <Compile Include="Splunk\ModularInputs\InputDefinition.cs" />
     <Compile Include="Splunk\ModularInputs\InputDefinitionBase.cs" />
     <Compile Include="Splunk\ModularInputs\MultiValueParameter.cs" />

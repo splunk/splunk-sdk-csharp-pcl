@@ -31,37 +31,37 @@ namespace Splunk.ModularInputs.UnitTesting
     public class TestModularInputs
     {
         /// <summary>
-        ///     Input file folder
+        /// Input file folder
         /// </summary>
         static readonly string TestDataFolder = Path.Combine("Data", "ModularInputs");
 
         /// <summary>
-        ///     Input file containing input definition
+        /// Input file containing input definition
         /// </summary>
         const string InputDefinitionFilePath = "InputDefinition.xml";
 
         /// <summary>
-        ///     Input file containing validation items
+        /// Input file containing validation items
         /// </summary>
         const string ValidationItemsFilePath = "ValidationItems.xml";
 
         /// <summary>
-        ///     Input file containing expected validation error message.
+        /// Input file containing expected validation error message.
         /// </summary>
         const string ValidationErrorMessageFilePath = "ValidationErrorMessage.xml";
 
         /// <summary>
-        ///     Input file containing scheme
+        /// Input file containing scheme
         /// </summary>
         const string SchemeFilePath = "Scheme.xml";
 
         /// <summary>
-        ///     Input file containing events
+        /// Input file containing events
         /// </summary>
         const string EventsFilePath = "Events.xml";
 
         /// <summary>
-        ///     Test returning scheme through stdout
+        /// Test returning scheme through stdout
         /// </summary>
         [Trait("class", "Splunk.ModularInputs")]
         [Fact]
@@ -76,7 +76,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         /// <summary>
-        ///     Test getting validation info from stdin and return validation error through stdout.
+        /// Test getting validation info from stdin and return validation error through stdout.
         /// </summary>
         [Trait("class", "Splunk.ModularInputs")]
         [Fact]
@@ -96,7 +96,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         /// <summary>
-        ///     Test getting validation info from stdin
+        /// Test getting validation info from stdin
         /// </summary>
         [Trait("class", "Splunk.ModularInputs")]
         [Fact]
@@ -115,7 +115,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         /// <summary>
-        ///     Test error handling and logging
+        /// Test error handling and logging
         /// </summary>
         [Trait("class", "Splunk.ModularInputs")]
         [Fact]
@@ -137,10 +137,10 @@ namespace Splunk.ModularInputs.UnitTesting
                     Assert.Contains("FATAL Script.Run: Unhandled exception:", error);
 
                     // Verify that the exception is what we expect.
-                    Assert.Contains("Root element is missing", error);
+                    Assert.Contains("No input definitions could be read from the standard input stream.", error);
 
                     // Verify that an info level message is logged properly.
-                    Assert.Contains("INFO Script.Run: Reading input definition", error);
+                    Assert.Contains("INFO Script.Run: Reading input definitions.", error);
 
                     // Verify that the logged exception does not span more than one line
                     // Splunk breaks up events using new lines for splunkd log.
@@ -155,7 +155,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         /// <summary>
-        ///     Assert equal with expected file content.
+        /// Assert equal with expected file content.
         /// </summary>
         /// <param name="expectedFilePath">Relative file path</param>
         /// <param name="actual">Data to check</param>
@@ -168,7 +168,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         /// <summary>
-        ///     Read file from data directory as a string
+        /// Read file from data directory as a string
         /// </summary>
         /// <param name="relativePath">Relative path to the resource</param>
         /// <returns>Resource content</returns>
@@ -178,7 +178,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         /// <summary>
-        ///     Read file from data directory as a test reader
+        /// Read file from data directory as a test reader
         /// </summary>
         /// <param name="relativePath">Relative path to the resource</param>
         /// <returns>Resource content</returns>
@@ -188,7 +188,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         /// <summary>
-        ///     Get full path to the data file.
+        /// Get full path to the data file.
         /// </summary>
         /// <param name="relativePath">Relative path to the data folder.</param>
         /// <returns>A full path</returns>
@@ -198,68 +198,67 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         /// <summary>
-        ///     Write events using EventStreamWriter
+        /// Write events using EventStreamWriter
         /// </summary>
         // This method can be used by manual testing thus is public 
-        public static async Task WriteEvents()
+        public static void WriteEvents()
         {
-            using (var writer = new EventStreamWriter())
-            {
-                var eventTemplate = new EventElement
-                    {
-                        Index = "sdk-tests2",
-                        Host = "test host",
-                        SourceType = "test sourcetype",
-                        Source = "test source",
-                    };
+            var writer = new EventStream();
 
-                await WriteEventData(
-                    writer,
-                    eventTemplate,
-                    "Event with all default fields set");
+            var eventTemplate = new EventElement
+                {
+                    Index = "sdk-tests2",
+                    Host = "test host",
+                    SourceType = "test sourcetype",
+                    Source = "test source",
+                };
 
-                await WriteEventData(
-                    writer,
-                    eventTemplate,
-                    "Letter O with double acute: \u0150");
+            WriteEventData(
+                writer,
+                eventTemplate,
+                "Event with all default fields set");
 
-                eventTemplate.Unbroken = true;
+            WriteEventData(
+                writer,
+                eventTemplate,
+                "Letter O with double acute: \u0150");
 
-                await WriteEventData(
-                    writer,
-                    eventTemplate,
-                    "Part 1 of an unbroken event ");
+            eventTemplate.Unbroken = true;
 
-                await WriteEventData(
-                    writer,
-                    eventTemplate,
-                    "Part 2 of an unbroken event ending with newline" + Environment.NewLine);
+            WriteEventData(
+                writer,
+                eventTemplate,
+                "Part 1 of an unbroken event ");
 
-                await WriteEventDone(
-                    writer,
-                    eventTemplate);
+            WriteEventData(
+                writer,
+                eventTemplate,
+                "Part 2 of an unbroken event ending with newline" + Environment.NewLine);
 
-                eventTemplate.Unbroken = false;
+            WriteEventDone(
+                writer,
+                eventTemplate);
 
-                await WriteEventData(
-                    writer,
-                    eventTemplate,
-                    "Event after done key");
+            eventTemplate.Unbroken = false;
 
-                var timedEvent = eventTemplate;
-                timedEvent.Time = new DateTime(2013, 1, 1, 0, 0, 0, 1, DateTimeKind.Utc);
-                timedEvent.Data = "Event with fixed time";
-                await writer.WriteEventAsync(timedEvent);
+            WriteEventData(
+                writer,
+                eventTemplate,
+                "Event after done key");
 
-                await WriteMultiplex(writer);
-            }
+            var timedEvent = eventTemplate;
+            timedEvent.Time = new DateTime(2013, 1, 1, 0, 0, 0, 1, DateTimeKind.Utc);
+            timedEvent.Data = "Event with fixed time";
+            writer.Write(timedEvent);
+
+            WriteMultiplex(writer);
         }
 
         /// <summary>
-        ///     Write for multiple stanzas
+        /// Write for multiple stanzas
         /// </summary>
         /// <param name="writer">An event writer</param>
-        static async Task WriteMultiplex(EventStreamWriter writer)
+        static void WriteMultiplex(EventStream writer)
         {
             var eventTemplate1 = new EventElement
                 {
@@ -273,64 +272,64 @@ namespace Splunk.ModularInputs.UnitTesting
                     Unbroken = true,
                 };
 
-            await WriteEventDataLine(writer, eventTemplate1, "Part 1 of channel 1 with a newline");
-            await WriteEventData(writer, eventTemplate2, "Part 1 of channel 2 without a newline ");
+            WriteEventDataLine(writer, eventTemplate1, "Part 1 of channel 1 with a newline");
+            WriteEventData(writer, eventTemplate2, "Part 1 of channel 2 without a newline ");
 
             // Mark the first channel done.
-            await WriteEventDone(writer, eventTemplate1);
+            WriteEventDone(writer, eventTemplate1);
 
-            await WriteEventDataLine(writer, eventTemplate1, "Part 2 of channel 1 with a newline");
-            await WriteEventDataLine(writer, eventTemplate2, "Part 2 of channel 2 with a newline");
+            WriteEventDataLine(writer, eventTemplate1, "Part 2 of channel 1 with a newline");
+            WriteEventDataLine(writer, eventTemplate2, "Part 2 of channel 2 with a newline");
 
             // Mark the second channel done.
-            await WriteEventDone(writer, eventTemplate2);
+            WriteEventDone(writer, eventTemplate2);
         }
 
         /// <summary>
-        ///     Write a done key
+        /// Write a done key
         /// </summary>
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
-        static async Task WriteEventDone(EventStreamWriter writer, EventElement eventTemplate)
+        static void WriteEventDone(EventStream writer, EventElement eventTemplate)
         {
             var @event = eventTemplate;
             @event.Unbroken = false;
             @event.Done = true;
-            await writer.WriteEventAsync(@event);
+            writer.Write(@event);
         }
 
         /// <summary>
-        ///     Write an event data line.
+        /// Write an event data line.
         /// </summary>
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
         /// <param name="eventData">Event data</param>
-        static async Task WriteEventDataLine(
-            EventStreamWriter writer,
+        static void WriteEventDataLine(
+            EventStream writer,
             EventElement eventTemplate,
             string eventData)
         {
-            await WriteEventData(
+            WriteEventData(
                 writer,
                 eventTemplate,
                 eventData + Environment.NewLine);
         }
 
         /// <summary>
-        ///     Write event data without appending a newline seperator.
+        /// Write event data without appending a newline seperator.
         /// </summary>
         /// <param name="writer">An event writer</param>
         /// <param name="eventTemplate">An event template</param>
         /// <param name="eventData">Event data</param>
-        static async Task WriteEventData(EventStreamWriter writer, EventElement eventTemplate, string eventData)
+        static void WriteEventData(EventStream writer, EventElement eventTemplate, string eventData)
         {
             var @event = eventTemplate;
             @event.Data = eventData;
-            await writer.WriteEventAsync(@event);
+            writer.Write(@event);
         }
 
         /// <summary>
-        ///     Redirect console in
+        /// Redirect console in
         /// </summary>
         /// <param name="target">Destination of the redirection</param>
         static void SetConsoleIn(TextReader target)
@@ -338,18 +337,17 @@ namespace Splunk.ModularInputs.UnitTesting
             // Must set Console encoding to be UTF8. Otherwise, Script.Run
             // will call the setter of OutputEncoding which results in
             // resetting Console.In (which should be a System.Console bug).
-            var utf8 = new UTF8Encoding();
-            Console.InputEncoding = utf8;
+            Console.InputEncoding = Encoding.UTF8;
             Console.SetIn(target);
         }
 
         /// <summary>
-        ///     Run the scripts and validate the results.
+        /// Run the scripts and validate the results.
         /// </summary>
         class TestScript : ModularInput
         {
             /// <summary>
-            ///     Scheme used by the test
+            /// Scheme used by the test
             /// </summary>
             public override Scheme Scheme
             {
@@ -392,10 +390,10 @@ namespace Splunk.ModularInputs.UnitTesting
             }
 
             /// <summary>
-            ///     Perform test verifications and stream events.
+            /// Perform test verifications and stream events.
             /// </summary>
             /// <param name="inputDefinition">Input definition</param>
-            public override async Task StreamEventsAsync(InputDefinition inputDefinition)
+            public override Task StreamEventsAsync(InputDefinition inputDefinition)
             {
                 // Verify every part of the input definition is received 
                 // parsed, and later recontructed correctly.
@@ -435,11 +433,13 @@ namespace Splunk.ModularInputs.UnitTesting
                 }
 
                 Assert.Null(stanza);
-                await WriteEvents();
+                WriteEvents();
+
+                return Task.FromResult(false);
             }
 
             /// <summary>
-            ///     Validate and return an error message.
+            /// Validate and return an error message.
             /// </summary>
             /// <param name="validationItems">Configuration data to validate</param>
             /// <param name="errorMessage">Message to display in UI when validation fails</param>

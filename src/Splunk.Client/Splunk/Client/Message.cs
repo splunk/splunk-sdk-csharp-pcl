@@ -57,11 +57,111 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// Compares the current <see cref="Message"/> with another object
+        /// and returns an integer that indicates whether the current <see 
+        /// cref="Message"/> precedes, follows, or appears in the same 
+        /// position in the sort order as the other object.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare to the current <see cref="Message"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance 
+        /// precedes, follows, or appears in the same position in the sort 
+        /// order as <see cref="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <see cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as <see
+        ///     cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <see cref="other"/>, <see cref="other"/>
+        ///     is not an <see cref="Message"/>, or <see cref="other"/> is
+        ///     <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </list>
+        /// </returns>
         public int CompareTo(object other)
         {
             return this.CompareTo(other as Message);
         }
 
+        /// <summary>
+        /// Compares the current <see cref="Message"/> with another one and
+        /// returns an integer that indicates whether the current <see cref=
+        /// "Message"/> precedes, follows, or appears in the same position in
+        /// the sort order as the other one.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Message"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance 
+        /// precedes, follows, or appears in the same position in the sort 
+        /// order as <see cref="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <see cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as <see
+        ///     cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <see cref="other"/> or <see cref="other"/>
+        ///     is <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </returns>
         public int CompareTo(Message other)
         {
             if (other == null)
@@ -78,11 +178,34 @@ namespace Splunk.Client
             return difference != 0 ? difference : this.Text.CompareTo(other.Text);
         }
 
-        public override bool Equals(object o)
+        /// <summary>
+        /// Determines whether the current <see cref="Message"/> and another
+        /// object are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Message"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <see cref="other"/> is a non-null <see cref=
+        /// "Message"/> and is the same as the current <see cref="Message"/>;
+        /// otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object other)
         {
-            return this.Equals(o as Message);
+            return this.Equals(other as Message);
         }
 
+        /// <summary>
+        /// Determines whether the current <see cref="Message"/> and another
+        /// one are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Message"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <see cref="other"/> is non-null and is the same as 
+        /// the current <see cref="Message"/>; otherwise, <c>false</c>.
+        /// </returns>
         public bool Equals(Message other)
         {
             if (other == null)
@@ -92,6 +215,12 @@ namespace Splunk.Client
             return object.ReferenceEquals(this, other) || (this.Type == other.Type && this.Text == other.Text);
         }
 
+        /// <summary>
+        /// Computes the hash code for the current <see cref="Message"/>.
+        /// </summary>
+        /// <returns>
+        /// The hash code for the current <see cref="Message"/>.
+        /// </returns>
         public override int GetHashCode()
         {
             // TODO: Check this against the algorithm presented in Effective Java

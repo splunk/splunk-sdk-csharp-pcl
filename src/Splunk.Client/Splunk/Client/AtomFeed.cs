@@ -31,11 +31,15 @@ namespace Splunk.Client
     /// Provides an object representation of a Splunk Atom Feed response.
     /// </summary>
     /// <remarks>
-    /// <para>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/YVTE9l">REST API: Atom Feed responses</a>
+    ///     <a href="http://goo.gl/TDthxd">REST API Reference Manual: Accessing
+    ///     Splunk resources</a>.
+    /// </description></item>
+    /// <item><description>
+    ///     <a href="http://goo.gl/YVTE9l">REST API Reference Manual: Atom Feed
+    ///     responses</a>.
     /// </description></item>
     /// </list>
     /// </para>

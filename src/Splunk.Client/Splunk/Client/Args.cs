@@ -36,9 +36,11 @@ namespace Splunk.Client
     using System.Text;
 
     /// <summary>
-    /// 
+    /// Provides a base class for representing strongly typed arguments to 
+    /// Splunk endpoints.
     /// </summary>
-    /// <typeparam name="TArgs"></typeparam>
+    /// <typeparam name="TArgs">
+    /// </typeparam>
     public abstract class Args<TArgs> : IEnumerable<Argument> where TArgs : Args<TArgs>
     {
         #region Constructors
@@ -138,6 +140,9 @@ namespace Splunk.Client
             Parameters = parameters;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Args"/> class.
+        /// </summary>
         protected Args()
         {
             foreach (var serializationEntry in Parameters.Where(entry => entry.DefaultValue != null))
@@ -148,14 +153,29 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Fields
-
-        public static readonly IEnumerable<Argument> Empty = Enumerable.Empty<Argument>();
-
-        #endregion
-
         #region Methods
 
+        /// <summary>
+        /// Gets an enumerator that produces an <see cref="Argument"/> sequence
+        /// based on the serialization attributes of the properties of the 
+        /// current <see cref="Args"/> instance.
+        /// </summary>
+        /// <returns>
+        /// An object for producing the <see cref="Argument"/> sequence.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an enumerator that produces an <see cref="Argument"/> sequence
+        /// based on the serialization attributes of the properties of the 
+        /// current <see cref="Args"/> instance.
+        /// </summary>
+        /// <returns>
+        /// An object for producing the <see cref="Argument"/> sequence.
+        /// </returns>
         public IEnumerator<Argument> GetEnumerator()
         {
             foreach (var parameter in Args<TArgs>.Parameters)
@@ -189,11 +209,10 @@ namespace Splunk.Client
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
@@ -215,11 +234,13 @@ namespace Splunk.Client
                     append("null", parameter.Name, FormatString);
                     continue;
                 }
+
                 if (!parameter.IsCollection)
                 {
                     append(value, parameter.Name, parameter.Format);
                     continue;
                 }
+                
                 foreach (var item in (IEnumerable)value)
                 {
                     append(item, parameter.Name, parameter.Format);

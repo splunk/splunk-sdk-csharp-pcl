@@ -83,11 +83,111 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// Compares the current <see cref="Namespace"/> with another object
+        /// and returns an integer that indicates whether the current <see 
+        /// cref="Namespace"/> precedes, follows, or appears in the same 
+        /// position in the sort order as the other object.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare to the current <see cref="Namespace"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance 
+        /// precedes, follows, or appears in the same position in the sort 
+        /// order as <see cref="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <see cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as <see
+        ///     cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <see cref="other"/>, <see cref="other"/>
+        ///     is not an <see cref="Namespace"/>, or <see cref="other"/> is
+        ///     <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </list>
+        /// </returns>
         public int CompareTo(object other)
         {
             return this.CompareTo(other as Namespace);
         }
 
+        /// <summary>
+        /// Compares the current <see cref="Namespace"/> with another one and
+        /// returns an integer that indicates whether the current <see cref=
+        /// "Namespace"/> precedes, follows, or appears in the same position in
+        /// the sort order as the other one.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Namespace"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance 
+        /// precedes, follows, or appears in the same position in the sort 
+        /// order as <see cref="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <see cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as <see
+        ///     cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <see cref="other"/> or <see cref="other"/>
+        ///     is <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </returns>
         public int CompareTo(Namespace other)
         {
             if (other == null)
@@ -104,11 +204,34 @@ namespace Splunk.Client
             return difference != 0 ? difference : this.App.CompareTo(other.App);
         }
 
+        /// <summary>
+        /// Determines whether the current <see cref="Namespace"/> and another
+        /// object are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Namespace"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <see cref="other"/> is a non-null <see cref=
+        /// "Namespace"/> and is the same as the current <see cref="Namespace"/>;
+        /// otherwise, <c>false</c>.
+        /// </returns>
         public override bool Equals(object other)
         {
             return this.Equals(other as Namespace);
         }
 
+        /// <summary>
+        /// Determines whether the current <see cref="Namespace"/> and another
+        /// one are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Namespace"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <see cref="other"/> is non-null and is the same as 
+        /// the current <see cref="Namespace"/>; otherwise, <c>false</c>.
+        /// </returns>
         public bool Equals(Namespace other)
         {
             if (other == null)
@@ -118,6 +241,12 @@ namespace Splunk.Client
             return object.ReferenceEquals(this, other) || (this.User == other.User && this.App == other.App);
         }
 
+        /// <summary>
+        /// Computes the hash code for the current <see cref="Namespace"/>.
+        /// </summary>
+        /// <returns>
+        /// The hash code for the current <see cref="Namespace"/>.
+        /// </returns>
         public override int GetHashCode()
         {
             // TODO: Check this against the algorithm presented in Effective Java

@@ -80,11 +80,111 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// Compares the current <see cref="ResourceName"/> with another object
+        /// and returns an integer that indicates whether the current <see 
+        /// cref="ResourceName"/> precedes, follows, or appears in the same 
+        /// position in the sort order as the other object.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare to the current <see cref="ResourceName"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance 
+        /// precedes, follows, or appears in the same position in the sort 
+        /// order as <see cref="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <see cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as <see
+        ///     cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <see cref="other"/>, <see cref="other"/>
+        ///     is not an <see cref="ResourceName"/>, or <see cref="other"/> is
+        ///     <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </list>
+        /// </returns>
         public int CompareTo(object other)
         {
             return this.CompareTo(other as ResourceName);
         }
 
+        /// <summary>
+        /// Compares the current <see cref="ResourceName"/> with another one and
+        /// returns an integer that indicates whether the current <see cref=
+        /// "ResourceName"/> precedes, follows, or appears in the same position in
+        /// the sort order as the other one.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="ResourceName"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance 
+        /// precedes, follows, or appears in the same position in the sort 
+        /// order as <see cref="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <see cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as <see
+        ///     cref="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <see cref="other"/> or <see cref="other"/>
+        ///     is <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </returns>
         public int CompareTo(ResourceName other)
         {
             if (other == null)
@@ -116,11 +216,34 @@ namespace Splunk.Client
             return pair.ThisPart.CompareTo(pair.OtherPart);
         }
 
+        /// <summary>
+        /// Determines whether the current <see cref="ResourceName"/> and 
+        /// another object are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="ResourceName"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <see cref="other"/> is a non-null <see cref=
+        /// "ResourceName"/> and is the same as the current <see cref=
+        /// "ResourceName"/>; otherwise, <c>false</c>.
+        /// </returns>
         public override bool Equals(object other)
         {
             return this.Equals(other as ResourceName);
         }
 
+        /// <summary>
+        /// Determines whether the current <see cref="ResourceName"/> and another
+        /// one are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="ResourceName"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <see cref="other"/> is non-null and is the same as 
+        /// the current <see cref="ResourceName"/>; otherwise, <c>false</c>.
+        /// </returns>
         public bool Equals(ResourceName other)
         {
             if (other == null)
@@ -141,16 +264,38 @@ namespace Splunk.Client
             return this.parts.SequenceEqual(other.parts);
         }
 
-        public IEnumerator<string> GetEnumerator()
-        {
-            return this.parts.GetEnumerator();
-        }
-
+        /// <summary>
+        /// Gets an enumerator for iterating over the parts of this <see cref=
+        /// "ResourceName"/>
+        /// </summary>
+        /// <returns>
+        /// An enumerator for iterating over the parts of this <see cref=
+        /// "ResourceName"/>
+        /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.parts.GetEnumerator();
         }
 
+        /// <summary>
+        /// Gets an enumerator for iterating over the parts of this <see cref=
+        /// "ResourceName"/>
+        /// </summary>
+        /// <returns>
+        /// An enumerator for iterating over the parts of this <see cref=
+        /// "ResourceName"/>
+        /// </returns>
+        public IEnumerator<string> GetEnumerator()
+        {
+            return this.parts.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Computes the hash code for the current <see cref="ResourceName"/>.
+        /// </summary>
+        /// <returns>
+        /// The hash code for the current <see cref="ResourceName"/>.
+        /// </returns>
         public override int GetHashCode()
         {
             // TODO: Check this against the algorithm presented in Effective Java
@@ -169,6 +314,20 @@ namespace Splunk.Client
             return new ResourceName(parts.Take(parts.Count - 1));
         }
 
+        /// <summary>
+        /// Determines whether two <see cref="ResourceName"/> instances have 
+        /// the same value. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <see cref="1"/> is the same as the 
+        /// value of <c>b</c>; otherwise, <c>false</c>.
+        /// </returns>
         public static bool operator ==(ResourceName a, ResourceName b)
         {
             if (object.ReferenceEquals(a, b))
@@ -184,6 +343,20 @@ namespace Splunk.Client
             return a.Equals(b);
         }
 
+        /// <summary>
+        /// Determines whether two <see cref="ResourceName"/> instances have 
+        /// different values. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <see cref="1"/> is different than the 
+        /// value of <c>b</c>; otherwise, <c>false</c>.
+        /// </returns>
         public static bool operator !=(ResourceName a, ResourceName b)
         {
             return !(a == b);

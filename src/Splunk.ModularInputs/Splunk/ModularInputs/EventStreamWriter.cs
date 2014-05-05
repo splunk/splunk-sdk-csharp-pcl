@@ -149,7 +149,7 @@ namespace Splunk.ModularInputs
         XmlWriter xmlWriter = XmlWriter.Create(Console.Out, XmlWriterSettings);
 
         /// <summary>
-        /// Converts a date-time value to Unix UTC timestamp.
+        /// Converts a date-time value to a Unix UTC timestamp.
         /// </summary>
         /// <param name="dateTime">A date-time value.</param>
         /// <returns>The UTC timestamp.</returns>

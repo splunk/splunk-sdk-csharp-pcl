@@ -235,7 +235,7 @@ namespace Splunk.Client
         /// The object to compare with the current <see cref="Namespace"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="other"/> is a non-null <see cref=
+        /// <c>true</c> if <see cref="other"/> is a non <c>null</c> <see cref=
         /// "Namespace"/> and is the same as the current <see cref="Namespace"/>;
         /// otherwise, <c>false</c>.
         /// </returns>
@@ -252,8 +252,9 @@ namespace Splunk.Client
         /// The object to compare with the current <see cref="Namespace"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="other"/> is non-null and is the same as 
-        /// the current <see cref="Namespace"/>; otherwise, <c>false</c>.
+        /// <c>true</c> if <see cref="other"/> is non <c>null</c> and is the 
+        /// same as the current <see cref="Namespace"/>; otherwise, 
+        /// <c>false</c>.
         /// </returns>
         public bool Equals(Namespace other)
         {

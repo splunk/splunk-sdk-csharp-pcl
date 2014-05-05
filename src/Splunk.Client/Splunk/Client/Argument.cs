@@ -195,7 +195,7 @@ namespace Splunk.Client
         /// The object to compare with the current <see cref="Argument"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="other"/> is a non-null <see cref=
+        /// <c>true</c> if <see cref="other"/> is a non <c>null</c> <see cref=
         /// "Argument"/> and is the same as the current <see cref="Argument"/>;
         /// otherwise, <c>false</c>.
         /// </returns>
@@ -212,8 +212,8 @@ namespace Splunk.Client
         /// The object to compare with the current <see cref="Argument"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="other"/> is non-null and is the same as 
-        /// the current <see cref="Argument"/>; otherwise, <c>false</c>.
+        /// <c>true</c> if <see cref="other"/> is non <c>null</c> and is the 
+        /// same as the current <see cref="Argument"/>; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Argument other)
         {

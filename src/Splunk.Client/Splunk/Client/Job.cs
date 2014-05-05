@@ -538,7 +538,7 @@ namespace Splunk.Client
             {
                 try
                 {
-                    //// Guarantee: unique result because entities have specific namespaces
+                    //// Guarantee: unique result because entities have specific namespace
 
                     using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
                     {
@@ -546,7 +546,13 @@ namespace Splunk.Client
 
                         if (response.Message.StatusCode == HttpStatusCode.NoContent)
                         {
-                            throw new RequestException(response.Message, new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", this.Namespace, this.ResourceName)));
+                            var details = new Message[] 
+                            { 
+                                new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", 
+                                    this.Namespace, this.ResourceName))
+                            };
+
+                            throw new RequestException(response.Message, details);
                         }
 
                         if (!response.Message.IsSuccessStatusCode)
@@ -606,6 +612,7 @@ namespace Splunk.Client
                     {
                         throw;
                     }
+
                     requestException = e;
                 }
                 await Task.Delay(500);

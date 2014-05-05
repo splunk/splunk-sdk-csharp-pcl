@@ -31,28 +31,23 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="RequestException"/>
+        /// class.
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="details"></param>
+        /// <param name="message">
+        /// An object representing an HTTP response message including the status
+        /// code and data.
+        /// </param>
+        /// <param name="details">
+        /// A sequence of <see cref="Message"/> instances detailing the cause
+        /// of the <see cref="RequestException"/>.
+        /// </param>
         internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(string.Format("{0}: {1}", (int)message.StatusCode, message.ReasonPhrase))
         {
             this.Details = new List<Message>(details ?? Enumerable.Empty<Message>());
             this.StatusCode = message.StatusCode;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="messages"></param>
-        internal RequestException(HttpResponseMessage message, params Message[] messages)
-            : this(message, (IEnumerable<Message>)messages)
-        { }
-
-        private RequestException()
-        { }
 
         #endregion
 

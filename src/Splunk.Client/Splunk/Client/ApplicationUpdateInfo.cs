@@ -32,6 +32,19 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationUpdateInfo"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="name">
+        /// The name of a Splunk application.
+        /// </param>
         internal ApplicationUpdateInfo(Context context, Namespace ns, string name)
             : base(context, ns, new ResourceName(ApplicationCollection.ClassResourceName, name, "update"))
         { }

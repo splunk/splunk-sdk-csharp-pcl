@@ -36,6 +36,25 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationSetting"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a stanza within <see cref="fileName"/>.
+        /// </param>
+        /// <param name="keyName">
+        /// Name of the setting within <see cref="stanzaName"/> to be represented 
+        /// by the current instance.</param>
         internal ConfigurationSetting(Context context, Namespace ns, string fileName, string stanzaName, 
             string keyName)
             : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName), keyName)

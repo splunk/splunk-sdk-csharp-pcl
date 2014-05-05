@@ -23,9 +23,7 @@ namespace Splunk.Client
 {
     using System;
     using System.ComponentModel;
-    using System.IO;
     using System.Net;
-    using System.Net.Http;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
@@ -37,11 +35,17 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="Index"/> class.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="ns"></param>
-        /// <param name="name"></param>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="name">
+        /// Name of the index to be represented by the current instance.
+        /// </param>
         internal Index(Context context, Namespace ns, string name)
             : base(context, ns, ClassResourceName, name)
         { }

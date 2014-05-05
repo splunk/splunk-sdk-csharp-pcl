@@ -54,7 +54,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
+        /// 
         /// </param>
         /// <param name="name">
         /// The name of the <see cref="Application"/>.

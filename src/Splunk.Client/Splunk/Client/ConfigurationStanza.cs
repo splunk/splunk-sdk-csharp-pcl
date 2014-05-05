@@ -15,9 +15,9 @@
  */
 
 // TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [ ] Properties & Methods
+// [O] Contracts
+// [O] Documentation
+// [X] Properties & Methods
 
 namespace Splunk.Client
 {
@@ -32,6 +32,23 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationStanza"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a stanza within <see cref="fileName"/> containing the 
+        /// configuration stanza to be represented by the current instance.
+        /// </param>
         internal ConfigurationStanza(Context context, Namespace ns, string fileName, string stanzaName)
             : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName))
         { }

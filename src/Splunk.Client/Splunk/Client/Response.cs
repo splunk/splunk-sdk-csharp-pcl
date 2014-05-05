@@ -39,9 +39,12 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Intializes a new instance of the <see cref="Response"/> class.
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="message">
+        /// An object representing an HTTP response message including the status
+        /// code and data.
+        /// </param>
         Response(HttpResponseMessage message)
         { this.message = message; }
 
@@ -50,7 +53,8 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the HTTP response message associated with the current <see 
+        /// cref="Response"/>.
         /// </summary>
         public HttpResponseMessage Message
         {

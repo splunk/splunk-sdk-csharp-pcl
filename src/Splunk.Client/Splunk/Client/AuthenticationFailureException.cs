@@ -19,6 +19,7 @@
 namespace Splunk.Client
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Net;
     using System.Net.Http;
 
@@ -31,9 +32,23 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AuthenticationFailureException"/>
+        /// class.
+        /// </summary>
+        /// <param name="message">
+        /// An object representing an HTTP response message including the status
+        /// code and data.
+        /// </param>
+        /// <param name="details">
+        /// A sequence of <see cref="Message"/> instances detailing the cause
+        /// of the <see cref="AuthenticationFailureException"/>.
+        /// </param>
         internal AuthenticationFailureException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(message, details)
-        { }
+        {
+            Debug.Assert(message.StatusCode == HttpStatusCode.Unauthorized);
+        }
 
         #endregion
     }

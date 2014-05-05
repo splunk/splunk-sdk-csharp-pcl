@@ -39,6 +39,11 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="ns"></param>
         internal Receiver(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
         { }

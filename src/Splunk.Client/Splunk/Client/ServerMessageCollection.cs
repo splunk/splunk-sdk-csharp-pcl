@@ -24,10 +24,18 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class ServerMessageCollection : EntityCollection<ServerMessageCollection, ServerMessage>
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="ns"></param>
         public ServerMessageCollection(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
         { }

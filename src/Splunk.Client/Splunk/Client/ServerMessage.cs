@@ -96,16 +96,25 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ServerMessageSeverity Severity
         {
             get { return this.GetValue("Severity", EnumConverter<ServerMessageSeverity>.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Text
         {
             get { return this.GetValue("Message", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public long TimeCreatedEpochSecs
         {
             get { return this.GetValue("TimeCreatedEpochSecs", Int64Converter.Instance); }
@@ -115,6 +124,12 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
         public async Task CreateAsync(ServerMessageSeverity type, string text)
         {
             var resourceName = ServerMessageCollection.ClassResourceName;
@@ -133,6 +148,10 @@ namespace Splunk.Client
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task RemoveAsync()
         {
             using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))

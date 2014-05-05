@@ -21,6 +21,12 @@ namespace Splunk.Client
 {
     public class SavedSearchCollection : EntityCollection<SavedSearchCollection, SavedSearch>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="ns"></param>
+        /// <param name="args"></param>
         internal SavedSearchCollection(Context context, Namespace ns, SavedSearchCollectionArgs args = null)
             : base(context, ns, ClassResourceName, args)
         { }

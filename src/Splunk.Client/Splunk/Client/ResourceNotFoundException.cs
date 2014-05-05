@@ -30,6 +30,11 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="details"></param>
         internal ResourceNotFoundException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(message, details)
         { }

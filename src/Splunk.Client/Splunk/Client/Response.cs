@@ -38,6 +38,10 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
         Response(HttpResponseMessage message)
         { this.message = message; }
 
@@ -45,14 +49,23 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public HttpResponseMessage Message
         {
             get { return this.message; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Stream Stream
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public XmlReader XmlReader
         { get; private set; }
 

@@ -29,27 +29,34 @@ namespace Splunk.Client
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/vJvIXv">REST API Reference: POST search/jobs/export</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/vJvIXv">REST API Reference: POST search/jobs/export</a>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class SearchExportArgs : Args<SearchExportArgs>
     {
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "auto_cancel", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int AutoCancel
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "auto_finalize_ec", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int AutoFinalizeEventCount
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "auto_pause", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int AutoPause
@@ -67,11 +74,17 @@ namespace Splunk.Client
         public int Count
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "earliest_time", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string EarliestTime // TODO: Convenience class for specifying a time string. See 
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "enable_lookups", EmitDefaultValue = false)]
         [DefaultValue(true)]
         public bool EnableLookups
@@ -85,21 +98,33 @@ namespace Splunk.Client
         public IReadOnlyList<string> FieldList
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "force_bundle_replication", EmitDefaultValue = false)]
         [DefaultValue(false)]
         public bool ForceBundleReplication
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "id", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Id
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "index_earliest", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string IndexEarliest
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "index_latest", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string IndexLatest
@@ -117,21 +142,33 @@ namespace Splunk.Client
         public int MaxLines
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "latest_time", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string LatestTime
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "max_time", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int MaxTime
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "namespace", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Namespace
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "now", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Now
@@ -160,51 +197,81 @@ namespace Splunk.Client
         public string OutputTimeFormat
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "reduce_freq", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int ReduceFrequency
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "reload_macros", EmitDefaultValue = false)]
         [DefaultValue(true)]
         public bool ReloadMacros
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "remote_server_list", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string RemoteServerList
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rf", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public IReadOnlyList<string> RequiredFieldList
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rt_blocking", EmitDefaultValue = false)]
         [DefaultValue(false)]
         public bool RealTimeBlocking
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rt_indexfilter", EmitDefaultValue = false)]
         [DefaultValue(false)]
         public bool RealTimeIndexFilter
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rt_maxblocksecs", EmitDefaultValue = false)]
         [DefaultValue(60)]
         public int RealTimeMaxBlockSeconds
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "rt_queue_size", EmitDefaultValue = false)]
         [DefaultValue(10000)]
         public int RealTimeQueueSize
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "search_listener", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string SearchListener
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "search_mode", EmitDefaultValue = false)]
         [DefaultValue(typeof(SearchMode), "Normal")]
         public SearchMode SearchMode
@@ -221,16 +288,25 @@ namespace Splunk.Client
         public string Segmentation
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "sync_bundle_replication", EmitDefaultValue = false)]
         [DefaultValue(false)]
         public bool SyncBundleReplication
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "time_format", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string TimeFormat
         { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "timeout", EmitDefaultValue = false)]
         [DefaultValue(86400)]
         public int Timeout

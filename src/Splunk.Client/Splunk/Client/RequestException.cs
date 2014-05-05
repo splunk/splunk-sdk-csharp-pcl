@@ -30,6 +30,11 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="details"></param>
         internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(string.Format("{0}: {1}", (int)message.StatusCode, message.ReasonPhrase))
         {
@@ -37,6 +42,11 @@ namespace Splunk.Client
             this.StatusCode = message.StatusCode;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="messages"></param>
         internal RequestException(HttpResponseMessage message, params Message[] messages)
             : this(message, (IEnumerable<Message>)messages)
         { }
@@ -48,9 +58,15 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyList<Message> Details
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public HttpStatusCode StatusCode
         { get; private set; }
 

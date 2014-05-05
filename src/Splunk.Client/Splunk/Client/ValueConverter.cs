@@ -37,11 +37,19 @@ namespace Splunk.Client
     /// </remarks>
     public abstract class ValueConverter<TValue>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public virtual TValue DefaultValue
         { 
             get { return default(TValue); } 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public abstract TValue Convert(object value);
 
         protected static readonly EqualityComparer<TValue> Comparer = EqualityComparer<TValue>.Default;

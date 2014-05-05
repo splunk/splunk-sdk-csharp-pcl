@@ -26,20 +26,33 @@ namespace Splunk.Client
     using System.Linq;
 
     /// <summary>
-    /// Provides a class for representing a Splunk resource name.
+    /// Represents a Splunk resource name.
     /// </summary>
     public sealed class ResourceName : IComparable, IComparable<ResourceName>, IEquatable<ResourceName>, IReadOnlyList<string>
     {
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="parts"></param>
         public ResourceName(ResourceName resourceName, params string[] parts)
             : this(resourceName.Concat(parts))
         { }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parts"></param>
         public ResourceName(params string[] parts)
             : this(parts.AsEnumerable<string>())
         { }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parts"></param>
         public ResourceName(IEnumerable<string> parts)
         {
             this.parts = parts.Select((part, i) =>
@@ -56,21 +69,35 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public string this[int index]
         {
 	        get { return this.parts[index]; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Count
         {
             get { return this.parts.Count; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Collection
         {
             get { return this.parts.Count > 1 ? this.parts[this.parts.Count - 2] : null; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Title
         {
             get { return this.parts[this.parts.Count - 1]; }

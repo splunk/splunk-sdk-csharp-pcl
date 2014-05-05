@@ -29,22 +29,14 @@ namespace Splunk.Client
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/eZzuBh">REST API Reference: POST search/jobs/{search_id}/events</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/eZzuBh">REST API Reference: POST 
+    ///   search/jobs/{search_id}/events</a>.
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class SearchEventArgs : Args<SearchEventArgs>
     {
-        #region Constructors
-
-        public SearchEventArgs()
-        { }
-
-        #endregion
-
         #region Properties
 
         /// <summary>

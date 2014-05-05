@@ -24,7 +24,7 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides arguments for sending events to a Splunk <see cref="Receiver"/>
+    /// Provides arguments for sending events to a Splunk <see cref="Receiver"/>.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>

@@ -26,7 +26,7 @@ namespace Splunk.Client
     using System.Linq;
 
     /// <summary>
-    /// Specifies the user/app context for a resource
+    /// Specifies the user/app context for a resource.
     /// </summary>
     public class Namespace : IComparable, IComparable<Namespace>, IEquatable<Namespace>
     {
@@ -55,27 +55,50 @@ namespace Splunk.Client
 
         #region Fields
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly Namespace Default = new Namespace();
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public const string AllUsers = "-";
+
+        /// <summary>
+        /// 
+        /// </summary>
         public const string AllApps = "-";
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string App
         { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsSpecific
         {
             get { return !this.IsWildcard; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsWildcard
         {
             get { return this.User == AllUsers || this.App == AllApps; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string User
         { get; private set; }
 

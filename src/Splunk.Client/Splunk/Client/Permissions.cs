@@ -29,11 +29,17 @@ namespace Splunk.Client
     /// </summary>
     public sealed class Permissions : ExpandoAdapter<Permissions>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public ISet<string> Read
         {
             get { return this.GetValue("Read", CollectionConverter<string, SortedSet<string>, StringConverter>.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ISet<string> Write
         {
             get { return this.GetValue("Write", CollectionConverter<string, SortedSet<string>, StringConverter>.Instance); }

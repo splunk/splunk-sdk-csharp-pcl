@@ -32,12 +32,10 @@ namespace Splunk.Client
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
-    /// <item>
-    ///     <description>
-    ///     <a href="http://goo.gl/AfzBJO">REST API Reference: POST 
-    ///     saved/searches/{name}/dispatch</a>
-    ///     </description>
-    /// </item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/AfzBJO">REST API Reference: POST 
+    ///   saved/searches/{name}/dispatch</a>
+    /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class SavedSearchDispatchArgs : Args<SavedSearchDispatchArgs>

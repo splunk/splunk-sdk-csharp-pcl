@@ -14,20 +14,13 @@
  * under the License.
  */
 
-// TODO:
-//
-// [ ] Parameterize Job.Transition strategy. (It's primitive at present)
-//     It's the usual sort of thing:
-//     + Linear or non-linear time between retries? 
-//     + How long before first retry? 
-//     + How many retries?
-//     Should we cancel the job, if it times out?
-//
-// [O] Contracts
-//
-// [O] Documentation
-//
-// [ ] Trace messages (e.g., when there are no observers)
+//// TODO:
+////
+//// [O] Contracts
+////
+//// [O] Documentation
+////
+//// [ ] Trace messages (e.g., when there are no observers)
 
 namespace Splunk.Client
 {

@@ -212,8 +212,8 @@ namespace Splunk.Client.UnitTesting
 
             // set email params
             attrs = new SavedSearchAttributes();
-            //attrs.ActionEmailAuthPassword = "sdk-password";
-            //attrs.ActionEmailAuthUsername = "sdk-username";
+            attrs.ActionEmailAuthPassword = "sdk-password";
+            attrs.ActionEmailAuthUsername = "sdk-username";
             attrs.ActionEmailBcc = "sdk-bcc@splunk.com";
             attrs.ActionEmailCC = "sdk-cc@splunk.com";
             attrs.ActionEmailCommand = "$name1$";

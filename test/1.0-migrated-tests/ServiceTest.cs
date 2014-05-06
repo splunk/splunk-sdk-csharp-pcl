@@ -83,9 +83,9 @@ namespace Splunk.Client.UnitTesting
             dummyDouble = job.RunDuration;
             dummyInt = job.ScanCount;
             dummyString = job.EventSearch;// Search;
-            //dummyString = job.SearchEarliestTime;
-            //dummyString = job.SearchLatestTime;
-            //dummyList = job.SearchProviders;
+            DateTime jobearliestTime = job.EarliestTime;//SearchEarliestTime;
+            DateTime joblatestTime = job.LatestTime;
+            IReadOnlyList<string> providers=  job.SearchProviders;
             dummyString = job.Sid;
             dummyInt = job.StatusBuckets;
             dummyInt = job.Ttl;
@@ -259,7 +259,6 @@ namespace Splunk.Client.UnitTesting
             // Not logged in, should fail with 401
             try
             {
-                //response = service.Get("/services/authentication/users");
                 config = service.GetConfigurationsAsync().Result;
                 Assert.True(false, "Expected HttpException");
             }
@@ -269,7 +268,6 @@ namespace Splunk.Client.UnitTesting
             }
             catch (Exception e)
             {
-                //TODO, if dev fix the aggregate exception issue, should only catch the above exception
                 Assert.True(e.InnerException.Message.Contains("401"));
             }
 
@@ -298,48 +296,5 @@ namespace Splunk.Client.UnitTesting
                 Assert.True(e.InnerException.Message.Contains("401"));
             }
         }
-
-        ///// <summary>
-        ///// Test setters and getters
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void ServiceSettersGetters()
-        //{
-        //    // The individual classes test most of the set/get methods,
-        //    // but call out some specific cases here.
-        //    Service service = this.Connect();
-        //    Settings settings = service.GetSettings();
-        //    string originalHost = settings.Host;
-        //    int originalMinSpace = settings.MinFreeSpace;
-
-        //    // make sure set updates state before getting.
-        //    // entity.setMethod(value)
-        //    // entity.Method() --> gets value.
-        //    settings.Host = "sdk-host";
-        //    Assert.Equal("sdk-host", settings.Host, this.assertRoot + "#8");
-
-        //    // make sure posts arguments are merged
-        //    // entity.setMethod(value)
-        //    // entity.update(args.create("key2", value2))
-        //    settings.Host = "sdk-host2";
-        //    settings.Update(new Dictionary<string, object>(Args.Create("minFreeSpace", 500)));
-        //    Assert.Equal("sdk-host2", settings.Host, this.assertRoot + "#9");
-        //    Assert.Equal(500, settings.MinFreeSpace, this.assertRoot + "#10");
-
-        //    // make sure live posts argument take precedents over setters
-        //    // entity.setMethod(value)
-        //    // entity.update(args.create("samekey", value2))
-        //    settings.MinFreeSpace = 600;
-        //    settings.Update(new Dictionary<string, object>(Args.Create("minFreeSpace", 700)));
-        //    Assert.Equal(700, settings.MinFreeSpace, this.assertRoot + "#11");
-
-        //    // Restore original
-        //    settings.Host = originalHost;
-        //    settings.MinFreeSpace = originalMinSpace;
-        //    settings.Update();
-        //    Assert.Equal(settings.MinFreeSpace, originalMinSpace, this.assertRoot + "#12");
-        //    Assert.Equal(settings.Host, originalHost, this.assertRoot + "#13");
-        //}
     }
 }

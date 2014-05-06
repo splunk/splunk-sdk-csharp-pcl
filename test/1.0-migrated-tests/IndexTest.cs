@@ -74,8 +74,9 @@ namespace Splunk.Client.UnitTesting
             if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
             {
                 await service.RemoveIndexAsync(indexName);
-                await service.CreateIndexAsync(indexName);
             }
+
+            await service.CreateIndexAsync(indexName);
 
             //// set can_delete if not set, so we can delete events from the index.
             //User user = service.GetUsers().Get("admin");
@@ -148,22 +149,15 @@ namespace Splunk.Client.UnitTesting
                 dummyBool = idx.Disabled;
                 dummyBool = idx.IsInternal;
             }
-
-            Index index = null;
-
-            try
+            
+            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
             {
-                index = await service.GetIndexAsync(indexName);
-            }
-            catch (Splunk.Client.ResourceNotFoundException)
-            { }
-
-            if (index == null)
-            {
-                index = await service.CreateIndexAsync(indexName);
+                await service.RemoveIndexAsync(indexName);
             }
 
-            await service.GetIndexAsync(indexName);
+            await service.CreateIndexAsync(indexName);
+
+            Index index = await service.GetIndexAsync(indexName);
 
             var indexAttributes = GetIndexAttributes(index);
 
@@ -273,9 +267,9 @@ namespace Splunk.Client.UnitTesting
             if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
             {
                 await service.RemoveIndexAsync(indexName);
-                await service.CreateIndexAsync(indexName);
             }
 
+            await service.CreateIndexAsync(indexName);
             Index index = await service.GetIndexAsync(indexName);
 
             //if (index.TotalEventCount > 0)
@@ -418,9 +412,9 @@ namespace Splunk.Client.UnitTesting
             if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
             {
                 await service.RemoveIndexAsync(indexName);
-                await service.CreateIndexAsync(indexName);
             }
 
+            await service.CreateIndexAsync(indexName);   
             Index index = await service.GetIndexAsync(indexName);
 
             await index.EnableAsync();

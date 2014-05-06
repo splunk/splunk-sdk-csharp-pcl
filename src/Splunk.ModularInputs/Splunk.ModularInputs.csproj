@@ -10,6 +10,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <ErrorReport>prompt</ErrorReport>
     <FileAlignment>512</FileAlignment>
@@ -33,37 +34,13 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Splunk\ModularInputs\Argument.cs" />
-    <Compile Include="Splunk\ModularInputs\ConfigurationItem.cs" />
-    <Compile Include="Splunk\ModularInputs\ConfigurationItemBase.cs" />
-    <Compile Include="Splunk\ModularInputs\EventWriter.cs" />
-    <Compile Include="Splunk\ModularInputs\StreamingMode.cs" />
-    <Compile Include="Splunk\ModularInputs\DataType.cs" />
-    <Compile Include="Splunk\ModularInputs\EventElement.cs" />
-    <Compile Include="Splunk\ModularInputs\EventStream.cs" />
-    <Compile Include="Splunk\ModularInputs\InputDefinition.cs" />
-    <Compile Include="Splunk\ModularInputs\InputDefinitionBase.cs" />
-    <Compile Include="Splunk\ModularInputs\MultiValueParameter.cs" />
-    <Compile Include="Splunk\ModularInputs\ParameterBase.cs" />
-    <Compile Include="Splunk\ModularInputs\Scheme.cs" />
-    <Compile Include="Splunk\ModularInputs\ModularInput.cs" />
-    <Compile Include="Splunk\ModularInputs\SingleValueParameter.cs" />
-    <Compile Include="Splunk\ModularInputs\Stanza.cs" />
-    <Compile Include="Splunk\ModularInputs\SystemLogger.cs" />
-    <Compile Include="Splunk\ModularInputs\ValidationItems.cs" />
+    <Compile Include="Splunk\**\*.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Reference Include="System" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -18,6 +18,7 @@ namespace Splunk.Client.UnitTesting
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
     using System;
@@ -288,7 +289,7 @@ namespace Splunk.Client.UnitTesting
             }
             catch (Exception e)
             {
-                if (!e.InnerException.Message.ToLower().Contains("400: bad request"))
+                if (!e.InnerException.Message.ToLower(CultureInfo.InvariantCulture).Contains("400: bad request"))
                 {
                     throw;
                 }

@@ -211,7 +211,7 @@ namespace Splunk.Client.UnitTesting
             string version = info.ToString();
             //oat inputVersion = float.Parse(versionToCompare);
 
-            return (string.Compare(version, versionToCompare));
+            return (string.Compare(version, versionToCompare, StringComparison.InvariantCulture));
             
         }
     }

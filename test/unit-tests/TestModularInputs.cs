@@ -108,7 +108,7 @@ namespace Splunk.ModularInputs.UnitTesting
                 {
                     SetConsoleIn(consoleIn);
                     Console.SetOut(consoleOut);
-                    await ModularInput.RunAsync<TestScript>(new string[] { });
+                    Assert.Equal(0, await ModularInput.RunAsync<TestScript>(new string[] { }));
                     AssertEqualWithExpectedFile(EventsFilePath, consoleOut.ToString());
                 }
             }

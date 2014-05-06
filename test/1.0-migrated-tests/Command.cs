@@ -262,7 +262,7 @@ namespace Splunk.Client.UnitTesting
                     break;
                 }
 
-                if (line.StartsWith("#"))
+                if (line.StartsWith("#", StringComparison.InvariantCulture))
                 {
                     continue;
                 }
@@ -273,7 +273,7 @@ namespace Splunk.Client.UnitTesting
                     continue;
                 }
 
-                if (!line.StartsWith("-"))
+                if (!line.StartsWith("-", StringComparison.InvariantCulture))
                 {
                     line = "--" + line;
                 }

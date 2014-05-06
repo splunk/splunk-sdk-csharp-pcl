@@ -14,12 +14,16 @@
  * under the License.
  */
 
+//// TODO: 
+//// [ ] Splunk.ModularInputs.EventElement really needs to be a class
+////     Issue: Simply renaming it as a class breaks StreamEvents test
+
 namespace Splunk.ModularInputs
 {
     using System;
 
     /// <summary>
-    /// The <see cref="EventElement"/> class represents an event element
+    /// The <see cref="EventElement"/> struct represents an event element
     /// for XML event streaming.
     /// </summary>
     public struct EventElement

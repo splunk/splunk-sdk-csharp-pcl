@@ -350,20 +350,17 @@ namespace Splunk.Client.UnitTesting
                          string.Format("{0}{1} ", offset.Offset.Hours.ToString("D2"),
                              offset.Offset.Minutes.ToString("D2"));
 
-            Service service = this.Connect();
-            Receiver receiver = service.Receiver;
-
-            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
-            {
-                await service.RemoveIndexAsync(indexName);
-                await service.CreateIndexAsync(indexName);
-            }
+            Namespace ns = new Namespace("nobody", "system");
+            Service service = this.Connect(ns);
 
             Index index = await service.GetIndexAsync(indexName);
+            Assert.NotNull(index);
             await index.EnableAsync();
             Assert.False(index.Disabled);
 
             // submit events to default index
+            service = this.Connect();
+            Receiver receiver = service.Receiver;
             await receiver.SendAsync(now + " Hello World. \u0150");
             await receiver.SendAsync(now + " Goodbye World. \u0150");
 
@@ -426,12 +423,11 @@ namespace Splunk.Client.UnitTesting
 
             Index index = await service.GetIndexAsync(indexName);
 
-            //index.Enable();
+            await index.EnableAsync();
             Assert.False(index.Disabled);
 
             IndexAttributes indexAttributes = GetIndexAttributes(index);
-
-            //ClearIndex(service, indexName, index);
+            //await ClearIndex(service, indexName, index);
 
             // submit event to index using variable arguments
             //index.Submit(indexAttributes, now + " Hello World. \u0150");
@@ -516,33 +512,12 @@ namespace Splunk.Client.UnitTesting
         public async Task DefaultIndexArgs()
         {
             string indexName = "main";
-            DateTimeOffset offset = new DateTimeOffset(DateTime.Now);
-            string now = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") +
-                         string.Format("{0}{1} ", offset.Offset.Hours.ToString("D2"),
-                             offset.Offset.Minutes.ToString("D2"));
-
             Service service = this.Connect();
-
-            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
-            {
-                await service.RemoveIndexAsync(indexName);
-                await service.CreateIndexAsync(indexName);
-            }
-
-            //Receiver receiver = service.GetReceiver();
-            Receiver receiver = new Receiver();
-            if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
-            {
-                await service.RemoveIndexAsync(indexName);
-                await service.CreateIndexAsync(indexName);
-            }
-
             Index index = await service.GetIndexAsync(indexName);
-
-
-            //index.Enable();
-            Assert.False(index.Disabled);
-
+            Assert.NotNull(index);
+     
+            //Receiver receiver = service.GetReceiver();
+            Receiver receiver = service.Receiver;
             IndexAttributes indexAttributes = GetIndexAttributes(index);
             ReceiverArgs receiverArgs = new ReceiverArgs() { Index = index.Name, };
             // submit event to default index using variable arguments
@@ -561,7 +536,7 @@ namespace Splunk.Client.UnitTesting
             byte[] inputString = uniEncoding.GetBytes("stream hello world ");
             MemoryStream stream = new MemoryStream();
             stream.Write(inputString, 0, inputString.Length);
-            await receiver.SendAsync(stream, receiverArgs);
+            receiver.SendAsync(stream, receiverArgs).Wait();
             stream.Close();
         }
     }

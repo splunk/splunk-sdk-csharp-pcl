@@ -63,7 +63,7 @@ namespace Splunk.Examples.Authenticate
             {
                 await service.GetConfigurationsAsync();
             }
-            catch (AuthenticationFailureException e)
+            catch (AuthenticationFailureException)
             {
                 Console.WriteLine("Can't get service configuration without log in");
             }

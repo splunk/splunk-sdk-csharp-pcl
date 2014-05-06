@@ -203,7 +203,7 @@ namespace Splunk.Client
             base.Initialize(context, entry);
         }
 
-        protected async Task UpdateSnapshotAsync(Response response)
+        protected virtual async Task UpdateSnapshotAsync(Response response)
         {
             var feed = new AtomFeed();
             await feed.ReadXmlAsync(response.XmlReader);

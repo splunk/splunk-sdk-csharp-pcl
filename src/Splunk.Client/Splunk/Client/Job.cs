@@ -33,8 +33,10 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -519,106 +521,64 @@ namespace Splunk.Client
         /// <returns></returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/SFqSPI">GET 
-        /// search/jobs/{search_id}</a> endpoint to update the cached 
-        /// cached state of the current <see cref="Job"/>.
+        /// search/jobs/{search_id}</a> endpoint to update the cached state of 
+        /// the current <see cref="Job"/>.
         /// </remarks>
         public override async Task GetAsync()
         {
-            //// TODO: This retry logic is for jobs. Parmeterize it and move it into the Job class
+            await GetAsync(DispatchState.Running);
+        }
 
-            // FJR: I assume the retry logic is for jobs, since nothing else requires this. I suggest moving it
-            // into Job. Also, it's insufficient. If you're just trying to get some state, this will do it, but
-            // as of Splunk 6, getting a 200 and content back does not imply you have all the fields. For pivot
-            // support, they're now shoving fields in as they become ready, so you have to wait until the dispatchState
-            // field of the Atom entry reaches a certain point.
-
-            RequestException requestException = null;
-
-            for (int i = 3; i > 0; --i)
+        /// <summary>
+        /// Asynchronously retrieves a fresh copy of the current <see cref=
+        /// "Job"/> that is in or has moved past a desired <see cref=
+        /// "DispatchState"/> and contains all changes to it since it was last 
+        /// retrieved.
+        /// </summary>
+        /// <param name="dispatchState">
+        /// Desired dispatch state.
+        /// </param>
+        /// <param name="delay">
+        /// Number of milliseconds to wait for the current <see cref="Job"/> to 
+        /// move into the desired <see cref="dispatchState"/>.
+        /// </param>
+        /// <param name="retryInterval">
+        /// Number of milliseconds to wait between checks for the dispatch
+        /// state of the current <see cref="Job"/>. This value is increased
+        /// by 50% on each retry.
+        /// </param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method always retrieves a fresh copy of the current <see cref=
+        /// "Job"/>.
+        /// </remarks>
+        public async Task GetAsync(DispatchState dispatchState, int delay = 30000, int retryInterval = 250)
+        {
+            using (var cancellationTokenSource = new CancellationTokenSource())
             {
-                try
+                cancellationTokenSource.CancelAfter(delay);
+                var token = cancellationTokenSource.Token;
+
+                for (int i = 0; ; i++)
                 {
-                    //// Guarantee: unique result because entities have specific namespace
-
-                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, token))
                     {
-                        //// TODO: Use Response.EnsureStatusCode. Is it true that gets always return HttpStatusCode.OK?
-
-                        if (response.Message.StatusCode == HttpStatusCode.NoContent)
+                        if (response.Message.StatusCode != HttpStatusCode.NoContent)
                         {
-                            var details = new Message[] 
-                            { 
-                                new Message(MessageType.Warning, string.Format("Resource '{0}/{1}' is not ready.", 
-                                    this.Namespace, this.ResourceName))
-                            };
+                            await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                            await this.UpdateSnapshotAsync(response);
 
-                            throw new RequestException(response.Message, details);
-                        }
-
-                        if (!response.Message.IsSuccessStatusCode)
-                        {
-                            throw new RequestException(response.Message, await Message.ReadMessagesAsync(response.XmlReader));
-                        }
-
-                        var reader = response.XmlReader;
-                        await reader.ReadAsync();
-
-                        if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                        {
-                            await response.XmlReader.ReadAsync();
-                        }
-
-                        if (reader.NodeType != XmlNodeType.Element)
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
-                        AtomEntry entry;
-
-                        if (reader.Name == "feed")
-                        {
-                            AtomFeed feed = new AtomFeed();
-
-                            await feed.ReadXmlAsync(reader);
-                            int count = feed.Entries.Count;
-
-                            foreach (var feedEntry in feed.Entries)
+                            if (this.DispatchState >= dispatchState)
                             {
-                                string id = feedEntry.Title;
-                                id.Trim();
+                                break;
                             }
-
-                            if (feed.Entries.Count != 1)
-                            {
-                                throw new InvalidDataException(); // TODO: Diagnostics
-                            }
-
-                            entry = feed.Entries[0];
                         }
-                        else
-                        {
-                            entry = new AtomEntry();
-                            await entry.ReadXmlAsync(reader);
-                        }
-
-                        this.Snapshot = new EntitySnapshot(entry);
                     }
 
-                    return;
+                    await Task.Delay(retryInterval);
+                    retryInterval += retryInterval / 2;
                 }
-                catch (RequestException e)
-                {
-                    if (e.StatusCode != System.Net.HttpStatusCode.NoContent)
-                    {
-                        throw;
-                    }
-
-                    requestException = e;
-                }
-                await Task.Delay(500);
             }
-
-            throw requestException;
         }
 
         /// <summary>
@@ -639,6 +599,36 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Asynchronously retrieves a fresh copy of the current <see cref=
+        /// "Job"/> that is in or has moved past a desired <see cref=
+        /// "DispatchState"/> and contains all changes to it since it was last 
+        /// retrieved.
+        /// </summary>
+        /// <param name="dispatchState">
+        /// Desired dispatch state.
+        /// </param>
+        /// <param name="delay">
+        /// Number of milliseconds to wait for the current <see cref="Job"/> to 
+        /// move into the desired <see cref="dispatchState"/>.
+        /// </param>
+        /// <param name="retryInterval">
+        /// Number of milliseconds to wait between checks for the dispatch
+        /// state of the current <see cref="Job"/>. This value is increased
+        /// by 50% on each retry.
+        /// </param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method returns immediately if <see cref="DispatchState"/> is 
+        /// greater than or equal to <see cref="dispatchState"/>.
+        /// </remarks>
+        public async Task TransitionAsync(DispatchState dispatchState, int delay = 30000, int retryInterval = 250)
+        {
+            if (this.DispatchState >= dispatchState)
+                return;
+            await this.GetAsync(dispatchState, delay, retryInterval);
+        }
+
+        /// <summary>
         /// Updates custom arguments to the current <see cref="Job"/>.
         /// </summary>
         /// <returns></returns>
@@ -653,6 +643,52 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
+        }
+
+        protected override async Task UpdateSnapshotAsync(Response response)
+        {
+            var reader = response.XmlReader;
+            await reader.ReadAsync();
+
+            if (reader.NodeType == XmlNodeType.XmlDeclaration)
+            {
+                await response.XmlReader.ReadAsync();
+            }
+
+            if (reader.NodeType != XmlNodeType.Element)
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics
+            }
+
+            AtomEntry entry;
+
+            if (reader.Name == "feed")
+            {
+                AtomFeed feed = new AtomFeed();
+
+                await feed.ReadXmlAsync(reader);
+                int count = feed.Entries.Count;
+
+                foreach (var feedEntry in feed.Entries)
+                {
+                    string id = feedEntry.Title;
+                    id.Trim();
+                }
+
+                if (feed.Entries.Count != 1)
+                {
+                    throw new InvalidDataException(); // TODO: Diagnostics
+                }
+
+                entry = feed.Entries[0];
+            }
+            else
+            {
+                entry = new AtomEntry();
+                await entry.ReadXmlAsync(reader);
+            }
+
+            this.Snapshot = new EntitySnapshot(entry);
         }
 
         #endregion
@@ -846,20 +882,6 @@ namespace Splunk.Client
             { 
                 new Argument("action", "unpause") 
             });
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="requiredState"></param>
-        /// <returns></returns>
-        public async Task TransitionAsync(DispatchState requiredState)
-        {
-            while (this.DispatchState < requiredState)
-            {
-                await this.GetAsync();
-                await Task.Delay(500);
-            }
         }
 
         /// <summary>

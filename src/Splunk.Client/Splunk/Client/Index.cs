@@ -30,6 +30,15 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a class that represents a Splunk data index.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>References:</b>
+    /// <list type="number">
+    /// <item><description>
+    ///   <a href="http://goo.gl/UscaUQ">REST API Reference: Indexes</a>.
+    /// </description></item>
+    /// </list>
+    /// </remarks>
     public class Index : Entity<Index>
     {
         #region Constructors
@@ -85,24 +94,37 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets a value that indicates whether all data from the <see cref=
+        /// "Index"/> is proper UTF-8.
         /// </summary>
+        /// <remarks>
+        /// This is a global setting, not a per-index setting.
+        /// </remarks>
         public bool AssureUTF8
         {
             get { return this.GetValue("AssureUTF8", BooleanConverter.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the number of events that make up a block for block signatures
+        /// on an index.
         /// </summary>
+        /// <remarks>
+        /// The default value is zero (0) indicating that block signatures are
+        /// disabled. If your index requires block signatures, a value is 100
+        /// is recommended. 
+        /// </remarks>
         public int BlockSignSize
         {
             get { return this.GetValue("BlockSignSize", Int32Converter.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the name of the index that stores block signatures of events.
         /// </summary>
+        /// <remarks>
+        /// This is a global setting, not a per-index setting.
+        /// </remarks>
         public string BlockSignatureDatabase
         {
             get { return this.GetValue("BlockSignatureDatabase", StringConverter.Instance); }
@@ -125,7 +147,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the path to the cold databases for the index.
         /// </summary>
         public string ColdPath
         {
@@ -133,7 +155,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the absolute path to the cold databases for the index.
         /// </summary>
         public string ColdPathExpanded
         {
@@ -141,7 +163,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the maximum size in MB for the cold database to reach before
+        /// a roll to the frozen archive is triggered.
         /// </summary>
         public string ColdPathMaxDataSizeMB
         {
@@ -149,48 +172,81 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the path to a directory for the frozen archive of an index.
         /// </summary>
+        /// <remarks>
+        /// This property is an alternative to <see cref= "ColdToFrozenScript"/>. 
+        /// If <see cref="ColdToFrozenDir"/> and <see cref="ColdToFrozenScript"/> 
+        /// are specified, <see cref="ColdToFrozenDir"/> takes precedence. 
+        /// Splunk will automatically put frozen buckets in this directory.
+        /// </remarks>        
         public string ColdToFrozenDir
         {
             get { return this.GetValue("ColdToFrozenDir", StringConverter.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the path to an archiving script for the frozen archive of an 
+        /// index.
         /// </summary>
+        /// <remarks>
+        /// If your script requires a program to run it (for example, python), 
+        /// specify the program followed by the path. The script must be in 
+        /// <c>$SPLUNK_HOME/bin</c> or one of its subdirectories.
+        /// </remarks>
         public string ColdToFrozenScript
         {
             get { return this.GetValue("ColdToFrozenScript", StringConverter.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets or sets the path to an archiving script for the frozen archive
+        /// of an index.
         /// </summary>
+        /// <remarks>
+        /// If your script requires a program to run it (for example, python), 
+        /// specify the program followed by the path. The script must be in 
+        /// <c>$SPLUNK_HOME/bin</c> or one of its subdirectories.
+        /// </remarks>
         public bool CompressRawData
         {
             get { return this.GetValue("CompressRawdata", BooleanConverter.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the total size in megabytes of data stored in the current <see 
+        /// cref="Index"/>.
         /// </summary>
-        public int CurrentDBSizeMB
+        /// <remarks>
+        /// The total includes the size of data in the <see cref="HomePath"/>, 
+        /// <see cref="ColdPath"/>, and <see cref="ThawedPath"/> databases.
+        /// </remarks>
+        public long CurrentDBSizeMB
         {
             get { return this.GetValue("CurrentDBSizeMB", Int32Converter.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the name of the index for input data that does not contain
+        /// index destination information.
         /// </summary>
+        /// <remarks>
+        /// If no index destination information is available in the input data, 
+        /// the index shown here is the destination of that data.
+        /// </remarks>
         public string DefaultDatabase
         {
             get { return this.GetValue("DefaultDatabase", StringConverter.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets a value that indicates whether the current <see cref="Index"/>
+        /// is disabled.
         /// </summary>
+        /// <remarks>
+        /// This value is <c>true</c>, if the current <see cref="Index"/> is
+        /// disabled; otherwise, <c>false</c>.
+        /// </remarks>
         public bool Disabled
         {
             get { return this.GetValue("Disabled", BooleanConverter.Instance); }
@@ -213,8 +269,11 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets a value that indicates if realtime searches are enabled.
         /// </summary>
+        /// <remarks>
+        /// This is a global setting, not a per-index setting.
+        /// </remarks>
         public bool EnableRealtimeSearch
         {
             get { return this.GetValue("EnableRealtimeSearch", BooleanConverter.Instance); }
@@ -229,7 +288,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the path to the hot and warm buckets for the current <see 
+        /// cref="Index"/>.
         /// </summary>
         public string HomePath
         {
@@ -237,7 +297,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the absolute path to the hot and warm buckets for the current
+        /// <see cref="Index"/>.
         /// </summary>
         public string HomePathExpanded
         {
@@ -245,7 +306,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the maximum size in MB for the hot and warm buckets for the
+        /// current <see cref="Index"/> to reach.
         /// </summary>
         public string HomePathMaxDataSizeMB
         {
@@ -253,7 +315,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the number of threads used for indexing.
         /// </summary>
         public string IndexThreads
         {
@@ -261,8 +323,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets a value that indicates if the current <see cref="Index"/> is
+        /// an internal index.
         /// </summary>
+        /// <remarks>
+        /// Internal indexes include, for example, <c>"_audit"</c> and <c>
+        /// "_internal"</c>.
+        /// </remarks>
         public bool IsInternal
         {
             get { return this.GetValue("IsInternal", BooleanConverter.Instance); }

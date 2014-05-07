@@ -249,7 +249,7 @@ namespace Splunk.Client
         /// </summary>
         public string HomePathMaxDataSizeMB
         {
-            get { return this.GetValue("ColdPathMaxDataSizeMB", StringConverter.Instance); }
+            get { return this.GetValue("HomePathMaxDataSizeMB", StringConverter.Instance); }
         }
 
         /// <summary>

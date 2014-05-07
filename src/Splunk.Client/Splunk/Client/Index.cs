@@ -143,6 +143,14 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
+        public string ColdPathMaxDataSizeMB
+        {
+            get { return this.GetValue("ColdPathMaxDataSizeMB", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public string ColdToFrozenDir
         {
             get { return this.GetValue("ColdToFrozenDir", StringConverter.Instance); }
@@ -234,6 +242,14 @@ namespace Splunk.Client
         public string HomePathExpanded
         {
             get { return this.GetValue("HomePathExpanded", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string HomePathMaxDataSizeMB
+        {
+            get { return this.GetValue("ColdPathMaxDataSizeMB", StringConverter.Instance); }
         }
 
         /// <summary>

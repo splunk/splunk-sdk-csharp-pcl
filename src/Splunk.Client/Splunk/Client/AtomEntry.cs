@@ -240,7 +240,7 @@ namespace Splunk.Client
 
                     case "content":
 
-                        this.Content = await ParsePropertyValueAsync(reader);
+                        this.Content = await ParsePropertyValueAsync(reader, 0);
                         break;
 
                     default: throw new InvalidDataException(); // TODO: Diagnostics
@@ -323,7 +323,7 @@ namespace Splunk.Client
             }
         }
 
-        static async Task<dynamic> ParseDictionaryAsync(XmlReader reader)
+        static async Task<dynamic> ParseDictionaryAsync(XmlReader reader, int level)
         {
             var value = (IDictionary<string, dynamic>)new ExpandoObject();
 
@@ -337,35 +337,50 @@ namespace Splunk.Client
 
                     // TODO: Include a domain-specific name translation capability (?)
 
-                    switch (name)
+                    if (level == 0)
                     {
-                        case "action.email":
-                        case "action.populate_lookup":
-                        case "action.rss":
-                        case "action.script":
-                        case "action.summary_index":
-                        case "alert.suppress":
-                        case "auto_summarize":
-                            name += ".IsEnabled";
-                            break;
-                        case "alert_comparator":
-                            name = "alert.comparator";
-                            break;
-                        case "alert_condition":
-                            name = "alert.condition";
-                            break;
-                        case "alert_threshold":
-                            name = "alert.threshold";
-                            break;
-                        case "alert_type":
-                            name = "alert.type";
-                            break;
-                        case "display.visualizations.charting.chart":
-                            name += ".Type";
-                            break;
-                        case "update.checksum.type":
-                            name = "update.checksum_type";
-                            break;
+                        switch (name)
+                        {
+                            case "action.email.subject.alert":
+                                name = "action.email.subject_alert";
+                                break;
+                            case "action.email.subject.report":
+                                name = "action.email.subject_report";
+                                break;
+                            case "action.email":
+                            case "action.populate_lookup":
+                            case "action.rss":
+                            case "action.script":
+                            case "action.summary_index":
+                            case "alert.suppress":
+                            case "auto_summarize":
+                                name += ".IsEnabled";
+                                break;
+                            case "alert_comparator":
+                                name = "alert.comparator";
+                                break;
+                            case "alert_condition":
+                                name = "alert.condition";
+                                break;
+                            case "alert_threshold":
+                                name = "alert.threshold";
+                                break;
+                            case "alert_type":
+                                name = "alert.type";
+                                break;
+                            case "coldPath.maxDataSizeMB":
+                                name = "coldPath_maxDataSizeMB";
+                                break;
+                            case "display.visualizations.charting.chart":
+                                name += ".Type";
+                                break;
+                            case "homePath.maxDataSizeMB":
+                                name = "homePath_maxDataSizeMB";
+                                break;
+                            case "update.checksum.type":
+                                name = "update.checksum_type";
+                                break;
+                        }
                     }
 
                     string[] names = name.Split(':', '.');
@@ -394,7 +409,7 @@ namespace Splunk.Client
                     }
 
                     propertyName = NormalizePropertyName(names[names.Length - 1]);
-                    propertyValue = await ParsePropertyValueAsync(reader);
+                    propertyValue = await ParsePropertyValueAsync(reader, level + 1);
                     dictionary.Add(propertyName, propertyValue);
                 }
 
@@ -408,7 +423,7 @@ namespace Splunk.Client
             return value;  // TODO: what's the type seen by dynamic?
         }
 
-        static async Task<IReadOnlyList<dynamic>> ParseListAsync(XmlReader reader)
+        static async Task<IReadOnlyList<dynamic>> ParseListAsync(XmlReader reader, int level)
         {
             List<dynamic> value = new List<dynamic>();
 
@@ -418,7 +433,7 @@ namespace Splunk.Client
 
                 while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:item")
                 {
-                    value.Add(await ParsePropertyValueAsync(reader));
+                    value.Add(await ParsePropertyValueAsync(reader, level + 1));
                 }
 
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:list"))
@@ -431,7 +446,7 @@ namespace Splunk.Client
             return value;
         }
 
-        static async Task<dynamic> ParsePropertyValueAsync(XmlReader reader)
+        static async Task<dynamic> ParsePropertyValueAsync(XmlReader reader, int level)
         {
             if (reader.IsEmptyElement)
             {
@@ -459,12 +474,12 @@ namespace Splunk.Client
                     {
                         case "s:dict":
 
-                            value = await ParseDictionaryAsync(reader);
+                            value = await ParseDictionaryAsync(reader, level);
                             break;
 
                         case "s:list":
 
-                            value = await ParseListAsync(reader);
+                            value = await ParseListAsync(reader, level);
                             break;
 
                         default: throw new InvalidDataException(string.Format("Unexpected element name: {0}", reader.Name));

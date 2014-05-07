@@ -88,9 +88,8 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates a new <see cref="SearchResultStream"/> instance
-        /// using the specified <see cref="Response"/> object and optionally 
-        /// leaves the reader open.
+        /// Asynchronously creates a new <see cref="SearchResultStream"/> 
+        /// instance using the specified <see cref="Response"/>.
         /// </summary>
         /// <param name="response">
         /// An object from which the search results are read. 
@@ -147,7 +146,7 @@ namespace Splunk.Client
             {
                 if (!await reader.ReadToFollowingAsync("results"))
                 {
-                    throw new InvalidDataException();  // TODO: diagnostics
+                    throw new InvalidDataException(); // TODO: diagnostics
                 }
             }
 

@@ -395,7 +395,7 @@ namespace Splunk.Client.UnitTesting
             using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
             {
                 await service.LoginAsync("admin", "changeme");
-                var collection = service.GetIndexesAsync().Result;
+                var collection = await service.GetIndexesAsync();
 
                 foreach (var entity in collection)
                 {
@@ -881,6 +881,7 @@ namespace Splunk.Client.UnitTesting
                 foreach (var search in searches)
                 {
                     var job = await service.CreateJobAsync(search.Command, search.JobArgs);
+                    await Task.Delay(4000);
                     Assert.NotNull(job);
 
                     var results = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();

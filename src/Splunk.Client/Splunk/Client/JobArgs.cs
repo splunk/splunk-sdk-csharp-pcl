@@ -42,8 +42,8 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Specifies how long a <see cref="Job"/> may be inactive before it is
-        /// automatically cancelled.
+        /// Gets or sets a value that specifies how long a <see cref="Job"/> 
+        /// may be inactive before it is automatically cancelled.
         /// </summary>
         /// <remarks>
         /// A value of <c>0</c> specifies that a <see cref="Job"/> is never 
@@ -54,8 +54,8 @@ namespace Splunk.Client
         { get; set; }
         
         /// <summary>
-        /// Specifies how many events a <see cref="Job"/> must process before 
-        /// it is automatically finalized.
+        /// Gets or sets a value that specifies how many events a <see cref=
+        /// "Job"/> must process before it is automatically finalized.
         /// </summary>
         /// <remarks>
         /// A value of <c>0</c> specifies that a <see cref="Job"/> is never 
@@ -66,8 +66,8 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Specifies how long a <see cref="Job"/> may run before it is 
-        /// automatically paused.
+        /// Gets or sets a value that specifies how long a <see cref="Job"/> 
+        /// may run before it is automatically paused.
         /// </summary>
         /// <remarks>
         /// A value of <c>0</c> specifies that a <see cref="Job"/> is never 
@@ -78,8 +78,8 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// A time string that specifies the earliest inclusive time bounds for 
-        /// a <see cref="Job"/>. 
+        /// Gets or sets a time string that specifies the earliest inclusive 
+        /// time bounds for a <see cref="Job"/>. 
         /// </summary>
         /// <remarks>
         /// The time string can be either a UTC time (with fractional seconds), 
@@ -91,10 +91,26 @@ namespace Splunk.Client
         public string EarliestTime
         { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value that indicates whether lookups should be 
+        /// applied to events processed by a search <see cref="Job"/>.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>true</c>. Depending on the nature of the
+        /// lookups a search <see cref="Job"/> may take significantly longer
+        /// to execute when the value of this property is <c>true</c>.
+        /// </remarks>
         [DataMember(Name = "enable_lookups", EmitDefaultValue = false)]
         public bool? EnableLookups
         { get; set; }
 
+        /// <summary>
+        /// Gets or sets the <see cref="ExecutionMode"/> for a search <see 
+        /// cref="Job"/>.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <see cref="ExecutionMode.Normal"/>.
+        /// </remakrs>
         [DataMember(Name = "exec_mode", EmitDefaultValue = false)]
         public ExecutionMode? ExecutionMode
         { get; set; }
@@ -175,6 +191,14 @@ namespace Splunk.Client
         public int? MaxCount
         { get; set; }
 
+        /// <summary>
+        /// Gets or sets the number of seconds to run a <see cref="Job"/>
+        /// before finalizing.
+        /// </summary>
+        /// <remarks>
+        /// A value of <c>0</c> specifies that a <see cref="Job"/> should never
+        /// finalize.
+        /// </remarks>
         [DataMember(Name = "max_time", EmitDefaultValue = false)]
         public int? MaxTime
         { get; set; }

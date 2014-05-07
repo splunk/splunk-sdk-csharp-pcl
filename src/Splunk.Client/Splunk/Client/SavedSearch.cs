@@ -600,6 +600,16 @@ namespace Splunk.Client
                     get { return this.GetValue("Subject", StringConverter.Instance); }
                 }
 
+                public string SubjectAlert
+                {
+                    get { return this.GetValue("SubjectAlert", StringConverter.Instance); }
+                }
+
+                public string SubjectReport
+                {
+                    get { return this.GetValue("SubjectReport", StringConverter.Instance); }
+                }
+
                 public string To
                 {
                     get { return this.GetValue("To", StringConverter.Instance); }

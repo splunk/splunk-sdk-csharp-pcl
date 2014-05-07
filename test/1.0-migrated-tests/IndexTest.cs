@@ -107,7 +107,7 @@ namespace Splunk.Client.UnitTesting
                 dummyString = idx.ColdToFrozenDir;
                 dummyString = idx.ColdToFrozenScript;
                 dummyBool = idx.CompressRawData;
-                dummyInt = idx.CurrentDBSizeMB;
+                long size = idx.CurrentDBSizeMB;
                 dummyString = idx.DefaultDatabase;
                 dummyBool = idx.EnableRealtimeSearch;
                 dummyInt = idx.FrozenTimePeriodInSecs;

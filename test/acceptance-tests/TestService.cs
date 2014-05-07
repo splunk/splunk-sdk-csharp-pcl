@@ -412,7 +412,7 @@ namespace Splunk.Client.UnitTesting
                     Assert.DoesNotThrow(() => { string value = entity.ColdPathExpanded; });
                     Assert.DoesNotThrow(() => { string value = entity.ColdToFrozenDir; });
                     Assert.DoesNotThrow(() => { string value = entity.ColdToFrozenScript; });
-                    Assert.DoesNotThrow(() => { int value = entity.CurrentDBSizeMB; });
+                    Assert.DoesNotThrow(() => { long value = entity.CurrentDBSizeMB; });
                     Assert.DoesNotThrow(() => { string value = entity.DefaultDatabase; });
                     Assert.DoesNotThrow(() => { bool value = entity.Disabled; });
                     Assert.DoesNotThrow(() => { Eai value = entity.Eai; });

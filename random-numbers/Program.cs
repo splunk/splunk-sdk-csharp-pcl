@@ -59,9 +59,20 @@ namespace random_numbers
             }
         }
 
-        public override Task StreamEventsAsync(InputDefinition inputDefinition)
+        public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
         {
-            return null;
+            double min = (double)inputDefinition.Parameters["min"];
+            double max = (double)inputDefinition.Parameters["max"];
+
+            while (true)
+            {
+                eventWriter.WriteEvent(new Event
+                {
+                    Stanza = inputDefinition.Name,
+                    Data = "number=" + 1 * (max - min) + min
+                });
+                await Task.Delay(1000);
+            }
         }
     }
 }

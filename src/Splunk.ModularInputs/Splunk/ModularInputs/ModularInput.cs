@@ -77,7 +77,7 @@ namespace Splunk.ModularInputs
             try
             {
                 //// Console default is OEM text encoding, which is not handled by Splunk,
-                //// resulting in loss of chars such as O with double acute (\u0150)
+                //// resulting in loss of chars such as O with an umlaut (\u0150)
                 //// Splunk's default is UTF8.
 
                 //// Avoid setting InputEncoding unnecessarily because 
@@ -96,25 +96,18 @@ namespace Splunk.ModularInputs
                 if (args.Length == 0)
                 {
                     await LogAsync("Reading input definitions.");
-                    var eventStreams = new List<Task>();
-
-                    for (int i = 1; Console.In.Peek() != -1; i++)
+                    using (EventWriter writer = new EventWriter())
                     {
-                        var inputDefinition = (InputDefinition)Read(typeof(InputDefinition));
-                        await LogAsync(string.Format("Starting event stream {0}.", i));
-                        eventStreams.Add(script.StreamEventsAsync(inputDefinition));
+                        List<Task> instances = new List<Task>();
+
+                        var inputDefinitions = (InputDefinitionCollection)Read(typeof(InputDefinitionCollection));
+                        foreach (InputDefinition inputDefinition in inputDefinitions)
+                        {
+                            instances.Add(Task.Factory.StartNew(() => script.StreamEventsAsync(inputDefinition, writer)));
+                        }
+
+                        Task.WaitAll(instances.ToArray());
                     }
-
-                    if (eventStreams.Count == 0)
-                    {
-                        var message = "No input definitions could be read from the standard input stream.";
-                        throw new InvalidDataException(message);
-                    }
-
-                    await Task.Factory.ContinueWhenAll(eventStreams.ToArray(), 
-                        (tasks) => EventWriter.CompleteAdding(),
-                        TaskContinuationOptions.LongRunning);
-
                     return 0;
                 }
 
@@ -173,7 +166,7 @@ namespace Splunk.ModularInputs
         /// <param name="inputDefinition">
         /// Input definition from Splunk for this input.
         /// </param>
-        public abstract Task StreamEventsAsync(InputDefinition inputDefinition);
+        public abstract Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter);
 
         /// <summary>
         /// Writes a validation error to standard output during external 

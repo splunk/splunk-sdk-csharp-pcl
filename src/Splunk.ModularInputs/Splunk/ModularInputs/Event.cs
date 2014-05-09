@@ -21,36 +21,43 @@
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.Xml.Serialization;
 
     /// <summary>
-    /// The <see cref="EventElement"/> struct represents an event element
+    /// The <see cref="Event"/> struct represents an event element
     /// for XML event streaming.
     /// </summary>
-    public struct EventElement
+    [XmlRoot("event")]
+    public struct Event
     {
         /// <summary>
         /// Event data.
         /// </summary>
+        [XmlElement("data")]
         public string Data { get; set; }
 
         /// <summary>
         /// The event source.
         /// </summary>
+        [XmlElement("source")]
         public string Source { get; set; }
 
         /// <summary>
         /// The source type.
         /// </summary>
+        [XmlElement("sourcetype")]
         public string SourceType { get; set; }
 
         /// <summary>
         /// The index.
         /// </summary>
+        [XmlElement("index")]
         public string Index { get; set; }
 
         /// <summary>
         /// The host.
         /// </summary>
+        [XmlElement("host")]
         public string Host { get; set; }
 
         /// <summary>
@@ -61,12 +68,15 @@ namespace Splunk.ModularInputs
         /// according to current time, or in case of "unbroken" event, the
         /// timestamp supplied earlier for the event will be used.
         /// </remarks>
+        [XmlElement("time")]            
         public DateTime? Time { get; set; }
+        // TODO: Fix UTC timestamp generation
 
         /// <summary>
         /// A value indicating whether the event stream has
         /// completed a set of events and can be flushed.
         /// </summary>
+        [XmlElement("done")]
         public bool Done { get; set; }
 
         /// <summary>
@@ -77,11 +87,13 @@ namespace Splunk.ModularInputs
         /// If this property is false, the element represents a single, 
         /// whole event.
         /// </remarks>
+        [XmlAttribute("unbroken")]
         public bool Unbroken { get; set; }
 
         /// <summary>
         /// The name of the stanza of the input this event belongs to.
         /// </summary>
+        [XmlAttribute("stanza")]
         public string Stanza { get; set; }
     }
 }

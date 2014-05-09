@@ -16,7 +16,9 @@
 
 namespace Splunk.ModularInputs
 {
+    using System.Collections.Generic;
     using System.Xml.Serialization;
+    using System.Linq;
 
     /// <summary>
     /// Base class for input definition.
@@ -24,6 +26,66 @@ namespace Splunk.ModularInputs
     [XmlRoot("input")]
     public class InputDefinitionCollection
     {
-        
+        /// <summary>
+        /// The hostname for the Splunk server that runs the modular input.
+        /// </summary>
+        [XmlElement("server_host")]
+        public string ServerHost { get; set; }
+
+        /// <summary>
+        /// The management URI for the Splunk server, identified by host, port,
+        /// and protocol.
+        /// </summary>
+        [XmlElement("server_uri")]
+        public string ServerUri { get; set; }
+
+        /// <summary>
+        /// The directory used for a modular input to save checkpoints.  
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This location is where Splunk tracks the input state from sources
+        /// it is reading from.
+        /// </para>
+        /// </remarks>
+        [XmlElement("checkpoint_dir")]
+        public string CheckpointDirectory { get; set; }
+
+        /// <summary>
+        /// The REST API session key for this modular input.
+        /// </summary>
+        [XmlElement("session_key")]
+        public string SessionKey { get; set; }
+
+        public class Stanza
+        {
+            [XmlAttribute("name")]
+            public string Name { get; set; }
+
+            [XmlElement("param")]
+            [XmlElement("param_list")]
+            public List<Parameter> Parameters { get; set; }
+        }
+
+        [XmlElement("stanza")]
+        public List<Stanza> Stanzas { get; set; }
+
+        public IEnumerator<InputDefinition> GetEnumerator()
+        {
+            foreach (Stanza stanza in Stanzas)
+            {
+                yield return new InputDefinition {
+                    Name = stanza.Name,
+                    Parameters = stanza.Parameters.ToDictionary(
+                        v => v.Name,
+                        v => v
+                    ),
+                    ServerHost = this.ServerHost,
+                    ServerUri = this.ServerUri,
+                    CheckpointDirectory = this.CheckpointDirectory,
+                    SessionKey = this.SessionKey
+                };
+            }
+        }
     }
 }

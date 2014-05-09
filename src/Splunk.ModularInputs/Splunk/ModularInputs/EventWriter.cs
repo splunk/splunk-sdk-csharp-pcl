@@ -20,54 +20,66 @@ namespace Splunk.ModularInputs
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// 
     /// </summary>
-    static class EventWriter
+    public class EventWriter : IDisposable
     {
+        private static XmlSerializer serializer = new XmlSerializer(typeof(Event));
+
+        private BlockingCollection<Event> eventQueue;
+        private XmlWriter writer;
+        Task eventQueueMonitor;
+        TextWriter stderr;
+        
+        
         /// <summary>
         /// 
         /// </summary>
-        static EventWriter()
+        public EventWriter() : this(Console.Out, Console.Error) {}
+
+        public EventWriter(TextWriter stdout, TextWriter stderr)
         {
+            this.stderr = stderr;
+            eventQueue = new BlockingCollection<Event>();
             var settings = new XmlWriterSettings
             {
                 Async = true,
                 ConformanceLevel = ConformanceLevel.Fragment
             };
 
-            eventCollection = new BlockingCollection<EventElement>();
-            eventWriter = XmlWriter.Create(Console.Out, settings);
-
-            writeEventElements = Task.Factory.StartNew(WriteEventElementsAsync);
+            writer = XmlWriter.Create(stdout, settings);
+            eventQueueMonitor = WriteEventElementsAsync();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="eventElement">
-        /// </param>
-        public static void Add(EventElement item)
+        public void WriteEvent(Event e)
         {
-            eventCollection.Add(item);
+            eventQueue.Add(e);
         }
-
+    
         #region Privates/internals
 
         static readonly DateTime UnixUtcEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        static readonly BlockingCollection<EventElement> eventCollection;
-        static readonly XmlWriter eventWriter;
-        static Task writeEventElements;
 
-        internal static void CompleteAdding()
+        public void Dispose()
         {
-            eventCollection.CompleteAdding();
-            writeEventElements.Wait();
+            eventQueue.CompleteAdding();
+            eventQueueMonitor.Wait();
+        }
+
+        public Task LogAsync(string severity, string message)
+        {
+            this.stderr.WriteAsync(severity);
+            this.stderr.WriteAsync(" ");
+            this.stderr.WriteAsync(message);
+            this.stderr.WriteAsync
         }
 
         static string ConvertDateTimeToUnixTimestamp(DateTime value)
@@ -76,77 +88,19 @@ namespace Splunk.ModularInputs
             return (utcTime - UnixUtcEpoch).TotalSeconds.ToString();
         }
 
-        static async Task WriteEventElementAsync(EventElement eventElement)
+        private async Task WriteEventElementsAsync()
         {
-            if (eventWriter.WriteState == WriteState.Start)
+            await this.writer.WriteStartElementAsync(prefix: null, localName: "stream", ns: null);
+
+            foreach (Event e in this.eventQueue.GetConsumingEnumerable())
             {
-                await eventWriter.WriteStartElementAsync(prefix: null, localName: "stream", ns: null);
+                serializer.Serialize(writer, e);
+                await this.writer.FlushAsync();
             }
 
-            await eventWriter.WriteStartElementAsync(prefix: null, localName: "event", ns: null);
-            var stanza = eventElement.Stanza;
-
-            if (stanza != null)
-            {
-                await eventWriter.WriteAttributeStringAsync(prefix: null, localName: "stanza", ns: null, value: stanza);
-            }
-
-            if (eventElement.Unbroken)
-            {
-                await eventWriter.WriteAttributeStringAsync(prefix: null, localName: "unbroken", ns: null, value: "1");
-            }
-
-            if (eventElement.Index != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "index", ns: null, value: eventElement.Index);
-            }
-            
-            if (eventElement.SourceType != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "sourcetype", ns: null, value: eventElement.SourceType);
-            }
-            
-            if (eventElement.Source != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "source", ns: null, value: eventElement.Source);
-            }
-            
-            if (eventElement.Host != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "host", ns: null, value: eventElement.Host);
-            }
-
-            if (eventElement.Data != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "data", ns: null, value: eventElement.Data);
-            }
-
-            var time = eventElement.Time;
-
-            if (time != null)
-            {
-                await eventWriter.WriteElementStringAsync(
-                    prefix: null, localName: "time", ns: null, value: ConvertDateTimeToUnixTimestamp(time.Value));
-            }
-
-            if (eventElement.Done)
-            {
-                await eventWriter.WriteStartElementAsync(prefix: null, localName: "done", ns: null);
-                await eventWriter.WriteEndElementAsync();
-                await eventWriter.FlushAsync();
-            }
-
-            await eventWriter.WriteEndElementAsync();
-        }
-
-        static async void WriteEventElementsAsync()
-        {
-            foreach (var eventElement in eventCollection.GetConsumingEnumerable())
-            {
-                await WriteEventElementAsync(eventElement);
-            }
-
-            eventWriter.Close();
+            await writer.WriteEndElementAsync();
+            await writer.FlushAsync();
+            writer.Close();
         }
         
         #endregion

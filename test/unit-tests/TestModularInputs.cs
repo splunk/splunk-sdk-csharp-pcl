@@ -233,6 +233,27 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
+        [Trait("class", "Splunk.ModularInputs.Event")]
+        [Fact]
+        public void SerializeEvent()
+        {
+            Event e = new Event {
+                Time = System.DateTime.Now,
+                Source = "hilda",
+                SourceType = "misc",
+                Index = "main",
+                Host = "localhost",
+                Data = "This is a test of the emergency broadcast system.",
+                Done = false,
+                Unbroken = true
+            };
+            using (StringWriter writer = new StringWriter()) {
+                XmlSerializer serializer = new XmlSerializer(typeof(Event));
+                serializer.Serialize(writer, e);
+                Assert.Equal("", writer.ToString());
+            }
+        }
+
         /// <summary>
         /// Assert equal with expected file content.
         /// </summary>
@@ -276,137 +297,9 @@ namespace Splunk.ModularInputs.UnitTesting
             return Path.Combine(TestDataFolder, relativePath);
         }
 
-        /// <summary>
-        /// Write events using EventStreamWriter
-        /// </summary>
-        // This method can be used by manual testing thus is public 
-        public static void WriteEvents()
-        {
-            var writer = new EventStream();
 
-            var eventTemplate = new EventElement
-                {
-                    Index = "sdk-tests2",
-                    Host = "test host",
-                    SourceType = "test sourcetype",
-                    Source = "test source",
-                };
 
-            WriteEventData(
-                writer,
-                eventTemplate,
-                "Event with all default fields set");
-
-            WriteEventData(
-                writer,
-                eventTemplate,
-                "Letter O with double acute: \u0150");
-
-            eventTemplate.Unbroken = true;
-
-            WriteEventData(
-                writer,
-                eventTemplate,
-                "Part 1 of an unbroken event ");
-
-            WriteEventData(
-                writer,
-                eventTemplate,
-                "Part 2 of an unbroken event ending with newline" + Environment.NewLine);
-
-            WriteEventDone(
-                writer,
-                eventTemplate);
-
-            eventTemplate.Unbroken = false;
-
-            WriteEventData(
-                writer,
-                eventTemplate,
-                "Event after done key");
-
-            var timedEvent = eventTemplate;
-            timedEvent.Time = new DateTime(2013, 1, 1, 0, 0, 0, 1, DateTimeKind.Utc);
-            timedEvent.Data = "Event with fixed time";
-            writer.Write(timedEvent);
-
-            WriteMultiplex(writer);
-        }
-
-        /// <summary>
-        /// Write for multiple stanzas
-        /// </summary>
-        /// <param name="writer">An event writer</param>
-        static void WriteMultiplex(EventStream writer)
-        {
-            var eventTemplate1 = new EventElement
-                {
-                    Stanza = "modular_input://UnitTest1",
-                    Unbroken = true,
-                };
-
-            var eventTemplate2 = new EventElement
-                {
-                    Stanza = "modular_input://UnitTest2",
-                    Unbroken = true,
-                };
-
-            WriteEventDataLine(writer, eventTemplate1, "Part 1 of channel 1 with a newline");
-            WriteEventData(writer, eventTemplate2, "Part 1 of channel 2 without a newline ");
-
-            // Mark the first channel done.
-            WriteEventDone(writer, eventTemplate1);
-
-            WriteEventDataLine(writer, eventTemplate1, "Part 2 of channel 1 with a newline");
-            WriteEventDataLine(writer, eventTemplate2, "Part 2 of channel 2 with a newline");
-
-            // Mark the second channel done.
-            WriteEventDone(writer, eventTemplate2);
-        }
-
-        /// <summary>
-        /// Write a done key
-        /// </summary>
-        /// <param name="writer">An event writer</param>
-        /// <param name="eventTemplate">An event template</param>
-        static void WriteEventDone(EventStream writer, EventElement eventTemplate)
-        {
-            var @event = eventTemplate;
-            @event.Unbroken = false;
-            @event.Done = true;
-            writer.Write(@event);
-        }
-
-        /// <summary>
-        /// Write an event data line.
-        /// </summary>
-        /// <param name="writer">An event writer</param>
-        /// <param name="eventTemplate">An event template</param>
-        /// <param name="eventData">Event data</param>
-        static void WriteEventDataLine(
-            EventStream writer,
-            EventElement eventTemplate,
-            string eventData)
-        {
-            WriteEventData(
-                writer,
-                eventTemplate,
-                eventData + Environment.NewLine);
-        }
-
-        /// <summary>
-        /// Write event data without appending a newline seperator.
-        /// </summary>
-        /// <param name="writer">An event writer</param>
-        /// <param name="eventTemplate">An event template</param>
-        /// <param name="eventData">Event data</param>
-        static void WriteEventData(EventStream writer, EventElement eventTemplate, string eventData)
-        {
-            var @event = eventTemplate;
-            @event.Data = eventData;
-            writer.Write(@event);
-        }
-
+       
         /// <summary>
         /// Redirect console in
         /// </summary>
@@ -472,7 +365,7 @@ namespace Splunk.ModularInputs.UnitTesting
             /// Perform test verifications and stream events.
             /// </summary>
             /// <param name="inputDefinition">Input definition</param>
-            public override Task StreamEventsAsync(InputDefinition inputDefinition)
+            public override Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
             {
                 // Verify every part of the input definition is received 
                 // parsed, and later recontructed correctly.
@@ -486,15 +379,15 @@ namespace Splunk.ModularInputs.UnitTesting
             /// <summary>
             /// Validate and return an error message.
             /// </summary>
-            /// <param name="validationItems">Configuration data to validate</param>
+            /// <param name="validation">Configuration data to validate</param>
             /// <param name="errorMessage">Message to display in UI when validation fails</param>
             /// <returns>Whether the validation succeeded</returns>
-            public override bool Validate(Validation validationItems, out string errorMessage)
+            public override bool Validate(Validation inputDefinition, out string errorMessage)
             {
                 // Test the dictionary for single value parameter.
-                //Assert.Equal("0", (string)validationItems["disabled"]);
+                Assert.False((bool)inputDefinition.Parameters["disabled"]);
 
-                var reconstructed = Serialize(validationItems);
+                var reconstructed = Serialize(inputDefinition);
                 AssertEqualWithExpectedFile(ValidationItemsFilePath, reconstructed);
 
                 errorMessage = "test message";

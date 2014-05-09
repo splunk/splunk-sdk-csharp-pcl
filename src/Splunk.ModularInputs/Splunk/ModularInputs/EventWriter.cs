@@ -74,12 +74,12 @@ namespace Splunk.ModularInputs
             eventQueueMonitor.Wait();
         }
 
-        public Task LogAsync(string severity, string message)
+        public async Task LogAsync(string severity, string message)
         {
-            this.stderr.WriteAsync(severity);
-            this.stderr.WriteAsync(" ");
-            this.stderr.WriteAsync(message);
-            this.stderr.WriteAsync
+            await this.stderr.WriteAsync(severity);
+            await this.stderr.WriteAsync(" ");
+            await this.stderr.WriteAsync(message);
+            await this.stderr.WriteAsync(this.stderr.NewLine);
         }
 
         static string ConvertDateTimeToUnixTimestamp(DateTime value)

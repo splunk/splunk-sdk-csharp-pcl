@@ -13,6 +13,22 @@ namespace random_numbers
         {
         }
 
+        private IEnumerable<Task> schedule;
+
+        public static IEnumerable<Task> RepeatEvery(int delayInMs)
+        {
+            while (true)
+                yield return Task.Delay(delayInMs);
+        }
+
+        public Program() : this(RepeatEvery(1000)) {}
+
+        public Program(IEnumerable<Task> schedule)
+        {
+            this.schedule = schedule;
+        }
+
+
         public override Scheme Scheme
         {
             get {
@@ -64,14 +80,14 @@ namespace random_numbers
             double min = (double)inputDefinition.Parameters["min"];
             double max = (double)inputDefinition.Parameters["max"];
 
-            while (true)
+            foreach (Task t in schedule)
             {
+                await t;
                 eventWriter.WriteEvent(new Event
                 {
                     Stanza = inputDefinition.Name,
                     Data = "number=" + 1 * (max - min) + min
                 });
-                await Task.Delay(1000);
             }
         }
     }

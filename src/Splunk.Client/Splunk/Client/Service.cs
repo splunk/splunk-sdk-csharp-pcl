@@ -79,6 +79,7 @@ namespace Splunk.Client
         /// </param>
         public Service(Scheme scheme, string host, int port, Namespace ns = null)
             : this(new Context(scheme, host, port), ns)
+            
         { }
 
         #endregion

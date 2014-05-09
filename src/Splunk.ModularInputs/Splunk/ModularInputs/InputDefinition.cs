@@ -18,6 +18,7 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
+    using Splunk.Client;
 
     public class InputDefinition
     {
@@ -27,5 +28,35 @@ namespace Splunk.ModularInputs
         public string ServerUri { get; set; }
         public string CheckpointDirectory { get; set; }
         public string SessionKey { get; set; }
+        public Service Service
+        {
+            get
+            {
+                if (ServerUri == null)
+                    throw new NullReferenceException("Cannot get a Service object without ServerUri");
+                Uri parsedServerUri;
+                if (Uri.TryCreate(ServerUri, UriKind.Absolute, out parsedServerUri))
+                {
+                    Splunk.Client.Scheme scheme;
+                    if (parsedServerUri.Scheme.Equals("https"))
+                        scheme = Splunk.Client.Scheme.Https;
+                    else if (parsedServerUri.Scheme.Equals("http"))
+                        scheme = Splunk.Client.Scheme.Http;
+                    else
+                        throw new FormatException("Invalid URI scheme: " + parsedServerUri.Scheme + "; expected http or https");
+                    Service service = new Service(
+                        scheme: scheme,
+                        host: parsedServerUri.Host,
+                        port: parsedServerUri.Port
+                    );
+                    service.SessionKey = SessionKey;
+                    return service;
+                }
+                else
+                {
+                    throw new FormatException("Invalid server URI");
+                }
+            }
+        }
     }
 }

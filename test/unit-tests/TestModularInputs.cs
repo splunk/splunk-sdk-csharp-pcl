@@ -26,6 +26,8 @@ namespace Splunk.ModularInputs.UnitTesting
     using Xunit;
     using System.Xml;
     using System.Xml.Serialization;
+    using System.Xml.Linq;
+    using System.Threading;
 
     /// <summary>
     /// Test classes in Splunk.ModularInputs namespace
@@ -62,19 +64,41 @@ namespace Splunk.ModularInputs.UnitTesting
         /// </summary>
         const string EventsFilePath = "Events.xml";
 
-        /// <summary>
-        /// Test returning scheme through stdout
-        /// </summary>
-        [Trait("class", "Splunk.ModularInputs")]
+        [Trait("class", "Splunk.ModularInputs.InputDefinition")]
         [Fact]
-        public async Task OutputScheme()
+        public void InputDefinitionServiceWorks()
         {
-            using (var consoleOut = new StringWriter())
+            InputDefinition inputDefinition = new InputDefinition
             {
-                Console.SetOut(consoleOut);
-                await ModularInput.RunAsync<TestScript>(new[] { "--scheme" });
-                AssertEqualWithExpectedFile(SchemeFilePath, consoleOut.ToString());
-            }
+                Name = "input_definition",
+                Parameters = null,
+                ServerHost = "boris",
+                ServerUri = "https://localhost:8089",
+                CheckpointDirectory = "",
+                SessionKey = "abcdefg"
+            };
+
+            Splunk.Client.Service service = inputDefinition.Service;
+            Assert.Equal(Splunk.Client.Scheme.Https, service.Context.Scheme);
+            Assert.Equal("localhost", service.Context.Host);
+            Assert.Equal(8089, service.Context.Port);
+            Assert.Equal("abcdefg", service.Context.SessionKey);
+        }
+
+        [Trait("class", "Splunk.ModularInputs.InputDefinition")]
+        [Fact]
+        public void InputDefinitionServiceFailsWithInvalidUri()
+        {
+            InputDefinition inputDefinition = new InputDefinition
+            {
+                Name = "input_definition",
+                Parameters = null,
+                ServerHost = "boris",
+                ServerUri = "gopher://localhost:8089",
+                CheckpointDirectory = "",
+                SessionKey = "abcdefg"
+            };
+            Assert.Throws<FormatException>(() => inputDefinition.Service);
         }
 
         [Trait("class", "Splunk.ModularInputs.SingleValueParameter")]
@@ -154,91 +178,132 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal(new List<long> { 52, 42 }, (List<long>)parameter);
         }
 
-        /// <summary>
-        /// Test getting validation info from stdin and return validation error through stdout.
-        /// </summary>
-        [Trait("class", "Splunk.ModularInputs")]
-        [Fact]
-        public async Task ExternalValidation()
+        public static IEnumerable<Task> TriggeredSchedule(ManualResetEvent triggerEvent)
         {
-            using (var consoleIn = ReadFileFromDataFolderAsReader(ValidationItemsFilePath))
-            using (var consoleOut = new StringWriter())
+            while (true)
             {
-                SetConsoleIn(consoleIn);
-                Console.SetOut(consoleOut);
-
-                int exitCode = await ModularInput.RunAsync<TestScript>(new[] { "--validate-arguments" });
-
-                AssertEqualWithExpectedFile(ValidationErrorMessageFilePath, consoleOut.ToString());
-                Assert.NotEqual(0, exitCode);
+                yield return Task.Run(() =>
+                {
+                    triggerEvent.WaitOne();
+                    triggerEvent.Reset();
+                });
             }
         }
 
-        /// <summary>
-        /// Test getting validation info from stdin
-        /// </summary>
-        [Trait("class", "Splunk.ModularInputs")]
-        [Fact]
-        public async Task StreamEvents()
+        class TestInput : ModularInput
         {
-            using (var consoleIn = ReadFileFromDataFolderAsReader(InputDefinitionFilePath))
+            public List<ManualResetEvent> TriggerEvents { get; set; }
+
+            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
             {
-                using (var consoleOut = new StringWriter())
+                ManualResetEvent e = new ManualResetEvent(false);
+                TriggerEvents.Add(e);
+                int i = 0;
+                foreach (Task t in TriggeredSchedule(e))
                 {
-                    SetConsoleIn(consoleIn);
-                    Console.SetOut(consoleOut);
-                    Assert.Equal(0, await ModularInput.RunAsync<TestScript>(new string[] { }));
-                    AssertEqualWithExpectedFile(EventsFilePath, consoleOut.ToString());
+                    await t;
+                    eventWriter.WriteEvent(new Event {
+                        Data = "Test " + i
+                    });
                 }
+            }
+
+            public override Scheme Scheme
+            {
+                get
+                {
+                    return new Scheme
+                    {
+                        Title = "Random numbers",
+                        Description = "Generate random numbers in the specified range",
+                        Arguments = new List<Argument> {
+                            new Argument
+                            {
+                                Name = "min",
+                                Description = "Generated value should be at least min",
+                                DataType = DataType.Number,
+                                RequiredOnCreate = true
+                            },
+                            new Argument
+                            {
+                                Name = "max",
+                                Description = "Generated value should be less than max",
+                                DataType = DataType.Number,
+                                RequiredOnCreate = true
+                            }
+                        }
+                    };
+                }
+            }
+
+
+        }
+
+        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task StreamEventsCorrectly()
+        {
+            // Generate stdin with an input definition
+
+            using (StringReader stdin = new StringReader(""))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = {};
+
+                
+                await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+
+              
             }
         }
 
-        /// <summary>
-        /// Test error handling and logging
-        /// </summary>
-        [Trait("class", "Splunk.ModularInputs")]
+        [Trait("class", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public async Task ErrorHandling()
+        public async Task GeneratesSchemeCorrectly()
         {
-            using (var consoleIn = new StringReader(string.Empty))
+            
+            using (StringReader stdin = new StringReader(""))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
             {
-                using (var consoleError = new StringWriter())
-                {
-                    SetConsoleIn(consoleIn);
-                    Console.SetError(consoleError);
-                    int exitCode = await ModularInput.RunAsync<TestScript>(new string[] { });
+                string[] args = { "--scheme" };
+                await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
 
-                    // There will be an exception due to missing input definition in 
-                    // (redirected) console stdin.      
-                    var error = consoleError.ToString();
-
-                    // Verify that an exception is logged with level FATAL.
-                    Assert.Contains("FATAL Script.Run: Unhandled exception:", error);
-
-                    // Verify that the exception is what we expect.
-                    Assert.Contains("No input definitions could be read from the standard input stream.", error);
-
-                    // Verify that an info level message is logged properly.
-                    Assert.Contains("INFO Script.Run: Reading input definitions.", error);
-
-                    // Verify that the logged exception does not span more than one line
-                    // Splunk breaks up events using new lines for splunkd log.
-                    var lines = error.Split(
-                        new[] { Environment.NewLine },
-                        StringSplitOptions.RemoveEmptyEntries);
-
-                    Assert.Equal(2, lines.Length);
-                    Assert.NotEqual(0, exitCode);
-                }
+                XDocument doc = XDocument.Parse(stdout.ToString());
+                Assert.Equal("Random numbers", doc.Element("scheme").Element("title").Value);
+                Assert.Equal("Generate random numbers in the specified range", 
+                    doc.Element("scheme").Element("description").Value);
+                Assert.NotNull(doc.Element("scheme").Element("endpoint").Element("args"));
+                Assert.Equal(String.Empty, stderr.ToString());
             }
+        }
+
+        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task WorkingValidation()
+        {
+        }
+
+        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ValidationFails()
+        {
+        }
+
+        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ValidationThrows()
+        {
         }
 
         [Trait("class", "Splunk.ModularInputs.Event")]
         [Fact]
-        public void SerializeEvent()
+        public void SerializeEventWithoutDone()
         {
+            DateTime timestamp = System.DateTime.Now;
             Event e = new Event {
-                Time = System.DateTime.Now,
+                Time = timestamp,
                 Source = "hilda",
                 SourceType = "misc",
                 Index = "main",
@@ -247,11 +312,57 @@ namespace Splunk.ModularInputs.UnitTesting
                 Done = false,
                 Unbroken = true
             };
+            string serialized;
             using (StringWriter writer = new StringWriter()) {
                 XmlSerializer serializer = new XmlSerializer(typeof(Event));
                 serializer.Serialize(writer, e);
-                Assert.Equal("", writer.ToString());
+                serialized = writer.ToString();
             }
+
+            XDocument doc = XDocument.Parse(serialized);
+            Assert.False(serialized.Contains("<done"));
+            Assert.Equal("hilda", doc.Element("event").Element("source").Value);
+            Assert.Equal("misc", doc.Element("event").Element("sourcetype").Value);
+            Assert.Equal("main", doc.Element("event").Element("index").Value);
+            Assert.Equal("localhost", doc.Element("event").Element("host").Value);
+            Assert.Equal("This is a test of the emergency broadcast system.",
+                doc.Element("event").Element("data").Value);
+            Assert.Equal("1", doc.Element("event").Attribute("unbroken").Value);
+            long utcTimestamp = timestamp.Ticks - new DateTime(1970, 1, 1).Ticks;
+            utcTimestamp /= TimeSpan.TicksPerSecond;
+            Assert.Equal(utcTimestamp, long.Parse(doc.Element("event").Element("time").Value));
+        }
+
+
+        [Trait("class", "Splunk.ModularInputs.Event")]
+        [Fact]
+        public void SerializeEventWithDone()
+        {
+            Event e = new Event
+            {
+                Time = System.DateTime.Now,
+                Source = "hilda",
+                SourceType = "misc",
+                Index = "main",
+                Host = "localhost",
+                Data = "This is a test of the emergency broadcast system.",
+                Done = true,
+                Unbroken = false
+            };
+            string serialized;
+            using (StringWriter writer = new StringWriter())
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Event));
+                serializer.Serialize(writer, e);
+                serialized = writer.ToString();
+            }
+
+            Assert.True(serialized.Contains("<done />"));
+
+            XDocument doc = XDocument.Parse(serialized);
+            Assert.NotNull(doc.Element("event").Element("done"));
+            Assert.Equal("", doc.Element("event").Element("done").Value);
+            Assert.Equal("0", doc.Element("event").Attribute("unbroken").Value);
         }
 
         /// <summary>
@@ -311,88 +422,6 @@ namespace Splunk.ModularInputs.UnitTesting
             // resetting Console.In (which should be a System.Console bug).
             Console.InputEncoding = Encoding.UTF8;
             Console.SetIn(target);
-        }
-
-        /// <summary>
-        /// Run the scripts and validate the results.
-        /// </summary>
-        class TestScript : ModularInput
-        {
-            /// <summary>
-            /// Scheme used by the test
-            /// </summary>
-            public override Scheme Scheme
-            {
-                get
-                {
-                    return new Scheme
-                    {
-                        Title = "Test Example",
-                        Description = "This is a test modular input that handles all the appropriate functionality",
-                        StreamingMode = StreamingMode.Xml,
-                        Endpoint =
-                        {
-                            Arguments = new List<Argument>
-                            {
-                                new Argument
-                                {
-                                    Name = "interval",
-                                    Description = "Polling Interval",
-                                    DataType = DataType.Number,
-                                    Validation = "is_pos_int('interval')"
-                                },
-                                new Argument
-                                {
-                                    Name = "username",
-                                    Description = "Admin Username",
-                                    DataType = DataType.String,
-                                    RequiredOnCreate = false
-                                },
-                                new Argument
-                                {
-                                    Name = "password",
-                                    Description = "Admin Password",
-                                    DataType = DataType.String,
-                                    RequiredOnEdit = true
-                                }
-                            }
-                        }
-                    };
-                }
-            }
-
-            /// <summary>
-            /// Perform test verifications and stream events.
-            /// </summary>
-            /// <param name="inputDefinition">Input definition</param>
-            public override Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
-            {
-                // Verify every part of the input definition is received 
-                // parsed, and later recontructed correctly.
-                var reconstructed = Serialize(inputDefinition);
-                AssertEqualWithExpectedFile(InputDefinitionFilePath, reconstructed);
-
-
-                return Task.FromResult(false);
-            }
-
-            /// <summary>
-            /// Validate and return an error message.
-            /// </summary>
-            /// <param name="validation">Configuration data to validate</param>
-            /// <param name="errorMessage">Message to display in UI when validation fails</param>
-            /// <returns>Whether the validation succeeded</returns>
-            public override bool Validate(Validation inputDefinition, out string errorMessage)
-            {
-                // Test the dictionary for single value parameter.
-                Assert.False((bool)inputDefinition.Parameters["disabled"]);
-
-                var reconstructed = Serialize(inputDefinition);
-                AssertEqualWithExpectedFile(ValidationItemsFilePath, reconstructed);
-
-                errorMessage = "test message";
-                return false;
-            }
         }
     }
 }

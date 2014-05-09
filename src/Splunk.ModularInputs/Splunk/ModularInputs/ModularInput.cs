@@ -72,35 +72,43 @@ namespace Splunk.ModularInputs
         /// exceptions and internal progress messages encountered during 
         /// execution are written to the splunkd log file.
         /// </remarks>
-        public static async Task<int> RunAsync<T>(string[] args) where T : ModularInput, new()
+        public static async Task<int> RunAsync<T>(string[] args,
+            TextReader stdin = null, 
+            TextWriter stdout = null, 
+            TextWriter stderr = null) where T : ModularInput, new()
         {
+            /// Console default is OEM text encoding, which is not handled by Splunk,
+            //// resulting in loss of chars such as O with an umlaut (\u0150)
+            //// Splunk's default is UTF8.
+            if (stdin == null)
+            {
+                stdin = Console.In;
+                Console.InputEncoding = Encoding.UTF8;
+            }
+            if (stdout == null)
+            {
+                stdout = Console.Out;
+                Console.OutputEncoding = Encoding.UTF8;
+            }
+            if (stderr == null)
+            {
+                stderr = Console.Error;
+                Console.OutputEncoding = Encoding.UTF8;
+            }
+            
+
             try
             {
-                //// Console default is OEM text encoding, which is not handled by Splunk,
-                //// resulting in loss of chars such as O with an umlaut (\u0150)
-                //// Splunk's default is UTF8.
-
-                //// Avoid setting InputEncoding unnecessarily because 
-                //// it will cause a reset of Console.In (which should be a 
-                //// System.Console bug), 
-                //// losing the redirection unit tests depend on.
-
-                if (!(Console.InputEncoding is UTF8Encoding))
-                {
-                    Console.InputEncoding = Encoding.UTF8;
-                }
-
-                Console.OutputEncoding = Encoding.UTF8; // sets stderr and stdout
                 var script = new T();
 
                 if (args.Length == 0)
                 {
-                    await LogAsync("Reading input definitions.");
                     using (EventWriter writer = new EventWriter())
                     {
                         List<Task> instances = new List<Task>();
 
-                        var inputDefinitions = (InputDefinitionCollection)Read(typeof(InputDefinitionCollection));
+                        InputDefinitionCollection inputDefinitions = 
+                            (InputDefinitionCollection)new XmlSerializer(typeof(InputDefinitionCollection)).Deserialize(stdin);
                         foreach (InputDefinition inputDefinition in inputDefinitions)
                         {
                             instances.Add(Task.Factory.StartNew(() => script.StreamEventsAsync(inputDefinition, writer)));
@@ -110,55 +118,64 @@ namespace Splunk.ModularInputs
                     }
                     return 0;
                 }
-
-                if (args[0].ToLower().Equals("--scheme"))
+                else if (args[0].ToLower().Equals("--scheme"))
                 {
-                    if (script.Scheme != null)
+                    Scheme scheme = script.Scheme;
+                    if (scheme != null)
                     {
-                        await LogAsync("Writing introspection scheme");
-                        Console.WriteLine(Serialize(script.Scheme));
+                        StringWriter stringWriter = new StringWriter();
+                        new XmlSerializer(typeof(Scheme)).Serialize(stringWriter, scheme);
+                        stdout.WriteLine(stringWriter.ToString());
+                        return 0;
                     }
-
-                    return 0;
+                    else
+                    {
+                        throw new NullReferenceException("Scheme was null; could not serialize.");
+                        return -1;
+                    }
                 }
-
-                if (args[0].ToLower().Equals("--validate-arguments"))
+                else if (args[0].ToLower().Equals("--validate-arguments"))
                 {
                     string errorMessage = null;
 
                     try
                     {
-                        await LogAsync("Reading validation items");
-                        var validationItems = (Validation)Read(typeof(Validation));
-                        await LogAsync("Calling Validate");
-
-                        if (script.Validate(validationItems, out errorMessage))
+                        Validation validation = (Validation)new XmlSerializer(typeof(Validation)).Deserialize(stdin);
+                        if (script.Validate(validation, out errorMessage))
                         {
                             return 0; // Validation succeeded
                         }
                     }
                     catch (Exception e)
                     {
-                        LogExceptionAsync(e).Wait();
-
                         if (errorMessage == null)
                         {
                             errorMessage = e.Message;
-                            LogAsync("Using exception message as validation error message").Wait();
                         }
                     }
 
-                    await WriteValidationErrorAsync(errorMessage);
+                    using (var xmlWriter = XmlWriter.Create(stdout, XmlWriterSettings))
+                    {
+                        await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
+                        await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: errorMessage);
+                        await xmlWriter.WriteEndElementAsync();
+                    }
+                    return 0;
+                }
+                else
+                {
+                    await LogAsync("Invalid arguments to modular input.");
+                    return -1;
                 }
             }
             catch (Exception e)
             {
                 LogExceptionAsync(e).Wait();
+                return -1;
             }
-
-            // The value one indicates failure, but has no specific meaning
-            return 1;
         }
+
+   
 
         /// <summary>
         /// Streams events to Splunk through standard output.
@@ -167,34 +184,6 @@ namespace Splunk.ModularInputs
         /// Input definition from Splunk for this input.
         /// </param>
         public abstract Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter);
-
-        /// <summary>
-        /// Writes a validation error to standard output during external 
-        /// validation.
-        /// </summary>
-        /// <param name="message">The error message.</param>
-        /// <remarks>
-        /// <para>
-        /// The validation error will also be displayed in the Splunk UI.
-        /// Normally an application does not need to call this method.
-        /// It will be called by <see cref="ModularInput.Run{T}"/> automatically.
-        /// </para>
-        /// <example>Sample error message</example>
-        /// <code>
-        /// <error>
-        ///   <message>test message</message>
-        /// </error>
-        /// </code>
-        /// </remarks>
-        public static async Task WriteValidationErrorAsync(string message)
-        {
-            using (var xmlWriter = XmlWriter.Create(Console.Out, XmlWriterSettings))
-            {
-                await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
-                await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: message);
-                await xmlWriter.WriteEndElementAsync();
-            }
-        }
 
         /// <summary>
         /// Performs validation for configurations of a new input being
@@ -229,19 +218,6 @@ namespace Splunk.ModularInputs
         };
 
         /// <summary>
-        /// Serializes this object to XML output. Used by unit tests.
-        /// </summary>
-        /// <param name="object">An object to serialize.</param>
-        /// <returns>The XML string.</returns>
-        internal static string Serialize(object @object)
-        {
-            var x = new XmlSerializer(@object.GetType());
-            var sw = new StringWriter();
-            x.Serialize(sw, @object);
-            return sw.ToString();
-        }
-
-        /// <summary>
         /// Writes an exception as a <see cref="LogLevel.Info"/> event to the
         /// splunkd log.
         /// </summary>
@@ -269,17 +245,6 @@ namespace Splunk.ModularInputs
         static async Task LogAsync(string message, LogLevel level = LogLevel.Info)
         {
             await SystemLogger.WriteAsync(level, "Script.Run: " + message);
-        }
-
-        /// <summary>
-        /// Reads standard input and returns the parsed XML input.
-        /// </summary>
-        /// <param name="type">Type of object to parse.</param>
-        /// <returns>An object.</returns>
-        static object Read(Type type)
-        {
-            var x = new XmlSerializer(type);
-            return x.Deserialize(Console.In);
         }
 
         #endregion

@@ -68,16 +68,48 @@ namespace Splunk.ModularInputs
         /// according to current time, or in case of "unbroken" event, the
         /// timestamp supplied earlier for the event will be used.
         /// </remarks>
-        [XmlElement("time")]            
+        [XmlIgnore]            
         public DateTime? Time { get; set; }
-        // TODO: Fix UTC timestamp generation
+
+        [System.ComponentModel.DefaultValueAttribute(-1)]
+        [XmlElement("time")]
+        public long DateTimeElementElement
+        {
+            get
+            {
+                if (Time.HasValue)
+                {
+                    long timestamp = Time.Value.Ticks - new DateTime(1970, 1, 1).Ticks;
+                    timestamp /= TimeSpan.TicksPerSecond;
+                    return timestamp;
+                }
+                else
+                {
+                    return -1; // Timestamp should not be written
+                }
+            }
+            set
+            {
+                return;
+            }
+        }
 
         /// <summary>
         /// A value indicating whether the event stream has
         /// completed a set of events and can be flushed.
         /// </summary>
-        [XmlElement("done")]
+        /// 
+        [XmlIgnore]
         public bool Done { get; set; }
+
+        [System.ComponentModel.DefaultValueAttribute(null)] // Don't wrote <done/> if 
+        [XmlElement("done")]
+        public string DoneXmlElement
+        {
+            get { return Done ? string.Empty : null; }
+            set { return; }
+        }
+
 
         /// <summary>
         /// A value indicating whether the element contains
@@ -87,8 +119,16 @@ namespace Splunk.ModularInputs
         /// If this property is false, the element represents a single, 
         /// whole event.
         /// </remarks>
-        [XmlAttribute("unbroken")]
+        [XmlIgnore]
         public bool Unbroken { get; set; }
+
+        [XmlAttribute("unbroken")]
+        public string UnbrokenXmlElement 
+        {
+            get { return Unbroken ? "1" : "0"; }
+            set { return; }
+        }
+
 
         /// <summary>
         /// The name of the stanza of the input this event belongs to.

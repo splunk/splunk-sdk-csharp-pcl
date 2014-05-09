@@ -68,56 +68,50 @@ namespace Splunk.ModularInputs
     /// </code>
     /// </remarks>
     [XmlRoot("input")]
-    public class InputDefinition : InputDefinitionBase
+    public class InputDefinition : InputDefinitionCollection
     {
         /// <summary>
         /// A dictionary of stanzas keyed by stanza name.
         /// </summary>
-        Dictionary<string, Stanza> stanzas;
+        Dictionary<string, InputDefinition> inputDefinitions;
+
+        /// <summary>
+        /// The hostname for the Splunk server that runs the modular input.
+        /// </summary>
+        [XmlElement("server_host")]
+        public string ServerHost { get; set; }
+
+        /// <summary>
+        /// The management URI for the Splunk server, identified by host, port,
+        /// and protocol.
+        /// </summary>
+        [XmlElement("server_uri")]
+        public string ServerUri { get; set; }
+
+        /// <summary>
+        /// The directory used for a modular input to save checkpoints.  
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This location is where Splunk tracks the input state from sources
+        /// it is reading from.
+        /// </para>
+        /// </remarks>
+        [XmlElement("checkpoint_dir")]
+        public string CheckpointDirectory { get; set; }
+
+        /// <summary>
+        /// The REST API session key for this modular input.
+        /// </summary>
+        [XmlElement("session_key")]
+        public string SessionKey { get; set; }
 
         /// <summary> 
         /// The stanza elements in the configuration element.
         /// </summary>
         [XmlArray("configuration")]
         [XmlArrayItem("stanza")]
-        public List<Stanza> StanzaXmlElements { get; set; }
+        public List<InputDefinition> StanzaXmlElements { get; set; }
 
-        /// <summary>
-        /// Gets a dictionary of stanzas keyed by stanza name.
-        /// </summary>
-        public IDictionary<string, Stanza> Stanzas
-        {
-            get
-            {
-                if (this.stanzas == null)
-                {
-                    this.stanzas = this.StanzaXmlElements.ToDictionary(p => p.Name);
-                }
-
-                return this.stanzas;
-            }
-        }
-
-        /// <summary>
-        /// Gets the stanza in the input definition.
-        /// </summary>
-        /// <remarks>
-        /// This method is provided because it is very common to have only one
-        /// stanza.  That is the case when <see cref="UseSingleInstance"/> is 
-        /// true. If there is more than one stanza, this property will fail.
-        /// </remarks>
-        public Stanza Stanza
-        {
-            get
-            {
-                if (this.StanzaXmlElements.Count > 1)
-                {
-                    throw new InvalidOperationException(
-                        "There are more than one stanza. Use Stanzas property instead.");
-                }
-
-                return this.StanzaXmlElements[0];
-            }
-        }
     }
 }

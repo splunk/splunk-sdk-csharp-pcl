@@ -130,7 +130,13 @@ namespace Splunk.ModularInputs
         /// Gets or sets the endpoint element for this scheme.
         /// </summary>
         [XmlElement("endpoint")]
-        public EndpointElement Endpoint { get; set; }
+        internal EndpointElement Endpoint { get; set; }
+
+        public List<Argument> Arguments
+        {
+            get { return Endpoint.Arguments; }
+            set { Endpoint.Arguments = value; }
+        }
 
         /// <summary>
         /// The <see cref="EndpointElement"/> class represents the 

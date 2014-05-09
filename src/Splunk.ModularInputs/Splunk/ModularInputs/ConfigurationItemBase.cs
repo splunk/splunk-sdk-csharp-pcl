@@ -58,64 +58,9 @@ namespace Splunk.ModularInputs
         [XmlElement("param_list")]
         public List<MultiValueParameter> MultiValueParameterXmlElements { get; set; }
 
-        /// <summary>
-        /// Single value parameters keyed by name in the item.
-        /// </summary>
-        /// <remarks>
-        /// This method is provided to make it easier to retrieve single value
-        /// parameters. It is a much more common case than multi value 
-        /// parameters. Splunk auto-generated modular input UI does not
-        /// support multi value parameters.
-        /// </remarks>
-        public IDictionary<string, string> SingleValueParameters
-        {
-            get
-            {
-                if (this.singleValueParameters == null)
-                {
-                    this.singleValueParameters = this.SingleValueParameterXmlElements
-                        .ToDictionary(
-                        p => p.Name,
-                        p => (string)(SingleValueParameter.Value)p.ValueAsBaseType);
-                }
-
-                return this.singleValueParameters;
-            }
-        }
-
-        /// <summary>
-        /// Parameters keyed by name in the item.
-        /// </summary>
-        public IDictionary<string, ParameterBase.ValueBase> Parameters
-        {
-            get
-            {
-                if (this.parameters == null)
-                {
-                    var list = new List<ParameterBase>();
-
-                    list.AddRange(
-                        this.SingleValueParameterXmlElements.Select(
-                            p => (ParameterBase)p));
-
-                    list.AddRange(
-                        this.MultiValueParameterXmlElements.Select(
-                            p => (ParameterBase)p));
-
-                    this.parameters = list.ToDictionary(
-                        p => p.Name, p => p.ValueAsBaseType);
-                }
-
-                return this.parameters;
-            }
-        }
+     
 
         #region Privates/internals
-
-        /// <summary>
-        /// Parameter in the input definition item.
-        /// </summary>
-        Dictionary<string, ParameterBase.ValueBase> parameters;
 
         /// <summary>
         /// Single value parameters keyed by name in the input definition item.

@@ -19,28 +19,11 @@ namespace Splunk.ModularInputs
     using System.Xml.Serialization;
 
     /// <summary>
-    /// The <see cref="ParameterBase"/> class is the base class for different
-    /// types of parameters in an input configuration.
+    /// Base class for input definition.
     /// </summary>
-    public abstract class ParameterBase
+    [XmlRoot("input")]
+    public class InputDefinitionCollection
     {
-        /// <summary>
-        /// The name of the parameter.
-        /// </summary>
-        [XmlAttribute("name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets the value of the parameter.
-        /// </summary>
-        internal abstract ValueBase ValueAsBaseType { get; }
-
-        /// <summary>
-        /// The <see cref="ValueBase"/> abstract class is the base class for
-         /// different types of parameter values.
-        /// </summary>
-        public abstract class ValueBase
-        { 
-        }
+        
     }
 }

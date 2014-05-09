@@ -136,7 +136,7 @@ namespace Splunk.ModularInputs
                     try
                     {
                         await LogAsync("Reading validation items");
-                        var validationItems = (ValidationItems)Read(typeof(ValidationItems));
+                        var validationItems = (Validation)Read(typeof(Validation));
                         await LogAsync("Calling Validate");
 
                         if (script.Validate(validationItems, out errorMessage))
@@ -219,7 +219,7 @@ namespace Splunk.ModularInputs
         /// fails.</param>
         /// <returns>A value indicating whether the validation
         /// succeeded.</returns>
-        public virtual bool Validate(ValidationItems validationItems, out string errorMessage)
+        public virtual bool Validate(Validation validationItems, out string errorMessage)
         {
             errorMessage = null;
             return true;

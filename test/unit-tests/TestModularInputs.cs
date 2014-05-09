@@ -24,6 +24,8 @@ namespace Splunk.ModularInputs.UnitTesting
     using Splunk.ModularInputs;
 
     using Xunit;
+    using System.Xml;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// Test classes in Splunk.ModularInputs namespace
@@ -73,6 +75,83 @@ namespace Splunk.ModularInputs.UnitTesting
                 await ModularInput.RunAsync<TestScript>(new[] { "--scheme" });
                 AssertEqualWithExpectedFile(SchemeFilePath, consoleOut.ToString());
             }
+        }
+
+        [Trait("class", "Splunk.ModularInputs.SingleValueParameter")]
+        [Fact]
+        public void SingleValueParameterConversions()
+        {
+            SingleValueParameter parameter = new SingleValueParameter();
+
+            parameter.Value = "abc";
+            Assert.Equal("abc", (string)parameter);
+
+            parameter.Value = "52";
+            Assert.Equal(52, (int)parameter);
+
+            parameter.Value = "52";
+            Assert.Equal((double)52, (double)parameter);
+
+            parameter.Value = "1";
+            Assert.True((bool)parameter);
+
+            parameter.Value = "52";
+            Assert.Equal((long)52, (long)parameter);
+        }
+
+        [Trait("class", "Splunk.ModularInputs.SingleValueParameter")]
+        [Fact]
+        public void SingleValueParameterParsing()
+        {
+            using (TextReader reader = new StringReader("<param name=\"param1\">value1</param>"))
+            {
+                SingleValueParameter parameter =
+                    (SingleValueParameter)new XmlSerializer(typeof(SingleValueParameter)).Deserialize(reader);
+                Assert.Equal("param1", parameter.Name);
+                Assert.Equal("value1", parameter.Value);
+            }
+
+        }
+
+        [Trait("class", "Splunk.ModularInputs.MultiValueParameter")]
+        [Fact]
+        public void MultiValueParameterParsing()
+        {
+            using (TextReader reader = new StringReader("<param_list name=\"multiValue\"><value>value3</value>" +
+                "<value>value4</value></param_list>"))
+            {
+                MultiValueParameter parameter =
+                    (MultiValueParameter)new XmlSerializer(typeof(MultiValueParameter)).Deserialize(reader);
+                Assert.Equal("multiValue", parameter.Name);
+                Assert.Equal(new List<string> { "value3", "value4" }, parameter.Values);
+            }
+        }
+
+        [Trait("class", "Splunk.ModularInputs.MultiValueParameter")]
+        [Fact]
+        public void MultiValueParameterConversions()
+        {
+            MultiValueParameter parameter = new MultiValueParameter
+            {
+                Name = "some_name",
+                Values = new List<string> { "abc", "def" }
+            };
+            Assert.Equal(new List<string> { "abc", "def" }, (List<string>)parameter);
+
+            parameter.Values = new List<string> { "true", "0" };
+            Assert.Equal(new List<bool> { true, false }, (List<bool>)parameter);
+
+            parameter.Values = new List<string> { "52", "42" };
+            Assert.Equal(new List<double> { 52.0, 42.0 }, (List<double>)parameter);
+
+            parameter.Values = new List<string> { "52", "42" };
+            Assert.Equal(new List<float> { (float)52, (float)42 }, (List<float>)parameter);
+
+            parameter.Values = new List<string> { "52", "42" };
+            Assert.Equal(new List<int> { 52, 42 }, (List<int>)parameter);
+
+            parameter.Values = new List<string> { "52", "42" };
+            Assert.Equal(new List<long> { 52, 42 }, (List<long>)parameter);
         }
 
         /// <summary>
@@ -400,40 +479,6 @@ namespace Splunk.ModularInputs.UnitTesting
                 var reconstructed = Serialize(inputDefinition);
                 AssertEqualWithExpectedFile(InputDefinitionFilePath, reconstructed);
 
-                // Test the dictionary for single value parameter.
-                var stanza = inputDefinition.Stanzas["foobar://bbb"];
-                var parameterName = "param2";
-
-                // Test full parameter dictionary.
-                var parameterValue = stanza.Parameters[parameterName];
-                var singleValue = (SingleValueParameter.Value)parameterValue;
-                Assert.Equal("value22", singleValue);
-
-                // Test single value parameter dictionary.
-                var stringValue = stanza.SingleValueParameters[parameterName];
-                Assert.Equal("value22", stringValue);
-
-                // Test the dictionary for multi value parameter.
-                stanza = inputDefinition.Stanzas["foobar://bbb"];
-                parameterValue = stanza.Parameters["multiValue2"];
-
-                var multiValue = (MultiValueParameter.Value)parameterValue;
-                var elementInMultiValue = multiValue[1];
-                Assert.Equal("value4", elementInMultiValue);
-
-                // Stanza property can't be used since there are more than one.
-                stanza = null;
-                try
-                {
-                    stanza = inputDefinition.Stanza;
-                }
-                catch (InvalidOperationException e)
-                {
-                    Assert.True(e.Message.Contains("Use Stanzas property instead"));
-                }
-
-                Assert.Null(stanza);
-                WriteEvents();
 
                 return Task.FromResult(false);
             }
@@ -444,12 +489,10 @@ namespace Splunk.ModularInputs.UnitTesting
             /// <param name="validationItems">Configuration data to validate</param>
             /// <param name="errorMessage">Message to display in UI when validation fails</param>
             /// <returns>Whether the validation succeeded</returns>
-            public override bool Validate(ValidationItems validationItems, out string errorMessage)
+            public override bool Validate(Validation validationItems, out string errorMessage)
             {
                 // Test the dictionary for single value parameter.
-                var item = validationItems.Item;
-                string stringParamValue = (SingleValueParameter.Value)item.Parameters["disabled"];
-                Assert.Equal("0", stringParamValue);
+                //Assert.Equal("0", (string)validationItems["disabled"]);
 
                 var reconstructed = Serialize(validationItems);
                 AssertEqualWithExpectedFile(ValidationItemsFilePath, reconstructed);

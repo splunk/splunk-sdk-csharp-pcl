@@ -20,6 +20,7 @@ namespace Splunk.ModularInputs
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Xml.Serialization;
+    using System.Linq;
 
     /// <summary>
     /// The <see cref="MultiValueParameter"/> class represents a parameter that
@@ -35,153 +36,54 @@ namespace Splunk.ModularInputs
     /// </code>
     /// </remarks>
     [XmlRoot("param_list")]
-    public class MultiValueParameter : ParameterBase
+    public class MultiValueParameter : Parameter
     {
         #region Properties
 
-        /// <summary>
-        /// The value of the parameter.
-        /// </summary>
         [XmlElement("value")]
-        public Value ValueXmlElements { get; set; }
+        public List<string> Values;
 
+        #endregion
+
+        #region Methods
+
+        public static explicit operator List<string>(MultiValueParameter parameter)
+        {
+            return new List<string>(parameter.Values);
+        }
+
+        public static explicit operator List<bool>(MultiValueParameter parameter)
+        {
+            return (from x in parameter.Values select Util.ParseSplunkBoolean(x)).ToList();
+        }
+
+        public static explicit operator List<double>(MultiValueParameter parameter)
+        {
+            return (from x in parameter.Values select double.Parse(x)).ToList();
+        }
+
+        public static explicit operator List<float>(MultiValueParameter parameter)
+        {
+            return (from x in parameter.Values select float.Parse(x)).ToList();
+        }
+
+        public static explicit operator List<int>(MultiValueParameter parameter)
+        {
+            return (from x in parameter.Values select int.Parse(x)).ToList();
+        }
+
+        public static explicit operator List<long>(MultiValueParameter parameter)
+        {
+            return (from x in parameter.Values select long.Parse(x)).ToList();
+        }
+        
         #endregion
 
         #region Privates/internals
 
-        /// <summary>
-        /// Gets the value of the parameter.
-        /// </summary>
-        internal override ValueBase ValueAsBaseType
-        {
-            get { return this.ValueXmlElements; }
-        }
-
         #endregion
 
         #region Types
-
-        /// <summary>
-        /// The <see cref="Value"/> class represents a multivalue.
-        /// </summary>
-        [SuppressMessage(
-            "Microsoft.StyleCop.CSharp.DocumentationRules",
-            "SA1600:ElementsMustBeDocumented",
-            Justification = "Internal class. Pure passthrough.")]
-        public class Value : ValueBase, IList<string>
-        {
-            readonly List<string> value = new List<string>();
-
-            public int Count
-            {
-                get { return this.value.Count; }
-            }
-
-            public bool IsReadOnly
-            {
-                get { return ((ICollection<string>)this.value).IsReadOnly; }
-            }
-
-            public string this[int index]
-            {
-                get { return this.value[index]; }
-                set { this.value[index] = value; }
-            }
-
-            public int IndexOf(string item)
-            {
-                return this.value.IndexOf(item);
-            }
-
-            public void Insert(int index, string item)
-            {
-                this.value.Insert(index, item);
-            }
-
-            public void RemoveAt(int index)
-            {
-                this.value.RemoveAt(index);
-            }
-
-            public void Add(string item)
-            {
-                this.value.Add(item);
-            }
-
-            public void Clear()
-            {
-                this.value.Clear();
-            }
-
-            public bool Contains(string item)
-            {
-                return this.value.Contains(item);
-            }
-
-            public void CopyTo(string[] array, int arrayIndex)
-            {
-                this.value.CopyTo(array, arrayIndex);
-            }
-
-            public bool Remove(string item)
-            {
-                return this.value.Remove(item);
-            }
-
-            public IEnumerator<string> GetEnumerator()
-            {
-                return this.value.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return this.GetEnumerator();
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="ValueXmlElement"/> class represents the <b>value</b> 
-        /// XML element.
-        /// </summary>
-        /// <remarks>
-        /// This class is used for serializing and deserializing the
-        /// <b>value</b> XML element for a multivalue parameter.
-        /// </remarks>
-        [XmlRoot("value")]
-        public class ValueXmlElement
-        {
-            /// <summary>
-            /// The value of the parameter.
-            /// </summary>
-            [XmlText]
-            public string Text { get; set; }
-
-            /// <summary>
-            /// Returns the string value.
-            /// </summary>
-            /// <returns>
-            /// The string value.
-            /// </returns>
-            public override string ToString()
-            {
-                return this.Text;
-            }
-
-            /// <summary>
-            /// Converts a <see cref="ValueXmlElement"/> to a <c>string</c>.
-            /// </summary>
-            /// <param name="value">Field value.</param>
-            /// <returns>
-            /// The string value delimiter.
-            /// </returns>
-            /// <remarks>
-            /// This method is the same as <see cref="ToString" />.
-            /// </remarks>
-            public static implicit operator string(ValueXmlElement value)
-            {
-                return value.ToString();
-            }
-        }
 
         #endregion
     }

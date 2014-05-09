@@ -16,14 +16,15 @@
 
 namespace Splunk.ModularInputs
 {
-    using System.Xml.Serialization;
+    using System;
+using System.Xml.Serialization;
 
     /// <summary>
     /// The <see cref="SingleValueParameter"/> class represents a parameter
     /// that contains a single value.
     /// </summary>
     [XmlRoot("param")]
-    public class SingleValueParameter : ParameterBase
+    public class SingleValueParameter : Parameter
     {
         /// <summary>
         /// The value of the parameter.
@@ -36,53 +37,36 @@ namespace Splunk.ModularInputs
         /// </code>
         /// </remarks>
         [XmlText]
-        public string ValueXmlText { get; set; }
+        public string Value { get; set; }
 
-        /// <summary>
-        /// Gets the value of the parameter.
-        /// </summary>
-        internal override ValueBase ValueAsBaseType
+        public static explicit operator string(SingleValueParameter parameter)
         {
-            get { return new Value(this.ValueXmlText); }
+            return parameter.Value;
         }
 
-        /// <summary>
-        /// The <see cref="Value"/> class represents a single value.
-        /// </summary>
-        public class Value : ValueBase
+        public static explicit operator int(SingleValueParameter parameter)
         {
-            /// <summary>
-            /// The single value.
-            /// </summary>
-            readonly string stringValue;
+            return int.Parse(parameter.Value);
+        }
 
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Value"/> class.
-            /// </summary>
-            /// <param name="value">Value of this type.</param>
-            public Value(string value)
-            {
-                this.stringValue = value;
-            }
+        public static explicit operator double(SingleValueParameter parameter)
+        {
+            return double.Parse(parameter.Value);
+        }
 
-            /// <summary>
-            /// Converts a value to a string.
-            /// </summary>
-            /// <param name="singleValue">The value.</param>
-            /// <returns>The string value.</returns>
-            public static implicit operator string(Value singleValue)
-            {
-                return singleValue.ToString();
-            }
+        public static explicit operator float(SingleValueParameter parameter)
+        {
+            return float.Parse(parameter.Value);
+        }
 
-            /// <summary>
-            /// Converts to a string.
-            /// </summary>
-            /// <returns>The string value.</returns>
-            public override string ToString()
-            {
-                return this.stringValue;
-            }
+        public static explicit operator long(SingleValueParameter parameter)
+        {
+            return long.Parse(parameter.Value);
+        }
+
+        public static explicit operator bool(SingleValueParameter parameter)
+        {
+            return Util.ParseSplunkBoolean(parameter.Value);
         }
     }
 }

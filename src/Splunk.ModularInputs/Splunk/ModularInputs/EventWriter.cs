@@ -36,10 +36,11 @@ namespace Splunk.ModularInputs
 
         private BlockingCollection<Event> eventQueue;
         private XmlWriter writer;
-        Task eventQueueMonitor;
-        TextWriter stderr;
-        
-        
+        private Task eventQueueMonitor;
+        private TextWriter stderr;
+
+        #region Constructors
+
         /// <summary>
         /// 
         /// </summary>
@@ -59,15 +60,13 @@ namespace Splunk.ModularInputs
             eventQueueMonitor = WriteEventElementsAsync();
         }
 
+        #endregion
+
         public void WriteEvent(Event e)
         {
             eventQueue.Add(e);
         }
     
-        #region Privates/internals
-
-        static readonly DateTime UnixUtcEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         public void Dispose()
         {
             eventQueue.CompleteAdding();
@@ -76,17 +75,9 @@ namespace Splunk.ModularInputs
 
         public async Task LogAsync(string severity, string message)
         {
-            await this.stderr.WriteAsync(severity);
-            await this.stderr.WriteAsync(" ");
-            await this.stderr.WriteAsync(message);
-            await this.stderr.WriteAsync(this.stderr.NewLine);
+            await this.stderr.WriteAsync(severity + " " + message + this.stderr.NewLine);
         }
 
-        static string ConvertDateTimeToUnixTimestamp(DateTime value)
-        {
-            var utcTime = TimeZoneInfo.ConvertTime(value, TimeZoneInfo.Utc);
-            return (utcTime - UnixUtcEpoch).TotalSeconds.ToString();
-        }
 
         private async Task WriteEventElementsAsync()
         {
@@ -102,7 +93,5 @@ namespace Splunk.ModularInputs
             await writer.FlushAsync();
             writer.Close();
         }
-        
-        #endregion
     }
 }

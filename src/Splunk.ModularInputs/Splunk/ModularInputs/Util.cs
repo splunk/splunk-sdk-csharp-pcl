@@ -8,7 +8,7 @@ namespace Splunk.ModularInputs
 {
     internal static class Util
     {
-        public static bool ParseSplunkBoolean(string input)
+        internal static bool ParseSplunkBoolean(string input)
         {
             if (input == null)
                 throw new NullReferenceException("Cannot parse a Splunk boolean from null");

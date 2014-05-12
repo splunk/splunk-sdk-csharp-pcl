@@ -39,6 +39,9 @@ namespace Splunk.ModularInputs
     [XmlRoot("arg")]
     public class Argument
     {
+
+        #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Argument" /> class.
         /// </summary>
@@ -48,6 +51,10 @@ namespace Splunk.ModularInputs
             this.RequiredOnEdit = false;
             this.RequiredOnCreate = true;
         }
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// The unique name for the parameter.
@@ -115,5 +122,7 @@ namespace Splunk.ModularInputs
         /// </remarks>
         [XmlElement("required_on_create")]
         public bool RequiredOnCreate { get; set; }
+
+        #endregion
     }
 }

@@ -38,7 +38,6 @@
     <Compile Include="Splunk\ModularInputs\Argument.cs" />
     <Compile Include="Splunk\ModularInputs\Util.cs" />
     <Compile Include="Splunk\ModularInputs\ConfigurationItem.cs" />
-    <Compile Include="Splunk\ModularInputs\ConfigurationItemBase.cs" />
     <Compile Include="Splunk\ModularInputs\DataType.cs" />
     <Compile Include="Splunk\ModularInputs\Event.cs" />
     <Compile Include="Splunk\ModularInputs\EventWriter.cs" />
@@ -50,7 +49,6 @@
     <Compile Include="Splunk\ModularInputs\Scheme.cs" />
     <Compile Include="Splunk\ModularInputs\SingleValueParameter.cs" />
     <Compile Include="Splunk\ModularInputs\StreamingMode.cs" />
-    <Compile Include="Splunk\ModularInputs\SystemLogger.cs" />
     <Compile Include="Splunk\ModularInputs\Validation.cs" />
     <None Include="packages.config" />
   </ItemGroup>

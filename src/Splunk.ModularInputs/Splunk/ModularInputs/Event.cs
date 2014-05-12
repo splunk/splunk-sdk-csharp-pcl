@@ -30,6 +30,10 @@ namespace Splunk.ModularInputs
     [XmlRoot("event")]
     public struct Event
     {
+        private static long ticksSinceEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
+
+        #region Properties
+
         /// <summary>
         /// Event data.
         /// </summary>
@@ -71,6 +75,9 @@ namespace Splunk.ModularInputs
         [XmlIgnore]            
         public DateTime? Time { get; set; }
 
+        // This property is used to serialize the Time attribute to XML.
+        // The Time property is a C# DateTime? instance. This property serializes
+        // it as a timestamp of seconds since the epoch.
         [System.ComponentModel.DefaultValueAttribute(-1)]
         [XmlElement("time")]
         public long DateTimeElementElement
@@ -79,7 +86,7 @@ namespace Splunk.ModularInputs
             {
                 if (Time.HasValue)
                 {
-                    long timestamp = Time.Value.Ticks - new DateTime(1970, 1, 1).Ticks;
+                    long timestamp = Time.Value.Ticks - ticksSinceEpoch;
                     timestamp /= TimeSpan.TicksPerSecond;
                     return timestamp;
                 }
@@ -102,7 +109,10 @@ namespace Splunk.ModularInputs
         [XmlIgnore]
         public bool Done { get; set; }
 
-        [System.ComponentModel.DefaultValueAttribute(null)] // Don't wrote <done/> if 
+        // This property is used to serialize the Done attribute to XML.
+        // If the Done property is true, this should serialize to <done />. If
+        // it is false, no element should be written.
+        [System.ComponentModel.DefaultValueAttribute(null)]
         [XmlElement("done")]
         public string DoneXmlElement
         {

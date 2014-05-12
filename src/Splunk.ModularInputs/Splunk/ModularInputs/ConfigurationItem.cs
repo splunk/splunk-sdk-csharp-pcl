@@ -16,13 +16,58 @@
 
 namespace Splunk.ModularInputs
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Xml.Serialization;
 
     /// <summary>
-    /// Provides a class that represents a configuration item that Splunk sends
-    /// to a modular inputs program to start event streaming.
+    /// The <see cref="ConfigurationItem"/> class is the base class for
+    /// input definition that Splunk sends to modular input to start event
+    /// streaming.
     /// </summary>
     [XmlRoot("item")]
-    public class ConfigurationItem : ConfigurationItemBase
-    { }
+    public class ConfigurationItem
+    {
+        #region Constructors
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationItem"/> class.
+        /// </summary>
+        internal ConfigurationItem()
+        {
+            this.SingleValueParameterXmlElements = new List<SingleValueParameter>();
+            this.MultiValueParameterXmlElements = new List<MultiValueParameter>();
+        }
+
+        #endregion
+
+        /// <summary>
+        /// The name of this item.
+        /// </summary>
+        [XmlAttribute("name")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The list of parameters for defining this item.
+        /// </summary>
+        [XmlElement("param")]
+        public List<SingleValueParameter> SingleValueParameterXmlElements { get; set; }
+
+        /// <summary>
+        /// The list of multi value parameters for defining this stanza.
+        /// </summary>
+        [XmlElement("param_list")]
+        public List<MultiValueParameter> MultiValueParameterXmlElements { get; set; }
+
+     
+
+        #region Privates/internals
+
+        /// <summary>
+        /// Single value parameters keyed by name in the input definition item.
+        /// </summary>
+        Dictionary<string, string> singleValueParameters;
+
+        #endregion
+    }
 }

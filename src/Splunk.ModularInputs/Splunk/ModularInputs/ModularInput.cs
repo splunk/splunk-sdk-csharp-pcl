@@ -73,8 +73,8 @@ namespace Splunk.ModularInputs
         /// execution are written to the splunkd log file.
         /// </remarks>
         public static async Task<int> RunAsync<T>(string[] args,
-            TextReader stdin = null, 
-            TextWriter stdout = null, 
+            TextReader stdin = null,
+            TextWriter stdout = null,
             TextWriter stderr = null) where T : ModularInput, new()
         {
             /// Console default is OEM text encoding, which is not handled by Splunk,
@@ -95,87 +95,92 @@ namespace Splunk.ModularInputs
                 stderr = Console.Error;
                 Console.OutputEncoding = Encoding.UTF8;
             }
-            
 
-            try
+            using (EventWriter writer = new EventWriter())
             {
-                var script = new T();
 
-                if (args.Length == 0)
+                try
                 {
-                    using (EventWriter writer = new EventWriter())
+                    var script = new T();
+
+                    if (args.Length == 0)
                     {
                         List<Task> instances = new List<Task>();
 
-                        InputDefinitionCollection inputDefinitions = 
-                            (InputDefinitionCollection)new XmlSerializer(typeof(InputDefinitionCollection)).Deserialize(stdin);
+                        InputDefinitionCollection inputDefinitions =
+                            (InputDefinitionCollection)new XmlSerializer(typeof(InputDefinitionCollection)).
+                            Deserialize(stdin);
                         foreach (InputDefinition inputDefinition in inputDefinitions)
                         {
-                            instances.Add(Task.Factory.StartNew(() => script.StreamEventsAsync(inputDefinition, writer)));
+                            instances.Add(Task.Factory.StartNew(() =>
+                                script.StreamEventsAsync(inputDefinition, writer)));
                         }
 
                         Task.WaitAll(instances.ToArray());
+
+                        return 0;
                     }
-                    return 0;
-                }
-                else if (args[0].ToLower().Equals("--scheme"))
-                {
-                    Scheme scheme = script.Scheme;
-                    if (scheme != null)
+                    else if (args[0].ToLower().Equals("--scheme"))
                     {
-                        StringWriter stringWriter = new StringWriter();
-                        new XmlSerializer(typeof(Scheme)).Serialize(stringWriter, scheme);
-                        stdout.WriteLine(stringWriter.ToString());
+                        Scheme scheme = script.Scheme;
+                        if (scheme != null)
+                        {
+                            StringWriter stringWriter = new StringWriter();
+                            new XmlSerializer(typeof(Scheme)).Serialize(stringWriter, scheme);
+                            stdout.WriteLine(stringWriter.ToString());
+                            return 0;
+                        }
+                        else
+                        {
+                            throw new NullReferenceException("Scheme was null; could not serialize.");
+                            return -1;
+                        }
+                    }
+                    else if (args[0].ToLower().Equals("--validate-arguments"))
+                    {
+                        string errorMessage = null;
+
+                        try
+                        {
+                            Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
+                                Deserialize(stdin);
+                            if (script.Validate(validation, out errorMessage))
+                            {
+                                return 0; // Validation succeeded
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            if (errorMessage == null)
+                            {
+                                errorMessage = e.Message;
+                            }
+                        }
+
+                        using (var xmlWriter = XmlWriter.Create(stdout, XmlWriterSettings))
+                        {
+                            await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
+                            await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: errorMessage);
+                            await xmlWriter.WriteEndElementAsync();
+                        }
                         return 0;
                     }
                     else
                     {
-                        throw new NullReferenceException("Scheme was null; could not serialize.");
+                        await writer.LogAsync("ERROR", "Invalid arguments to modular input.");
                         return -1;
                     }
                 }
-                else if (args[0].ToLower().Equals("--validate-arguments"))
+                catch (Exception e)
                 {
-                    string errorMessage = null;
-
-                    try
-                    {
-                        Validation validation = (Validation)new XmlSerializer(typeof(Validation)).Deserialize(stdin);
-                        if (script.Validate(validation, out errorMessage))
-                        {
-                            return 0; // Validation succeeded
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        if (errorMessage == null)
-                        {
-                            errorMessage = e.Message;
-                        }
-                    }
-
-                    using (var xmlWriter = XmlWriter.Create(stdout, XmlWriterSettings))
-                    {
-                        await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
-                        await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: errorMessage);
-                        await xmlWriter.WriteEndElementAsync();
-                    }
-                    return 0;
-                }
-                else
-                {
-                    await LogAsync("Invalid arguments to modular input.");
+                    var full = e.ToString().Replace(Environment.NewLine, " | ");
+                    writer.LogAsync(string.Format("Unhandled exception: {0}", full), "FATAL").Wait();
                     return -1;
                 }
             }
-            catch (Exception e)
-            {
-                LogExceptionAsync(e).Wait();
-                return -1;
-            }
         }
 
-   
+
 
         /// <summary>
         /// Streams events to Splunk through standard output.
@@ -211,41 +216,11 @@ namespace Splunk.ModularInputs
 
         #region Privates/internals
 
-        static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings() 
-        { 
-            Async = true, 
-            ConformanceLevel = ConformanceLevel.Fragment 
+        private static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings()
+        {
+            Async = true,
+            ConformanceLevel = ConformanceLevel.Fragment
         };
-
-        /// <summary>
-        /// Writes an exception as a <see cref="LogLevel.Info"/> event to the
-        /// splunkd log.
-        /// </summary>
-        /// <param name="e">
-        /// The <see cref="Exception"/> to write.
-        /// </param>
-        static async Task LogExceptionAsync(Exception e)
-        {
-            //// The splunkd logger identifies each line of text as a new log entry, but the stack trace is a
-            //// multi-line entry. Hence, we replace newlines with the string " | ".
-            var full = e.ToString();
-            full = full.Replace(Environment.NewLine, " | ");
-            await LogAsync(string.Format("Unhandled exception: {0}", full), LogLevel.Fatal);
-        }
-
-        /// <summary>
-        /// Writes a message to the splunkd log.
-        /// </summary>
-        /// <param name="message">
-        /// A message.
-        /// </param>
-        /// <param name="level">Log level. The default value is 
-        /// <c>LogLevel.Info</c>.
-        /// </param>
-        static async Task LogAsync(string message, LogLevel level = LogLevel.Info)
-        {
-            await SystemLogger.WriteAsync(level, "Script.Run: " + message);
-        }
 
         #endregion
     }

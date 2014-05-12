@@ -14,11 +14,10 @@
  * under the License.
  */
 
-// TODO:
-//
-// [ ] Port DispatchTimeFormat and use it wherever appropriate. Can we create
-//     a relative as well as an absolute time formatter?
-// [O] Documentation
+//// TODO:
+//// [ ] Port DispatchTimeFormat and use it wherever appropriate. Can we create
+////     a relative as well as an absolute time formatter?
+//// [O] Documentation
 
 namespace Splunk.Client
 {

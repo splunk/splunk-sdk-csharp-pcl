@@ -15,8 +15,8 @@
  */
 
 // TODO:
-// [ ] Contracts
-// [ ] Documentation
+// [O] Contracts
+// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -34,10 +34,14 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="ResourceName"/> class.
         /// </summary>
-        /// <param name="resourceName"></param>
-        /// <param name="parts"></param>
+        /// <param name="resourceName">
+        /// 
+        /// </param>
+        /// <param name="parts">
+        /// 
+        /// </param>
         public ResourceName(ResourceName resourceName, params string[] parts)
             : this(resourceName.Concat(parts))
         {
@@ -46,9 +50,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Intializes a new instance of the <see cref="ResourceName"/> class.
         /// </summary>
-        /// <param name="parts"></param>
+        /// <param name="parts">
+        /// </param>
         public ResourceName(params string[] parts)
             : this(parts.AsEnumerable<string>())
         {
@@ -56,7 +61,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Intializes a new instance of the <see cref="ResourceName"/> class.
         /// </summary>
         /// <param name="parts"></param>
         public ResourceName(IEnumerable<string> parts)

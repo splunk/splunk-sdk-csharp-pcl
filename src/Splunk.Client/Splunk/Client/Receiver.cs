@@ -14,13 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [ ] Properties & Methods
-// [ ] Refactor Resource<TResource> to eliminate all abstract members because
-//     there are too many places where they aren't relevant. Move them into
-//     Entity<TEntity> and EntityCollection<TCollection, TEntity>
+//// TODO:
+//// [ ] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {

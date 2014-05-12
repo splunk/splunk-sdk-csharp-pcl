@@ -14,10 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [O] Contracts
-// [ ] Documentation
-// [ ] Consider limiting the number of messages we process in a response body
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -48,13 +47,13 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the text of the current <see cref="Message"/>.
         /// </summary>
         public string Text
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the type of the current <see cref="Message"/>.
         /// </summary>
         public MessageType Type
         { get; private set; }

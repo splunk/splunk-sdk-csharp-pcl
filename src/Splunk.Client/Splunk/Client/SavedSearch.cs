@@ -14,13 +14,9 @@
  * under the License.
  */
 
-// TODO:
-//
-// [O] Contracts
-//
-// [O] Documentation
-//
-// [ ] Trace messages
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {

@@ -14,16 +14,10 @@
  * under the License.
  */
 
-// TODO:
-//
-// [X] Remove Observers property and replace it with gated OnNext, OnError,
-//     and OnCompleted methods
-//
-// [O] Contracts
-//
-// [O] Documentation
-//
-// [ ] Trace messages (e.g., when there are no observers)
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+//// [ ] Trace messages (e.g., when there are no observers)
 
 namespace Splunk.Client
 {

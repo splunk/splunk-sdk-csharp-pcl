@@ -14,19 +14,19 @@
  * under the License.
  */
 
-// TODO:
-// [X] Synchronization strategy
-// [X] Settable SessionKey
-// [X] Dead code removal
-// [X] Contracts
-// [O] Documentation
-// [O] All unsealed classes that implement IDisposable must also implement 
-//     this method: protected virtual void Dispose(bool);
-//     See [Implementing a Dispose Method](http://goo.gl/VPIovn)
-//     All sealed classes that implement IDisposable must also implemnt this
-//     method: void Dispose(bool);
-//     See [GC.SuppressFinalize Method](http://goo.gl/XiI3HZ) and note the
-//     private void Dispose(bool disposing) implementation.
+//// TODO:
+//// [X] Synchronization strategy
+//// [X] Settable SessionKey
+//// [X] Dead code removal
+//// [X] Contracts
+//// [O] Documentation
+//// [X] All unsealed classes that implement IDisposable must also implement 
+////     this method: protected virtual void Dispose(bool);
+////     See [Implementing a Dispose Method](http://goo.gl/VPIovn)
+////     All sealed classes that implement IDisposable must also implemnt this
+////     method: void Dispose(bool);
+////     See [GC.SuppressFinalize Method](http://goo.gl/XiI3HZ) and note the
+////     private void Dispose(bool disposing) implementation.
 
 namespace Splunk.Client
 {

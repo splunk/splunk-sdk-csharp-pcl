@@ -16,7 +16,6 @@
 
 //// TODO:
 //// [O] Documentation
-//// [ ] Diagnostics
 
 namespace Splunk.Client
 {

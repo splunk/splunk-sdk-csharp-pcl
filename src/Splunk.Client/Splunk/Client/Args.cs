@@ -14,14 +14,14 @@
  * under the License.
  */
 
-// TODO: Ensure this code is solid
-// [ ] Support more than one level of inheritance => move away from generic implementation.
-// [O] Documentation
-// [X] Respect DataMemberAttribute.Order
-// [X] Do not serialize default values => define default values and check for them
-// [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)
-// [X] Work on nomenclature (serialization nomenclature is not necessarily appropriate)
-// [X] Ensure this class works with nullable types.
+//// TODO: Ensure this code is solid
+//// [ ] Support more than one level of inheritance => move away from generic implementation.
+//// [O] Documentation
+//// [X] Respect DataMemberAttribute.Order
+//// [X] Do not serialize default values => define default values and check for them
+//// [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)
+//// [X] Work on nomenclature (serialization nomenclature is not necessarily appropriate)
+//// [X] Ensure this class works with nullable types.
 
 namespace Splunk.Client
 {

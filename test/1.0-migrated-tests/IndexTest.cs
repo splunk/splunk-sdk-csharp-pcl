@@ -62,7 +62,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task IndexAccessors()
         {
-            string indexName = "sdk-tests2";
+            string indexName = "sdk-tests2_indexaccessors";
             Service service = Connect();
             DateTimeOffset offset = new DateTimeOffset(DateTime.Now);
             string now = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") +
@@ -248,7 +248,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task IndexEvents()
         {
-            string indexName = "sdk-tests2";
+            string indexName = "sdk-tests2_indexevents";
             DateTimeOffset offset = new DateTimeOffset(DateTime.Now);
             string now = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") +
                          string.Format("{0}{1} ", offset.Offset.Hours.ToString("D2"),
@@ -344,6 +344,7 @@ namespace Splunk.Client.UnitTesting
             service = this.Connect();
             index = await service.GetIndexAsync(indexName);
             long count = index.TotalEventCount;
+            Console.WriteLine("Index TotalEventCount = {0} ", count);
             Receiver receiver = service.Receiver;
             await receiver.SendAsync(now + " Hello World. \u0150");
             await receiver.SendAsync(now + " Goodbye World. \u0150");
@@ -351,12 +352,14 @@ namespace Splunk.Client.UnitTesting
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
-            while (watch.Elapsed < new TimeSpan(0, 0, 60) && index.TotalEventCount != count + 2)
+            while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != count + 2)
             {
-                await Task.Delay(1000);
+                Console.WriteLine("Index TotalEventCount = {0} ", index.TotalEventCount);
+                await Task.Delay(2000);
                 await index.GetAsync();
             }
 
+            Console.WriteLine("After wait a while, Index TotalEventCount = {0} ", index.TotalEventCount);
             Console.WriteLine("send string event, sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
             Assert.True(index.TotalEventCount == count + 2);
 
@@ -431,7 +434,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task IndexArgs()
         {
-            string indexName = "sdk-tests2";
+            string indexName = "sdk-tests2_indexargs";
             DateTimeOffset offset = new DateTimeOffset(DateTime.Now);
             string now = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss") +
                          string.Format("{0}{1} ", offset.Offset.Hours.ToString("D2"),

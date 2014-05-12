@@ -168,7 +168,7 @@ namespace Splunk.Client.UnitTesting
 
             Service service = this.Connect();
             watch.Start();
-            service.Server.RestartAsync(10 * 60 * 1000).Wait();
+            service.Server.RestartAsync().Wait();
             watch.Stop();
 
             Console.WriteLine("spend {0}s to restart server", watch.Elapsed.TotalSeconds);

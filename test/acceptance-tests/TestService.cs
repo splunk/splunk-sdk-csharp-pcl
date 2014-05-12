@@ -1152,7 +1152,7 @@ namespace Splunk.Client.UnitTesting
 
                 for (int i = 0; i < 10; i++)
                 {
-                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} Hello world!", i, DateTime.Now));
+                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} send string event Hello world!", i, DateTime.Now));
                 }
 
                 using (var eventStream = new MemoryStream())
@@ -1161,9 +1161,11 @@ namespace Splunk.Client.UnitTesting
 
                     for (int i = 0; i < 10; i++)
                     {
-                        writer.Write(string.Format("{0:D6} {1} Goodbye world!\r\n", i, DateTime.Now));
+                        writer.Write(string.Format("{0:D6} {1} send stream event hello world!\r\n", i, DateTime.Now));
                     }
 
+                    writer.Flush();
+                    eventStream.Seek(0, SeekOrigin.Begin);
                     var task = receiver.SendAsync(eventStream);
                     task.Wait();
                 }

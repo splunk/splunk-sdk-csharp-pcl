@@ -52,13 +52,13 @@ namespace Splunk.Client
         /// Name of the <see cref="SavedSearch"/>.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal SavedSearch(Context context, Namespace ns, string name)
             : base(context, ns, SavedSearchCollection.ClassResourceName, name)
@@ -119,11 +119,19 @@ namespace Splunk.Client
             get { return this.GetValue("AutoSummarize", AutoSummarize_t.Converter.Instance); }
         }
 
+        /// <summary>
+        /// Gets or sets the cron schedule to execute the current <see cref=
+        /// "SavedSearch"/>.
+        /// </summary>
         public string CronSchedule
         {
             get { return this.GetValue("CronSchedule", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the human-readable description of the current <see cref=
+        /// "SavedSearch"/>.
+        /// </summary>
         public string Description
         {
             get { return this.GetValue("Description", StringConverter.Instance); }
@@ -148,31 +156,57 @@ namespace Splunk.Client
             get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
+        /// <summary>
+        /// Gets a value that indicates if the current <see cref="SavedSearch"/>
+        /// is disabled.
+        /// </summary>
+        /// <remarks>
+        /// Disabled saved searches are not visible in Splunk Web.
+        /// </remarks>
         public bool IsDisabled
         {
             get { return this.GetValue("IsDisabled", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets a value that indicates whether the current <see cref=
+        /// "SavedSearch"/> runs on a schedule.
+        /// </summary>
         public bool IsScheduled
         {
             get { return this.GetValue("IsScheduled", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets a value that indicates whether the current <see cref=
+        /// "SavedSearch"/> appears in the list of saved searches on Splunk
+        /// Web.
+        /// </summary>
+        /// </summary>
         public bool IsVisible
         {
             get { return this.GetValue("IsVisible", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int MaxConcurrent
         {
             get { return this.GetValue("MaxConcurrent", Int32Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime NextScheduledTime
         {
             get { return this.GetValue("NextScheduledTime", DateTimeConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool RealtimeSchedule
         {
             get { return this.GetValue("RealtimeSchedule", BooleanConverter.Instance); }
@@ -183,26 +217,41 @@ namespace Splunk.Client
             get { return this.GetValue("Request", Request_t.Converter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool RestartOnSearchPeerAdd
         {
             get { return this.GetValue("RestartOnSearchpeerAdd", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string QualifiedSearch
         {
             get { return this.GetValue("QualifiedSearch", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public bool RunOnStartup
         {
             get { return this.GetValue("RunOnStartup", BooleanConverter.Instance); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyList<DateTime> ScheduledTimes
         {
             get { return this.GetValue("ScheduledTimes", CollectionConverter<DateTime, List<DateTime>, UnixDateTimeConverter>.Instance); }
         }
 
+        /// <summary>
+        /// Gets the search command for the current <see cref="SavedSearch"/>.
+        /// </summary>
         public string Search
         {
             get { return this.GetValue("Search", StringConverter.Instance); }
@@ -215,7 +264,7 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously creates a new saved search.
         /// </summary>
-        /// <param name="searchName">
+        /// <param name="search">
         /// Name of the saved search to be created.
         /// </param>
         /// <param name="attributes">
@@ -227,14 +276,19 @@ namespace Splunk.Client
         /// <param name="templateArgs">
         /// Template arguments for the saved search to be created.
         /// </param>
+        /// <remarks>
         /// This method uses the <a href="http://goo.gl/EPQypw">POST 
         /// saved/searches</a> endpoint to create the <see cref="SavedSearch"/>
         /// represented by the current instance.
         /// </remarks>
-        public async Task CreateAsync(SavedSearchAttributes attributes, SavedSearchDispatchArgs dispatchArgs = null, 
-            SavedSearchTemplateArgs templateArgs = null)
+        public async Task CreateAsync(string search, SavedSearchAttributes attributes, 
+            SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
         {
-            var args = new Argument[] { new Argument("name", this.ResourceName.Title) };
+            var args = new Argument[] 
+            { 
+                new Argument("name", this.Name), 
+                new Argument("search", search) 
+            };
 
             using (var response = await this.Context.PostAsync(this.Namespace, SavedSearchCollection.ClassResourceName, 
                 args, attributes, dispatchArgs, templateArgs))
@@ -421,8 +475,8 @@ namespace Splunk.Client
         /// New template arguments for the saved search to be updated.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <see cref="attributes"/>, <see cref="dispatchArgs"/>, and <see 
-        /// cref="templateArgs"/> are <c>null</c>.
+        /// <paramref name="attributes"/>, <paramref name="dispatchArgs"/>, and <paramref 
+        /// name="templateArgs"/> are <c>null</c>.
         /// </exception>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/aV9eiZ">POST 

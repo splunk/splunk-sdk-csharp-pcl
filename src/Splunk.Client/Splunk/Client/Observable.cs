@@ -175,7 +175,7 @@ namespace Splunk.Client
         #region Types
 
         /// <summary>
-        /// Represents a disposable subscription to the <see cref="Observable"/>.
+        /// Represents a disposable subscription to the <see cref="Observable&lt;T&gt;"/>.
         /// </summary>
         /// <remarks>
         /// This class implements <see cref="IDisposable"/>, but does not require

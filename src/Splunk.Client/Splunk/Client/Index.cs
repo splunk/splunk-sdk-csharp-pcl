@@ -38,6 +38,7 @@ namespace Splunk.Client
     ///   <a href="http://goo.gl/UscaUQ">REST API Reference: Indexes</a>.
     /// </description></item>
     /// </list>
+    /// </para>
     /// </remarks>
     public class Index : Entity<Index>
     {
@@ -758,8 +759,8 @@ namespace Splunk.Client
         /// Asynchronously disables the current <see cref="Index"/>.
         /// </summary>
         /// <remarks>
-        /// This method uses the POST data/indexes/{name}/disable </a> endpoint 
-        /// to disable the current <see cref="Index"/>.
+        /// This method uses the POST data/indexes/{name}/disable endpoint to 
+        /// disable the current <see cref="Index"/>.
         /// </remarks>
         public async Task DisableAsync()
         {
@@ -776,8 +777,8 @@ namespace Splunk.Client
         /// Asynchronously enables the current <see cref="Index"/>.
         /// </summary>
         /// <remarks>
-        /// This method uses the POST data/indexes/{name}/enable </a> endpoint 
-        /// to enable the current <see cref="Index"/>.
+        /// This method uses the POST data/indexes/{name}/enable endpoint to 
+        /// enable the current <see cref="Index"/>.
         /// </remarks>
         public async Task EnableAsync()
         {
@@ -842,7 +843,7 @@ namespace Splunk.Client
 
         #region Types
 
-        public class CreationArgs : Args<CreationArgs>
+        class CreationArgs : Args<CreationArgs>
         {
             #region Properties
 
@@ -882,7 +883,7 @@ namespace Splunk.Client
             /// <remarks>
             /// The specified path must be readable and writable. The default 
             /// value is <c>""</c> indicating that the hot and warm buckets
-            /// should be stored at the default location.</para>
+            /// should be stored at the default location.
             /// <para>
             /// <b>Caution:</b> Splunk will not start if an index lacks a valid
             /// <see cref="HomePath"/>.</para>

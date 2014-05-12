@@ -115,7 +115,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Throws a <see cref="RequestException"/> if the current <see cref=
-        /// "Response.Message.StatusCode"/> is different than <see cref=
+        /// "Response"/>.Message.StatusCode is different than <paramref name=
         /// "expected"/>.
         /// </summary>
         /// <param name="expected">

@@ -27,6 +27,9 @@ namespace Splunk.Client
     using System.Diagnostics.Contracts;
     using System.Dynamic;
 
+    /// <summary>
+    /// Represents information about an entity at a point in time.
+    /// </summary>
     public sealed class EntitySnapshot
     {
         #region Constructors

@@ -50,7 +50,7 @@ namespace Splunk.ModularInputs
         #region Methods
 
         /// <summary>
-        /// Performs the action specified by the <see cref="args"/> parameter.
+        /// Performs the action specified by the <paramref name="args"/> parameter.
         /// </summary>
         /// <typeparam name="T">
         /// The application-derived type of the <see cref="ModularInput"/>. It
@@ -67,7 +67,7 @@ namespace Splunk.ModularInputs
         /// value indicates failure.
         /// </returns>
         /// <remarks>
-        /// If the <see cref="args"/> are not in the supported set of values,
+        /// If the <paramref name="args"/> are not in the supported set of values,
         /// the method will do nothing and return a non-zero value. Any 
         /// exceptions and internal progress messages encountered during 
         /// execution are written to the splunkd log file.

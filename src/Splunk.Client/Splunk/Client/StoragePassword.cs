@@ -64,17 +64,18 @@ namespace Splunk.Client
         /// <param name="username">
         /// Username associated with the <see cref="StoragePassword"/>.
         /// </param>
-        /// <param name="username">
-        /// Realm associated with the <see cref="StoragePassword"/>.
+        /// <param name="realm">
+        /// Realm associated with the <see cref="StoragePassword"/> or <c>
+        /// null</c>. The default value is <c>null</c>.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        /// <paramref name="username"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal StoragePassword(Context context, Namespace ns, string username, string realm = "")
             : base(context, ns, StoragePasswordCollection.ClassResourceName, CreateNameFromRealmAndUsername(
@@ -190,9 +191,6 @@ namespace Splunk.Client
         /// <param name="password">
         /// Storage password.
         /// </param>
-        /// <param name="realm">
-        /// Optional storage realm.
-        /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/JgyIeN">POST 
         /// storage/passwords</a> endpoint to create the <see cref=
@@ -243,7 +241,7 @@ namespace Splunk.Client
         /// New storage password.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="password"/> is <c>null</c>.
+        /// <paramref name="password"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="RequestException">
         /// </exception>

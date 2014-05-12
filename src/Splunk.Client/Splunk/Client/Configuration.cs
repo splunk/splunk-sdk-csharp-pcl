@@ -50,6 +50,7 @@ namespace Splunk.Client
     /// <item><description>
     ///     Knowledge objects and saved searches
     /// </description></item>
+    /// </list>
     /// <para>
     /// Most configuration files come packaged with your Splunk installation
     /// and can be found in <c>$SPLUNK_HOME/etc/default</c>.
@@ -101,7 +102,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
         /// intended to be used directly from your code. Use one of these
-        /// methods to obtain an <see cref="Configuration"/> instance:
+        /// methods to obtain a <see cref="Configuration"/> instance:
         /// <list type="table">
         /// <listheader>
         ///   <term>Method</term>
@@ -156,11 +157,11 @@ namespace Splunk.Client
         /// Name of a configuration stanza in the current instance.
         /// </param>
         /// <param name="keyName">
-        /// Name of a configuration setting in <see cref="stanzaName"/>.
+        /// Name of a configuration setting in <paramref name="stanzaName"/>.
         /// </param>
         /// <returns>
-        /// An object representing the configuration setting identified by <see 
-        /// cref="stanzaName"/> and <see cref="keyName"/>.
+        /// An object representing the configuration setting identified by <paramref 
+        /// name="stanzaName"/> and <paramref name="keyName"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/cqT50u">GET 
@@ -180,17 +181,21 @@ namespace Splunk.Client
         /// file represented by this instance.
         /// </summary>
         /// <param name="stanzaName">
-        /// Name of a configuration stanza in the current <see cref=
-        /// "Configuration"/>.
+        /// Name of a <see cref="ConfigurationStanza"/> in the current <see 
+        /// cref="Configuration"/>.
         /// </param>
-        /// <param name="settings">
-        /// A variable-length list of objects representing the settings to be
-        /// added or updated.
+        /// <param name="keyName">
+        /// Name of a <see cref="ConfigurationSetting"/> in <paramref name=
+        /// "stanzaName"/>.
+        /// </param>
+        /// <param name="value">
+        /// A string value for <paramref name="keyName"/>.
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/w742jw">POST 
         /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
-        /// stanza identified by <see cref="stanzaName"/>.
+        /// setting identified by <paramref name="stanzaName"/> and <paramref 
+        /// name="keyName"/>.
         /// </remarks>
         public async Task<ConfigurationSetting> UpdateSettingAsync(string stanzaName, string keyName, string value)
         {
@@ -225,13 +230,13 @@ namespace Splunk.Client
         /// Name of the configuration stanza to be retrieved.
         /// </param>
         /// <returns>
-        /// An object representing the configuration stanza identified by <see 
-        /// cref="stanzaName"/>.
+        /// An object representing the configuration stanza identified by <paramref 
+        /// name="stanzaName"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/dpbuhQ">GET 
         /// properties/{file_name}/{stanza_name}</a> endpoint to construct the 
-        /// <see cref="ConfigurationStanza"/> identified by <see cref=
+        /// <see cref="ConfigurationStanza"/> identified by <paramref name=
         /// "stanzaName"/>.
         /// </remarks>
         public async Task<ConfigurationStanza> GetStanzaAsync(string stanzaName)
@@ -252,7 +257,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
         /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
-        /// stanza identified by <see cref="stanzaName"/>.
+        /// stanza identified by <paramref name="stanzaName"/>.
         /// </remarks>
         public async Task RemoveStanzaAsync(string stanzaName)
         {
@@ -275,7 +280,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/w742jw">POST 
         /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
-        /// stanza identified by <see cref="stanzaName"/>.
+        /// stanza identified by <paramref name="stanzaName"/>.
         /// </remarks>
         public async Task<ConfigurationStanza> UpdateStanzaAsync(string stanzaName, params Argument[] settings)
         {

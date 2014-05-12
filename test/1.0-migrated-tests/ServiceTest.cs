@@ -41,7 +41,7 @@ namespace Splunk.Client.UnitTesting
         private void CheckJob(Job job, Service service)
         {
             string dummyString;
-            string[] dummyList;
+            //string[] dummyList;
             long dummyInt;
             bool dummyBool;
             DateTime dummyDateTime;
@@ -222,7 +222,7 @@ namespace Splunk.Client.UnitTesting
 
             bool dummyBool;
             int dummyInt;
-            string[] dummyStrings;
+            //string[] dummyStrings;
             string dummyString;
 
             dummyInt = info.Build;

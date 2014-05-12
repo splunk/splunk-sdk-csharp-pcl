@@ -44,10 +44,10 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal ServerSettings(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
@@ -67,14 +67,14 @@ namespace Splunk.Client
         ///   <description>Description</description>
         /// </listheader>
         /// <item>
-        ///   <term><see cref="Server.GetServerSettingsAsync"/></term>
+        ///   <term><see cref="Server.GetSettingsAsync"/></term>
         ///   <description>
         ///   Asynchronously retrieves <see cref="ServerSettings"/> from the 
         ///   Splunk server represented by the current instance.
         ///   </description>
         /// </item>
         /// <item>
-        ///   <term><see cref="Service.UpdateSettingsAsync"/></term>
+        ///   <term><see cref="Server.UpdateSettingsAsync"/></term>
         ///   <description>
         ///   Asynchronously updates <see cref="ServerSettings"/> on the Splunk 
         ///   server represented by the current instance.

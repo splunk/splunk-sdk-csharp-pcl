@@ -77,7 +77,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the owner of the resource represented by the current <see 
-        /// cref="AtomEntry">, as defined in the access control list.
+        /// cref="AtomEntry"/>, as defined in the access control list.
         /// </summary>
         /// <remarks>
         /// This value can be <c>"system"</c>, <c>"nobody"</c> or some specific

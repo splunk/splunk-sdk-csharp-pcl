@@ -36,7 +36,7 @@ namespace Splunk.Client
         public static readonly UnixDateTimeConverter Instance = new UnixDateTimeConverter();
 
         /// <summary>
-        /// Converts the string representation of a <see cref="input"/> Unix 
+        /// Converts the string representation of a <paramref name="input"/> Unix 
         /// time value to a <see cref="DateTime"/> value.
         /// </summary>
         /// <param name="input">
@@ -46,7 +46,7 @@ namespace Splunk.Client
         /// Result of the conversion.
         /// </returns>
         /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="DateTime"/>
+        /// The <paramref name="input"/> does not represent a <see cref="DateTime"/>
         /// value.
         /// </exception>
         public override DateTime Convert(object input)

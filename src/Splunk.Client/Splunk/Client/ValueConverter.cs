@@ -19,6 +19,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.IO;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
 
@@ -32,7 +33,7 @@ namespace Splunk.Client
     /// If you want to create a value converter, create a class that implements 
     /// the <see cref="Convert"/> method and--optionally--overrides the 
     /// <see cref="DefaultValue"/> property. Your <see cref="Convert"/> method
-    /// should accept a value of any type and produce a <see cref="TValue"/>
+    /// should accept a value of any type and produce a <typeparamref name="TValue"/>
     /// or throw an <see cref="InvalidDataException"/>.
     /// </remarks>
     public abstract class ValueConverter<TValue>
@@ -52,7 +53,14 @@ namespace Splunk.Client
         /// <returns></returns>
         public abstract TValue Convert(object value);
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected static readonly EqualityComparer<TValue> Comparer = EqualityComparer<TValue>.Default;
+
+        /// <summary>
+        /// 
+        /// </summary>
         protected static readonly string TypeName = typeof(TValue).Name;
     }
 }

@@ -95,6 +95,7 @@ namespace Splunk.Client.UnitTesting
             foreach (Index idx in indexes)
             {
                 int dummyInt;
+                long dummyLong;
                 string dummyString;
                 bool dummyBool;
                 DateTime dummyTime;
@@ -107,7 +108,7 @@ namespace Splunk.Client.UnitTesting
                 dummyString = idx.ColdToFrozenDir;
                 dummyString = idx.ColdToFrozenScript;
                 dummyBool = idx.CompressRawData;
-                dummyInt = idx.CurrentDBSizeMB;
+                dummyLong = idx.CurrentDBSizeMB;
                 dummyString = idx.DefaultDatabase;
                 dummyBool = idx.EnableRealtimeSearch;
                 dummyInt = idx.FrozenTimePeriodInSecs;

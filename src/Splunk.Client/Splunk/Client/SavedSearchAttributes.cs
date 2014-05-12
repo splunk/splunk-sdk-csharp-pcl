@@ -14,11 +14,11 @@
  * under the License.
  */
 
-// TODO:
-//
-// [ ] Port DispatchTimeFormat and use it wherever appropriate. Can we create
-//     a relative as well as an absolute time formatter?
-// [O] Documentation
+//// TODO:
+////
+//// [ ] Port DispatchTimeFormat and use it wherever appropriate. Can we create
+////     a relative as well as an absolute time formatter?
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -32,26 +32,16 @@ namespace Splunk.Client
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/khXMdf">REST API: POST saved/searches.</a>
+    ///   <a href="http://goo.gl/khXMdf">REST API: POST saved/searches.</a>
     /// </description></item>
     /// <item><description>
-    ///     <a href="http://goo.gl/csTpM2">REST API: POST saved/searches/{name}.</a>
+    ///   <a href="http://goo.gl/csTpM2">REST API: POST saved/searches/{name}.</a>
     /// </description></item>
     /// </list>
     /// </remarks>
     public sealed class SavedSearchAttributes : Args<SavedSearchAttributes>
     {
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the search command for a <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <remarks>
-        /// This value is required.
-        /// </remarks>
-        [DataMember(Name = "search", EmitDefaultValue = false)]
-        public string Search
-        { get; set; }
 
         /// <summary>
         /// Gets or sets a comma-separated list of actions to enable for a
@@ -105,8 +95,9 @@ namespace Splunk.Client
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
         /// template arguments by enclosing their names in dollar signs ($). 
-        /// For example, to reference <see cref="Name"/> use <c>$name$</c>. To
-        /// reference <see cref="Search"/> use <c>$search$</c>.
+        /// For example, to reference <see cref="SavedSearch"/>.Name use 
+        /// <c>$name$</c>. To reference <see cref="SavedSearch"/>.Search use 
+        /// <c>$search$</c>.
         /// </remarks>
         [DataMember(Name = "action.email.command", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -178,7 +169,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the maximum period of time the e-mail action for a
-        /// <see cref="SearchCommand"/> may execute before it is aborted.
+        /// <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
@@ -281,7 +272,7 @@ namespace Splunk.Client
         /// <see cref="SavedSearch"/>.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>"SplunkAlert-"<saved-search-name></c>.
+        /// The default value is <c>"SplunkAlert-"&lt;saved-search-name&gt;</c>.
         /// </remarks>
         [DataMember(Name = "action.email.subject", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -369,8 +360,9 @@ namespace Splunk.Client
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
         /// template arguments by enclosing their names in dollar signs ($). 
-        /// For example, to reference <see cref="Name"/> use <c>$name$</c>. To
-        /// reference <see cref="Search"/> use <c>$search$</c>.
+        /// For example, to reference <see cref="SavedSearch"/>.Name use 
+        /// <c>$name$</c>. To reference <see cref="SavedSearch"/>.Search use 
+        /// <c>$search$</c>.
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.command", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -414,7 +406,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the maximum period of time the populate lookup action
-        /// for a <see cref="SearchCommand"/> may execute before it is aborted.
+        /// for a <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
@@ -461,8 +453,9 @@ namespace Splunk.Client
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
         /// template arguments by enclosing their names in dollar signs ($). 
-        /// For example, to reference <see cref="Name"/> use <c>$name$</c>. To
-        /// reference <see cref="Search"/> use <c>$search$</c>.
+        /// For example, to reference <see cref="SavedSearch"/>.Name use 
+        /// <c>$name$</c>. To reference <see cref="SavedSearch"/>.Search use 
+        /// <c>$search$</c>.
         /// </remarks>
         [DataMember(Name = "action.rss.command", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -483,7 +476,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the maximum period of time the RSS action for a 
-        /// <see cref="SearchCommand"/> may execute before it is aborted.
+        /// <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
@@ -530,8 +523,9 @@ namespace Splunk.Client
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
         /// template arguments by enclosing their names in dollar signs ($). 
-        /// For example, to reference <see cref="Name"/> use <c>$name$</c>. To
-        /// reference <see cref="Search"/> use <c>$search$</c>.
+        /// For example, to reference <see cref="SavedSearch"/>.Name use 
+        /// <c>$name$</c>. To reference <see cref="SavedSearch"/>.Search use 
+        /// <c>$search$</c>.
         /// </remarks>
         [DataMember(Name = "action.script.command", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -577,7 +571,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the maximum period of time the script action for a 
-        /// <see cref="SearchCommand"/> may execute before it is aborted.
+        /// <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
@@ -624,8 +618,9 @@ namespace Splunk.Client
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
         /// template arguments by enclosing their names in dollar signs ($). 
-        /// For example, to reference <see cref="Name"/> use <c>$name$</c>. To
-        /// reference <see cref="Search"/> use <c>$search$</c>.
+        /// For example, to reference <see cref="SavedSearch"/>.Name use 
+        /// <c>$name$</c>. To reference <see cref="SavedSearch"/>.Search use 
+        /// <c>$search$</c>.
         /// </remarks>
         [DataMember(Name = "action.summary_index.command", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -660,7 +655,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the maximum period of time the summary index action 
-        /// for a <see cref="SearchCommand"/> may execute before it is aborted.
+        /// for a <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
@@ -759,7 +754,7 @@ namespace Splunk.Client
         /// Gets or sets
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="AlertSeverity.Warning"/>.
+        /// The default value is <see cref="AlertSeverity"/>.Warning.
         /// </remarks>
         [DataMember(Name = "alert.severity", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -781,7 +776,7 @@ namespace Splunk.Client
         /// Gets or sets
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="AlertTrack.Automatic"/>.
+        /// The default value is <see cref="AlertTrack"/>.Automatic.
         /// </remarks>
         [DataMember(Name = "alert.track", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -836,7 +831,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a CRON schedule for auto-summarization of a <see cref=
-        /// "SaveSearch"/>.
+        /// "SavedSearch"/>.
         /// </summary>
         /// <remarks>
         /// The default value is <c>"*/10 * * * *"</c> which schedules 
@@ -925,10 +920,15 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
+        /// Gets or sets the cron schedule to execute a <see cref="SavedSearch"/>.
         /// </summary>
         /// <remarks>
-        /// 
+        /// Use standard Cron notation to define the scheduled search interval. 
+        /// Splunk recommends that you schedule your searches so that they are 
+        /// staggered over time. This reduces system load. Running all of them 
+        /// every 20 minutes (*/20) means they would all launch at hh:00, 
+        /// hh:20, and hh:40 and this might slow your system every twenty 
+        /// minutes.
         /// </remarks>
         [DataMember(Name = "cron_schedule", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -936,10 +936,11 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
+        /// Gets or sets the human-readable description of a <see cref=
+        /// "SavedSearch"/>.
         /// </summary>
         /// <remarks>
-        /// 
+        /// The default value is an empty string.
         /// </remarks>
         [DataMember(Name = "description", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -947,10 +948,11 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
+        /// Gets or sets a value that indicates if a saved search should be
+        /// disabled.
         /// </summary>
         /// <remarks>
-        /// 
+        /// Disabled saved searches are not visible in Splunk Web.
         /// </remarks>
         [DataMember(Name = "disabled", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -1027,7 +1029,6 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// The default value is <c>10</c>.
-        /// </para>
         /// </remarks>
         [DataMember(Name = "dispatch.reduce_freq", EmitDefaultValue = false)]
         [DefaultValue(null)]
@@ -1104,7 +1105,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value indicating whether a <see cref="SavedSearch"/> 
-        /// should be listed in the visible saved search list.
+        /// should appear in the list of saved searches on Splunk Web.
         /// </summary>
         /// <remarks>
         /// The default value is <c>true</c>.
@@ -1149,7 +1150,7 @@ namespace Splunk.Client
         /// make sure that the scheduler is executing the searches running 
         /// over the most recent time range. The scheduler tries to execute 
         /// searches configured for realtime scheduling before it executes 
-        /// searches that have continuous scheduling. 
+        /// searches that have continuous scheduling.</para>
         /// </remarks>
         [DataMember(Name = "realtime_schedule", EmitDefaultValue = false)]
         [DefaultValue(null)]

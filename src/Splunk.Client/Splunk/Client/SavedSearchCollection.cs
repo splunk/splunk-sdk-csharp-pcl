@@ -19,14 +19,24 @@
 
 namespace Splunk.Client
 {
+    /// <summary>
+    /// Represents a collection of saved searches.
+    /// </summary>
     public class SavedSearchCollection : EntityCollection<SavedSearchCollection, SavedSearch>
     {
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="SavedSearchCollection"/>
+        /// class.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="ns"></param>
-        /// <param name="args"></param>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="args">
+        /// Arguments for retrieving the <see cref="SavedSearchCollection"/>.
+        /// </param>
         internal SavedSearchCollection(Context context, Namespace ns, SavedSearchCollectionArgs args = null)
             : base(context, ns, ClassResourceName, args)
         { }

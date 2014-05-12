@@ -53,6 +53,8 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
+        /// <param name="resourceName">
+        /// </param>
         /// <remarks>
         /// This constructor is used by the <see cref="SavedSearch.GetHistoryAsync"/>
         /// method to retrieve the collection of jobs created from a saved

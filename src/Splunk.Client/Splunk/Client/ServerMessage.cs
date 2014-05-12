@@ -50,13 +50,13 @@ namespace Splunk.Client
         /// The name of the <see cref="ServerMessage"/>
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal ServerMessage(Context context, Namespace ns, string name)
             : base(context, ns, ServerMessageCollection.ClassResourceName, name)

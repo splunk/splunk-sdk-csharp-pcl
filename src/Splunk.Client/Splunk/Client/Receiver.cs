@@ -73,7 +73,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method the <a href="http://goo.gl/zFKzMp">POST 
         /// receivers/stream</a> endpoint to send raw events to Splunk as
-        /// they become available on <see cref="stream"/>.
+        /// they become available on <paramref name="eventStream"/>.
         /// </remarks>
         public async Task SendAsync(Stream eventStream, ReceiverArgs args = null)
         {
@@ -93,17 +93,18 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="eventText">
         /// Raw event text.
+        /// </param>
         /// <param name="args">
         /// Arguments identifying the event type and destination.
         /// </param>
         /// <returns>
-        /// A <see cref="Result"/> object representing the event created by
+        /// A <see cref="SearchResult"/> object representing the event created by
         /// Splunk.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/GPLUVg">POST 
-        /// receivers/simple</a> endpoint to obtain the <see cref="Result"/>
-        /// that it returns.
+        /// receivers/simple</a> endpoint to obtain the <see cref=
+        /// "SearchResult"/> that it returns.
         /// </remarks>
         public async Task<SearchResult> SendAsync(string eventText, ReceiverArgs args = null)
         {

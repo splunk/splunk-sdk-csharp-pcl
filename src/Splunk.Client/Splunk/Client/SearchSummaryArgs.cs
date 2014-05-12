@@ -83,10 +83,10 @@ namespace Splunk.Client
         /// based on their rate of occurrence in the event stream.
         /// </summary>
         /// <remarks>
-        /// Express the rate as a <see cref="Double"/> in the closed interval
-        /// between zero and one ([0,1]). The default is zero, indicating that
-        /// all fields should be included in the search <see cref="Job"/>
-        /// summary.
+        /// Express the rate as a <see cref="System.Double"/> in the closed 
+        /// interval between zero and one ([0,1]). The default is zero, 
+        /// indicating that all fields should be included in the search <see 
+        /// cref="Job"/> summary.
         /// </remarks>
         [DataMember(Name = "min_freq", EmitDefaultValue = false)]
         [DefaultValue(0D)]
@@ -111,7 +111,7 @@ namespace Splunk.Client
         /// <see cref="Job"/> summary based on field values or tags.
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="String.Empty"/>
+        /// The default value is <c>""</c>.
         /// </remarks>
         [DataMember(Name = "search", EmitDefaultValue = false)]
         [DefaultValue("")]

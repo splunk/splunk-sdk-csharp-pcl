@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
 
     /// <summary>
@@ -39,7 +40,10 @@ namespace Splunk.Client
         /// <param name="parts"></param>
         public ResourceName(ResourceName resourceName, params string[] parts)
             : this(resourceName.Concat(parts))
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(resourceName != null);
+            Contract.Requires<ArgumentNullException>(parts != null);
+        }
 
         /// <summary>
         /// 
@@ -47,7 +51,9 @@ namespace Splunk.Client
         /// <param name="parts"></param>
         public ResourceName(params string[] parts)
             : this(parts.AsEnumerable<string>())
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(parts != null);
+        }
 
         /// <summary>
         /// 
@@ -119,7 +125,7 @@ namespace Splunk.Client
         /// <returns>
         /// A 32-bit signed integer that indicates whether this instance 
         /// precedes, follows, or appears in the same position in the sort 
-        /// order as <see cref="other"/>.
+        /// order as <paramref name="other"/>.
         /// <list type="table">
         /// <listheader>
         ///   <term>
@@ -134,7 +140,7 @@ namespace Splunk.Client
         ///     Less than zero
         ///   </term>
         ///   <description>
-        ///     This instance precedes <see cref="other"/>.
+        ///     This instance precedes <paramref name="other"/>.
         ///   </description>
         /// </item>
         /// <item>
@@ -142,8 +148,8 @@ namespace Splunk.Client
         ///     Zero
         ///   </term>
         ///   <description>
-        ///     This instance is in the same position in the sort order as <see
-        ///     cref="other"/>.
+        ///     This instance is in the same position in the sort order as 
+        ///     <paramref name="other"/>.
         ///   </description>
         /// </item>
         /// <item>
@@ -151,9 +157,9 @@ namespace Splunk.Client
         ///     Greater than zero
         ///   </term>
         ///   <description>
-        ///     This instance follows <see cref="other"/>, <see cref="other"/>
-        ///     is not an <see cref="ResourceName"/>, or <see cref="other"/> is
-        ///     <c>null</c>.
+        ///     This instance follows <paramref name="other"/>, <paramref name=
+        ///     "other"/> is not a <see cref="ResourceName"/>, or <paramref 
+        ///     name="other"/> is <c>null</c>.
         ///   </description>
         /// </item>
         /// </list>
@@ -175,7 +181,7 @@ namespace Splunk.Client
         /// <returns>
         /// A 32-bit signed integer that indicates whether this instance 
         /// precedes, follows, or appears in the same position in the sort 
-        /// order as <see cref="other"/>.
+        /// order as <paramref name="other"/>.
         /// <list type="table">
         /// <listheader>
         ///   <term>
@@ -190,7 +196,7 @@ namespace Splunk.Client
         ///     Less than zero
         ///   </term>
         ///   <description>
-        ///     This instance precedes <see cref="other"/>.
+        ///     This instance precedes <paramref name="other"/>.
         ///   </description>
         /// </item>
         /// <item>
@@ -198,8 +204,8 @@ namespace Splunk.Client
         ///     Zero
         ///   </term>
         ///   <description>
-        ///     This instance is in the same position in the sort order as <see
-        ///     cref="other"/>.
+        ///     This instance is in the same position in the sort order as 
+        ///     <paramref name="other"/>.
         ///   </description>
         /// </item>
         /// <item>
@@ -207,10 +213,11 @@ namespace Splunk.Client
         ///     Greater than zero
         ///   </term>
         ///   <description>
-        ///     This instance follows <see cref="other"/> or <see cref="other"/>
-        ///     is <c>null</c>.
+        ///     This instance follows <paramref name="other"/> or <paramref
+        ///     name="other"/> is <c>null</c>.
         ///   </description>
         /// </item>
+        /// </list>
         /// </returns>
         public int CompareTo(ResourceName other)
         {
@@ -251,8 +258,8 @@ namespace Splunk.Client
         /// The object to compare with the current <see cref="ResourceName"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="other"/> is a non <c>null</c> <see cref=
-        /// "ResourceName"/> and is the same as the current <see cref=
+        /// <c>true</c> if <paramref name="other"/> is a non <c>null</c> <see 
+        /// cref="ResourceName"/> and is the same as the current <see cref=
         /// "ResourceName"/>; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object other)
@@ -268,8 +275,8 @@ namespace Splunk.Client
         /// The object to compare with the current <see cref="ResourceName"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="other"/> is non <c>null</c> and is the 
-        /// same as the current <see cref="ResourceName"/>; otherwise, 
+        /// <c>true</c> if <paramref name="other"/> is non <c>null</c> and is 
+        /// the same as the current <see cref="ResourceName"/>; otherwise, 
         /// <c>false</c>.
         /// </returns>
         public bool Equals(ResourceName other)
@@ -353,8 +360,8 @@ namespace Splunk.Client
         /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the value of <see cref="1"/> is the same as the 
-        /// value of <c>b</c>; otherwise, <c>false</c>.
+        /// <c>true</c> if the value of <paramref name="a"/> is the same as the 
+        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
         /// </returns>
         public static bool operator ==(ResourceName a, ResourceName b)
         {
@@ -382,8 +389,8 @@ namespace Splunk.Client
         /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the value of <see cref="1"/> is different than the 
-        /// value of <c>b</c>; otherwise, <c>false</c>.
+        /// <c>true</c> if the value of <paramref name="a"/> is different than 
+        /// the value of <paramref name="b"/>; otherwise, <c>false</c>.
         /// </returns>
         public static bool operator !=(ResourceName a, ResourceName b)
         {

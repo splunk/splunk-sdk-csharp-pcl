@@ -50,7 +50,7 @@ namespace Splunk.ModularInputs
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="eventElement">
+        /// <param name="item">
         /// </param>
         public static void Add(EventElement item)
         {

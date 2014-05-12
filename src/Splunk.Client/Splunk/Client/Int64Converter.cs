@@ -34,7 +34,7 @@ namespace Splunk.Client
         public static readonly Int64Converter Instance = new Int64Converter();
 
         /// <summary>
-        /// Converts the string representation of the <see cref="input"/> 
+        /// Converts the string representation of the <paramref name="input"/> 
         /// object to a <see cref="Int64"/> value.
         /// </summary>
         /// <param name="input">
@@ -44,7 +44,7 @@ namespace Splunk.Client
         /// Result of the conversion.
         /// </returns>
         /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="Int64"/>
+        /// The <paramref name="input"/> does not represent a <see cref="Int64"/>
         /// value.
         /// </exception>
         public override Int64 Convert(object input)

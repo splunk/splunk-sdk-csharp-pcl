@@ -18,6 +18,8 @@
 
 namespace Splunk.Client
 {
+    using Splunk.Client;
+
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
@@ -25,7 +27,7 @@ namespace Splunk.Client
 
     /// <summary>
     /// The exception that is thrown when a request to access a <see cref=
-    /// "Resource"/> results in <see cref="HttpStatusCode.Forbidden"/>.
+    /// "Resource&lt;TResource&gt;"/> results in <see cref="HttpStatusCode.Forbidden"/>.
     /// </summary>
     public sealed class UnauthorizedAccessException : RequestException
     {

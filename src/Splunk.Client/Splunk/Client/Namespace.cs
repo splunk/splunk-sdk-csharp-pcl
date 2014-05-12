@@ -118,7 +118,7 @@ namespace Splunk.Client
         /// <returns>
         /// A 32-bit signed integer that indicates whether this instance 
         /// precedes, follows, or appears in the same position in the sort 
-        /// order as <see cref="other"/>.
+        /// order as <paramref name="other"/>.
         /// <list type="table">
         /// <listheader>
         ///   <term>
@@ -133,7 +133,7 @@ namespace Splunk.Client
         ///     Less than zero
         ///   </term>
         ///   <description>
-        ///     This instance precedes <see cref="other"/>.
+        ///     This instance precedes <paramref name="other"/>.
         ///   </description>
         /// </item>
         /// <item>
@@ -141,8 +141,8 @@ namespace Splunk.Client
         ///     Zero
         ///   </term>
         ///   <description>
-        ///     This instance is in the same position in the sort order as <see
-        ///     cref="other"/>.
+        ///     This instance is in the same position in the sort order as 
+        ///     <paramref name="other"/>.
         ///   </description>
         /// </item>
         /// <item>
@@ -150,9 +150,9 @@ namespace Splunk.Client
         ///     Greater than zero
         ///   </term>
         ///   <description>
-        ///     This instance follows <see cref="other"/>, <see cref="other"/>
-        ///     is not an <see cref="Namespace"/>, or <see cref="other"/> is
-        ///     <c>null</c>.
+        ///     This instance follows <paramref name="other"/>, <paramref name=
+        ///     "other"/> is not a <see cref="Namespace"/>, or <paramref name=
+        ///     "other"/> is <c>null</c>.
         ///   </description>
         /// </item>
         /// </list>
@@ -174,7 +174,7 @@ namespace Splunk.Client
         /// <returns>
         /// A 32-bit signed integer that indicates whether this instance 
         /// precedes, follows, or appears in the same position in the sort 
-        /// order as <see cref="other"/>.
+        /// order as <paramref name="other"/>.
         /// <list type="table">
         /// <listheader>
         ///   <term>
@@ -189,7 +189,7 @@ namespace Splunk.Client
         ///     Less than zero
         ///   </term>
         ///   <description>
-        ///     This instance precedes <see cref="other"/>.
+        ///     This instance precedes <paramref name="other"/>.
         ///   </description>
         /// </item>
         /// <item>
@@ -197,8 +197,8 @@ namespace Splunk.Client
         ///     Zero
         ///   </term>
         ///   <description>
-        ///     This instance is in the same position in the sort order as <see
-        ///     cref="other"/>.
+        ///     This instance is in the same position in the sort order as 
+        ///      <paramref name="other"/>.
         ///   </description>
         /// </item>
         /// <item>
@@ -206,10 +206,11 @@ namespace Splunk.Client
         ///     Greater than zero
         ///   </term>
         ///   <description>
-        ///     This instance follows <see cref="other"/> or <see cref="other"/>
-        ///     is <c>null</c>.
+        ///     This instance follows <paramref name="other"/> or <paramref 
+        ///     name="other"/> is <c>null</c>.
         ///   </description>
         /// </item>
+        /// </list>
         /// </returns>
         public int CompareTo(Namespace other)
         {
@@ -235,9 +236,9 @@ namespace Splunk.Client
         /// The object to compare with the current <see cref="Namespace"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="other"/> is a non <c>null</c> <see cref=
-        /// "Namespace"/> and is the same as the current <see cref="Namespace"/>;
-        /// otherwise, <c>false</c>.
+        /// <c>true</c> if <paramref name="other"/> is a non <c>null</c> <see 
+        /// cref="Namespace"/> and is the same as the current <see cref=
+        /// "Namespace"/>; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object other)
         {
@@ -252,8 +253,8 @@ namespace Splunk.Client
         /// The object to compare with the current <see cref="Namespace"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <see cref="other"/> is non <c>null</c> and is the 
-        /// same as the current <see cref="Namespace"/>; otherwise, 
+        /// <c>true</c> if <paramref name="other"/> is non <c>null</c> and is 
+        /// the same as the current <see cref="Namespace"/>; otherwise, 
         /// <c>false</c>.
         /// </returns>
         public bool Equals(Namespace other)

@@ -25,7 +25,7 @@ namespace Splunk.Client
 
     /// <summary>
     /// The exception that is thrown when a request to retrieve a <see cref=
-    /// "Resource"/> results in <see cref="HttpStatusCode.NotFound"/>.
+    /// "Resource&lt;TResource&gt;"/> results in <see cref="HttpStatusCode.NotFound"/>.
     /// </summary>
     public sealed class ResourceNotFoundException : RequestException
     {

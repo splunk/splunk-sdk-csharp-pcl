@@ -32,29 +32,23 @@ namespace Splunk.Client
     {
         /// <summary>
         /// Gets the XML markup for the <c>_raw</c> field value.
+        /// </summary>
         /// <remarks>
-        /// <para>
         /// The return value is different than that of the <c>_raw</c> field 
         /// value in that this segmented raw value is an XML fragment that 
         /// includes all markup such as XML tags and escaped characters. For 
         /// example, <c>record["_raw"]</c> field value returns this:
-        /// </para>
-        /// <example>
-        /// <![CDATA[
-        /// "http://localhost:8000/en-US/app/search/flashtimeline?q=search%20search%20index%3D_internal%20%7C%20head%2010&earliest=rt-1h&latest=rt"
-        /// ]]>
-        /// </example>
-        /// <para>
-        /// While <c>record.SegmentedRaw</c> returns this:</para>
-        /// <example>
-        /// <v xml:space="preserve" trunc="0">"http://localhost:8000/en-US/app/<sg h="1">search</sg>/flashtimeline?q=<sg h="1">search</sg>%20<sg h="1">search</sg>%20index%3D_internal%20%7C%20head%2010&amp;earliest=rt-1h&amp;latest=rt"</v>
-        /// </example>
         /// </remarks>
-        /// </summary>
         public string SegmentedRaw { get; internal set; }
 
         #region Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader">
+        /// </param>
+        /// <returns></returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");

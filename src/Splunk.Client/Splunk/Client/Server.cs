@@ -48,10 +48,10 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal Server(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
@@ -80,13 +80,19 @@ namespace Splunk.Client
         /// <param name="name">
         /// Name of the message to create.
         /// </param>
+        /// <param name="severity">
+        /// Message severity level.
+        /// </param>
+        /// <param name="text">
+        /// Text of the message.
+        /// </param>
         /// <returns>
-        /// An object representing the server message created.
+        /// An object representing the message created.
         /// </returns>
-        public async Task<ServerMessage> CreateMessageAsync(string name, ServerMessageSeverity type, string text)
+        public async Task<ServerMessage> CreateMessageAsync(string name, ServerMessageSeverity severity, string text)
         {
             var resource = new ServerMessage(this.Context, this.Namespace, name);
-            await resource.CreateAsync(type, text);
+            await resource.CreateAsync(severity, text);
             return resource;
         }
 
@@ -112,11 +118,11 @@ namespace Splunk.Client
         /// Name of the message to get.
         /// </param>
         /// <returns>
-        /// An object representing the server message identified by <see cref=
+        /// An object representing the server message identified by <paramref name=
         /// "name"/>.
         /// </returns>
         /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
         public async Task<ServerMessage> GetMessageAsync(string name)
         {
@@ -162,7 +168,7 @@ namespace Splunk.Client
         /// Name of the <see cref="ServerMessage"/> to remove.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
         public async Task RemoveMessageAsync(string name)
         {
@@ -183,7 +189,7 @@ namespace Splunk.Client
         /// <c>-1</c> specifies an infinite wait time.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="millisecondsDelay"/> is less than <c>-1</c>.
+        /// <paramref name="millisecondsDelay"/> is less than <c>-1</c>.
         /// </exception>
         /// <exception cref="AuthenticationFailureException">
         /// </exception>

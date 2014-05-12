@@ -80,7 +80,7 @@ namespace Splunk.Client
         /// "Application"/>entries in ascending or descending order.
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="SortDirection.Ascending"/>.
+        /// The default value is <see cref="SortDirection"/>.Ascending.
         /// </remarks>
         [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
         [DefaultValue(SortDirection.Descending)]

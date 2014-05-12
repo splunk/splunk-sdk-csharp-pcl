@@ -21,8 +21,8 @@
 
 namespace Splunk.Client
 {
+    using System;
     using System.ComponentModel;
-    using System.IO;
     using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
@@ -42,6 +42,7 @@ namespace Splunk.Client
     /// <item><description>
     ///   <a href="http://goo.gl/a7HqRp">REST API Reference: Applications</a>
     /// </description></item>
+    /// </list>
     /// </remarks>
     public class Application : Entity<Application>
     {
@@ -60,13 +61,13 @@ namespace Splunk.Client
         /// The name of the <see cref="Application"/>.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal Application(Context context, Namespace ns, string name)
             : base(context, ns, ApplicationCollection.ClassResourceName, name)
@@ -160,7 +161,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the access control lists for the current <see cref=
-        /// "Appliciation"/>.
+        /// "Application"/>.
         /// </summary>
         public Eai Eai
         {
@@ -243,6 +244,13 @@ namespace Splunk.Client
         /// Asynchronously creates the current <see cref="Application"/>.
         /// instance.
         /// </summary>
+        /// <param name="template">
+        /// 
+        /// </param>
+        /// <param name="attributes">
+        /// 
+        /// </param>
+        /// <returns></returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
         /// apps/local</a> endpoint to create the current <see cref=
@@ -270,9 +278,10 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously disables the current <see cref="Application"/>.
         /// </summary>
+        /// <returns></returns>
         /// <remarks>
-        /// This method uses the POST apps/local/{name}/disable </a> endpoint 
-        /// to disable the current <see cref="Application"/>.
+        /// This method uses the POST apps/local/{name}/disable endpoint to 
+        /// disable the current <see cref="Application"/>.
         /// </remarks>
         public async Task DisableAsync()
         {
@@ -287,9 +296,10 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously enables the current <see cref="Application"/>.
         /// </summary>
+        /// <returns></returns>
         /// <remarks>
-        /// This method uses the POST apps/local/{name}/enable </a> endpoint 
-        /// to enable the current <see cref="Index"/>.
+        /// This method uses the POST apps/local/{name}/enable endpoint to 
+        /// enable the current <see cref="Application"/>.
         /// </remarks>
         public async Task EnableAsync()
         {
@@ -352,10 +362,11 @@ namespace Splunk.Client
         /// <c>true</c> if Splunk should allow the installation to update an
         /// existing application. The default value is <c>false</c>.
         /// </param>
+        /// <returns></returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
         /// apps/local</a> endpoint to install the application from the archive
-        /// file on <see cref="path"/>.
+        /// file on <paramref name="path"/>.
         /// </remarks>
         public async Task InstallAsync(string path, bool update = false)
         {
@@ -398,6 +409,7 @@ namespace Splunk.Client
         /// Asynchronously removes the application represented by the current
         /// instance.
         /// </summary>
+        /// <returns></returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/fIQOrK">DELETE 
         /// apps/local/{name}</a> endpoint to remove the current <see cref=
@@ -422,6 +434,7 @@ namespace Splunk.Client
         /// A value of <c>true</c>, if Splunk should check Splunkbase for 
         /// updates to the current <see cref="Application"/> instance.
         /// </param>
+        /// <returns></returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/dKraaR">POST 
         /// apps/local/{name}</a> endpoint to update the attributes of the 

@@ -124,7 +124,6 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// The default value is <c>10</c>.
-        /// </para>
         /// </remarks>
         [DataMember(Name = "dispatch.reduce_freq", EmitDefaultValue = false)]
         [DefaultValue(10)]

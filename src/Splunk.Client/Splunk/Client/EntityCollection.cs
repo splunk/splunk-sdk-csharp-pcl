@@ -40,7 +40,7 @@ namespace Splunk.Client
     /// The entity collection type inheriting from this class.
     /// </typeparam>
     /// <typeparam name="TEntity">
-    /// The type of the entity in <see cref="TCollection"/>.
+    /// The type of the entity in <typeparamref name="TCollection"/>.
     /// </typeparam>
     public abstract class EntityCollection<TCollection, TEntity> : Resource<TCollection>, IReadOnlyList<TEntity> 
         where TCollection : EntityCollection<TCollection, TEntity>, new() 
@@ -49,7 +49,8 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityCollection<TCollection, TEntity>"/> class.
+        /// Initializes a new instance of the <see cref=
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -57,7 +58,11 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
+        /// <param name="resource">
+        /// 
+        /// </param>
         /// <param name="args">
+        /// 
         /// </param>
         internal EntityCollection(Context context, Namespace ns, ResourceName resource, IEnumerable<Argument> 
             args = null)
@@ -68,7 +73,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "EntityCollection<TCollection, TEntity>"/> class.
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
@@ -83,41 +88,65 @@ namespace Splunk.Client
 
         #region AtomFeed properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Author
         {
             get { return this.data == null ? null : this.data.Author; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Version GeneratorVersion
         {
             get { return this.data == null ? null : this.data.GeneratorVersion; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Uri Id
         {
             get { return this.data == null ? null : this.data.Id; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyDictionary<string, Uri> Links
         {
             get { return this.data == null ? null : this.data.Links; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyList<Message> Messages
         {
             get { return this.data == null ? null : this.data.Messages; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Pagination Pagination
         {
             get { return this.data == null ? Pagination.Empty : this.data.Pagination; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Published
         {
             get { return this.data == null ? DateTime.MinValue : this.data.Published; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Updated
         {
             get { return this.data == null ? DateTime.MinValue : this.data.Updated; }
@@ -128,13 +157,13 @@ namespace Splunk.Client
         #region IReadOnlyList<TEntity> properties
 
         /// <summary>
-        /// Gets the entity at the specified <see cref="index"/>.
+        /// Gets the entity at the specified <paramref name="index"/>.
         /// </summary>
         /// <param name="index">
         /// The zero-based index of the entity to get.
         /// </param>
         /// <returns>
-        /// An object representing the entity at <see cref="index"/>.
+        /// An object representing the entity at <paramref name="index"/>.
         /// </returns>
         public TEntity this[int index]
         {
@@ -149,7 +178,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the number of entities in the current <see cref="EntityCollection"/>.
+        /// Gets the number of entities in the current <see cref=
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </summary>
         public int Count
         {
@@ -184,8 +214,8 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the entities in the 
-        /// current <see cref="EntityCollection"/> that contains all changes
-        /// to it since it was last retrieved.
+        /// current <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/> 
+        /// that contains all changes to it since it was last retrieved.
         /// </summary>
         /// <returns></returns>
         public virtual async Task GetAsync()
@@ -206,10 +236,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets an enumerator that iterates through the current <see cref=
-        /// "EntityCollection"/>.
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </summary>
         /// <returns>
-        /// An object for iterating through the current <see cref="EntityCollection"/>.
+        /// An object for iterating through the current <see cref=
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -218,10 +249,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets an enumerator that iterates through the current <see cref=
-        /// "EntityCollection"/>.
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </summary>
         /// <returns>
-        /// An object for iterating through the current <see cref="EntityCollection"/>.
+        /// An object for iterating through the current <see cref=
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {

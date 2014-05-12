@@ -42,7 +42,6 @@ namespace Splunk.Client
     ///     responses</a>.
     /// </description></item>
     /// </list>
-    /// </para>
     /// </remarks>
     public sealed class AtomFeed
     {

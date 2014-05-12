@@ -31,8 +31,97 @@ namespace Splunk.Client
         {
             var attributes = new SavedSearchAttributes();
 
-            Assert.Equal("action.email.auth_password=null; action.email.auth_username=null; action.email.bcc=null; action.email.cc=null; action.email.command=null; action.email.format=null; action.email.from=null; action.email.inline=null; action.email.mailserver=null; action.email.maxresults=null; action.email.maxtime=null; action.email.reportCIDFontList=null; action.email.reportIncludeSplunkLogo=null; action.email.reportPaperOrientation=null; action.email.reportPaperSize=null; action.email.reportServerEnabled=null; action.email.sendpdf=null; action.email.sendresults=null; action.email.subject=null; action.email.to=null; action.email.track_alert=null; action.email.ttl=null; action.email.use_ssl=null; action.email.use_tls=null; action.email.width_sort_columns=null; action.populate_lookup.command=null; action.populate_lookup.dest=null; action.populate_lookup.hostname=null; action.populate_lookup.maxresults=null; action.populate_lookup.maxtime=null; action.populate_lookup.track_alert=null; action.populate_lookup.ttl=null; action.rss.command=null; action.rss.maxresults=null; action.rss.maxtime=null; action.rss.track_alert=null; action.rss.ttl=null; action.script.command=null; action.script.filename=null; action.script.hostname=null; action.script.maxresults=null; action.script.maxtime=null; action.script.track_alert=null; action.script.ttl=null; action.summary_index.command=null; action.summary_index.inline=null; action.summary_index.maxresults=null; action.summary_index.maxtime=null; action.summary_index.name=null; action.summary_index.track_alert=null; action.summary_index.ttl=null; actions=null; alert.digest_mode=null; alert.expires=null; alert.severity=null; alert.track=null; alert_comparator=null; alert_condition=null; alert_threshold=null; alert_type=null; auto_summarize=null; auto_summarize.command=null; auto_summarize.cron_schedule=null; auto_summarize.dispatch.time_format=null; auto_summarize.dispatch.ttl=null; auto_summarize.max_disabled_buckets=null; auto_summarize.max_summary_ratio=null; auto_summarize.max_summary_size=null; auto_summarize.max_time=null; auto_summarize.suspend_period=null; cron_schedule=null; description=null; disabled=null; dispatch.buckets=null; dispatch.earliest_time=null; dispatch.latest_time=null; dispatch.lookups=null; dispatch.max_count=null; dispatch.max_time=null; dispatch.reduce_freq=null; dispatch.rt_backfill=null; dispatch.spawn_process=null; dispatch.time_format=null; is_scheduled=null; is_visible=null; max_concurrent=null; realtime_schedule=null; restart_on_searchpeer_add=null; run_on_startup=null; search=null",
+            Assert.Equal("action.email.auth_password=null; " +
+                "action.email.auth_username=null; " +
+                "action.email.bcc=null; " +
+                "action.email.cc=null; " +
+                "action.email.command=null; " +
+                "action.email.format=null; " +
+                "action.email.from=null; " +
+                "action.email.inline=null; " +
+                "action.email.mailserver=null; " +
+                "action.email.maxresults=null; " +
+                "action.email.maxtime=null; " +
+                "action.email.reportCIDFontList=null; " +
+                "action.email.reportIncludeSplunkLogo=null; " +
+                "action.email.reportPaperOrientation=null; " +
+                "action.email.reportPaperSize=null; " +
+                "action.email.reportServerEnabled=null; " +
+                "action.email.sendpdf=null; " +
+                "action.email.sendresults=null; " +
+                "action.email.subject=null; " +
+                "action.email.to=null; " +
+                "action.email.track_alert=null; " +
+                "action.email.ttl=null; " +
+                "action.email.use_ssl=null; " +
+                "action.email.use_tls=null; " +
+                "action.email.width_sort_columns=null; " +
+                "action.populate_lookup.command=null; " +
+                "action.populate_lookup.dest=null; " +
+                "action.populate_lookup.hostname=null; " +
+                "action.populate_lookup.maxresults=null; " +
+                "action.populate_lookup.maxtime=null; " +
+                "action.populate_lookup.track_alert=null; " +
+                "action.populate_lookup.ttl=null; " +
+                "action.rss.command=null; " +
+                "action.rss.maxresults=null; " +
+                "action.rss.maxtime=null; " +
+                "action.rss.track_alert=null; " +
+                "action.rss.ttl=null; " +
+                "action.script.command=null; " +
+                "action.script.filename=null; " +
+                "action.script.hostname=null; " +
+                "action.script.maxresults=null; " +
+                "action.script.maxtime=null; " +
+                "action.script.track_alert=null; " +
+                "action.script.ttl=null; " +
+                "action.summary_index.command=null; " +
+                "action.summary_index.inline=null; " +
+                "action.summary_index.maxresults=null; " +
+                "action.summary_index.maxtime=null; " +
+                "action.summary_index.name=null; " +
+                "action.summary_index.track_alert=null; " +
+                "action.summary_index.ttl=null; " +
+                "actions=null; " +
+                "alert.digest_mode=null; " +
+                "alert.expires=null; " +
+                "alert.severity=null; " +
+                "alert.track=null; " +
+                "alert_comparator=null; " +
+                "alert_condition=null; " +
+                "alert_threshold=null; " +
+                "alert_type=null; " +
+                "auto_summarize=null; " +
+                "auto_summarize.command=null; " +
+                "auto_summarize.cron_schedule=null; " +
+                "auto_summarize.dispatch.time_format=null; " +
+                "auto_summarize.dispatch.ttl=null; " +
+                "auto_summarize.max_disabled_buckets=null; " +
+                "auto_summarize.max_summary_ratio=null; " +
+                "auto_summarize.max_summary_size=null; " +
+                "auto_summarize.max_time=null; " +
+                "auto_summarize.suspend_period=null; " +
+                "cron_schedule=null; " +
+                "description=null; " +
+                "disabled=null; " +
+                "dispatch.buckets=null; " +
+                "dispatch.earliest_time=null; " +
+                "dispatch.latest_time=null; " +
+                "dispatch.lookups=null; " +
+                "dispatch.max_count=null; " +
+                "dispatch.max_time=null; " +
+                "dispatch.reduce_freq=null; " +
+                "dispatch.rt_backfill=null; " +
+                "dispatch.spawn_process=null; " +
+                "dispatch.time_format=null; " +
+                "is_scheduled=null; " +
+                "is_visible=null; " +
+                "max_concurrent=null; " +
+                "realtime_schedule=null; " +
+                "restart_on_searchpeer_add=null; " +
+                "run_on_startup=null",
                 attributes.ToString());
+
             Assert.Equal(new List<Argument>(), attributes);
         }
 
@@ -132,7 +221,6 @@ namespace Splunk.Client
                 RealtimeSchedule = "some-unchecked-string",
                 RestartOnSearchPeerAdd = "some-unchecked-string",
                 RunOnStartup = true,
-                Search = "some-unchecked-string",
             };
 
             Assert.Equal(
@@ -224,8 +312,7 @@ namespace Splunk.Client
                 "max_concurrent=99; " +
                 "realtime_schedule=some-unchecked-string; " +
                 "restart_on_searchpeer_add=some-unchecked-string; " +
-                "run_on_startup=t; " +
-                "search=some-unchecked-string",
+                "run_on_startup=t",
                 attributes.ToString());
 
             Assert.Equal(new List<Argument> 
@@ -318,8 +405,7 @@ namespace Splunk.Client
                     new Argument("max_concurrent", "99"),
                     new Argument("realtime_schedule", "some-unchecked-string"),
                     new Argument("restart_on_searchpeer_add", "some-unchecked-string"),
-                    new Argument("run_on_startup", "t"),
-                    new Argument("search", "some-unchecked-string")
+                    new Argument("run_on_startup", "t")
                 },
                 attributes);
         }

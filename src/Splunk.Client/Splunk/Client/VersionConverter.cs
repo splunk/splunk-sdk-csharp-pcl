@@ -35,7 +35,7 @@ namespace Splunk.Client
         public static readonly VersionConverter Instance = new VersionConverter();
 
         /// <summary>
-        /// Converts the string representation of the <see cref="input"/> 
+        /// Converts the string representation of the <paramref name="input"/> 
         /// object to a <see cref="Version"/> instance.
         /// </summary>
         /// <param name="input">
@@ -45,7 +45,8 @@ namespace Splunk.Client
         /// Result of the conversion.
         /// </returns>
         /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="Version"/>
+        /// The <paramref name="input"/> does not represent a <see cref=
+        /// "Version"/>
         /// instance.
         /// </exception>
         public override Version Convert(object input)

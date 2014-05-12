@@ -412,7 +412,7 @@ namespace Splunk.Client.UnitTesting
                     Assert.DoesNotThrow(() => { string value = entity.ColdPathExpanded; });
                     Assert.DoesNotThrow(() => { string value = entity.ColdToFrozenDir; });
                     Assert.DoesNotThrow(() => { string value = entity.ColdToFrozenScript; });
-                    Assert.DoesNotThrow(() => { int value = entity.CurrentDBSizeMB; });
+                    Assert.DoesNotThrow(() => { long value = entity.CurrentDBSizeMB; });
                     Assert.DoesNotThrow(() => { string value = entity.DefaultDatabase; });
                     Assert.DoesNotThrow(() => { bool value = entity.Disabled; });
                     Assert.DoesNotThrow(() => { Eai value = entity.Eai; });
@@ -594,18 +594,18 @@ namespace Splunk.Client.UnitTesting
                 //// Create
 
                 var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var search = "search index=_internal | head 1000";
 
                 var originalAttributes = new SavedSearchAttributes()
                 {
-                    Search = "search index=_internal | head 1000",
                     CronSchedule = "00 * * * *", // on the hour
                     IsScheduled = true,
                     IsVisible = false
                 };
 
-                var savedSearch = await service.CreateSavedSearchAsync(name, originalAttributes);
+                var savedSearch = await service.CreateSavedSearchAsync(name, search, originalAttributes);
 
-                Assert.Equal(originalAttributes.Search, savedSearch.Search);
+                Assert.Equal(search, savedSearch.Search);
                 Assert.Equal(originalAttributes.CronSchedule, savedSearch.CronSchedule);
                 Assert.Equal(originalAttributes.IsScheduled, savedSearch.IsScheduled);
                 Assert.Equal(originalAttributes.IsVisible, savedSearch.IsVisible);
@@ -690,9 +690,9 @@ namespace Splunk.Client.UnitTesting
             {
                 await service.LoginAsync("admin", "changeme");
 
-                var attributes = new SavedSearchAttributes() { Search = "search index=_internal * earliest=-1m" };
                 var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
-                var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
+                var search = "search index=_internal * earliest=-1m";
+                var savedSearch = await service.CreateSavedSearchAsync(name, search);
 
                 var jobHistory = await savedSearch.GetHistoryAsync();
                 Assert.Equal(0, jobHistory.Count);

@@ -27,8 +27,8 @@ namespace Splunk.Client
     using System.Linq;
 
     /// <summary>
-    /// Provides a converter to convert an <see cref="IEnumerable"/> object to 
-    /// a collection.
+    /// Provides a converter to convert an <see cref="IEnumerable&lt;T&gt;"/> 
+    /// object to a collection.
     /// </summary>
     /// <typeparam name="TValue">
     /// The type of the values in the collection.
@@ -38,7 +38,7 @@ namespace Splunk.Client
     /// </typeparam>
     /// <typeparam name="TConverter">
     /// The type of value converter to convert items enumerated by the <see 
-    /// cref="IEnumerable"/> object.
+    /// cref="IEnumerable&lt;T&gt;"/> object.
     /// </typeparam>
     sealed class CollectionConverter<TValue, TCollection, TConverter> : ValueConverter<TCollection> 
         where TCollection : ICollection<TValue>, new()
@@ -51,7 +51,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// The default <see cref="CollectionConverter"/> instance.
+        /// The default <see cref="CollectionConverter&lt;TValue, TCollection, TConverter&gt;"/>
+        /// instance.
         /// </summary>
         public static readonly CollectionConverter<TValue, TCollection, TConverter> Instance;
 

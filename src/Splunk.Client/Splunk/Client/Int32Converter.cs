@@ -29,12 +29,12 @@ namespace Splunk.Client
     sealed class Int32Converter : ValueConverter<Int32>
     {
         /// <summary>
-        /// The default <see cref="EnumConverter"/> instance.
+        /// The default <see cref="EnumConverter&lt;TEnum&gt;"/> instance.
         /// </summary>
         public static readonly Int32Converter Instance = new Int32Converter();
 
         /// <summary>
-        /// Converts the string representation of the <see cref="input"/> 
+        /// Converts the string representation of the <paramref name="input"/> 
         /// object to a <see cref="Int32"/> value.
         /// </summary>
         /// <param name="input">
@@ -44,7 +44,7 @@ namespace Splunk.Client
         /// Result of the conversion.
         /// </returns>
         /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="Int32"/>
+        /// The <paramref name="input"/> does not represent a <see cref="Int32"/>
         /// value.
         /// </exception>
         public override Int32 Convert(object input)

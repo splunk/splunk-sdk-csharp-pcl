@@ -14,32 +14,32 @@
  * under the License.
  */
 
-// TODO:
-//
-// [X] Refactor SearchResultsReader/SearchResults
-//
-//     1. SearchResults should read one and only one result set
-//     2. SearchResultsReader should accept a stream and instantiate a new 
-//        SearchResults instance for each result set.
-//     3. Care should be taken to ensure that SearchResults instances do
-//        not dispose their stream prematurely; perhaps by creating each
-//        SearchResults instance with an XmlReader instance. When 
-//        constructed in this fashion, we would simply short-circuit 
-//        Dispose and leave it to our creator to close the stream.
-//
-// [O] Work out semantics for skipping preview SearchResults
-//     Use Reactive Extensions Operators
-//
-// [O] Contracts
-//
-// [O] Documentation
-//
-// [X] Thread safety
-//     Addresed by modifications to Observable<T> class. See 
-//     Observable<T>.NotifySubscribers and Observable<T>.Complete.
-//
-// References:
-// 1. [Async, await, and yield return](http://goo.gl/RLVDK5)
+//// TODO:
+////
+//// [O] Work out semantics for skipping preview SearchResults
+////     Use Reactive Extensions Operators
+////
+//// [O] Contracts
+////
+//// [O] Documentation
+////
+//// [X] Refactor SearchExportStream/SearchResultStream
+////
+////     1. SearchResultStream should read one and only one result set
+////     2. SearchExportStream should accept a stream and instantiate a new 
+////        SearchResults instance for each result set.
+////     3. Care should be taken to ensure that SearchResults instances do
+////        not dispose their stream prematurely; perhaps by creating each
+////        SearchResults instance with an XmlReader instance. When 
+////        constructed in this fashion, we would simply short-circuit 
+////        Dispose and leave it to our creator to close the stream.
+////
+//// [X] Thread safety
+////     Addresed by modifications to Observable<T> class. See 
+////     Observable<T>.NotifySubscribers and Observable<T>.Complete.
+////
+//// References:
+//// 1. [Async, await, and yield return](http://goo.gl/RLVDK5)
 
 namespace Splunk.Client
 {
@@ -59,11 +59,11 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SearchExportStream"/> class.
-        /// This is a base contructor that should not be used directly.
+        /// Initializes a new instance of the <see cref="SearchExportStream"/>
+        /// class.
         /// </summary>
-        /// <param name="stream">
-        /// The underlying <see cref="Stream"/>.
+        /// <param name="response">
+        /// The underlying <see cref="Response"/> object.
         /// </param>
         SearchExportStream(Response response)
         {

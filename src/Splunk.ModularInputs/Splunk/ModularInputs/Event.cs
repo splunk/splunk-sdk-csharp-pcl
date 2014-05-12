@@ -32,8 +32,6 @@ namespace Splunk.ModularInputs
     {
         private static long ticksSinceEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
 
-        #region Properties
-
         /// <summary>
         /// Event data.
         /// </summary>

@@ -37,10 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "list_apps", "examples\list_
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. documentation", "4. documentation", "{90CFCC8E-84FC-4842-B51A-8B26C1140FF0}"
 EndProject
-Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Splunk.Client", "docs\Splunk.Client\Splunk.Client.shfbproj", "{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}"
-EndProject
-Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Splunk.ModularInputs", "docs\Splunk.ModularInputs\Splunk.ModularInputs.shfbproj", "{3C28E511-43A6-4646-91B9-5FDAF50161E0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -161,26 +157,6 @@ Global
 		{4D090E62-8E8F-45F8-9382-97AFE56578AB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4D090E62-8E8F-45F8-9382-97AFE56578AB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{4D090E62-8E8F-45F8-9382-97AFE56578AB}.Release|x86.ActiveCfg = Release|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1}.Release|x86.ActiveCfg = Release|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -197,7 +173,5 @@ Global
 		{F3692BB4-E692-4ED8-B999-FB7FBCF3126F} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
 		{A585A939-E070-455D-9A99-A68618B54E1F} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
 		{4D090E62-8E8F-45F8-9382-97AFE56578AB} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
-		{22A30CA1-E24F-4093-88EA-C0A4310FD3E1} = {90CFCC8E-84FC-4842-B51A-8B26C1140FF0}
-		{3C28E511-43A6-4646-91B9-5FDAF50161E0} = {90CFCC8E-84FC-4842-B51A-8B26C1140FF0}
 	EndGlobalSection
 EndGlobal

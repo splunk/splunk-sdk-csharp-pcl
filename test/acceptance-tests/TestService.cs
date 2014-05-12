@@ -1134,7 +1134,7 @@ namespace Splunk.Client.UnitTesting
             using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
                 await service.LoginAsync("admin", "changeme");
-                await service.Server.RestartAsync(millisecondsDelay: 60000);
+                await service.Server.RestartAsync();
                 Assert.Null(service.SessionKey);
                 await service.LoginAsync("admin", "changeme");
             }

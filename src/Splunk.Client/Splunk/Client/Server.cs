@@ -24,6 +24,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
@@ -197,45 +198,46 @@ namespace Splunk.Client
         /// </exception>
         /// <exception cref="OperationCanceledException">
         /// </exception>
-        public async Task RestartAsync(int millisecondsDelay = 60000)
+        public async Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
             Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
+
+            await this.CreateMessageAsync("restart_requested", ServerMessageSeverity.Information, "");
 
             using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(this.ResourceName, "restart")))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
-            
+
             if (millisecondsDelay == 0)
             {
                 return;
             }
 
-            //// Wait until the server goes down
-
-            for (int i = 0; ; i++)
-            {
-                try
-                {
-                    using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName))
-                    {
-                        await Task.Delay(millisecondsDelay: 500);
-                    }
-                }
-                catch (HttpRequestException)
-                {
-                    break;
-                }
-            }
-
-            //// Wait for millisecondsDelay for the server to come up
-
-            this.Context.SessionKey = null; // We're no longer authenticated
-
             using (var cancellationTokenSource = new CancellationTokenSource())
             {
                 cancellationTokenSource.CancelAfter(millisecondsDelay);
                 var token = cancellationTokenSource.Token;
+
+                //// Wait for the server to go
+
+                try
+                {
+                    for (int i = 0; ; i++)
+                    {
+                        var serverMessage = await this.GetMessageAsync("restart_requested");
+                        await Task.Delay(millisecondsDelay: retryInterval);
+                    }
+                }
+                catch (HttpRequestException e)
+                {
+                    Debug.Assert(e.InnerException is WebException);
+                    Debug.Assert(((WebException)e.InnerException).Status == WebExceptionStatus.ConnectFailure);
+                }
+
+                //// Wait for the server to come up
+
+                this.Context.SessionKey = null; // because we're no longer authenticated
 
                 for (int i = 0; ; i++)
                 {
@@ -247,10 +249,13 @@ namespace Splunk.Client
                             break;
                         }
                     }
-                    catch (HttpRequestException)
+                    catch (HttpRequestException e)
                     {
-                        continue;
+                        Debug.Assert(e.InnerException is WebException);
+                        Debug.Assert(((WebException)e.InnerException).Status == WebExceptionStatus.ConnectFailure);
                     }
+
+                    await Task.Delay(millisecondsDelay: retryInterval);
                 }
             }
         }

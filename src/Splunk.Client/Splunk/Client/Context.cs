@@ -14,19 +14,19 @@
  * under the License.
  */
 
-// TODO:
-// [X] Synchronization strategy
-// [X] Settable SessionKey
-// [X] Dead code removal
-// [X] Contracts
-// [O] Documentation
-// [O] All unsealed classes that implement IDisposable must also implement 
-//     this method: protected virtual void Dispose(bool);
-//     See [Implementing a Dispose Method](http://goo.gl/VPIovn)
-//     All sealed classes that implement IDisposable must also implemnt this
-//     method: void Dispose(bool);
-//     See [GC.SuppressFinalize Method](http://goo.gl/XiI3HZ) and note the
-//     private void Dispose(bool disposing) implementation.
+//// TODO:
+//// [X] Synchronization strategy
+//// [X] Settable SessionKey
+//// [X] Dead code removal
+//// [X] Contracts
+//// [O] Documentation
+//// [X] All unsealed classes that implement IDisposable must also implement 
+////     this method: protected virtual void Dispose(bool);
+////     See [Implementing a Dispose Method](http://goo.gl/VPIovn)
+////     All sealed classes that implement IDisposable must also implemnt this
+////     method: void Dispose(bool);
+////     See [GC.SuppressFinalize Method](http://goo.gl/XiI3HZ) and note the
+////     private void Dispose(bool disposing) implementation.
 
 namespace Splunk.Client
 {
@@ -141,7 +141,7 @@ namespace Splunk.Client
         /// "Context"/>.
         /// </summary>
         /// <remarks>
-        /// Do not override this method. Override <see cref="Context.Dispose(bool disposing)"/> 
+        /// Do not override this method. Override <see cref="Dispose(bool)"/>
         /// instead.
         /// </remarks>
         public void Dispose()
@@ -208,7 +208,7 @@ namespace Splunk.Client
         // + Consolidated the code into one private method: Context.SendAsync accepts both HttpContent and parameters.
         //
         // + Provided these public entry points:
-        ///
+        //
         //   o Context.DeleteAsync  Accepts parameters, but not HttpContent. 
         //
         //   o Context.GetAsync     Accepts parameters, but not HttpContent.
@@ -257,10 +257,21 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ns"></param>
-        /// <param name="resourceName"></param>
-        /// <param name="argumentSets"></param>
-        /// <returns></returns>
+        /// <param name="ns">
+        /// 
+        /// </param>
+        /// <param name="resourceName">
+        /// 
+        /// </param>
+        /// <param name="token">
+        /// 
+        /// </param>
+        /// <param name="argumentSets">
+        /// 
+        /// </param>
+        /// <returns>
+        /// 
+        /// </returns>
         public async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token, 
             params IEnumerable<Argument>[] argumentSets)
         {
@@ -287,10 +298,21 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ns"></param>
-        /// <param name="resource"></param>
-        /// <param name="parameterSets"></param>
-        /// <returns></returns>
+        /// <param name="ns">
+        /// 
+        /// </param>
+        /// <param name="resource">
+        /// 
+        /// </param>
+        /// <param name="content">
+        /// 
+        /// </param>
+        /// <param name="argumentSets">
+        /// 
+        /// </param>
+        /// <returns>
+        /// 
+        /// </returns>
         public async Task<Response> PostAsync(Namespace ns, ResourceName resource,
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
@@ -305,9 +327,6 @@ namespace Splunk.Client
         /// <returns>
         /// A string representation of the current <see cref="Context"/>.
         /// </returns>
-        /// <remarks>
-        /// The value 
-        /// </remarks>
         public override string ToString()
         {
             return string.Concat(SchemeStrings[(int)this.Scheme], "://", this.Host, ":", this.Port.ToString());

@@ -47,10 +47,10 @@ namespace Splunk.Client
         /// <param name="ns">
         /// The namespace for requests by the new <see cref="Service"/>. The
         /// default value is <c>null</c> indicating that <see cref=
-        /// "Namespace.Default"/> should be used.
+        /// "Namespace"/>.Default should be used.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> is <c>null</c>.
+        /// <paramref name="context"/> is <c>null</c>.
         /// </exception>
         public Service(Context context, Namespace ns = null)
         {
@@ -284,7 +284,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/JGm0JP">DELETE 
         /// storage/passwords/{name}</a> endpoint to remove the <see cref=
-        /// storage password identified by <see cref="name"/>.
+        /// "StoragePassword"/> identified by <paramref name="name"/>.
         /// </remarks>
         public async Task RemoveStoragePasswordAsync(string name)
         {
@@ -296,7 +296,10 @@ namespace Splunk.Client
         /// Asynchronously updates a storage password.
         /// </summary>
         /// <param name="name">
-        /// Username identifying the storage password to be updated.
+        /// Identity of the storage password to be updated.
+        /// </param>
+        /// <param name="password">
+        /// 
         /// </param>
         /// <returns>
         /// An object representing the updated storage password.
@@ -304,7 +307,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/HL3c0T">POST 
         /// storage/passwords/{name}</a> endpoint to update the storage
-        /// password identified by <see cref="name"/>.
+        /// password identified by <paramref name="name"/>.
         /// </remarks>
         public async Task<StoragePassword> UpdateStoragePasswordAsync(string name, string password)
         {
@@ -322,6 +325,12 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="name">
         /// Name of the application to create.
+        /// </param>
+        /// <param name="template">
+        /// 
+        /// </param>
+        /// <param name="attributes">
+        /// 
         /// </param>
         /// <returns>
         /// An object representing the application created.
@@ -368,7 +377,7 @@ namespace Splunk.Client
         /// </param>
         /// <returns>
         /// An object representing the collection of installed applications
-        /// specified by <see cref="args"/>.
+        /// specified by <paramref name="args"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/iiCmcY">GET apps/local</a> 
@@ -432,6 +441,12 @@ namespace Splunk.Client
         /// <param name="name">
         /// Name of the application to create.
         /// </param>
+        /// <param name="path">
+        /// 
+        /// </param>
+        /// <param name="update">
+        /// 
+        /// </param>
         /// <returns>
         /// An object representing the application created.
         /// </returns>
@@ -459,13 +474,11 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/SzKzNX">GET 
         /// apps/local/{name}/package</a> endpoint to create an archive of the
-        /// application identified by <see cref="name"/> and construct the <see 
+        /// application identified by <paramref name="name"/> and construct the <see 
         /// cref="ApplicationArchiveInfo"/> object it returns.
         /// </remarks>
-        public async Task<ApplicationArchiveInfo> PackageApplication(string name)
+        public async Task<ApplicationArchiveInfo> PackageApplicationAsync(string name)
         {
-            //// TODO: Should this method be named CreateApplicationArchive?
-
             var resource = new ApplicationArchiveInfo(this.Context, this.Namespace, name);
             await resource.GetAsync();
             return resource;
@@ -481,7 +494,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/SzKzNX">DELETE 
         /// apps/local/{name}</a> endpoint to remove the <see cref=
-        /// "Application"/> object identified by <see cref="name"/>.
+        /// "Application"/> object identified by <paramref name="name"/>.
         /// </remarks>
         public async Task RemoveApplicationAsync(string name)
         {
@@ -496,7 +509,7 @@ namespace Splunk.Client
         /// Name of the application to update.
         /// </param>
         /// <param name="attributes">
-        /// New attributes for the application identified by <see cref=
+        /// New attributes for the application identified by <paramref name=
         /// "name"/>.
         /// </param>
         /// <returns>
@@ -505,7 +518,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
         /// apps/local/{name}</a> endpoint to update the <see cref=
-        /// "Application"/> object identified by <see cref="name"/>.
+        /// "Application"/> object identified by <paramref name="name"/>.
         /// </remarks>
         public async Task<Application> UpdateApplicationAsync(string name, ApplicationAttributes attributes)
         {
@@ -527,7 +540,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/CBWes7">POST 
         /// properties</a> endpoint to create the <see cref="Configuration"/>
-        /// identified by <see cref="name"/>.
+        /// identified by <paramref name="name"/>.
         /// </remarks>
         public async Task<Configuration> CreateConfigurationAsync(string name)
         {
@@ -542,14 +555,14 @@ namespace Splunk.Client
         /// <param name="fileName">
         /// Name of a configuration file.
         /// </param>
-        /// <param name="fileName">
+        /// <param name="stanzaName">
         /// Name of the configuration stanza to create.
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/jae44k">POST 
         /// properties/{file_name></a> endpoint to create the <see cref=
-        /// "ConfigurationStanza"/> identified by <see cref="fileName"/> and
-        /// <see cref="stanzaName"/>.
+        /// "ConfigurationStanza"/> identified by <paramref name="fileName"/> and
+        /// <paramref name="stanzaName"/>.
         /// </remarks>
         public async Task<ConfigurationStanza> CreateConfigurationStanzaAsync(string fileName, string stanzaName)
         {
@@ -566,7 +579,7 @@ namespace Splunk.Client
         /// </param>
         /// <returns>
         /// An object representing the configuration file.
-        /// <see cref="name"/>.
+        /// <paramref name="name"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/JNbGtL">GET 
@@ -643,13 +656,13 @@ namespace Splunk.Client
         /// Name of a configuration file.
         /// </param>
         /// <param name="stanzaName">
-        /// Name of a configuration stanza in <see cref="fileName"/> to be
+        /// Name of a configuration stanza in <paramref name="fileName"/> to be
         /// removed.
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
         /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
-        /// identified by <see cref="stanzaName"/>.
+        /// identified by <paramref name="stanzaName"/>.
         /// </remarks>
         public async Task RemoveConfigurationStanzaAsync(string fileName, string stanzaName)
         {
@@ -670,14 +683,15 @@ namespace Splunk.Client
         /// Name of the configuration setting to update.
         /// </param>
         /// <param name="value">
-        /// A new <see cref="string"/> value for the configuration setting
-        /// identified by <see cref="fileName"/>, <see cref="stanzaName"/>,
-        /// and <see cref="keyName"/>.
+        /// A new value for the configuration setting identified by <paramref 
+        /// name="fileName"/>, <paramref name="stanzaName"/>, and <paramref 
+        /// name="keyName"/>.
+        /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
         /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// update the configuration setting identified by <see cref=
-        /// "fileName"/>, <see cref="stanzaName"/>, and <see cref="keyName"/>.
+        /// update the configuration setting identified by <paramref name=
+        /// "fileName"/>, <paramref name="stanzaName"/>, and <paramref name="keyName"/>.
         /// </remarks>
         public async Task<ConfigurationSetting> UpdateConfigurationSettingAsync(string fileName, string stanzaName, 
             string keyName, string value)
@@ -695,16 +709,18 @@ namespace Splunk.Client
         /// Name of a configuration file.
         /// </param>
         /// <param name="stanzaName">
-        /// Name of a stanza within the configuration file identified by <see 
-        /// cref="fileName"/>.
+        /// Name of a stanza within the configuration file identified by <paramref 
+        /// name="fileName"/>.
+        /// </param>
         /// <param name="settings">
         /// A variable-length list of objects representing the settings to be
         /// added or updated.
+        /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/w742jw">POST 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to update <see 
-        /// cref="settings"/> in the stanza identified by <see cref=
-        /// "fileName"/> and <see cref="stanzaName"/>.
+        /// properties/{file_name}/{stanza_name}</a> endpoint to update 
+        /// <paramref name="settings"/> in the stanza identified by <paramref 
+        /// name="fileName"/> and <paramref name="stanzaName"/>.
         /// </remarks>
         public async Task UpdateConfigurationSettingsAsync(string fileName, string stanzaName, params Argument[] settings)
         {
@@ -724,19 +740,18 @@ namespace Splunk.Client
         /// </param>
         /// <param name="coldPath">
         /// Location for storing the cold databases for the index identified by
-        /// <see cref="name"/>. A value of <c>null</c> or <c>""</c> specifies 
+        /// <paramref name="name"/>. A value of <c>null</c> or <c>""</c> specifies 
         /// that the cold databases should be stored at the default location.
         /// </param>
         /// <param name="homePath">
         /// Location for storing the hot and warm buckets for the index 
-        /// identified by <see cref="name"/>. A value of <c>null</c> or <c>""
+        /// identified by <paramref name="name"/>. A value of <c>null</c> or <c>""
         /// </c> specifies that the hot and warm buckets should be stored at 
         /// the default location.
         /// </param>
         /// <param name="thawedPath">
-        /// <summary>
         /// Specifies the absolute path for storing the resurrected databases 
-        /// for the index identified by <see cref="name"/>. A value of <c>null
+        /// for the index identified by <paramref name="name"/>. A value of <c>null
         /// </c> or <c>""</c> specifies that the resurrected databases should 
         /// be stored at the default location.
         /// </param>
@@ -810,7 +825,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/hCc1xe">DELETE
         /// data/indexes/{name}</a> endpoint to remove the <see cref=
-        /// "Index"/> identified by <see cref="name"/>.
+        /// "Index"/> identified by <paramref name="name"/>.
         /// </remarks>
         public async Task RemoveIndexAsync(string name)
         {
@@ -830,8 +845,8 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/n3S22S">POST
         /// data/indexes/{name}</a> endpoint to update the <see cref=
-        /// "Index"/> identified by <see cref="name"/> with a new set of <see 
-        /// cref="attributes"/>.
+        /// "Index"/> identified by <paramref name="name"/> with a new set of <paramref 
+        /// name="attributes"/>.
         /// </remarks>
         public async Task UpdateIndexAsync(string name, IndexAttributes attributes)
         {
@@ -848,6 +863,9 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="name">
         /// Name of the saved search to be created.
+        /// </param>
+        /// <param name="search">
+        /// A Splunk search command.
         /// </param>
         /// <param name="attributes">
         /// Attributes of the saved search to be created.
@@ -866,11 +884,12 @@ namespace Splunk.Client
         /// saved/searches</a> endpoint to create the <see cref="SavedSearch"/>
         /// object it returns.
         /// </remarks>
-        public async Task<SavedSearch> CreateSavedSearchAsync(string name, SavedSearchAttributes attributes,
-            SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
+        public async Task<SavedSearch> CreateSavedSearchAsync(string name, string search, 
+            SavedSearchAttributes attributes = null, SavedSearchDispatchArgs dispatchArgs = null, 
+            SavedSearchTemplateArgs templateArgs = null)
         {
             var resource = new SavedSearch(this.Context, this.Namespace, name);
-            await resource.CreateAsync(attributes, dispatchArgs, templateArgs);
+            await resource.CreateAsync(search, attributes, dispatchArgs, templateArgs);
             return resource;
         }
 
@@ -893,7 +912,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
         /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
-        /// cref="SavedSearch"/> identified by <see cref="name"/>.
+        /// cref="SavedSearch"/> identified by <paramref name="name"/>.
         /// </remarks>
         public async Task<Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null,
             SavedSearchTemplateArgs templateArgs = null)
@@ -916,7 +935,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
         /// saved/searches/{name}</a> endpoint to get the <see cref=
-        /// "SavedSearch"/> identified by <see cref="name"/>.
+        /// "SavedSearch"/> identified by <paramref name="name"/>.
         /// </remarks>
         public async Task<SavedSearch> GetSavedSearchAsync(string name, SavedSearchFilterArgs args = null)
         {
@@ -934,13 +953,13 @@ namespace Splunk.Client
         /// </param>
         /// <returns>
         /// A new <see cref="SavedSearchCollection"/> containing the <see cref=
-        /// "SavedSearch"/> entries identified by <see cref="args"/>.
+        /// "SavedSearch"/> entries identified by <paramref name="args"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/bKrRK0">GET 
         /// saved/searches</a> endpoint to retrieve a new <see cref=
         /// "SavedSearchCollection"/> containing the <see cref="SavedSearch"/> 
-        /// entries identified by <see cref="args"/>.
+        /// entries identified by <paramref name="args"/>.
         /// </remarks>
         public async Task<SavedSearchCollection> GetSavedSearchesAsync(SavedSearchCollectionArgs args = null)
         {
@@ -958,7 +977,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/sn7qC5">DELETE 
         /// saved/searches/{name}</a> endpoint to remove the saved search
-        /// identified by <see cref="name"/>.
+        /// identified by <paramref name="name"/>.
         /// </remarks>
         public async Task RemoveSavedSearchAsync(string name)
         {
@@ -987,7 +1006,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/aV9eiZ">POST 
         /// saved/searches/{name}</a> endpoint to update the saved search
-        /// identified by <see cref="name"/>.
+        /// identified by <paramref name="name"/>.
         /// </remarks>
         public async Task<SavedSearch> UpdateSavedSearchAsync(string name, SavedSearchAttributes attributes = null, 
             SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
@@ -1006,13 +1025,13 @@ namespace Splunk.Client
         /// </param>
         /// <returns>
         /// An object representing the collection of jobs created from the
-        /// saved search identified by <see cref="name"/>.
+        /// saved search identified by <paramref name="name"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/kv9L1l">GET 
         /// saved/searches/{name}/history</a> endpoint to get the collection of
-        /// jobs created from the <see cref="SavedSearch"/> identified by <see 
-        /// cref="name"/>.
+        /// jobs created from the <see cref="SavedSearch"/> identified by <paramref 
+        /// name="name"/>.
         /// </remarks>
         public async Task<JobCollection> GetSavedSearchHistoryAsync(string name)
         {
@@ -1034,13 +1053,19 @@ namespace Splunk.Client
         /// <param name="args">
         /// Optional search arguments.
         /// </param>
+        /// <param name="customArgs">
+        /// 
+        /// </param>
+        /// <param name="requiredState">
+        /// 
+        /// </param>
         /// <returns>
         /// An object representing the search job that was created.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/JZcPEb">POST 
         /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
-        /// specified by <see cref="args"/>.
+        /// specified by <paramref name="args"/>.
         /// </remarks>
         public async Task<Job> CreateJobAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null,
             DispatchState requiredState = DispatchState.Running)
@@ -1087,7 +1112,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/SFqSPI">GET 
         /// search/jobs/{search_id}</a> endpoint to get the <see cref="Job"/> 
-        /// identified by <see cref="searchId"/>.
+        /// identified by <paramref name="searchId"/>.
         /// </remarks>
         public async Task<Job> GetJobAsync(string searchId)
         {
@@ -1104,8 +1129,8 @@ namespace Splunk.Client
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/ja2Sev">GET 
-        /// search/jobs</a> endpoint to get the <see cref="JobCollelction"/> 
-        /// specified by <see cref="args"/>.
+        /// search/jobs</a> endpoint to get the <see cref="JobCollection"/>
+        /// specified by <paramref name="args"/>.
         /// </remarks>
         public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args = null)
         {
@@ -1123,7 +1148,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/TUqQUc">DELETE 
         /// search/jobs/{search_id}</a> endpoint to remove the <see cref="Job"/> 
-        /// identified by <see cref="searchId"/>.
+        /// identified by <paramref name="searchId"/>.
         /// </remarks>
         public async Task RemoveJobAsync(string searchId)
         {
@@ -1182,6 +1207,9 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously starts a search export.
         /// </summary>
+        /// <param name="search">
+        /// Splunk search command.
+        /// </param>
         /// <param name="args">
         /// Optional export arguments.
         /// </param>
@@ -1228,7 +1256,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/bL4tFk">POST 
         /// search/jobs/{search_id}</a> to update the specificiation of
-        /// search <see cref="Job"/> identified by <see cref="searchId"/>.
+        /// search <see cref="Job"/> identified by <paramref name="searchId"/>.
         /// </remarks>
         public async Task UpdateJobAsync(string searchId, CustomJobArgs args)
         {
@@ -1244,8 +1272,8 @@ namespace Splunk.Client
         /// Releases all resources used by the <see cref="Service"/>.
         /// </summary>
         /// <remarks>
-        /// Do not override this method. Override 
-        /// <see cref="Service.Dispose(bool disposing)"/> instead.
+        /// Do not override this method. Override <see cref="Service.Dispose(bool)"/> 
+        /// instead.
         /// </remarks>
         public void Dispose()
         {

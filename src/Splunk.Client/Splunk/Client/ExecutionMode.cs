@@ -34,15 +34,15 @@ namespace Splunk.Client
         Normal, 
         
         /// <summary>
-        /// Specifies that a Search ID (SID) should be returned when the 
-        /// <see cref="job"/> is complete.
+        /// Specifies that a Search ID (SID) should be returned when the <see 
+        /// cref="Job"/> completes, not before then.
         /// </summary>
         [EnumMember(Value = "blocking")]
         Blocking,
 
         /// <summary>
         /// Specifies that a Search ID (SID) should be returned when the 
-        /// <see cref="job"/> is complete.
+        /// <see cref="Job"/> is complete.
         /// </summary>
         [EnumMember(Value = "oneshot")]
         Oneshot

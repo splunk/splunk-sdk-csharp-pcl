@@ -91,7 +91,7 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the version string for an <see cref="Applcation"/>.
+        /// Gets or sets the version string for an <see cref="Application"/>.
         /// </summary>
         /// <remarks>
         /// Version strings are a number followed by a sequence of numbers or 

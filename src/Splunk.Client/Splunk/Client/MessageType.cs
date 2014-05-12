@@ -14,41 +14,44 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Documentation
+
 namespace Splunk.Client
 {
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Specifies the type of a server response <see cref="Message"/>.
     /// </summary>
     public enum MessageType
     {
         /// <summary>
-        /// 
+        /// Specifies a debug  messages.
         /// </summary>
         [EnumMember(Value = "DEBUG")]
         Debug, 
         
         /// <summary>
-        /// 
+        /// Specifies an information message.
         /// </summary>
         [EnumMember(Value = "INFO")]
         Information, 
         
         /// <summary>
-        /// 
+        /// Specifies a warning message.
         /// </summary>
         [EnumMember(Value = "WARN")]
         Warning, 
         
         /// <summary>
-        /// 
+        /// Specifies an error message.
         /// </summary>
         [EnumMember(Value = "ERROR")]
         Error,
 
         /// <summary>
-        /// 
+        /// Specifies a fatal error message.
         /// </summary>
         [EnumMember(Value = "FATAL")]
         Fatal

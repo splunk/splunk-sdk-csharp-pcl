@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [O] Contracts
-// [ ] Documentation
+//// TODO:
+//// [O] Contracts
+//// [ ] Documentation
 
 namespace Splunk.Client
 {
@@ -51,6 +51,10 @@ namespace Splunk.Client
 
         #region Fields
 
+        /// <summary>
+        /// A readonly instance of the <see cref="Pagination"/> structure that
+        /// is all zeros.
+        /// </summary>
         public static readonly Pagination Empty;
 
         #endregion
@@ -98,6 +102,12 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// Gets a string representation for the current <see cref="Pagination"/>.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="Pagination"/>.
+        /// </returns>
         public override string ToString()
         {
             var text = string.Format("ItemsPerPage = {0}, StartIndex = {1}, TotalResults = {2}", 

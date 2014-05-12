@@ -14,8 +14,8 @@
  * under the License.
  */
 
-// TODO:
-// [O] Documentation
+//// TODO:
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -95,7 +95,7 @@ namespace Splunk.Client
         /// "Application"/>entries in ascending or descending order.
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="SortDirection.Ascending"/>.
+        /// The default value is <see cref="SortDirection"/>.Ascending.
         /// </remarks>
         [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
         [DefaultValue(SortDirection.Ascending)]
@@ -107,7 +107,7 @@ namespace Splunk.Client
         /// cref="Application"/> entries.
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="SortMode.Automatic"/>.
+        /// The default value is <see cref="SortMode"/>.Automatic.
         /// </remarks>
         [DataMember(Name = "sort_mode", EmitDefaultValue = false)]
         [DefaultValue(SortMode.Automatic)]

@@ -106,14 +106,14 @@ namespace Splunk.Client.Examples
 
             //// Search : Export
 
-            SearchExportStream searchResultsReader;
+            SearchExportStream searchExportStream;
 
-            using (searchResultsReader = service.StartSearchExportAsync("search index=_internal | head 100").Result)
+            using (searchExportStream = service.StartSearchExportAsync("search index=_internal | head 100").Result)
             {
                 int recordNumber = 0;
                 int setNumber = 0;
 
-                foreach (var searchResultSet in searchResultsReader)
+                foreach (var searchResultSet in searchExportStream)
                 {
                     Console.WriteLine(string.Format("Result set {0}", ++setNumber));
 
@@ -187,13 +187,13 @@ namespace Splunk.Client.Examples
                 }
             }
 
-            using (var searchResultsReader = await service.StartSearchExportAsync("search index=_internal | head 100000"))
+            using (var searchExportStream = await service.StartSearchExportAsync("search index=_internal | head 100000"))
             {
                 Console.WriteLine("Begin: Service.SearchExportAsync: Asyncrhonous use case");
                 int recordNumber = 0;
                 int setNumber = 0;
 
-                foreach (var resultSet in searchResultsReader)
+                foreach (var resultSet in searchExportStream)
                 {
                     Console.WriteLine(string.Format("Result set {0}", ++setNumber));
                     var manualResetEvent = new ManualResetEvent(true);

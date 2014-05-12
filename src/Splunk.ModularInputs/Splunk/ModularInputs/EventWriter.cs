@@ -62,6 +62,7 @@ namespace Splunk.ModularInputs
 
         #endregion
 
+        /// <param name="eventElement">
         public void WriteEvent(Event e)
         {
             eventQueue.Add(e);

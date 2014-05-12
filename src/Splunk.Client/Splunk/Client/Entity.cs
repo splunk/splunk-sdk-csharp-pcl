@@ -54,9 +54,9 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity<TEntity>"/> 
-        /// class as specified by <see cref="context"/>, <see cref="namespace"/>
-        /// and "<see cref="resourceName"/>.
+        /// Initializes a new instance of the <see cref="Entity&lt;TEntity&gt;"/> 
+        /// class as specified by <paramref name="context"/>, <paramref name="ns"/>
+        /// and "<paramref name="resourceName"/>.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -65,23 +65,23 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resourceName">
-        /// An object identifying a Splunk resource within <see cref="namespace"/>.
+        /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/>, <see cref="namespace"/>, or <see cref=
+        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
         /// "resourceName"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected Entity(Context context, Namespace ns, ResourceName resourceName)
             : base(context, ns, resourceName)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity<TEntity>"/> 
-        /// class as specified by <see cref="context"/>, <see cref="namespace"/>,
-        /// and resource <see cref="collection"/> and <see cref="title"/>.
+        /// Initializes a new instance of the <see cref="Entity&lt;TEntity&gt;"/> 
+        /// class as specified by <paramref name="context"/>, <paramref name="ns"/>,
+        /// <paramref name="collection"/>, and <paramref name="entity"/>.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -90,26 +90,33 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="collection">
-        /// An object identifying a Splunk resource collection within <see 
-        /// cref="namespace"/>.
+        /// The <see cref="ResourceName"/> of an <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </param>
         /// <param name="entity">
-        /// The name of a resource within <see cref="collection"/>.
+        /// The name of an entity within <paramref name="collection"/>.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <see cref="entity"/> is <c>null</c> or empty.
+        /// <paramref name="entity"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/>, <see cref="namespace"/>, or <see cref=
-        /// "collection"/> are <c>null</c>.
+        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref 
+        /// name="collection"/>, or <paramref name="entity"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected Entity(Context context, Namespace ns, ResourceName collection, string entity)
             : this(context, ns, new ResourceName(collection, entity))
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "Resource&lt;TResource&gt;"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         public Entity()
         { }
 
@@ -117,26 +124,41 @@ namespace Splunk.Client
 
         #region Properties backed by AtomEntry
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Author
         { 
             get { return this.Snapshot.Author; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Uri Id
         { 
             get { return this.Snapshot.Id; } 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IReadOnlyDictionary<string, Uri> Links
         { 
             get { return this.Snapshot.Links; } 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Published
         {
             get { return this.Snapshot.Published; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Updated
         { 
             get { return this.Snapshot.Updated; }
@@ -161,7 +183,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the current <see cref=
-        /// "Entity"/> that contains all changes to it since it was last 
+        /// "Entity&lt;TEntity&gt;"/> that contains all changes to it since it was last 
         /// retrieved.
         /// </summary>
         /// <returns></returns>
@@ -174,11 +196,38 @@ namespace Splunk.Client
             }
         }
 
+        /// <summary>
+        /// Gets a property value from the <see cref="ExpandoAdapter"/>
+        /// underlying the current <see cref="Entity&lt;TEntity&gt;"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Property name.
+        /// </param>
+        /// <returns>
+        /// Property value or <c>null</c>, if property does not exist.
+        /// </returns>
         protected dynamic GetValue(string name)
         {
             return this.Snapshot.Adapter.GetValue(name);
         }
 
+        /// <summary>
+        /// Gets a converted property value from the <see cref="ExpandoAdapter"/>
+        /// underlying the current <see cref="Entity&lt;TEntity&gt;"/>.
+        /// </summary>
+        /// <param name="name">
+        /// Property name.
+        /// </param>
+        /// <param name="valueConverter">
+        /// A value converter for converting the property identified by
+        /// <paramref name="name"/>.
+        /// </param>
+        /// <returns>
+        /// Property value or <c>null</c>, if property does not exist.
+        /// </returns>
+        /// <exception cref="InvalidDataException">
+        /// The conversion failed.
+        /// </exception>
         protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
             return this.Snapshot.Adapter.GetValue(name, valueConverter);
@@ -190,12 +239,8 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
-        /// </param>
-        /// <param name="collection">
-        /// </param>
         /// <param name="entry">
+        /// 
         /// </param>
         protected internal override void Initialize(Context context, AtomEntry entry)
         {
@@ -203,6 +248,13 @@ namespace Splunk.Client
             base.Initialize(context, entry);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response">
+        /// 
+        /// </param>
+        /// <returns></returns>
         protected virtual async Task UpdateSnapshotAsync(Response response)
         {
             var feed = new AtomFeed();
@@ -210,7 +262,7 @@ namespace Splunk.Client
 
             if (feed.Entries.Count != 1)
             {
-                throw new InvalidDataException();  // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics
             }
 
             this.Snapshot = new EntitySnapshot(feed.Entries[0]);

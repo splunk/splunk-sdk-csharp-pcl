@@ -15,6 +15,7 @@
  */
 
 //// TODO:
+////
 //// [O] Contracts
 ////
 //// [O] Documentation
@@ -46,7 +47,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new <see cref="Resource"/> instance.
+        /// Initializes a new <see cref="Resource&lt;TResource&gt;"/> instance.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -55,14 +56,14 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resourceName">
-        /// An object identifying a Splunk resource within <see cref="namespace"/>.
+        /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/>, <see cref="namespace"/>, or <see cref=
+        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
         /// "resourceName"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected Resource(Context context, Namespace ns, ResourceName resourceName)
         {
@@ -80,7 +81,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Resource<TResource>"/> class.
+        /// "Resource&lt;TResource&gt;"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
@@ -95,13 +96,13 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the <see cref="Context"/> instance for the current <see cref=
-        /// "Resource<TResource>"/>.
+        /// "Resource&lt;TResource&gt;"/>.
         /// </summary>
         public Context Context
         { get; internal set; }
 
         /// <summary>
-        /// Gets the name of the current <see cref="Resource<TResource>"/>.
+        /// Gets the name of the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
         public string Name
         {
@@ -109,15 +110,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the namespace containing the current <see cref=
-        /// "Resource<TResource>"/>.
+        /// Gets the namespace containing the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
         public Namespace Namespace
         { get; private set; }
 
         /// <summary>
-        /// Gets the resource name of the current <see cref=
-        /// "Resource<TResource>"/>.
+        /// Gets the resource name of the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
         public ResourceName ResourceName
         { get; private set; }
@@ -128,7 +127,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Compares the specified object with the current <see cref=
-        /// "Resource<TResource>"/> instance and indicates whether the 
+        /// "Resource&lt;TResource&gt;"/> instance and indicates whether the 
         /// identity of the current instance precedes, follows, or appears in 
         /// the same position in the sort order as the specified object.
         /// </summary>
@@ -145,7 +144,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Compares the specified <see cref="Resource<TResource>"/> with 
+        /// Compares the specified <see cref="Resource&lt;TResource&gt;"/> with 
         /// the current instance and indicates whether the identity of the 
         /// current instance precedes, follows, or appears in the same position
         /// in the sort order as the specified instance.
@@ -155,7 +154,7 @@ namespace Splunk.Client
         /// </param>
         /// <returns>
         /// A signed number indicating the relative values of the current 
-        /// instance and <see cref="other"/>.
+        /// instance and <paramref name="other"/>.
         /// </returns>
         public int CompareTo(Resource<TResource> other)
         {
@@ -173,17 +172,16 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref=
-        /// "Resource<TResource>"/> refers to the same resource as the
-        /// current one.
+        /// Determines whether the specified <see cref="Resource&lt;TResource&gt;"/> 
+        /// refers to the same resource as the current one.
         /// </summary>
         /// <param name="other">
-        /// The <see cref="Resource<TResource>"/> to compare with the current
-        /// one.
+        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the
+        /// current one.
         /// </param>
         /// <returns>
         /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="Resource<TResource>"/>; otherwise, <c>false</c>.
+        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object other)
         {
@@ -191,16 +189,16 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Resource<TResource>"/>
+        /// Determines whether the specified <see cref="Resource&lt;TResource&gt;"/>
         /// refers to the same resource as the current one.
         /// </summary>
         /// <param name="other">
-        /// The <see cref="Resource<TResource>"/> to compare with the current
-        /// instance.
+        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the 
+        /// current one.
         /// </param>
         /// <returns>
         /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="Resource<TResource>"/>; otherwise, <c>false</c>.
+        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Resource<TResource> other)
         {
@@ -219,10 +217,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns the hash code for the current <see cref="Resource<TResource>"/>.
+        /// Returns the hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
         /// <returns>
-        /// Hash code for the current <see cref="Resource<TResource>"/>.
+        /// Hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </returns>
         public override int GetHashCode()
         {
@@ -230,7 +228,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes the current <see cref="Resource"/>.
+        /// Initializes the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -238,7 +236,6 @@ namespace Splunk.Client
         /// <param name="entry">
         /// An object representing a Splunk atom entry response.
         /// </param>
-        /// </remarks>
         protected internal virtual void Initialize(Context context, AtomEntry entry)
         {
             Contract.Requires<ArgumentNullException>(context != null);
@@ -296,12 +293,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets a string identifying the current <see cref=
-        /// "Resource<TResource>"/>.
+        /// Gets a string identifying the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </summary>
         /// <returns>
-        /// A string representing the identity of the current <see cref=
-        /// "Resource<TResource>"/>.
+        /// A string representing the identity of the current <see cref="Resource&lt;TResource&gt;"/>.
         /// </returns>
         public override string ToString()
         {

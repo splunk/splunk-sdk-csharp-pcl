@@ -14,11 +14,10 @@
  * under the License.
  */
 
-// TODO:
-//
-// [ ] Port DispatchTimeFormat and use it wherever appropriate. Can we create
-//     a relative as well as an absolute time formatter?
-// [O] Documentation
+//// TODO:
+//// [ ] Port DispatchTimeFormat and use it wherever appropriate. Can we create
+////     a relative as well as an absolute time formatter?
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -124,7 +123,6 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// The default value is <c>10</c>.
-        /// </para>
         /// </remarks>
         [DataMember(Name = "dispatch.reduce_freq", EmitDefaultValue = false)]
         [DefaultValue(10)]

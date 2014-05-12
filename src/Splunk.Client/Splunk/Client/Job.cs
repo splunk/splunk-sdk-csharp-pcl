@@ -53,13 +53,13 @@ namespace Splunk.Client
         /// Name of the search <see cref="Job"/>.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal Job(Context context, Namespace ns, string name)
             : base(context, ns, JobCollection.ClassResourceName, name)
@@ -91,7 +91,7 @@ namespace Splunk.Client
         ///   </description>
         /// </item>
         /// <item>
-        ///   <term><see cref="Service.DispatchSavedSearchAsnyc"/></term>
+        ///   <term><see cref="Service.DispatchSavedSearchAsync"/></term>
         ///   <description>
         ///   Asynchronously dispatches a <see cref="SavedSearch"/> identified
         ///   by name.
@@ -473,10 +473,11 @@ namespace Splunk.Client
         /// <remarks>
         /// The priority is mapped to the OS process priority. The higher the 
         /// number the higher the priority. The priority can be changed using 
-        /// <see cref="SetPriority"/>. 
-        /// <para>
-        /// <b>Note:</b> In *nix systems, non-privileged users can only reduce
-        /// the priority of a process.
+        /// <see cref="SetPriorityAsync"/>. 
+        /// <note type="note">
+        /// On *nix systems, non-privileged users can only reduce the priority 
+        /// of a process.
+        /// </note>
         /// </remarks>
         public int Priority
         {
@@ -618,7 +619,7 @@ namespace Splunk.Client
         /// Gets the search ID for the current <see cref="Job"/>.
         /// </summary>
         /// <remarks>
-        /// This property is a synonym for <see cref="Name"/>.
+        /// This property is a synonym for <see cref="Resource&lt;TResource&gt;.Name"/>.
         /// </remarks>
         public string Sid
         {
@@ -673,7 +674,7 @@ namespace Splunk.Client
         /// </param>
         /// <param name="delay">
         /// Number of milliseconds to wait for the current <see cref="Job"/> to 
-        /// move into the desired <see cref="dispatchState"/>.
+        /// move into the desired <paramref name="dispatchState"/>.
         /// </param>
         /// <param name="retryInterval">
         /// Number of milliseconds to wait between checks for the dispatch
@@ -742,7 +743,7 @@ namespace Splunk.Client
         /// </param>
         /// <param name="delay">
         /// Number of milliseconds to wait for the current <see cref="Job"/> to 
-        /// move into the desired <see cref="dispatchState"/>.
+        /// move into the desired <paramref name="dispatchState"/>.
         /// </param>
         /// <param name="retryInterval">
         /// Number of milliseconds to wait between checks for the dispatch
@@ -752,7 +753,7 @@ namespace Splunk.Client
         /// <returns></returns>
         /// <remarks>
         /// This method returns immediately if <see cref="DispatchState"/> is 
-        /// greater than or equal to <see cref="dispatchState"/>.
+        /// greater than or equal to <paramref name="dispatchState"/>.
         /// </remarks>
         public async Task TransitionAsync(DispatchState dispatchState, int delay = 30000, int retryInterval = 250)
         {
@@ -778,6 +779,13 @@ namespace Splunk.Client
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response">
+        /// 
+        /// </param>
+        /// <returns></returns>
         protected override async Task UpdateSnapshotAsync(Response response)
         {
             var reader = response.XmlReader;
@@ -1031,6 +1039,13 @@ namespace Splunk.Client
             });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args">
+        /// 
+        /// </param>
+        /// <returns></returns>
         public async Task UpdateJobArgs(JobArgs args)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))

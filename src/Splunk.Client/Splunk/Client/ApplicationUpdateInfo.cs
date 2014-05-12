@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
+//// TODO:
+//// [ ] Contracts
+//// [ ] Documentation
 
 namespace Splunk.Client
 {
@@ -77,6 +77,7 @@ namespace Splunk.Client
         ///   "Application"/> identified by name.
         ///   </description>
         /// </item>
+        /// </list>
         /// </remarks>
         public ApplicationUpdateInfo()
         { }
@@ -119,9 +120,6 @@ namespace Splunk.Client
 
         public class Update_t : ExpandoAdapter<Update_t>
         {
-            public Update_t()
-            {  }
-
             /// <summary>
             /// Get the name of the application.
             /// </summary>

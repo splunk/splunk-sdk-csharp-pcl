@@ -27,17 +27,19 @@ namespace Splunk.Client
     using System.IO;
 
     /// <summary>
-    /// Provides a base class for implementing strong types over an <see cref=
-    /// "ExpandoObject"/>.
+    /// Provides a base class for implementing strong types backed by <see 
+    /// cref="System.Dynamic.ExpandoObject"/> instances.
     /// </summary>
     public class ExpandoAdapter
     {
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Intializes a new instance of the ExpandoAdapter class.
         /// </summary>
-        /// <param name="expandoObject"></param>
+        /// <param name="expandoObject">
+        /// The object backing the current <see cref="ExpandoAdapter"/>.
+        /// </param>
         public ExpandoAdapter(ExpandoObject expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
@@ -45,15 +47,18 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Intializes a new instance of the <see cref="ExpandoAdapter"/> class.
         /// </summary>
-        protected ExpandoAdapter()
+        internal ExpandoAdapter()
         { }
 
         #endregion
 
         #region Fields
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly ExpandoAdapter Empty = new ExpandoAdapter(new ExpandoObject());
 
         #endregion
@@ -61,7 +66,8 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="System.Dynamic.ExpandoObject"/> backing the 
+        /// current <see cref="ExpandoAdapter"/> instance.
         /// </summary>
         internal ExpandoObject ExpandoObject
         { get; set; }
@@ -71,12 +77,9 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Gets a named item from the underlying <see cref="ExpandoObject"/>"/>.
+        /// Gets a named item from the <see cref="System.Dynamic.ExpandoObject"/>"/>
+        /// backing the current <see cref="ExpandoAdapter"/>.
         /// </summary>
-        /// <typeparam name="TValue">
-        /// The type of value to return.
-        /// </typeparam>
-        /// </param>
         /// <param name="name">
         /// The name of the item to be returned.
         /// </param>
@@ -102,25 +105,25 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets a named item from the underlying <see cref="ExpandoObject"/>"/>
-        /// and applies a <see cref="ValueConverter"/>.
+        /// and applies a <see cref="ValueConverter&lt;TValue&gt;"/>.
         /// </summary>
         /// <typeparam name="TValue">
         /// The type of value to return.
         /// </typeparam>
-        /// </param>
         /// <param name="name">
         /// The name of the item to be returned.
         /// </param>
         /// <param name="valueConverter">
-        /// The <see cref="ValueConverter"/> applied to the item identified by
-        /// <see cref="name"/>.
+        /// The <see cref="ValueConverter&lt;TValue&gt;"/> applied to the item 
+        /// identified by <paramref name="name"/>.
         /// </param>
         /// <returns>
-        /// A value of type <see cref="TValue"/>.
+        /// A value of type <typeparamref name="TValue"/>.
         /// </returns>
         /// <remarks>
-        /// The value returned by this method is stored into underlying <see 
-        /// cref="ExpandoObject"/> to reduce conversion overhead. 
+        /// The value returned by this method is stored into the backing <see 
+        /// cref="System.Dynamic.ExpandoObject"/> to reduce conversion 
+        /// overhead.
         /// </remarks>
         public TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
@@ -226,8 +229,8 @@ namespace Splunk.Client
     }
 
     /// <summary>
-    /// Provides a generic base class for implementing strong types over an 
-    /// <see cref="ExpandoObject"/>.
+    /// Provides a generic base class for implementing strong types backed by 
+    /// <see cref="System.Dynamic.ExpandoObject"/> instances.
     /// </summary>
     /// <typeparam name="TExpandoAdapter">
     /// The type inheriting from this class.
@@ -248,7 +251,8 @@ namespace Splunk.Client
 
         /// <summary>
         /// Provides a converter to create <see cref="ExpandoAdapter"/> 
-        /// instances from <see cref="ExpandoObject"/> instances.
+        /// instances from <see cref="System.Dynamic.ExpandoObject"/> 
+        /// instances.
         /// </summary>
         public class Converter : ValueConverter<TExpandoAdapter>
         {
@@ -257,9 +261,21 @@ namespace Splunk.Client
                 Instance = new Converter();
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
             public static Converter Instance
             { get; private set; }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="input">
+            /// 
+            /// </param>
+            /// <returns>
+            /// 
+            /// </returns>
             public override TExpandoAdapter Convert(object input)
             {
                 var value = input as TExpandoAdapter;

@@ -14,10 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [ ] Properties & Methods
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -50,10 +49,10 @@ namespace Splunk.Client
         /// Name of a configuration file.
         /// </param>
         /// <param name="stanzaName">
-        /// Name of a stanza within <see cref="fileName"/>.
+        /// Name of a stanza within <paramref name="fileName"/>.
         /// </param>
         /// <param name="keyName">
-        /// Name of the setting within <see cref="stanzaName"/> to be represented 
+        /// Name of the setting within <paramref name="stanzaName"/> to be represented 
         /// by the current instance.</param>
         internal ConfigurationSetting(Context context, Namespace ns, string fileName, string stanzaName, 
             string keyName)
@@ -164,6 +163,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="value">
         /// A new value for the current <see cref="ConfigurationSetting"/>.
+        /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
         /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 

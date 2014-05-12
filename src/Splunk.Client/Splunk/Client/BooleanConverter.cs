@@ -50,7 +50,7 @@ namespace Splunk.Client
         /// Result of the conversion.
         /// </returns>
         /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="Boolean"/>
+        /// The <paramref name="input"/> does not represent a <see cref="Boolean"/>
         /// value.
         /// </exception>
         public override Boolean Convert(object input)

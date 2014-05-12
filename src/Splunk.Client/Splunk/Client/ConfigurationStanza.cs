@@ -46,7 +46,7 @@ namespace Splunk.Client
         /// Name of a configuration file.
         /// </param>
         /// <param name="stanzaName">
-        /// Name of a stanza within <see cref="fileName"/> containing the 
+        /// Name of a stanza within <paramref name="fileName"/> containing the 
         /// configuration stanza to be represented by the current instance.
         /// </param>
         internal ConfigurationStanza(Context context, Namespace ns, string fileName, string stanzaName)
@@ -161,7 +161,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/w742jw">POST 
         /// properties/{file_name}/{stanza_name}</a> endpoint to add or update
-        /// <see cref="settings"/> in the current <see cref="ConfigurationStanza"/>.
+        /// <paramref name="settings"/> in the current <see cref="ConfigurationStanza"/>.
         /// </remarks>
         public async Task UpdateAsync(params Argument[] settings)
         {
@@ -186,14 +186,14 @@ namespace Splunk.Client
         /// The name of a configuration setting.
         /// </param>
         /// <returns>
-        /// An object representing the configuration setting identified by <see
-        /// cref="keyName"/>.
+        /// An object representing the configuration setting identified by
+        /// <paramref name="keyName"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/cqT50u">GET 
         /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// construct the <see cref="ConfigurationSetting"/> identified by <see 
-        /// cref="keyName"/>.
+        /// construct the <see cref="ConfigurationSetting"/> identified by 
+        /// <paramref name="keyName"/>.
         /// </remarks>
         public async Task<ConfigurationSetting> GetSettingAsync(string keyName)
         {
@@ -214,7 +214,7 @@ namespace Splunk.Client
         /// "ConfigurationStanza"/>.
         /// </param>
         /// <param name="value">
-        /// A new value for the setting identified by <see cref="keyName"/>.
+        /// A new value for the setting identified by <paramref name="keyName"/>.
         /// </param>
         /// <returns>
         /// An object representing the configuration setting that was updated.
@@ -222,8 +222,8 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
         /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// update the <see cref="ConfigurationSetting"/> identified by <see 
-        /// cref="keyName"/>.
+        /// update the <see cref="ConfigurationSetting"/> identified by <paramref 
+        /// name="keyName"/>.
         /// </remarks>
         public async Task<ConfigurationSetting> UpdateSettingAsync(string keyName, string value)
         {

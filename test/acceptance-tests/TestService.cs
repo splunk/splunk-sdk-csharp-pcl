@@ -594,18 +594,18 @@ namespace Splunk.Client.UnitTesting
                 //// Create
 
                 var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var search = "search index=_internal | head 1000";
 
                 var originalAttributes = new SavedSearchAttributes()
                 {
-                    Search = "search index=_internal | head 1000",
                     CronSchedule = "00 * * * *", // on the hour
                     IsScheduled = true,
                     IsVisible = false
                 };
 
-                var savedSearch = await service.CreateSavedSearchAsync(name, originalAttributes);
+                var savedSearch = await service.CreateSavedSearchAsync(name, search, originalAttributes);
 
-                Assert.Equal(originalAttributes.Search, savedSearch.Search);
+                Assert.Equal(search, savedSearch.Search);
                 Assert.Equal(originalAttributes.CronSchedule, savedSearch.CronSchedule);
                 Assert.Equal(originalAttributes.IsScheduled, savedSearch.IsScheduled);
                 Assert.Equal(originalAttributes.IsVisible, savedSearch.IsVisible);
@@ -690,9 +690,9 @@ namespace Splunk.Client.UnitTesting
             {
                 await service.LoginAsync("admin", "changeme");
 
-                var attributes = new SavedSearchAttributes() { Search = "search index=_internal * earliest=-1m" };
                 var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
-                var savedSearch = await service.CreateSavedSearchAsync(name, attributes);
+                var search = "search index=_internal * earliest=-1m";
+                var savedSearch = await service.CreateSavedSearchAsync(name, search);
 
                 var jobHistory = await savedSearch.GetHistoryAsync();
                 Assert.Equal(0, jobHistory.Count);
@@ -1152,7 +1152,7 @@ namespace Splunk.Client.UnitTesting
 
                 for (int i = 0; i < 10; i++)
                 {
-                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} Hello world!", i, DateTime.Now));
+                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} send string event Hello world!", i, DateTime.Now));
                 }
 
                 using (var eventStream = new MemoryStream())
@@ -1161,9 +1161,11 @@ namespace Splunk.Client.UnitTesting
 
                     for (int i = 0; i < 10; i++)
                     {
-                        writer.Write(string.Format("{0:D6} {1} Goodbye world!\r\n", i, DateTime.Now));
+                        writer.Write(string.Format("{0:D6} {1} send stream event hello world!\r\n", i, DateTime.Now));
                     }
 
+                    writer.Flush();
+                    eventStream.Seek(0, SeekOrigin.Begin);
                     var task = receiver.SendAsync(eventStream);
                     task.Wait();
                 }

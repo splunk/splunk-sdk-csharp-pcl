@@ -14,16 +14,10 @@
  * under the License.
  */
 
-// TODO:
-//
-// [X] Remove Observers property and replace it with gated OnNext, OnError,
-//     and OnCompleted methods
-//
-// [O] Contracts
-//
-// [O] Documentation
-//
-// [ ] Trace messages (e.g., when there are no observers)
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+//// [ ] Trace messages (e.g., when there are no observers)
 
 namespace Splunk.Client
 {
@@ -175,7 +169,7 @@ namespace Splunk.Client
         #region Types
 
         /// <summary>
-        /// Represents a disposable subscription to the <see cref="Observable"/>.
+        /// Represents a disposable subscription to the <see cref="Observable&lt;T&gt;"/>.
         /// </summary>
         /// <remarks>
         /// This class implements <see cref="IDisposable"/>, but does not require

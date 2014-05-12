@@ -109,8 +109,8 @@ namespace Splunk.Client
         /// cref="Job"/>.
         /// </summary>
         /// <remarks>
-        /// The default value is <see cref="ExecutionMode.Normal"/>.
-        /// </remakrs>
+        /// The default value is <see cref="ExecutionMode"/>.Normal.
+        /// </remarks>
         [DataMember(Name = "exec_mode", EmitDefaultValue = false)]
         public ExecutionMode? ExecutionMode
         { get; set; }

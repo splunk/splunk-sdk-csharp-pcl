@@ -263,9 +263,11 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets a string representation for the current <see cref="ArgumentSet"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A string representation of the current <see cref="ArgumentSet"/>.
+        /// </returns>
         public override string ToString()
         {
             return string.Join("; ", from arg in this select arg.ToString());

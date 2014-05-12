@@ -14,15 +14,14 @@
  * under the License.
  */
 
-// TODO: Ensure this code is solid
-// [O] Documentation
-// [X] Respect DataMemberAttribute.Order
-// [X] Do not serialize default values => define default values and check for them
-// [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)
-// [X] Work on nomenclature (serialization nomenclature is not necessarily appropriate)
-// [X] Ensure this class works with nullable types.
-// [ ] Support more than one level of inheritance => move away from generic implementation.
-// [ ] More (?)
+//// TODO: Ensure this code is solid
+//// [ ] Support more than one level of inheritance => move away from generic implementation.
+//// [O] Documentation
+//// [X] Respect DataMemberAttribute.Order
+//// [X] Do not serialize default values => define default values and check for them
+//// [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)
+//// [X] Work on nomenclature (serialization nomenclature is not necessarily appropriate)
+//// [X] Ensure this class works with nullable types.
 
 namespace Splunk.Client
 {
@@ -141,7 +140,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Args"/> class.
+        /// Initializes a new instance of the <see cref="Args&lt;TArgs&gt;"/> class.
         /// </summary>
         protected Args()
         {
@@ -158,7 +157,7 @@ namespace Splunk.Client
         /// <summary>
         /// Gets an enumerator that produces an <see cref="Argument"/> sequence
         /// based on the serialization attributes of the properties of the 
-        /// current <see cref="Args"/> instance.
+        /// current <see cref="Args&lt;TArgs&gt;"/> instance.
         /// </summary>
         /// <returns>
         /// An object for producing the <see cref="Argument"/> sequence.
@@ -171,7 +170,7 @@ namespace Splunk.Client
         /// <summary>
         /// Gets an enumerator that produces an <see cref="Argument"/> sequence
         /// based on the serialization attributes of the properties of the 
-        /// current <see cref="Args"/> instance.
+        /// current <see cref="Args&lt;TArgs&gt;"/> instance.
         /// </summary>
         /// <returns>
         /// An object for producing the <see cref="Argument"/> sequence.
@@ -210,9 +209,11 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets a string representation for the current <see cref="Args&lt;TArgs&gt;"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A string representation of the current <see cref="Args&lt;TArgs&gt;"/>.
+        /// </returns>
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
@@ -295,7 +296,7 @@ namespace Splunk.Client
                 
                 if (enumType != null)
                 {
-                    //// TODO: we should add two items to formatters: 
+                    //// TODO: Add two items to formatters for each enum: 
                     //// formatters.Add(enumType, formatter)
                     //// formatters.Add(info.IsEnum ? typeof(Nullable<>).MakeGenericType(type), formatter)
 
@@ -310,18 +311,21 @@ namespace Splunk.Client
                         map[(int)value] = enumMember == null ? name : enumMember.Value;
                     }
 
+                    Func<object, string> format = (object value) =>
+                    {
+                        string name;
+
+                        if (map.TryGetValue((int)value, out name))
+                        {
+                            return name;
+                        }
+
+                        throw new ArgumentException(string.Format("{0}.{1}: {2}", typeof(TArgs).Name, propertyName, value));
+                    };
+
                     formatter = new Formatter
                     {
-                        Format = (object value) =>
-                        {
-                            string name;
-
-                            if (map.TryGetValue((int)value, out name))
-                            {
-                                return name;
-                            }
-                            throw new ArgumentException(string.Format("{0}.{1}: {2}", typeof(TArgs).Name, propertyName, value));
-                        },
+                        Format = format,
                         IsCollection = container != null
                     };
                 }

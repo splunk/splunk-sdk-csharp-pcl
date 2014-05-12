@@ -59,7 +59,7 @@ namespace Splunk.Sdk.UnitTesting
         {
             string dummyString;
             bool dummyBool;
-            int dummyInt;
+
             Service service = Connect();
 
             ApplicationCollection apps = service.GetApplicationsAsync().Result;

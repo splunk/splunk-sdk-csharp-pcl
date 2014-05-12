@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [O] Contracts
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -39,10 +39,12 @@ namespace Splunk.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchResultStream"/> class.
         /// </summary>
-        /// <param name="reader">The <see cref="reader"/> for reading search 
-        /// results.</param>
-        /// <param name="leaveOpen">Indicates whether the reader should be left
-        /// open following <see cref="SearchResultStream.Dispose"/>.
+        /// <param name="response">
+        /// The object for reading search results.
+        /// </param>
+        /// <param name="leaveOpen">
+        /// Indicates whether the reader should be left open following <see
+        /// cref="SearchResultStream.Dispose"/>.
         /// </param>
         SearchResultStream(Response response, bool leaveOpen)
         {
@@ -95,7 +97,7 @@ namespace Splunk.Client
         /// An object from which the search results are read. 
         /// </param>
         /// <param name="leaveOpen">
-        /// <c>true</c> to leave the <see cref="response"/> object open after 
+        /// <c>true</c> to leave the <paramref name="response"/> object open after 
         /// the <see cref="SearchResultStream"/> object is disposed; otherwise, 
         /// <c>false</c>.
         /// </param>

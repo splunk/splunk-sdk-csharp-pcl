@@ -29,14 +29,42 @@ namespace Splunk.Client
         [Fact]
         void CanConstruct()
         {
-            string[] expectedString = new string[] {
-                "auto_cancel=0; auto_finalize_ec=0; auto_pause=0; earliest_time=null; enable_lookups=t; exec_mode=normal; force_bundle_replication=f; id=null; index_earliest=null; index_latest=null; latest_time=null; max_count=10000; max_time=0; namespace=null; now=null; reduce_freq=0; reload_macros=t; remote_server_list=null; reuse_max_seconds_ago=0; rf=null; rt_blocking=f; rt_indexfilter=f; rt_maxblocksecs=60; rt_queue_size=10000; search_listener=null; search_mode=normal; spawn_process=t; status_buckets=0; sync_bundle_replication=f; time_format=null; timeout=86400",
-                "auto_cancel=0; auto_finalize_ec=0; auto_pause=0; earliest_time=null; enable_lookups=t; exec_mode=normal; force_bundle_replication=f; id=null; index_earliest=null; index_latest=null; latest_time=null; max_count=10000; max_time=0; namespace=null; now=null; reduce_freq=0; reload_macros=t; remote_server_list=null; reuse_max_seconds_ago=0; rf=null; rt_blocking=f; rt_indexfilter=f; rt_maxblocksecs=60; rt_queue_size=10000; search_listener=null; search_mode=normal; spawn_process=t; status_buckets=0; sync_bundle_replication=f; time_format=null; timeout=86400"
-            };
-
             var args = new JobArgs();
             
-            Assert.Equal(expectedString[1], args.ToString());
+            Assert.Equal(
+                "auto_cancel=null; " +
+                "auto_finalize_ec=null; " +
+                "auto_pause=null; " +
+                "earliest_time=null; " +
+                "enable_lookups=null; " +
+                "exec_mode=null; " +
+                "force_bundle_replication=null; " +
+                "id=null; " +
+                "index_earliest=null; " +
+                "index_latest=null; " +
+                "latest_time=null; " +
+                "max_count=null; " +
+                "max_time=null; " +
+                "namespace=null; " +
+                "now=null; " +
+                "reduce_freq=null; " +
+                "reload_macros=null; " +
+                "remote_server_list=null; " +
+                "reuse_max_seconds_ago=null; " +
+                "rf=null; " +
+                "rt_blocking=null; " +
+                "rt_indexfilter=null; " +
+                "rt_maxblocksecs=null; " +
+                "rt_queue_size=null; " +
+                "search_listener=null; " +
+                "search_mode=null; " +
+                "spawn_process=null; " +
+                "status_buckets=null; " +
+                "sync_bundle_replication=null; " +
+                "time_format=null; " +
+                "timeout=null", 
+                args.ToString());
+
             Assert.Equal(0, args.Count());
         }
 

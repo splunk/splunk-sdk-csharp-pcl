@@ -31,7 +31,7 @@ namespace Splunk.Client
     /// <list type="number">
     /// <item><description>
     ///   <a href="http://goo.gl/L6GlMC">REST API Reference: POST data/indexes</a>.
-    /// </item></description>
+    /// </description></item>
     /// <item><description>
     ///   <a href="http://goo.gl/r5rZ7i">REST API Reference: POST data/indexes/{name}</a>.
     /// </description></item>

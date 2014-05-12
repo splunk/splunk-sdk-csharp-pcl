@@ -59,13 +59,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// The default <see cref="EnumConverter"/> instance.
+        /// The default <see cref="EnumConverter&lt;TEnum&gt;"/> instance.
         /// </summary>
         public static readonly EnumConverter<TEnum> Instance;
 
         /// <summary>
-        /// Converts the string representation of the <see cref="input"/> 
-        /// object to a <see cref="TEnum"/> value.
+        /// Converts the string representation of the <paramref name="input"/> 
+        /// object to a <typeparamref name="TEnum"/> value.
         /// </summary>
         /// <param name="input">
         /// The object to convert.
@@ -74,7 +74,8 @@ namespace Splunk.Client
         /// Result of the conversion.
         /// </returns>
         /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="TEnum"/>
+        /// The <paramref name="input"/> does not represent a <typeparamref 
+        /// name="TEnum"/>
         /// value.
         /// </exception>
         public override TEnum Convert(object input)

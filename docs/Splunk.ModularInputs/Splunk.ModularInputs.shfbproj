@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>3c28e511-43a6-4646-91b9-5fdaf50161e0</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
+
+    <!-- 
+    The configuration and platform are used to determine which assemblies to include from solution and project 
+    documentation sources 
+    -->
+
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+
+    <!-- SHFB properties -->
+
+    <HtmlHelpName>Splunk.ModularInputs namespace</HtmlHelpName>
+    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
+    <Language>en-US</Language>
+    <OutputPath>Help\</OutputPath>
+    <TransformComponentArguments>
+      <Argument Key="logoFile" Value=""/>
+      <Argument Key="logoHeight" Value=""/>
+      <Argument Key="logoWidth" Value=""/>
+      <Argument Key="logoAltText" Value=""/>
+      <Argument Key="logoPlacement" Value="left"/>
+      <Argument Key="logoAlignment" Value="left"/>
+      <Argument Key="maxVersionParts" Value=""/>
+    </TransformComponentArguments>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="..\..\src\Splunk.ModularInputs\Splunk.ModularInputs.csproj"/>
+    </DocumentationSources>
+  </PropertyGroup>
+  <!-- 
+  PropertyGroup elements that ensure Sandcastle projects load into Visual Studio 2013 
+  It is mysterious, but true that if you remove these property groups Sandcastle 
+  projects will fail to load into Visual Studio 2013 and—perhaps—other versions
+  of Visual Studio as well.
+  -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Win32' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
+  </PropertyGroup>
+
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+
+</Project>

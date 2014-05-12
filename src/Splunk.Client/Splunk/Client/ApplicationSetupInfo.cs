@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
+//// TODO:
+//// [ ] Contracts
+//// [ ] Documentation
 
 namespace Splunk.Client
 {
@@ -25,10 +25,25 @@ namespace Splunk.Client
     using System.Net;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Represents the setup information for an <see cref="Application"/>.
+    /// </summary>
     public sealed class ApplicationSetupInfo : Entity<ApplicationSetupInfo>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the ApplicationSetupInfo class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="name">
+        /// The name of a Splunk application.
+        /// </param>
         internal ApplicationSetupInfo(Context context, Namespace ns, string name)
             : base(context, ns, new ResourceName(ApplicationCollection.ClassResourceName, name, "setup"))
         { }
@@ -61,6 +76,7 @@ namespace Splunk.Client
         ///   "Application"/> identified by name.
         ///   </description>
         /// </item>
+        /// </list>
         /// </remarks>
         public ApplicationSetupInfo()
         { }

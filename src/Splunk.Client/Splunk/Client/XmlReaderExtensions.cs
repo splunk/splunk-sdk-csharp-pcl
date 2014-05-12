@@ -14,8 +14,10 @@
  * under the License.
  */
 
-// [O] TODO: Contract checks on all public methods
-// [ ] TODO: Documentation
+//// TODO:
+//// [X] Eliminate unused extensions and justify the remainder
+//// [O] Contract checks on all public methods
+//// [ ] Documentation
 
 namespace Splunk.Client
 {
@@ -24,8 +26,6 @@ namespace Splunk.Client
     using System.IO;
     using System.Threading.Tasks;
     using System.Xml;
-
-    //// TODO: Eliminate unused extensions and justify the remainder
 
     internal static class XmlReaderExtensions
     {

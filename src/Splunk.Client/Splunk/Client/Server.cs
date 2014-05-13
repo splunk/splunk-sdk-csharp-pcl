@@ -192,11 +192,15 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="millisecondsDelay"/> is less than <c>-1</c>.
         /// </exception>
-        /// <exception cref="AuthenticationFailureException">
-        /// </exception>
         /// <exception cref="HttpRequestException">
+        /// The restart operation failed.
         /// </exception>
         /// <exception cref="OperationCanceledException">
+        /// The check for server availability was canceled after <paramref 
+        /// name="millisecondsDelay"/>.
+        /// </exception>
+        /// <exception cref="UnauthorizedAccessException">
+        /// Insufficient privileges to restart the current <see cref="Server"/>.
         /// </exception>
         public async Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
@@ -229,15 +233,12 @@ namespace Splunk.Client
                         await Task.Delay(millisecondsDelay: retryInterval);
                     }
                 }
-                catch (HttpRequestException e)
+                catch (HttpRequestException)
                 {
-                    Debug.Assert(e.InnerException is WebException);
-                    Debug.Assert(((WebException)e.InnerException).Status == WebExceptionStatus.ConnectFailure);
+                    this.Context.SessionKey = null; // because we're no longer authenticated
                 }
 
                 //// Wait for the server to come up
-
-                this.Context.SessionKey = null; // because we're no longer authenticated
 
                 for (int i = 0; ; i++)
                 {
@@ -251,8 +252,12 @@ namespace Splunk.Client
                     }
                     catch (HttpRequestException e)
                     {
-                        Debug.Assert(e.InnerException is WebException);
-                        Debug.Assert(((WebException)e.InnerException).Status == WebExceptionStatus.ConnectFailure);
+                        var innerException = e.InnerException as WebException;
+
+                        if (innerException == null || innerException.Status != WebExceptionStatus.ConnectFailure)
+                        {
+                            throw;
+                        }
                     }
 
                     await Task.Delay(millisecondsDelay: retryInterval);

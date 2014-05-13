@@ -30,9 +30,13 @@ namespace Splunk.ModularInputs
     /// <summary>
     /// 
     /// </summary>
+    public delegate void EventWrittenHandler(object sender, EventArgs e);
+
     public class EventWriter : IDisposable
     {
         private static XmlSerializer serializer = new XmlSerializer(typeof(Event));
+
+        public event EventWrittenHandler EventWritten;
 
         private BlockingCollection<Event> eventQueue;
         private XmlWriter writer;
@@ -57,7 +61,7 @@ namespace Splunk.ModularInputs
             };
 
             writer = XmlWriter.Create(stdout, settings);
-            eventQueueMonitor = WriteEventElementsAsync();
+            eventQueueMonitor = Task.Factory.StartNew<Task>(WriteEventElementsAsync);
         }
 
         #endregion
@@ -79,7 +83,6 @@ namespace Splunk.ModularInputs
             await this.stderr.WriteAsync(severity + " " + message + this.stderr.NewLine);
         }
 
-
         private async Task WriteEventElementsAsync()
         {
             await this.writer.WriteStartElementAsync(prefix: null, localName: "stream", ns: null);
@@ -88,6 +91,7 @@ namespace Splunk.ModularInputs
             {
                 serializer.Serialize(writer, e);
                 await this.writer.FlushAsync();
+                EventWritten(this, EventArgs.Empty);
             }
 
             await writer.WriteEndElementAsync();

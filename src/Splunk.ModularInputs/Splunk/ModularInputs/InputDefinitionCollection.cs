@@ -62,12 +62,13 @@ namespace Splunk.ModularInputs
             [XmlAttribute("name")]
             public string Name { get; set; }
 
-            [XmlElement("param")]
-            [XmlElement("param_list")]
+            [XmlElement("param", Type=typeof(SingleValueParameter))]
+            [XmlElement("param_list", Type=typeof(MultiValueParameter))]
             public List<Parameter> Parameters { get; set; }
         }
 
-        [XmlElement("stanza")]
+        [XmlArray("configuration")]
+        [XmlArrayItem("stanza", Type=typeof(Stanza))]
         public List<Stanza> Stanzas { get; set; }
 
         public IEnumerator<InputDefinition> GetEnumerator()

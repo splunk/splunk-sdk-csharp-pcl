@@ -75,7 +75,8 @@ namespace Splunk.ModularInputs
         public static async Task<int> RunAsync<T>(string[] args,
             TextReader stdin = null,
             TextWriter stdout = null,
-            TextWriter stderr = null) where T : ModularInput, new()
+            TextWriter stderr = null,
+            T script = null) where T : ModularInput, new()
         {
             /// Console default is OEM text encoding, which is not handled by Splunk,
             //// resulting in loss of chars such as O with an umlaut (\u0150)
@@ -101,7 +102,8 @@ namespace Splunk.ModularInputs
 
                 try
                 {
-                    var script = new T();
+                    if (script == null)
+                        script = new T();
 
                     if (args.Length == 0)
                     {
@@ -112,12 +114,10 @@ namespace Splunk.ModularInputs
                             Deserialize(stdin);
                         foreach (InputDefinition inputDefinition in inputDefinitions)
                         {
-                            instances.Add(Task.Factory.StartNew(() =>
-                                script.StreamEventsAsync(inputDefinition, writer)));
+                            instances.Add(script.StreamEventsAsync(inputDefinition, writer));
                         }
 
-                        Task.WaitAll(instances.ToArray());
-
+                        await Task.WhenAll(instances.ToArray());
                         return 0;
                     }
                     else if (args[0].ToLower().Equals("--scheme"))
@@ -153,7 +153,7 @@ namespace Splunk.ModularInputs
                         {
                             if (errorMessage == null)
                             {
-                                errorMessage = e.Message;
+                                errorMessage = e.ToString().Replace(Environment.NewLine, " | ");
                             }
                         }
 

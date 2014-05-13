@@ -55,30 +55,41 @@ namespace Splunk.ModularInputs
     ///   </items>]]>
     /// </code>
     /// </remarks>
-    [XmlRoot("input")]
+    [XmlRoot("items")]
     public class Validation
     {
-        public IDictionary<string, Parameter> Parameters { get; set; }
-
-        /// <summary>
-        /// Gets or sets an instance of this modular input.
-        /// </summary>
-        /// <remarks>This property is used by unit tests.</remarks>
-        [XmlElement("param")]
-        public List<SingleValueParameter> SingleValueParameters { set {
-            foreach (SingleValueParameter parameter in value)
+        [XmlIgnore]
+        public IReadOnlyDictionary<string, Parameter> Parameters {
+            get
             {
-                Parameters.Add(parameter.Name, parameter);
-            }  
-        }}
-
-        [XmlElement("param_list")]
-        public List<MultiValueParameter> MultiValueParameters { set {
-            foreach (MultiValueParameter parameter in value)
-            {
-                Parameters.Add(parameter.Name, parameter);
+                return InputDefinitionElement.Parameters.ToDictionary(
+                    v => v.Name,
+                    v => v
+                );
             }
-        }}
+        }
+
+        [XmlIgnore]
+        public string Name {
+            get
+            {
+                return InputDefinitionElement.Name;
+            }
+        }
+
+        public class Item
+        {
+            [XmlAttribute("name")]
+            public string Name { get; set; }
+            
+            [XmlElement("param", Type=typeof(SingleValueParameter))]
+            [XmlElement("param_list", Type=typeof(MultiValueParameter))]
+            public List<Parameter> Parameters { get; set; }
+        }
+
+        [XmlElement("item")]
+        public Item InputDefinitionElement { get; set; }
+            
 
         [XmlElement("server_host")]
         public string ServerHost { get; set; }

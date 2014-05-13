@@ -4,30 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Splunk.ModularInputs;
+using System.Threading;
 
 namespace random_numbers
 {
-    class Program : ModularInput
+    public class Program : ModularInput
     {
         static void Main(string[] args)
         {
+            RunAsync<Program>(args).Wait();
         }
-
-        private IEnumerable<Task> schedule;
-
-        public static IEnumerable<Task> RepeatEvery(int delayInMs)
-        {
-            while (true)
-                yield return Task.Delay(delayInMs);
-        }
-
-        public Program() : this(RepeatEvery(1000)) {}
-
-        public Program(IEnumerable<Task> schedule)
-        {
-            this.schedule = schedule;
-        }
-
 
         public override Scheme Scheme
         {
@@ -57,13 +43,13 @@ namespace random_numbers
 
             }
         }
-
+            
         public override bool Validate(Validation validation, out string errorMessage)
         {
             double min = (double)validation.Parameters["min"];
             double max = (double)validation.Parameters["max"];
 
-            if (max >= min)
+            if (max <= min)
             {
                 errorMessage = "min must be less than max.";
                 return false;
@@ -80,14 +66,15 @@ namespace random_numbers
             double min = (double)inputDefinition.Parameters["min"];
             double max = (double)inputDefinition.Parameters["max"];
 
-            foreach (Task t in schedule)
+            while (true)
             {
-                await t;
                 eventWriter.WriteEvent(new Event
                 {
                     Stanza = inputDefinition.Name,
                     Data = "number=" + 1 * (max - min) + min
                 });
+                eventWriter.LogAsync("INFO", "Argh!").Wait();
+                await Task.Delay(1000);   
             }
         }
     }

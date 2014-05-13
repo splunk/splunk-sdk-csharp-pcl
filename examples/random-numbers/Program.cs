@@ -5,15 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Splunk.ModularInputs;
 using System.Threading;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace random_numbers
 {
     public class Program : ModularInput
     {
+        private static Random rnd = new Random();
+
         static void Main(string[] args)
         {
             RunAsync<Program>(args).Wait();
         }
+
+        public IObservable<long> schedule = null;
 
         public override Scheme Scheme
         {
@@ -49,8 +55,7 @@ namespace random_numbers
             double min = (double)validation.Parameters["min"];
             double max = (double)validation.Parameters["max"];
 
-            if (max <= min)
-            {
+            if (min >= max) {
                 errorMessage = "min must be less than max.";
                 return false;
             }
@@ -61,21 +66,33 @@ namespace random_numbers
             }
         }
 
-        public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
+        public IObservable<Event> InputDefinitionToObservable(InputDefinition inputDefinition)
         {
+            if (schedule == null)
+                schedule = Observable.Interval(new TimeSpan(0, 0, 1));
+
             double min = (double)inputDefinition.Parameters["min"];
             double max = (double)inputDefinition.Parameters["max"];
 
-            while (true)
-            {
-                eventWriter.WriteEvent(new Event
+            var subject = new Subject<Event>();
+
+            schedule.ForEachAsync((long i) => {
+                subject.OnNext(new Event
                 {
                     Stanza = inputDefinition.Name,
-                    Data = "number=" + 1 * (max - min) + min
+                    Data = "number=" + (rnd.NextDouble()*(max-min) + min)
                 });
-                eventWriter.LogAsync("INFO", "Argh!").Wait();
-                await Task.Delay(1000);   
-            }
+            });
+
+            return subject;
+        }
+
+        public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
+        {
+            var eventSequence = InputDefinitionToObservable(inputDefinition);
+            await eventSequence.ForEachAsync((Event e) => {
+                eventWriter.WriteEvent(e);
+            });
         }
     }
 }

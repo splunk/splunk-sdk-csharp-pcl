@@ -8,6 +8,7 @@ namespace random_numbers
 {
     using Splunk.ModularInputs;
     using System.IO;
+    using System.Reactive.Subjects;
     using System.Threading;
     using System.Xml.Linq;
     using System.Xml.Serialization;
@@ -158,8 +159,17 @@ namespace random_numbers
             using (HarnessedScript harness =
                 new HarnessedScript(new string[0], doc.ToString()))
             {
-                await harness.RunAsync();
+                Subject<long> subject = new Subject<long>();
+                
+                harness.Script.schedule = subject;
+                Task t = harness.RunAsync();
 
+                Assert.Equal("", harness.Stdout.ToString());
+
+                subject.OnNext(1);
+                await Task.Delay(1000);
+
+                Assert.Equal("abcd", harness.Stdout.ToString());
 
             }
         }

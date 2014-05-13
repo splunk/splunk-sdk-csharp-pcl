@@ -233,7 +233,7 @@ namespace Splunk.Client
                         await Task.Delay(millisecondsDelay: retryInterval);
                     }
                 }
-                catch (HttpRequestException e)
+                catch (HttpRequestException)
                 {
                     this.Context.SessionKey = null; // because we're no longer authenticated
                 }

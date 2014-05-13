@@ -206,9 +206,7 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
 
-            await this.CreateMessageAsync("restart_requested", ServerMessageSeverity.Information, "");
-
-            using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(this.ResourceName, "restart")))
+            using (var response = await this.Context.PostAsync(this.Namespace, Restart))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
@@ -229,11 +227,13 @@ namespace Splunk.Client
                 {
                     for (int i = 0; ; i++)
                     {
-                        var serverMessage = await this.GetMessageAsync("restart_requested");
+                        using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName, token))
+                        { }
+
                         await Task.Delay(millisecondsDelay: retryInterval);
                     }
                 }
-                catch (HttpRequestException)
+                catch (HttpRequestException e)
                 {
                     this.Context.SessionKey = null; // because we're no longer authenticated
                 }
@@ -246,8 +246,7 @@ namespace Splunk.Client
                     {
                         using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName, token))
                         {
-                            await response.EnsureStatusCodeAsync(HttpStatusCode.Unauthorized);
-                            break;
+                            return;
                         }
                     }
                     catch (HttpRequestException e)
@@ -288,6 +287,7 @@ namespace Splunk.Client
         #region Privates/internals
 
         internal static readonly ResourceName ClassResourceName = new ResourceName("server", "control");
+        internal static readonly ResourceName Restart = new ResourceName(ClassResourceName, "restart");
 
         #endregion
     }

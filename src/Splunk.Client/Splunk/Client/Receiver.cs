@@ -79,7 +79,7 @@ namespace Splunk.Client
 
                 using (var response = await this.Context.PostAsync(this.Namespace, StreamReceiver, content, args))
                 {
-                    await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                    await response.EnsureStatusCodeAsync(HttpStatusCode.NoContent);
                 }
             }
         }

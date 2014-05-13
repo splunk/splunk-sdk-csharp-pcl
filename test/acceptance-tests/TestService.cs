@@ -23,6 +23,7 @@ namespace Splunk.Client.UnitTesting
     using System.Linq;
     using System.Net;
     using System.Reflection;
+    using System.Text;
     using System.Threading.Tasks;
     using System.Web.Security;
     using Xunit;
@@ -1144,7 +1145,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanSendEvents()
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            using (var service = new Service(Scheme.Https, "personal-splunk", 8089))
             {
                 await service.LoginAsync("admin", "changeme");
 
@@ -1157,17 +1158,16 @@ namespace Splunk.Client.UnitTesting
 
                 using (var eventStream = new MemoryStream())
                 {
-                    var writer = new StreamWriter(eventStream);
-
-                    for (int i = 0; i < 10; i++)
+                    using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
-                        writer.Write(string.Format("{0:D6} {1} send stream event hello world!\r\n", i, DateTime.Now));
+                        for (int i = 0; i < 10; i++)
+                        {
+                            writer.Write(string.Format("{0:D6} {1} send stream event hello world!\r\n", i, DateTime.Now));
+                        }
                     }
 
-                    writer.Flush();
                     eventStream.Seek(0, SeekOrigin.Begin);
-                    var task = receiver.SendAsync(eventStream);
-                    task.Wait();
+                    await receiver.SendAsync(eventStream);
                 }
             }
         }

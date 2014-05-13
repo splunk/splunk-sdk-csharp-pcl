@@ -254,7 +254,7 @@ namespace Splunk.Client
         #region Privates/internals
 
         internal static async Task<IReadOnlyList<Message>> ReadMessagesAsync(XmlReader reader)
-        { 
+        {
             if (reader.ReadState == ReadState.Initial)
             {
                 await reader.ReadAsync();
@@ -265,33 +265,37 @@ namespace Splunk.Client
                 }
             }
 
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
-            {
-                throw new InvalidDataException();  // TODO: Diagnostics
-            }
-
-            await reader.ReadAsync();
-
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "messages"))
-            {
-                throw new InvalidDataException();  // TODO: Diagnostics
-            }
-
             var messages = new List<Message>();
-            await reader.ReadAsync();
 
-            while (reader.NodeType == XmlNodeType.Element)
+            if (!reader.EOF)
             {
-                if (reader.Name != "msg")
+                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
                 {
-                    throw new InvalidDataException(); // TODO: Diagnostics
+                    throw new InvalidDataException();  // TODO: Diagnostics
                 }
 
-                // TODO: Throw InvalidDataException if type attribute is missing
+                await reader.ReadAsync();
 
-                MessageType type = EnumConverter<MessageType>.Instance.Convert(reader.GetAttribute("type"));
-                string text = await reader.ReadElementContentAsStringAsync();
-                messages.Add(new Message(type, text));
+                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "messages"))
+                {
+                    throw new InvalidDataException();  // TODO: Diagnostics
+                }
+
+                await reader.ReadAsync();
+
+                while (reader.NodeType == XmlNodeType.Element)
+                {
+                    if (reader.Name != "msg")
+                    {
+                        throw new InvalidDataException(); // TODO: Diagnostics
+                    }
+
+                    // TODO: Throw InvalidDataException if type attribute is missing
+
+                    MessageType type = EnumConverter<MessageType>.Instance.Convert(reader.GetAttribute("type"));
+                    string text = await reader.ReadElementContentAsStringAsync();
+                    messages.Add(new Message(type, text));
+                }
             }
 
             return messages;

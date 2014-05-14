@@ -135,6 +135,14 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously creates a new storage password.
         /// </summary>
+        /// <param name="password">
+        /// Storage password.
+        /// </param>
+        /// <param name="name">
+        /// Storage password name.
+        /// </param>
+        /// <param name="realm">
+        /// Storage password realm.
         /// <returns>
         /// An object representing the storage password created.
         /// </returns>
@@ -143,7 +151,7 @@ namespace Splunk.Client
         /// storage/passwords</a> endpoint to construct the <see cref=
         /// "StoragePassword"/> it returns.
         /// </remarks>
-        public async Task<StoragePassword> CreateStoragePasswordAsync(string name, string password, string realm = null)
+        public async Task<StoragePassword> CreateStoragePasswordAsync(string password, string name, string realm = null)
         {
             var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
             await resource.CreateAsync(password);
@@ -185,8 +193,10 @@ namespace Splunk.Client
         /// Asynchronously retrieves a storage password.
         /// </summary>
         /// <param name="name">
-        /// Username identifying the storage password to be retrieved.
+        /// Storage password name.
         /// </param>
+        /// <param name="realm">
+        /// Storage password realm.
         /// <returns>
         /// An object representing the storage password retrieved.
         /// </returns>
@@ -195,9 +205,9 @@ namespace Splunk.Client
         /// storage/passwords/{name}</a> endpoint to construct the <see cref=
         /// "StoragePassword"/> it returns.
         /// </remarks>
-        public async Task<StoragePassword> GetStoragePasswordAsync(string name)
+        public async Task<StoragePassword> GetStoragePasswordAsync(string name, string realm = null)
         {
-            var resource = new StoragePassword(this.Context, this.Namespace, name);
+            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
             await resource.GetAsync();
             return resource;
         }
@@ -276,30 +286,34 @@ namespace Splunk.Client
         /// Asynchronously removes a storage password.
         /// </summary>
         /// <param name="name">
-        /// Username identifying the storage password to be removed.
+        /// Storage password name.
         /// </param>
-        /// <returns>
-        /// </returns>
+        /// <param name="realm">
+        /// Storage password realm.
+        /// </param>
+        /// <returns></returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/JGm0JP">DELETE 
         /// storage/passwords/{name}</a> endpoint to remove the <see cref=
         /// "StoragePassword"/> identified by <paramref name="name"/>.
         /// </remarks>
-        public async Task RemoveStoragePasswordAsync(string name)
+        public async Task RemoveStoragePasswordAsync(string name, string realm = null)
         {
-            var resource = new StoragePassword(this.Context, this.Namespace, name);
+            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
             await resource.RemoveAsync();
         }
 
         /// <summary>
         /// Asynchronously updates a storage password.
         /// </summary>
-        /// <param name="name">
-        /// Identity of the storage password to be updated.
-        /// </param>
         /// <param name="password">
-        /// 
+        /// Storage password.
         /// </param>
+        /// <param name="name">
+        /// Storage password name.
+        /// </param>
+        /// <param name="realm">
+        /// Storage password realm.
         /// <returns>
         /// An object representing the updated storage password.
         /// </returns>
@@ -308,9 +322,9 @@ namespace Splunk.Client
         /// storage/passwords/{name}</a> endpoint to update the storage
         /// password identified by <paramref name="name"/>.
         /// </remarks>
-        public async Task<StoragePassword> UpdateStoragePasswordAsync(string name, string password)
+        public async Task<StoragePassword> UpdateStoragePasswordAsync(string password, string name, string realm = null)
         {
-            var resource = new StoragePassword(this.Context, this.Namespace, name);
+            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
             await resource.UpdateAsync(password);
             return resource;
         }

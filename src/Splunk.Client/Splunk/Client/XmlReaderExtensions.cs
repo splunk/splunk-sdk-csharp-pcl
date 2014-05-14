@@ -162,11 +162,21 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously advances the the source <see cref="XmlReader"/> to 
+        /// the next sibling element with the specified qualified name.
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="reader">
+        /// The source <see cref="XmlReader"/>. 
+        /// </param>
+        /// <param name="name">
+        /// A qualified element name.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if a matching sibling element is found; otherwise <c>
+        /// false</c>. If a matching sibling element is not found, <paramref 
+        /// name="reader"/> is positioned on the end tag of the parent parent
+        /// element.
+        /// </returns>
         public static async Task<bool> ReadToNextSiblingAsync(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");

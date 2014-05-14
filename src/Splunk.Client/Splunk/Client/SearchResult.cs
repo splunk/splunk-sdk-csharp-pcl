@@ -48,9 +48,10 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// 
+        /// Asynchronously reads data into the current <see cref="SearchResult"/>.
         /// </summary>
         /// <param name="reader">
+        /// The <see cref="XmlReader"/> from which to read.
         /// </param>
         /// <returns></returns>
         public async Task ReadXmlAsync(XmlReader reader)

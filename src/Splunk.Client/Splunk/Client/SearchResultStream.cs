@@ -32,7 +32,7 @@ namespace Splunk.Client
     /// Represents an enumerable, observable stream of <see cref="SearchResult"/> 
     /// records.
     /// </summary>
-    public sealed class SearchResultStream : Observable<SearchResult>, IDisposable, IEnumerable<SearchResult>
+    public sealed class SearchResultStream : Observable<SearchResult>, IDisposable
     {
         #region Constructors
 
@@ -123,6 +123,7 @@ namespace Splunk.Client
                     }
                     catch (XmlException)
                     {
+                        //// WORKAROUND:
                         //// When nothing follows the XmlDeclaration the reader
                         //// fails to detect EOF on the response stream, does
                         //// not update the current XmlNode, and then throws an 
@@ -216,45 +217,6 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through search result <see 
-        /// cref="SearchResult"/> objects synchronously.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="SearchResult"/> enumerator structure for the <see 
-        /// cref="SearchResultStream"/>.
-        /// </returns>
-        /// <remarks>
-        /// You can use the <see cref="GetEnumerator"/> method to
-        /// <list type="bullet">
-        /// <item><description>
-        ///     Perform LINQ to Objects queries to obtain a filtered set of 
-        ///     search result records.</description></item>
-        /// <item><description>
-        ///     Append search results to an existing <see cref="SearchResult"/>
-        ///     collection.</description></item>
-        /// </list>
-        /// </remarks>
-        public IEnumerator<SearchResult> GetEnumerator()
-        {
-            if (this.enumerated)
-            {
-                throw new InvalidOperationException(); // TODO: diagnostics
-            }
-
-            this.enumerated = true;
-
-            for (var task = this.ReadResultAsync(); task.Result != null; task = this.ReadResultAsync())
-            {
-                yield return task.Result;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        /// <summary>
         /// Pushes <see cref="SearchResult"/> objects to observers and then completes.
         /// </summary>
         /// <returns>
@@ -269,9 +231,9 @@ namespace Splunk.Client
 
             this.enumerated = true;
 
-            for (SearchResult record; (record = await this.ReadResultAsync()) != null; )
+            for (SearchResult result; (result = await this.ReadResultAsync()) != null; )
             { 
-                this.OnNext(record); 
+                this.OnNext(result); 
             }
 
             this.OnCompleted();

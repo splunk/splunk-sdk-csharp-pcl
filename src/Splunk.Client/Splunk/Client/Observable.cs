@@ -77,6 +77,7 @@ namespace Splunk.Client
                 {
                     observer.OnError(e);
                 }
+
                 this.observers.Clear();
             }
         }
@@ -138,6 +139,7 @@ namespace Splunk.Client
                 {
                     this.observers = new LinkedList<IObserver<T>>();
                 }
+
                 unsubscriber = new Subscription(this, this.observers.AddLast(observer));
             }
 
@@ -184,8 +186,6 @@ namespace Splunk.Client
                 
                 this.node = node;
                 this.observable = observable;
-
-                GC.SuppressFinalize(this);
             }
 
             /// <summary>
@@ -197,12 +197,14 @@ namespace Splunk.Client
                 {
                     return;
                 }
+
                 lock (this.observable.gate)
                 {
                     if (this.node.List == null)
                     {
                         return;
                     }
+
                     node.List.Remove(this.node);
                 }
             }

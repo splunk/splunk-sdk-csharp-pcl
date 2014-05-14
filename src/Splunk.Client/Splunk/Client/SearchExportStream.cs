@@ -54,7 +54,7 @@ namespace Splunk.Client
     /// The <see cref="SearchExportStream"/> class represents a streaming XML 
     /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
-    public sealed class SearchExportStream : Observable<SearchResultStream>, IDisposable, IEnumerable<SearchResultStream>
+    public sealed class SearchExportStream : Observable<SearchResultStream>, IDisposable
     {
         #region Constructors
 
@@ -75,10 +75,15 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// 
+        /// Asynchronously creates a new <see cref="SearchExportStream"/>.
         /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
+        /// <param name="response">
+        /// The <see cref="Response"/> from which to create a new <see cref=
+        /// "SearchExportStream"/>.
+        /// </param>
+        /// <returns>
+        /// A new <see cref="SearchExportStream"/>.
+        /// </returns>
         internal static async Task<SearchExportStream> CreateAsync(Response response)
         {
             response.XmlReader.MoveToElement(); // ensures we're at an element, not an attribute
@@ -108,42 +113,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through <see cref="SearchResultStream"/>
-        /// synchronously.
+        /// Pushes <see cref="SearchResultStream"/> instances to subscribers 
+        /// and then completes.
         /// </summary>
-        /// <returns>
-        /// A <see cref="SearchResultStream"/> enumerator structure for the current <see 
-        /// cref="SearchExportStream"/>.
-        /// </returns>
-        public IEnumerator<SearchResultStream> GetEnumerator()
-        {
-            do
-            {
-                var results = SearchResultStream.CreateAsync(this.response, leaveOpen: true).Result;
-                yield return results;
-            }
-            while (this.response.XmlReader.ReadToFollowingAsync("results").Result);
-        }
-
-        /// <summary>
-        /// Returns an enumerator that iterates through <see cref="SearchResultStream"/>
-        /// synchronously.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="SearchResultStream"/> enumerator structure for the current <see 
-        /// cref="SearchExportStream"/>.
-        /// </returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        { 
-            return this.GetEnumerator(); 
-        }
-
-        /// <summary>
-        /// Pushes <see cref="SearchResultStream"/> to subscribers and then completes.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/>
-        /// </returns>
+        /// <returns></returns>
         override protected async Task PushObservations()
         {
             do

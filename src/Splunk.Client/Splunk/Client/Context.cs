@@ -178,7 +178,6 @@ namespace Splunk.Client
             {
                 this.httpClient.Dispose();
                 this.httpClient = null;
-                GC.SuppressFinalize(this);
             }
         }
 

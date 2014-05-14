@@ -64,7 +64,7 @@ namespace Splunk.Client.Examples.Search
             // Simple oneshot search
             using (SearchResultStream searchResults = await service.SearchOneshotAsync("search index=_internal | head 5"))
             {
-                foreach (SearchResult record in searchResults)
+                foreach (SearchResult record in searchResults.ToEnumerable())
                 {
                     Console.WriteLine(record);
                 }
@@ -78,7 +78,7 @@ namespace Splunk.Client.Examples.Search
 
             using (SearchResultStream searchResults = await service.SearchOneshotAsync("search index=_internal | head 5", args))
             {
-                foreach (SearchResult record in searchResults)
+                foreach (SearchResult record in searchResults.ToEnumerable())
                 {
                     Console.WriteLine(record);
                 }

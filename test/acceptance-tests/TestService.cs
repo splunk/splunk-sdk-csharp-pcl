@@ -22,8 +22,11 @@ namespace Splunk.Client.UnitTesting
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Reactive.Concurrency;
+    using System.Reactive.Linq;
     using System.Reflection;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Security;
     using Xunit;
@@ -32,7 +35,7 @@ namespace Splunk.Client.UnitTesting
     {
         [Trait("class", "Service")]
         [Fact]
-        public void CanConstruct()
+        public void CanConstructService()
         {
             using (var service = new Service(Scheme.Https, "localhost", 8089, Namespace.Default))
             {
@@ -61,7 +64,7 @@ namespace Splunk.Client.UnitTesting
 
                     for (int i = 0; i < 50; i++)
                     {
-                        var storagePassword = await service.CreateStoragePasswordAsync(name + i, "foobar", realm[i % realm.Length]);
+                        var storagePassword = await service.CreateStoragePasswordAsync("foobar", name + i, realm[i % realm.Length]);
                         var password = Membership.GeneratePassword(15, 2);
                         await storagePassword.UpdateAsync(password);
 
@@ -180,7 +183,7 @@ namespace Splunk.Client.UnitTesting
                     var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
 
                     // other asserts on the contents of the update
-                    
+
                     Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
                     Assert.Equal(true, twitterApplication.CheckForUpdates);
                     Assert.Equal(false, twitterApplication.Configured);
@@ -679,7 +682,7 @@ namespace Splunk.Client.UnitTesting
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
                 SearchResultStream searchResults = await job.GetSearchResultsAsync();
 
-                var records = new List<Splunk.Client.SearchResult>(searchResults);
+                var records = new List<Splunk.Client.SearchResult>(searchResults.ToEnumerable());
             }
         }
 
@@ -886,8 +889,8 @@ namespace Splunk.Client.UnitTesting
                     Assert.NotNull(job);
 
                     var results = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
-                    Assert.Equal<IEnumerable<string>>(search.ExpectedFieldNames, results.FieldNames); 
-                    var records = new List<SearchResult>(results);
+                    Assert.Equal<IEnumerable<string>>(search.ExpectedFieldNames, results.FieldNames);
+                    var records = new List<SearchResult>(results.ToEnumerable());
                     // Assert.Equal(10, records.Count);
                 }
             }
@@ -901,35 +904,56 @@ namespace Splunk.Client.UnitTesting
             {
                 await service.LoginAsync("admin", "changeme");
 
-                SearchExportStream reader = await service.StartSearchExportAsync("search index=_internal | head 1000", new SearchExportArgs() { Count = 0 });
-                var records = new List<Splunk.Client.SearchResult>();
+                SearchExportStream exportStream = await service.StartSearchExportAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
+                var results = new List<Splunk.Client.SearchResult>();
+                var exception = (Exception)null;
 
-                foreach (var results in reader)
-                {
-                    Assert.Equal<IEnumerable<string>>(new List<string> 
-                    { 
-                        "_bkt",
-                        "_cd",
-                        "_indextime",
-                        "_raw",
-                        "_serial",
-                        "_si",
-                        "_sourcetype",
-                        "_subsecond",
-                        "_time",
-                        "host",
-                        "index",
-                        "linecount",
-                        "source",
-                        "sourcetype",
-                        "splunk_server",
+                exportStream.Subscribe(
+                    onNext: (resultStream) =>
+                    {
+                        Assert.Equal<IEnumerable<string>>(new List<string> 
+                            {
+                                "_bkt",
+                                "_cd",
+                                "_indextime",
+                                "_raw",
+                                "_serial",
+                                "_si",
+                                "_sourcetype",
+                                "_subsecond",
+                                "_time",
+                                "host",
+                                "index",
+                                "linecount",
+                                "source",
+                                "sourcetype",
+                                "splunk_server",
+                            },
+                            resultStream.FieldNames);
+
+                        resultStream.Subscribe(
+                            onNext: (result) =>
+                            {
+                                results.Add(result);
+                            },
+                            onError: (e) =>
+                            {
+                                exception = new ApplicationException("SearchResultStream error: " + e.Message, e);
+                            },
+                            onCompleted: () =>
+                            {
+                            });
                     },
-                        results.FieldNames);
+                    onError: (e) =>
+                    {
+                        exception = new ApplicationException("SearchExportStream error: " + e.Message, e);
+                    },
+                    onCompleted: () =>
+                    {
+                    });
 
-                    records.AddRange(results);
-                }
-
-                Assert.Equal(1000, records.Count);
+                Assert.Null(exception);
+                Assert.Equal(100, results.Count);
             }
         }
 
@@ -953,7 +977,7 @@ namespace Splunk.Client.UnitTesting
                 foreach (var command in searchCommands)
                 {
                     var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
-                    var records = new List<Splunk.Client.SearchResult>(searchResults);
+                    var records = new List<Splunk.Client.SearchResult>(searchResults.ToEnumerable());
                 }
             }
         }

@@ -15,6 +15,7 @@
     <RootNamespace />
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
+    <StyleCopOverrideSettingsFile>acceptance-tests.StyleCop</StyleCopOverrideSettingsFile>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

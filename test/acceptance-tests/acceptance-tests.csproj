@@ -14,7 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <RootNamespace />
     <RunCodeAnalysis>False</RunCodeAnalysis>
-    <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
+    <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
+    <StyleCopOverrideSettingsFile>acceptance-tests.StyleCop</StyleCopOverrideSettingsFile>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

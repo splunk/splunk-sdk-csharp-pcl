@@ -76,7 +76,7 @@ namespace Splunk.ModularInputs
             TextReader stdin = null,
             TextWriter stdout = null,
             TextWriter stderr = null,
-            T script = null) where T : ModularInput, new()
+            Action onEventWritten = null) where T : ModularInput, new()
         {
             /// Console default is OEM text encoding, which is not handled by Splunk,
             //// resulting in loss of chars such as O with an umlaut (\u0150)
@@ -97,13 +97,14 @@ namespace Splunk.ModularInputs
                 Console.OutputEncoding = Encoding.UTF8;
             }
 
-            using (EventWriter writer = new EventWriter())
+            using (EventWriter writer = new EventWriter(stdout, stderr))
             {
+                if (onEventWritten != null)
+                    writer.EventWritten += onEventWritten;
 
                 try
                 {
-                    if (script == null)
-                        script = new T();
+                    T script = new T();
 
                     if (args.Length == 0)
                     {

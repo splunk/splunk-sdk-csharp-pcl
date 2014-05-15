@@ -19,7 +19,7 @@ namespace random_numbers
             RunAsync<Program>(args).Wait();
         }
 
-        public IObservable<long> schedule = null;
+        public IObservable<long> schedule = Observable.Interval(new TimeSpan(0, 0, 0, 500));
 
         public override Scheme Scheme
         {
@@ -66,33 +66,22 @@ namespace random_numbers
             }
         }
 
-        public IObservable<Event> InputDefinitionToObservable(InputDefinition inputDefinition)
+        public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
         {
-            if (schedule == null)
-                schedule = Observable.Interval(new TimeSpan(0, 0, 1));
-
             double min = (double)inputDefinition.Parameters["min"];
             double max = (double)inputDefinition.Parameters["max"];
 
-            var subject = new Subject<Event>();
 
-            schedule.ForEachAsync((long i) => {
-                subject.OnNext(new Event
-                {
-                    Stanza = inputDefinition.Name,
-                    Data = "number=" + (rnd.NextDouble()*(max-min) + min)
-                });
-            });
+            schedule.Subscribe(
+                onNext: x => 
+                    eventWriter.WriteEvent(new Event
+                    {
+                        Stanza = inputDefinition.Name,
+                        Data = "number=" + (rnd.NextDouble() * (max - min) + min)
+                    })
+            );
+            await schedule.TakeLast(0).Materialize(); // Handles waiting for even empty IObservables to complete
 
-            return subject;
-        }
-
-        public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
-        {
-            var eventSequence = InputDefinitionToObservable(inputDefinition);
-            await eventSequence.ForEachAsync((Event e) => {
-                eventWriter.WriteEvent(e);
-            });
         }
     }
 }

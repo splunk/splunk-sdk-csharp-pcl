@@ -30,18 +30,17 @@ namespace Splunk.ModularInputs
     /// <summary>
     /// 
     /// </summary>
-    public delegate void EventWrittenHandler(object sender, EventArgs e);
-
     public class EventWriter : IDisposable
     {
         private static XmlSerializer serializer = new XmlSerializer(typeof(Event));
 
-        public event EventWrittenHandler EventWritten;
+        public event Action EventWritten;
 
         private BlockingCollection<Event> eventQueue;
         private XmlWriter writer;
-        private Task eventQueueMonitor;
+        private Task eventQueueMonitor = null;
         private TextWriter stderr;
+        private TextWriter stdout;
 
         #region Constructors
 
@@ -61,7 +60,7 @@ namespace Splunk.ModularInputs
             };
 
             writer = XmlWriter.Create(stdout, settings);
-            eventQueueMonitor = Task.Factory.StartNew<Task>(WriteEventElementsAsync);
+            this.stdout = stdout;
         }
 
         #endregion
@@ -69,13 +68,17 @@ namespace Splunk.ModularInputs
         /// <param name="eventElement">
         public void WriteEvent(Event e)
         {
+            if (eventQueueMonitor == null)
+                eventQueueMonitor = Task.Factory.StartNew<Task>(WriteEventElementsAsync);
             eventQueue.Add(e);
         }
     
         public void Dispose()
         {
             eventQueue.CompleteAdding();
-            eventQueueMonitor.Wait();
+            if (eventQueueMonitor != null)
+                eventQueueMonitor.Wait();
+            writer.Close();
         }
 
         public async Task LogAsync(string severity, string message)
@@ -87,16 +90,24 @@ namespace Splunk.ModularInputs
         {
             await this.writer.WriteStartElementAsync(prefix: null, localName: "stream", ns: null);
 
-            foreach (Event e in this.eventQueue.GetConsumingEnumerable())
+            Event e;
+            while (!eventQueue.IsCompleted)
             {
-                serializer.Serialize(writer, e);
-                await this.writer.FlushAsync();
-                EventWritten(this, EventArgs.Empty);
+                if (eventQueue.TryTake(out e))
+                {
+                    serializer.Serialize(writer, e);
+                    await this.writer.FlushAsync();
+                    EventWritten();
+                }
+                else
+                {
+                    await Task.Delay(50);
+                }
             }
-
+                
             await writer.WriteEndElementAsync();
             await writer.FlushAsync();
-            writer.Close();
+            EventWritten();
         }
     }
 }

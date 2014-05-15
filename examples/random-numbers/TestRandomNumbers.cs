@@ -8,7 +8,10 @@ namespace random_numbers
 {
     using Splunk.ModularInputs;
     using System.IO;
+    using System.Reactive;
+    using System.Reactive.Linq;
     using System.Reactive.Subjects;
+    using System.Reactive.Threading.Tasks;
     using System.Threading;
     using System.Xml.Linq;
     using System.Xml.Serialization;
@@ -18,13 +21,13 @@ namespace random_numbers
     {
         public class HarnessedScript : IDisposable
         {
+            public Subject<Unit> EventWrittenTrigger = new Subject<Unit>();
             public Program Script;
             public StringWriter Stdout;
             public StringWriter Stderr;
             public StringReader Stdin;
             public string[] Args;
 
-            
             public HarnessedScript(string[] args, String stdinText)
             {
                 Args = args;
@@ -36,7 +39,7 @@ namespace random_numbers
 
             public async Task<int> RunAsync()
             {
-                return await Program.RunAsync<Program>(Args, Stdin, Stdout, Stderr, Script);
+                return await Program.RunAsync<Program>(Args, Stdin, Stdout, Stderr, () => EventWrittenTrigger.OnNext(Unit.Default));
             }
 
             public void Dispose()
@@ -46,7 +49,6 @@ namespace random_numbers
                 Stdin.Dispose();
             }
         }
-
 
         [Trait("class", "random_numbers.Program")]
         [Fact]
@@ -67,12 +69,12 @@ namespace random_numbers
         [Fact]
         public async Task InvalidArguments()
         {
-            using (HarnessedScript harness = 
+            using (HarnessedScript harness =
                 new HarnessedScript(new string[] { "cowabunga!" }, ""))
             {
                 Assert.Equal(-1, await harness.RunAsync());
                 Assert.Equal("", harness.Stdout.ToString());
-                Assert.Equal("", harness.Stderr.ToString());
+                Assert.Equal("ERROR Invalid arguments to modular input.", harness.Stderr.ToString().Trim());
             }
         }
 
@@ -137,7 +139,7 @@ namespace random_numbers
         }
 
         [Trait("class", "random_numbers.Program")]
-        [Fact]
+        [Fact(Timeout=1000)]
         public async Task StreamEvents()
         {
             XDocument doc = new XDocument(
@@ -159,18 +161,30 @@ namespace random_numbers
             using (HarnessedScript harness =
                 new HarnessedScript(new string[0], doc.ToString()))
             {
-                Subject<long> subject = new Subject<long>();
-                
-                harness.Script.schedule = subject;
+                var trigger = new Subject<long>();
+                harness.Script.schedule = trigger;
                 Task t = harness.RunAsync();
 
                 Assert.Equal("", harness.Stdout.ToString());
+                Assert.Equal("", harness.Stderr.ToString());
 
-                subject.OnNext(1);
-                await Task.Delay(1000);
+                Task callback = harness.EventWrittenTrigger.FirstAsync().ToTask();
+                trigger.OnNext(0);
+                await callback;
+                //await harness.EventWrittenTrigger.FirstAsync();
 
-                Assert.Equal("abcd", harness.Stdout.ToString());
+                //String expected = "<stream><event xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+                //    "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" unbroken=\"0\" stanza=\"foobar://aaa\"><data>";
+                //Assert.True(harness.Stdout.ToString().Trim().StartsWith(expected));
+                //Assert.Equal("", harness.Stderr.ToString());
 
+                //trigger.OnNext(1);
+                //trigger.OnCompleted();
+                //await harness.EventWrittenTrigger;
+
+                //XDocument docComplete = XDocument.Parse(harness.Stdout.ToString());
+                //Assert.Equal(2, docComplete.Root.Elements().Count());
+                //Assert.Equal("", harness.Stderr.ToString());
             }
         }
     }

@@ -104,22 +104,22 @@ namespace Splunk.Client.Examples
                 manualResetEvent.WaitOne();
             }
 
-            //// Search : Export
+            //// Search : Export Previews
 
-            SearchPreviewStream searchExportStream;
+            SearchPreviewStream searchPreviewStream;
 
-            using (searchExportStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
+            using (searchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
             {
-                int recordNumber = 0;
-                int setNumber = 0;
+                int previewNumber = 0;
 
-                foreach (var resultStream in searchExportStream.ToEnumerable())
+                foreach (var searchPreview in searchPreviewStream.ToEnumerable())
                 {
-                    Console.WriteLine(string.Format("Result set {0}", ++setNumber));
+                    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, searchPreview.IsFinal ? "final" : "partial");
+                    int recordNumber = 0;
 
-                    foreach (var record in resultStream.ToEnumerable())
+                    foreach (var result in searchPreview.SearchResults)
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
                     }
                 }
             }
@@ -149,7 +149,7 @@ namespace Splunk.Client.Examples
                     }
                 }
             }
-            while (searchResultStream.ArePreview);
+            while (!searchResultStream.IsFinal);
 
             //// Search : Saved search
 
@@ -187,36 +187,31 @@ namespace Splunk.Client.Examples
                 }
             }
 
-            using (var searchExportStream = await service.ExportSearchPreviewsAsync("search index=_internal | head 100000"))
+            using (searchResultStream = await service.ExportSearchResultsAsync("search index=_internal | head 100000"))
             {
                 Console.WriteLine("Begin: Service.SearchExportAsync: Asyncrhonous use case");
                 int recordNumber = 0;
-                int setNumber = 0;
 
-                foreach (var resultStream in searchExportStream.ToEnumerable())
-                {
-                    Console.WriteLine(string.Format("Result set {0}", ++setNumber));
-                    var manualResetEvent = new ManualResetEvent(true);
+                var manualResetEvent = new ManualResetEvent(true);
 
-                    resultStream.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
-                        onNext: (record) =>
-                        {
-                            Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
-                        },
-                        onError: (exception) =>
-                        {
-                            Console.WriteLine(string.Format("SearchResults error: {0}", exception.Message));
-                            manualResetEvent.Set();
-                        },
-                        onCompleted: () =>
-                        {
-                            Console.WriteLine("Service.SearchExportAsync: Asyncrhonous use case");
-                            manualResetEvent.Set();
-                        });
+                searchResultStream.Subscribe(
+                    onNext: (result) =>
+                    {
+                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
+                    },
+                    onError: (exception) =>
+                    {
+                        Console.WriteLine(string.Format("SearchResults error: {0}", exception.Message));
+                        manualResetEvent.Set();
+                    },
+                    onCompleted: () =>
+                    {
+                        Console.WriteLine("Service.SearchExportAsync: Asyncrhonous use case");
+                        manualResetEvent.Set();
+                    });
 
-                    manualResetEvent.Reset(); 
-                    manualResetEvent.WaitOne();
-                }
+                manualResetEvent.Reset(); 
+                manualResetEvent.WaitOne();
             }
         }
     }

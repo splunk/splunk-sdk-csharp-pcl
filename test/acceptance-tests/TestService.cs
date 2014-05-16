@@ -22,9 +22,7 @@ namespace Splunk.Client.UnitTesting
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Reactive.Concurrency;
     using System.Reactive.Linq;
-    using System.Reflection;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -52,11 +50,13 @@ namespace Splunk.Client.UnitTesting
         public async Task CanCrudStoragePasswords()
         {
             TestHelper.GetInstance();
+
             foreach (var ns in TestNamespaces)
             {
                 using (var service = await TestHelper.Connect(ns))
                 {
                     StoragePasswordCollection sps = service.GetStoragePasswordsAsync().Result;
+
                     foreach (StoragePassword pwd in sps)
                     {
                         if (pwd.Username.Contains("delete-me-"))
@@ -135,6 +135,7 @@ namespace Splunk.Client.UnitTesting
         public async Task CanCrudApplications()
         {
             TestHelper.GetInstance();
+
             foreach (var ns in TestNamespaces)
             {
                 using (var service = await TestHelper.Connect(ns))

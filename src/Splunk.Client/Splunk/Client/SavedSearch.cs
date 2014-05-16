@@ -178,7 +178,6 @@ namespace Splunk.Client
         /// "SavedSearch"/> appears in the list of saved searches on Splunk
         /// Web.
         /// </summary>
-        /// </summary>
         public bool IsVisible
         {
             get { return this.GetValue("IsVisible", BooleanConverter.Instance); }

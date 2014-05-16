@@ -184,10 +184,16 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="millisecondsDelay">
         /// The time to wait before canceling the check for server availability.
-        /// The default value is <c>60000</c> indicating that the check for
+        /// The default value is <c>60000</c> specifying that the check for
         /// server avaialability will continue for up to 60 seconds. A value
         /// of <c>0</c> specifices that no check should be made. A value of 
         /// <c>-1</c> specifies an infinite wait time.
+        /// </param>
+        /// <param name="retryInterval">
+        /// The time to wait between checks for server availability in 
+        /// milliseconds. The default value is <c>250</c> specifying that the
+        /// time between checks for server availability is one quarter of a 
+        /// second.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="millisecondsDelay"/> is less than <c>-1</c>.

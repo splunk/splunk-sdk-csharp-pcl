@@ -15,9 +15,9 @@
  */
 
 //// TODO:
-//// [ ] Contracts
-//// [ ] Documentation
-//// [ ] Ensure that Response.EnsureStatusCodeAsync is used instead of
+//// [O] Contracts
+//// [O] Documentation
+//// [X] Ensure that Response.EnsureStatusCodeAsync is used instead of
 ////     throwing RequestException or its derivatives directly.
 
 namespace Splunk.Client
@@ -62,13 +62,18 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="Stream"/> associated with the current <see 
+        /// cref="Response.Message"/>.
         /// </summary>
+        /// <remarks>
+        /// This object is the one returned by <see cref="HttpContent.ReadAsStreamAsync()"/>.
+        /// </remarks>
         public Stream Stream
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="XmlReader"/> for reading HTTP body data from
+        /// the current <see cref="Response.Stream"/>.
         /// </summary>
         public XmlReader XmlReader
         { get; private set; }

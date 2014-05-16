@@ -143,6 +143,7 @@ namespace Splunk.Client
         /// </param>
         /// <param name="realm">
         /// Storage password realm.
+        /// </param>
         /// <returns>
         /// An object representing the storage password created.
         /// </returns>
@@ -197,6 +198,7 @@ namespace Splunk.Client
         /// </param>
         /// <param name="realm">
         /// Storage password realm.
+        /// </param>
         /// <returns>
         /// An object representing the storage password retrieved.
         /// </returns>
@@ -314,6 +316,7 @@ namespace Splunk.Client
         /// </param>
         /// <param name="realm">
         /// Storage password realm.
+        /// </param>
         /// <returns>
         /// An object representing the updated storage password.
         /// </returns>

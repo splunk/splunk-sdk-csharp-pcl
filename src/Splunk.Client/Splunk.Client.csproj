@@ -72,6 +72,11 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateDocumentationFile Condition=" '$(GenerateDocumentationFile)' == '' ">False</GenerateDocumentationFile>
+    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' != 'True' "></DocumentationFile>
+    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'True' ">$(OutputPath)Splunk.Client.XML</DocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Splunk\Client\AlertComparator.cs" />

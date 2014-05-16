@@ -34,6 +34,71 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="name"></param>
+        /// <returns></returns>
+        public static async Task<bool> MoveToDocumentElementAsync(this XmlReader reader, string name)
+        {
+            if (reader.ReadState == ReadState.Initial)
+            {
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                {
+                    try
+                    {
+                        await reader.ReadAsync();
+                    }
+                    catch (XmlException)
+                    {
+                        //// WORKAROUND:
+                        //// Issue: Some searches return no results and in 
+                        //// these cases Splunk writes nothing but an XML 
+                        //// Declaration. When nothing follows the declaration 
+                        //// the XmlReader fails to detect EOF, does not update
+                        //// the current XmlNode, and then throws an XmlException
+                        //// because it thinks the XmlNode appears on a line
+                        //// other than the first.
+                        ////
+                        //// We catch the issue here, dispose the reader to 
+                        //// ensure that EOF is true, and then return.
+                        ////
+                        //// Verified against Microsoft .NET 4.5 and Splunk
+                        //// 5.0.4, 6.0.3, and 6.1.1.
+
+                        if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                        {
+                            reader.Dispose();
+                            return false;
+                        }
+
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+                reader.MoveToElement(); // ensures we're on an element, not an attribute
+            }
+
+            if (reader.ReadState != ReadState.Interactive)
+            {
+                return false;
+            }
+
+            //// Read search results
+
+            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
+            {
+                throw new InvalidDataException(string.Format("Expected <{0}> element, not {1} {2}", name, reader.NodeType, reader.Name));
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="name"></param>
         /// <param name="task"></param>
         /// <returns></returns>
         public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<Task> task)
@@ -66,13 +131,102 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Reads a sequence of element start tags.
+        /// </summary>
+        /// <param name="reader">
+        /// The source <see cref="XmlReader"/>. 
+        /// </param>
+        /// <param name="names">
+        /// The sequence of element start tag names to match.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Task"/> representing this operation.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="reader"/> or <paramref name="names"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// If the sequence of nodes read from <paramref name="reader"/> does 
+        /// not match the sequence of start tag <paramref name="names"/>.
+        /// </exception>
+        /// <remarks>
+        /// The <paramref name="reader"/> should be positioned on the node
+        /// preceding the first start tag in the sequence of <paramref name=
+        /// "names"/> when this method is called. The 
+        /// <paramref name="reader"/> will be positioned on the last start
+        /// tag in the sequence of <paramref name="names"/> when this method 
+        /// returns.
+        /// </remarks>
+        public static async Task ReadElementSequenceAsync(this XmlReader reader, params string[] names)
+        {
+            Contract.Requires<ArgumentNullException>(reader != null);
+            Contract.Requires<ArgumentNullException>(names != null);
+
+            foreach (var name in names)
+            {
+                await reader.ReadAsync();
+
+                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
+                {
+                    throw new InvalidDataException(string.Format("Expected <{0}>, not {1} {2}", name, reader.NodeType, reader.Name));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads a sequence of element end tags.
+        /// </summary>
+        /// <param name="reader">
+        /// The source <see cref="XmlReader"/>. 
+        /// </param>
+        /// <param name="names">
+        /// The sequence of element end tag names to match.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Task"/> representing this operation.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="reader"/> or <paramref name="names"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// If the sequence of nodes read from <paramref name="reader"/> does 
+        /// not match the sequence of end tag <paramref name="names"/>.
+        /// </exception>
+        /// <remarks>
+        /// The <paramref name="reader"/> should be positioned on the first 
+        /// end tag in the sequence of <paramref name="names"/> when this 
+        /// method is called. The <paramref name="reader"/> will be positioned
+        /// on the node following the last end tag in the sequence of <paramref 
+        /// name="names "/> when this method returns.
+        /// </remarks>
+        public static async Task ReadEndElementSequenceAsync(this XmlReader reader, params string[] names)
+        {
+            Contract.Requires<ArgumentNullException>(reader != null);
+            Contract.Requires<ArgumentNullException>(names != null);
+
+            foreach (var name in names)
+            {
+                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
+                {
+                    throw new InvalidDataException(string.Format("Expected </{0}>, not {1} {2}", name, reader.NodeType, reader.Name));
+                }
+
+                await reader.ReadAsync();
+            }
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="reader">
+        /// 
         /// </param>
         /// <param name="name">
+        /// 
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// 
+        /// </returns>
         public static async Task<string> ReadResponseElementAsync(this XmlReader reader, string name)
         {
             await reader.ReadAsync();
@@ -101,8 +255,12 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="name"></param>
+        /// <param name="reader">
+        /// 
+        /// </param>
+        /// <param name="name">
+        /// 
+        /// </param>
         /// <returns></returns>
         public static async Task<bool> ReadToDescendantAsync(this XmlReader reader, string name)
         {

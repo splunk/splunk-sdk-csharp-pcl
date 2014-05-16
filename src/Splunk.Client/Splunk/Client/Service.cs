@@ -1207,7 +1207,7 @@ namespace Splunk.Client
             try
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                var stream = await SearchResultStream.CreateAsync(response, leaveOpen: false); // Transfers response ownership
+                var stream = await SearchResultStream.CreateAsync(response); // Transfers response ownership
                 return stream;
             }
             catch
@@ -1218,7 +1218,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously starts a search export.
+        /// Asynchronously exports an observable sequence of search result previews.
         /// </summary>
         /// <param name="search">
         /// Splunk search command.
@@ -1227,13 +1227,14 @@ namespace Splunk.Client
         /// Optional export arguments.
         /// </param>
         /// <returns>
-        /// An object representing a stream of search export results.
+        /// An object representing an observable sequence of search result 
+        /// previews.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/vJvIXv">GET 
         /// search/jobs/export</a> endpoint to start the 
         /// </remarks>
-        public async Task<SearchExportStream> StartSearchExportAsync(string search, SearchExportArgs args = null)
+        public async Task<SearchPreviewStream> ExportSearchPreviewsAsync(string search, SearchExportArgs args = null)
         {
             Contract.Requires<ArgumentNullException>(args != null, "args");
 
@@ -1247,7 +1248,47 @@ namespace Splunk.Client
             try
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                return await SearchExportStream.CreateAsync(response); // Transfers response ownership
+                return new SearchPreviewStream(response); // Transfers response ownership
+            }
+            catch
+            {
+                response.Dispose();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously exports an observable sequence of search results.
+        /// </summary>
+        /// <param name="search">
+        /// Splunk search command.
+        /// </param>
+        /// <param name="args">
+        /// Optional export arguments.
+        /// </param>
+        /// <returns>
+        /// An object representing an observable sequence of search result 
+        /// previews.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/vJvIXv">GET 
+        /// search/jobs/export</a> endpoint to start the 
+        /// </remarks>
+        public async Task<SearchResultStream> ExportSearchResultsAsync(string search, SearchExportArgs args = null)
+        {
+            Contract.Requires<ArgumentNullException>(args != null, "args");
+
+            var command = new Argument[] 
+            { 
+                new Argument("search", search) 
+            };
+
+            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, command, args);
+
+            try
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                return await SearchResultStream.CreateAsync(response); // Transfers response ownership
             }
             catch
             {

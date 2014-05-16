@@ -898,18 +898,83 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanStartSearchExport()
+        public async Task CanExportSearchPreviews()
         {
             using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
                 await service.LoginAsync("admin", "changeme");
 
-                SearchExportStream exportStream = await service.StartSearchExportAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
+                SearchPreviewStream previewStream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
                 var results = new List<Splunk.Client.SearchResult>();
                 var exception = (Exception)null;
 
-                exportStream.Subscribe(
-                    onNext: (resultStream) =>
+                var manualResetEvent = new ManualResetEvent(true);
+
+                previewStream.Subscribe(
+                    onNext: (preview) =>
+                    {
+                        Assert.Equal<IEnumerable<string>>(new List<string> 
+                            {
+                                "_bkt",
+                                "_cd",
+                                "_indextime",
+                                "_raw",
+                                "_serial",
+                                "_si",
+                                "_sourcetype",
+                                "_subsecond",
+                                "_time",
+                                "host",
+                                "index",
+                                "linecount",
+                                "source",
+                                "sourcetype",
+                                "splunk_server",
+                            },
+                            preview.FieldNames);
+
+                        if (preview.IsFinal)
+                        {
+                            results.AddRange(preview.SearchResults);
+                        }
+                    },
+                    onError: (e) =>
+                    {
+                        exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
+                        manualResetEvent.Set();
+
+                    },
+                    onCompleted: () =>
+                    {
+                        manualResetEvent.Set();
+                    });
+
+                manualResetEvent.Reset();
+                manualResetEvent.WaitOne();
+                
+                Assert.Null(exception);
+                Assert.Equal(100, results.Count);
+                
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("class", "Service: Search Jobs")]
+        [Fact]
+        public async Task CanExportSearchResults()
+        {
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            {
+                await service.LoginAsync("admin", "changeme");
+
+                SearchResultStream resultStream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
+                var results = new List<Splunk.Client.SearchResult>();
+                var exception = (Exception)null;
+
+                var manualResetEvent = new ManualResetEvent(true);
+
+                resultStream.Subscribe(
+                    onNext: (result) =>
                     {
                         Assert.Equal<IEnumerable<string>>(new List<string> 
                             {
@@ -931,29 +996,32 @@ namespace Splunk.Client.UnitTesting
                             },
                             resultStream.FieldNames);
 
-                        resultStream.Subscribe(
-                            onNext: (result) =>
-                            {
-                                results.Add(result);
-                            },
-                            onError: (e) =>
-                            {
-                                exception = new ApplicationException("SearchResultStream error: " + e.Message, e);
-                            },
-                            onCompleted: () =>
-                            {
-                            });
+                        var count = resultStream.FieldNames.Intersect(result.Keys).Count();
+                        Assert.Equal(count, result.Count);
+
+                        if (resultStream.IsFinal)
+                        {
+                            results.Add(result);
+                        }
                     },
                     onError: (e) =>
                     {
-                        exception = new ApplicationException("SearchExportStream error: " + e.Message, e);
+                        exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
+                        manualResetEvent.Set();
+
                     },
                     onCompleted: () =>
                     {
+                        manualResetEvent.Set();
                     });
+
+                manualResetEvent.Reset();
+                manualResetEvent.WaitOne();
 
                 Assert.Null(exception);
                 Assert.Equal(100, results.Count);
+
+                await service.LogoffAsync();
             }
         }
 
@@ -1169,7 +1237,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanSendEvents()
         {
-            using (var service = new Service(Scheme.Https, "personal-splunk", 8089))
+            using (var service = new Service(Scheme.Https, "localhost", 8089))
             {
                 await service.LoginAsync("admin", "changeme");
 

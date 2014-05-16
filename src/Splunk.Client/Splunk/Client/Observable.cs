@@ -113,7 +113,7 @@ namespace Splunk.Client
         protected abstract Task PushObservations();
 
         /// <summary>
-        /// Notifies the current <see cref="SearchExportStream"/> that an 
+        /// Notifies the current <see cref="SearchPreviewStream"/> that an 
         /// observer is to receive notifications.
         /// </summary>
         /// <param name="observer">
@@ -121,7 +121,7 @@ namespace Splunk.Client
         /// </param>
         /// <returns>
         /// A reference to an interface that allows observers to stop receiving
-        /// notifications before the current <see cref="SearchExportStream"/>
+        /// notifications before the current <see cref="SearchPreviewStream"/>
         /// has finished sending them.
         /// </returns>
         public IDisposable Subscribe(IObserver<T> observer)

@@ -734,7 +734,7 @@ namespace Splunk.Client.UnitTesting
 
             ForEachEnum(
                 enumType,
-                (@enum) => service.StartSearchExportAsync(search,
+                (@enum) => service.ExportSearchPreviewsAsync(search,
                     getJobExportArgs(@enum)).Wait());
         }
 

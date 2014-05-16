@@ -886,11 +886,7 @@ namespace Splunk.Client
         public async Task CancelAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
-
-            await this.PostControlCommandAsync(new Argument[] 
-            { 
-                new Argument("action", "cancel")
-            });
+            await this.PostControlCommandAsync(Cancel);
         }
 
         /// <summary>
@@ -900,11 +896,7 @@ namespace Splunk.Client
         public async Task DisablePreviewAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
-
-            await this.PostControlCommandAsync(new Argument[] 
-            { 
-                new Argument("action", "disable_preview") 
-            });
+            await this.PostControlCommandAsync(DisablePreview);
         }
 
         /// <summary>
@@ -914,11 +906,7 @@ namespace Splunk.Client
         public async Task EnablePreviewAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
-
-            await this.PostControlCommandAsync(new Argument[] 
-            { 
-                new Argument("action", "enable_preview") 
-            });
+            await this.PostControlCommandAsync(EnablePreview);
         }
 
         /// <summary>
@@ -928,11 +916,7 @@ namespace Splunk.Client
         public async Task FinalizeAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
-
-            await this.PostControlCommandAsync(new Argument[] 
-            { 
-                new Argument("action", "finalize") 
-            });
+            await this.PostControlCommandAsync(Finalize);
         }
 
         /// <summary>
@@ -942,11 +926,7 @@ namespace Splunk.Client
         public async Task PauseAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
-
-            await this.PostControlCommandAsync(new Argument[] 
-            { 
-                new Argument("action", "pause") 
-            });
+            await this.PostControlCommandAsync(Pause);
         }
 
         /// <summary>
@@ -956,11 +936,7 @@ namespace Splunk.Client
         public async Task SaveAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
-
-            await this.PostControlCommandAsync(new Argument[] 
-            { 
-                new Argument("action", "save") 
-            });
+            await this.PostControlCommandAsync(Save);
         }
 
         /// <summary>
@@ -1018,11 +994,7 @@ namespace Splunk.Client
         public async Task UnpauseAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
-
-            await this.PostControlCommandAsync(new Argument[] 
-            { 
-                new Argument("action", "unpause") 
-            });
+            await this.PostControlCommandAsync(Unpause);
         }
 
         /// <summary>
@@ -1032,11 +1004,7 @@ namespace Splunk.Client
         public async Task UnsaveAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
-
-            await this.PostControlCommandAsync(new Argument[] 
-            { 
-                new Argument("action", "unsave") 
-            });
+            await this.PostControlCommandAsync(Unsave);
         }
 
         /// <summary>
@@ -1062,6 +1030,46 @@ namespace Splunk.Client
 
         #region Privates
 
+        static readonly Argument[] Cancel = new Argument[] 
+        { 
+            new Argument("action", "cancel")
+        };
+
+        static readonly Argument[] DisablePreview = new Argument[] 
+        { 
+            new Argument("action", "disable_preview") 
+        };
+
+        static readonly Argument[] EnablePreview = new Argument[] 
+        { 
+            new Argument("action", "enable_preview") 
+        };
+
+        static readonly Argument[] Finalize = new Argument[] 
+        { 
+            new Argument("action", "finalize") 
+        };
+
+        static readonly Argument[] Pause = new Argument[]
+        { 
+            new Argument("action", "pause") 
+        };
+
+        static readonly Argument[] Save = new Argument[]
+        {
+            new Argument("action", "save") 
+        };
+
+        static readonly Argument[] Unpause = new Argument[] 
+        { 
+            new Argument("action", "unpause") 
+        };
+
+        static readonly Argument[] Unsave = new Argument[] 
+        { 
+            new Argument("action", "unsave") 
+        };
+
         async Task<SearchResultStream> GetSearchResultsAsync(string endpoint, IEnumerable<Argument> args)
         {
             var resourceName = new ResourceName(this.ResourceName, endpoint);
@@ -1069,7 +1077,7 @@ namespace Splunk.Client
 
             try
             {
-                var searchResults = await SearchResultStream.CreateAsync(response, leaveOpen: false);
+                var searchResults = await SearchResultStream.CreateAsync(response);
                 return searchResults;
             }
             catch 

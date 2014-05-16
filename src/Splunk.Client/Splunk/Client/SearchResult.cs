@@ -53,24 +53,13 @@ namespace Splunk.Client
         /// <param name="reader">
         /// The <see cref="XmlReader"/> from which to read.
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="Task"/> representing this operation.
+        /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
-
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-            else
-            {
-                reader.MoveToElement();
-            }
+            reader.MoveToElement();
 
             if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
             {

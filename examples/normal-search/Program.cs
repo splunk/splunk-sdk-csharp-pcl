@@ -106,9 +106,9 @@ namespace Splunk.Client.Examples
 
             //// Search : Export
 
-            SearchExportStream searchExportStream;
+            SearchPreviewStream searchExportStream;
 
-            using (searchExportStream = service.StartSearchExportAsync("search index=_internal | head 100").Result)
+            using (searchExportStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
             {
                 int recordNumber = 0;
                 int setNumber = 0;
@@ -187,7 +187,7 @@ namespace Splunk.Client.Examples
                 }
             }
 
-            using (var searchExportStream = await service.StartSearchExportAsync("search index=_internal | head 100000"))
+            using (var searchExportStream = await service.ExportSearchPreviewsAsync("search index=_internal | head 100000"))
             {
                 Console.WriteLine("Begin: Service.SearchExportAsync: Asyncrhonous use case");
                 int recordNumber = 0;

@@ -255,25 +255,10 @@ namespace Splunk.Client
 
         internal static async Task<IReadOnlyList<Message>> ReadMessagesAsync(XmlReader reader)
         {
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-
             var messages = new List<Message>();
 
-            if (!reader.EOF)
+            if (await reader.MoveToDocumentElementAsync("response"))
             {
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
                 await reader.ReadAsync();
 
                 if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "messages"))
@@ -290,9 +275,14 @@ namespace Splunk.Client
                         throw new InvalidDataException(); // TODO: Diagnostics
                     }
 
-                    // TODO: Throw InvalidDataException if type attribute is missing
+                    var name = reader["type"];
 
-                    MessageType type = EnumConverter<MessageType>.Instance.Convert(reader.GetAttribute("type"));
+                    if (name == null)
+                    {
+                        throw new InvalidDataException(); // TODO: Diagnostics
+                    }
+
+                    MessageType type = EnumConverter<MessageType>.Instance.Convert(name);
                     string text = await reader.ReadElementContentAsStringAsync();
                     messages.Add(new Message(type, text));
                 }

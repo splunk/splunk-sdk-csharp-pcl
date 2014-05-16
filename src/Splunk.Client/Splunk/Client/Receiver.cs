@@ -111,34 +111,17 @@ namespace Splunk.Client
                     await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                     var reader = response.XmlReader;
 
-                    await reader.ReadAsync();
-
-                    if (reader.NodeType != XmlNodeType.XmlDeclaration)
+                    if (!await reader.MoveToDocumentElementAsync("response"))
                     {
-                        throw new InvalidDataException(); // TODO: diagnostics
+                        throw new InvalidDataException(); // TODO: Diagnostics
                     }
 
-                    foreach (var name in new string[] { "response", "results", "result" })
-                    {
-                        await reader.ReadAsync();
-
-                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
-                        {
-                            throw new InvalidDataException(); // TODO: diagnostics
-                        }
-                    }
+                    await reader.ReadElementSequenceAsync("results", "result");
 
                     var result = new SearchResult();
                     await result.ReadXmlAsync(reader);
-
-                    foreach (var name in new string[] { "result", "results", "response" })
-                    {
-                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
-                        {
-                            throw new InvalidDataException(); // TODO: diagnostics
-                        }
-                        await reader.ReadAsync();
-                    }
+                    
+                    await reader.ReadEndElementSequenceAsync("result", "results", "response");
 
                     return result;
                 }

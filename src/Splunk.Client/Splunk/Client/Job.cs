@@ -789,11 +789,19 @@ namespace Splunk.Client
         protected override async Task UpdateSnapshotAsync(Response response)
         {
             var reader = response.XmlReader;
-            await reader.ReadAsync();
 
-            if (reader.NodeType == XmlNodeType.XmlDeclaration)
+            if (reader.ReadState == ReadState.Initial)
             {
-                await response.XmlReader.ReadAsync();
+                await reader.ReadAsync();
+
+                if (reader.NodeType == XmlNodeType.XmlDeclaration)
+                {
+                    await reader.ReadAsync();
+                }
+            }
+            else
+            {
+                reader.MoveToElement();
             }
 
             if (reader.NodeType != XmlNodeType.Element)

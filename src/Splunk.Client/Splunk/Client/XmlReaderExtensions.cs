@@ -229,24 +229,12 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<string> ReadResponseElementAsync(this XmlReader reader, string name)
         {
-            await reader.ReadAsync();
-
-            if (reader.NodeType == XmlNodeType.XmlDeclaration)
-            {
-                await reader.ReadAsync();
-            }
-
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
+            if (!await reader.MoveToDocumentElementAsync("response"))
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }
 
-            await reader.ReadAsync();
-
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
+            await reader.ReadElementSequenceAsync(name);
 
             var text = await reader.ReadElementContentAsStringAsync();
             return text;

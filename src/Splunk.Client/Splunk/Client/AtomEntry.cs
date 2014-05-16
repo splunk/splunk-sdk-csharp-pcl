@@ -151,21 +151,7 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-            else
-            {
-                reader.MoveToElement();
-            }
-
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "entry"))
+            if (!await reader.MoveToDocumentElementAsync("entry"))
             {
                 throw new InvalidDataException(); // TODO: Diagnostics
             }

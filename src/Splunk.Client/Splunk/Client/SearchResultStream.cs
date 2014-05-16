@@ -232,7 +232,7 @@ namespace Splunk.Client
                 var fieldNames = new List<string>();
 
                 this.FieldNames = fieldNames;
-                this.IsFinal = false;
+                this.IsFinal = true;
 
                 if (!await reader.MoveToDocumentElementAsync("results"))
                 {

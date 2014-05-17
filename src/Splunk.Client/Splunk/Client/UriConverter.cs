@@ -17,6 +17,7 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
+using PUrify;
 
 namespace Splunk.Client
 {
@@ -53,11 +54,13 @@ namespace Splunk.Client
 
             if (value != null)
             {
+                value.Purify ();
                 return value;
             }
 
             if (Uri.TryCreate(input.ToString(), UriKind.RelativeOrAbsolute, out value))
             {
+                value.Purify ();
                 return value;
             }
 

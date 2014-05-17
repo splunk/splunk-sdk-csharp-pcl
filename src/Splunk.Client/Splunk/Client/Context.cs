@@ -38,6 +38,7 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using PUrify;
 
     /// <summary>
     /// Provides a class for sending HTTP requests and receiving HTTP responses 
@@ -402,7 +403,7 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(resource != null);
 
             var serviceUri = this.CreateServiceUri(ns, resource, argumentSets);
-
+            serviceUri.Purify();
             using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
             {
                 if (this.SessionKey != null)

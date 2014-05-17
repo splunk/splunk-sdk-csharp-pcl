@@ -1,0 +1,16 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="src/Splunk.Client/Splunk/Client/EntitySnapshot.cs">
+    <Files>
+      <File FileName="src/Splunk.Client/Splunk/Client/EntitySnapshot.cs" Line="67" Column="15" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <DisabledProjects>
+    <String>examples/reactive-ui/reactive-ui.csproj</String>
+    <String>examples/normal-search/normal-search.csproj</String>
+  </DisabledProjects>
+</Properties>

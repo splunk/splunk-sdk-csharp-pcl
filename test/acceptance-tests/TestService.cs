@@ -832,6 +832,26 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCreateJobAndGetResults()
         {
+            var expectedFieldNames = new List<string>
+            {
+                "_bkt",
+                "_cd",
+                "_confstr",
+                "_indextime",
+                "_raw",
+                "_serial",
+                "_si",
+                "_sourcetype",
+                "_subsecond",
+                "_time",
+                "host",
+                "index",
+                "linecount",
+                "source",
+                "sourcetype",
+                "splunk_server",
+            };
+
             var searches = new[]
             {
                 new
@@ -843,49 +863,12 @@ namespace Splunk.Client.UnitTesting
                         EarliestTime = "rt-5m",
                         LatestTime = "rt",
                         MaxTime = 10000
-                    },
-                    ExpectedFieldNames = new List<string>
-                    {
-                        "_bkt",
-                        "_cd",
-                        "_confstr",
-                        "_indextime",
-                        "_raw",
-                        "_serial",
-                        "_si",
-                        "_sourcetype",
-                        "_subsecond",
-                        "_time",
-                        "host",
-                        "index",
-                        "linecount",
-                        "source",
-                        "sourcetype",
-                        "splunk_server",
                     }
                 },
                 new
                 {
                     Command = "search index=_internal | head 10",
-                    JobArgs = new JobArgs(),
-                    ExpectedFieldNames = new List<string>
-                    {
-                        "_bkt",
-                        "_cd",
-                        "_indextime",
-                        "_raw",
-                        "_serial",
-                        "_si",
-                        "_sourcetype",
-                        "_subsecond",
-                        "_time",
-                        "host",
-                        "index",
-                        "linecount",
-                        "source",
-                        "sourcetype",
-                        "splunk_server",
-                    }
+                    JobArgs = new JobArgs()
                 }
             };
 
@@ -899,10 +882,13 @@ namespace Splunk.Client.UnitTesting
                     await Task.Delay(4000);
                     Assert.NotNull(job);
 
-                    var results = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
-                    Assert.Equal<IEnumerable<string>>(search.ExpectedFieldNames, results.FieldNames);
-                    var records = new List<SearchResult>(results.ToEnumerable());
-                    // Assert.Equal(10, records.Count);
+                    var resultStream = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
+                    
+                    var count = resultStream.FieldNames.Intersect(expectedFieldNames).Count();
+                    Assert.Equal(resultStream.FieldNames.Count, count);
+
+                    List<SearchResult> results = null;
+                    Assert.DoesNotThrow(() => results = new List<SearchResult>(resultStream.ToEnumerable()));
                 }
             }
         }

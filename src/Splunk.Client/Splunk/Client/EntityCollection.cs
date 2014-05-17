@@ -16,14 +16,13 @@
 
 
 //// TODO:
-//// [O] Contracts
-//// [O] Documentation
-//// [X] Define and set addtional properties of the EntityCollection (the stuff we get from the atom feed)
-////     See http://docs.splunk.com/Documentation/Splunk/6.0.1/RESTAPI/RESTatom.
 //// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
 ////     method (?) args does NOT belong on the constructor. One difficulty:
 ////     not all collections take arguments. Examples: ConfigurationCollection
 ////     and IndexCollection.
+//// [O] Contracts
+//// [O] Documentation
+
 
 namespace Splunk.Client
 {
@@ -93,7 +92,7 @@ namespace Splunk.Client
         /// </summary>
         public string Author
         {
-            get { return this.data == null ? null : this.data.Author; }
+            get { return this.data.Author; }
         }
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace Splunk.Client
         /// </summary>
         public Version GeneratorVersion
         {
-            get { return this.data == null ? null : this.data.GeneratorVersion; }
+            get { return this.data.GeneratorVersion; }
         }
 
         /// <summary>
@@ -109,7 +108,7 @@ namespace Splunk.Client
         /// </summary>
         public Uri Id
         {
-            get { return this.data == null ? null : this.data.Id; }
+            get { return this.data.Id; }
         }
 
         /// <summary>
@@ -117,7 +116,7 @@ namespace Splunk.Client
         /// </summary>
         public IReadOnlyDictionary<string, Uri> Links
         {
-            get { return this.data == null ? null : this.data.Links; }
+            get { return this.data.Links; }
         }
 
         /// <summary>
@@ -125,7 +124,7 @@ namespace Splunk.Client
         /// </summary>
         public IReadOnlyList<Message> Messages
         {
-            get { return this.data == null ? null : this.data.Messages; }
+            get { return this.data.Messages; }
         }
 
         /// <summary>
@@ -133,15 +132,15 @@ namespace Splunk.Client
         /// </summary>
         public Pagination Pagination
         {
-            get { return this.data == null ? Pagination.Empty : this.data.Pagination; }
+            get { return this.data.Pagination; }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public DateTime Published
+        public string Title
         {
-            get { return this.data == null ? DateTime.MinValue : this.data.Published; }
+            get { return this.data.Title; }
         }
 
         /// <summary>
@@ -149,7 +148,7 @@ namespace Splunk.Client
         /// </summary>
         public DateTime Updated
         {
-            get { return this.data == null ? DateTime.MinValue : this.data.Updated; }
+            get { return this.data.Updated; }
         }
 
         #endregion
@@ -169,10 +168,6 @@ namespace Splunk.Client
         {
             get
             {
-                if (this.data == null)
-                {
-                    throw new InvalidOperationException();
-                }
                 return this.data.Entities[index];
             }
         }
@@ -185,10 +180,6 @@ namespace Splunk.Client
         {
             get
             {
-                if (this.data == null)
-                {
-                    throw new InvalidOperationException();
-                }
                 return this.data.Entities.Count;
             }
         }
@@ -204,8 +195,12 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="entry"></param>
+        /// <param name="context">
+        /// 
+        /// </param>
+        /// <param name="entry">
+        /// 
+        /// </param>
         protected internal override void Initialize(Context context, AtomEntry entry)
         {
             this.data = new DataCache(entry);
@@ -270,8 +265,8 @@ namespace Splunk.Client
 
         #region Privates
 
+        volatile DataCache data = DataCache.Missing;
         readonly IEnumerable<Argument> args;
-        volatile DataCache data;
 
         #endregion
 
@@ -287,9 +282,9 @@ namespace Splunk.Client
                 this.id = entry.Id;
                 this.generatorVersion = null; // TODO: figure out a way to inherit the enclosing feed's generator version or is it in each entry too?
                 this.links = entry.Links;
-                this.messages = null; // TODO: does an entry contain messages?
+                this.messages = new List<Message>(); // TODO: does an entry contain messages?
                 this.pagination = Pagination.Empty;
-                this.published = entry.Published;
+                this.title = entry.Title;
                 this.updated = entry.Updated;
 
                 this.entities = new List<TEntity>();
@@ -302,7 +297,8 @@ namespace Splunk.Client
                 this.generatorVersion = feed.GeneratorVersion;
                 this.links = feed.Links;
                 this.messages = feed.Messages;
-                this.pagination = Pagination.Empty;
+                this.pagination = feed.Pagination;
+                this.title = feed.Title;
                 this.updated = feed.Updated;
 
                 var entities = new List<TEntity>(feed.Entries.Count);
@@ -317,6 +313,26 @@ namespace Splunk.Client
 
                 this.entities = entities;
             }
+
+            DataCache()
+            {
+                this.author = null;
+                this.id = null;
+                this.generatorVersion = null;
+                this.links = new Dictionary<string, Uri>();
+                this.messages = new List<Message>();
+                this.pagination = Pagination.Empty;
+                this.title = null;
+                this.updated = DateTime.MinValue;
+
+                this.entities = new List<TEntity>();
+            }
+
+            #endregion
+
+            #region Fields
+
+            public static readonly DataCache Missing = new DataCache();
 
             #endregion
 
@@ -357,9 +373,9 @@ namespace Splunk.Client
                 get { return this.pagination; }
             }
 
-            public DateTime Published
+            public string Title
             {
-                get { return this.published; }
+                get { return this.title; }
             }
 
             public DateTime Updated
@@ -378,7 +394,7 @@ namespace Splunk.Client
             readonly IReadOnlyDictionary<string, Uri> links;
             readonly IReadOnlyList<Message> messages;
             readonly Pagination pagination;
-            readonly DateTime published;
+            readonly string title;
             readonly DateTime updated;
 
             #endregion

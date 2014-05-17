@@ -14,7 +14,6 @@
  * under the License.
  */
 
-
 //// TODO:
 //// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
 ////     method (?) args does NOT belong on the constructor. One difficulty:
@@ -22,7 +21,6 @@
 ////     and IndexCollection.
 //// [O] Contracts
 //// [O] Documentation
-
 
 namespace Splunk.Client
 {

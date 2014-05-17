@@ -34,7 +34,7 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public sealed class IndexCollectionArgs : Args<IndexCollectionArgs>
+    public sealed class ServerMessageCollectionArgs : Args<ServerMessageCollectionArgs>
     {
         #region Properties
 
@@ -68,7 +68,7 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Search expression to filter <see cref="Index"/> entries. 
+        /// Search expression to filter <see cref="ServerMessage"/> entries.
         /// </summary>
         /// <remarks>
         /// Use this expression to filter the entries returned based on 
@@ -92,11 +92,11 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// <see cref="Index"/> property to use for sorting.
+        /// <see cref="ServerMessage"/> property to use for sorting.
         /// </summary>
         /// <remarks>
-        /// The default <see cref="Index"/> property to use for sorting is 
-        /// <c>"name"</c>.
+        /// The default <see cref="ServerMessage"/> property to use for sorting 
+        /// is <c>"name"</c>.
         /// </remarks>
         [DataMember(Name = "sort_key", EmitDefaultValue = false)]
         [DefaultValue("name")]
@@ -105,7 +105,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-        /// cref="Index"/> entries.
+        /// cref="ServerMessage"/> entries.
         /// </summary>
         /// <remarks>
         /// The default value is <see cref="SortMode"/>.Automatic.
@@ -113,18 +113,6 @@ namespace Splunk.Client
         [DataMember(Name = "sort_mode", EmitDefaultValue = false)]
         [DefaultValue(SortMode.Automatic)]
         public SortMode SortMode
-        { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to leave out certain index 
-        /// details in order to provide a faster response.
-        /// </summary>
-        /// <remarks>
-        /// The default value is <c>false</c>.
-        /// </remarks>
-        [DataMember(Name = "summarize", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool Summarize
         { get; set; }
 
         #endregion

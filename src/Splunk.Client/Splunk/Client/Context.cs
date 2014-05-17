@@ -221,6 +221,7 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resource">
         /// </param>
@@ -239,6 +240,7 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resource">
         /// </param>
@@ -257,7 +259,7 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="ns">
-        /// 
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resourceName">
         /// 
@@ -281,7 +283,9 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="ns"></param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
         /// <param name="resource"></param>
         /// <param name="argumentSets"></param>
         /// <returns></returns>
@@ -298,7 +302,7 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="ns">
-        /// 
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resource">
         /// 

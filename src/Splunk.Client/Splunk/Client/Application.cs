@@ -34,13 +34,13 @@ namespace Splunk.Client
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/OsgrYx">Apps and add-ons: an introduction</a>
+    ///   <a href="http://goo.gl/OsgrYx">Apps and add-ons: an introduction</a>.
     /// </description></item>
     /// <item><description>
-    ///   <a href="http://goo.gl/1txQUG">Package your app or add-on</a>
+    ///   <a href="http://goo.gl/1txQUG">Package your app or add-on</a>.
     /// </description></item>
     /// <item><description>
-    ///   <a href="http://goo.gl/a7HqRp">REST API Reference: Applications</a>
+    ///   <a href="http://goo.gl/a7HqRp">REST API Reference: Applications</a>.
     /// </description></item>
     /// </list>
     /// </remarks>
@@ -55,7 +55,7 @@ namespace Splunk.Client
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="ns">
-        /// 
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
         /// The name of the <see cref="Application"/>.

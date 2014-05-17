@@ -15,6 +15,8 @@
  */
 
 //// TODO:
+//// [ ] Reload method as per <a href="http://goo.gl/TDthxd">Accessing Splunk
+////     resource</a>, Other actions for Splunk REST API endpoints.
 //// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
 ////     method (?) args does NOT belong on the constructor. One difficulty:
 ////     not all collections take arguments. Examples: ConfigurationCollection
@@ -182,10 +184,7 @@ namespace Splunk.Client
         /// </returns>
         public TEntity this[int index]
         {
-            get
-            {
-                return this.data.Entities[index];
-            }
+            get { return this.data.Entities[index]; }
         }
 
         /// <summary>
@@ -194,10 +193,7 @@ namespace Splunk.Client
         /// </summary>
         public int Count
         {
-            get
-            {
-                return this.data.Entities.Count;
-            }
+            get { return this.data.Entities.Count; }
         }
 
         #endregion
@@ -209,14 +205,22 @@ namespace Splunk.Client
         #region Request-related methods
 
         /// <summary>
-        /// 
+        /// Infrastructure. Initializes the current <see cref="EntityCollection
+        /// &lt;TCollection, TEntity&gt;"/>.
         /// </summary>
         /// <param name="context">
-        /// 
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="entry">
-        /// 
+        /// An atom entry containing metadata, plus the content for the current
+        /// <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </param>
+        /// <remarks>
+        /// Override this method to provide special initialization code. Call
+        /// the base implementation before initialization is complete. This
+        /// method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         protected internal override void Initialize(Context context, AtomEntry entry)
         {
             this.data = new DataCache(entry);
@@ -228,7 +232,9 @@ namespace Splunk.Client
         /// current <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/> 
         /// that contains all changes to it since it was last retrieved.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
         public virtual async Task GetAsync()
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))

@@ -125,15 +125,21 @@ namespace Splunk.Client
         #region Properties backed by AtomEntry
 
         /// <summary>
-        /// 
+        /// Gets the author of the current <see cref="Entity&lt;TEntity&gt;"/>.
         /// </summary>
+        /// <remarks>
+        /// <c>"Splunk"</c> is the author of all <see cref="Entity&lt;TEntity&gt;"/> 
+        /// and <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>
+        /// instances.
+        /// </remarks>
         public string Author
         { 
             get { return this.Snapshot.Author; }
         }
 
         /// <summary>
-        /// 
+        /// Gets the Splunk management URI for accessing the current <see cref=
+        /// "Entity&lt;TEntity&gt;"/>.
         /// </summary>
         public Uri Id
         { 
@@ -157,7 +163,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the date that <see cref="Id"/> was implemented in Splunk.
         /// </summary>
         public DateTime Updated
         { 
@@ -183,8 +189,8 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the current <see cref=
-        /// "Entity&lt;TEntity&gt;"/> that contains all changes to it since it was last 
-        /// retrieved.
+        /// "Entity&lt;TEntity&gt;"/> that contains all changes to it since it
+        /// was last retrieved.
         /// </summary>
         /// <returns></returns>
         public virtual async Task GetAsync()

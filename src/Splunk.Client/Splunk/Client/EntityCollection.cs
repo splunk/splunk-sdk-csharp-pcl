@@ -86,15 +86,22 @@ namespace Splunk.Client
         #region AtomFeed properties
 
         /// <summary>
-        /// 
+        /// Gets the author of the current <see cref="EntityCollection&lt;
+        /// TCollection, TEntity&gt;"/>.
         /// </summary>
+        /// <remarks>
+        /// <c>"Splunk"</c> is the author of all <see cref="Entity&lt;TEntity&gt;"/> 
+        /// and <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>
+        /// instances.
+        /// </remarks>
         public string Author
         {
             get { return this.data.Author; }
         }
 
         /// <summary>
-        /// 
+        /// Gets the version of the Atom Feed generator that produced the
+        /// current <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </summary>
         public Version GeneratorVersion
         {
@@ -102,7 +109,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the Splunk management URI for accessing the current <see cref=
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </summary>
         public Uri Id
         {
@@ -118,15 +126,21 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the list of info, warning, or error messages associated with 
+        /// the operation that produced the current <see cref="EntityCollection
+        /// &lt;TCollection, TEntity&gt;"/>.
         /// </summary>
+        /// <remarks>
+        /// Not all operations produce messages.
+        /// </remarks>
         public IReadOnlyList<Message> Messages
         {
             get { return this.data.Messages; }
         }
 
         /// <summary>
-        /// 
+        /// Gets the pagination attributes for the current <see cref=
+        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </summary>
         public Pagination Pagination
         {
@@ -134,15 +148,19 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the human readable name of the current <see cref="EntityCollection
+        /// &lt;TCollection, TEntity&gt;"/>.
         /// </summary>
+        /// <remarks>
+        /// This value is derived from the last segment of <see cref="Id"/>;
+        /// </remarks>
         public string Title
         {
             get { return this.data.Title; }
         }
 
         /// <summary>
-        /// 
+        /// Gets the date that <see cref="Id"/> was implemented in Splunk.
         /// </summary>
         public DateTime Updated
         {

@@ -58,10 +58,10 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the author of the Atom Feed.
+        /// Gets the author of the current <see cref="AtomFeed"/> response.
         /// </summary>
         /// <remarks>
-        /// <c>"Splunk"</c> is the author of all responses.
+        /// <c>"Splunk"</c> is the author of all <see cref="AtomFeed"/> responses.
         /// </remarks>
         public string Author
         { get; private set; }
@@ -108,9 +108,12 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// Gets the human readable name of the endpoint, typically derived 
-        /// from the last node of the endpoint. 
+        /// Gets the human readable name of the endpoint <see cref="Id"/>.
         /// </summary>
+        /// <remarks>
+        /// This value is typically derived from the last segment of <see cref=
+        /// "Id"/>.
+        /// </remarks>
         public string Title
         { get; private set; }
 

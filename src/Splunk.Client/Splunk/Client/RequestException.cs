@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Text;
 
     /// <summary>
     /// The expception that is thrown when a Splunk service request fails.
@@ -44,7 +45,7 @@ namespace Splunk.Client
         /// of the <see cref="RequestException"/>.
         /// </param>
         internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
-            : base(string.Format("{0}: {1}", (int)message.StatusCode, message.ReasonPhrase))
+            : base(FormatMessageText(message, details))
         {
             this.Details = new List<Message>(details ?? Enumerable.Empty<Message>());
             this.StatusCode = message.StatusCode;
@@ -55,16 +56,46 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the list of Splunk messages detailing the cause of the current
+        /// <see cref="RequestException"/>.
         /// </summary>
+        /// <remarks>
+        /// This list may be empty. Splunk does not provide <c>Details</c> all
+        /// of the time.
+        /// </remarks>
         public IReadOnlyList<Message> Details
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="HttpStatusCode"/> for the current <see cref=
+        /// "RequestException"/>.
         /// </summary>
         public HttpStatusCode StatusCode
         { get; private set; }
+
+        #endregion
+
+        #region Privates/internals
+
+        static string FormatMessageText(HttpResponseMessage message, IEnumerable<Message> details)
+        {
+            StringBuilder builder = new StringBuilder(1024);
+
+            builder.Append((int)message.StatusCode);
+            builder.Append(": ");
+            builder.Append(message.ReasonPhrase);
+
+            if (details != null)
+            {
+                foreach (var detail in details)
+                {
+                    builder.Append("\n  ");
+                    builder.Append(detail);
+                }
+            }
+
+            return builder.ToString();
+        }
 
         #endregion
     }

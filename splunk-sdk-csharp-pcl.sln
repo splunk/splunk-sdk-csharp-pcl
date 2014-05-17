@@ -35,8 +35,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "submit", "examples\submit\s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "list_apps", "examples\list_apps\list_apps.csproj", "{4D090E62-8E8F-45F8-9382-97AFE56578AB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. documentation", "4. documentation", "{90CFCC8E-84FC-4842-B51A-8B26C1140FF0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

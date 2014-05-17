@@ -189,7 +189,7 @@ namespace Splunk.Client.UnitTesting
 
                     var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
 
-                    // other asserts on the contents of the update
+                    //// Other asserts on the contents of the update
 
                     Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
                     Assert.Equal(true, twitterApplication.CheckForUpdates);

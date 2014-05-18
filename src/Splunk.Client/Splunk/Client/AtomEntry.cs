@@ -151,11 +151,7 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            if (!await reader.MoveToDocumentElementAsync("entry"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics : premature end of file
-            }
-
+            reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
             var links = new Dictionary<string, Uri>();
             this.Links = links;
 

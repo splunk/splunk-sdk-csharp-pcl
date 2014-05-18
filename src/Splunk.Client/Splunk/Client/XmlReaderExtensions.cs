@@ -17,13 +17,14 @@
 //// TODO:
 //// [X] Eliminate unused extensions and justify the remainder
 //// [O] Contract checks on all public methods
-//// [ ] Documentation
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -33,47 +34,69 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="reader">
-        /// 
+        /// The source <see cref="XmlReader"/>. 
         /// </param>
         /// <param name="nodeType">
         /// 
         /// </param>
-        /// <param name="name">
+        /// <param name="names">
         /// 
         /// </param>
-        public static void EnsureMarkup(this XmlReader reader, XmlNodeType nodeType, string name)
+        public static void EnsureMarkup(this XmlReader reader, XmlNodeType nodeType, params string[] names)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
 
-            if (reader.NodeType == nodeType && (name == null || name == reader.Name))
+            if (reader.NodeType == nodeType && names.FirstOrDefault(name => reader.Name == name) != null)
             {
                 return;
             }
 
+            var expected = Conjoin("or", names.Select(name => FormatNode(nodeType, name)).ToArray());
+            string message;
+
             switch (reader.ReadState)
             {
                 case ReadState.EndOfFile:
-                    throw new InvalidDataException(string.Format(
-                        "Reached end of file where {0} was expected.", FormatNode(nodeType, name)));
+                    
+                    message = string.Format("Reached end of file where {0} was expected.", expected);
+                    break;
+                
                 case ReadState.Interactive:
-                    throw new InvalidDataException(string.Format(
-                        "Read {0} where {1} was expected.", FormatNode(reader.NodeType, reader.Name), FormatNode(nodeType, name)));
-                default:
-                    throw new InvalidOperationException(); // TODO: Diagnostics
+                
+                    var actual = FormatNode(reader.NodeType, reader.Name);
+                    message = string.Format("Read {1} where {0} was expected.", expected, actual);
+                    break;
+                
+                default: throw new InvalidOperationException(); // TODO: Diagnostics
             }
+
+            throw new InvalidDataException(message);
         }
 
-        public static string GetRequiredAttribute(this XmlReader reader, string attributeName)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader">
+        /// The source <see cref="XmlReader"/>.
+        /// </param>
+        /// <param name="name">
+        /// 
+        /// </param>
+        /// <returns>
+        /// 
+        /// </returns>
+        public static string GetRequiredAttribute(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
-            Contract.Requires<ArgumentNullException>(attributeName != null);
+            Contract.Requires<ArgumentNullException>(name != null);
             Contract.Requires<ArgumentException>(reader.NodeType == XmlNodeType.Element);
 
-            string value = reader[attributeName];
+            string value = reader[name];
 
             if (string.IsNullOrEmpty(value))
             {
-                throw new InvalidDataException(string.Format("Value of <{0}> attribute {1} is missing.", reader.Name, attributeName));
+                var message = string.Format("Value of <{0}> attribute {1} is missing.", reader.Name, name);
+                throw new InvalidDataException(message);
             }
 
             return value;
@@ -83,7 +106,7 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="reader">
-        /// 
+        /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
         /// 
@@ -91,9 +114,10 @@ namespace Splunk.Client
         /// <returns>
         /// 
         /// </returns>
-        public static async Task<bool> MoveToDocumentElementAsync(this XmlReader reader, string name = null)
+        public static async Task<bool> MoveToDocumentElementAsync(this XmlReader reader, params string[] names)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
+            Contract.Requires<ArgumentNullException>(names != null);
 
             if (reader.ReadState == ReadState.Initial)
             {
@@ -142,17 +166,25 @@ namespace Splunk.Client
                 return false;
             }
 
-            reader.EnsureMarkup(XmlNodeType.Element, name);
+            reader.EnsureMarkup(XmlNodeType.Element, names);
             return true;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="name"></param>
-        /// <param name="task"></param>
-        /// <returns></returns>
+        /// <param name="reader">
+        /// The source <see cref="XmlReader"/>.
+        /// </param>
+        /// <param name="name">
+        /// 
+        /// </param>
+        /// <param name="task">
+        /// 
+        /// </param>
+        /// <returns>
+        /// 
+        /// </returns>
         public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<Task> task)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
@@ -174,7 +206,9 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <typeparam name="TValue"></typeparam>
-        /// <param name="reader"></param>
+        /// <param name="reader">
+        /// The source <see cref="XmlReader"/>.
+        /// </param>
         /// <param name="valueConverter"></param>
         /// <returns></returns>
         public static async Task<TValue> ReadElementContentAsync<TValue>(this XmlReader reader, ValueConverter<TValue> valueConverter)
@@ -263,7 +297,7 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="reader">
-        /// 
+        /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
         /// 
@@ -273,14 +307,13 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<string> ReadResponseElementAsync(this XmlReader reader, string name)
         {
-            if (!await reader.MoveToDocumentElementAsync("response"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics : premature end of file
-            }
+            Contract.Requires<ArgumentNullException>(reader != null);
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
 
+            reader.Requires(await reader.MoveToDocumentElementAsync("response"));
             await reader.ReadElementSequenceAsync(name);
-
             var text = await reader.ReadElementContentAsStringAsync();
+
             return text;
         }
 
@@ -288,7 +321,7 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="reader">
-        /// 
+        /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
         /// 
@@ -330,9 +363,15 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="reader">
+        /// The source <see cref="XmlReader"/>.
+        /// </param>
+        /// <param name="name">
+        /// 
+        /// </param>
+        /// <returns>
+        /// 
+        /// </returns>
         public static async Task<bool> ReadToFollowingAsync(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
@@ -381,6 +420,7 @@ namespace Splunk.Client
                 {
                     break;
                 }
+
                 nodeType = reader.NodeType;
 
                 if ((nodeType == XmlNodeType.Element) && reader.Name == name)
@@ -393,27 +433,60 @@ namespace Splunk.Client
             return false;
         }
 
-        static async Task<bool> SkipSubtreeAsync(this XmlReader reader)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader">
+        /// The source <see cref="XmlReader"/>.
+        /// </param>
+        /// <param name="condition">
+        /// 
+        /// </param>
+        public static void Requires(this XmlReader reader, bool condition)
         {
-            reader.MoveToElement(); // the element we're moving to is guaranteed to be accessible so no need for async
-
-            if ((reader.NodeType == XmlNodeType.Element) && !reader.IsEmptyElement)
+            if (condition)
             {
-                int depth = reader.Depth;
-            
-                while (await reader.ReadAsync() && (depth < reader.Depth))
-                { }
-                
-                if (reader.NodeType != XmlNodeType.EndElement)
-                {
-                    return false;
-                }
+                return;
             }
 
-            return await reader.ReadAsync();
+            string message;
+
+            switch (reader.ReadState)
+            {
+                case ReadState.EndOfFile:
+                    message = "Premature end of file";
+                    break;
+                case ReadState.Interactive:
+                    message = string.Format("Unexpected {0}", FormatNode(reader.NodeType, reader.Name));
+                    break;
+                default: throw new InvalidOperationException(); // TODO: Diagnostics
+            }
+
+            throw new InvalidDataException(message);
         }
 
         #region Privates/internals
+
+        static string Conjoin(string conjunction, params string[] names)
+        {
+            if (names.Length <= 0)
+            {
+                return "";
+            }
+
+            if (names.Length == 1)
+            {
+                return names[0];
+            }
+
+            if (names.Length == 2)
+            {
+                return string.Join(" ", names[0], conjunction, names[1]);
+            }
+
+            int n = names.Length - 1;
+            return string.Join(", ", names.Take(n).Concat(new string[] { conjunction, names[n] }));
+        }
 
         static string FormatNode(XmlNodeType nodeType, string name)
         {
@@ -437,6 +510,26 @@ namespace Splunk.Client
                 
                 default: throw new ArgumentException(string.Format("Unsupported XmlNodeType: {0}", nodeType));
             }
+        }
+
+        static async Task<bool> SkipSubtreeAsync(this XmlReader reader)
+        {
+            reader.MoveToElement(); // the element we're moving to is guaranteed to be accessible so no need for async
+
+            if ((reader.NodeType == XmlNodeType.Element) && !reader.IsEmptyElement)
+            {
+                int depth = reader.Depth;
+
+                while (await reader.ReadAsync() && (depth < reader.Depth))
+                { }
+
+                if (reader.NodeType != XmlNodeType.EndElement)
+                {
+                    return false;
+                }
+            }
+
+            return await reader.ReadAsync();
         }
 
         #endregion

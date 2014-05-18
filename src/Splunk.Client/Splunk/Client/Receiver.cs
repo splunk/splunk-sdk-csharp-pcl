@@ -113,11 +113,7 @@ namespace Splunk.Client
                     await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                     var reader = response.XmlReader;
 
-                    if (!await reader.MoveToDocumentElementAsync("response"))
-                    {
-                        throw new InvalidDataException(); // TODO: Diagnostics : premature end of file
-                    }
-
+                    reader.Requires(await reader.MoveToDocumentElementAsync("response"));
                     await reader.ReadElementSequenceAsync("results", "result");
 
                     var result = new SearchResult();

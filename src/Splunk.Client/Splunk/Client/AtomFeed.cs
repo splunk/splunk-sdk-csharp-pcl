@@ -140,34 +140,14 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-            else
-            {
-                reader.MoveToElement();
-            }
-
-            if (!(reader.NodeType == XmlNodeType.Element && (reader.Name == "feed" || reader.Name == "entry")))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
-            }
-
-            string rootElementName = reader.Name;
-
+            reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));
+            var documentElementName = reader.Name;
             var entries = new List<AtomEntry>();
-            this.Entries = entries;
-
             var links = new Dictionary<string, Uri>();
-            this.Links = links;
-
             var messages = new List<Message>();
+
+            this.Entries = entries;
+            this.Links = links;
             this.Messages = messages;
 
             await reader.ReadAsync();
@@ -275,7 +255,7 @@ namespace Splunk.Client
                 }
             }
 
-            reader.EnsureMarkup(XmlNodeType.EndElement, rootElementName);
+            reader.EnsureMarkup(XmlNodeType.EndElement, documentElementName);
             await reader.ReadAsync();
         }
 

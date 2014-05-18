@@ -785,12 +785,15 @@ namespace Splunk.Client
         /// <param name="response">
         /// 
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="Task"/>
+        /// </returns>
         protected override async Task UpdateSnapshotAsync(Response response)
         {
+            Contract.Requires<ArgumentNullException>(response != null);
             var reader = response.XmlReader;
 
-            await reader.MoveToDocumentElementAsync();
+            reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));
             AtomEntry entry;
 
             if (reader.Name == "feed")

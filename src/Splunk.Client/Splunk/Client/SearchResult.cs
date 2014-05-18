@@ -63,7 +63,7 @@ namespace Splunk.Client
 
             if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
             {
-                throw new InvalidDataException(); // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
             }
 
             await reader.ReadEachDescendantAsync("field", async () =>
@@ -72,7 +72,7 @@ namespace Splunk.Client
 
                 if (key == null)
                 {
-                    throw new XmlException("'field' attribute 'k' not found");
+                    throw new InvalidDataException("'field' attribute 'k' not found"); // TODO: Diagnostics : missing attribute value
                 }
 
                 var fieldDepth = reader.Depth;
@@ -86,6 +86,8 @@ namespace Splunk.Client
                     }
 
                     Debug.Assert(reader.Depth > fieldDepth, "This loop should have exited earlier.");
+
+                    // TODO: Replace calls to IsStartElement because it is blocking
 
                     if (reader.IsStartElement("value"))
                     {

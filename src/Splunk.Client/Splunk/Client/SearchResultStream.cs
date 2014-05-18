@@ -179,7 +179,7 @@ namespace Splunk.Client
 
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "results"))
                 {
-                    throw new InvalidDataException(); // TODO: Diagnostics
+                    throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
                 }
 
                 await reader.ReadAsync();
@@ -270,7 +270,7 @@ namespace Splunk.Client
 
                     if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "messages"))
                     {
-                        throw new InvalidDataException(string.Format("Expected </messages>, not {0}", reader.ToString()));
+                        throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
                     }
 
                     await reader.ReadAsync();

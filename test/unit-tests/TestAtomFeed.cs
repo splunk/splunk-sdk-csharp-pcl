@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Client
+namespace Splunk.Client.UnitTests
 {
     using System;
     using System.Collections.Generic;
@@ -26,9 +26,9 @@ namespace Splunk.Client
 
     public class TestAtomFeed
     {
-        [Trait("class", "AtomFeed")]
+        [Trait("unit-test", "AtomFeed: operation: read")]
         [Fact]
-        public async Task CanReadFeed()
+        public async Task CanReadAtomFeed()
         {
             using (var stream = new FileStream(AtomFeedPath, FileMode.Open, FileAccess.Read))
             {
@@ -39,9 +39,9 @@ namespace Splunk.Client
             }
         }
 
-        [Trait("class", "AtomFeed")]
+        [Trait("unit-test", "AtomEntry: operation: read")]
         [Fact]
-        public async Task CanReadEntry()
+        public async Task CanReadAtomEntry()
         {
             var expected = "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=2/17/2014 5:46:39 PM, Updated=2/17/2014 5:46:39 PM)";
             var stream = new FileStream(AtomFeedPath, FileMode.Open, FileAccess.Read);

@@ -790,43 +790,17 @@ namespace Splunk.Client
         {
             var reader = response.XmlReader;
 
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-            else
-            {
-                reader.MoveToElement();
-            }
-
-            if (reader.NodeType != XmlNodeType.Element)
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
+            await reader.MoveToDocumentElementAsync();
             AtomEntry entry;
 
             if (reader.Name == "feed")
             {
                 AtomFeed feed = new AtomFeed();
-
                 await feed.ReadXmlAsync(reader);
-                int count = feed.Entries.Count;
-
-                foreach (var feedEntry in feed.Entries)
-                {
-                    string id = feedEntry.Title;
-                    id.Trim();
-                }
 
                 if (feed.Entries.Count != 1)
                 {
-                    throw new InvalidDataException(); // TODO: Diagnostics
+                    throw new InvalidDataException(); // TODO: Diagnostics : cardinality violation
                 }
 
                 entry = feed.Entries[0];

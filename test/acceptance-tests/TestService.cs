@@ -872,8 +872,6 @@ namespace Splunk.Client.UnitTesting
                 }
             };
 
-            TestHelper.GetInstance();
-
             using (var service = await TestHelper.Connect())
             {
                 foreach (var search in searches)

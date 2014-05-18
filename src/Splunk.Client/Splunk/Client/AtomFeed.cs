@@ -156,7 +156,7 @@ namespace Splunk.Client
 
             if (!(reader.NodeType == XmlNodeType.Element && (reader.Name == "feed" || reader.Name == "entry")))
             {
-                throw new InvalidDataException(); // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
             }
 
             string rootElementName = reader.Name;
@@ -194,14 +194,14 @@ namespace Splunk.Client
 
                         if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "name"))
                         {
-                            throw new InvalidDataException(); // TODO: Diagnostics
+                            throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
                         }
 
                         this.Author = await reader.ReadElementContentAsync(StringConverter.Instance);
 
                         if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "author"))
                         {
-                            throw new InvalidDataException(); // TODO: Diagnostics
+                            throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
                         }
 
                         await reader.ReadAsync();
@@ -211,16 +211,16 @@ namespace Splunk.Client
 
                         string build = reader.GetAttribute("build");
 
-                        if (build == null)
+                        if (string.IsNullOrEmpty(build))
                         {
-                            throw new InvalidDataException(); // TODO: Diagnostics
+                            throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
                         }
 
                         string version = reader.GetAttribute("version");
 
-                        if (version == null)
+                        if (string.IsNullOrEmpty(version))
                         {
-                            throw new InvalidDataException(); // TODO: Diagnostics
+                            throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
                         }
 
                         this.GeneratorVersion = VersionConverter.Instance.Convert(string.Join(".", version, build));
@@ -246,14 +246,14 @@ namespace Splunk.Client
 
                         if (string.IsNullOrWhiteSpace(href))
                         {
-                            throw new InvalidDataException();  // TODO: Diagnostics
+                            throw new InvalidDataException();  // TODO: Diagnostics : missing attribute value
                         }
 
                         string rel = reader.GetAttribute("rel");
 
                         if (string.IsNullOrWhiteSpace(rel))
                         {
-                            throw new InvalidDataException();  // TODO: Diagnostics
+                            throw new InvalidDataException();  // TODO: Diagnostics : missing attribute value
                         }
 
                         links[rel] = UriConverter.Instance.Convert(href);
@@ -276,7 +276,7 @@ namespace Splunk.Client
 
                             if (value == null)
                             {
-                                throw new InvalidDataException(); // TODO: Diagnostics
+                                throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
                             }
 
                             MessageType type = EnumConverter<MessageType>.Instance.Convert(value);
@@ -289,7 +289,7 @@ namespace Splunk.Client
                         {
                             if (reader.Name != "s:messages")
                             {
-                                throw new InvalidDataException(); // TODO: Diagnostics
+                                throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
                             }
                             await reader.ReadAsync();
                         }
@@ -314,13 +314,13 @@ namespace Splunk.Client
                         this.Pagination = new Pagination(this.Pagination.ItemsPerPage, this.Pagination.StartIndex, totalResults);
                         break;
 
-                    default: throw new InvalidDataException(string.Format("Found invalid data while decoding: {0}", reader));
+                    default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
                 }
             }
 
             if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == rootElementName))
             {
-                throw new InvalidDataException(); // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
             }
 
             await reader.ReadAsync();

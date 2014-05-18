@@ -287,7 +287,7 @@ namespace Splunk.Client
 
             if (feed.Entries.Count != 1)
             {
-                throw new InvalidDataException(); // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics : cardinality violation
             }
 
             this.Snapshot = new EntitySnapshot(feed.Entries[0]);

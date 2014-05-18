@@ -263,7 +263,7 @@ namespace Splunk.Client
 
                 if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "messages"))
                 {
-                    throw new InvalidDataException();  // TODO: Diagnostics
+                    throw new InvalidDataException();  // TODO: Diagnostics : unexpected start tag
                 }
 
                 await reader.ReadAsync();
@@ -272,14 +272,14 @@ namespace Splunk.Client
                 {
                     if (reader.Name != "msg")
                     {
-                        throw new InvalidDataException(); // TODO: Diagnostics
+                        throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
                     }
 
                     var name = reader["type"];
 
-                    if (name == null)
+                    if (string.IsNullOrEmpty(name))
                     {
-                        throw new InvalidDataException(); // TODO: Diagnostics
+                        throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
                     }
 
                     MessageType type = EnumConverter<MessageType>.Instance.Convert(name);

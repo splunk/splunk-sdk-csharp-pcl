@@ -32,11 +32,69 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static async Task<bool> MoveToDocumentElementAsync(this XmlReader reader, string name)
+        /// <param name="reader">
+        /// 
+        /// </param>
+        /// <param name="nodeType">
+        /// 
+        /// </param>
+        /// <param name="name">
+        /// 
+        /// </param>
+        public static void EnsureMarkup(this XmlReader reader, XmlNodeType nodeType, string name)
         {
+            Contract.Requires<ArgumentNullException>(reader != null);
+
+            if (reader.NodeType == nodeType && (name == null || name == reader.Name))
+            {
+                return;
+            }
+
+            switch (reader.ReadState)
+            {
+                case ReadState.EndOfFile:
+                    throw new InvalidDataException(string.Format(
+                        "Reached end of file where {0} was expected.", FormatNode(nodeType, name)));
+                case ReadState.Interactive:
+                    throw new InvalidDataException(string.Format(
+                        "Read {0} where {1} was expected.", FormatNode(reader.NodeType, reader.Name), FormatNode(nodeType, name)));
+                default:
+                    throw new InvalidOperationException(); // TODO: Diagnostics
+            }
+        }
+
+        public static string GetRequiredAttributeValue(this XmlReader reader, string attributeName)
+        {
+            Contract.Requires<ArgumentNullException>(reader != null);
+            Contract.Requires<ArgumentNullException>(attributeName != null);
+            Contract.Requires<ArgumentException>(reader.NodeType == XmlNodeType.Element);
+
+            string value = reader[attributeName];
+
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new InvalidDataException(string.Format("Value of <{0}> attribute {1} is missing.", reader.Name, attributeName));
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader">
+        /// 
+        /// </param>
+        /// <param name="name">
+        /// 
+        /// </param>
+        /// <returns>
+        /// 
+        /// </returns>
+        public static async Task<bool> MoveToDocumentElementAsync(this XmlReader reader, string name = null)
+        {
+            Contract.Requires<ArgumentNullException>(reader != null);
+
             if (reader.ReadState == ReadState.Initial)
             {
                 await reader.ReadAsync();
@@ -84,13 +142,7 @@ namespace Splunk.Client
                 return false;
             }
 
-            //// Read search results
-
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
-            {
-                throw new InvalidDataException(string.Format("Expected <{0}> element, not {1} {2}", name, reader.NodeType, reader.Name));
-            }
-
+            reader.EnsureMarkup(XmlNodeType.Element, name);
             return true;
         }
 
@@ -168,7 +220,7 @@ namespace Splunk.Client
 
                 if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
                 {
-                    throw new InvalidDataException(string.Format("Expected <{0}>, not {1} {2}", name, reader.NodeType, reader.Name));
+                    throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
                 }
             }
         }
@@ -208,7 +260,7 @@ namespace Splunk.Client
             {
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
                 {
-                    throw new InvalidDataException(string.Format("Expected </{0}>, not {1} {2}", name, reader.NodeType, reader.Name));
+                    throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
                 }
 
                 await reader.ReadAsync();
@@ -231,7 +283,7 @@ namespace Splunk.Client
         {
             if (!await reader.MoveToDocumentElementAsync("response"))
             {
-                throw new InvalidDataException(); // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics : premature end of file
             }
 
             await reader.ReadElementSequenceAsync(name);
@@ -368,5 +420,33 @@ namespace Splunk.Client
 
             return await reader.ReadAsync();
         }
+
+        #region Privates/internals
+
+        static string FormatNode(XmlNodeType nodeType, string name)
+        {
+            switch (nodeType)
+            {
+                case XmlNodeType.CDATA:
+
+                    return "CDATA section";
+
+                case XmlNodeType.Text:
+
+                    return "charater data";
+
+                case XmlNodeType.Element:
+
+                    return string.IsNullOrEmpty(name) ? "start-tag" : string.Concat("<", name, ">");
+                
+                case XmlNodeType.EndElement:
+                    
+                    return string.IsNullOrEmpty(name) ? "end-tag" : string.Concat("</", name, ">");
+                
+                default: throw new ArgumentException(string.Format("Unsupported XmlNodeType: {0}", nodeType));
+            }
+        }
+
+        #endregion
     }
 }

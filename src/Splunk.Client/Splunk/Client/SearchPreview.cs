@@ -102,9 +102,9 @@ namespace Splunk.Client
 
             string preview = reader["preview"];
 
-            if (preview == null)
+            if (string.IsNullOrEmpty(preview))
             {
-                throw new InvalidDataException(string.Format("Expected preview attribute on <results>"));
+                throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
             }
 
             this.IsFinal = !BooleanConverter.Instance.Convert(preview);
@@ -131,7 +131,7 @@ namespace Splunk.Client
 
                 if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "messages"))
                 {
-                    throw new InvalidDataException(string.Format("Expected </messages>, not {0}", reader.ToString()));
+                    throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
                 }
 
                 await reader.ReadAsync();

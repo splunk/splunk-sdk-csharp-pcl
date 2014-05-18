@@ -115,7 +115,7 @@ namespace Splunk.Client
 
                     if (!await reader.MoveToDocumentElementAsync("response"))
                     {
-                        throw new InvalidDataException(); // TODO: Diagnostics
+                        throw new InvalidDataException(); // TODO: Diagnostics : premature end of file
                     }
 
                     await reader.ReadElementSequenceAsync("results", "result");

@@ -175,12 +175,13 @@ namespace Splunk.Client
             using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
                 var feed = new AtomFeed();
                 await feed.ReadXmlAsync(response.XmlReader);
 
                 if (feed.Entries.Count != 1)
                 {
-                    throw new InvalidDataException(); // TODO: Diagnostics
+                    throw new InvalidDataException(); // TODO: Diagnostics : cardinality violation
                 }
 
                 var entry = feed.Entries[0];

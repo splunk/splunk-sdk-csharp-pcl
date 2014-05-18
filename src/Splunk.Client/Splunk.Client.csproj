@@ -83,6 +83,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Splunk\Client\*" />
     <None Include="packages.config" />
+    <Compile Include="PUrify\IPurify.cs" />
+    <Compile Include="PUrify\PurifierDotNet.cs" />
+    <Compile Include="PUrify\PurifierMono.cs" />
+    <Compile Include="PUrify\Purify.cs" />
+    <Compile Include="PUrify\UriInfo.cs" />
+    <Compile Include="Splunk\Client\Contract.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -104,4 +110,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="PUrify\" />
+  </ItemGroup>
 </Project>

@@ -43,6 +43,7 @@ namespace Splunk.Client
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml;
+    using PUrify;
 
     /// <summary>
     /// Provides an object representation of an individual entry in a Splunk 
@@ -174,7 +175,8 @@ namespace Splunk.Client
 
                     case "id":
 
-                        this.Id = await reader.ReadElementContentAsync(UriConverter.Instance);
+                        this.Id = await reader.ReadElementContentAsync (UriConverter.Instance);
+                        this.Id.Purify ();
                         break;
 
                     case "author":

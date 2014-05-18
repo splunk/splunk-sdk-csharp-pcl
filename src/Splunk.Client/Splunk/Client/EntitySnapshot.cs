@@ -19,6 +19,7 @@
 //// [O] Documentation
 //// [ ] Construct from AtomFeed and update AtomEntry constructor to include
 ////     properties from AtomFeed that aren't in AtomEntry.
+using PUrify;
 
 namespace Splunk.Client
 {

@@ -63,7 +63,7 @@ namespace Splunk.Client
             }
         }
 
-        public static string GetRequiredAttributeValue(this XmlReader reader, string attributeName)
+        public static string GetRequiredAttribute(this XmlReader reader, string attributeName)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
             Contract.Requires<ArgumentNullException>(attributeName != null);
@@ -217,11 +217,7 @@ namespace Splunk.Client
             foreach (var name in names)
             {
                 await reader.ReadAsync();
-
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
-                }
+                reader.EnsureMarkup(XmlNodeType.Element, name);
             }
         }
 
@@ -258,11 +254,7 @@ namespace Splunk.Client
 
             foreach (var name in names)
             {
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
-                }
-
+                reader.EnsureMarkup(XmlNodeType.EndElement, name);
                 await reader.ReadAsync();
             }
         }

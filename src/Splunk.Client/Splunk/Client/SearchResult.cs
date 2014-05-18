@@ -59,22 +59,13 @@ namespace Splunk.Client
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
-            reader.MoveToElement();
 
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
-            }
+            reader.MoveToElement();
+            reader.EnsureMarkup(XmlNodeType.Element, "result");
 
             await reader.ReadEachDescendantAsync("field", async () =>
             {
-                var key = reader["k"];
-
-                if (key == null)
-                {
-                    throw new InvalidDataException("'field' attribute 'k' not found"); // TODO: Diagnostics : missing attribute value
-                }
-
+                var key = reader.GetRequiredAttribute("k");
                 var fieldDepth = reader.Depth;
                 var values = new List<string>();
 

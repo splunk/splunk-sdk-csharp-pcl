@@ -260,32 +260,19 @@ namespace Splunk.Client
             if (await reader.MoveToDocumentElementAsync("response"))
             {
                 await reader.ReadAsync();
-
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "messages"))
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics : unexpected start tag
-                }
-
+                reader.EnsureMarkup(XmlNodeType.Element, "messages");
                 await reader.ReadAsync();
 
-                while (reader.NodeType == XmlNodeType.Element)
+                while (reader.NodeType == XmlNodeType.Element && reader.Name == "msg")
                 {
-                    if (reader.Name != "msg")
-                    {
-                        throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
-                    }
-
-                    var name = reader["type"];
-
-                    if (string.IsNullOrEmpty(name))
-                    {
-                        throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
-                    }
-
-                    MessageType type = EnumConverter<MessageType>.Instance.Convert(name);
-                    string text = await reader.ReadElementContentAsStringAsync();
+                    var name = reader.GetRequiredAttribute("type");
+                    var type = EnumConverter<MessageType>.Instance.Convert(name);
+                    var text = await reader.ReadElementContentAsStringAsync();
+                    
                     messages.Add(new Message(type, text));
                 }
+
+                reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
             }
 
             return messages;

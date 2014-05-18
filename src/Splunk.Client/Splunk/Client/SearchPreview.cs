@@ -100,15 +100,8 @@ namespace Splunk.Client
                 return; // an empty final result
             }
 
-            string preview = reader["preview"];
-
-            if (string.IsNullOrEmpty(preview))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
-            }
-
+            string preview = reader.GetRequiredAttribute("preview");
             this.IsFinal = !BooleanConverter.Instance.Convert(preview);
-
             await reader.ReadElementSequenceAsync("meta", "fieldOrder");
 
             await reader.ReadEachDescendantAsync("field", async () =>
@@ -129,11 +122,7 @@ namespace Splunk.Client
                     return Task.FromResult(true);
                 });
 
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "messages"))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
-                }
-
+                reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
                 await reader.ReadAsync();
             }
 

@@ -198,20 +198,8 @@ namespace Splunk.Client
 
                     case "link":
 
-                        string href = reader.GetAttribute("href");
-
-                        if (string.IsNullOrWhiteSpace(href))
-                        {
-                            throw new InvalidDataException();  // TODO: Diagnostics : missing attribute value
-                        }
-
-                        string rel = reader.GetAttribute("rel");
-
-                        if (string.IsNullOrWhiteSpace(rel))
-                        {
-                            throw new InvalidDataException();  // TODO: Diagnostics : missing attribute value
-                        }
-
+                        var href = reader.GetRequiredAttribute("href");
+                        var rel = reader.GetRequiredAttribute("rel");
                         links[rel] = UriConverter.Instance.Convert(href);
                         await reader.ReadAsync();
                         break;
@@ -387,10 +375,7 @@ namespace Splunk.Client
                     dictionary.Add(propertyName, propertyValue);
                 }
 
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:dict"))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
-                }
+                reader.EnsureMarkup(XmlNodeType.EndElement, "s:dict");
             }
 
             await reader.ReadAsync();
@@ -409,11 +394,8 @@ namespace Splunk.Client
                 {
                     value.Add(await ParsePropertyValueAsync(reader, level + 1));
                 }
-
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:list"))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics: unexpected end tag
-                }
+                
+                reader.EnsureMarkup(XmlNodeType.EndElement, "s:list");
             }
 
             await reader.ReadAsync();

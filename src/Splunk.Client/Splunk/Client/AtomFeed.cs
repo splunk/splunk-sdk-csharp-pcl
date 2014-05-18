@@ -191,38 +191,16 @@ namespace Splunk.Client
                     case "author":
 
                         await reader.ReadAsync();
-
-                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "name"))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
-                        }
-
+                        reader.EnsureMarkup(XmlNodeType.Element, "name");
                         this.Author = await reader.ReadElementContentAsync(StringConverter.Instance);
-
-                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "author"))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
-                        }
-
+                        reader.EnsureMarkup(XmlNodeType.EndElement, "author");
                         await reader.ReadAsync();
                         break;
 
                     case "generator":
 
-                        string build = reader.GetAttribute("build");
-
-                        if (string.IsNullOrEmpty(build))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
-                        }
-
-                        string version = reader.GetAttribute("version");
-
-                        if (string.IsNullOrEmpty(version))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
-                        }
-
+                        string build = reader.GetRequiredAttribute("build");
+                        string version = reader.GetRequiredAttribute("version");
                         this.GeneratorVersion = VersionConverter.Instance.Convert(string.Join(".", version, build));
                         await reader.ReadAsync();
                         break;
@@ -242,20 +220,8 @@ namespace Splunk.Client
 
                     case "link":
 
-                        string href = reader.GetAttribute("href");
-
-                        if (string.IsNullOrWhiteSpace(href))
-                        {
-                            throw new InvalidDataException();  // TODO: Diagnostics : missing attribute value
-                        }
-
-                        string rel = reader.GetAttribute("rel");
-
-                        if (string.IsNullOrWhiteSpace(rel))
-                        {
-                            throw new InvalidDataException();  // TODO: Diagnostics : missing attribute value
-                        }
-
+                        var href = reader.GetRequiredAttribute("href");
+                        var rel = reader.GetRequiredAttribute("rel");
                         links[rel] = UriConverter.Instance.Convert(href);
                         await reader.ReadAsync();
                         break;
@@ -272,25 +238,16 @@ namespace Splunk.Client
 
                         while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:msg")
                         {
-                            string value = reader.GetAttribute("type");
-
-                            if (value == null)
-                            {
-                                throw new InvalidDataException(); // TODO: Diagnostics : missing attribute value
-                            }
-
-                            MessageType type = EnumConverter<MessageType>.Instance.Convert(value);
-                            string text = await reader.ReadElementContentAsStringAsync();
-
+                            var value = reader.GetRequiredAttribute("type");
+                            var type = EnumConverter<MessageType>.Instance.Convert(value);
+                            var text = await reader.ReadElementContentAsStringAsync();
+                            
                             messages.Add(new Message(type, text));
                         }
 
                         if (reader.NodeType == XmlNodeType.EndElement)
                         {
-                            if (reader.Name != "s:messages")
-                            {
-                                throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
-                            }
+                            reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
                             await reader.ReadAsync();
                         }
 
@@ -318,11 +275,7 @@ namespace Splunk.Client
                 }
             }
 
-            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == rootElementName))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics : unexpected end tag
-            }
-
+            reader.EnsureMarkup(XmlNodeType.EndElement, rootElementName);
             await reader.ReadAsync();
         }
 

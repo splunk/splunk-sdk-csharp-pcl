@@ -135,10 +135,8 @@ namespace Splunk.Client.UnitTesting
             {
                 using (var service = await TestHelper.CreateService(ns))
                 {
-
-                    Assert.NotNull(service.SessionKey);
-
                     var collection = await service.GetApplicationsAsync();
+                    await collection.ReloadAsync();
 
                     foreach (var application in collection)
                     {
@@ -869,7 +867,7 @@ namespace Splunk.Client.UnitTesting
                     {
                         resultStream = await job.GetSearchResultsAsync();
                     }
-                    
+
                     var count = resultStream.FieldNames.Intersect(expectedFieldNames).Count();
                     Assert.Equal(resultStream.FieldNames.Count, count);
                     List<SearchResult> results = null;
@@ -933,10 +931,10 @@ namespace Splunk.Client.UnitTesting
 
                 manualResetEvent.Reset();
                 manualResetEvent.WaitOne();
-                
+
                 Assert.Null(exception);
                 Assert.Equal(100, results.Count);
-                
+
                 await service.LogoffAsync();
             }
         }

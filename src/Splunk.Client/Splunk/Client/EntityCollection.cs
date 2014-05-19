@@ -247,6 +247,23 @@ namespace Splunk.Client
             }
         }
 
+        /// <summary>
+        /// Asynchronously forces the Splunk server to reload data for the current
+        /// <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing this operation.
+        /// </returns>
+        public async Task ReloadAsync()
+        {
+            var reload = new ResourceName(this.ResourceName, "_reload");
+
+            using (Response response = await this.Context.GetAsync(this.Namespace, reload))
+            {
+                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
+            }
+        }
+
         #endregion
 
         #region IReadOnlyList<TEntity> methods

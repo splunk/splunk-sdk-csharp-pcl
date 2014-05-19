@@ -184,6 +184,17 @@ namespace Splunk.Client
             return null;
         }
 
+        /// <summary>
+        /// Gets a string representation of the current instance.
+        /// </summary>
+        /// <returns>
+        /// A string instance representing the current instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format("IsFinal = {0}, FieldNames.Count = {1}", this.IsFinal, this.FieldNames.Count);
+        }
+
         #endregion
 
         #region Types
@@ -237,7 +248,15 @@ namespace Splunk.Client
 
                 string preview = reader.GetRequiredAttribute("preview");
                 this.IsFinal = !BooleanConverter.Instance.Convert(preview);
-                await reader.ReadElementSequenceAsync("meta", "fieldOrder");
+
+                if (!await reader.ReadAsync())
+                {
+                    return;
+                }
+
+                reader.EnsureMarkup(XmlNodeType.Element, "meta");
+                await reader.ReadAsync();
+                reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");
 
                 await reader.ReadEachDescendantAsync("field", async (r) =>
                 {

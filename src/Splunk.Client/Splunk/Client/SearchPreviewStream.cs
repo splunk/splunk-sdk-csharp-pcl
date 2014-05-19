@@ -80,11 +80,7 @@ namespace Splunk.Client
         /// </summary>
         public void Dispose()
         {
-            if (this.disposed)
-                return;
-
             this.response.Dispose();
-            this.disposed = true;
         }
 
         /// <summary>
@@ -110,7 +106,6 @@ namespace Splunk.Client
         #region Privates
 
         readonly Response response;
-        bool disposed;
 
         #endregion
     }

@@ -35,8 +35,6 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public void CanConstructService()
         {
-            TestHelper.GetInstance();
-
             using (var service = new Service(TestHelper.UserConfigure.scheme, TestHelper.UserConfigure.host, TestHelper.UserConfigure.port, Namespace.Default))
             {
                 Assert.Equal(service.ToString(), string.Format("{0}://{1}:{2}/services", TestHelper.UserConfigure.scheme, TestHelper.UserConfigure.host, TestHelper.UserConfigure.port).ToLower());
@@ -49,11 +47,9 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudStoragePasswords()
         {
-            TestHelper.GetInstance();
-
             foreach (var ns in TestNamespaces)
             {
-                using (var service = await TestHelper.Connect(ns))
+                using (var service = await TestHelper.CreateService(ns))
                 {
                     StoragePasswordCollection sps = service.GetStoragePasswordsAsync().Result;
 
@@ -103,7 +99,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanLoginAndLogoff()
         {
-            using (var service = await TestHelper.Connect(Namespace.Default))
+            using (var service = await TestHelper.CreateService(Namespace.Default))
             {
                 await service.LogoffAsync();
                 Assert.Null(service.SessionKey);
@@ -134,11 +130,9 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudApplications()
         {
-            TestHelper.GetInstance();
-
             foreach (var ns in TestNamespaces)
             {
-                using (var service = await TestHelper.Connect(ns))
+                using (var service = await TestHelper.CreateService(ns))
                 {
 
                     Assert.NotNull(service.SessionKey);
@@ -302,9 +296,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudConfiguration() // no delete operation is available
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 var fileName = string.Format("delete-me-{0:N}", Guid.NewGuid());
 
@@ -363,9 +355,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetConfigurations()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 var collection = await service.GetConfigurationsAsync();
             }
@@ -375,9 +365,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanReadConfigurations()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 //// Read the entire configuration system
 
@@ -404,9 +392,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetIndexes()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect(new Namespace(user: "nobody", app: "search")))
+            using (var service = await TestHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
                 var collection = await service.GetIndexesAsync();
 
@@ -553,9 +539,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudIndex()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect(new Namespace(user: "nobody", app: "search")))
+            using (var service = await TestHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
                 var indexName = string.Format("delete-me-{0:N}", Guid.NewGuid());
                 Index index;
@@ -600,9 +584,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudSavedSearch()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 //// Create
 
@@ -684,9 +666,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanDispatchSavedSearch()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
                 SearchResultStream searchResults = await job.GetSearchResultsAsync();
@@ -699,9 +679,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetSavedSearchHistory()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
                 var search = "search index=_internal * earliest=-1m";
@@ -748,9 +726,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetSavedSearches()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 var collection = await service.GetSavedSearchesAsync();
             }
@@ -760,9 +736,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanUpdateSavedSearch()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 await service.UpdateSavedSearchAsync("Errors in the last 24 hours", new SavedSearchAttributes() { IsVisible = false });
             }
@@ -776,9 +750,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetJob()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 Job job1 = null, job2 = null;
 
@@ -803,9 +775,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetJobs()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 var jobs = new Job[]
                 {
@@ -817,7 +787,7 @@ namespace Splunk.Client.UnitTesting
                 };
 
                 JobCollection collection = null;
-                Assert.DoesNotThrow(() => collection = service.GetJobsAsync().Result);
+                collection = await service.GetJobsAsync();
                 Assert.NotNull(collection);
                 Assert.Equal(collection.ToString(), collection.Id.ToString());
 
@@ -860,6 +830,7 @@ namespace Splunk.Client.UnitTesting
                     JobArgs = new JobArgs
                     {
                         SearchMode = SearchMode.Realtime,
+                        MaxCount = 10,
                         EarliestTime = "rt-5m",
                         LatestTime = "rt",
                         MaxTime = 10000
@@ -872,20 +843,36 @@ namespace Splunk.Client.UnitTesting
                 }
             };
 
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 foreach (var search in searches)
                 {
                     var job = await service.CreateJobAsync(search.Command, search.JobArgs);
-                    await Task.Delay(4000);
                     Assert.NotNull(job);
 
-                    var resultStream = job.IsRealTimeSearch ? await job.GetSearchResultsPreviewAsync() : await job.GetSearchResultsAsync();
+                    SearchResultStream resultStream = null;
+
+                    if (job.IsRealTimeSearch)
+                    {
+                        for (int i = 0; i < 4; i++)
+                        {
+                            resultStream = await job.GetSearchResultsPreviewAsync();
+
+                            if (resultStream.FieldNames.Count > 0)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        resultStream = await job.GetSearchResultsAsync();
+                    }
                     
                     var count = resultStream.FieldNames.Intersect(expectedFieldNames).Count();
                     Assert.Equal(resultStream.FieldNames.Count, count);
-
                     List<SearchResult> results = null;
+
                     Assert.DoesNotThrow(() => results = new List<SearchResult>(resultStream.ToEnumerable()));
                 }
             }
@@ -895,9 +882,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanExportSearchPreviews()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 SearchPreviewStream previewStream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
 
@@ -1025,9 +1010,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanSearchOneshot()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 var indexName = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
 
@@ -1056,9 +1039,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudServerMessages()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 //// Create
 
@@ -1107,9 +1088,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanCrudServerSettings()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 //// Get
 
@@ -1192,9 +1171,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanGetServerInfo()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 var info = await service.Server.GetInfoAsync();
 
@@ -1224,9 +1201,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanRestartServer()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 await service.Server.RestartAsync();
                 Assert.Null(service.SessionKey);
@@ -1238,9 +1213,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanSendEvents()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            using (var service = await TestHelper.CreateService())
             {
                 await service.LoginAsync("admin", "changeme");
 

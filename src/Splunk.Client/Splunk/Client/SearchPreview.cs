@@ -144,7 +144,7 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            return base.ToString();
+            return string.Format("IsFinal = {0}, FieldNames.Count = {1}", this.IsFinal, this.FieldNames.Count);
         }
 
         #endregion

@@ -90,7 +90,7 @@ namespace Splunk.Client
                 default: throw new InvalidOperationException(); // TODO: Diagnostics
             }
 
-            throw new InvalidDataException(message);
+            reader.ThrowInvalidDataException(message);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Splunk.Client
             if (string.IsNullOrEmpty(value))
             {
                 var message = string.Format("Value of <{0}> attribute {1} is missing.", reader.Name, name);
-                throw new InvalidDataException(message);
+                reader.ThrowInvalidDataException(message);
             }
 
             return value;
@@ -231,34 +231,56 @@ namespace Splunk.Client
         /// the visited elements.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// <c>true</c> if at least one matching descendant element is found; 
+        /// otherwise <c>false</c>. The <paramref name="reader"/> is positioned 
+        /// on the end-tag of the element. If the <paramref name="reader"/> is 
+        /// not positioned on an element, this method returns false and the 
+        /// position of the <paramref name="reader"/> is not changed.
         /// </returns>
-        public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<XmlReader, Task> task)
+        /// <exception cref="ArgumentException">
+        /// <paramref name="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="reader"/> or <paramref name="task"/> are <c>null</c>.
+        /// </exception>
+        public static async Task<bool> ReadEachDescendantAsync(this XmlReader reader, string name, 
+            Func<XmlReader, Task> task)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
-            Contract.Requires<ArgumentNullException>(task != null, "action");
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
+            Contract.Requires<ArgumentNullException>(task != null, "action");
 
-            if (await reader.ReadToDescendantAsync(name))
+            if (!await reader.ReadToDescendantAsync(name))
+            {
+                return false;
+            }
+
+            await task(reader);
+
+            while (await reader.ReadToNextSiblingAsync(name))
             {
                 await task(reader);
-
-                while (await reader.ReadToNextSiblingAsync(name))
-                {
-                    await task(reader);
-                }
             }
+
+            return true;
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously reads element content using the specified <see cref=
+        /// "ValueConverter&lt;Tvalue&gt;"/>.
         /// </summary>
-        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="TValue">
+        /// The type of value to be returned.
+        /// </typeparam>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
-        /// <param name="valueConverter"></param>
-        /// <returns></returns>
+        /// <param name="valueConverter">
+        /// The converter to convert the element content.
+        /// </param>
+        /// <returns>
+        /// The element content converted to the requested type.
+        /// </returns>
         public static async Task<TValue> ReadElementContentAsync<TValue>(this XmlReader reader, ValueConverter<TValue> valueConverter)
         {
             return valueConverter.Convert(await reader.ReadElementContentAsStringAsync());
@@ -366,15 +388,24 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously advances the source <see cref="XmlReader"/> to the 
+        /// next descendant element with the specified qualified name.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
-        /// 
+        /// The qualified name of the element you wish to move to.
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// <c>true</c> if a matching descendant element is found; otherwise 
+        /// <c>false</c>. If a matching child element is not found, the 
+        /// <paramref name="reader"/> is positioned on the end-tag of the 
+        /// element. If the <paramref name="reader"/> is not positioned on an 
+        /// element when <see cref="ReadToDescendantAsync"/> was called, this
+        /// method returns false and the position of the <paramref name=
+        /// "reader"/> is not changed.
+        /// </returns>
         public static async Task<bool> ReadToDescendantAsync(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
@@ -502,7 +533,7 @@ namespace Splunk.Client
             switch (reader.ReadState)
             {
                 case ReadState.EndOfFile:
-                    message = "Premature end of file";
+                    message = string.Format("Premature end of file");
                     break;
                 case ReadState.Interactive:
                     message = string.Format("Unexpected {0}", FormatNode(reader.NodeType, reader.Name));
@@ -510,7 +541,7 @@ namespace Splunk.Client
                 default: throw new InvalidOperationException(); // TODO: Diagnostics
             }
 
-            throw new InvalidDataException(message);
+            reader.ThrowInvalidDataException(message);
         }
 
         #region Privates/internals
@@ -578,6 +609,18 @@ namespace Splunk.Client
             }
 
             return await reader.ReadAsync();
+        }
+
+        static void ThrowInvalidDataException(this XmlReader reader, string message)
+        {
+            var info = (IXmlLineInfo)reader;
+
+            if (info.HasLineInfo())
+            {
+                string.Format("Line {0}, position {1}: {2}", info.LineNumber, info.LinePosition, message);
+            }
+
+            throw new InvalidDataException(message);
         }
 
         #endregion

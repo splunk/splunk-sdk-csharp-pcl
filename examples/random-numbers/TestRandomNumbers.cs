@@ -8,20 +8,26 @@ namespace random_numbers
 {
     using Splunk.ModularInputs;
     using System.IO;
-    using System.Reactive;
-    using System.Reactive.Linq;
-    using System.Reactive.Subjects;
-    using System.Reactive.Threading.Tasks;
     using System.Threading;
     using System.Xml.Linq;
     using System.Xml.Serialization;
     using Xunit;
+    using System.Threading.Tasks;
 
     public class TestRandomNumbers
     {
+
         public class HarnessedScript : IDisposable
         {
-            public Subject<Unit> EventWrittenTrigger = new Subject<Unit>();
+            public event EventHandler trigger = (sender, args) => { };
+
+            public void TriggerEvent()
+            {
+                trigger.Invoke(this, new EventArgs());
+            }
+            
+            public CancellationTokenSource cancellationTokenSource;
+            public AwaitableProgress<EventWrittenProgressReport> Progress;
             public Program Script;
             public StringWriter Stdout;
             public StringWriter Stderr;
@@ -31,6 +37,8 @@ namespace random_numbers
             public HarnessedScript(string[] args, String stdinText)
             {
                 Args = args;
+                cancellationTokenSource = new CancellationTokenSource();
+                Progress = new AwaitableProgress<EventWrittenProgressReport>();
                 Script = new Program();
                 Stdout = new StringWriter();
                 Stderr = new StringWriter();
@@ -39,7 +47,8 @@ namespace random_numbers
 
             public async Task<int> RunAsync()
             {
-                return await Program.RunAsync<Program>(Args, Stdin, Stdout, Stderr, () => EventWrittenTrigger.OnNext(Unit.Default));
+                return await Script.RunAsync(Args, Stdin, Stdout, Stderr, cancellationTokenSource.Token, this.Progress);
+
             }
 
             public void Dispose()
@@ -138,8 +147,41 @@ namespace random_numbers
             }
         }
 
+        public class AwaitableProgress<T> : IProgress<T>
+        {
+            private event Action<T> handler = (T x) => { };
+
+            public void Report(T value)
+            {
+                this.handler(value);
+            }
+
+            public async Task<T> AwaitProgressAsync()
+            {
+                TaskCompletionSource<T> source = new TaskCompletionSource<T>();
+                Action<T> onReport = null;
+                onReport = (T x) =>
+                {
+                    handler -= onReport;
+                    source.SetResult(x);
+                };
+                handler += onReport;
+                return await source.Task;
+            }
+        }
+
+        [Trait("class", "AwaitableProgress")]
+        [Fact]
+        public async Task AwaitProgressWorks()
+        {
+            AwaitableProgress<bool> progress = new AwaitableProgress<bool>();
+            Task<bool> triggered = progress.AwaitProgressAsync();
+            progress.Report(true);
+            Assert.Equal(true, await triggered);
+        }
+
         [Trait("class", "random_numbers.Program")]
-        [Fact(Timeout=1000)]
+        [Fact(Timeout = 10)]
         public async Task StreamEvents()
         {
             XDocument doc = new XDocument(
@@ -161,30 +203,36 @@ namespace random_numbers
             using (HarnessedScript harness =
                 new HarnessedScript(new string[0], doc.ToString()))
             {
-                var trigger = new Subject<long>();
-                harness.Script.schedule = trigger;
                 Task t = harness.RunAsync();
 
                 Assert.Equal("", harness.Stdout.ToString());
                 Assert.Equal("", harness.Stderr.ToString());
 
-                Task callback = harness.EventWrittenTrigger.FirstAsync().ToTask();
-                trigger.OnNext(0);
-                await callback;
-                //await harness.EventWrittenTrigger.FirstAsync();
+                Task<EventWrittenProgressReport> progressReportTask;
 
-                //String expected = "<stream><event xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
-                //    "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" unbroken=\"0\" stanza=\"foobar://aaa\"><data>";
-                //Assert.True(harness.Stdout.ToString().Trim().StartsWith(expected));
-                //Assert.Equal("", harness.Stderr.ToString());
+                progressReportTask = harness.Progress.AwaitProgressAsync();
+                harness.TriggerEvent();
+                await progressReportTask;
 
-                //trigger.OnNext(1);
-                //trigger.OnCompleted();
-                //await harness.EventWrittenTrigger;
+                String expected = "<stream><event xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
+                    "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" unbroken=\"0\" stanza=\"foobar://aaa\"><data>";
+                Assert.True(harness.Stdout.ToString().Trim().StartsWith(expected));
+                Assert.Equal("", harness.Stderr.ToString());
 
-                //XDocument docComplete = XDocument.Parse(harness.Stdout.ToString());
-                //Assert.Equal(2, docComplete.Root.Elements().Count());
-                //Assert.Equal("", harness.Stderr.ToString());
+                progressReportTask = harness.Progress.AwaitProgressAsync();
+                harness.TriggerEvent();
+                await progressReportTask;
+                await progressReportTask;
+                await progressReportTask;
+                await progressReportTask;
+                await progressReportTask;
+
+                Assert.Equal("", harness.Stdout.ToString());
+                XDocument docComplete = XDocument.Parse(harness.Stdout.ToString());
+                Assert.Equal(2, docComplete.Root.Elements().Count());
+                Assert.Equal("", harness.Stderr.ToString());
+
+                await t;
             }
         }
     }

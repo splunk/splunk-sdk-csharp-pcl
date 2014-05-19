@@ -20,9 +20,21 @@ namespace Splunk.ModularInputs
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
+
+    public static class ExtensionMethods
+    {
+        public static async Task WaitForCancellationAsync(this CancellationToken cancellationToken)
+        {
+            TaskCompletionSource<bool> source = new TaskCompletionSource<bool>();
+            cancellationToken.Register(() => source.SetResult(true));
+            await source.Task;
+            return;
+        }
+    }
 
     /// <summary>
     /// The <see cref="ModularInput"/> class represents the functionality of a
@@ -35,8 +47,12 @@ namespace Splunk.ModularInputs
     /// methods. It can optionally override the <see cref="Validate"/> method.
     /// </para>
     /// </remarks>
+    /// 
+
     public abstract class ModularInput
     {
+       
+
         #region Properties
 
         /// <summary>
@@ -44,6 +60,12 @@ namespace Splunk.ModularInputs
         /// introspection.
         /// </summary>
         public abstract Scheme Scheme { get; }
+
+        #endregion
+
+        #region Fields
+
+        private CancellationToken cancellationToken;
 
         #endregion
 
@@ -72,12 +94,20 @@ namespace Splunk.ModularInputs
         /// exceptions and internal progress messages encountered during 
         /// execution are written to the splunkd log file.
         /// </remarks>
-        public static async Task<int> RunAsync<T>(string[] args,
+        public async Task<int> RunAsync(string[] args,
             TextReader stdin = null,
             TextWriter stdout = null,
             TextWriter stderr = null,
-            Action onEventWritten = null) where T : ModularInput, new()
+            CancellationToken cancellationToken = default(CancellationToken),
+            IProgress<EventWrittenProgressReport> progress = null)
         {
+            if (cancellationToken.IsCancellationRequested)
+                return -1;
+
+            if (progress == null)            
+                progress = new Progress<EventWrittenProgressReport>();
+            
+
             /// Console default is OEM text encoding, which is not handled by Splunk,
             //// resulting in loss of chars such as O with an umlaut (\u0150)
             //// Splunk's default is UTF8.
@@ -97,15 +127,10 @@ namespace Splunk.ModularInputs
                 Console.OutputEncoding = Encoding.UTF8;
             }
 
-            using (EventWriter writer = new EventWriter(stdout, stderr))
+            using (EventWriter writer = new EventWriter(stdout, stderr, progress))
             {
-                if (onEventWritten != null)
-                    writer.EventWritten += onEventWritten;
-
                 try
                 {
-                    T script = new T();
-
                     if (args.Length == 0)
                     {
                         List<Task> instances = new List<Task>();
@@ -115,7 +140,7 @@ namespace Splunk.ModularInputs
                             Deserialize(stdin);
                         foreach (InputDefinition inputDefinition in inputDefinitions)
                         {
-                            instances.Add(script.StreamEventsAsync(inputDefinition, writer));
+                            instances.Add(this.StreamEventsAsync(inputDefinition, writer, cancellationToken));
                         }
 
                         await Task.WhenAll(instances.ToArray());
@@ -123,7 +148,7 @@ namespace Splunk.ModularInputs
                     }
                     else if (args[0].ToLower().Equals("--scheme"))
                     {
-                        Scheme scheme = script.Scheme;
+                        Scheme scheme = this.Scheme;
                         if (scheme != null)
                         {
                             StringWriter stringWriter = new StringWriter();
@@ -145,7 +170,7 @@ namespace Splunk.ModularInputs
                         {
                             Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
                                 Deserialize(stdin);
-                            if (script.Validate(validation, out errorMessage))
+                            if (this.Validate(validation, out errorMessage))
                             {
                                 return 0; // Validation succeeded
                             }
@@ -189,7 +214,8 @@ namespace Splunk.ModularInputs
         /// <param name="inputDefinition">
         /// Input definition from Splunk for this input.
         /// </param>
-        public abstract Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter);
+        public abstract Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Performs validation for configurations of a new input being
@@ -224,5 +250,7 @@ namespace Splunk.ModularInputs
         };
 
         #endregion
+
+        
     }
 }

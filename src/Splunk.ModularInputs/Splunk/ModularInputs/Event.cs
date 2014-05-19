@@ -110,7 +110,7 @@ namespace Splunk.ModularInputs
         // This property is used to serialize the Done attribute to XML.
         // If the Done property is true, this should serialize to <done />. If
         // it is false, no element should be written.
-        [System.ComponentModel.DefaultValueAttribute(null)]
+        [System.ComponentModel.DefaultValue(null)]
         [XmlElement("done")]
         public string DoneXmlElement
         {
@@ -127,6 +127,7 @@ namespace Splunk.ModularInputs
         /// If this property is false, the element represents a single, 
         /// whole event.
         /// </remarks>
+        [System.ComponentModel.DefaultValue(true)]
         [XmlIgnore]
         public bool Unbroken { get; set; }
 

@@ -23,91 +23,123 @@ namespace Splunk.ModularInputs
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
+
+    public struct EventWrittenProgressReport
+    {
+        public DateTime Timestamp { get; set; }
+        public Event WrittenEvent { get; set; }
+    }
 
     /// <summary>
     /// 
     /// </summary>
     public class EventWriter : IDisposable
     {
+        #region Private fields
         private static XmlSerializer serializer = new XmlSerializer(typeof(Event));
-
-        public event Action EventWritten;
-
-        private BlockingCollection<Event> eventQueue;
+        private BlockingCollection<Event> eventQueue = new BlockingCollection<Event>();
         private XmlWriter writer;
         private Task eventQueueMonitor = null;
-        private TextWriter stderr;
-        private TextWriter stdout;
+        private object synchronizationObject = new object();
+        private bool disposed;
+        #endregion
+
+        #region Properties
+        public readonly TextWriter Stdout;
+        public readonly TextWriter Stderr;
+        public readonly IProgress<EventWrittenProgressReport> Progress;
+        #endregion
+
 
         #region Constructors
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public EventWriter() : this(Console.Out, Console.Error) {}
-
-        public EventWriter(TextWriter stdout, TextWriter stderr)
+        public EventWriter(TextWriter stdout, TextWriter stderr, 
+            IProgress<EventWrittenProgressReport> progress)
         {
-            this.stderr = stderr;
-            eventQueue = new BlockingCollection<Event>();
-            var settings = new XmlWriterSettings
+            this.Stdout = stdout;
+            this.Stderr = stderr;
+            this.Progress = progress;
+
+            writer = XmlWriter.Create(stdout, new XmlWriterSettings
             {
                 Async = true,
-                ConformanceLevel = ConformanceLevel.Fragment
-            };
-
-            writer = XmlWriter.Create(stdout, settings);
-            this.stdout = stdout;
+                ConformanceLevel = ConformanceLevel.Document
+            });
         }
 
         #endregion
 
         /// <param name="eventElement">
-        public void WriteEvent(Event e)
+        public async Task QueueEventForWriting(Event e)
         {
-            if (eventQueueMonitor == null)
-                eventQueueMonitor = Task.Factory.StartNew<Task>(WriteEventElementsAsync);
-            eventQueue.Add(e);
+            if (disposed)
+                throw new ObjectDisposedException("EventWriter already disposed.");
+            lock (synchronizationObject)
+            {
+                if (eventQueueMonitor == null)
+                    eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
+            }
+            await Task.Run(() => eventQueue.Add(e));
         }
     
         public void Dispose()
         {
-            eventQueue.CompleteAdding();
-            if (eventQueueMonitor != null)
-                eventQueueMonitor.Wait();
-            writer.Close();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            lock (synchronizationObject)
+            {
+                if (disposed) return;
+
+                if (eventQueue.IsAddingCompleted)
+                    return;
+                eventQueue.CompleteAdding();
+                if (eventQueueMonitor != null)
+                    eventQueueMonitor.Wait();
+                writer.Close();
+                this.Progress.Report(new EventWrittenProgressReport
+                {
+                    Timestamp = DateTime.Now,
+                    WrittenEvent = new Event { }
+                });
+
+                disposed = true;
+            }
+        }
+
 
         public async Task LogAsync(string severity, string message)
         {
-            await this.stderr.WriteAsync(severity + " " + message + this.stderr.NewLine);
+            if (disposed) throw new ObjectDisposedException("EventWriter is already disposed.");
+            await this.Stderr.WriteAsync(severity + " " + message + this.Stderr.NewLine);
         }
 
-        private async Task WriteEventElementsAsync()
+        protected void WriteEventsFromQueue()
         {
-            await this.writer.WriteStartElementAsync(prefix: null, localName: "stream", ns: null);
+            writer.WriteStartDocument();
+            writer.WriteStartElement(prefix: null, localName: "stream", ns: null);
 
-            Event e;
-            while (!eventQueue.IsCompleted)
+            foreach (Event eventToWrite in eventQueue.GetConsumingEnumerable())
             {
-                if (eventQueue.TryTake(out e))
-                {
-                    serializer.Serialize(writer, e);
-                    await this.writer.FlushAsync();
-                    EventWritten();
-                }
-                else
-                {
-                    await Task.Delay(50);
-                }
+                serializer.Serialize(writer, eventToWrite);
+                writer.Flush();
+                this.Progress.Report(new EventWrittenProgressReport {
+                        Timestamp = DateTime.Now,
+                        WrittenEvent = eventToWrite
+                });
+
             }
-                
-            await writer.WriteEndElementAsync();
-            await writer.FlushAsync();
-            EventWritten();
+
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Flush();
         }
     }
 }

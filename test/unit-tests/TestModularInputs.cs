@@ -194,7 +194,8 @@ namespace Splunk.ModularInputs.UnitTesting
         {
             public List<ManualResetEvent> TriggerEvents { get; set; }
 
-            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
+            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter,
+                CancellationToken cancellationToken)
             {
                 ManualResetEvent e = new ManualResetEvent(false);
                 TriggerEvents.Add(e);
@@ -202,7 +203,7 @@ namespace Splunk.ModularInputs.UnitTesting
                 foreach (Task t in TriggeredSchedule(e))
                 {
                     await t;
-                    eventWriter.WriteEvent(new Event {
+                    eventWriter.QueueEventForWriting(new Event {
                         Data = "Test " + i
                     });
                 }
@@ -251,8 +252,8 @@ namespace Splunk.ModularInputs.UnitTesting
             {
                 string[] args = {};
 
-                
-                await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+                TestInput testInput = new TestInput();
+                await testInput.RunAsync(args, stdin, stdout, stderr);
 
               
             }
@@ -268,8 +269,9 @@ namespace Splunk.ModularInputs.UnitTesting
             using (StringWriter stderr = new StringWriter())
             {
                 string[] args = { "--scheme" };
-                await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
-
+                TestInput testInput = new TestInput();
+                await testInput.RunAsync(args, stdin, stdout, stderr);
+ 
                 XDocument doc = XDocument.Parse(stdout.ToString());
                 Assert.Equal("Random numbers", doc.Element("scheme").Element("title").Value);
                 Assert.Equal("Generate random numbers in the specified range", 
@@ -363,6 +365,98 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.NotNull(doc.Element("event").Element("done"));
             Assert.Equal("", doc.Element("event").Element("done").Value);
             Assert.Equal("0", doc.Element("event").Attribute("unbroken").Value);
+        }
+
+        public class AwaitableProgress<T> : IProgress<T>
+        {
+            private event Action<T> handler = (T x) => { };
+
+            public void Report(T value)
+            {
+                this.handler(value);
+            }
+
+            public async Task<T> AwaitProgressAsync()
+            {
+                TaskCompletionSource<T> source = new TaskCompletionSource<T>();
+                Action<T> onReport = null;
+                onReport = (T x) =>
+                {
+                    handler -= onReport;
+                    source.SetResult(x);
+                };
+                handler += onReport;
+                return await source.Task;
+            }
+        }
+
+        [Trait("class", "AwaitableProgress")]
+        [Fact]
+        public async Task AwaitProgressWorks()
+        {
+            AwaitableProgress<bool> progress = new AwaitableProgress<bool>();
+            Task<bool> triggered = progress.AwaitProgressAsync();
+            progress.Report(true);
+            Assert.Equal(true, await triggered);
+        }
+
+        [Trait("class", "Splunk.ModularInputs.EventWriter")]
+        [Fact]
+        public async Task EventWriterReportsOnDispose()
+        {
+            var progress = new AwaitableProgress<EventWrittenProgressReport>();
+            var stdout = new StringWriter();
+            var stderr = new StringWriter();
+            EventWriter eventWriter = new EventWriter(
+                stdout: stdout,
+                stderr: stderr,
+                progress: progress
+            );
+
+            Task<EventWrittenProgressReport> t =
+                progress.AwaitProgressAsync();
+            eventWriter.Dispose();
+            EventWrittenProgressReport r = await t;
+
+            Assert.Equal(new Event(), r.WrittenEvent);
+            Assert.Equal("", stderr.ToString());
+            Assert.Equal("", stdout.ToString());
+        }
+
+        [Trait("class", "Splunk.ModularInputs.EventWriter")]
+        [Fact]
+        public async Task EventWriterReportsOnWrite()
+        {
+            var progress = new AwaitableProgress<EventWrittenProgressReport>();
+            var stdout = new StringWriter();
+            var stderr = new StringWriter();
+            EventWriter eventWriter = new EventWriter(
+                stdout: stdout,
+                stderr: stderr,
+                progress: progress
+            );
+
+            var writtenTask = progress.AwaitProgressAsync();
+            eventWriter.QueueEventForWriting(new Event
+            {
+                Time = DateTime.FromFileTime(0),
+                Data = "Boris the mad baboon"
+            });
+            var report = await writtenTask;
+
+            Assert.Equal("Boris the mad baboon", report.WrittenEvent.Data);
+            string expectedXml = "<?xml version=\"1.0\" encoding=\"utf-16\"?><stream>" +
+                "<event xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=" +
+                "\"http://www.w3.org/2001/XMLSchema\" unbroken=\"0\"><data>Boris the mad " +
+                "baboon</data><time>-11644502400</time></event>";
+
+            Assert.Equal(expectedXml, stdout.ToString().Trim());
+            Assert.Equal("", stderr.ToString());
+
+            var completedTask = progress.AwaitProgressAsync();
+            eventWriter.Dispose();
+            report = await completedTask;
+
         }
 
         /// <summary>

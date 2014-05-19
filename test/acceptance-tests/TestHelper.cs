@@ -88,7 +88,29 @@ namespace Splunk.Client.UnitTesting
             Assert.NotNull(service.SessionKey);
             return service;
         }
+
+        public static int VersionCompare(Service service, string versionToCompare)
+        {
+            Version info = service.Server.GetInfoAsync().Result.Version;
+            string version = info.ToString();
+            return (string.Compare(version, versionToCompare, StringComparison.InvariantCulture));
+        }
+
+        public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds)
+        {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            while (watch.Elapsed < new TimeSpan(0, 0, seconds) && index.TotalEventCount != expectEventCount)
+            {
+                await Task.Delay(1000);
+                await index.GetAsync();
+            }
+
+            Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated, current index.TotalEventCount={1}", watch.Elapsed, index.TotalEventCount);
+            Assert.True(index.TotalEventCount == expectEventCount);
+        }
         
+
         /// <summary>
         /// Load a file of options and arguments
         /// </summary>

@@ -19,6 +19,7 @@ namespace Splunk.Client.UnitTesting
     using Splunk.Client;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -1166,30 +1167,63 @@ namespace Splunk.Client.UnitTesting
         public async Task CanSendEvents()
         {
             TestHelper.GetInstance();
+
             using (var service = await TestHelper.Connect())
             {
-                await service.LoginAsync("admin", "changeme");
+                //default index
+                Index index = await service.GetIndexAsync("main");
+                Assert.NotNull(index);
+                Assert.False(index.Disabled);
 
                 var receiver = service.Receiver;
 
-                for (int i = 0; i < 10; i++)
+                long currentEventCount = index.TotalEventCount;
+                Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);
+                int sendEventCount = 10;
+                                
+                for (int i = 0; i < sendEventCount; i++)
                 {
-                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} send string event Hello world!", i, DateTime.Now));
+                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
                 }
 
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
+                while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
+                {
+                    await Task.Delay(1000);
+                    await index.GetAsync();
+                }
+
+                Console.WriteLine("After send {0} string events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
+                Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+
+                // test stream events
+                currentEventCount = currentEventCount + sendEventCount;
                 using (var eventStream = new MemoryStream())
                 {
                     using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
-                        for (int i = 0; i < 10; i++)
+                        for (int i = 0; i < sendEventCount; i++)
                         {
-                            writer.Write(string.Format("{0:D6} {1} send stream event hello world!\r\n", i, DateTime.Now));
+                            writer.Write(string.Format("{0:D6} {1} jly send stream event hello world!\r\n", i, DateTime.Now));
                         }
                     }
 
                     eventStream.Seek(0, SeekOrigin.Begin);
                     await receiver.SendAsync(eventStream);
                 }
+
+                watch.Restart();
+                while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
+                {
+                    await Task.Delay(1000);
+                    await index.GetAsync();
+                }
+
+                Console.WriteLine("After send {0} strem events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
+                Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
             }
         }
 

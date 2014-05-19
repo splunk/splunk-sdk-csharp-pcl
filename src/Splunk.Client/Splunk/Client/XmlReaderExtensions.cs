@@ -94,16 +94,16 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the value of the attribute with the specified name.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
-        /// 
+        /// An attribute name.
         /// </param>
         /// <returns>
-        /// 
+        /// The value of attribute <paramref name="name"/>.
         /// </returns>
         /// <exception cref="ArgumentNullExeption">
         /// <paramref name="reader"/> or <paramref name="name"/> are <c>
@@ -114,9 +114,14 @@ namespace Splunk.Client
         /// "XmlNodeType"/>.Element.
         /// </exception>
         /// <exception cref="InvalidDataException">
-        /// If the value of attribute <paramref name="name"/> is empty or <c>
-        /// null</c>.
+        /// If the value of attribute <paramref name="name"/> is <see cref=
+        /// "String"/>.Empty or <c>null</c>.
         /// </exception>
+        /// <remarks>
+        /// If attribute <paramref name="name"/> is not present or is equal to
+        /// <see cref="string"/>.Empty an <see cref="InvalidDataException"/>
+        /// is thrown.
+        /// </remarks>
         public static string GetRequiredAttribute(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
@@ -135,21 +140,30 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously positions the source <see cref="XmlReader"/> to the
+        /// start-tag following an <see cref="XmlNodeType"/>.XmlDeclaration.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
-        /// <param name="name">
-        /// 
+        /// <param name="names">
+        /// Optional list of permitted document element names.
         /// </param>
         /// <returns>
-        /// 
+        /// <c>true</c> if the source <see cref="XmlReader"/> is successfully
+        /// positioned at one of the permitted document element <paramref name=
+        /// "names"/>; otherwise, if the end of file is reached, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="reader"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// There is no start-tag following the <see cref="XmlNodeType"/>.XmlDeclaration or
+        /// the start-tag is not in the list of permitted document element names.
+        /// </exception>
         public static async Task<bool> MoveToDocumentElementAsync(this XmlReader reader, params string[] names)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
-            Contract.Requires<ArgumentNullException>(names != null);
 
             if (reader.ReadState == ReadState.Initial)
             {

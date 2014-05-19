@@ -55,6 +55,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestApplication.cs" />
+    <Compile Include="TestConfiguration.cs" />
     <Compile Include="FakeContext.cs" />
     <Compile Include="TestServiceProperties.cs" />
     <Compile Include="TestSearchJob.cs" />

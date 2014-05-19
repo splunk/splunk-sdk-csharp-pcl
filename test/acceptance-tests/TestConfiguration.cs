@@ -24,44 +24,27 @@ namespace Splunk.Client.UnitTesting
     /// <summary>
     /// Tests the configurations
     /// </summary>
-    public class ConfTest : TestHelper
-    {
-        /// <summary>
-        /// Assert root string
-        /// </summary>
-        private static string assertRoot = "Config assert: ";
-
-        private bool ConfigurationContainKey(ConfigurationCollection confs, string key)
-        {
-            foreach (Configuration conf in confs)
-            {
-                if (conf.ResourceName.Title == key)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+    public class ConfTest 
+    {     
         /// <summary>
         /// Basic conf touch test
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public void Conf()
+        public async void Conf()
         {
-            Service service = this.Connect();
+            Service service = await TestHelper.CreateService();
 
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
 
             // Make sure the collection contains some of the expected entries.
-            Assert.True(this.ConfigurationContainKey(confs, "eventtypes"), assertRoot + "#1");
-            Assert.True(this.ConfigurationContainKey(confs, "searchbnf"), assertRoot + "#2");
-            Assert.True(this.ConfigurationContainKey(confs, "indexes"), assertRoot + "#3");
-            Assert.True(this.ConfigurationContainKey(confs, "inputs"), assertRoot + "#4");
-            Assert.True(this.ConfigurationContainKey(confs, "props"), assertRoot + "#5");
-            Assert.True(this.ConfigurationContainKey(confs, "transforms"), assertRoot + "#6");
-            Assert.True(this.ConfigurationContainKey(confs, "savedsearches"), assertRoot + "#7");
+            Assert.True(confs.Any(a => a.Title == "eventtypes"));
+            Assert.True(confs.Any(a => a.Title == "searchbnf"));
+            Assert.True(confs.Any(a => a.Title == "indexes"));
+            Assert.True(confs.Any(a => a.Title == "inputs"));
+            Assert.True(confs.Any(a => a.Title == "props"));
+            Assert.True(confs.Any(a => a.Title == "transforms"));
+            Assert.True(confs.Any(a => a.Title == "savedsearches"));
 
             // Iterate over the confs just to make sure we can read them
             foreach (Configuration conf in confs)
@@ -93,9 +76,8 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public void ConfCRUD()
-        {
-            Service service;
+        public async void ConfCRUD()
+        {            
             // Create a fresh app to use as the container for confs that we will
             // create in this test. There is no way to delete a conf once it's
             // created so we make sure to create in the context of this test app
@@ -103,21 +85,24 @@ namespace Splunk.Client.UnitTesting
             // away.
             string app = "sdk-tests";
             string owner = "nobody";
-            this.CreateApp(app);
-            service = this.Connect();
+
+           
+           TestHelper.CreateApp(app);
+           Service service =await TestHelper.CreateService();
+            
             var apps = service.GetApplicationsAsync().Result;
-            Assert.True(apps.Any(a => a.ResourceName.Title == app), assertRoot + "#8");
+            Assert.True(apps.Any(a => a.ResourceName.Title == app));
 
             Namespace ns = new Namespace(owner, app);
-            service = this.Connect(ns);
+            service = await TestHelper.CreateService(ns);
 
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
             //if below failed, remove the file C:\Program Files\Splunk\etc\system\local\testconf.conf, serverInfo should provide home  path etc?            
-            Assert.False(confs.Any(a => a.Name == "testconf"), assertRoot + "#9");
+            Assert.False(confs.Any(a => a.Name == "testconf"));
 
             Configuration testconf = service.CreateConfigurationAsync("testconf").Result;
             confs.GetAsync().Wait();
-            Assert.True(confs.Any(a => a.Name == "testconf"), assertRoot + "#10");
+            Assert.True(confs.Any(a => a.Name == "testconf"));
 
             testconf = service.GetConfigurationAsync("testconf").Result;
             service.CreateConfigurationStanzaAsync("testconf", "stanza1").Wait();
@@ -132,10 +117,6 @@ namespace Splunk.Client.UnitTesting
 
             //// Grab the new stanza and check its content
             ConfigurationStanza stanza1 = testconf.GetStanzaAsync("stanza1").Result;
-            //Assert.False(stanza1.Any(), "Expected stanza1 to be non-empty");
-            //Assert.Equal(5, stanza1.Count);//, "Expected stanza1 to have 5 elements");
-            //Assert.Equal("nobody", stanza1.GetSettingAsync("eai:userName").Result.Name);
-            //Assert.Equal(app, stanza1.GetSettingAsync("eai:appName").Result.Name);
 
             // Add a couple of properties
             Argument args = new Argument("key1", "value1");
@@ -144,7 +125,6 @@ namespace Splunk.Client.UnitTesting
             stanza1 = testconf.GetStanzaAsync("stanza1").Result;
             Assert.Equal("value1", stanza1.GetSettingAsync("key1").Result.Value);
             Assert.Equal("42", stanza1.GetSettingAsync("key2").Result.Value);
-            //Assert.False(stanza1.ContainsKey("key3"), assertRoot + "#23");
 
             //// Update an existing property
             args = new Argument("key1", "value2");
@@ -158,7 +138,6 @@ namespace Splunk.Client.UnitTesting
             Assert.Equal(3, testconf.Count);
             Assert.NotNull(testconf.GetStanzaAsync("stanza1").Result.Name);
             Assert.NotNull(testconf.GetStanzaAsync("stanza2").Result.Name);
-            //Assert.Null(testconf.GetStanzaAsync("stanza3").Result.Name);
 
             testconf.RemoveStanzaAsync("stanza2").Wait();
             testconf.GetAsync().Wait(); // because remove gives no data back
@@ -169,7 +148,7 @@ namespace Splunk.Client.UnitTesting
             Assert.Equal(1, testconf.Count);
 
             // Cleanup after ourselves
-            this.RemoveApp(app);
+            TestHelper.RemoveApp(app);
         }
     }
 }

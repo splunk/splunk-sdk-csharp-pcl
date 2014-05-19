@@ -110,6 +110,60 @@ namespace Splunk.Client.UnitTesting
         }
 
         /// <summary>
+        /// Create a fresh test app with the given name, delete the existing
+        /// test app and reboot Splunk.
+        /// </summary>
+        /// <param name="name">The app name</param>
+        public async static void CreateApp(string name)
+        {
+            //EntityCollection<App> apps;
+
+            Service service = await CreateService();
+
+            ApplicationCollection apps = service.GetApplicationsAsync(new ApplicationCollectionArgs()).Result;
+
+            if (apps.Any(a => a.ResourceName.Title == name))
+            {
+                service.RemoveApplicationAsync(name).Wait();
+                await RestartServer();
+                service = await CreateService();
+                apps = service.GetApplicationsAsync().Result;
+            }
+
+            Assert.False(apps.Any(a => a.ResourceName.Title == name));
+
+            //apps.Create(name);
+            service.CreateApplicationAsync(name, "sample_app").Wait();
+
+            await RestartServer();
+
+            service = await CreateService();
+
+            apps = service.GetApplicationsAsync().Result;
+            Assert.True(apps.Any(a => a.Name == name));
+        }
+
+        /// <summary>
+        /// Remove the given app and reboot Splunk if needed.
+        /// </summary>
+        /// <param name="name">The app name</param>
+        public static async void RemoveApp(string name)
+        {
+            Service service = await CreateService();
+
+            ApplicationCollection apps = service.GetApplicationsAsync().Result;
+            if (apps.Any(a => a.Name == name))
+            {
+                service.RemoveApplicationAsync(name).Wait();
+                await RestartServer();
+                service = await CreateService();
+            }
+
+            apps = service.GetApplicationsAsync().Result;
+            Assert.False(apps.Any(a => a.Name == name));
+        }
+
+        /// <summary>
         /// Load a file of options and arguments
         /// </summary>
         /// <param name="path">

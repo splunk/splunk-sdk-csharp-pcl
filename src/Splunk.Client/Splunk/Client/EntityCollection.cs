@@ -15,8 +15,6 @@
  */
 
 //// TODO:
-//// [ ] Reload method as per <a href="http://goo.gl/TDthxd">Accessing Splunk
-////     resource</a>, Other actions for Splunk REST API endpoints.
 //// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
 ////     method (?) args does NOT belong on the constructor. One difficulty:
 ////     not all collections take arguments. Examples: ConfigurationCollection
@@ -33,7 +31,7 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a base class for representing a collection of Splunk entities.
+    /// Provides a base class for representing a collection of Splunk resources.
     /// </summary>
     /// <typeparam name="TCollection">
     /// The entity collection type inheriting from this class.
@@ -41,6 +39,18 @@ namespace Splunk.Client
     /// <typeparam name="TEntity">
     /// The type of the entity in <typeparamref name="TCollection"/>.
     /// </typeparam>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///   <a href="http://goo.gl/TDthxd">Accessing Splunk resources</a>, 
+    ///   especially "Other actions for Splunk REST API endpoints".
+    /// </description></item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/oc65Bo">REST API Reference</a>.
+    /// </description></item>
+    /// </list>
+    /// </remarks>
     public abstract class EntityCollection<TCollection, TEntity> : Resource<TCollection>, IReadOnlyList<TEntity> 
         where TCollection : EntityCollection<TCollection, TEntity>, new() 
         where TEntity : Resource<TEntity>, new()
@@ -244,6 +254,23 @@ namespace Splunk.Client
                 await feed.ReadXmlAsync(response.XmlReader);
 
                 this.data = new DataCache(this.Context, feed);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously forces the Splunk server to reload data for the current
+        /// <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing this operation.
+        /// </returns>
+        public async Task ReloadAsync()
+        {
+            var reload = new ResourceName(this.ResourceName, "_reload");
+
+            using (Response response = await this.Context.GetAsync(this.Namespace, reload))
+            {
+                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
             }
         }
 

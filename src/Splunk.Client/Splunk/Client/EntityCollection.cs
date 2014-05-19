@@ -15,8 +15,6 @@
  */
 
 //// TODO:
-//// [ ] Reload method as per <a href="http://goo.gl/TDthxd">Accessing Splunk
-////     resource</a>, Other actions for Splunk REST API endpoints.
 //// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
 ////     method (?) args does NOT belong on the constructor. One difficulty:
 ////     not all collections take arguments. Examples: ConfigurationCollection
@@ -41,6 +39,18 @@ namespace Splunk.Client
     /// <typeparam name="TEntity">
     /// The type of the entity in <typeparamref name="TCollection"/>.
     /// </typeparam>
+    /// <remarks>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///   <a href="http://goo.gl/TDthxd">Accessing Splunk resources</a>, 
+    ///   especially Other actions for Splunk REST API endpoints.
+    /// </description></item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/oc65Bo">REST API Reference</a>.
+    /// </description></item>
+    /// </list>
+    /// </remarks>
     public abstract class EntityCollection<TCollection, TEntity> : Resource<TCollection>, IReadOnlyList<TEntity> 
         where TCollection : EntityCollection<TCollection, TEntity>, new() 
         where TEntity : Resource<TEntity>, new()

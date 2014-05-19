@@ -32,12 +32,10 @@ namespace Splunk.Client.UnitTesting
     using System.Threading.Tasks;
 
     /// <summary>
-    /// test helper class
+    /// Test helper class
     /// </summary>
-    internal class TestHelper
+    static class TestHelper
     {
-        private static TestHelper instance;
-
         static TestHelper()
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
@@ -50,42 +48,23 @@ namespace Splunk.Client.UnitTesting
             LoadSplunkRC(Path.Combine(home, ".splunkrc"));
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestHelper"/> class.
-        /// </summary>
-        private TestHelper()
-        { }
-
-        public static TestHelper GetInstance()
-        {
-            if (instance == null)
-            {
-                instance = new TestHelper();
-            }
-
-            return instance;
-        }
-
         public static SplunkRC UserConfigure
         { get; private set; }
 
         /// <summary>
-        /// Connect to splunk using the command line options (or .splunkrc)
+        /// Create a Splunk <see cref="Service"/> and login using the command 
+        /// line options (or .splunkrc)
         /// </summary>
-        /// <returns>The service</returns>
-        public static async Task<Service> Connect()
-        {
-            var service = new Service(UserConfigure.scheme, UserConfigure.host,UserConfigure.port);
-            await service.LoginAsync(UserConfigure.username, UserConfigure.password);
-            Assert.NotNull(service.SessionKey);
-            return service;
-        }
-
-        public static async Task<Service> Connect(Namespace ns)
+        /// <returns>
+        /// The service created.
+        /// </returns>
+        public static async Task<Service> CreateService(Namespace ns = null)
         {
             var service = new Service(UserConfigure.scheme, UserConfigure.host, UserConfigure.port, ns);
+            
             await service.LoginAsync(UserConfigure.username, UserConfigure.password);
             Assert.NotNull(service.SessionKey);
+
             return service;
         }
 
@@ -141,20 +120,20 @@ namespace Splunk.Client.UnitTesting
         /// </param>
         static void LoadSplunkRC(string path)
         {
-            StreamReader streamReader;
-            streamReader = new StreamReader(path);
+            var reader = new StreamReader(path);
 
             List<string> argList = new List<string>(4);
             string line;
 
-            while ((line = streamReader.ReadLine()) != null)
+            while ((line = reader.ReadLine()) != null)
             {
+                line = line.Trim();
+
                 if (line.StartsWith("#", StringComparison.InvariantCulture))
                 {
                     continue;
                 }
 
-                line = line.Trim();
                 if (line.Length == 0)
                 {
                     continue;
@@ -168,11 +147,12 @@ namespace Splunk.Client.UnitTesting
             foreach (string arg in argList)
             {
                 string[] strs = arg.Split('=');
+
                 switch (strs[0].ToLower().TrimStart().TrimEnd())
                 {
                     case "username": UserConfigure.username = strs[1].TrimEnd().TrimStart(); break;
                     case "password": UserConfigure.password = strs[1].TrimEnd().TrimStart(); break;
-                    case "scheme": UserConfigure.scheme = strs[1].TrimEnd().TrimStart()=="https"?Scheme.Https:Scheme.Http; break;
+                    case "scheme": UserConfigure.scheme = strs[1].TrimEnd().TrimStart() == "https" ? Scheme.Https : Scheme.Http; break;
                     case "port": UserConfigure.port = int.Parse(strs[1].TrimEnd().TrimStart()); break;
                     case "host": UserConfigure.host = strs[1].TrimEnd().TrimStart(); break;
                 }

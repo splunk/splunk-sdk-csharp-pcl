@@ -270,18 +270,17 @@ namespace Splunk.Client
         /// <param name="response">
         /// An <see cref="AtomFeed"/> response.
         /// </param>
-        /// <param name="entry">
-        /// An atom entry containing metadata, plus the content for the current
-        /// <see cref="Entity&lt;TEntity&gt;"/>.
-        /// </param>
         /// <remarks>
-        /// Override this method to provide special initialization code. Call
-        /// the base implementation before initialization is complete. This
-        /// method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// Override this method to provide initialization code specific to
+        /// the derived class. Call this base implementation before 
+        /// initialization is complete. This method supports the Splunk client
+        /// infrastructure and is not intended to be used directly from your 
+        /// code.
         /// </remarks>
         protected virtual async Task UpdateSnapshotAsync(Response response)
         {
+            Contract.Requires(response != null);
+
             var feed = new AtomFeed();
             await feed.ReadXmlAsync(response.XmlReader);
 

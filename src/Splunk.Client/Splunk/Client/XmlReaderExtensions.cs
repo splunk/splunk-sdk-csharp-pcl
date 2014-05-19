@@ -45,7 +45,7 @@ namespace Splunk.Client
         /// Optional list of names which the expected <paramref name="nodeType"/>
         /// may have.
         /// </param>
-        /// <exception cref="ArgumentNullExeption">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidDataException">
@@ -105,7 +105,7 @@ namespace Splunk.Client
         /// <returns>
         /// The value of attribute <paramref name="name"/>.
         /// </returns>
-        /// <exception cref="ArgumentNullExeption">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> or <paramref name="name"/> are <c>
         /// null</c>.
         /// </exception>
@@ -217,21 +217,23 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously visits the named descendants of the element at the 
+        /// current <see cref="XmlReader"/> position.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
-        /// 
+        /// Name of the descendant elements to read.
         /// </param>
         /// <param name="task">
-        /// 
+        /// An awaitable function to apply to <see cref="reader"/> at each of
+        /// the visited elements.
         /// </param>
         /// <returns>
-        /// 
+        /// A <see cref="Task"/> representing this operation.
         /// </returns>
-        public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<Task> task)
+        public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<XmlReader, Task> task)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
             Contract.Requires<ArgumentNullException>(task != null, "action");
@@ -239,11 +241,11 @@ namespace Splunk.Client
 
             if (await reader.ReadToDescendantAsync(name))
             {
-                await task();
+                await task(reader);
 
                 while (await reader.ReadToNextSiblingAsync(name))
                 {
-                    await task();
+                    await task(reader);
                 }
             }
         }

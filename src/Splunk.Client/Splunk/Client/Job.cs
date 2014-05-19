@@ -780,17 +780,14 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Infrastructure. Asynchronously brings the current <see cref=
+        /// "Job"/> up to date with new metadata and content.
         /// </summary>
         /// <param name="response">
-        /// 
+        /// An <see cref="AtomFeed"/> or <see cref="AtomEntry"/> response.
         /// </param>
-        /// <returns>
-        /// A <see cref="Task"/>
-        /// </returns>
         protected override async Task UpdateSnapshotAsync(Response response)
         {
-            Contract.Requires<ArgumentNullException>(response != null);
             var reader = response.XmlReader;
 
             reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));

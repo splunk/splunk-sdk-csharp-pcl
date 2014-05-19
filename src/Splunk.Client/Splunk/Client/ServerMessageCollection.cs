@@ -35,6 +35,7 @@ namespace Splunk.Client
     /// <item><description>
     ///   <a href="http://goo.gl/w3Rmjp">REST API: messages</a>.
     /// </description></item>
+    /// </list>
     /// </remarks>
     public sealed class ServerMessageCollection : EntityCollection<ServerMessageCollection, ServerMessage>
     {

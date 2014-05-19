@@ -63,33 +63,33 @@ namespace Splunk.Client
             reader.MoveToElement();
             reader.EnsureMarkup(XmlNodeType.Element, "result");
 
-            await reader.ReadEachDescendantAsync("field", async () =>
+            await reader.ReadEachDescendantAsync("field", async (r) =>
             {
-                var key = reader.GetRequiredAttribute("k");
-                var fieldDepth = reader.Depth;
+                var key = r.GetRequiredAttribute("k");
+                var fieldDepth = r.Depth;
                 var values = new List<string>();
 
-                while (await reader.ReadAsync())
+                while (await r.ReadAsync())
                 {
-                    if (reader.Depth == fieldDepth)
+                    if (r.Depth == fieldDepth)
                     {
                         break;
                     }
 
-                    Debug.Assert(reader.Depth > fieldDepth, "This loop should have exited earlier.");
+                    Debug.Assert(r.Depth > fieldDepth, "This loop should have exited earlier.");
 
                     // TODO: Replace calls to IsStartElement because it is blocking
 
-                    if (reader.IsStartElement("value"))
+                    if (r.IsStartElement("value"))
                     {
-                        if (await reader.ReadToDescendantAsync("text"))
+                        if (await r.ReadToDescendantAsync("text"))
                         {
-                            values.Add(await reader.ReadElementContentAsStringAsync());
+                            values.Add(await r.ReadElementContentAsStringAsync());
                         }
                     }
-                    else if (reader.IsStartElement("v"))
+                    else if (r.IsStartElement("v"))
                     {
-                        string value = await reader.ReadOuterXmlAsync();
+                        string value = await r.ReadOuterXmlAsync();
                         this.SegmentedRaw = value;
                         values.Add(value);
                     }

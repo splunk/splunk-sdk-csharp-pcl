@@ -104,10 +104,10 @@ namespace Splunk.Client
             this.IsFinal = !BooleanConverter.Instance.Convert(preview);
             await reader.ReadElementSequenceAsync("meta", "fieldOrder");
 
-            await reader.ReadEachDescendantAsync("field", async () =>
+            await reader.ReadEachDescendantAsync("field", async (r) =>
             {
-                await reader.ReadAsync();
-                var fieldName = await reader.ReadContentAsStringAsync();
+                await r.ReadAsync();
+                var fieldName = await r.ReadContentAsStringAsync();
                 fieldNames.Add(fieldName);
             });
 
@@ -117,7 +117,7 @@ namespace Splunk.Client
             {
                 //// Skip messages
 
-                await reader.ReadEachDescendantAsync("msg", () =>
+                await reader.ReadEachDescendantAsync("msg", (r) =>
                 { 
                     return Task.FromResult(true);
                 });

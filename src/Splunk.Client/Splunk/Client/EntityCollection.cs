@@ -31,7 +31,7 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a base class for representing a collection of Splunk entities.
+    /// Provides a base class for representing a collection of Splunk resources.
     /// </summary>
     /// <typeparam name="TCollection">
     /// The entity collection type inheriting from this class.
@@ -44,7 +44,7 @@ namespace Splunk.Client
     /// <list type="number">
     /// <item><description>
     ///   <a href="http://goo.gl/TDthxd">Accessing Splunk resources</a>, 
-    ///   especially Other actions for Splunk REST API endpoints.
+    ///   especially "Other actions for Splunk REST API endpoints".
     /// </description></item>
     /// <item><description>
     ///   <a href="http://goo.gl/oc65Bo">REST API Reference</a>.

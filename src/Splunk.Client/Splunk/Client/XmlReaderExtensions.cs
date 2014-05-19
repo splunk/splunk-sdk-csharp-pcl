@@ -42,8 +42,8 @@ namespace Splunk.Client
         /// Expected XML node type.
         /// </param>
         /// <param name="names">
-        /// Optional list of names to match <paramref name="reader"/>.Name
-        /// against.
+        /// Optional list of names which the expected <paramref name="nodeType"/>
+        /// may have.
         /// </param>
         /// <exception cref="ArgumentNullExeption">
         /// <paramref name="reader"/> is <c>null</c>.

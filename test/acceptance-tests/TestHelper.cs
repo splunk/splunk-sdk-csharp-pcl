@@ -77,8 +77,7 @@ namespace Splunk.Client.UnitTesting
 
         public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds=60)
         {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
+            Stopwatch watch = Stopwatch.StartNew();
             while (watch.Elapsed < new TimeSpan(0, 0, seconds) && index.TotalEventCount != expectEventCount)
             {
                 await Task.Delay(1000);
@@ -91,11 +90,9 @@ namespace Splunk.Client.UnitTesting
 
         public static async Task RestartServer()
         {
-            Stopwatch watch = new Stopwatch();
+            Stopwatch watch = Stopwatch.StartNew();
 
-            Service service = await Connect();
-            watch.Start();
-
+            Service service = await CreateService();
             try
             {
                 await service.Server.RestartAsync();

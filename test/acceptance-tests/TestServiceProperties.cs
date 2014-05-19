@@ -36,8 +36,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void ServiceCapabilities()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 List<string> expected = new List<string> 
             {
@@ -73,8 +73,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void ServiceInfo()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 ServerInfo info = await service.Server.GetInfoAsync();
 
@@ -111,8 +111,8 @@ namespace Splunk.Client.UnitTesting
         public async void ServiceLogin()
         {
             //ResponseMessage response;
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 ConfigurationCollection config;
 
@@ -162,8 +162,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void Settings()
         {
-            TestHelper.GetInstance();
-            Service service = await TestHelper.Connect();
+            
+            Service service = await TestHelper.CreateService();
 
 
             ServerSettings settings = service.Server.GetSettingsAsync().Result;
@@ -210,7 +210,7 @@ namespace Splunk.Client.UnitTesting
             await TestHelper.RestartServer();
 
 
-            service = await TestHelper.Connect();
+            service = await TestHelper.CreateService();
 
             settings = service.Server.GetSettingsAsync().Result;
 
@@ -235,7 +235,7 @@ namespace Splunk.Client.UnitTesting
 
             // changing ports require a restart
             await TestHelper.RestartServer();
-            service = await TestHelper.Connect();
+            service = await TestHelper.CreateService();
 
             settings = service.Server.GetSettingsAsync().Result;
 

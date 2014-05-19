@@ -48,8 +48,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void BadOutputMode()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 var search = "invalidpart" + Query;
 
@@ -82,8 +82,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void JobSearchMode()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
@@ -106,8 +106,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void JobExecutionMode()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
@@ -140,8 +140,8 @@ namespace Splunk.Client.UnitTesting
             Type enumType,
             Func<Job, string, SearchResultStream> jobFunction)
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
                 ForEachEnum(
@@ -247,14 +247,13 @@ namespace Splunk.Client.UnitTesting
         public async void JobRefreshTest()
         {
             string search = "search index=_internal * | head 10 ";
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 var job = await service.CreateJobAsync(search);
 
                 this.CheckJob(job, service);
-                Stopwatch stopwatch = new Stopwatch();
-                stopwatch.Start();
+                Stopwatch stopwatch = Stopwatch.StartNew();
                 TimeSpan max = new TimeSpan(0, 0, 0, 10);
 
                 while (!job.IsDone)
@@ -377,8 +376,8 @@ namespace Splunk.Client.UnitTesting
             Type enumType,
             Func<string, SearchExportArgs> getJobExportArgs)
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 ForEachEnum(
                     enumType,
@@ -398,8 +397,8 @@ namespace Splunk.Client.UnitTesting
             Type enumType,
             Func<string, JobArgs> getJobArgs)
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 ForEachEnum(
                     enumType,

@@ -1205,9 +1205,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanRestartServer()
         {
-            TestHelper.GetInstance();
-
-            using (var service = await TestHelper.Connect())
+            Stopwatch watch = Stopwatch.StartNew();            
+            using (var service = await TestHelper.CreateService())
             {
                 try
                 {
@@ -1249,8 +1248,7 @@ namespace Splunk.Client.UnitTesting
                     var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
                 }
 
-                Stopwatch watch = new Stopwatch();
-                watch.Start();
+                Stopwatch watch = Stopwatch.StartNew();                
                 while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
                 {
                     await Task.Delay(1000);

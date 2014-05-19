@@ -35,8 +35,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void SavedSearchesProperties()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
 
@@ -159,8 +159,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void SavedSearchesUpdateProperties()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 string name = "sdk-test1";
 
@@ -348,8 +348,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void SavedSearchDispatchProperties()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 string name = "sdk-test1";
                 SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
@@ -461,8 +461,8 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task SavedSearchHistory()
         {
-            TestHelper.GetInstance();
-            using (Service service = await TestHelper.Connect())
+            
+            using (Service service = await TestHelper.CreateService())
             {
                 string name = "sdk-test1";
 
@@ -533,7 +533,7 @@ namespace Splunk.Client.UnitTesting
 
         private async Task RemoveSavedSearch(string name)
         {
-            using (Service service = await TestHelper.Connect())
+            using (Service service = await TestHelper.CreateService())
             {
                 if ((await service.GetSavedSearchesAsync()).Any(a => a.Name == name))
                 {

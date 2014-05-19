@@ -42,18 +42,9 @@ namespace Splunk.Client
         /// <param name="response">
         /// The object for reading search results.
         /// </param>
-        /// <param name="leaveOpen">
-        /// Indicates whether the reader should be left open following <see
-        /// cref="SearchResultStream.Dispose"/>.
-        /// </param>
-        SearchResultStream(Response response, bool leaveOpen)
+        SearchResultStream(Response response)
         {
             this.response = response;
-
-            if (leaveOpen)
-            {
-                this.disposed = true;
-            }
         }
 
         #endregion
@@ -61,29 +52,25 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets a value indicating whether these <see cref="SearchResultStream"/> 
-        /// are the final results from a search job.
+        /// Gets a value indicating whether the current <see cref="SearchResultStream"/> 
+        /// is yielding the final results from a search job.
         /// </summary>
-        public bool AreFinal
-        { get { return !this.ArePreview; } }
+        public bool IsFinal
+        {
+            get { return this.metadata.IsFinal; }
+        }
 
         /// <summary>
-        /// Gets a value indicating whether these <see cref="SearchResultStream"/> 
-        /// are a preview of the results from an unfinished search job.
-        /// </summary>
-        public bool ArePreview
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the read-only list of field names that may appear in a search 
-        /// event <see cref="SearchResult"/>.
+        /// Gets the read-only list of field names that may appear in a 
+        /// <see cref="SearchResult"/>.
         /// </summary>
         /// <remarks>
-        /// Be aware that any given result will contain a subset of these 
-        /// fields.
+        /// Be aware that any given result may contain a subset of these fields.
         /// </remarks>
         public IReadOnlyList<string> FieldNames
-        { get; private set; }
+        {
+            get { return this.metadata.FieldNames; }
+        }
 
         #endregion
 
@@ -96,131 +83,30 @@ namespace Splunk.Client
         /// <param name="response">
         /// An object from which the search results are read. 
         /// </param>
-        /// <param name="leaveOpen">
-        /// <c>true</c> to leave the <paramref name="response"/> object open after 
-        /// the <see cref="SearchResultStream"/> object is disposed; otherwise, 
-        /// <c>false</c>.
-        /// </param>
         /// <returns>
         /// A <see cref="SearchResultStream"/> object.
         /// </returns>
-        internal static async Task<SearchResultStream> CreateAsync(Response response, bool leaveOpen)
+        internal static async Task<SearchResultStream> CreateAsync(Response response)
         {
-            var fieldNames = new List<string>();
-            var arePreview = false;
-
-            var reader = response.XmlReader;
-
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    try
-                    {
-                        await reader.ReadAsync();
-                    }
-                    catch (XmlException)
-                    {
-                        //// WORKAROUND:
-                        //// When nothing follows the XmlDeclaration the reader
-                        //// fails to detect EOF on the response stream, does
-                        //// not update the current XmlNode, and then throws an 
-                        //// XmlException because it thinks the XmlNode appears
-                        //// on a line other than the first. We catch that here.
-
-                        reader.Dispose();
-
-                        return new SearchResultStream(response, leaveOpen)
-                        {
-                            ArePreview = false,
-                            FieldNames = fieldNames
-                        };
-                    }
-                }
-            }
-            else
-            {
-                reader.MoveToElement(); // Ensures we're at an element, not an attribute
-            }
-
-            if (!reader.IsStartElement("results"))
-            {
-                if (!await reader.ReadToFollowingAsync("results"))
-                {
-                    throw new InvalidDataException(); // TODO: diagnostics
-                }
-            }
-
-            arePreview = XmlConvert.ToBoolean(reader["preview"]);
-
-            foreach (var name in new string[] { "meta", "fieldOrder" })
-            {
-                await reader.ReadAsync();
-
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics
-                }
-            }
-
-            await reader.ReadEachDescendantAsync("field", async () => 
-            {
-                await reader.ReadAsync();
-                var fieldName = await reader.ReadContentAsStringAsync();
-                fieldNames.Add(fieldName);
-            });
-
-            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "fieldOrder"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
-            await reader.ReadAsync();
-
-            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "meta"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
-            await reader.ReadAsync();
-
-            if (reader.NodeType == XmlNodeType.Element && reader.Name == "messages")
-            {
-                reader.ReadEachDescendantAsync("msg", () => { return Task.FromResult(true); }).Wait();
-
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "messages"))
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics
-                }
-            }
-
-            return new SearchResultStream(response, leaveOpen)
-            {
-                ArePreview = arePreview,
-                FieldNames = fieldNames
-            };
+            var stream = new SearchResultStream(response);
+            await stream.ReadMetadataAsync();
+            return stream;
         }
 
         /// <summary>
-        /// Releases all disposable resources used by the current <see cref=
-        /// "SearchResultStream"/>.
+        /// Releases all disposable resources used by the current <see cref="SearchResultStream"/>.
         /// </summary>
         public void Dispose()
         {
-            if (!this.disposed)
-            {
-                this.response.Dispose();
-                this.disposed = true;
-            }
+            this.response.Dispose();
         }
 
         /// <summary>
-        /// Pushes <see cref="SearchResult"/> objects to observers and then completes.
+        /// Asynchronously pushes <see cref="SearchResult"/> objects to observers 
+        /// and then completes.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task"/> representing this asychronous operation.
+        /// A <see cref="Task"/> representing this operation.
         /// </returns>
         override protected async Task PushObservations()
         {
@@ -244,55 +130,139 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly Response response;
-        bool disposed;
         bool enumerated;
+        Metadata metadata;
+
+        /// <summary>
+        /// Asynchronously reads the metadata for the current chunk of search results.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing this asychronous operation.
+        /// </returns>
+        async Task ReadMetadataAsync()
+        {
+            var metadata = new Metadata();
+            
+            await metadata.ReadXmlAsync(this.response.XmlReader);
+            this.metadata = metadata;
+        }
 
         /// <summary>
         /// Reads the next <see cref="SearchResult"/> in the current <see cref=
         /// "SearchResultStream"/> stream.
         /// </summary>
         /// <returns>
-        /// A <see cref="SearchResult"/> if the next result was read successfully; 
+        /// A <see cref="SearchResult"/> if the next result was read successfully;
         /// <c>null</c> if there are no more records to read.
         /// </returns>
         async Task<SearchResult> ReadResultAsync()
         {
             var reader = this.response.XmlReader;
-
-            switch (reader.ReadState)
-            {
-                case ReadState.Closed:
-                case ReadState.EndOfFile:
-                    return null;
-
-                case ReadState.Interactive:
-                    break;
-
-                default:
-                    throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
             reader.MoveToElement();
 
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
+            while (reader.ReadState == ReadState.Interactive)
             {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "results")
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "results")
                 {
-                    return null;
+                    await this.ReadMetadataAsync();
                 }
 
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "result")
                 {
-                    throw new InvalidDataException(); // TODO: Diagnostics
+                    var result = new SearchResult();
+
+                    await result.ReadXmlAsync(reader);
+                    await reader.ReadAsync();
+
+                    return result;
+                }
+
+                reader.EnsureMarkup(XmlNodeType.EndElement, "results");
+                await reader.ReadAsync();
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region Types
+
+        class Metadata
+        {
+            #region Properties
+
+            /// <summary>
+            /// Gets a value indicating whether this <see cref="SearchPreview"/> 
+            /// contains the final results from a search job.
+            /// </summary>
+            public bool IsFinal
+            { get; private set; }
+
+            /// <summary>
+            /// Gets the read-only list of field names that may appear in a 
+            /// <see cref="SearchResult"/>.
+            /// </summary>
+            /// <remarks>
+            /// Be aware that any given result will contain a subset of these 
+            /// fields.
+            /// </remarks>
+            public IReadOnlyList<string> FieldNames
+            { get; private set; }
+
+            #endregion
+
+            #region Methods
+
+            /// <summary>
+            /// Asynchronously reads data into the current <see cref="SearchResultStream"/>.
+            /// </summary>
+            /// <param name="reader">
+            /// The <see cref="XmlReader"/> from which to read.
+            /// </param>
+            /// <returns>
+            /// A <see cref="Task"/> representing this operation.
+            /// </returns>
+            public async Task ReadXmlAsync(XmlReader reader)
+            {
+                var fieldNames = new List<string>();
+
+                this.FieldNames = fieldNames;
+                this.IsFinal = true;
+
+                if (!await reader.MoveToDocumentElementAsync("results"))
+                {
+                    return;
+                }
+
+                string preview = reader.GetRequiredAttribute("preview");
+                this.IsFinal = !BooleanConverter.Instance.Convert(preview);
+                await reader.ReadElementSequenceAsync("meta", "fieldOrder");
+
+                await reader.ReadEachDescendantAsync("field", async (r) =>
+                {
+                    await r.ReadAsync();
+                    var fieldName = await r.ReadContentAsStringAsync();
+                    fieldNames.Add(fieldName);
+                });
+
+                await reader.ReadEndElementSequenceAsync("fieldOrder", "meta");
+
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "messages")
+                {
+                    //// Skip messages
+
+                    await reader.ReadEachDescendantAsync("msg", (r) =>
+                    {
+                        return Task.FromResult(true);
+                    });
+
+                    reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
+                    await reader.ReadAsync();
                 }
             }
 
-            var result = new SearchResult();
-            await result.ReadXmlAsync(reader);
-
-            return result;
+            #endregion
         }
 
         #endregion

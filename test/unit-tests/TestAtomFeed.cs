@@ -14,42 +14,45 @@
  * under the License.
  */
 
-namespace Splunk.Client
+namespace Splunk.Client.UnitTests
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Xml;
     using System.Xml.Linq;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class TestAtomFeed
     {
-        [Trait("class", "AtomFeed")]
+        [Trait("unit-test", "AtomFeed: operation: read")]
         [Fact]
-        public void CanReadFeed()
+        public async Task CanReadAtomFeed()
         {
             using (var stream = new FileStream(AtomFeedPath, FileMode.Open, FileAccess.Read))
             {
                 var reader = XmlReader.Create(stream, XmlReaderSettings);
                 var feed = new AtomFeed();
 
-                feed.ReadXmlAsync(reader).Wait();
+                await feed.ReadXmlAsync(reader);
             }
         }
 
-        [Trait("class", "AtomFeed")]
+        [Trait("unit-test", "AtomEntry: operation: read")]
         [Fact]
-        public void CanReadEntry()
+        public async Task CanReadAtomEntry()
         {
-            var expected = new List<string>() { "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=2/17/2014 5:46:39 PM, Updated=2/17/2014 5:46:39 PM)" };
+            var expected = "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=2/17/2014 5:46:39 PM, Updated=2/17/2014 5:46:39 PM)";
             var stream = new FileStream(AtomFeedPath, FileMode.Open, FileAccess.Read);
             var reader = XmlReader.Create(stream, XmlReaderSettings);
 
-            bool result = reader.ReadToFollowingAsync("entry").Result;
-            var entry = new AtomEntry();
+            bool result = await reader.ReadToFollowingAsync("entry");
+            Assert.True(result);
 
-            entry.ReadXmlAsync(reader).Wait();
+            var entry = new AtomEntry();
+            await entry.ReadXmlAsync(reader);
+            Assert.Equal(expected, entry.ToString());
         }
 
         static readonly string AtomFeedPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "Client", "AtomFeed.xml"));

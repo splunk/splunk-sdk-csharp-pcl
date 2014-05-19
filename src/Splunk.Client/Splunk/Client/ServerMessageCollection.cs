@@ -24,19 +24,38 @@ namespace Splunk.Client
     using System.Collections.Generic;
 
     /// <summary>
-    /// 
+    /// Provides a class for accessing Splunk system messages.
     /// </summary>
+    /// <remarks>
+    /// Most messages are created by splunkd to inform the user of system 
+    /// problems. Splunk Web typically displays these as bulletin board 
+    /// messages.
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///   <a href="http://goo.gl/w3Rmjp">REST API: messages</a>.
+    /// </description></item>
+    /// </list>
+    /// </remarks>
     public sealed class ServerMessageCollection : EntityCollection<ServerMessageCollection, ServerMessage>
     {
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Intializes a new instance of the <see cref="ServerMessageCollection"/>
+        /// class.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="ns"></param>
-        public ServerMessageCollection(Context context, Namespace ns)
-            : base(context, ns, ClassResourceName)
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="args">
+        /// Optional arguments for retrieving the <see cref="ServerMessageCollection"/>.
+        /// </param>
+        internal ServerMessageCollection(Context context, Namespace ns, ServerMessageCollectionArgs args = null)
+            : base(context, ns, ClassResourceName, args)
         { }
 
         /// <summary>

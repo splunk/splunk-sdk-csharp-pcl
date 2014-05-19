@@ -37,21 +37,24 @@ namespace Splunk.Client.UnitTesting
     internal class TestHelper
     {
         private static TestHelper instance;
-     
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TestHelper"/> class.
-        /// </summary>
-        private TestHelper()
+
+        static TestHelper()
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;
             };
 
-            UserConfigure = new SplunkRC();
             var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            Load_splunkrc(Path.Combine(home, ".splunkrc"));
+            UserConfigure = new SplunkRC();
+            LoadSplunkRC(Path.Combine(home, ".splunkrc"));
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TestHelper"/> class.
+        /// </summary>
+        private TestHelper()
+        { }
 
         public static TestHelper GetInstance()
         {
@@ -64,16 +67,13 @@ namespace Splunk.Client.UnitTesting
         }
 
         public static SplunkRC UserConfigure
-        {
-            get;
-            private set;
-        }
+        { get; private set; }
 
         /// <summary>
         /// Connect to splunk using the command line options (or .splunkrc)
         /// </summary>
         /// <returns>The service</returns>
-        public async static Task<Service> Connect()
+        public static async Task<Service> Connect()
         {
             var service = new Service(UserConfigure.scheme, UserConfigure.host,UserConfigure.port);
             await service.LoginAsync(UserConfigure.username, UserConfigure.password);
@@ -81,9 +81,9 @@ namespace Splunk.Client.UnitTesting
             return service;
         }
 
-        public async static Task<Service> Connect(Namespace ns)
+        public static async Task<Service> Connect(Namespace ns)
         {
-            var service = new Service(UserConfigure.scheme, UserConfigure.host, UserConfigure.port,ns);
+            var service = new Service(UserConfigure.scheme, UserConfigure.host, UserConfigure.port, ns);
             await service.LoginAsync(UserConfigure.username, UserConfigure.password);
             Assert.NotNull(service.SessionKey);
             return service;
@@ -114,15 +114,17 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Load a file of options and arguments
         /// </summary>
-        /// <param name="path">The path to the file</param>
-        /// <returns>The Command instance</returns>
-        private static void Load_splunkrc(string path)
+        /// <param name="path">
+        /// The path to the .splunkrc file.
+        /// </param>
+        static void LoadSplunkRC(string path)
         {
             StreamReader streamReader;
             streamReader = new StreamReader(path);
 
             List<string> argList = new List<string>(4);
             string line;
+
             while ((line = streamReader.ReadLine()) != null)
             {
                 if (line.StartsWith("#", StringComparison.InvariantCulture))
@@ -140,6 +142,7 @@ namespace Splunk.Client.UnitTesting
             }
 
             SplunkRC splunkrc = new SplunkRC();
+
             foreach (string arg in argList)
             {
                 string[] strs = arg.Split('=');

@@ -255,47 +255,24 @@ namespace Splunk.Client
 
         internal static async Task<IReadOnlyList<Message>> ReadMessagesAsync(XmlReader reader)
         {
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-
             var messages = new List<Message>();
 
-            if (!reader.EOF)
+            if (await reader.MoveToDocumentElementAsync("response"))
             {
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "response"))
-                {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
+                await reader.ReadAsync();
+                reader.EnsureMarkup(XmlNodeType.Element, "messages");
                 await reader.ReadAsync();
 
-                if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "messages"))
+                while (reader.NodeType == XmlNodeType.Element && reader.Name == "msg")
                 {
-                    throw new InvalidDataException();  // TODO: Diagnostics
-                }
-
-                await reader.ReadAsync();
-
-                while (reader.NodeType == XmlNodeType.Element)
-                {
-                    if (reader.Name != "msg")
-                    {
-                        throw new InvalidDataException(); // TODO: Diagnostics
-                    }
-
-                    // TODO: Throw InvalidDataException if type attribute is missing
-
-                    MessageType type = EnumConverter<MessageType>.Instance.Convert(reader.GetAttribute("type"));
-                    string text = await reader.ReadElementContentAsStringAsync();
+                    var name = reader.GetRequiredAttribute("type");
+                    var type = EnumConverter<MessageType>.Instance.Convert(name);
+                    var text = await reader.ReadElementContentAsStringAsync();
+                    
                     messages.Add(new Message(type, text));
                 }
+
+                reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
             }
 
             return messages;

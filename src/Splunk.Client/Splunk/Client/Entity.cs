@@ -125,15 +125,21 @@ namespace Splunk.Client
         #region Properties backed by AtomEntry
 
         /// <summary>
-        /// 
+        /// Gets the author of the current <see cref="Entity&lt;TEntity&gt;"/>.
         /// </summary>
+        /// <remarks>
+        /// <c>"Splunk"</c> is the author of all <see cref="Entity&lt;TEntity&gt;"/> 
+        /// and <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>
+        /// instances.
+        /// </remarks>
         public string Author
         { 
             get { return this.Snapshot.Author; }
         }
 
         /// <summary>
-        /// 
+        /// Gets the Splunk management URI for accessing the current <see cref=
+        /// "Entity&lt;TEntity&gt;"/>.
         /// </summary>
         public Uri Id
         { 
@@ -157,7 +163,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the date that <see cref="Id"/> was implemented in Splunk.
         /// </summary>
         public DateTime Updated
         { 
@@ -183,8 +189,8 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the current <see cref=
-        /// "Entity&lt;TEntity&gt;"/> that contains all changes to it since it was last 
-        /// retrieved.
+        /// "Entity&lt;TEntity&gt;"/> that contains all changes to it since it
+        /// was last retrieved.
         /// </summary>
         /// <returns></returns>
         public virtual async Task GetAsync()
@@ -234,14 +240,22 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Infrastructure. Initializes the current <see cref="Entity&lt;
+        /// TEntity&gt;"/>.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="entry">
-        /// 
+        /// An atom entry containing metadata, plus the content for the current
+        /// <see cref="Entity&lt;TEntity&gt;"/>.
         /// </param>
+        /// <remarks>
+        /// Override this method to provide special initialization code. Call
+        /// the base implementation before initialization is complete. This
+        /// method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
         protected internal override void Initialize(Context context, AtomEntry entry)
         {
             this.snapshot = new EntitySnapshot(entry);
@@ -249,20 +263,30 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Infrastructure. Asynchronously brings the current <see cref=
+        /// "Entity&lt;TEntity&gt;"/> up to date with new metadata and
+        /// content.
         /// </summary>
         /// <param name="response">
-        /// 
+        /// An <see cref="AtomFeed"/> response.
         /// </param>
-        /// <returns></returns>
+        /// <remarks>
+        /// Override this method to provide initialization code specific to
+        /// the derived class. Call this base implementation before 
+        /// initialization is complete. This method supports the Splunk client
+        /// infrastructure and is not intended to be used directly from your 
+        /// code.
+        /// </remarks>
         protected virtual async Task UpdateSnapshotAsync(Response response)
         {
+            Contract.Requires(response != null);
+
             var feed = new AtomFeed();
             await feed.ReadXmlAsync(response.XmlReader);
 
             if (feed.Entries.Count != 1)
             {
-                throw new InvalidDataException(); // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics : cardinality violation
             }
 
             this.Snapshot = new EntitySnapshot(feed.Entries[0]);

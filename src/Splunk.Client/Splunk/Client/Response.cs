@@ -15,10 +15,8 @@
  */
 
 //// TODO:
-//// [ ] Contracts
-//// [ ] Documentation
-//// [ ] Ensure that Response.EnsureStatusCodeAsync is used instead of
-////     throwing RequestException or its derivatives directly.
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -62,13 +60,18 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="Stream"/> associated with the current <see 
+        /// cref="Response.Message"/>.
         /// </summary>
+        /// <remarks>
+        /// This object is the one returned by <see cref="HttpContent.ReadAsStreamAsync()"/>.
+        /// </remarks>
         public Stream Stream
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the <see cref="XmlReader"/> for reading HTTP body data from
+        /// the current <see cref="Response.Stream"/>.
         /// </summary>
         public XmlReader XmlReader
         { get; private set; }
@@ -78,10 +81,16 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// 
+        /// Asynchronously creates a <see cref="Response"/> object from an <see
+        /// cref="HttpResponseMessage"/>.
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="message">
+        /// The <see cref="HttpResponseMessage"/> from which to create a <see 
+        /// cref="Response"/> object.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Response"/> object created.
+        /// </returns>
         public static async Task<Response> CreateAsync(HttpResponseMessage message)
         {
             Contract.Requires(message != null);
@@ -121,7 +130,9 @@ namespace Splunk.Client
         /// <param name="expected">
         /// The expected <see cref="HttpStatusCode"/>.
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="Task"/> representing this operation.
+        /// </returns>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected)
         {
             var statusCode = this.Message.StatusCode;

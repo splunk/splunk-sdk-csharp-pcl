@@ -92,8 +92,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value specifying the first result (inclusive) from 
-        /// which to begin returning <see cref="SavedSearch"/> entries.
+        /// which to begin returning entries.
         /// </summary>
+        /// <remarks>
+        /// The <c>Offset</c> property is zero-based and cannot be negative. 
+        /// The default value is zero.
+        /// </remarks>
         /// <remarks>
         /// This value is zero-based and cannot be negative. The default value
         /// is zero.

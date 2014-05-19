@@ -117,7 +117,7 @@ namespace Splunk.Client.Examples.Search
 
                 using (SearchResultStream searchResults = await job.GetSearchResultsPreviewAsync())
                 {
-                    System.Diagnostics.Debug.Assert(!searchResults.AreFinal);
+                    System.Diagnostics.Debug.Assert(!searchResults.IsFinal);
                     System.Console.WriteLine("searchResults count:{0}", searchResults.Count());
 
                 }

@@ -53,61 +53,43 @@ namespace Splunk.Client
         /// <param name="reader">
         /// The <see cref="XmlReader"/> from which to read.
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="Task"/> representing this operation.
+        /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            if (reader.ReadState == ReadState.Initial)
+            reader.MoveToElement();
+            reader.EnsureMarkup(XmlNodeType.Element, "result");
+
+            await reader.ReadEachDescendantAsync("field", async (r) =>
             {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-            else
-            {
-                reader.MoveToElement();
-            }
-
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "result"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
-            await reader.ReadEachDescendantAsync("field", async () =>
-            {
-                var key = reader["k"];
-
-                if (key == null)
-                {
-                    throw new XmlException("'field' attribute 'k' not found");
-                }
-
-                var fieldDepth = reader.Depth;
+                var key = r.GetRequiredAttribute("k");
+                var fieldDepth = r.Depth;
                 var values = new List<string>();
 
-                while (await reader.ReadAsync())
+                while (await r.ReadAsync())
                 {
-                    if (reader.Depth == fieldDepth)
+                    if (r.Depth == fieldDepth)
                     {
                         break;
                     }
 
-                    Debug.Assert(reader.Depth > fieldDepth, "This loop should have exited earlier.");
+                    Debug.Assert(r.Depth > fieldDepth, "This loop should have exited earlier.");
 
-                    if (reader.IsStartElement("value"))
+                    // TODO: Replace calls to IsStartElement because it is blocking
+
+                    if (r.IsStartElement("value"))
                     {
-                        if (await reader.ReadToDescendantAsync("text"))
+                        if (await r.ReadToDescendantAsync("text"))
                         {
-                            values.Add(await reader.ReadElementContentAsStringAsync());
+                            values.Add(await r.ReadElementContentAsStringAsync());
                         }
                     }
-                    else if (reader.IsStartElement("v"))
+                    else if (r.IsStartElement("v"))
                     {
-                        string value = await reader.ReadOuterXmlAsync();
+                        string value = await r.ReadOuterXmlAsync();
                         this.SegmentedRaw = value;
                         values.Add(value);
                     }

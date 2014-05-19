@@ -51,21 +51,21 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// The <see cref="SearchExportStream"/> class represents a streaming XML 
+    /// The <see cref="SearchPreviewStream"/> class represents a streaming XML 
     /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
-    public sealed class SearchExportStream : Observable<SearchResultStream>, IDisposable
+    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SearchExportStream"/>
+        /// Initializes a new instance of the <see cref="SearchPreviewStream"/>
         /// class.
         /// </summary>
         /// <param name="response">
         /// The underlying <see cref="Response"/> object.
         /// </param>
-        SearchExportStream(Response response)
+        internal SearchPreviewStream(Response response)
         {
             this.response = response;
         }
@@ -75,33 +75,8 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates a new <see cref="SearchExportStream"/>.
-        /// </summary>
-        /// <param name="response">
-        /// The <see cref="Response"/> from which to create a new <see cref=
-        /// "SearchExportStream"/>.
-        /// </param>
-        /// <returns>
-        /// A new <see cref="SearchExportStream"/>.
-        /// </returns>
-        internal static async Task<SearchExportStream> CreateAsync(Response response)
-        {
-            response.XmlReader.MoveToElement(); // ensures we're at an element, not an attribute
-
-            if (!response.XmlReader.IsStartElement("results"))
-            {
-                if (!await response.XmlReader.ReadToFollowingAsync("results"))
-                {
-                    throw new InvalidDataException();  // TODO: diagnostics
-                }
-            }
-
-            return new SearchExportStream(response);
-        }
-
-        /// <summary>
         /// Releases all disposable resources used by the current <see cref=
-        /// "SearchExportStream"/>.
+        /// "SearchPreviewStream"/>.
         /// </summary>
         public void Dispose()
         {
@@ -113,7 +88,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Pushes <see cref="SearchResultStream"/> instances to subscribers 
+        /// Pushes <see cref="SearchPreview"/> instances to subscribers 
         /// and then completes.
         /// </summary>
         /// <returns></returns>
@@ -121,8 +96,9 @@ namespace Splunk.Client
         {
             do
             {
-                var searchResults = await SearchResultStream.CreateAsync(this.response, leaveOpen: true);
-                this.OnNext(searchResults);
+                var preview = new SearchPreview();
+                await preview.ReadXmlAsync(this.response.XmlReader);
+                this.OnNext(preview);
             }
             while (await this.response.XmlReader.ReadToFollowingAsync("results"));
 

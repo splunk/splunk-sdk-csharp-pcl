@@ -40,459 +40,93 @@ namespace Splunk.Client.UnitTesting
         private const string Query =
             "search index=_internal GET | head 3";
 
-       /// <summary>
-        /// Run the given query with the given query args and wait for the job to
-        /// complete.
-        /// </summary>
-        /// <param name="service">The service</param>
-        /// <param name="jobArgs">The args</param>
-        /// <returns>The job</returns>
-        private Job RunWait(Service service, string search, JobArgs args)
-        {
-
-            return service.CreateJobAsync(search, args).Result;
-        }
-
-        /// <summary>
-        /// Tests the basic create job, wait for it to finish, close the stream
-        /// and cancel (clean up) the job on the server. Try with optional args too.
-        /// </summary>
-        [Trait("class", "Service")]
-        [Fact]
-        public void Search()
-        {
-            Service service = Connect();
-
-            //Job job;
-
-            service.CreateJobAsync(Query).Wait();
-            //JobArgs jobArgs = new JobArgs();
-            //jobArgs.e="csv"
-            //service.CreateJobAsync(jobArgs).Wait();
-
-
-            //this.RunWait(service, Query);
-            //job.Results(new Args("output_mode", "json")).Close();
-            //job.Cancel();
-        }
-
-        ///// <summary>
-        ///// Verify that segmentation is defaulted to 'none' and can be changed.
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void SegmentationWithExport()
-        //{
-        //    VerifySegmentation(
-        //        (service, query, args) => service.Export(query, args));
-        //}
-
-        ///// <summary>
-        ///// Verify that segmentation is defaulted to 'none' and can be changed.
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void SegmentationWithOneshot()
-        //{
-        //    VerifySegmentation(
-        //        (service, query, args) => service.Oneshot(query, args));
-        //}
-
-        ///// <summary>
-        ///// Verify that segmentation is defaulted to 'none' and can be changed.
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void SegmentationWithJobResults()
-        //{
-        //    SegmentationWithJob(
-        //        (job, resultsArgs) => job.Results(resultsArgs));
-        //}
-
-        ///// <summary>
-        ///// Verify that segmentation is defaulted to 'none' and can be changed.
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void SegmentationWithJobResultsPreview()
-        //{
-        //    SegmentationWithJob(
-        //        (job, resultsArgs) => job.ResultsPreview(resultsArgs));
-        //}
-
-        ///// <summary>
-        ///// Verify that segmentation is defaulted to 'none' and can be changed.
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void SegmentationWithJobEvents()
-        //{
-        //    SegmentationWithJob(
-        //        (job, resultsArgs) => job.Events(resultsArgs));
-        //}
-
-        ///// <summary>
-        ///// Verify that segmentation is defaulted to 'none' and can be changed.
-        ///// </summary>
-        ///// <param name="results">
-        ///// Get results stream from a Job object.
-        ///// </param>
-        //private void SegmentationWithJob(
-        //    Func<Job, Args, Stream> results)
-        //{
-        //    VerifySegmentation(
-        //        (service, query, resultsArgs) =>
-        //        {
-        //            var job = this.RunWait(service, query);
-        //            return results(job, resultsArgs);
-        //        });
-        //}
-
-        ///// <summary>
-        ///// Verify that segmentation is defaulted to 'none' and can be changed.
-        ///// </summary>
-        ///// <param name="getResults">
-        ///// Function to get a results stream.
-        ///// </param>
-        //private void VerifySegmentation(
-        //    Func<Service, string, Args, Stream> getResults)
-        //{
-        //    var service = Connect();
-
-        //    // SDK's segmentation default has no impact on Splunk 4.3.5 (or earlier).
-        //    var segmentationDefaultEffective = true;//this.VersionCompare(service,"5.0") >= 0;
-
-        //    var countSgWithDefault = CountSgIn(
-        //        () => getResults(
-        //            service,
-        //            Query,
-        //            null));
-
-        //    if (segmentationDefaultEffective)
-        //    {
-        //        Assert.Equal(0, countSgWithDefault);
-        //    }
-
-        //    var args = new Args
-        //        {
-        //            { "segmentation", "raw" }
-        //        };
-
-        //    var countSgWithSegmentationRaw = CountSgIn(
-        //        () => getResults(
-        //            service,
-        //            Query,
-        //            args));
-
-        //    Assert.AreNotEqual(0, countSgWithSegmentationRaw);
-
-        //    if (!segmentationDefaultEffective)
-        //    {
-        //        Assert.Equal(
-        //            countSgWithDefault,
-        //            countSgWithSegmentationRaw);
-        //    }
-        //}
-
-        /// <summary>
-        /// Count the number of sg tags in a stream
-        /// </summary>
-        /// <param name="getStream">Function to return a stream</param>
-        /// <returns>The count</returns>
-        private static int CountSgIn(
-            Func<Stream> getStream)
-        {
-            const string SgTag = "<sg";
-
-            using (var input = getStream())
-            using (var reader = new StreamReader(input))
-            {
-                var data = reader.ReadToEnd();
-                return Regex.Matches(data, SgTag).Count;
-            }
-        }
 
         /// <summary>
         /// Tests the result from a bad search argument.
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
-        public void BadOutputMode()
+        public async void BadOutputMode()
         {
-            var service = Connect();
-            var search = "invalidpart" + Query;
-            //jobArgs.outuputMode = badOutputMode;
+            TestHelper.GetInstance();
+            using (Service service = await TestHelper.Connect())
+            {
+                var search = "invalidpart" + Query;
 
-            Job job = null;
-            try
-            {
-                job = service.CreateJobAsync(search).Result;
-            }
-            catch (Exception e)
-            {
-                if (!e.InnerException.Message.ToLower(CultureInfo.InvariantCulture).Contains("400: bad request"))
+                Job job = null;
+                try
                 {
-                    throw;
+                    job = service.CreateJobAsync(search).Result;
+                }
+                catch (Exception e)
+                {
+                    if (!e.InnerException.Message.ToLower(CultureInfo.InvariantCulture).Contains("400: bad request"))
+                    {
+                        throw;
+                    }
+                }
+                finally
+                {
+                    if (job != null)
+                    {
+                        job.CancelAsync().Wait();
+                    }
                 }
             }
-            finally
-            {
-                if (job != null)
-                {
-                    job.CancelAsync().Wait();
-                }
-            }
-        }
-
-        ///// <summary>
-        ///// Tests the result from a bad search argument.
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //[ExpectedException(typeof(WebException),
-        //  "Bad argument should cause Splunk to return http 400: Bad Request")]
-        //public void BadTruncateMode()
-        //{
-        //    var service = Connect();
-
-        //    var job = this.RunWait(service, Query);
-        //    job.Events(badTruncationMode).Close();
-        //    job.Cancel();
-        //}
-
-
-        /// <summary>
-        /// Tests the result from a search argument.
-        /// </summary>
-        [Trait("class", "Service")]
-        [Fact]
-        public void JobSearchMode()
-        {
-            var service = Connect();
-            JobArgs jobArgs = new JobArgs();
-
-            jobArgs.SearchMode = SearchMode.Normal;
-            Job job = service.CreateJobAsync(Query, jobArgs).Result;
-            Assert.NotNull(job);
-
-            jobArgs.SearchMode = SearchMode.Realtime;
-            job.UpdateJobArgs(jobArgs).Wait();
-            Assert.NotNull(job);
-
-            //try
-            //{
-
-            //    jobArgs.SearchMode = SearchMode.None;
-            //    job.UpdateJobArgs(jobArgs).Wait();
-            //    Assert.Fail("SearchMode.None should return 400 invalid query error");
-            //}
-            //catch (Exception e)
-            //{
-            //    Assert.True(e.InnerException.Message.Contains("400"));
-            //}
-
-            job.CancelAsync().Wait();
         }
 
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
-        public void JobExecutionMode()
+        public async void JobSearchMode()
         {
-            var service = Connect();
-            JobArgs jobArgs = new JobArgs();
-            
-            jobArgs.ExecutionMode = ExecutionMode.Blocking;
+            TestHelper.GetInstance();
+            using (Service service = await TestHelper.Connect())
+            {
+                JobArgs jobArgs = new JobArgs();
 
-            Job job = service.CreateJobAsync(Query, jobArgs).Result;
-            Assert.NotNull(job);
+                jobArgs.SearchMode = SearchMode.Normal;
+                Job job = await service.CreateJobAsync(Query, jobArgs);
+                Assert.NotNull(job);
 
-            jobArgs.ExecutionMode = ExecutionMode.Normal;
-            job.UpdateJobArgs(jobArgs).Wait();
-            Assert.NotNull(job);
+                jobArgs.SearchMode = SearchMode.Realtime;
+                await job.UpdateJobArgs(jobArgs);
+                Assert.NotNull(job);
 
-            jobArgs.ExecutionMode = ExecutionMode.Oneshot;
-            job.UpdateJobArgs(jobArgs).Wait();
-            Assert.NotNull(job);
-
-            job.CancelAsync().Wait();
+                await job.CancelAsync();
+            }
         }
 
         /// <summary>
-        /// Tests the result from a bad search argument.
+        /// Tests the result from a search argument.
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
-        public void BadSearchModeExport()
+        public async void JobExecutionMode()
         {
-            var service = Connect();
-            JobArgs jobArgs = new JobArgs();
-            
-            //jobArgs.SearchMode = SearchMode.Realtime;
+            TestHelper.GetInstance();
+            using (Service service = await TestHelper.Connect())
+            {
+                JobArgs jobArgs = new JobArgs();
 
-            Job job = service.CreateJobAsync(Query, jobArgs).Result;
-            Assert.NotNull(job);
+                jobArgs.ExecutionMode = ExecutionMode.Blocking;
 
-            job.CancelAsync().Wait();
+                Job job = service.CreateJobAsync(Query, jobArgs).Result;
+                Assert.NotNull(job);
+
+                jobArgs.ExecutionMode = ExecutionMode.Normal;
+                await job.UpdateJobArgs(jobArgs);
+                Assert.NotNull(job);
+
+                jobArgs.ExecutionMode = ExecutionMode.Oneshot;
+                await job.UpdateJobArgs(jobArgs);
+                Assert.NotNull(job);
+
+                await job.CancelAsync();
+            }
         }
-
-        ///// <summary>
-        ///// Tests the result from a bad search argument.
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //[ExpectedException(typeof(WebException),
-        //  "Bad argument should cause Splunk to return http 400: Bad Request")]
-        //public void BadOutputModeExport()
-        //{
-        //    var service = Connect();
-
-        //    service.Export(Query, badOutputMode);
-        //}
-
-        ///// <summary>
-        ///// Tests all output modes for Job.Results
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void JobResultsOutputModeArgument()
-        //{
-        //    var type = typeof(JobResultsArgs.OutputModeEnum);
-
-        //    RunJobFuntionForEachEnum(
-        //        type,
-        //        (job, mode) =>
-        //            job.Results(
-        //                new JobResultsArgs
-        //                {
-        //                    OutputMode =
-        //                        (JobResultsArgs.OutputModeEnum)Enum.Parse(
-        //                            type,
-        //                            mode)
-        //                }));
-        //}
-
-        ///// <summary>
-        ///// Unittest for DVPL-2678, make sure the result stream can be read through.
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void JobResultStream()
-        //{
-        //    var cli = SplunkSDKHelper.Command.Splunk("search");
-        //    cli.AddRule("search", typeof(string), "search string");
-        //    cli.Opts["search"] = "search index=_internal * | head 10 ";
-
-        //    var service = Service.Connect(cli.Opts);
-        //    var jobs = service.GetJobs();
-        //    var job = jobs.Create((string)cli.Opts["search"]);
-
-        //    while (!job.IsDone)
-        //    {
-        //        System.Threading.Thread.Sleep(1000);
-        //    }
-
-        //    var outArgs = new JobResultsArgs
-        //    {
-        //        OutputMode = JobResultsArgs.OutputModeEnum.Xml,
-        //        Count = 0
-        //    };
-
-        //    try
-        //    {
-        //        using (var stream = job.Results(outArgs))
-        //        {
-        //            using (var rr = new ResultsReaderXml(stream))
-        //            {
-        //                foreach (var @event in rr)
-        //                {
-        //                    System.Console.WriteLine("EVENT:");
-        //                    GC.Collect();
-
-        //                    foreach (string key in @event.Keys)
-        //                    {
-        //                        System.Console.WriteLine("   " + key + " -> " + @event[key]);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Assert.Fail(string.Format("Reading Job result throw exception : {0} ", e));
-        //    }
-
-
-        //    try
-        //    {
-        //        using (var stream = service.Export((string)cli.Opts["search"]))
-        //        {
-        //            using (var rr = new ResultsReaderXml(stream))
-        //            {
-        //                foreach (var @event in rr)
-        //                {
-        //                    System.Console.WriteLine("EVENT:");
-        //                    GC.Collect();
-
-        //                    foreach (string key in @event.Keys)
-        //                    {
-        //                        System.Console.WriteLine("   " + key + " -> " + @event[key]);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Assert.Fail(string.Format("Export result throw exception : {0} ", e));
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Tests all output modes for Job.ResultsPreview
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void JobResultsPreviewOutputModeArgument()
-        //{
-        //    var type = typeof(SearchResultsArgs);
-
-        //    RunJobFuntionForEachEnum(
-        //        type,
-        //        (job, mode) =>
-        //            job.GetSearchResultsPreviewAsync(
-        //                new SearchResultsArgs
-        //                {
-        //                    OutputMode =
-        //                        (SearchResultsArgs)Enum.Parse(
-        //                            type,
-        //                            mode)
-        //                }));
-        //}
-
-        ///// <summary>
-        ///// Tests all output modes for Job.Events
-        ///// </summary>
-        //[Trait("class", "Service")]
-        //[Fact]
-        //public void JobEventsOutputModeArgument()
-        //{
-        //    var type = typeof(JobEventsArgs.OutputModeEnum);
-
-        //    RunJobFuntionForEachEnum(
-        //        type,
-        //        (job, mode) =>
-        //        job.Events(
-        //            new JobEventsArgs
-        //                {
-        //                    OutputMode =
-        //                        (JobEventsArgs.OutputModeEnum)Enum.Parse(
-        //                            type,
-        //                            mode)
-        //                }));
-        //}
 
         /// <summary>
         /// Run a job and a function on the job 
@@ -514,7 +148,7 @@ namespace Splunk.Client.UnitTesting
                     enumType,
                     (@enum) =>
                     {
-                        var job = this.RunWait(service, Query, jobArgs);
+                        var job = service.CreateJobAsync(Query, jobArgs).Result;
 
                         jobFunction(job, @enum);
 
@@ -526,9 +160,9 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests all output modes for Job.Events
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
-        public async void JobEventsTruncationModeArgument()
+        public void JobEventsTruncationModeArgument()
         {
             var type = typeof(TruncationMode);
 
@@ -548,13 +182,13 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests all search modes
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
         public void JobSearchModeArgument()
         {
             var type = typeof(SearchMode);
             JobArgs jobArgs = new JobArgs();
-            
+
             RunJobForEachEnum(
                 type,
                 (mode) => new JobArgs()
@@ -569,7 +203,7 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
         public void ExportSearchModeArgument()
         {
@@ -579,18 +213,18 @@ namespace Splunk.Client.UnitTesting
                 Query,
                 type,
                 (mode) => new SearchExportArgs()
-                {                    
+                {
                     SearchMode =
                         (SearchMode)Enum.Parse(
                                 type,
                                 mode)
                 });
         }
-     
+
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
         public void ExportTruncationModeArgument()
         {
@@ -608,117 +242,52 @@ namespace Splunk.Client.UnitTesting
                 });
         }
 
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
-        public void JobRefreshTest()
+        public async void JobRefreshTest()
         {
-            var cli = Command.Splunk("search");
-            cli.AddRule("search", typeof(string), "search string");
-            cli.Opts["search"] = "search index=_internal * | head 10 ";
-
-            var service = new Service(Scheme.Https, "localhost", 8089);
-            service.LoginAsync("admin", "changeme").Wait();
-            var job = service.CreateJobAsync((string)cli.Opts["search"]).Result;
-
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            TimeSpan max = new TimeSpan(0, 0, 0, 10);
-
-            while (!job.IsDone)
+            string search = "search index=_internal * | head 10 ";
+            TestHelper.GetInstance();
+            using (Service service = await TestHelper.Connect())
             {
-                Thread.Sleep(1000);
+                var job = await service.CreateJobAsync(search);
 
-                //has to call this to get the job.IsCompleted
-                job.GetAsync().Wait();
-                Console.WriteLine("jobUpdated={0}", job.Updated);
+                this.CheckJob(job, service);
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                TimeSpan max = new TimeSpan(0, 0, 0, 10);
 
-                if (stopwatch.Elapsed > max)
+                while (!job.IsDone)
                 {
-                    Assert.False(true, string.Format("The job is not finished within expected time {0} seconds", max.TotalSeconds));
+                    Thread.Sleep(1000);
+
+                    //has to call this to get the job.IsCompleted
+                    job.GetAsync().Wait();
+                    Console.WriteLine("jobUpdated={0}", job.Updated);
+
+                    if (stopwatch.Elapsed > max)
+                    {
+                        Assert.False(true, string.Format("The job is not finished within expected time {0} seconds", max.TotalSeconds));
+                    }
                 }
-            }
 
-            job.CancelAsync().Wait();
-        }
-
-        /// <summary>
-        /// Run export for each enum value in an enum type.
-        /// </summary>
-        /// <param name="enumType">The enum type</param>
-        /// <param name="getJobExportArgs">
-        /// The funtion to get arguments to run a job.
-        /// </param>
-        private void RunExportForEachEnum(
-            string search,
-            Type enumType,
-            Func<string, SearchExportArgs> getJobExportArgs)
-        {
-            var service = Connect();
-
-            ForEachEnum(
-                enumType,
-                (@enum) => service.StartSearchExportAsync(search,
-                    getJobExportArgs(@enum)).Wait());
-        }
-
-        /// <summary>
-        /// Run a job for each enum value in an enum type.
-        /// </summary>
-        /// <param name="enumType">The enum type</param>
-        /// <param name="getJobArgs">
-        /// The funtion to get arguments to run a job.
-        /// </param>
-        private void RunJobForEachEnum(
-            Type enumType,
-            Func<string, JobArgs> getJobArgs)
-        {
-            var service = Connect();
-
-            ForEachEnum(
-                enumType,
-                (@enum) =>
-                {
-                    var job = this.RunWait(
-                        service,
-                        Query,
-                        getJobArgs(@enum));
-
-                    job.CancelAsync().Wait();
-                });
-        }
-
-        /// <summary>
-        /// Perform an action for each enum value in an enum type.
-        /// </summary>
-        /// <param name="enumType">The enum type</param>
-        /// <param name="action">
-        /// The action to perform on an enum value
-        /// </param>
-        private static
-            void ForEachEnum(
-            Type enumType,
-            Action<string> action)
-        {
-            var enums = Enum.GetNames(enumType);
-            foreach (var @enum in enums)
-            {
-                action(@enum);
+                job.CancelAsync().Wait();
             }
         }
 
         /// <summary>
         /// Tests RemoteServerList property
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "Search")]
         [Fact]
         public void RemoteServerList()
         {
-            var array = "first,second";// new string[] { "first", "second" };
+            var array = "first,second";
 
             var args1 = new SearchExportArgs()
-                {
-                    RemoteServerList = array,
-                };
+            {
+                RemoteServerList = array,
+            };
 
             Assert.Equal("first,second", args1.RemoteServerList);
 
@@ -728,6 +297,134 @@ namespace Splunk.Client.UnitTesting
             };
 
             Assert.Equal("first,second", args2.RemoteServerList);
+        }
+
+        /// <summary>
+        /// Touches the job after it is queryable.
+        /// </summary>
+        /// <param name="job">The job</param>
+        private void CheckJob(Job job, Service service)
+        {
+            string dummyString;
+            //string[] dummyList;
+            long dummyInt;
+            bool dummyBool;
+            DateTime dummyDateTime;
+            double dummyDouble;
+
+            dummyDateTime = job.CursorTime;
+            //dummyString = job.Delegate;
+            dummyInt = job.DiskUsage;
+            DispatchState dummyDispatchState = job.DispatchState;
+            dummyDouble = job.DoneProgress;
+            dummyInt = job.DropCount;
+            dummyDateTime = job.EarliestTime;
+            dummyInt = job.EventAvailableCount;
+            dummyInt = job.EventCount;
+            dummyInt = job.EventFieldCount;
+            dummyBool = job.EventIsStreaming;
+            dummyBool = job.EventIsTruncated;
+            dummyString = job.EventSearch;
+            SortDirection sordirection = job.EventSorting;
+            long indexEarliestTime = job.IndexEarliestTime;
+            long indexLatestTime = job.IndexLatestTime;
+            dummyString = job.Keywords;
+            //dummyString = job.Label;
+
+            if (TestHelper.VersionCompare(service, "6.0") < 0)
+            {
+                dummyDateTime = job.LatestTime;
+            }
+
+            dummyInt = job.NumPreviews;
+            dummyInt = job.Priority;
+            dummyString = job.RemoteSearch;
+            //dummyString = job.ReportSearch;
+            dummyInt = job.ResultCount;
+            dummyBool = job.ResultIsStreaming;
+            dummyInt = job.ResultPreviewCount;
+            dummyDouble = job.RunDuration;
+            dummyInt = job.ScanCount;
+            dummyString = job.EventSearch;// Search;
+            DateTime jobearliestTime = job.EarliestTime;//SearchEarliestTime;
+            DateTime joblatestTime = job.LatestTime;
+            IReadOnlyList<string> providers = job.SearchProviders;
+            dummyString = job.Sid;
+            dummyInt = job.StatusBuckets;
+            dummyInt = job.Ttl;
+            dummyBool = job.IsDone;
+            dummyBool = job.IsFailed;
+            dummyBool = job.IsFinalized;
+            dummyBool = job.IsPaused;
+            dummyBool = job.IsPreviewEnabled;
+            dummyBool = job.IsRealTimeSearch;
+            dummyBool = job.IsRemoteTimeline;
+            dummyBool = job.IsSaved;
+            dummyBool = job.IsSavedSearch;
+            dummyBool = job.IsZombie;
+            Assert.Equal(job.Name, job.Sid);
+        }
+
+        /// <summary>
+        /// Run export for each enum value in an enum type.
+        /// </summary>
+        /// <param name="enumType">The enum type</param>
+        /// <param name="getJobExportArgs">
+        /// The funtion to get arguments to run a job.
+        /// </param>
+        private async void RunExportForEachEnum(
+            string search,
+            Type enumType,
+            Func<string, SearchExportArgs> getJobExportArgs)
+        {
+            TestHelper.GetInstance();
+            using (Service service = await TestHelper.Connect())
+            {
+                ForEachEnum(
+                    enumType,
+                    (@enum) => service.ExportSearchPreviewsAsync(search,
+                        getJobExportArgs(@enum)).Wait());
+            }
+        }
+
+        /// <summary>
+        /// Run a job for each enum value in an enum type.
+        /// </summary>
+        /// <param name="enumType">The enum type</param>
+        /// <param name="getJobArgs">
+        /// The funtion to get arguments to run a job.
+        /// </param>
+        private async void RunJobForEachEnum(
+            Type enumType,
+            Func<string, JobArgs> getJobArgs)
+        {
+            TestHelper.GetInstance();
+            using (Service service = await TestHelper.Connect())
+            {
+                ForEachEnum(
+                    enumType,
+                    (@enum) =>
+                    {
+                        var job = service.CreateJobAsync(Query, getJobArgs(@enum)).Result;
+                        job.CancelAsync().Wait();
+                    });
+            }
+        }
+
+        /// <summary>
+        /// Perform an action for each enum value in an enum type.
+        /// </summary>
+        /// <param name="enumType">The enum type</param>
+        /// <param name="action">
+        /// The action to perform on an enum value
+        /// </param>
+        private static void ForEachEnum(Type enumType, Action<string> action)
+        {
+            var enums = Enum.GetNames(enumType);
+            foreach (var @enum in enums)
+            {
+                action(@enum);
+            }
         }
     }
 }

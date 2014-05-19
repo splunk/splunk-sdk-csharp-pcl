@@ -62,17 +62,8 @@
     <Compile Include="ApplicationTest.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="ConfTest.cs" />
-    <Compile Include="IndexTest.cs" />
     <Compile Include="MessageTest.cs" />
     <Compile Include="NameSpaceTest.cs" />
-    <Compile Include="SavedSearchTest.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SearchTest.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
-    <Compile Include="ServiceTest.cs" />
-    <Compile Include="SettingsTest.cs" />
     <Compile Include="TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>

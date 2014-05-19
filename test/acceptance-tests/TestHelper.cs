@@ -96,7 +96,7 @@ namespace Splunk.Client.UnitTesting
             return (string.Compare(version, versionToCompare, StringComparison.InvariantCulture));
         }
 
-        public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds)
+        public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds=60)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -106,10 +106,32 @@ namespace Splunk.Client.UnitTesting
                 await index.GetAsync();
             }
 
-            Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated, current index.TotalEventCount={1}", watch.Elapsed, index.TotalEventCount);
+            Console.WriteLine("Sleep {0}s to wait index {2} 'TotalEventCount got updated, current index.TotalEventCount={1}", watch.Elapsed, index.TotalEventCount, index.Name);
             Assert.True(index.TotalEventCount == expectEventCount);
         }
-        
+
+        public static async Task RestartServer()
+        {
+            Stopwatch watch = new Stopwatch();
+
+            Service service = await Connect();
+            watch.Start();
+
+            try
+            {
+                await service.Server.RestartAsync();
+                Console.WriteLine("{1},  spend {0}s to restart server successfully", watch.Elapsed.TotalSeconds, DateTime.Now);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("----------------------------------------------------------------------------------------");
+                Console.WriteLine("{1}, spend {0}s to restart server failed:", watch.Elapsed.TotalSeconds, DateTime.Now);
+                Console.WriteLine(e);
+                Console.WriteLine("----------------------------------------------------------------------------------------");
+            }
+
+            watch.Stop();
+        }
 
         /// <summary>
         /// Load a file of options and arguments
@@ -155,8 +177,8 @@ namespace Splunk.Client.UnitTesting
                     case "host": UserConfigure.host = strs[1].TrimEnd().TrimStart(); break;
                 }
             }
-        }
-
+        }  
+ 
         internal class SplunkRC
         {
             public string username = "admin";

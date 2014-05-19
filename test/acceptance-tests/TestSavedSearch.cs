@@ -17,12 +17,11 @@
 namespace Splunk.Client.UnitTesting
 {
     using Splunk.Client;
-
     using System;
     using System.Linq.Expressions;
     using System.Linq;
     using System.Threading.Tasks;
-   using Xunit;
+    using Xunit;
 
     /// <summary>
     /// Tests saved searches
@@ -32,7 +31,7 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Touch test properties
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "SavedSearch")]
         [Fact]
         public async void SavedSearchesProperties()
         {
@@ -156,7 +155,7 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test Saved Search Create Read Update and Delete.
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "SavedSearch")]
         [Fact]
         public async void SavedSearchesUpdateProperties()
         {
@@ -168,13 +167,7 @@ namespace Splunk.Client.UnitTesting
                 SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
 
                 // Ensure test starts in a known good state
-                if (savedSearches.Any(a => a.Name == name))
-                {
-                    service.RemoveSavedSearchAsync(name).Wait();
-                    savedSearches.GetAsync().Wait();
-                }
-
-                Assert.False(savedSearches.Any(a => a.Name == name));
+                await this.RemoveSavedSearch(name);
 
                 SavedSearch savedSearch;
                 string search = "search index=sdk-tests * earliest=-1m";
@@ -351,7 +344,7 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test saved search dispatch
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "SavedSearch")]
         [Fact]
         public async void SavedSearchDispatchProperties()
         {
@@ -386,7 +379,7 @@ namespace Splunk.Client.UnitTesting
 
                 // Dispatch with some additional search options
                 job = savedSearch.DispatchAsync(new SavedSearchDispatchArgs() { DispatchEarliestTime = "aaaa" }).Result;
-                await Wait(job);;
+                await Wait(job); ;
                 //job.Timeline().Close();
                 job.CancelAsync().Wait();
 
@@ -452,7 +445,7 @@ namespace Splunk.Client.UnitTesting
 
                 //// Same as the previous dispatch except using custom arg
                 job = savedSearch.DispatchAsync(null, savedSearchTemplateArgs).Result;
-                await Wait(job);;
+                await Wait(job); ;
                 //job.Timeline().Close();
                 job.CancelAsync().Wait();
 
@@ -464,7 +457,7 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test saved search history
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "SavedSearch")]
         [Fact]
         public async Task SavedSearchHistory()
         {
@@ -473,22 +466,12 @@ namespace Splunk.Client.UnitTesting
             {
                 string name = "sdk-test1";
 
-                SavedSearchCollection savedSearches = await service.GetSavedSearchesAsync(
-                    new SavedSearchCollectionArgs { Count = 0 });
+                SavedSearchCollection savedSearches = await service.GetSavedSearchesAsync(new SavedSearchCollectionArgs { Count = 0 });
 
-                // Ensure test starts in a known good state
-
-                if (savedSearches.Any(a => a.Name == name))
-                {
-                    await service.RemoveSavedSearchAsync(name);
-                    await savedSearches.GetAsync();
-                }
-
-                Assert.False(savedSearches.Any(a => a.Name == name));
+                await this.RemoveSavedSearch(name);
                 string search = "search index=sdk-tests * earliest=-1m";
-
+                
                 // Create a saved search
-
                 SavedSearch savedSearch = await service.CreateSavedSearchAsync(name, search);
 
                 // Clear the history - even though we have a newly create saved search
@@ -496,7 +479,7 @@ namespace Splunk.Client.UnitTesting
                 // that had a matching history.
 
                 JobCollection history = await savedSearch.GetHistoryAsync();
-                
+
                 foreach (Job job in history)
                 {
                     await job.CancelAsync();
@@ -505,12 +488,12 @@ namespace Splunk.Client.UnitTesting
                 history = await savedSearch.GetHistoryAsync();
                 Assert.Equal(0, history.Count);
 
-                Job job1 = await savedSearch.DispatchAsync();               
+                Job job1 = await savedSearch.DispatchAsync();
                 history = await savedSearch.GetHistoryAsync();
                 Assert.Equal(1, history.Count);
                 Assert.True(history.Any(a => a.Sid == job1.Sid)); // this.Contains(history, job1.Sid));
 
-                Job job2 = await savedSearch.DispatchAsync();                
+                Job job2 = await savedSearch.DispatchAsync();
                 history = await savedSearch.GetHistoryAsync();
                 Assert.Equal(2, history.Count);
                 Assert.True(history.Any(a => a.Sid == job1.Sid));
@@ -546,6 +529,17 @@ namespace Splunk.Client.UnitTesting
             }
 
             return job;
+        }
+
+        private async Task RemoveSavedSearch(string name)
+        {
+            using (Service service = await TestHelper.Connect())
+            {
+                if ((await service.GetSavedSearchesAsync()).Any(a => a.Name == name))
+                {
+                    await service.RemoveSavedSearchAsync(name);
+                }
+            }
         }
     }
 }

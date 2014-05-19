@@ -1149,7 +1149,8 @@ namespace Splunk.Client.UnitTesting
 
                 //// Restart the server because it's required following a settings update
 
-                await service.Server.RestartAsync();
+                await TestHelper.RestartServer();
+
                 await service.LoginAsync("admin", "changeme");
 
                 //// Restore
@@ -1185,7 +1186,9 @@ namespace Splunk.Client.UnitTesting
 
                 //// Restart the server because it's required following a settings update
 
-                await service.Server.RestartAsync();
+
+                //await service.Server.RestartAsync();
+                await TestHelper.RestartServer();
             }
         }
 
@@ -1225,11 +1228,23 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task CanRestartServer()
         {
-            TestHelper.GetInstance();
-
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             using (var service = await TestHelper.Connect())
             {
-                await service.Server.RestartAsync();
+                try
+                {
+                    await service.Server.RestartAsync();
+                    Console.WriteLine("{1},  spend {0}s to restart server successfully", watch.Elapsed.TotalSeconds, DateTime.Now);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("----------------------------------------------------------------------------------------");
+                    Console.WriteLine("{1}, spend {0}s to restart server failed:", watch.Elapsed.TotalSeconds, DateTime.Now);
+                    Console.WriteLine(e);
+                    Console.WriteLine("----------------------------------------------------------------------------------------");
+                }
+
                 Assert.Null(service.SessionKey);
                 await service.LoginAsync("admin", "changeme");
             }

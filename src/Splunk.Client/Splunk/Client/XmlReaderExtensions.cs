@@ -31,24 +31,44 @@ namespace Splunk.Client
     internal static class XmlReaderExtensions
     {
         /// <summary>
-        /// 
+        /// Throws an exception if the source <see cref="XmlReader"/> is not
+        /// positioned as expected.
+        /// <paramref name="names"/>.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>. 
         /// </param>
         /// <param name="nodeType">
-        /// 
+        /// Expected XML node type.
         /// </param>
         /// <param name="names">
-        /// 
+        /// Optional list of names to match <paramref name="reader"/>.Name
+        /// against.
         /// </param>
+        /// <exception cref="ArgumentNullExeption">
+        /// <paramref name="reader"/> is <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// If <paramref name="reader"/>.NodeType is different than <paramref 
+        /// name="nodeType"/> or—if <paramref name="names"/> are provided—
+        /// paramref name="reader"/>.Name is not in the list of <paramref name=
+        /// "names"/>.
+        /// </exception>
         public static void EnsureMarkup(this XmlReader reader, XmlNodeType nodeType, params string[] names)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
 
-            if (reader.NodeType == nodeType && names.FirstOrDefault(name => reader.Name == name) != null)
+            if (reader.NodeType == nodeType)
             {
-                return;
+                if (names == null || names.Length == 0)
+                {
+                    return;
+                }
+
+                if (names.FirstOrDefault(name => reader.Name == name) != null)
+                {
+                    return;
+                }
             }
 
             var expected = Conjoin("or", names.Select(name => FormatNode(nodeType, name)).ToArray());
@@ -85,6 +105,18 @@ namespace Splunk.Client
         /// <returns>
         /// 
         /// </returns>
+        /// <exception cref="ArgumentNullExeption">
+        /// <paramref name="reader"/> or <paramref name="name"/> are <c>
+        /// null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="reader"/> is not positioned on an <see cref=
+        /// "XmlNodeType"/>.Element.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// If the value of attribute <paramref name="name"/> is empty or <c>
+        /// null</c>.
+        /// </exception>
         public static string GetRequiredAttribute(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentNullException>(reader != null);

@@ -200,7 +200,7 @@ namespace Splunk.Client.UnitTesting
                         var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
                         Assert.True(File.Exists(path));
 
-                        var twitterApplication = await service.InstallApplicationAsync(path, update: true);
+                        var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
 
                         //// Other asserts on the contents of the update
 

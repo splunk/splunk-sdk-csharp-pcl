@@ -19,6 +19,7 @@ namespace Splunk.Client.UnitTesting
     using System;
     using System.Linq;
     using Splunk.Client;
+    using SDKHelper;
     using Xunit;
 
     /// <summary>
@@ -33,7 +34,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async void Conf()
         {
-            Service service = await TestHelper.CreateService();
+            Service service = await SDKHelper.CreateService();
 
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
 
@@ -88,13 +89,13 @@ namespace Splunk.Client.UnitTesting
 
            
            TestHelper.CreateApp(app);
-           Service service =await TestHelper.CreateService();
+           Service service =await SDKHelper.CreateService();
             
             var apps = service.GetApplicationsAsync().Result;
             Assert.True(apps.Any(a => a.ResourceName.Title == app));
 
             Namespace ns = new Namespace(owner, app);
-            service = await TestHelper.CreateService(ns);
+            service = await SDKHelper.CreateService(ns);
 
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
             //if below failed, remove the file C:\Program Files\Splunk\etc\system\local\testconf.conf, serverInfo should provide home  path etc?            

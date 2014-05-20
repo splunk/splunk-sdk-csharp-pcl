@@ -22,6 +22,7 @@ namespace Splunk.Client.Examples.Search
     using System.Reactive.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SDKHelper;
 
     /// <summary>
     /// Starts a normal search and polls for completion to find out when the search has finished.
@@ -43,7 +44,7 @@ namespace Splunk.Client.Examples.Search
 
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
             {
                 SearchRealTime(service).Wait();
                 OneshotSearch(service).Wait();

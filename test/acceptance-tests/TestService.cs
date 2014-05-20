@@ -1204,6 +1204,7 @@ namespace Splunk.Client.UnitTesting
         public async Task CanRestartServer()
         {
             Stopwatch watch = Stopwatch.StartNew();            
+
             using (var service = await TestHelper.CreateService())
             {
                 try

@@ -212,6 +212,9 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
 
+            var info = await this.GetInfoAsync();
+            var startupTime = info.StartupTime;
+
             using (var response = await this.Context.PostAsync(this.Namespace, Restart))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
@@ -227,33 +230,21 @@ namespace Splunk.Client
                 cancellationTokenSource.CancelAfter(millisecondsDelay);
                 var token = cancellationTokenSource.Token;
 
-                //// Wait for the server to go
-
-                try
-                {
-                    for (int i = 0; ; i++)
-                    {
-                        using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName, token))
-                        { }
-
-                        await Task.Delay(millisecondsDelay: retryInterval);
-                    }
-                }
-                catch (HttpRequestException)
-                {
-                    this.Context.SessionKey = null; // because we're no longer authenticated
-                }
-
-                //// Wait for the server to come up
-
                 for (int i = 0; ; i++)
                 {
                     try
                     {
-                        using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName, token))
+                        info = await this.GetInfoAsync();
+
+                        if (startupTime < info.StartupTime)
                         {
+                            this.Context.SessionKey = null;
                             return;
                         }
+                    }
+                    catch (RequestException)
+                    {
+                        // because the server may return a failure code on the way up or down
                     }
                     catch (HttpRequestException e)
                     {

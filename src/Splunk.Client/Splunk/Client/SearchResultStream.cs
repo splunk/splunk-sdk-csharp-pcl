@@ -118,8 +118,8 @@ namespace Splunk.Client
             this.enumerated = true;
 
             for (SearchResult result; (result = await this.ReadResultAsync()) != null; )
-            { 
-                this.OnNext(result); 
+            {
+                this.OnNext(result);
             }
 
             this.OnCompleted();
@@ -142,7 +142,7 @@ namespace Splunk.Client
         async Task ReadMetadataAsync()
         {
             var metadata = new Metadata();
-            
+
             await metadata.ReadXmlAsync(this.response.XmlReader);
             this.metadata = metadata;
         }
@@ -238,14 +238,14 @@ namespace Splunk.Client
                 string preview = reader.GetRequiredAttribute("preview");
                 this.IsFinal = !BooleanConverter.Instance.Convert(preview);
 
-	            if (!await reader.ReadAsync())
-	            {
-	                return;
-	            }
-	
-	            reader.EnsureMarkup(XmlNodeType.Element, "meta");
-	            await reader.ReadAsync();
-	            reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");
+                if (!await reader.ReadAsync())
+                {
+                    return;
+                }
+
+                reader.EnsureMarkup(XmlNodeType.Element, "meta");
+                await reader.ReadAsync();
+                reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");
 
                 await reader.ReadEachDescendantAsync("field", async (r) =>
                 {

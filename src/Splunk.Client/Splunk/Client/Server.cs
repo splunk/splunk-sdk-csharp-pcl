@@ -24,6 +24,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
@@ -183,54 +184,46 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="millisecondsDelay">
         /// The time to wait before canceling the check for server availability.
-        /// The default value is <c>60000</c> indicating that the check for
+        /// The default value is <c>60000</c> specifying that the check for
         /// server avaialability will continue for up to 60 seconds. A value
         /// of <c>0</c> specifices that no check should be made. A value of 
         /// <c>-1</c> specifies an infinite wait time.
         /// </param>
+        /// <param name="retryInterval">
+        /// The time to wait between checks for server availability in 
+        /// milliseconds. The default value is <c>250</c> specifying that the
+        /// time between checks for server availability is one quarter of a 
+        /// second.
+        /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="millisecondsDelay"/> is less than <c>-1</c>.
         /// </exception>
-        /// <exception cref="AuthenticationFailureException">
-        /// </exception>
         /// <exception cref="HttpRequestException">
+        /// The restart operation failed.
         /// </exception>
         /// <exception cref="OperationCanceledException">
+        /// The check for server availability was canceled after <paramref 
+        /// name="millisecondsDelay"/>.
         /// </exception>
-        public async Task RestartAsync(int millisecondsDelay = 60000)
+        /// <exception cref="UnauthorizedAccessException">
+        /// Insufficient privileges to restart the current <see cref="Server"/>.
+        /// </exception>
+        public async Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
             Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
 
-            using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(this.ResourceName, "restart")))
+            var info = await this.GetInfoAsync();
+            var startupTime = info.StartupTime;
+
+            using (var response = await this.Context.PostAsync(this.Namespace, Restart))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
-            
+
             if (millisecondsDelay == 0)
             {
                 return;
             }
-
-            //// Wait until the server goes down
-
-            for (int i = 0; ; i++)
-            {
-                try
-                {
-                    using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName))
-                    {
-                        await Task.Delay(millisecondsDelay: 500);
-                    }
-                }
-                catch (HttpRequestException)
-                {
-                    break;
-                }
-            }
-
-            //// Wait for millisecondsDelay for the server to come up
-
-            this.Context.SessionKey = null; // We're no longer authenticated
 
             using (var cancellationTokenSource = new CancellationTokenSource())
             {
@@ -241,16 +234,29 @@ namespace Splunk.Client
                 {
                     try
                     {
-                        using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName, token))
+                        info = await this.GetInfoAsync();
+
+                        if (startupTime < info.StartupTime)
                         {
-                            await response.EnsureStatusCodeAsync(HttpStatusCode.Unauthorized);
-                            break;
+                            this.Context.SessionKey = null;
+                            return;
                         }
                     }
-                    catch (HttpRequestException)
+                    catch (RequestException)
                     {
-                        continue;
+                        // because the server may return a failure code on the way up or down
                     }
+                    catch (HttpRequestException e)
+                    {
+                        var innerException = e.InnerException as WebException;
+
+                        if (innerException == null || innerException.Status != WebExceptionStatus.ConnectFailure)
+                        {
+                            throw;
+                        }
+                    }
+
+                    await Task.Delay(millisecondsDelay: retryInterval);
                 }
             }
         }
@@ -278,6 +284,7 @@ namespace Splunk.Client
         #region Privates/internals
 
         internal static readonly ResourceName ClassResourceName = new ResourceName("server", "control");
+        internal static readonly ResourceName Restart = new ResourceName(ClassResourceName, "restart");
 
         #endregion
     }

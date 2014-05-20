@@ -58,14 +58,14 @@ namespace Splunk.Client.Examples
             //// Search : Pull model (foreach loop => IEnumerable)
 
             Job job = await service.CreateJobAsync("search index=_internal | head 10");
-            SearchResultStream searchResults;
+            SearchResultStream searchResultStream;
 
-            using (searchResults = await job.GetSearchResultsAsync())
+            using (searchResultStream = await job.GetSearchResultsAsync())
             {
                 int recordNumber = 0;
                 try
                 {
-                    foreach (var record in searchResults)
+                    foreach (var record in searchResultStream.ToEnumerable())
                     {
                         Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
                     }
@@ -80,12 +80,12 @@ namespace Splunk.Client.Examples
 
             job = await service.CreateJobAsync("search index=_internal | head 10");
 
-            using (searchResults = await job.GetSearchResultsAsync())
+            using (searchResultStream = await job.GetSearchResultsAsync())
             {
                 var manualResetEvent = new ManualResetEvent(true);
                 int recordNumber = 0;
 
-                searchResults.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
+                searchResultStream.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
                     onNext: (record) =>
                     {
                         Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
@@ -104,33 +104,33 @@ namespace Splunk.Client.Examples
                 manualResetEvent.WaitOne();
             }
 
-            //// Search : Export
+            //// Search : Export Previews
 
-            SearchExportStream searchExportStream;
+            SearchPreviewStream searchPreviewStream;
 
-            using (searchExportStream = service.StartSearchExportAsync("search index=_internal | head 100").Result)
+            using (searchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
             {
-                int recordNumber = 0;
-                int setNumber = 0;
+                int previewNumber = 0;
 
-                foreach (var searchResultSet in searchExportStream)
+                foreach (var searchPreview in searchPreviewStream.ToEnumerable())
                 {
-                    Console.WriteLine(string.Format("Result set {0}", ++setNumber));
+                    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, searchPreview.IsFinal ? "final" : "partial");
+                    int recordNumber = 0;
 
-                    foreach (var record in searchResultSet)
+                    foreach (var result in searchPreview.SearchResults)
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
                     }
                 }
             }
 
             //// Search : Oneshot
 
-            using (searchResults = await service.SearchOneshotAsync("search index=_internal | head 10"))
+            using (searchResultStream = await service.SearchOneshotAsync("search index=_internal | head 10"))
             {
-                foreach (var record in searchResults)
+                foreach (var result in searchResultStream.ToEnumerable())
                 {
-                    Console.WriteLine(record);
+                    Console.WriteLine(result);
                 }
             }
 
@@ -139,36 +139,36 @@ namespace Splunk.Client.Examples
             job = await service.CreateJobAsync("search index=_internal | head 10000");
             do
             {
-                using (searchResults = await job.GetSearchResultsPreviewAsync(new SearchResultsArgs() { Count = 0 }))
+                using (searchResultStream = await job.GetSearchResultsPreviewAsync(new SearchResultsArgs() { Count = 0 }))
                 {
                     int recordNumber = 0;
 
-                    foreach (var record in searchResults)
+                    foreach (var record in searchResultStream.ToEnumerable())
                     {
                         Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
                     }
                 }
             }
-            while (searchResults.ArePreview);
+            while (!searchResultStream.IsFinal);
 
             //// Search : Saved search
 
             job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours", dispatchArgs: new SavedSearchDispatchArgs());
 
-            using (searchResults = await job.GetSearchResultsAsync(new SearchResultsArgs() { Count = 0 }))
+            using (searchResultStream = await job.GetSearchResultsAsync(new SearchResultsArgs() { Count = 0 }))
             {
                 int recordNumber = 0;
 
-                foreach (var record in searchResults)
+                foreach (var result in searchResultStream.ToEnumerable())
                 {
-                    Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                    Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
                 }
             }
         }
 
         static async void Other()
         {
-            SearchResultStream searchResults;
+            SearchResultStream searchResultStream;
             Job job;
 
             //// Login
@@ -179,44 +179,39 @@ namespace Splunk.Client.Examples
             Console.WriteLine("Blocking search");
             job = await service.CreateJobAsync("search index=_internal | head 10", new JobArgs() { ExecutionMode = ExecutionMode.Blocking });
 
-            using (searchResults = await job.GetSearchResultsAsync())
+            using (searchResultStream = await job.GetSearchResultsAsync())
             {
-                foreach (var record in searchResults)
+                foreach (var result in searchResultStream.ToEnumerable())
                 {
-                    Console.WriteLine(record);
+                    Console.WriteLine(result);
                 }
             }
 
-            using (var searchExportStream = await service.StartSearchExportAsync("search index=_internal | head 100000"))
+            using (searchResultStream = await service.ExportSearchResultsAsync("search index=_internal | head 100000"))
             {
                 Console.WriteLine("Begin: Service.SearchExportAsync: Asyncrhonous use case");
                 int recordNumber = 0;
-                int setNumber = 0;
 
-                foreach (var resultSet in searchExportStream)
-                {
-                    Console.WriteLine(string.Format("Result set {0}", ++setNumber));
-                    var manualResetEvent = new ManualResetEvent(true);
+                var manualResetEvent = new ManualResetEvent(true);
 
-                    resultSet.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
-                        onNext: (record) =>
-                        {
-                            Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
-                        },
-                        onError: (exception) =>
-                        {
-                            Console.WriteLine(string.Format("SearchResults error: {0}", exception.Message));
-                            manualResetEvent.Set();
-                        },
-                        onCompleted: () =>
-                        {
-                            Console.WriteLine("Service.SearchExportAsync: Asyncrhonous use case");
-                            manualResetEvent.Set();
-                        });
+                searchResultStream.Subscribe(
+                    onNext: (result) =>
+                    {
+                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
+                    },
+                    onError: (exception) =>
+                    {
+                        Console.WriteLine(string.Format("SearchResults error: {0}", exception.Message));
+                        manualResetEvent.Set();
+                    },
+                    onCompleted: () =>
+                    {
+                        Console.WriteLine("Service.SearchExportAsync: Asyncrhonous use case");
+                        manualResetEvent.Set();
+                    });
 
-                    manualResetEvent.Reset(); 
-                    manualResetEvent.WaitOne();
-                }
+                manualResetEvent.Reset(); 
+                manualResetEvent.WaitOne();
             }
         }
     }

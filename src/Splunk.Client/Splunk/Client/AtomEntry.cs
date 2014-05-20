@@ -51,12 +51,12 @@ namespace Splunk.Client
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/TDthxd">REST API Reference Manual: Accessing
-    ///     Splunk resources</a>.
+    ///   <a href="http://goo.gl/TDthxd">REST API Reference Manual: Accessing
+    ///   Splunk resources</a>.
     /// </description></item>
     /// <item><description>
-    ///     <a href="http://goo.gl/YVTE9l">REST API Reference Manual: Atom Feed
-    ///     responses</a>.
+    ///   <a href="http://goo.gl/YVTE9l">REST API Reference Manual: Atom Feed
+    ///   responses</a>.
     /// </description></item>
     /// </list>
     /// </para>
@@ -144,30 +144,14 @@ namespace Splunk.Client
         /// <param name="reader">
         /// The reader from which to read.
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="Task"/> representing this operation.
+        /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
-
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-            else
-            {
-                reader.MoveToElement();
-            }
-
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "entry"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
+            reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
             var links = new Dictionary<string, Uri>();
             this.Links = links;
 
@@ -190,21 +174,11 @@ namespace Splunk.Client
                         break;
 
                     case "author":
-
+                        
                         await reader.ReadAsync();
-
-                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "name"))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
+                        reader.EnsureMarkup(XmlNodeType.Element, "name");
                         this.Author = await reader.ReadElementContentAsync(StringConverter.Instance);
-
-                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "author"))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
+                        reader.EnsureMarkup(XmlNodeType.EndElement, "author");
                         await reader.ReadAsync();
                         break;
 
@@ -220,20 +194,8 @@ namespace Splunk.Client
 
                     case "link":
 
-                        string href = reader.GetAttribute("href");
-
-                        if (string.IsNullOrWhiteSpace(href))
-                        {
-                            throw new InvalidDataException();  // TODO: Diagnostics
-                        }
-
-                        string rel = reader.GetAttribute("rel");
-
-                        if (string.IsNullOrWhiteSpace(rel))
-                        {
-                            throw new InvalidDataException();  // TODO: Diagnostics
-                        }
-
+                        var href = reader.GetRequiredAttribute("href");
+                        var rel = reader.GetRequiredAttribute("rel");
                         links[rel] = UriConverter.Instance.Convert(href);
                         await reader.ReadAsync();
                         break;
@@ -243,15 +205,11 @@ namespace Splunk.Client
                         this.Content = await ParsePropertyValueAsync(reader, 0);
                         break;
 
-                    default: throw new InvalidDataException(); // TODO: Diagnostics
+                    default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
                 }
             }
 
-            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "entry"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
+            reader.EnsureMarkup(XmlNodeType.EndElement, "entry");
             await reader.ReadAsync();
         }
 
@@ -396,7 +354,7 @@ namespace Splunk.Client
                         {
                             if (!(propertyValue is ExpandoObject))
                             {
-                                throw new InvalidDataException(); // TODO: Diagnostics
+                                throw new InvalidDataException(); // TODO: Diagnostics : conversion error
                             }
                         }
                         else
@@ -413,10 +371,7 @@ namespace Splunk.Client
                     dictionary.Add(propertyName, propertyValue);
                 }
 
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:dict"))
-                {
-                    throw new InvalidDataException();
-                }
+                reader.EnsureMarkup(XmlNodeType.EndElement, "s:dict");
             }
 
             await reader.ReadAsync();
@@ -435,11 +390,8 @@ namespace Splunk.Client
                 {
                     value.Add(await ParsePropertyValueAsync(reader, level + 1));
                 }
-
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:list"))
-                {
-                    throw new InvalidDataException();
-                }
+                
+                reader.EnsureMarkup(XmlNodeType.EndElement, "s:list");
             }
 
             await reader.ReadAsync();
@@ -482,27 +434,21 @@ namespace Splunk.Client
                             value = await ParseListAsync(reader, level);
                             break;
 
-                        default: throw new InvalidDataException(string.Format("Unexpected element name: {0}", reader.Name));
+                        default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
                     }
 
                     break;
 
                 case XmlNodeType.EndElement:
 
-                    if (reader.Name != name)
-                    {
-                        throw new InvalidDataException(); // TODO: Diagnostics
-                    }
+                    reader.EnsureMarkup(XmlNodeType.EndElement, name);
                     value = null;
                     break;
             }
 
-            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
+            reader.EnsureMarkup(XmlNodeType.EndElement, name);
             await reader.ReadAsync();
+
             return value;
         }
 

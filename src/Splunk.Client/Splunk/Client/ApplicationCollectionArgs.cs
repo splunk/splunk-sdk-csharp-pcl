@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/pqZJco">REST API: GET apps/local</a>
+    ///   <a href="http://goo.gl/pqZJco">REST API: GET apps/local</a>
     /// </description></item>
     /// </list>
     /// </remarks>
@@ -53,8 +53,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value specifying the first result (inclusive) from 
-        /// which to begin returning <see cref="Application"/> entries.
+        /// which to begin returning entries.
         /// </summary>
+        /// <remarks>
+        /// The <c>Offset</c> property is zero-based and cannot be negative. 
+        /// The default value is zero.
+        /// </remarks>
         /// <remarks>
         /// This value is zero-based and cannot be negative. The default value
         /// is zero.

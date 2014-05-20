@@ -27,7 +27,7 @@ namespace Splunk.Client.UnitTesting
     {
         [Trait("class", "Context")]
         [Fact]
-        public void Construct()
+        public void CanConstructContext()
         {
             client = new Context(Scheme.Https, "localhost", 8089);
 

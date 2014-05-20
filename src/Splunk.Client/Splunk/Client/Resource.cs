@@ -243,7 +243,7 @@ namespace Splunk.Client
 
             if (this.initialized)
             {
-                throw new InvalidOperationException(); // TODO: diagnostics
+                throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again");
             }
 
             // Compute namespace and resource name from entry.Id
@@ -252,7 +252,7 @@ namespace Splunk.Client
 
             if (path.Length < 3)
             {
-                throw new InvalidDataException(); // TODO: Diagnostics
+                throw new InvalidDataException(); // TODO: Diagnostics : conversion error
             }
 
             for (int i = 0; i < path.Length; i++)
@@ -275,14 +275,14 @@ namespace Splunk.Client
 
                     if (path.Length < 5)
                     {
-                        throw new InvalidDataException(); // TODO: Diagnostics
+                        throw new InvalidDataException(); // TODO: Diagnostics : conversion error
                     }
 
                     ns = new Namespace(user: path[2], app: path[3]);
                     resourceName = new ResourceName(new ArraySegment<string>(path, 4, path.Length - 4));
                     break;
 
-                default: throw new InvalidDataException(); // TODO: Diagnostics
+                default: throw new InvalidDataException(); // TODO: Diagnostics : conversion error
             }
 
             this.Context = context;

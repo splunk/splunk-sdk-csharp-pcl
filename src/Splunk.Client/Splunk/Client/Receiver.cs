@@ -39,7 +39,9 @@ namespace Splunk.Client
         /// 
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="ns"></param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
         internal Receiver(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
         { }
@@ -79,7 +81,7 @@ namespace Splunk.Client
 
                 using (var response = await this.Context.PostAsync(this.Namespace, StreamReceiver, content, args))
                 {
-                    await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                    await response.EnsureStatusCodeAsync(HttpStatusCode.NoContent);
                 }
             }
         }
@@ -111,34 +113,13 @@ namespace Splunk.Client
                     await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                     var reader = response.XmlReader;
 
-                    await reader.ReadAsync();
-
-                    if (reader.NodeType != XmlNodeType.XmlDeclaration)
-                    {
-                        throw new InvalidDataException(); // TODO: diagnostics
-                    }
-
-                    foreach (var name in new string[] { "response", "results", "result" })
-                    {
-                        await reader.ReadAsync();
-
-                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == name))
-                        {
-                            throw new InvalidDataException(); // TODO: diagnostics
-                        }
-                    }
+                    reader.Requires(await reader.MoveToDocumentElementAsync("response"));
+                    await reader.ReadElementSequenceAsync("results", "result");
 
                     var result = new SearchResult();
                     await result.ReadXmlAsync(reader);
-
-                    foreach (var name in new string[] { "result", "results", "response" })
-                    {
-                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
-                        {
-                            throw new InvalidDataException(); // TODO: diagnostics
-                        }
-                        await reader.ReadAsync();
-                    }
+                    
+                    await reader.ReadEndElementSequenceAsync("result", "results", "response");
 
                     return result;
                 }

@@ -25,7 +25,7 @@ namespace Splunk.Sdk.UnitTesting
     /// <summary>
     /// Application tests
     /// </summary>
-    public class ApplicationTest : TestHelper
+    public class ApplicationTest
     {
         /// <summary>
         /// The assert root string
@@ -33,36 +33,18 @@ namespace Splunk.Sdk.UnitTesting
         private static string assertRoot = "Application assert: ";
 
         /// <summary>
-        /// Cleans an application from Splunk -- requires a restart
-        /// </summary>
-        /// <param name="appName">The app name</param>
-        /// <param name="service">The connected service</param>
-        /// <returns>The new connection</returns>
-        private Service CleanApp(string appName, Service service)
-        {
-            ApplicationCollection apps = service.GetApplicationsAsync().Result;
-            if (apps.Any(a => a.Name == appName))
-            {
-                service.RemoveApplicationAsync(appName).Wait();
-                this.SplunkRestart();
-                service = this.Connect();
-            }
-
-            return service;
-        }
-
-        /// <summary>
         /// The app tests
         /// </summary>
+        [Trait("class", "Application")]
         [Fact]
-        public void Application()
+        public async void Application()
         {
             string dummyString;
             bool dummyBool;
 
-            Service service = Connect();
+            Service service = await TestHelper.CreateService();
 
-            ApplicationCollection apps = service.GetApplicationsAsync().Result;
+            ApplicationCollection apps = await service.GetApplicationsAsync();
             foreach (Application app in apps)
             {
                 try
@@ -83,7 +65,7 @@ namespace Splunk.Sdk.UnitTesting
                 dummyBool = app.Refresh;
                 dummyString = app.Version;
                 dummyBool = app.Configured;
-                if (this.VersionCompare(service, "5.0") < 0)
+                if (TestHelper.VersionCompare(service, "5.0") < 0)
                 {
                     //dummyBool = app.IsManageable;
                 }
@@ -107,8 +89,8 @@ namespace Splunk.Sdk.UnitTesting
 
             if (apps.Any(a => a.Name == "sdk-tests"))
             {
-
-                service = this.CleanApp("sdk-tests", service);
+                TestHelper.RemoveApp("sdk-tests");
+                service = await TestHelper.CreateService();
             }
 
             apps = service.GetApplicationsAsync().Result;
@@ -116,13 +98,13 @@ namespace Splunk.Sdk.UnitTesting
 
             ApplicationAttributes createArgs = new ApplicationAttributes();
             createArgs.ApplicationAuthor = "me";
-            if (this.VersionCompare(service, "4.2.4") >= 0)
+            if (TestHelper.VersionCompare(service, "4.2.4") >= 0)
             {
                 createArgs.Configured = false;
             }
             createArgs.Description = "this is a description";
             createArgs.Label = "SDKTEST";
-            if (this.VersionCompare(service, "5.0") < 0)
+            if (TestHelper.VersionCompare(service, "5.0") < 0)
             {
                 //createArgs.manageable", false);
             }
@@ -138,7 +120,7 @@ namespace Splunk.Sdk.UnitTesting
             Assert.Equal("SDKTEST", app2.Label);
             Assert.Equal("me", app2.ApplicationAuthor);
             Assert.False(app2.Configured, assertRoot + "#5");
-            if (this.VersionCompare(service, "5.0") < 0)
+            if (TestHelper.VersionCompare(service, "5.0") < 0)
             {
                 //Assert.False(app2.Manageable, assertRoot + "#6");
             }
@@ -152,7 +134,7 @@ namespace Splunk.Sdk.UnitTesting
             attr.Visible = false;
             attr.Version = "1.5";
 
-            if (this.VersionCompare(service, "5.0") < 0)
+            if (TestHelper.VersionCompare(service, "5.0") < 0)
             {
                 //app2.IsManageable = false;
             }
@@ -180,7 +162,8 @@ namespace Splunk.Sdk.UnitTesting
             //ApplicationUpdate appUpdate = app2.AppUpdate();
             //Assert.True(appUpdate.ContainsKey("eai:acl"), assertRoot + "#16");
 
-            service = this.CleanApp("sdk-tests", service);
+            TestHelper.RemoveApp("sdk-tests");
+            service = await TestHelper.CreateService();
             apps = service.GetApplicationsAsync().Result;
             Assert.False(apps.Any(a => a.Name == "sdk-tests"), assertRoot + "#17");
         }

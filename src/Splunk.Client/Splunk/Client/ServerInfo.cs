@@ -61,6 +61,23 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
+        /// Gets the name of the active license group for the Splunk server
+        /// instance.
+        /// </summary>
+        public string ActiveLicenseGroup
+        {
+            get { return this.GetValue("ActiveLicenseGroup", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the add ons installed on the Splunk server instance.
+        /// </summary>
+        public dynamic AddOns
+        {
+            get { return this.GetValue("AddOns"); }
+        }
+
+        /// <summary>
         /// Gets the build number for the Splunk server instance.
         /// </summary>
         public int Build
@@ -172,6 +189,15 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Gets the number of processor cores installed on the Splunk server
+        /// instance.
+        /// </summary>
+        public int NumberOfCores
+        {
+            get { return this.GetValue("NumberOfCores", Int32Converter.Instance); }
+        }
+
+        /// <summary>
         /// Gets build information for the operating system running splunkd.
         /// </summary>
         public string OSBuild
@@ -196,11 +222,37 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Gets the number of megabytes of physical memory installed on the 
+        /// Splunk server instance.
+        /// </summary>
+        public long PhysicalMemoryMB
+        {
+            get { return this.GetValue("PhysicalMemoryMB", Int64Converter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether realtime search is enabled on
+        /// the Splunk server instance.
+        /// </summary>
+        public bool RealtimeSearchEnabled
+        {
+            get { return this.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
+        }
+
+        /// <summary>
         /// Gets the fully qualified name of the Splunk server instance.
         /// </summary>
         public string ServerName
         {
             get { return this.GetValue("ServerName", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets the time that the Splunk server instance last started up.
+        /// </summary>
+        public DateTime StartupTime
+        {
+            get { return this.GetValue("StartupTime", UnixDateTimeConverter.Instance); }
         }
 
         /// <summary>

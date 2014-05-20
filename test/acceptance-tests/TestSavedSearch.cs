@@ -21,8 +21,9 @@ namespace Splunk.Client.UnitTesting
     using System.Linq.Expressions;
     using System.Linq;
     using System.Threading.Tasks;
+    using SDKHelper;
     using Xunit;
-
+    
     /// <summary>
     /// Tests saved searches
     /// </summary>
@@ -36,7 +37,7 @@ namespace Splunk.Client.UnitTesting
         public async void SavedSearchesProperties()
         {
             
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
 
@@ -160,7 +161,7 @@ namespace Splunk.Client.UnitTesting
         public async void SavedSearchesUpdateProperties()
         {
             
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 string name = "sdk-test1";
 
@@ -349,7 +350,7 @@ namespace Splunk.Client.UnitTesting
         public async void SavedSearchDispatchProperties()
         {
             
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 string name = "sdk-test1";
                 SavedSearchCollection savedSearches = service.GetSavedSearchesAsync().Result;
@@ -462,7 +463,7 @@ namespace Splunk.Client.UnitTesting
         public async Task SavedSearchHistory()
         {
             
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 string name = "sdk-test1";
 
@@ -533,7 +534,7 @@ namespace Splunk.Client.UnitTesting
 
         private async Task RemoveSavedSearch(string name)
         {
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 if ((await service.GetSavedSearchesAsync()).Any(a => a.Name == name))
                 {

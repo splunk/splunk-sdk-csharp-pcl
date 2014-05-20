@@ -20,7 +20,7 @@ namespace Splunk.Client.UnitTesting
     using System.Net;
     using System.Threading.Tasks;
     using System.Xml.Linq;
-    
+    using SDKHelper;
     using Xunit;
 
     public class TestContext : IUseFixture<AcceptanceTestingSetup>
@@ -29,7 +29,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public void CanConstructContext()
         {
-            client = new Context(Scheme.Https, "localhost", 8089);
+            client = new Context(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
 
             Assert.Equal(client.Scheme, Scheme.Https);
             Assert.Equal(client.Host, "localhost");

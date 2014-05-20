@@ -22,6 +22,7 @@ namespace Splunk.Client.Examples
     using System.Reactive.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using SDKHelper;
 
     /// <summary>
     /// Starts a normal search and polls for completion to find out when the search has finished.
@@ -43,7 +44,7 @@ namespace Splunk.Client.Examples
 
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
@@ -173,7 +174,7 @@ namespace Splunk.Client.Examples
 
             //// Login
 
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
+            var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search"));
             await service.LoginAsync("admin", "changeme");
 
             Console.WriteLine("Blocking search");

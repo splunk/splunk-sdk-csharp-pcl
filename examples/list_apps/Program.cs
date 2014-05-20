@@ -24,6 +24,7 @@ namespace Splunk.Examples.Submit
     using System.Threading;
     using System.Threading.Tasks;
     using Splunk.Client;
+    using SDKHelper;
 
     /// <summary>
     /// An example program to list apps installed on the server.
@@ -46,7 +47,7 @@ namespace Splunk.Examples.Submit
 
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }

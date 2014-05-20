@@ -24,6 +24,7 @@ namespace Splunk.Client.UnitTesting
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using SDKHelper;
     using Xunit;
 
     /// <summary>
@@ -41,7 +42,7 @@ namespace Splunk.Client.UnitTesting
             
             string indexName = "sdk-tests2_indexaccessors";
 
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 await this.RemoveIndex(indexName);
                 await service.CreateIndexAsync(indexName);
@@ -145,7 +146,7 @@ namespace Splunk.Client.UnitTesting
                 await TestHelper.RestartServer();
             }
 
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 Index index = await service.GetIndexAsync(indexName);
                 await index.EnableAsync();
@@ -166,7 +167,7 @@ namespace Splunk.Client.UnitTesting
             
             await this.RemoveIndex(indexName);
 
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 await service.CreateIndexAsync(indexName);
                 Index index = await service.GetIndexAsync(indexName);
@@ -210,9 +211,8 @@ namespace Splunk.Client.UnitTesting
         public async Task DefaultIndexArgs()
         {
             string indexName = "main";
-
             
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 Index index = await service.GetIndexAsync(indexName);
                 long currentEventCount = index.TotalEventCount;
@@ -287,7 +287,7 @@ namespace Splunk.Client.UnitTesting
         /// <param name="index">The index object</param>
         private async Task RemoveIndex(string indexName)
         {
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
                 {
@@ -305,7 +305,7 @@ namespace Splunk.Client.UnitTesting
                     catch (Exception e)
                     {
                         TestHelper.RestartServer().Wait();
-                        Service service1 = TestHelper.CreateService().Result;
+                        Service service1 = SDKHelper.CreateService().Result;
                         service1.RemoveIndexAsync(indexName).Wait();
                     }
                 }

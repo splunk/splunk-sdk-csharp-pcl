@@ -22,6 +22,7 @@ namespace Splunk.Client.UnitTesting
     using System.Collections.Generic;
     using System.Net;
     using Splunk.Client;
+    using SDKHelper;
     using Xunit;
 
     /// <summary>
@@ -37,7 +38,7 @@ namespace Splunk.Client.UnitTesting
         public async void ServiceCapabilities()
         {
             
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 List<string> expected = new List<string> 
             {
@@ -74,7 +75,7 @@ namespace Splunk.Client.UnitTesting
         public async void ServiceInfo()
         {
             
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 ServerInfo info = await service.Server.GetInfoAsync();
 
@@ -112,7 +113,7 @@ namespace Splunk.Client.UnitTesting
         {
             //ResponseMessage response;
             
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 ConfigurationCollection config;
 
@@ -132,7 +133,7 @@ namespace Splunk.Client.UnitTesting
                 }
 
                 // Logged in, request should succeed
-                await service.LoginAsync(TestHelper.UserConfigure.username, TestHelper.UserConfigure.password);
+                await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
                 config = await service.GetConfigurationsAsync();
                 Assert.NotNull(config);
 
@@ -163,7 +164,7 @@ namespace Splunk.Client.UnitTesting
         public async void Settings()
         {
             
-            Service service = await TestHelper.CreateService();
+            Service service = await SDKHelper.CreateService();
 
 
             ServerSettings settings = service.Server.GetSettingsAsync().Result;
@@ -210,7 +211,7 @@ namespace Splunk.Client.UnitTesting
             await TestHelper.RestartServer();
 
 
-            service = await TestHelper.CreateService();
+            service = await SDKHelper.CreateService();
 
             settings = service.Server.GetSettingsAsync().Result;
 
@@ -235,7 +236,7 @@ namespace Splunk.Client.UnitTesting
 
             // changing ports require a restart
             await TestHelper.RestartServer();
-            service = await TestHelper.CreateService();
+            service = await SDKHelper.CreateService();
 
             settings = service.Server.GetSettingsAsync().Result;
 

@@ -34,7 +34,7 @@ namespace Splunk.Client.UnitTesting
     /// <summary>
     /// Test helper class
     /// </summary>
-    static class TestHelper
+    public static class TestHelper
     {
         static TestHelper()
         {
@@ -210,7 +210,7 @@ namespace Splunk.Client.UnitTesting
             }
         }  
  
-        internal class SplunkRC
+        public class SplunkRC
         {
             public string username = "admin";
             public string password = "changeme";

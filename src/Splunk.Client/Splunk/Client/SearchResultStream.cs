@@ -237,7 +237,15 @@ namespace Splunk.Client
 
                 string preview = reader.GetRequiredAttribute("preview");
                 this.IsFinal = !BooleanConverter.Instance.Convert(preview);
-                await reader.ReadElementSequenceAsync("meta", "fieldOrder");
+
+	            if (!await reader.ReadAsync())
+	            {
+	                return;
+	            }
+	
+	            reader.EnsureMarkup(XmlNodeType.Element, "meta");
+	            await reader.ReadAsync();
+	            reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");
 
                 await reader.ReadEachDescendantAsync("field", async (r) =>
                 {

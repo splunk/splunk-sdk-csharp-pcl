@@ -302,7 +302,7 @@ namespace Splunk.Client.UnitTesting
                     {
                         await service.RemoveIndexAsync(indexName);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         TestHelper.RestartServer().Wait();
                         Service service1 = TestHelper.CreateService().Result;

@@ -135,89 +135,109 @@ namespace Splunk.Client.UnitTesting
             {
                 using (var service = await TestHelper.CreateService(ns))
                 {
-                    var collection = await service.GetApplicationsAsync();
-                    await collection.ReloadAsync();
+                    ApplicationCollection collection;
 
-                    foreach (var application in collection)
+                    var args = new ApplicationCollectionArgs()
                     {
-                        string value;
+                        Offset = 0,
+                        Count = 10
+                    };
 
-                        Assert.DoesNotThrow(() => value = string.Format("ApplicationAuthor = {0}", application.ApplicationAuthor));
-                        Assert.DoesNotThrow(() => value = string.Format("Author = {0}", application.Author));
-                        Assert.DoesNotThrow(() => value = string.Format("CheckForUpdates = {0}", application.CheckForUpdates));
-                        Assert.DoesNotThrow(() => value = string.Format("Configured = {0}", application.Configured));
-                        Assert.DoesNotThrow(() => value = string.Format("Description = {0}", application.Description));
-                        Assert.DoesNotThrow(() => value = string.Format("Disabled = {0}", application.Disabled));
-                        Assert.DoesNotThrow(() => value = string.Format("Eai = {0}", application.Eai));
-                        Assert.DoesNotThrow(() => value = string.Format("Id = {0}", application.Id));
-                        Assert.DoesNotThrow(() => value = string.Format("Label = {0}", application.Label));
-                        Assert.DoesNotThrow(() => value = string.Format("Links = {0}", application.Links));
-                        Assert.DoesNotThrow(() => value = string.Format("Name = {0}", application.Name));
-                        Assert.DoesNotThrow(() => value = string.Format("Namespace = {0}", application.Namespace));
-                        Assert.DoesNotThrow(() => value = string.Format("Published = {0}", application.Published));
-                        Assert.DoesNotThrow(() => value = string.Format("ResourceName = {0}", application.ResourceName));
-                        Assert.DoesNotThrow(() => value = string.Format("StateChangeRequiresRestart = {0}", application.StateChangeRequiresRestart));
-                        Assert.DoesNotThrow(() => value = string.Format("Updated = {0}", application.Updated));
-                        Assert.DoesNotThrow(() => value = string.Format("Version = {0}", application.Version));
-                        Assert.DoesNotThrow(() => value = string.Format("Visible = {0}", application.Visible));
+                    do
+                    {
+                        collection = await service.GetApplicationsAsync(args);
+                        await collection.ReloadAsync();
 
-                        if (application.Name == "twitter2")
+                        foreach (var application in collection)
                         {
-                            await application.RemoveAsync();
+                            string value;
 
-                            try
+                            Assert.DoesNotThrow(() => value = string.Format("ApplicationAuthor = {0}", application.ApplicationAuthor));
+                            Assert.DoesNotThrow(() => value = string.Format("Author = {0}", application.Author));
+                            Assert.DoesNotThrow(() => value = string.Format("CheckForUpdates = {0}", application.CheckForUpdates));
+                            Assert.DoesNotThrow(() => value = string.Format("Configured = {0}", application.Configured));
+                            Assert.DoesNotThrow(() => value = string.Format("Description = {0}", application.Description));
+                            Assert.DoesNotThrow(() => value = string.Format("Disabled = {0}", application.Disabled));
+                            Assert.DoesNotThrow(() => value = string.Format("Eai = {0}", application.Eai));
+                            Assert.DoesNotThrow(() => value = string.Format("Id = {0}", application.Id));
+                            Assert.DoesNotThrow(() => value = string.Format("Label = {0}", application.Label));
+                            Assert.DoesNotThrow(() => value = string.Format("Links = {0}", application.Links));
+                            Assert.DoesNotThrow(() => value = string.Format("Name = {0}", application.Name));
+                            Assert.DoesNotThrow(() => value = string.Format("Namespace = {0}", application.Namespace));
+                            Assert.DoesNotThrow(() => value = string.Format("Published = {0}", application.Published));
+                            Assert.DoesNotThrow(() => value = string.Format("ResourceName = {0}", application.ResourceName));
+                            Assert.DoesNotThrow(() => value = string.Format("StateChangeRequiresRestart = {0}", application.StateChangeRequiresRestart));
+                            Assert.DoesNotThrow(() => value = string.Format("Updated = {0}", application.Updated));
+                            Assert.DoesNotThrow(() => value = string.Format("Version = {0}", application.Version));
+                            Assert.DoesNotThrow(() => value = string.Format("Visible = {0}", application.Visible));
+
+                            if (application.Name == "twitter2")
                             {
-                                await application.GetAsync();
-                                Assert.False(true, "Expected ResourceNotFoundException");
+                                await application.RemoveAsync();
+
+                                try
+                                {
+                                    await application.GetAsync();
+                                    Assert.False(true, "Expected ResourceNotFoundException");
+                                }
+                                catch (ResourceNotFoundException)
+                                { }
                             }
-                            catch (ResourceNotFoundException)
-                            { }
                         }
+
+                        args.Offset += collection.Pagination.ItemsPerPage;
                     }
+                    while (args.Offset < collection.Pagination.TotalResults);
 
                     //// Install, update, and remove the Splunk App for Twitter Data, version 2.3.1
 
-                    var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
-                    Assert.True(File.Exists(path));
+                    IPHostEntry splunkHostEntry = await Dns.GetHostEntryAsync(service.Context.Host);
+                    IPHostEntry localHostEntry = await Dns.GetHostEntryAsync("localhost");
 
-                    var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
-
-                    //// Other asserts on the contents of the update
-
-                    Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
-                    Assert.Equal(true, twitterApplication.CheckForUpdates);
-                    Assert.Equal(false, twitterApplication.Configured);
-                    Assert.Equal("This application indexes Twitter's sample stream.", twitterApplication.Description);
-                    Assert.Equal("Splunk-Twitter Connector", twitterApplication.Label);
-                    Assert.Equal(false, twitterApplication.Refresh);
-                    Assert.Equal(false, twitterApplication.StateChangeRequiresRestart);
-                    Assert.Equal("2.3.0", twitterApplication.Version);
-                    Assert.Equal(true, twitterApplication.Visible);
-
-                    //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
-                    //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
-                    //// We might check that there is no update info for 2.3.1:
-                    ////    Assert.Null(twitterApplicationUpdateInfo.Update);
-                    //// Then change the version number to 2.3.0:
-                    ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
-                    //// Finally:
-                    //// ApplicationUpdateInfo twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
-                    //// Assert.NotNull(twitterApplicationUpdateInfo.Update);
-                    //// Assert.True(string.Compare(twitterApplicationUpdateInfo.Update.Version, "2.3.0") == 1, "expect the newer twitter app info");
-                    //// Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Update.Checksum);
-
-                    var twitterApplicationSetupInfo = await twitterApplication.GetSetupInfoAsync();
-                    var twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
-
-                    await twitterApplication.RemoveAsync();
-
-                    try
+                    if (splunkHostEntry.HostName == localHostEntry.HostName)
                     {
-                        await twitterApplication.GetAsync();
-                        Assert.False(true, "Expected ResourceNotFoundException");
+                        var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
+                        Assert.True(File.Exists(path));
+
+                        var twitterApplication = await service.InstallApplicationAsync(path, update: true);
+
+                        //// Other asserts on the contents of the update
+
+                        Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
+                        Assert.Equal(true, twitterApplication.CheckForUpdates);
+                        Assert.Equal(false, twitterApplication.Configured);
+                        Assert.Equal("This application indexes Twitter's sample stream.", twitterApplication.Description);
+                        Assert.Equal("Splunk-Twitter Connector", twitterApplication.Label);
+                        Assert.Equal(false, twitterApplication.Refresh);
+                        Assert.Equal(false, twitterApplication.StateChangeRequiresRestart);
+                        Assert.Equal("2.3.0", twitterApplication.Version);
+                        Assert.Equal(true, twitterApplication.Visible);
+
+                        //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
+                        //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
+                        //// We might check that there is no update info for 2.3.1:
+                        ////    Assert.Null(twitterApplicationUpdateInfo.Update);
+                        //// Then change the version number to 2.3.0:
+                        ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
+                        //// Finally:
+                        //// ApplicationUpdateInfo twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
+                        //// Assert.NotNull(twitterApplicationUpdateInfo.Update);
+                        //// Assert.True(string.Compare(twitterApplicationUpdateInfo.Update.Version, "2.3.0") == 1, "expect the newer twitter app info");
+                        //// Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Update.Checksum);
+
+                        var twitterApplicationSetupInfo = await twitterApplication.GetSetupInfoAsync();
+                        var twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
+
+                        await twitterApplication.RemoveAsync();
+
+                        try
+                        {
+                            await twitterApplication.GetAsync();
+                            Assert.False(true, "Expected ResourceNotFoundException");
+                        }
+                        catch (ResourceNotFoundException)
+                        { }
                     }
-                    catch (ResourceNotFoundException)
-                    { }
 
                     //// Create an app from one of the built-in templates
 
@@ -268,7 +288,7 @@ namespace Splunk.Client.UnitTesting
                     Assert.Equal(updateAttributes.Version, templatedApplication.Version);
                     Assert.Equal(updateAttributes.Visible, templatedApplication.Visible);
 
-                    Assert.False(twitterApplication.Disabled);
+                    Assert.False(templatedApplication.Disabled);
 
                     await templatedApplication.DisableAsync();
                     await templatedApplication.GetAsync(); // because POST apps/local/{name} does not return new data
@@ -279,8 +299,12 @@ namespace Splunk.Client.UnitTesting
                     Assert.False(templatedApplication.Disabled);
 
                     var templatedApplicationArchiveInfo = await templatedApplication.PackageAsync();
-                    Assert.True(File.Exists(templatedApplicationArchiveInfo.Path));
-                    File.Delete(templatedApplicationArchiveInfo.Path);
+
+                    if (splunkHostEntry.HostName == localHostEntry.HostName)
+                    {
+                        Assert.True(File.Exists(templatedApplicationArchiveInfo.Path));
+                        File.Delete(templatedApplicationArchiveInfo.Path);
+                    }
 
                     await templatedApplication.RemoveAsync();
                 }

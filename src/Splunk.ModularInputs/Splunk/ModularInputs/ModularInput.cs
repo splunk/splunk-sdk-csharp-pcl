@@ -36,6 +36,29 @@ namespace Splunk.ModularInputs
         }
     }
 
+    public class AwaitableProgress<T> : IProgress<T>
+    {
+        private event Action<T> handler = (T x) => { };
+
+        public void Report(T value)
+        {
+            this.handler(value);
+        }
+
+        public async Task<T> AwaitProgressAsync()
+        {
+            TaskCompletionSource<T> source = new TaskCompletionSource<T>();
+            Action<T> onReport = null;
+            onReport = (T x) =>
+            {
+                handler -= onReport;
+                source.SetResult(x);
+            };
+            handler += onReport;
+            return await source.Task;
+        }
+    }
+
     /// <summary>
     /// The <see cref="ModularInput"/> class represents the functionality of a
     /// modular input script (that is, an executable).
@@ -183,7 +206,7 @@ namespace Splunk.ModularInputs
                             await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: errorMessage);
                             await xmlWriter.WriteEndElementAsync();
                         }
-                        return 0;
+                        return -1;
                     }
                     else
                     {

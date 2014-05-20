@@ -119,7 +119,7 @@ namespace Splunk.Client
         {
             do
             {
-                var results = SearchResultStream.CreateAsync(this.response, leaveOpen: true).Result;
+                var results = SearchResultStream.CreateAsync(this.response).Result;
                 yield return results;
             }
             while (this.response.XmlReader.ReadToFollowingAsync("results").Result);
@@ -148,7 +148,7 @@ namespace Splunk.Client
         {
             do
             {
-                var searchResults = await SearchResultStream.CreateAsync(this.response, leaveOpen: true);
+                var searchResults = await SearchResultStream.CreateAsync(this.response);
                 this.OnNext(searchResults);
             }
             while (await this.response.XmlReader.ReadToFollowingAsync("results"));

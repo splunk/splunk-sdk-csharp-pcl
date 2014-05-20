@@ -34,35 +34,15 @@ namespace Splunk.ModularInputs.UnitTesting
     /// </summary>
     public class TestModularInputs
     {
-        /// <summary>
-        /// Input file folder
-        /// </summary>
-        static readonly string TestDataFolder = Path.Combine("Data", "ModularInputs");
-
-        /// <summary>
-        /// Input file containing input definition
-        /// </summary>
-        const string InputDefinitionFilePath = "InputDefinition.xml";
-
-        /// <summary>
-        /// Input file containing validation items
-        /// </summary>
-        const string ValidationItemsFilePath = "ValidationItems.xml";
-
-        /// <summary>
-        /// Input file containing expected validation error message.
-        /// </summary>
-        const string ValidationErrorMessageFilePath = "ValidationErrorMessage.xml";
-
-        /// <summary>
-        /// Input file containing scheme
-        /// </summary>
-        const string SchemeFilePath = "Scheme.xml";
-
-        /// <summary>
-        /// Input file containing events
-        /// </summary>
-        const string EventsFilePath = "Events.xml";
+        [Trait("class", "AwaitableProgress")]
+        [Fact]
+        public async Task AwaitProgressWorks()
+        {
+            AwaitableProgress<bool> progress = new AwaitableProgress<bool>();
+            Task<bool> triggered = progress.AwaitProgressAsync();
+            progress.Report(true);
+            Assert.Equal(true, await triggered);
+        }
 
         [Trait("class", "Splunk.ModularInputs.InputDefinition")]
         [Fact]
@@ -178,36 +158,10 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal(new List<long> { 52, 42 }, (List<long>)parameter);
         }
 
-        public static IEnumerable<Task> TriggeredSchedule(ManualResetEvent triggerEvent)
-        {
-            while (true)
-            {
-                yield return Task.Run(() =>
-                {
-                    triggerEvent.WaitOne();
-                    triggerEvent.Reset();
-                });
-            }
-        }
-
         class TestInput : ModularInput
         {
-            public List<ManualResetEvent> TriggerEvents { get; set; }
-
             public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter,
-                CancellationToken cancellationToken)
-            {
-                ManualResetEvent e = new ManualResetEvent(false);
-                TriggerEvents.Add(e);
-                int i = 0;
-                foreach (Task t in TriggeredSchedule(e))
-                {
-                    await t;
-                    await eventWriter.QueueEventForWriting(new Event {
-                        Data = "Test " + i
-                    });
-                }
-            }
+                CancellationToken cancellationToken) {}
 
             public override Scheme Scheme
             {
@@ -237,25 +191,24 @@ namespace Splunk.ModularInputs.UnitTesting
                 }
             }
 
-
-        }
-
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
-        [Fact]
-        public async Task StreamEventsCorrectly()
-        {
-            // Generate stdin with an input definition
-
-            using (StringReader stdin = new StringReader(""))
-            using (StringWriter stdout = new StringWriter())
-            using (StringWriter stderr = new StringWriter())
+            public override bool Validate(Validation validationItems, out string errorMessage)
             {
-                string[] args = {};
+                double min = (double)validationItems.Parameters["min"];
+                double max = (double)validationItems.Parameters["max"];
 
-                await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
-
-              
+                if (min >= max)
+                {
+                    errorMessage = "Max must be greater than min.";
+                    return false;
+                }
+                else
+                {
+                    errorMessage = "";
+                    return true;
+                }
             }
+
+
         }
 
         [Trait("class", "Splunk.ModularInputs.ModularInput")]
@@ -280,25 +233,82 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-       /*
         [Trait("class", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task WorkingValidation()
         {
+            XDocument doc = new XDocument(
+                new XElement("items",
+                    new XElement("server_host", "tiny"),
+                    new XElement("server_uri", "https://127.0.0.1:8089"),
+                    new XElement("checkpoint_dir", "/somewhere"),
+                    new XElement("session_key", "abcd"),
+                    new XElement("item",
+                        new XAttribute("name", "aaa"),
+                        new XElement("param", new XAttribute("name", "min"), 0),
+                        new XElement("param", new XAttribute("name", "max"), 12))));
+            using (StringReader stdin = new StringReader(doc.ToString()))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { "--validate-arguments" };
+                TestInput testInput = new TestInput();
+                int exitCode = await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+
+                Assert.Equal(0, exitCode);
+                Assert.Equal("", stdout.ToString());
+                Assert.Equal("", stderr.ToString());
+            }
         }
 
         [Trait("class", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task ValidationFails()
         {
+             XDocument doc = new XDocument(
+                new XElement("items",
+                    new XElement("server_host", "tiny"),
+                    new XElement("server_uri", "https://127.0.0.1:8089"),
+                    new XElement("checkpoint_dir", "/somewhere"),
+                    new XElement("session_key", "abcd"),
+                    new XElement("item",
+                        new XAttribute("name", "aaa"),
+                        new XElement("param", new XAttribute("name", "min"), 48),
+                        new XElement("param", new XAttribute("name", "max"), 12))));
+            using (StringReader stdin = new StringReader(doc.ToString()))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { "--validate-arguments" };
+                TestInput testInput = new TestInput();
+                int exitCode = await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+
+                Assert.NotEqual(0, exitCode);
+                Assert.Equal(
+                    "<error><message>Max must be greater than min.</message></error>",
+                    stdout.ToString().Trim()
+                );
+                Assert.Equal("", stderr.ToString());
+            }
         }
 
         [Trait("class", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task ValidationThrows()
         {
+            using (StringReader stdin = new StringReader("blargh!"))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { "--validate-arguments" };
+                TestInput testInput = new TestInput();
+                int exitCode = await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+  
+                Assert.NotEqual(0, exitCode);
+                Assert.NotEqual("", stdout.ToString());
+                Assert.Equal("", stderr.ToString());
+            }
         }
-        */
 
         [Trait("class", "Splunk.ModularInputs.Event")]
         [Fact]
@@ -368,38 +378,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal("0", doc.Element("event").Attribute("unbroken").Value);
         }
 
-        public class AwaitableProgress<T> : IProgress<T>
-        {
-            private event Action<T> handler = (T x) => { };
-
-            public void Report(T value)
-            {
-                this.handler(value);
-            }
-
-            public async Task<T> AwaitProgressAsync()
-            {
-                TaskCompletionSource<T> source = new TaskCompletionSource<T>();
-                Action<T> onReport = null;
-                onReport = (T x) =>
-                {
-                    handler -= onReport;
-                    source.SetResult(x);
-                };
-                handler += onReport;
-                return await source.Task;
-            }
-        }
-
-        [Trait("class", "AwaitableProgress")]
-        [Fact]
-        public async Task AwaitProgressWorks()
-        {
-            AwaitableProgress<bool> progress = new AwaitableProgress<bool>();
-            Task<bool> triggered = progress.AwaitProgressAsync();
-            progress.Report(true);
-            Assert.Equal(true, await triggered);
-        }
+       
 
         [Trait("class", "Splunk.ModularInputs.EventWriter")]
         [Fact]
@@ -424,8 +403,9 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal("", stdout.ToString());
         }
 
+        
         [Trait("class", "Splunk.ModularInputs.EventWriter")]
-        [Fact(Timeout=150)]
+        [Fact]
         public async Task EventWriterReportsOnWrite()
         {
             var progress = new AwaitableProgress<EventWrittenProgressReport>();
@@ -437,88 +417,39 @@ namespace Splunk.ModularInputs.UnitTesting
                 progress: progress
             );
 
-            var writtenTask = progress.AwaitProgressAsync();
-            eventWriter.QueueEventForWriting(new Event
+            try
             {
-                Time = DateTime.FromFileTime(0),
-                Data = "Boris the mad baboon"
-            });
-            var report = await writtenTask;
+                
+                var writtenTask = progress.AwaitProgressAsync();
+                eventWriter.QueueEventForWriting(new Event
+                {
+                    Time = DateTime.FromFileTime(0),
+                    Data = "Boris the mad baboon"
+                });
+                var report = await writtenTask;
+                
+                Assert.Equal("Boris the mad baboon", report.WrittenEvent.Data);
+                string expectedXml = "<?xml version=\"1.0\" encoding=\"utf-16\"?><stream>" +
+                    "<event xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=" +
+                    "\"http://www.w3.org/2001/XMLSchema\" unbroken=\"0\"><data>Boris the mad " +
+                    "baboon</data><time>-11644502400</time></event>";
 
-            Assert.Equal("Boris the mad baboon", report.WrittenEvent.Data);
-            string expectedXml = "<?xml version=\"1.0\" encoding=\"utf-16\"?><stream>" +
-                "<event xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=" +
-                "\"http://www.w3.org/2001/XMLSchema\" unbroken=\"0\"><data>Boris the mad " +
-                "baboon</data><time>-11644502400</time></event>";
+                Assert.Equal(expectedXml, stdout.ToString().Trim());
+                Assert.Equal("", stderr.ToString());
+                
+                var completedTask = progress.AwaitProgressAsync();
+                eventWriter.Dispose();
+                report = await completedTask;
 
-            Assert.Equal(expectedXml, stdout.ToString().Trim());
-            Assert.Equal("", stderr.ToString());
-
-            var completedTask = progress.AwaitProgressAsync();
-            eventWriter.Dispose();
-            report = await completedTask;
-
-            Assert.Equal("", stderr.ToString());
-            Assert.True(stdout.ToString().EndsWith("</stream>"));
+                Assert.Equal("", stderr.ToString());
+                Assert.True(stdout.ToString().EndsWith("</stream>"));
+            }
+            finally
+            {
+                // EventWriter.Dispose() is idempotent, so there is no problem if this is invoked twice.
+                eventWriter.Dispose(); 
+            }
         }
-
-        /// <summary>
-        /// Assert equal with expected file content.
-        /// </summary>
-        /// <param name="expectedFilePath">Relative file path</param>
-        /// <param name="actual">Data to check</param>
-        static void AssertEqualWithExpectedFile(
-            string expectedFilePath,
-            string actual)
-        {
-            var expected = ReadFileFromDataFolderAsString(expectedFilePath);
-            Assert.Equal(expected, actual);
-        }
-
-        /// <summary>
-        /// Read file from data directory as a string
-        /// </summary>
-        /// <param name="relativePath">Relative path to the resource</param>
-        /// <returns>Resource content</returns>
-        static string ReadFileFromDataFolderAsString(string relativePath)
-        {
-            return File.ReadAllText(GetDataFilePath(relativePath));
-        }
-
-        /// <summary>
-        /// Read file from data directory as a test reader
-        /// </summary>
-        /// <param name="relativePath">Relative path to the resource</param>
-        /// <returns>Resource content</returns>
-        static TextReader ReadFileFromDataFolderAsReader(string relativePath)
-        {
-            return File.OpenText(GetDataFilePath(relativePath));
-        }
-
-        /// <summary>
-        /// Get full path to the data file.
-        /// </summary>
-        /// <param name="relativePath">Relative path to the data folder.</param>
-        /// <returns>A full path</returns>
-        static string GetDataFilePath(string relativePath)
-        {
-            return Path.Combine(TestDataFolder, relativePath);
-        }
-
-
-
-       
-        /// <summary>
-        /// Redirect console in
-        /// </summary>
-        /// <param name="target">Destination of the redirection</param>
-        static void SetConsoleIn(TextReader target)
-        {
-            // Must set Console encoding to be UTF8. Otherwise, Script.Run
-            // will call the setter of OutputEncoding which results in
-            // resetting Console.In (which should be a System.Console bug).
-            Console.InputEncoding = Encoding.UTF8;
-            Console.SetIn(target);
-        }
+         
     }
 }

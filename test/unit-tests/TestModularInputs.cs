@@ -203,7 +203,7 @@ namespace Splunk.ModularInputs.UnitTesting
                 foreach (Task t in TriggeredSchedule(e))
                 {
                     await t;
-                    eventWriter.QueueEventForWriting(new Event {
+                    await eventWriter.QueueEventForWriting(new Event {
                         Data = "Test " + i
                     });
                 }
@@ -252,8 +252,7 @@ namespace Splunk.ModularInputs.UnitTesting
             {
                 string[] args = {};
 
-                TestInput testInput = new TestInput();
-                await testInput.RunAsync(args, stdin, stdout, stderr);
+                await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
 
               
             }
@@ -270,7 +269,7 @@ namespace Splunk.ModularInputs.UnitTesting
             {
                 string[] args = { "--scheme" };
                 TestInput testInput = new TestInput();
-                await testInput.RunAsync(args, stdin, stdout, stderr);
+                await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
  
                 XDocument doc = XDocument.Parse(stdout.ToString());
                 Assert.Equal("Random numbers", doc.Element("scheme").Element("title").Value);
@@ -281,6 +280,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
+       /*
         [Trait("class", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task WorkingValidation()
@@ -298,6 +298,7 @@ namespace Splunk.ModularInputs.UnitTesting
         public async Task ValidationThrows()
         {
         }
+        */
 
         [Trait("class", "Splunk.ModularInputs.Event")]
         [Fact]
@@ -424,7 +425,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         [Trait("class", "Splunk.ModularInputs.EventWriter")]
-        [Fact]
+        [Fact(Timeout=150)]
         public async Task EventWriterReportsOnWrite()
         {
             var progress = new AwaitableProgress<EventWrittenProgressReport>();
@@ -457,6 +458,8 @@ namespace Splunk.ModularInputs.UnitTesting
             eventWriter.Dispose();
             report = await completedTask;
 
+            Assert.Equal("", stderr.ToString());
+            Assert.True(stdout.ToString().EndsWith("</stream>"));
         }
 
         /// <summary>

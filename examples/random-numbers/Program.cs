@@ -51,7 +51,7 @@ namespace random_numbers
                                 new XAttribute("name", "max"),
                                 12)))));
             StringReader stdinReader = new StringReader(doc.ToString());
-            p.RunAsync(args, stdin: stdinReader).Wait();
+            RunAsync<Program>(args, stdin: stdinReader).Wait();
             return;
         }
 
@@ -111,7 +111,7 @@ namespace random_numbers
 
             for (int i = 0; i < 5; i++)
             {
-                await Task.Delay(1000, cancellationToken);
+                await Task.Delay(50, cancellationToken);
                 if (cancellationToken.IsCancellationRequested)
                     break;
                 await eventWriter.QueueEventForWriting(new Event

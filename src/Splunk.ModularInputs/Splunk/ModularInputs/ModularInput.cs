@@ -63,12 +63,6 @@ namespace Splunk.ModularInputs
 
         #endregion
 
-        #region Fields
-
-        private CancellationToken cancellationToken;
-
-        #endregion
-
         #region Methods
 
         /// <summary>
@@ -94,12 +88,12 @@ namespace Splunk.ModularInputs
         /// exceptions and internal progress messages encountered during 
         /// execution are written to the splunkd log file.
         /// </remarks>
-        public async Task<int> RunAsync(string[] args,
+        public async static Task<int> RunAsync<T>(string[] args,
             TextReader stdin = null,
             TextWriter stdout = null,
             TextWriter stderr = null,
             CancellationToken cancellationToken = default(CancellationToken),
-            IProgress<EventWrittenProgressReport> progress = null)
+            IProgress<EventWrittenProgressReport> progress = null) where T : ModularInput, new()
         {
             if (cancellationToken.IsCancellationRequested)
                 return -1;
@@ -131,6 +125,7 @@ namespace Splunk.ModularInputs
             {
                 try
                 {
+                    T script = new T();
                     if (args.Length == 0)
                     {
                         List<Task> instances = new List<Task>();
@@ -140,7 +135,7 @@ namespace Splunk.ModularInputs
                             Deserialize(stdin);
                         foreach (InputDefinition inputDefinition in inputDefinitions)
                         {
-                            instances.Add(this.StreamEventsAsync(inputDefinition, writer, cancellationToken));
+                            instances.Add(script.StreamEventsAsync(inputDefinition, writer, cancellationToken));
                         }
 
                         await Task.WhenAll(instances.ToArray());
@@ -148,7 +143,7 @@ namespace Splunk.ModularInputs
                     }
                     else if (args[0].ToLower().Equals("--scheme"))
                     {
-                        Scheme scheme = this.Scheme;
+                        Scheme scheme = script.Scheme;
                         if (scheme != null)
                         {
                             StringWriter stringWriter = new StringWriter();
@@ -159,7 +154,6 @@ namespace Splunk.ModularInputs
                         else
                         {
                             throw new NullReferenceException("Scheme was null; could not serialize.");
-                            return -1;
                         }
                     }
                     else if (args[0].ToLower().Equals("--validate-arguments"))
@@ -170,7 +164,7 @@ namespace Splunk.ModularInputs
                         {
                             Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
                                 Deserialize(stdin);
-                            if (this.Validate(validation, out errorMessage))
+                            if (script.Validate(validation, out errorMessage))
                             {
                                 return 0; // Validation succeeded
                             }

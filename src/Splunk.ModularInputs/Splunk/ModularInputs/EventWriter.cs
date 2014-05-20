@@ -78,40 +78,34 @@ namespace Splunk.ModularInputs
         {
             if (disposed)
                 throw new ObjectDisposedException("EventWriter already disposed.");
-            lock (synchronizationObject)
-            {
-                if (eventQueueMonitor == null)
-                    eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
-            }
+            if (eventQueueMonitor == null)
+                eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
             await Task.Run(() => eventQueue.Add(e));
         }
     
-        public void Dispose()
+        public async void Dispose()
         {
-            Dispose(true);
+            await Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
+        protected virtual async Task Dispose(bool disposing)
         {
-            lock (synchronizationObject)
+            if (disposed) return;
+
+            if (eventQueue.IsAddingCompleted)
+                return;
+            eventQueue.CompleteAdding();
+            if (eventQueueMonitor != null)
+                await eventQueueMonitor;
+            writer.Close();
+            this.Progress.Report(new EventWrittenProgressReport
             {
-                if (disposed) return;
+                Timestamp = DateTime.Now,
+                WrittenEvent = new Event { }
+            });
 
-                if (eventQueue.IsAddingCompleted)
-                    return;
-                eventQueue.CompleteAdding();
-                if (eventQueueMonitor != null)
-                    eventQueueMonitor.Wait();
-                writer.Close();
-                this.Progress.Report(new EventWrittenProgressReport
-                {
-                    Timestamp = DateTime.Now,
-                    WrittenEvent = new Event { }
-                });
-
-                disposed = true;
-            }
+            disposed = true;
         }
 
 

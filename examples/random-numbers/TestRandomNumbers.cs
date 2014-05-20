@@ -39,7 +39,6 @@ namespace random_numbers
                 Args = args;
                 cancellationTokenSource = new CancellationTokenSource();
                 Progress = new AwaitableProgress<EventWrittenProgressReport>();
-                Script = new Program();
                 Stdout = new StringWriter();
                 Stderr = new StringWriter();
                 Stdin = new StringReader(stdinText);
@@ -47,7 +46,7 @@ namespace random_numbers
 
             public async Task<int> RunAsync()
             {
-                return await Script.RunAsync(Args, Stdin, Stdout, Stderr, cancellationTokenSource.Token, this.Progress);
+                return await ModularInput.RunAsync<Program>(Args, Stdin, Stdout, Stderr, cancellationTokenSource.Token, this.Progress);
 
             }
 

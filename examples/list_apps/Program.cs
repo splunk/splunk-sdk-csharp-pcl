@@ -24,7 +24,7 @@ namespace Splunk.Examples.Submit
     using System.Threading;
     using System.Threading.Tasks;
     using Splunk.Client;
-    using SDKHelper;
+    using Splunk.Client.Helpers;
 
     /// <summary>
     /// An example program to list apps installed on the server.

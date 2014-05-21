@@ -22,7 +22,7 @@ namespace Splunk.Client.UnitTesting
     using System.Collections.Generic;
     using System.Net;
     using Splunk.Client;
-    using SDKHelper;
+    using Splunk.Client.Helpers;
     using Xunit;
 
     /// <summary>

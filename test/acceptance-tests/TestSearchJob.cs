@@ -26,7 +26,7 @@ namespace Splunk.Client.UnitTesting
     using System.Net;
     using System.Text.RegularExpressions;
     using Splunk.Client;
-    using SDKHelper;
+    using Splunk.Client.Helpers;
     using Xunit;
 
     /// <summary>

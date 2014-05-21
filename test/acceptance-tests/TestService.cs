@@ -28,7 +28,7 @@ namespace Splunk.Client.UnitTesting
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Security;
-    using SDKHelper;
+    using Splunk.Client.Helpers;
     using Xunit;
 
     public class TestService : IUseFixture<AcceptanceTestingSetup>
@@ -200,7 +200,7 @@ namespace Splunk.Client.UnitTesting
                         var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
                         Assert.True(File.Exists(path));
 
-                        var twitterApplication = await service.InstallApplicationAsync(path, update: true);
+                        var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
 
                         //// Other asserts on the contents of the update
 

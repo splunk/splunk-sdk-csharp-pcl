@@ -20,7 +20,7 @@ namespace Splunk.Client.UnitTesting
     using System.Net;
     using System.Threading.Tasks;
     using System.Xml.Linq;
-    using SDKHelper;
+    using Splunk.Client.Helpers;
     using Xunit;
 
     public class TestContext : IUseFixture<AcceptanceTestingSetup>

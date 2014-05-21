@@ -64,9 +64,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\sdkhelper\SDKHelper.csproj">
+    <ProjectReference Include="..\..\src\Splunk.Client.Helpers\Splunk.Client.Helpers.csproj">
       <Project>{0b0c43f2-ea9c-45ee-a8f7-7a2916dd1717}</Project>
-      <Name>SDKHelper</Name>
+      <Name>Splunk.Client.Helpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>

@@ -19,7 +19,7 @@ namespace Splunk.Client.UnitTesting
     using System;
     using System.Linq;
     using Splunk.Client;
-    using SDKHelper;
+    using Splunk.Client.Helpers;
     using Xunit;
 
     /// <summary>

@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace SDKHelper
+namespace Splunk.Client.Helpers
 {
     using System;
     using System.Linq;

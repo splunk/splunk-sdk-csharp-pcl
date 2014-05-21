@@ -20,7 +20,7 @@ namespace Splunk.Examples.Authenticate
     using System.Net;
     using System.Threading.Tasks;
     using Splunk.Client;
-    using SDKHelper;
+    using Splunk.Client.Helpers;
 
     /// <summary>
     /// An example program to authenticate to the server and print the received

@@ -158,6 +158,15 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
+        /// Gets the version of the Atom Feed generator that produced the
+        /// current <see cref="Resource"/>.
+        /// </summary>
+        public Version GeneratorVersion
+        {
+            get { return this.snapshot.GeneratorVersion; }
+        }
+
+        /// <summary>
         /// Gets the Splunk management URI for accessing the current <see cref=
         /// "Resource"/>.
         /// </summary>

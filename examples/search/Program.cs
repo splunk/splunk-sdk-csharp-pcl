@@ -23,6 +23,7 @@ namespace Splunk.Client.Examples.Search
     using System.Threading;
     using System.Threading.Tasks;
     using SDKHelper;
+    using System.Diagnostics;
 
     /// <summary>
     /// Starts a normal search and polls for completion to find out when the search has finished.
@@ -110,20 +111,39 @@ namespace Splunk.Client.Examples.Search
 
             Job job = await service.CreateJobAsync(query, jobArgs);
 
-            //this sleep should be removed if DVPL-4503 is fixed.
-            //Thread.Sleep(5000);
-            for (var i = 0; i < 5; i++)
+            int fieldCount = -1;
+
+            Stopwatch watch = Stopwatch.StartNew();
+            while (true)
             {
-                System.Console.WriteLine("============================= Snapshot {0}=================================", i);
 
                 using (SearchResultStream searchResults = await job.GetSearchResultsPreviewAsync())
                 {
                     System.Diagnostics.Debug.Assert(!searchResults.IsFinal);
-                    System.Console.WriteLine("searchResults count:{0}", searchResults.Count());
 
+                    if (searchResults.FieldNames.Count != fieldCount)
+                    {
+                        System.Console.WriteLine("============================= Snapshot {0}=================================", watch.Elapsed);
+
+                        System.Console.WriteLine("searchResults isFinal:{0}", searchResults.IsFinal);
+                        System.Console.WriteLine("searchResults FieldNames.Count:{0}", searchResults.FieldNames.Count);
+
+                        int i = 0;
+
+                        foreach (var x in searchResults.ToEnumerable())
+                        {
+                            Console.WriteLine(x);
+                        }
+                        Console.WriteLine(i);
+                    }
+
+                    if (watch.Elapsed > new TimeSpan(0, 0, 10))
+                    {
+                        break;
+                    }
+
+                    fieldCount = searchResults.FieldNames.Count;
                 }
-
-                Thread.Sleep(1000);
             }
 
             await job.CancelAsync();

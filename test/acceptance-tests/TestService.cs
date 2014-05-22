@@ -47,7 +47,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public async Task CanCrudStoragePasswords()
+        public async void  CanCrudStoragePasswords()
         {
             foreach (var ns in TestNamespaces)
             {
@@ -99,7 +99,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Access Control")]
         [Fact]
-        public async Task CanLoginAndLogoff()
+        public async void  CanLoginAndLogoff()
         {
             using (var service = await SDKHelper.CreateService(Namespace.Default))
             {
@@ -130,7 +130,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Applications")]
         [Fact]
-        public async Task CanCrudApplications()
+        public async void  CanCrudApplications()
         {
             foreach (var ns in TestNamespaces)
             {
@@ -318,7 +318,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Configuration")]
         [Fact]
-        public async Task CanCrudConfiguration() // no delete operation is available
+        public async void  CanCrudConfiguration() // no delete operation is available
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -377,7 +377,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Configuration")]
         [Fact]
-        public async Task CanGetConfigurations()
+        public async void  CanGetConfigurations()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -387,7 +387,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Configuration")]
         [Fact]
-        public async Task CanReadConfigurations()
+        public async void  CanReadConfigurations()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -414,7 +414,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Indexes")]
         [Fact]
-        public async Task CanGetIndexes()
+        public async void  CanGetIndexes()
         {
             using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
@@ -561,7 +561,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Indexes")]
         [Fact]
-        public async Task CanCrudIndex()
+        public async void  CanCrudIndex()
         {
             using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
@@ -606,7 +606,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public async Task CanCrudSavedSearch()
+        public async void  CanCrudSavedSearch()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -688,7 +688,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public async Task CanDispatchSavedSearch()
+        public async void  CanDispatchSavedSearch()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -701,7 +701,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public async Task CanGetSavedSearchHistory()
+        public async void  CanGetSavedSearchHistory()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -748,7 +748,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public async Task CanGetSavedSearches()
+        public async void  CanGetSavedSearches()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -758,7 +758,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Saved Searches")]
         [Fact]
-        public async Task CanUpdateSavedSearch()
+        public async void  CanUpdateSavedSearch()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -772,7 +772,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanGetJob()
+        public async void  CanGetJob()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -797,7 +797,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanGetJobs()
+        public async void  CanGetJobs()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -824,7 +824,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanCreateJobAndGetResults()
+        public async void  CanCreateJobAndGetResults()
         {
             var expectedFieldNames = new List<string>
             {
@@ -904,7 +904,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanExportSearchPreviews()
+        public async void CanExportSearchPreviews()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -966,7 +966,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanExportSearchResults()
+        public async void CanExportSearchResults()
         {
             using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port))
             {
@@ -1032,7 +1032,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Search Jobs")]
         [Fact]
-        public async Task CanSearchOneshot()
+        public async void  CanSearchOneshot()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1061,7 +1061,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Server")]
         [Fact]
-        public async Task CanCrudServerMessages()
+        public async void CanCrudServerMessages()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1110,7 +1110,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Server")]
         [Fact]
-        public async Task CanCrudServerSettings()
+        public async void  CanCrudServerSettings()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1196,7 +1196,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: System")]
         [Fact]
-        public async Task CanGetServerInfo()
+        public async void  CanGetServerInfo()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1226,7 +1226,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: Server")]
         [Fact]
-        public async Task CanRestartServer()
+        public async void  CanRestartServer()
         {
             Stopwatch watch = Stopwatch.StartNew();            
 
@@ -1252,7 +1252,7 @@ namespace Splunk.Client.UnitTesting
 
         [Trait("class", "Service: System")]
         [Fact]
-        public async Task CanSendEvents()
+        public async void  CanSendEvents()
         {
             using (var service = await SDKHelper.CreateService())
             {

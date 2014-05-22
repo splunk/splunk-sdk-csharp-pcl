@@ -15,7 +15,7 @@
  */
 
 //// TODO:
-//// [O] Contracts
+//// [X] Contracts
 //// [X] Documentation
 
 namespace Splunk.Client.Refactored
@@ -311,14 +311,14 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public override int GetHashCode()
         {
-            return this.ToString().GetHashCode();
+            return this.ResourceName.GetHashCode();
         }
 
         /// <summary>
-        /// 
+        /// Returns the enumeration of all dynamic member names.
         /// </summary>
         /// <returns>
-        /// 
+        /// The list of dynamic member names.
         /// </returns>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
@@ -338,19 +338,32 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-        /// 
+        /// Provides the implementation for operations that get dynamic member
+        /// values.
         /// </summary>
         /// <param name="binder">
-        /// 
+        /// Provides information about the object that called the dynamic 
+        /// operation. The <paramref name="binder"/>.Name property provides the
+        /// name of the member on which the dynamic operation is performed.
+        /// The <paramref name="binder"/>.IgnoreCase property specifies whether
+        /// the member name is case-sensitive.
         /// </param>
         /// <param name="result">
-        /// 
+        /// The result of the operation.
         /// </param>
         /// <returns>
-        /// 
+        /// <c>true</c> if the operation is successful; otherwise, <c>false</c>.
+        /// If this method returns <c>false</c>, the run-time binder of the 
+        /// language determines the behavior. In most cases, a run-time 
+        /// exception is thrown.
         /// </returns>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
+            if (binder.IgnoreCase)
+            {
+                throw new NotSupportedException("Case insensitive language bindings are not supported");
+            }
+
             result = this.snapshot.Adapter.GetValue(binder.Name);
             return result != null;
         }

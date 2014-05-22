@@ -37,7 +37,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Index")]
         [Fact]
-        public async void IndexAccessors()
+        public async Task IndexAccessors()
         {
             string indexName = "sdk-tests2_indexaccessors";
 
@@ -161,7 +161,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Index")]
         [Fact]
-        public async void IndexArgs()
+        public async Task IndexArgs()
         {
             string indexName = "sdk-tests2_indexargs";
 
@@ -208,7 +208,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Index")]
         [Fact]
-        public async void DefaultIndexArgs()
+        public async Task DefaultIndexArgs()
         {
             string indexName = "main";
 

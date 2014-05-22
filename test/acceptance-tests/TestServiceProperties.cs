@@ -14,16 +14,16 @@
  * under the License.
  */
 
-using System.Linq;
-
 namespace Splunk.Client.UnitTesting
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using Splunk.Client;
     using SDKHelper;
     using Xunit;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// This class tests all the Splunk Service methods.
@@ -35,7 +35,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "ServiceCapabilities")]
         [Fact]
-        public async void ServiceCapabilities()
+        public async Task ServiceCapabilities()
         {
 
             using (Service service = await SDKHelper.CreateService())
@@ -72,7 +72,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "ServiceInfo")]
         [Fact]
-        public async void ServiceInfo()
+        public async Task ServiceInfo()
         {
 
             using (Service service = await SDKHelper.CreateService())
@@ -109,20 +109,20 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "ServiceLogin")]
         [Fact]
-        public async void ServiceLogin()
-        {         
+        public async Task ServiceLogin()
+        {
             Service service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
-            ConfigurationCollection config = await service.GetConfigurationsAsync();
-            Console.WriteLine(config.Count);
+            ConfigurationCollection config = null;
+
             // Not logged in, should fail with 401
             try
             {
                 config = await service.GetConfigurationsAsync();
-                Assert.True(false, "Expected HttpException");
+                Assert.True(false, "Expected AuthenticationFailureException");
             }
-            catch (Exception e)
+            catch (AuthenticationFailureException e)
             {
-                Assert.True(e.InnerException.Message.Contains("401"));
+                Assert.True(e.Message.Contains("401"));
             }
 
             // Logged in, request should succeed
@@ -135,16 +135,11 @@ namespace Splunk.Client.UnitTesting
             try
             {
                 config = await service.GetConfigurationsAsync();
-                Assert.True(false, "Expected HttpException");
+                Assert.True(false, "Expected AuthenticationFailureException");
             }
-            catch (WebException ex)
+            catch (AuthenticationFailureException ex)
             {
-                Assert.Equal(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode());
-            }
-            catch (Exception e)
-            {
-                //TODO, if dev fix the aggregate exception issue, should only catch the above exception
-                Assert.True(e.InnerException.Message.Contains("401"));
+                Assert.True(ex.Message.Contains("401"));
             }
         }
     
@@ -154,7 +149,7 @@ namespace Splunk.Client.UnitTesting
         /// and then reverts back to the original
         /// </summary>
         [Fact]
-        public async void Settings()
+        public async Task Settings()
         {
 
             Service service = await SDKHelper.CreateService();

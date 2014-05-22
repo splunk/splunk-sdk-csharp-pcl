@@ -22,6 +22,7 @@ namespace Splunk.Sdk.UnitTesting
     using Xunit;
     using SDKHelper;
     using System;
+    using System.Threading.Tasks;
     
     /// <summary>
     /// Application tests
@@ -38,7 +39,7 @@ namespace Splunk.Sdk.UnitTesting
         /// </summary>
         [Trait("class", "Application")]
         [Fact]
-        public async void Application()
+        public async Task Application()
         {
             string dummyString;
             bool dummyBool;

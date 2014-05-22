@@ -34,7 +34,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "SavedSearch")]
         [Fact]
-        public async void SavedSearchesProperties()
+        public async Task SavedSearchesProperties()
         {
 
             using (Service service = await SDKHelper.CreateService())
@@ -158,7 +158,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "SavedSearch")]
         [Fact]
-        public async void SavedSearchesUpdateProperties()
+        public async Task SavedSearchesUpdateProperties()
         {
 
             using (Service service = await SDKHelper.CreateService())
@@ -343,7 +343,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "SavedSearch")]
         [Fact]
-        public async void SavedSearchDispatchProperties()
+        public async Task SavedSearchDispatchProperties()
         {
 
             using (Service service = await SDKHelper.CreateService())
@@ -457,7 +457,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "SavedSearch")]
         [Fact]
-        public async void SavedSearchHistory()
+        public async Task SavedSearchHistory()
         {
             using (Service service = await SDKHelper.CreateService())
             {

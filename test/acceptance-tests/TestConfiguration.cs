@@ -21,6 +21,7 @@ namespace Splunk.Client.UnitTesting
     using Splunk.Client;
     using SDKHelper;
     using Xunit;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Tests the configurations
@@ -32,7 +33,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public async void Conf()
+        public async Task Conf()
         {
             Service service = await SDKHelper.CreateService();
 
@@ -77,7 +78,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public async void ConfCRUD()
+        public async Task ConfCRUD()
         {            
             // Create a fresh app to use as the container for confs that we will
             // create in this test. There is no way to delete a conf once it's

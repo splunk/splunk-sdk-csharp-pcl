@@ -14,17 +14,17 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client.Helpers;
+    
     using Xunit;
 
     /// <summary>

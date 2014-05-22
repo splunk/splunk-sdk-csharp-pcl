@@ -14,9 +14,11 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
+    using Splunk.Client.Helpers;
+    
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -28,7 +30,7 @@ namespace Splunk.Client.UnitTesting
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Security;
-    using Splunk.Client.Helpers;
+    
     using Xunit;
 
     public class TestService : IUseFixture<AcceptanceTestingSetup>

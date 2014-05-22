@@ -16,13 +16,15 @@
 
 using System.Linq;
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Collections.Generic;
     using System.Net;
-    using Splunk.Client;
-    using Splunk.Client.Helpers;
+    
     using Xunit;
 
     /// <summary>

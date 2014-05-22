@@ -16,13 +16,12 @@
 
 namespace Splunk.Client.Examples.Search
 {
+    using Splunk.Client.Helpers;
     using System;
     using System.Net;
-    using System.Reactive.Concurrency;
     using System.Reactive.Linq;
     using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client.Helpers;
 
     /// <summary>
     /// Starts a normal search and polls for completion to find out when the search has finished.

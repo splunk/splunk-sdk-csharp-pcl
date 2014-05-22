@@ -47,6 +47,7 @@
     <Compile Include="TestIndexAttributes.cs" />
     <Compile Include="TestIndexCollectionArgs.cs" />
     <Compile Include="TestModularInputs.cs" />
+    <Compile Include="TestResource.cs" />
     <Compile Include="TestResourceName.cs" />
     <Compile Include="TestSavedSearchAttributes.cs" />
     <Compile Include="TestSavedSearchCollectionArgs.cs" />

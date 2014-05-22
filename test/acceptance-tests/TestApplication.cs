@@ -91,7 +91,7 @@ namespace Splunk.Sdk.UnitTesting
 
             if (apps.Any(a => a.Name == "sdk-tests"))
             {
-                TestHelper.RemoveApp("sdk-tests");
+                await TestHelper.RemoveApp("sdk-tests");
                 service = await SDKHelper.CreateService();
             }
 
@@ -164,7 +164,7 @@ namespace Splunk.Sdk.UnitTesting
             //ApplicationUpdate appUpdate = app2.AppUpdate();
             //Assert.True(appUpdate.ContainsKey("eai:acl"), assertRoot + "#16");
 
-            TestHelper.RemoveApp("sdk-tests");
+            await  TestHelper.RemoveApp("sdk-tests");
             service = await SDKHelper.CreateService();
             apps = service.GetApplicationsAsync().Result;
             Assert.False(apps.Any(a => a.Name == "sdk-tests"), assertRoot + "#17");

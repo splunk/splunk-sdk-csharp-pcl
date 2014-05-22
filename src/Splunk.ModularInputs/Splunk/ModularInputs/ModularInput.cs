@@ -20,44 +20,9 @@ namespace Splunk.ModularInputs
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
-
-    public static class ExtensionMethods
-    {
-        public static async Task WaitForCancellationAsync(this CancellationToken cancellationToken)
-        {
-            TaskCompletionSource<bool> source = new TaskCompletionSource<bool>();
-            cancellationToken.Register(() => source.SetResult(true));
-            await source.Task;
-            return;
-        }
-    }
-
-    public class AwaitableProgress<T> : IProgress<T>
-    {
-        private event Action<T> handler = (T x) => { };
-
-        public void Report(T value)
-        {
-            this.handler(value);
-        }
-
-        public async Task<T> AwaitProgressAsync()
-        {
-            TaskCompletionSource<T> source = new TaskCompletionSource<T>();
-            Action<T> onReport = null;
-            onReport = (T x) =>
-            {
-                handler -= onReport;
-                source.SetResult(x);
-            };
-            handler += onReport;
-            return await source.Task;
-        }
-    }
 
     /// <summary>
     /// The <see cref="ModularInput"/> class represents the functionality of a
@@ -111,16 +76,12 @@ namespace Splunk.ModularInputs
         /// exceptions and internal progress messages encountered during 
         /// execution are written to the splunkd log file.
         /// </remarks>
-        public async static Task<int> RunAsync<T>(string[] args,
+        public async Task<int> RunAsync(string[] args,
             TextReader stdin = null,
             TextWriter stdout = null,
             TextWriter stderr = null,
-            CancellationToken cancellationToken = default(CancellationToken),
-            IProgress<EventWrittenProgressReport> progress = null) where T : ModularInput, new()
+            IProgress<EventWrittenProgressReport> progress = null)
         {
-            if (cancellationToken.IsCancellationRequested)
-                return -1;
-
             if (progress == null)            
                 progress = new Progress<EventWrittenProgressReport>();
             
@@ -148,7 +109,6 @@ namespace Splunk.ModularInputs
             {
                 try
                 {
-                    T script = new T();
                     if (args.Length == 0)
                     {
                         List<Task> instances = new List<Task>();
@@ -158,7 +118,7 @@ namespace Splunk.ModularInputs
                             Deserialize(stdin);
                         foreach (InputDefinition inputDefinition in inputDefinitions)
                         {
-                            instances.Add(script.StreamEventsAsync(inputDefinition, writer, cancellationToken));
+                            instances.Add(this.StreamEventsAsync(inputDefinition, writer));
                         }
 
                         await Task.WhenAll(instances.ToArray());
@@ -166,7 +126,7 @@ namespace Splunk.ModularInputs
                     }
                     else if (args[0].ToLower().Equals("--scheme"))
                     {
-                        Scheme scheme = script.Scheme;
+                        Scheme scheme = this.Scheme;
                         if (scheme != null)
                         {
                             StringWriter stringWriter = new StringWriter();
@@ -187,7 +147,7 @@ namespace Splunk.ModularInputs
                         {
                             Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
                                 Deserialize(stdin);
-                            if (script.Validate(validation, out errorMessage))
+                            if (this.Validate(validation, out errorMessage))
                             {
                                 return 0; // Validation succeeded
                             }
@@ -196,7 +156,7 @@ namespace Splunk.ModularInputs
                         {
                             if (errorMessage == null)
                             {
-                                errorMessage = e.ToString().Replace(Environment.NewLine, " | ");
+                                ;
                             }
                         }
 
@@ -231,8 +191,7 @@ namespace Splunk.ModularInputs
         /// <param name="inputDefinition">
         /// Input definition from Splunk for this input.
         /// </param>
-        public abstract Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter,
-            CancellationToken cancellationToken);
+        public abstract Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter);
 
         /// <summary>
         /// Performs validation for configurations of a new input being

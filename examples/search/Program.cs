@@ -17,10 +17,7 @@
 namespace Splunk.Client.Examples.Search
 {
     using System;
-    using System.Net;
-    using System.Reactive.Concurrency;
     using System.Reactive.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -28,24 +25,10 @@ namespace Splunk.Client.Examples.Search
     /// </summary>
     class Program
     {
-        static Program()
-        {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
-            // 1. Instantiate a WebRequestHandler
-            // 2. Set its ServerCertificateValidationCallback
-            // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
-
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
-            {
-                return true;
-            };
-        }
-
         static void Main(string[] args)
         {
             using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
             {
-                SearchRealTime(service).Wait();
                 OneshotSearch(service).Wait();
             }
         }
@@ -69,65 +52,6 @@ namespace Splunk.Client.Examples.Search
                     Console.WriteLine(record);
                 }
             }
-
-            //Use JobArgs to define the search
-            JobArgs args = new JobArgs
-            {
-                AutoCancel = 0
-            };
-
-            using (SearchResultStream searchResults = await service.SearchOneshotAsync("search index=_internal | head 5", args))
-            {
-                foreach (SearchResult record in searchResults.ToEnumerable())
-                {
-                    Console.WriteLine(record);
-                }
-            }
-
-            await service.LogoffAsync();
-        }
-
-        /// <summary>
-        /// Do real time seach
-        /// </summary>
-        /// <param name="service">The service.</param>
-        /// <returns></returns>
-        static async Task SearchRealTime(Service service)
-        {
-
-            await service.LoginAsync("admin", "changeme");
-
-            // Realtime window is 5 minutes
-            string query = "search index=_internal";
-
-            var jobArgs = new JobArgs
-            {
-                SearchMode = SearchMode.Realtime,
-                EarliestTime = "rt-5m",
-                LatestTime = "rt",
-            };
-
-            Job job = await service.CreateJobAsync(query, jobArgs);
-
-            //this sleep should be removed if DVPL-4503 is fixed.
-            //Thread.Sleep(5000);
-            for (var i = 0; i < 5; i++)
-            {
-                System.Console.WriteLine("============================= Snapshot {0}=================================", i);
-
-                using (SearchResultStream searchResults = await job.GetSearchResultsPreviewAsync())
-                {
-                    System.Diagnostics.Debug.Assert(!searchResults.IsFinal);
-                    System.Console.WriteLine("searchResults count:{0}", searchResults.Count());
-
-                }
-
-                Thread.Sleep(1000);
-            }
-
-            await job.CancelAsync();
-
-            await service.LogoffAsync();
         }
     }
 }

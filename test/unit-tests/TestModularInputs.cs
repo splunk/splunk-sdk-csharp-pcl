@@ -18,16 +18,36 @@ namespace Splunk.ModularInputs.UnitTesting
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
     using System.Threading.Tasks;
 
     using Splunk.ModularInputs;
 
     using Xunit;
-    using System.Xml;
     using System.Xml.Serialization;
     using System.Xml.Linq;
-    using System.Threading;
+
+    public class AwaitableProgress<T> : IProgress<T>
+    {
+        private event Action<T> Handler = (T x) => { };
+
+        public void Report(T value)
+        {
+            this.Handler(value);
+        }
+
+        public async Task<T> AwaitProgressAsync()
+        {
+            var source = new TaskCompletionSource<T>();
+            Action<T> onReport = null;
+            onReport = (T x) =>
+            {
+                Handler -= onReport;
+                source.SetResult(x);
+            };
+            Handler += onReport;
+            return await source.Task;
+        }
+    }
 
     /// <summary>
     /// Test classes in Splunk.ModularInputs namespace
@@ -160,8 +180,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
         class TestInput : ModularInput
         {
-            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter,
-                CancellationToken cancellationToken) {}
+            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) {}
 
             public override Scheme Scheme
             {
@@ -221,8 +240,7 @@ namespace Splunk.ModularInputs.UnitTesting
             using (StringWriter stderr = new StringWriter())
             {
                 string[] args = { "--scheme" };
-                TestInput testInput = new TestInput();
-                await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+                await new TestInput().RunAsync(args, stdin, stdout, stderr);
  
                 XDocument doc = XDocument.Parse(stdout.ToString());
                 Assert.Equal("Random numbers", doc.Element("scheme").Element("title").Value);
@@ -253,7 +271,7 @@ namespace Splunk.ModularInputs.UnitTesting
             {
                 string[] args = { "--validate-arguments" };
                 TestInput testInput = new TestInput();
-                int exitCode = await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
 
                 Assert.Equal(0, exitCode);
                 Assert.Equal("", stdout.ToString());
@@ -281,7 +299,7 @@ namespace Splunk.ModularInputs.UnitTesting
             {
                 string[] args = { "--validate-arguments" };
                 TestInput testInput = new TestInput();
-                int exitCode = await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
 
                 Assert.NotEqual(0, exitCode);
                 Assert.Equal(
@@ -302,7 +320,7 @@ namespace Splunk.ModularInputs.UnitTesting
             {
                 string[] args = { "--validate-arguments" };
                 TestInput testInput = new TestInput();
-                int exitCode = await ModularInput.RunAsync<TestInput>(args, stdin, stdout, stderr);
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
   
                 Assert.NotEqual(0, exitCode);
                 Assert.NotEqual("", stdout.ToString());

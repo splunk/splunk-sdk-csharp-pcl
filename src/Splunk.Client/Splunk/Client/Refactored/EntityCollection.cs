@@ -22,9 +22,9 @@
 //// [O] Contracts
 //// [O] Documentation
 
-namespace Splunk.Client
+namespace Splunk.Client.Refactored
 {
-    using Splunk.Client.Refactored;
+    using Splunk.Client;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -55,6 +55,21 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
+        /// Initializes a new <see cref="EntityCollection"/> instance.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a Splunk service endpoint.
+        /// <param name="name">
+        /// An object identifying a Splunk resource within <paramref name=
+        /// "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        protected internal EntityCollection(Service service, ResourceName name)
+            : base(service, name)
+        { }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
         /// class.
         /// </summary>
@@ -71,15 +86,36 @@ namespace Splunk.Client
             : base(context, ns, name)
         { }
 
-        protected internal EntityCollection(Context context, AtomFeed feed)
-            : base(context, feed)
-        { }
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A entry in a Splunk atom feed response.
+        /// </param>
         protected internal EntityCollection(Context context, AtomEntry entry, Version generatorVersion)
             : base(context, entry, generatorVersion)
         { }
 
-#if false
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk atom feed response.
+        /// </param>
+        protected internal EntityCollection(Context context, AtomFeed feed)
+        {
+            // We cannot use the base constructor because it will use base.CreateResource, not this.CreateResource
+            this.Initialize(context, feed);
+        }
+
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "EntityCollection&lt;TEntity&gt;"/> class.
@@ -90,7 +126,6 @@ namespace Splunk.Client
         /// </remarks>
         public EntityCollection()
         { }
-#endif
 
         #endregion
 
@@ -142,6 +177,14 @@ namespace Splunk.Client
 
         #region Request-related methods
 
+        protected override Resource CreateResource(Context context, AtomEntry entry, Version generatorVersion)
+        {
+            var entity = new TEntity();
+
+            entity.Initialize(context, entry, generatorVersion);
+            return entity;
+        }
+
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the full list of entities
         /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
@@ -163,20 +206,12 @@ namespace Splunk.Client
             }
         }
 
-        protected override Resource CreateResource(Context context, AtomEntry entry, Version generatorVersion)
-        {
-            var entity = new TEntity();
-            
-            entity.Initialize(context, entry, generatorVersion);
-            return entity;
-        }
-
         /// <summary>
         /// Asynchronously forces the Splunk server to reload data for the current
         /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public async Task ReloadAsync()
         {

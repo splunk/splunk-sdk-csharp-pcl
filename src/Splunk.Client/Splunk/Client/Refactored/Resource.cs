@@ -39,6 +39,23 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Initializes a new <see cref="Resource"/> instance.
         /// </summary>
+        /// <param name="service">
+        /// An object representing a Splunk service endpoint.
+        /// <param name="name">
+        /// An object identifying a Splunk resource within <paramref name=
+        /// "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        protected internal Resource(Service service, ResourceName name)
+            : this(service.Context, service.Namespace, name)
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
+
+        /// <summary>
+        /// Initializes a new <see cref="Resource"/> instance.
+        /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
@@ -57,9 +74,9 @@ namespace Splunk.Client.Refactored
         /// </exception>
         protected internal Resource(Context context, Namespace ns, ResourceName name)
         {
-            Contract.Requires<ArgumentException>(name != null, "resourceName");
-            Contract.Requires<ArgumentNullException>(ns != null, "namespace");
-            Contract.Requires<ArgumentNullException>(context != null, "context");
+            Contract.Requires<ArgumentException>(name != null);
+            Contract.Requires<ArgumentNullException>(ns != null);
+            Contract.Requires<ArgumentNullException>(context != null);
             Contract.Requires<ArgumentOutOfRangeException>(ns.IsSpecific);
 
             this.context = context;
@@ -153,7 +170,11 @@ namespace Splunk.Client.Refactored
 
         #region Properties backed by a Snapshot
 
-        protected Snapshot CurrentSnapshot
+        /// <summary>
+        /// Gets the current <see cref="Snapshot"/> of the current <see cref=
+        /// "Resource"/>.
+        /// </summary>
+        protected internal Snapshot CurrentSnapshot
         {
             get { return this.snapshot; }
         }
@@ -480,22 +501,37 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously updates the <see cref="CurrentSnapshot"/> for the
+        /// current <see cref="Resource"/>
         /// </summary>
         /// <param name="response">
-        /// 
+        /// A Splunk atom feed response.
         /// </param>
         /// <returns>
-        /// 
+        /// <c>true</c>.
         /// </returns>
-        protected async Task UpdateSnapshotAsync(Response response)
+        protected virtual async Task<bool> UpdateSnapshotAsync(Response response)
         {
             var feed = new AtomFeed();
             
             await feed.ReadXmlAsync(response.XmlReader);
             this.snapshot = new Snapshot(this.Context, feed, this.CreateResource);
+            
+            return true;
         }
-        
+
+        /// <summary>
+        /// Asynchronously updates the <see cref="CurrentSnapshot"/> for the
+        /// current <see cref="Resource"/>
+        /// </summary>
+        /// <param name="entry">
+        /// A Splunk <see cref="AtomEntry"/>.
+        /// </param>
+        protected void UpdateSnapshotAsync(AtomEntry entry, Version generatorVersion)
+        {
+            this.snapshot = new Snapshot(this.Context, entry, generatorVersion);
+        }
+
         #endregion
 
         #region Privates
@@ -567,7 +603,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Represents information about a Splunk resource at a point in time.
         /// </summary>
-        protected class Snapshot
+        protected internal class Snapshot
         {
             #region Constructors
 

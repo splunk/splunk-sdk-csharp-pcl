@@ -26,7 +26,8 @@ namespace Splunk.Client.UnitTests
 
     public class TestAtomFeed
     {
-        public static readonly string Path = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "Client", "AtomFeed.xml"));
+        public static readonly string Directory = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Data", "Client"));
+        public static readonly string Path = System.IO.Path.Combine(Directory, "AtomFeed.xml");
         
         public static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()
         {

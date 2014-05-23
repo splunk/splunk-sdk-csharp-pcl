@@ -30,36 +30,36 @@ namespace Splunk.Client.UnitTests
 
     public class TestResource
     {
-        [Trait("unit-test", "class EntityCollection<Resource>")]
+        [Trait("unit-test", "class Entity")]
         [Fact]
-        async Task CanConstructEntityCollection()
+        async Task CanConstructEntity()
         {
-            using (var stream = new FileStream(TestAtomFeed.Path, FileMode.Open, FileAccess.Read))
+            var feed = await ReadAtomFeed(TestAtomFeed.Path);
+
+            using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
-                var feed = new AtomFeed();
+                dynamic entity = new Entity(context, feed);
 
-                await feed.ReadXmlAsync(reader);
+                CheckCommonStaticProperties(entity);
+                Assert.Equal("1392687998.313", entity.Name);
+                Assert.NotNull(entity.Links);
+                Assert.NotNull(entity.Messages);
+                Assert.NotNull(entity.Resources);
+                Assert.Equal(0, entity.Resources.Count);
+                CheckDynamicProperties(entity);
+            }
+        }
 
-                Context context = new Context(Scheme.Https, "localhost", 8089);
+        [Trait("unit-test", "class EntityCollection<Entity>")]
+        [Fact]
+        async Task CanConstructEntityCollectionOfEntity()
+        {
+            var feed = await ReadAtomFeed(TestAtomFeed.Path);
 
-                Action<dynamic> CheckCommonStaticProperties = resource =>
-                {
-                    Assert.DoesNotThrow(() => { var p = resource.Author; });
-                    Assert.DoesNotThrow(() => { var p = resource.Context; });
-                    Assert.DoesNotThrow(() => { var p = resource.GeneratorVersion; });
-                    Assert.DoesNotThrow(() => { var p = resource.Id; });
-                    Assert.DoesNotThrow(() => { var p = resource.Links; });
-                    Assert.DoesNotThrow(() => { var p = resource.Messages; });
-                    Assert.DoesNotThrow(() => { var p = resource.Name; });
-                    Assert.DoesNotThrow(() => { var p = resource.Namespace; });
-                    Assert.DoesNotThrow(() => { var p = resource.Published; });
-                    Assert.DoesNotThrow(() => { var p = resource.ResourceName; });
-                    Assert.DoesNotThrow(() => { var p = resource.Resources; });
-                    Assert.DoesNotThrow(() => { var p = resource.Updated; });
-                };
+            using (var context = new Context(Scheme.Https, "localhost", 8089))
+            {
+                dynamic collection = new EntityCollection<Entity>(context, feed);
 
-                dynamic collection = new EntityCollection<Resource>(context, feed);
                 Assert.DoesNotThrow(() => { var p = collection.Pagination; });
                 CheckCommonStaticProperties(collection);
                 Assert.Equal("jobs", collection.Name);
@@ -68,39 +68,72 @@ namespace Splunk.Client.UnitTests
                 Assert.Equal(1, collection.Count);
 
                 dynamic entity = collection.Resources[0];
+                
                 CheckCommonStaticProperties(entity);
                 Assert.Equal("1392687998.313", entity.Name);
                 Assert.NotNull(entity.Links);
                 Assert.NotNull(entity.Messages);
                 Assert.NotNull(entity.Resources);
                 Assert.Equal(0, entity.Resources.Count);
-                
-                //// Check dynamic properties
+                CheckDynamicProperties(entity);
+            }
+        }
 
-                Assert.DoesNotThrow(() => { var p = entity.CanSummarize; });
-                Assert.DoesNotThrow(() => { var p = entity.CursorTime; });
-                Assert.DoesNotThrow(() => { var p = entity.DefaultSaveTTL; });
-                Assert.DoesNotThrow(() => { var p = entity.DefaultTTL; });
-                Assert.DoesNotThrow(() => { var p = entity.DiskUsage; });
-                Assert.DoesNotThrow(() => { var p = entity.DispatchState; });
-                Assert.DoesNotThrow(() => { var p = entity.DoneProgress; });
-                Assert.DoesNotThrow(() => { var p = entity.DropCount; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.App; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.CanWrite; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Modifiable; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Owner; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Perms; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Perms.Read; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Perms.Write; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Sharing; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Ttl; });
-                Assert.DoesNotThrow(() => { var p = entity.EarliestTime; });
-                Assert.DoesNotThrow(() => { var p = entity.EventAvailableCount; });
-                Assert.DoesNotThrow(() => { var p = entity.EventCount; });
-                
-                //// More...
+        [Trait("unit-test", "class EntityCollection<EntityCollection<Entity>")]
+        [Fact]
+        async Task CanConstructEntityCollectionOfEntityCollectionOfEntity()
+        {
+            var feed = await ReadAtomFeed(Path.Combine(TestAtomFeed.Directory, "ConfigurationCollection.GetAsync.xml"));
+
+            using (var context = new Context(Scheme.Https, "localhost", 8089))
+            {
+                dynamic collection = new EntityCollection<EntityCollection<Entity>>(context, feed);
+
+                Assert.DoesNotThrow(() => { var p = collection.Pagination; });
+                CheckCommonStaticProperties(collection);
+                Assert.Equal("properties", collection.Name);
+                Assert.NotNull(collection.Links);
+                Assert.NotNull(collection.Messages);
+                Assert.Equal(83, collection.Count);
+
+                foreach (var resource in collection)
+                {
+                    Assert.IsType(typeof(EntityCollection<Entity>), resource);
+                    Assert.NotNull(resource.Links);
+                    Assert.NotNull(resource.Messages);
+                    Assert.NotNull(resource.Resources);
+                    Assert.Equal(0, resource.Count);
+                    Assert.Equal(resource.Pagination, Pagination.None);
+                }
+            }
+        }
+
+        [Trait("unit-test", "class EntityCollection<Resource>")]
+        [Fact]
+        async Task CanConstructEntityCollectionOfResource()
+        {
+            var feed = await ReadAtomFeed(TestAtomFeed.Path);
+
+            using (var context = new Context(Scheme.Https, "localhost", 8089))
+            {
+                dynamic collection = new EntityCollection<Resource>(context, feed);
+
+                Assert.DoesNotThrow(() => { var p = collection.Pagination; });
+                CheckCommonStaticProperties(collection);
+                Assert.Equal("jobs", collection.Name);
+                Assert.NotNull(collection.Links);
+                Assert.NotNull(collection.Messages);
+                Assert.Equal(1, collection.Count);
+
+                dynamic entity = collection.Resources[0];
+
+                CheckCommonStaticProperties(entity);
+                Assert.Equal("1392687998.313", entity.Name);
+                Assert.NotNull(entity.Links);
+                Assert.NotNull(entity.Messages);
+                Assert.NotNull(entity.Resources);
+                Assert.Equal(0, entity.Resources.Count);
+                CheckDynamicProperties(entity);
             }
         }
 
@@ -108,33 +141,13 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructResource()
         {
-            using (var stream = new FileStream(TestAtomFeed.Path, FileMode.Open, FileAccess.Read))
+            var feed = await ReadAtomFeed(TestAtomFeed.Path);
+
+            using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
-                var feed = new AtomFeed();
-
-                await feed.ReadXmlAsync(reader);
-
-                Context context = new Context(Scheme.Https, "localhost", 8089);
-
-                Action<dynamic> CheckStaticProperties = resource =>
-                {
-                    Assert.DoesNotThrow(() => { var p = resource.Author; });
-                    Assert.DoesNotThrow(() => { var p = resource.Context; });
-                    Assert.DoesNotThrow(() => { var p = resource.GeneratorVersion; });
-                    Assert.DoesNotThrow(() => { var p = resource.Id; });
-                    Assert.DoesNotThrow(() => { var p = resource.Links; });
-                    Assert.DoesNotThrow(() => { var p = resource.Messages; });
-                    Assert.DoesNotThrow(() => { var p = resource.Name; });
-                    Assert.DoesNotThrow(() => { var p = resource.Namespace; });
-                    Assert.DoesNotThrow(() => { var p = resource.Published; });
-                    Assert.DoesNotThrow(() => { var p = resource.ResourceName; });
-                    Assert.DoesNotThrow(() => { var p = resource.Resources; });
-                    Assert.DoesNotThrow(() => { var p = resource.Updated; });
-                };
-
                 dynamic collection = new Resource(context, feed);
-                CheckStaticProperties(collection);
+
+                CheckCommonStaticProperties(collection);
                 Assert.Equal("jobs", collection.Name);
                 Assert.NotNull(collection.Links);
                 Assert.NotNull(collection.Messages);
@@ -142,40 +155,75 @@ namespace Splunk.Client.UnitTests
                 Assert.Equal(1, collection.Resources.Count);
 
                 dynamic entity = collection.Resources[0];
-                CheckStaticProperties(entity);
+
+                CheckCommonStaticProperties(entity);
                 Assert.Equal("1392687998.313", entity.Name);
                 Assert.NotNull(entity.Links);
                 Assert.NotNull(entity.Messages);
                 Assert.NotNull(entity.Resources);
                 Assert.Equal(0, entity.Resources.Count);
-
-                //// Check dynamic properties
-
-                Assert.DoesNotThrow(() => { var p = entity.CanSummarize; });
-                Assert.DoesNotThrow(() => { var p = entity.CursorTime; });
-                Assert.DoesNotThrow(() => { var p = entity.DefaultSaveTTL; });
-                Assert.DoesNotThrow(() => { var p = entity.DefaultTTL; });
-                Assert.DoesNotThrow(() => { var p = entity.DiskUsage; });
-                Assert.DoesNotThrow(() => { var p = entity.DispatchState; });
-                Assert.DoesNotThrow(() => { var p = entity.DoneProgress; });
-                Assert.DoesNotThrow(() => { var p = entity.DropCount; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.App; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.CanWrite; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Modifiable; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Owner; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Perms; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Perms.Read; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Perms.Write; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Sharing; });
-                Assert.DoesNotThrow(() => { var p = entity.Eai.Acl.Ttl; });
-                Assert.DoesNotThrow(() => { var p = entity.EarliestTime; });
-                Assert.DoesNotThrow(() => { var p = entity.EventAvailableCount; });
-                Assert.DoesNotThrow(() => { var p = entity.EventCount; });
-
-                //// More...
+                CheckDynamicProperties(entity);
             }
         }
+
+        #region Privates/internals
+
+        void CheckDynamicProperties(dynamic job)
+        {
+            Assert.DoesNotThrow(() => { var p = job.CanSummarize; });
+            Assert.DoesNotThrow(() => { var p = job.CursorTime; });
+            Assert.DoesNotThrow(() => { var p = job.DefaultSaveTTL; });
+            Assert.DoesNotThrow(() => { var p = job.DefaultTTL; });
+            Assert.DoesNotThrow(() => { var p = job.DiskUsage; });
+            Assert.DoesNotThrow(() => { var p = job.DispatchState; });
+            Assert.DoesNotThrow(() => { var p = job.DoneProgress; });
+            Assert.DoesNotThrow(() => { var p = job.DropCount; });
+            Assert.DoesNotThrow(() => { var p = job.Eai; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.App; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.CanWrite; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Modifiable; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Owner; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms.Read; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms.Write; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Sharing; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Ttl; });
+            Assert.DoesNotThrow(() => { var p = job.EarliestTime; });
+            Assert.DoesNotThrow(() => { var p = job.EventAvailableCount; });
+            Assert.DoesNotThrow(() => { var p = job.EventCount; });
+
+            //// More...
+        }
+
+        void CheckCommonStaticProperties(Resource resource)
+        {
+            Assert.DoesNotThrow(() => { var p = resource.Author; });
+            Assert.DoesNotThrow(() => { var p = resource.Context; });
+            Assert.DoesNotThrow(() => { var p = resource.GeneratorVersion; });
+            Assert.DoesNotThrow(() => { var p = resource.Id; });
+            Assert.DoesNotThrow(() => { var p = resource.Links; });
+            Assert.DoesNotThrow(() => { var p = resource.Messages; });
+            Assert.DoesNotThrow(() => { var p = resource.Name; });
+            Assert.DoesNotThrow(() => { var p = resource.Namespace; });
+            Assert.DoesNotThrow(() => { var p = resource.Published; });
+            Assert.DoesNotThrow(() => { var p = resource.ResourceName; });
+            Assert.DoesNotThrow(() => { var p = resource.Resources; });
+            Assert.DoesNotThrow(() => { var p = resource.Updated; });
+        }
+
+        async Task<AtomFeed> ReadAtomFeed(string path)
+        {
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
+                var feed = new AtomFeed();
+
+                await feed.ReadXmlAsync(reader);
+                return feed;
+            }
+        }
+
+        #endregion
     }
 }

@@ -131,7 +131,7 @@ namespace Splunk.Client
         /// The expected <see cref="HttpStatusCode"/>.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected)
         {

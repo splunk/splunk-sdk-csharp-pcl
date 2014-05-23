@@ -262,7 +262,7 @@ namespace Splunk.Client
         /// <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public async Task ReloadAsync()
         {

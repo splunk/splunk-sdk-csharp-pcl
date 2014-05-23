@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>c8f6f6dd-3e7f-4661-a20a-e5b3c19eea3f</ProjectGuid>
+    <ProjectGuid>{D10A0063-A2DA-4F41-B54F-EE6E7FC57C41}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>search_realtime</RootNamespace>

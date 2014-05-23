@@ -156,7 +156,11 @@ namespace Splunk.ModularInputs
                             }
                         }
 
-                        using (var xmlWriter = XmlWriter.Create(stdout, XmlWriterSettings))
+                        using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings
+                        {
+                            Async = true,
+                            ConformanceLevel = ConformanceLevel.Fragment
+                        }))
                         {
                             await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
                             await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: errorMessage);

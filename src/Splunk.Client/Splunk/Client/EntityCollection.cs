@@ -332,7 +332,7 @@ namespace Splunk.Client
                 this.generatorVersion = null; // TODO: figure out a way to inherit the enclosing feed's generator version or is it in each entry too?
                 this.links = entry.Links;
                 this.messages = new List<Message>(); // TODO: does an entry contain messages?
-                this.pagination = Pagination.Empty;
+                this.pagination = Pagination.None;
                 this.title = entry.Title;
                 this.updated = entry.Updated;
 
@@ -370,7 +370,7 @@ namespace Splunk.Client
                 this.generatorVersion = null;
                 this.links = new Dictionary<string, Uri>();
                 this.messages = new List<Message>();
-                this.pagination = Pagination.Empty;
+                this.pagination = Pagination.None;
                 this.title = null;
                 this.updated = DateTime.MinValue;
 

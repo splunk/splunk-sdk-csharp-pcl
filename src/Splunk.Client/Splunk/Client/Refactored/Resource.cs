@@ -15,8 +15,8 @@
  */
 
 //// TODO:
-//// [X] Contracts
-//// [X] Documentation
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client.Refactored
 {
@@ -27,6 +27,7 @@ namespace Splunk.Client.Refactored
     using System.Dynamic;
     using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
@@ -54,7 +55,7 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        internal protected Resource(Context context, Namespace ns, ResourceName name)
+        protected internal Resource(Context context, Namespace ns, ResourceName name)
         {
             Contract.Requires<ArgumentException>(name != null, "resourceName");
             Contract.Requires<ArgumentNullException>(ns != null, "namespace");
@@ -78,12 +79,19 @@ namespace Splunk.Client.Refactored
         /// </param>
         protected internal Resource(Context context, AtomFeed feed)
         {
-            Contract.Requires<ArgumentNullException>(context != null);
-            Contract.Requires<ArgumentNullException>(feed != null);
-
-            this.SetIdentity(context, feed.Id);
-            this.snapshot = new Snapshot(context, feed);
+            this.Initialize(context, feed);
         }
+
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "Resource"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code. 
+        /// </remarks>
+        public Resource()
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Resource"/> class.
@@ -98,13 +106,9 @@ namespace Splunk.Client.Refactored
         /// The version of the generator producing the <see cref="AtomFeed"/>
         /// feed containing <paramref name="entry"/>.
         /// </param>
-        protected internal Resource(Context context, AtomEntry entry, Version generatorVersion = null)
+        protected internal Resource(Context context, AtomEntry entry, Version generatorVersion)
         {
-            Contract.Requires<ArgumentNullException>(context != null);
-            Contract.Requires<ArgumentNullException>(entry != null);
-
-            this.SetIdentity(context, entry.Id);
-            this.snapshot = new Snapshot(context, entry, generatorVersion);
+            this.Initialize(context, entry, generatorVersion);
         }
 
         #endregion
@@ -147,7 +151,12 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Properties backed by snapshot
+        #region Properties backed by a Snapshot
+
+        protected Snapshot CurrentSnapshot
+        {
+            get { return this.snapshot; }
+        }
 
         /// <summary>
         /// Gets the author of the current <see cref="Resource"/>.
@@ -182,6 +191,14 @@ namespace Splunk.Client.Refactored
         public IReadOnlyDictionary<string, Uri> Links
         {
             get { return this.snapshot.Links; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IReadOnlyList<Message> Messages
+        {
+            get { return this.snapshot.Messages; }
         }
 
         /// <summary>
@@ -261,6 +278,26 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context">
+        /// 
+        /// </param>
+        /// <param name="entry">
+        /// 
+        /// </param>
+        /// <param name="generatorVersion">
+        /// 
+        /// </param>
+        /// <returns>
+        /// An object representing a Splunk resource.
+        /// </returns>
+        protected virtual Resource CreateResource(Context context, AtomEntry entry, Version generatorVersion)
+        {
+            return new Resource(context, entry, generatorVersion);
+        }
+
+        /// <summary>
         /// Determines whether the specified <see cref="Resource"/> refers to 
         /// the same resource as the current one.
         /// </summary>
@@ -326,6 +363,80 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
+        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// "Resource"/>.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The current <see cref="Resource"/> is already initialized.
+        /// </exception>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Resource"/>
+        /// instantiated by the default constructor. Override this method to 
+        /// provide special initialization code. Call this base method before 
+        /// initialization is complete. 
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        protected internal virtual void Initialize(Context context, AtomFeed feed)
+        {
+            Contract.Requires<ArgumentNullException>(context != null);
+            Contract.Requires<ArgumentNullException>(feed != null);
+
+            this.SetIdentity(context, feed.Id);
+            this.snapshot = new Snapshot(context, feed, this.CreateResource);
+        }
+
+        /// <summary>
+        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// "Resource"/>.
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="entry">
+        /// An object representing a Splunk atom entry response.
+        /// </param>
+        /// <param name="generatorVersion">
+        /// The version of the generator producing the <see cref="AtomFeed"/>
+        /// feed containing <paramref name="entry"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="entry"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The current <see cref="Resource"/> is already initialized.
+        /// </exception>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Resource"/>
+        /// instantiated by the default constructor. Override this method to 
+        /// provide special initialization code. Call this base method before 
+        /// initialization is complete. 
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        protected internal virtual void Initialize(Context context, AtomEntry entry, Version generatorVersion)
+        {
+            Contract.Requires<ArgumentNullException>(context != null);
+            Contract.Requires<ArgumentNullException>(entry != null);
+            this.SetIdentity(context, entry.Id);
+            this.snapshot = new Snapshot(context, entry, generatorVersion);
+        }
+
+        /// <summary>
         /// Gets a string identifying the current <see cref="Resource"/>.
         /// </summary>
         /// <returns>
@@ -368,16 +479,33 @@ namespace Splunk.Client.Refactored
             return result != null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="response">
+        /// 
+        /// </param>
+        /// <returns>
+        /// 
+        /// </returns>
+        protected async Task UpdateSnapshotAsync(Response response)
+        {
+            var feed = new AtomFeed();
+            
+            await feed.ReadXmlAsync(response.XmlReader);
+            this.snapshot = new Snapshot(this.Context, feed, this.CreateResource);
+        }
+        
         #endregion
 
         #region Privates
 
+        volatile Snapshot snapshot = Snapshot.Missing;
         bool initialized;
 
         Context context;
         Namespace ns;
         ResourceName resourceName;
-        Snapshot snapshot = Snapshot.Missing;
 
         void SetIdentity(Context context, Uri id)
         {
@@ -439,7 +567,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Represents information about a Splunk resource at a point in time.
         /// </summary>
-        class Snapshot
+        protected class Snapshot
         {
             #region Constructors
 
@@ -449,7 +577,7 @@ namespace Splunk.Client.Refactored
             /// <param name="entry">
             /// An object representing a Splunk resource at a point in time.
             /// </param>
-            public Snapshot(Context context, AtomEntry entry, Version generatorVersion = null)
+            public Snapshot(Context context, AtomEntry entry, Version generatorVersion)
             {
                 Contract.Requires<ArgumentNullException>(entry != null);
 
@@ -474,8 +602,10 @@ namespace Splunk.Client.Refactored
                 this.id = entry.Id;
                 this.generatorVersion = generatorVersion;
                 this.links = entry.Links;
-                this.messages = new Message[0];
+                this.messages = NoMessages;
+                this.pagination = Pagination.None;
                 this.published = entry.Published;
+                this.resources = NoResources;
                 this.name = entry.Title;
                 this.updated = entry.Updated;
             }
@@ -486,7 +616,7 @@ namespace Splunk.Client.Refactored
             /// <param name="entry">
             /// An object representing a Splunk resource at a point in time.
             /// </param>
-            public Snapshot(Context context, AtomFeed feed)
+            public Snapshot(Context context, AtomFeed feed, Func<Context, AtomEntry, Version, Resource> createResource)
             {
                 Contract.Requires<ArgumentNullException>(feed != null);
 
@@ -495,28 +625,31 @@ namespace Splunk.Client.Refactored
                 this.id = feed.Id;
                 this.generatorVersion = feed.GeneratorVersion;
                 this.links = feed.Links;
-                this.messages = new Message[0];
+                this.messages = feed.Messages;
+                this.pagination = feed.Pagination;
                 this.published = feed.Updated;
                 this.name = feed.Title;
                 this.updated = feed.Updated;
 
-                var list = new List<Resource>();
+                var resources = new List<Resource>();
                 
                 foreach (var entry in feed.Entries)
                 {
-                    var resource = new Resource(context, entry, feed.GeneratorVersion);
-                    list.Add(resource);
+                    var resource = createResource(context, entry, feed.GeneratorVersion);
+                    resources.Add(resource);
                 }
 
-                this.resources = list;
+                this.resources = resources;
             }
 
             /// <summary>
             /// Initializes a new instance of the <see cref="Snapshot"/> class.
             /// </summary>
             /// <param name="other">
+            /// A <see cref="Snapshot"/> from which metadata is to be extracted.
             /// </param>
             /// <param name="content">
+            /// Content for the new <see cref="Snapshot"/> instance.
             /// </param>
             public Snapshot(Snapshot other, dynamic content)
             {
@@ -540,9 +673,9 @@ namespace Splunk.Client.Refactored
                 this.author = other.Author;
                 this.id = other.Id;
                 this.generatorVersion = other.GeneratorVersion;
-                this.resources = other.Resources;
                 this.links = other.Links;
                 this.messages = other.Messages;
+                this.pagination = other.pagination;
                 this.published = other.Published;
                 this.resources = other.Resources;
                 this.name = other.Name;
@@ -555,10 +688,11 @@ namespace Splunk.Client.Refactored
                 this.author = null;
                 this.id = null;
                 this.generatorVersion = null;
-                this.links = null;
-                this.messages = new Message[0];
+                this.links = NoLinks;
+                this.messages = NoMessages;
+                this.pagination = Pagination.None;
                 this.published = DateTime.MinValue;
-                this.resources = new Resource[0];
+                this.resources = NoResources;
                 this.name = null;
                 this.updated = DateTime.MinValue;
             }
@@ -568,6 +702,9 @@ namespace Splunk.Client.Refactored
             #region Fields
 
             public static readonly Snapshot Missing = new Snapshot();
+            public static readonly IReadOnlyList<Message> NoMessages = new List<Message>(0);
+            public static readonly IReadOnlyList<Resource> NoResources = new List<Resource>(0);
+            public static readonly IReadOnlyDictionary<string, Uri> NoLinks = new Dictionary<string, Uri>(0);
 
             #endregion
 
@@ -581,6 +718,11 @@ namespace Splunk.Client.Refactored
             public string Author
             {
                 get { return this.author; }
+            }
+
+            public Pagination Pagination
+            {
+                get { return this.pagination; }
             }
 
             public IReadOnlyList<Resource> Resources
@@ -625,6 +767,20 @@ namespace Splunk.Client.Refactored
 
             #endregion
 
+            #region Methods
+
+            public dynamic GetValue(string name)
+            {
+                return this.Adapter.GetValue(name);
+            }
+
+            public TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
+            {
+                return this.Adapter.GetValue(name, valueConverter);
+            }
+
+            #endregion
+
             #region Privates/internals
 
             readonly ExpandoAdapter adapter;
@@ -635,6 +791,7 @@ namespace Splunk.Client.Refactored
             readonly IReadOnlyDictionary<string, Uri> links;
             readonly IReadOnlyList<Message> messages;
             readonly string name;
+            readonly Pagination pagination;
             readonly DateTime published;
             readonly DateTime updated;
 

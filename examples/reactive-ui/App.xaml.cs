@@ -20,7 +20,7 @@ namespace Splunk.Client.Examples.ReactiveUI
     using System.Windows;
 
     using Splunk.Client;
-
+    using SDKHelper;
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -48,7 +48,7 @@ namespace Splunk.Client.Examples.ReactiveUI
             {
                 return true;
             };
-            this.Service = new Service(Scheme.Https, "localhost", 8089);
+            this.Service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
         }
 
         #endregion

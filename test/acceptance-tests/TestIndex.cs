@@ -24,6 +24,7 @@ namespace Splunk.Client.UnitTesting
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using SDKHelper;
     using Xunit;
 
     /// <summary>
@@ -38,13 +39,13 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task IndexAccessors()
         {
-            
             string indexName = "sdk-tests2_indexaccessors";
 
-            using (Service service = await TestHelper.CreateService())
+            await this.RemoveIndex(indexName);
+            using (Service service = await SDKHelper.CreateService())
             {
-                await this.RemoveIndex(indexName);
                 await service.CreateIndexAsync(indexName);
+                var x = service.GetIndexesAsync().Result;
 
                 IndexCollection indexes = await service.GetIndexesAsync();
                 foreach (Index idx in indexes)
@@ -145,14 +146,14 @@ namespace Splunk.Client.UnitTesting
                 await TestHelper.RestartServer();
             }
 
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 Index index = await service.GetIndexAsync(indexName);
                 await index.EnableAsync();
                 Assert.False(index.Disabled);
                 await RemoveIndex(indexName);
             }
-        }        
+        }
 
         /// <summary>
         /// Tests submitting and streaming events to an index given the indexAttributes argument
@@ -163,10 +164,10 @@ namespace Splunk.Client.UnitTesting
         public async Task IndexArgs()
         {
             string indexName = "sdk-tests2_indexargs";
-            
+
             await this.RemoveIndex(indexName);
 
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 await service.CreateIndexAsync(indexName);
                 Index index = await service.GetIndexAsync(indexName);
@@ -185,8 +186,8 @@ namespace Splunk.Client.UnitTesting
                 };
 
                 Receiver receiver = service.Receiver;
-                await receiver.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now,indexName), args);
-                await receiver.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now,indexName), args);
+                await receiver.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now, indexName), args);
+                await receiver.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now, indexName), args);
                 await TestHelper.WaitIndexTotalEventCountUpdated(index, 2);
 
                 SearchResultStream result = await service.SearchOneshotAsync(
@@ -211,8 +212,7 @@ namespace Splunk.Client.UnitTesting
         {
             string indexName = "main";
 
-            
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = await SDKHelper.CreateService())
             {
                 Index index = await service.GetIndexAsync(indexName);
                 long currentEventCount = index.TotalEventCount;
@@ -287,26 +287,25 @@ namespace Splunk.Client.UnitTesting
         /// <param name="index">The index object</param>
         private async Task RemoveIndex(string indexName)
         {
-            using (Service service = await TestHelper.CreateService())
+            using (Service service = SDKHelper.CreateService().Result)
             {
-                if ((await service.GetIndexesAsync()).Any(a => a.Name == indexName))
+                try
                 {
-                    //disabled index can't be removed
-                    Index index1 = await service.GetIndexAsync(indexName);
-                    if (index1.Disabled)
+                    await service.RemoveIndexAsync(indexName);
+                }
+                catch (RequestException e)
+                {
+                    if (e.Message.Contains("is disabled"))
                     {
-                        await index1.EnableAsync();
-                    }
-
-                    try
-                    {
-                        await service.RemoveIndexAsync(indexName);
-                    }
-                    catch (Exception e)
-                    {
+                        Index index = service.GetIndexAsync(indexName).Result;
+                        index.EnableAsync().Wait();
                         TestHelper.RestartServer().Wait();
-                        Service service1 = TestHelper.CreateService().Result;
+                        Service service1 = SDKHelper.CreateService().Result;
                         service1.RemoveIndexAsync(indexName).Wait();
+                    }
+                    else if (!e.Message.Contains("Not found"))
+                    {
+                        Console.WriteLine(e);
                     }
                 }
             }

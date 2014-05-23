@@ -21,51 +21,22 @@ namespace Splunk.Client.UnitTesting
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
-
     using Splunk.Client;
     using Splunk.Client.UnitTesting;
-
     using Xunit;
     using System.Diagnostics;
     using System.IO;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using SDKHelper;
 
     /// <summary>
     /// Test helper class
     /// </summary>
-    static class TestHelper
+    public static class TestHelper
     {
         static TestHelper()
         {
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
-            {
-                return true;
-            };
-
-            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            UserConfigure = new SplunkRC();
-            LoadSplunkRC(Path.Combine(home, ".splunkrc"));
-        }
-
-        public static SplunkRC UserConfigure
-        { get; private set; }
-
-        /// <summary>
-        /// Create a Splunk <see cref="Service"/> and login using the command 
-        /// line options (or .splunkrc)
-        /// </summary>
-        /// <returns>
-        /// The service created.
-        /// </returns>
-        public static async Task<Service> CreateService(Namespace ns = null)
-        {
-            var service = new Service(UserConfigure.scheme, UserConfigure.host, UserConfigure.port, ns);
-            
-            await service.LoginAsync(UserConfigure.username, UserConfigure.password);
-            Assert.NotNull(service.SessionKey);
-
-            return service;
         }
 
         public static int VersionCompare(Service service, string versionToCompare)
@@ -75,7 +46,7 @@ namespace Splunk.Client.UnitTesting
             return (string.Compare(version, versionToCompare, StringComparison.InvariantCulture));
         }
 
-        public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds=60)
+        public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds = 60)
         {
             Stopwatch watch = Stopwatch.StartNew();
             while (watch.Elapsed < new TimeSpan(0, 0, seconds) && index.TotalEventCount != expectEventCount)
@@ -92,7 +63,7 @@ namespace Splunk.Client.UnitTesting
         {
             Stopwatch watch = Stopwatch.StartNew();
 
-            Service service = await CreateService();
+            Service service = await SDKHelper.CreateService();
             try
             {
                 await service.Server.RestartAsync();
@@ -114,30 +85,30 @@ namespace Splunk.Client.UnitTesting
         /// test app and reboot Splunk.
         /// </summary>
         /// <param name="name">The app name</param>
-        public async static void CreateApp(string name)
+        public async static Task CreateApp(string name)
         {
             //EntityCollection<App> apps;
 
-            Service service = await CreateService();
+            Service service = await SDKHelper.CreateService();
 
             ApplicationCollection apps = service.GetApplicationsAsync(new ApplicationCollectionArgs()).Result;
 
             if (apps.Any(a => a.ResourceName.Title == name))
             {
-                service.RemoveApplicationAsync(name).Wait();
+                await service.RemoveApplicationAsync(name);
                 await RestartServer();
-                service = await CreateService();
+                service = await SDKHelper.CreateService();
                 apps = service.GetApplicationsAsync().Result;
             }
 
             Assert.False(apps.Any(a => a.ResourceName.Title == name));
 
             //apps.Create(name);
-            service.CreateApplicationAsync(name, "sample_app").Wait();
+            await service.CreateApplicationAsync(name, "sample_app");
 
             await RestartServer();
 
-            service = await CreateService();
+            service = await SDKHelper.CreateService();
 
             apps = service.GetApplicationsAsync().Result;
             Assert.True(apps.Any(a => a.Name == name));
@@ -147,76 +118,20 @@ namespace Splunk.Client.UnitTesting
         /// Remove the given app and reboot Splunk if needed.
         /// </summary>
         /// <param name="name">The app name</param>
-        public static async void RemoveApp(string name)
+        public static async Task RemoveApp(string name)
         {
-            Service service = await CreateService();
+            Service service = await SDKHelper.CreateService();
 
             ApplicationCollection apps = service.GetApplicationsAsync().Result;
             if (apps.Any(a => a.Name == name))
             {
-                service.RemoveApplicationAsync(name).Wait();
+                await service.RemoveApplicationAsync(name);
                 await RestartServer();
-                service = await CreateService();
+                service = await SDKHelper.CreateService();
             }
 
             apps = service.GetApplicationsAsync().Result;
             Assert.False(apps.Any(a => a.Name == name));
-        }
-
-        /// <summary>
-        /// Load a file of options and arguments
-        /// </summary>
-        /// <param name="path">
-        /// The path to the .splunkrc file.
-        /// </param>
-        static void LoadSplunkRC(string path)
-        {
-            var reader = new StreamReader(path);
-
-            List<string> argList = new List<string>(4);
-            string line;
-
-            while ((line = reader.ReadLine()) != null)
-            {
-                line = line.Trim();
-
-                if (line.StartsWith("#", StringComparison.InvariantCulture))
-                {
-                    continue;
-                }
-
-                if (line.Length == 0)
-                {
-                    continue;
-                }
-
-                argList.Add(line);
-            }
-
-            SplunkRC splunkrc = new SplunkRC();
-
-            foreach (string arg in argList)
-            {
-                string[] strs = arg.Split('=');
-
-                switch (strs[0].ToLower().TrimStart().TrimEnd())
-                {
-                    case "username": UserConfigure.username = strs[1].TrimEnd().TrimStart(); break;
-                    case "password": UserConfigure.password = strs[1].TrimEnd().TrimStart(); break;
-                    case "scheme": UserConfigure.scheme = strs[1].TrimEnd().TrimStart() == "https" ? Scheme.Https : Scheme.Http; break;
-                    case "port": UserConfigure.port = int.Parse(strs[1].TrimEnd().TrimStart()); break;
-                    case "host": UserConfigure.host = strs[1].TrimEnd().TrimStart(); break;
-                }
-            }
-        }  
- 
-        internal class SplunkRC
-        {
-            public string username = "admin";
-            public string password = "changeme";
-            public Scheme scheme = Scheme.Https;
-            public int port = 8089;
-            public string host = "localhost";
         }
     }
 }

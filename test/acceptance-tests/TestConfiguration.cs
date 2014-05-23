@@ -19,7 +19,9 @@ namespace Splunk.Client.UnitTesting
     using System;
     using System.Linq;
     using Splunk.Client;
+    using SDKHelper;
     using Xunit;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Tests the configurations
@@ -31,9 +33,9 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public async void Conf()
+        public async Task Conf()
         {
-            Service service = await TestHelper.CreateService();
+            Service service = await SDKHelper.CreateService();
 
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
 
@@ -76,7 +78,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         [Trait("class", "Service")]
         [Fact]
-        public async void ConfCRUD()
+        public async Task ConfCRUD()
         {            
             // Create a fresh app to use as the container for confs that we will
             // create in this test. There is no way to delete a conf once it's
@@ -87,29 +89,29 @@ namespace Splunk.Client.UnitTesting
             string owner = "nobody";
 
            
-           TestHelper.CreateApp(app);
-           Service service =await TestHelper.CreateService();
+           await TestHelper.CreateApp(app);
+           Service service =await SDKHelper.CreateService();
             
             var apps = service.GetApplicationsAsync().Result;
             Assert.True(apps.Any(a => a.ResourceName.Title == app));
 
             Namespace ns = new Namespace(owner, app);
-            service = await TestHelper.CreateService(ns);
+            service = await SDKHelper.CreateService(ns);
 
             ConfigurationCollection confs = service.GetConfigurationsAsync().Result;
             //if below failed, remove the file C:\Program Files\Splunk\etc\system\local\testconf.conf, serverInfo should provide home  path etc?            
             Assert.False(confs.Any(a => a.Name == "testconf"));
 
             Configuration testconf = service.CreateConfigurationAsync("testconf").Result;
-            confs.GetAsync().Wait();
+            await confs.GetAsync();
             Assert.True(confs.Any(a => a.Name == "testconf"));
 
             testconf = service.GetConfigurationAsync("testconf").Result;
-            service.CreateConfigurationStanzaAsync("testconf", "stanza1").Wait();
-            service.CreateConfigurationStanzaAsync("testconf", "stanza2").Wait();
-            service.CreateConfigurationStanzaAsync("testconf", "stanza3").Wait();
+            await service.CreateConfigurationStanzaAsync("testconf", "stanza1");
+            await service.CreateConfigurationStanzaAsync("testconf", "stanza2");
+            await service.CreateConfigurationStanzaAsync("testconf", "stanza3");
 
-            testconf.GetAsync().Wait();
+            await testconf.GetAsync();
             Assert.Equal(4, testconf.Count);
             Assert.NotNull(testconf.GetStanzaAsync("stanza1").Result.Name);
             Assert.NotNull(testconf.GetStanzaAsync("stanza2").Result.Name);
@@ -121,34 +123,34 @@ namespace Splunk.Client.UnitTesting
             // Add a couple of properties
             Argument args = new Argument("key1", "value1");
             Argument args1 = new Argument("key2", "42");
-            stanza1.UpdateAsync(args, args1).Wait();
+            await stanza1.UpdateAsync(args, args1);
             stanza1 = testconf.GetStanzaAsync("stanza1").Result;
             Assert.Equal("value1", stanza1.GetSettingAsync("key1").Result.Value);
             Assert.Equal("42", stanza1.GetSettingAsync("key2").Result.Value);
 
             //// Update an existing property
             args = new Argument("key1", "value2");
-            stanza1.UpdateAsync(args).Wait();
+            await stanza1.UpdateAsync(args);
             Assert.Equal("value2", stanza1.GetSettingAsync("key1").Result.Value);
             Assert.Equal("42", stanza1.GetSettingAsync("key2").Result.Value);
 
             // Delete the stanzas
-            testconf.RemoveStanzaAsync("stanza3").Wait();
-            testconf.GetAsync().Wait(); // because remove gives no data back
+            await testconf.RemoveStanzaAsync("stanza3");
+            await testconf.GetAsync(); // because remove gives no data back
             Assert.Equal(3, testconf.Count);
             Assert.NotNull(testconf.GetStanzaAsync("stanza1").Result.Name);
             Assert.NotNull(testconf.GetStanzaAsync("stanza2").Result.Name);
 
-            testconf.RemoveStanzaAsync("stanza2").Wait();
-            testconf.GetAsync().Wait(); // because remove gives no data back
+            await testconf.RemoveStanzaAsync("stanza2");
+            await testconf.GetAsync(); // because remove gives no data back
             Assert.Equal(2, testconf.Count);
 
-            testconf.RemoveStanzaAsync("stanza1").Wait();
-            testconf.GetAsync().Wait(); // because remove gives no data back
+            await testconf.RemoveStanzaAsync("stanza1");
+            await testconf.GetAsync(); // because remove gives no data back
             Assert.Equal(1, testconf.Count);
 
             // Cleanup after ourselves
-            TestHelper.RemoveApp(app);
+            await TestHelper.RemoveApp(app);
         }
     }
 }

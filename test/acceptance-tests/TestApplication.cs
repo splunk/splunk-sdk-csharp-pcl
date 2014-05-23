@@ -20,8 +20,10 @@ namespace Splunk.Sdk.UnitTesting
     using Splunk.Client;
     using Splunk.Client.UnitTesting;
     using Xunit;
+    using SDKHelper;
     using System;
-
+    using System.Threading.Tasks;
+    
     /// <summary>
     /// Application tests
     /// </summary>
@@ -37,12 +39,12 @@ namespace Splunk.Sdk.UnitTesting
         /// </summary>
         [Trait("class", "Application")]
         [Fact]
-        public async void Application()
+        public async Task Application()
         {
             string dummyString;
             bool dummyBool;
 
-            Service service = await TestHelper.CreateService();
+            Service service = await SDKHelper.CreateService();
 
             ApplicationCollection apps = await service.GetApplicationsAsync();
             foreach (Application app in apps)
@@ -89,8 +91,8 @@ namespace Splunk.Sdk.UnitTesting
 
             if (apps.Any(a => a.Name == "sdk-tests"))
             {
-                TestHelper.RemoveApp("sdk-tests");
-                service = await TestHelper.CreateService();
+                await TestHelper.RemoveApp("sdk-tests");
+                service = await SDKHelper.CreateService();
             }
 
             apps = service.GetApplicationsAsync().Result;
@@ -162,8 +164,8 @@ namespace Splunk.Sdk.UnitTesting
             //ApplicationUpdate appUpdate = app2.AppUpdate();
             //Assert.True(appUpdate.ContainsKey("eai:acl"), assertRoot + "#16");
 
-            TestHelper.RemoveApp("sdk-tests");
-            service = await TestHelper.CreateService();
+            await  TestHelper.RemoveApp("sdk-tests");
+            service = await SDKHelper.CreateService();
             apps = service.GetApplicationsAsync().Result;
             Assert.False(apps.Any(a => a.Name == "sdk-tests"), assertRoot + "#17");
         }

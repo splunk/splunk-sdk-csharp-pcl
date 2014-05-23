@@ -14,15 +14,16 @@
  * under the License.
  */
 
-using System.Linq;
-
 namespace Splunk.Client.UnitTesting
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using Splunk.Client;
+    using SDKHelper;
     using Xunit;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// This class tests all the Splunk Service methods.
@@ -32,12 +33,12 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test the expected service capabilities.
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "ServiceCapabilities")]
         [Fact]
-        public async void ServiceCapabilities()
+        public async Task ServiceCapabilities()
         {
-            
-            using (Service service = await TestHelper.CreateService())
+
+            using (Service service = await SDKHelper.CreateService())
             {
                 List<string> expected = new List<string> 
             {
@@ -69,12 +70,12 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests the getting of service info (there are no set arguments)
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "ServiceInfo")]
         [Fact]
-        public async void ServiceInfo()
+        public async Task ServiceInfo()
         {
-            
-            using (Service service = await TestHelper.CreateService())
+
+            using (Service service = await SDKHelper.CreateService())
             {
                 ServerInfo info = await service.Server.GetInfoAsync();
 
@@ -106,64 +107,52 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test login
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("class", "ServiceLogin")]
         [Fact]
-        public async void ServiceLogin()
+        public async Task ServiceLogin()
         {
-            //ResponseMessage response;
-            
-            using (Service service = await TestHelper.CreateService())
+            Service service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
+            ConfigurationCollection config = null;
+
+            // Not logged in, should fail with 401
+            try
             {
-                ConfigurationCollection config;
-
-                // Not logged in, should fail with 401
-                try
-                {
-                    config = service.GetConfigurationsAsync().Result;
-                    Assert.True(false, "Expected HttpException");
-                }
-                catch (WebException ex)
-                {
-                    Assert.Equal(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode());
-                }
-                catch (Exception e)
-                {
-                    Assert.True(e.InnerException.Message.Contains("401"));
-                }
-
-                // Logged in, request should succeed
-                await service.LoginAsync(TestHelper.UserConfigure.username, TestHelper.UserConfigure.password);
                 config = await service.GetConfigurationsAsync();
-                Assert.NotNull(config);
+                Assert.True(false, "Expected AuthenticationFailureException");
+            }
+            catch (AuthenticationFailureException e)
+            {
+                Assert.True(e.Message.Contains("401"));
+            }
 
-                //// Logout, the request should fail with a 401
-                service.LogoffAsync().Wait();
-                try
-                {
-                    config = await service.GetConfigurationsAsync();
-                    Assert.True(false, "Expected HttpException");
-                }
-                catch (WebException ex)
-                {
-                    Assert.Equal(401, ((HttpWebResponse)ex.Response).StatusCode.GetHashCode());
-                }
-                catch (Exception e)
-                {
-                    //TODO, if dev fix the aggregate exception issue, should only catch the above exception
-                    Assert.True(e.InnerException.Message.Contains("401"));
-                }
+            // Logged in, request should succeed
+            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+            config = await service.GetConfigurationsAsync();
+            Assert.NotNull(config);
+
+            //// Logout, the request should fail with a 401
+            service.LogoffAsync().Wait();
+            try
+            {
+                config = await service.GetConfigurationsAsync();
+                Assert.True(false, "Expected AuthenticationFailureException");
+            }
+            catch (AuthenticationFailureException ex)
+            {
+                Assert.True(ex.Message.Contains("401"));
             }
         }
+    
 
         /// <summary>
         /// This method tests geting the events and then sets most, 
         /// and then reverts back to the original
         /// </summary>
         [Fact]
-        public async void Settings()
+        public async Task Settings()
         {
-            
-            Service service = await TestHelper.CreateService();
+
+            Service service = await SDKHelper.CreateService();
 
 
             ServerSettings settings = service.Server.GetSettingsAsync().Result;
@@ -210,7 +199,7 @@ namespace Splunk.Client.UnitTesting
             await TestHelper.RestartServer();
 
 
-            service = await TestHelper.CreateService();
+            service = await SDKHelper.CreateService();
 
             settings = service.Server.GetSettingsAsync().Result;
 
@@ -235,7 +224,7 @@ namespace Splunk.Client.UnitTesting
 
             // changing ports require a restart
             await TestHelper.RestartServer();
-            service = await TestHelper.CreateService();
+            service = await SDKHelper.CreateService();
 
             settings = service.Server.GetSettingsAsync().Result;
 
@@ -247,24 +236,5 @@ namespace Splunk.Client.UnitTesting
             Assert.Equal(originalTimeout, settings.SessionTimeout);
             Assert.Equal(originalStartWeb, settings.StartWebServer);
         }
-
-        ///// <summary>
-        ///// Returns a value dermining whether a string is in the
-        ///// non-ordered array of strings.
-        ///// </summary>
-        ///// <param name="array">The array to scan</param>
-        ///// <param name="value">The value to look for</param>
-        ///// <returns>True or false</returns>
-        //private bool Contains(string[] array, string value)
-        //{
-        //    for (int i = 0; i < array.Length; ++i)
-        //    {
-        //        if (array[i].Equals(value))
-        //        {
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //}
     }
 }

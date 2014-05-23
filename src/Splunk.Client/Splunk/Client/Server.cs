@@ -102,7 +102,7 @@ namespace Splunk.Client
         /// represented by the current instance.
         /// </summary>
         /// <returns>
-        /// An object representing information about the Splunk server
+        /// An object representing information about the Splunk server.
         /// </returns>
         public async Task<ServerInfo> GetInfoAsync()
         {

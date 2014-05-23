@@ -1240,7 +1240,7 @@ namespace Splunk.Client
         /// </remarks>
         public async Task<SearchPreviewStream> ExportSearchPreviewsAsync(string search, SearchExportArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(args != null, "args");
+            Contract.Requires<ArgumentNullException>(search != null);
 
             var command = new Argument[] 
             { 

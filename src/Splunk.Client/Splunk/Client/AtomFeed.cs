@@ -227,7 +227,7 @@ namespace Splunk.Client
 
                         if (reader.NodeType == XmlNodeType.EndElement)
                         {
-                            reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
+                            reader.EnsureMarkup(XmlNodeType.EndElement, "s:messages");
                             await reader.ReadAsync();
                         }
 

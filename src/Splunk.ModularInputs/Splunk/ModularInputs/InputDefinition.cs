@@ -20,14 +20,44 @@ namespace Splunk.ModularInputs
     using System.Collections.Generic;
     using Splunk.Client;
 
+    /// <summary>
+    /// Represents the specification of a modular input instance.
+    /// </summary>
     public class InputDefinition
     {
+        /// <summary>
+        /// The name of this instance.
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// A dictionary of all the parameters and their values for this instance.
+        /// </summary>
         public IDictionary<string, Parameter> Parameters { get; set; }
+
+        /// <summary>
+        /// The hostname of the splunkd server that invoked this program.
+        /// </summary>
         public string ServerHost { get; set; }
+
+        /// <summary>
+        /// The URI to reach the REST API of the splunkd instance that invoked this program.
+        /// </summary>
         public string ServerUri { get; set; }
+
+        /// <summary>
+        /// A directory to write state that needs to be shared between executions of this program.
+        /// </summary>
         public string CheckpointDirectory { get; set; }
+
+        /// <summary>
+        /// A REST API session key allowing the instance to make REST calls.
+        /// </summary>
         public string SessionKey { get; set; }
+
+        /// <summary>
+        /// A Service instance connected to the Splunk instance that invoked this program.
+        /// </summary>
         public Service Service
         {
             get

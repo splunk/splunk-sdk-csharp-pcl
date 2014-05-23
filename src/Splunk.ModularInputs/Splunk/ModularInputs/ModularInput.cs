@@ -56,10 +56,6 @@ namespace Splunk.ModularInputs
         /// <summary>
         /// Performs the action specified by the <paramref name="args"/> parameter.
         /// </summary>
-        /// <typeparam name="T">
-        /// The application-derived type of the <see cref="ModularInput"/>. It
-        /// must have a parameterless constructor.
-        /// </typeparam>
         /// <param name="args">
         /// Command-line arguments provided by Splunk when it invokes the
         /// modular input program. Implementers should pass the arguments to
@@ -186,10 +182,13 @@ namespace Splunk.ModularInputs
 
 
         /// <summary>
-        /// Streams events to Splunk through standard output.
+        /// Streams events to Splunk through the provided EventWriter.
         /// </summary>
         /// <param name="inputDefinition">
         /// Input definition from Splunk for this input.
+        /// </param>
+        /// <param name="eventWriter">
+        /// An object encapsulating writing events and log messages to Splunk.
         /// </param>
         public abstract Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter);
 
@@ -200,7 +199,7 @@ namespace Splunk.ModularInputs
         /// <remarks>
         /// <para>
         /// An application can override this method to perform custom
-        /// validation logic.
+        /// validation logic. The default is to accept anything as valid.
         /// </para>
         /// </remarks>
         /// <param name="validationItems">Configuration data to validate.
@@ -216,17 +215,6 @@ namespace Splunk.ModularInputs
         }
 
         #endregion
-
-        #region Privates/internals
-
-        private static readonly XmlWriterSettings XmlWriterSettings = new XmlWriterSettings()
-        {
-            Async = true,
-            ConformanceLevel = ConformanceLevel.Fragment
-        };
-
-        #endregion
-
         
     }
 }

@@ -21,7 +21,7 @@ namespace Splunk.ModularInputs
     using System.Linq;
 
     /// <summary>
-    /// Base class for input definition.
+    /// The collection of input definitions passed to this program.
     /// </summary>
     [XmlRoot("input")]
     public class InputDefinitionCollection
@@ -57,6 +57,9 @@ namespace Splunk.ModularInputs
         [XmlElement("session_key")]
         public string SessionKey { get; set; }
 
+        /// <summary>
+        /// Represents the data for a single instance of the modular input.
+        /// </summary>
         public class Stanza
         {
             [XmlAttribute("name")]

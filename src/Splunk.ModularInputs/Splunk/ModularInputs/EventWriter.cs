@@ -28,6 +28,11 @@ namespace Splunk.ModularInputs
     using System.Xml;
     using System.Xml.Serialization;
 
+    /// <summary>
+    /// Structure emitted on an IProgress instance by EventWriter when it has finished
+    /// writing an event, or when it has terminated, in which case the event has no properties
+    /// set.
+    /// </summary>
     public struct EventWrittenProgressReport
     {
         public DateTime Timestamp { get; set; }
@@ -49,14 +54,27 @@ namespace Splunk.ModularInputs
         #endregion
 
         #region Properties
-        public readonly TextWriter Stdout;
-        public readonly TextWriter Stderr;
-        public readonly IProgress<EventWrittenProgressReport> Progress;
+        protected readonly TextWriter Stdout;
+        protected readonly TextWriter Stderr;
+        protected readonly IProgress<EventWrittenProgressReport> Progress;
         #endregion
 
 
         #region Constructors
 
+        /// <summary>
+        /// Create a new EventWriter instance writing to the provided streams
+        /// and emitting progress reports to the provided IProgress instance
+        /// after each event is written.
+        /// </summary>
+        /// <param name="stdout">A writer on which to write events (usually 
+        /// Console.Stdout in production, or a StringWriter in testing).</param>
+        /// <param name="stderr">A writer on which to log errors and messages
+        /// (usually Console.Stderr in production, or a StringWriter in testing).</param>
+        /// <param name="progress">An IProgress instance to write progress reports to.
+        /// This is the easiest way to trigger behavior after events are actually
+        /// written to Splunk. In production, it will usually be an instance
+        /// of Progress&lt;EventWrittenProgressReport&gt;</param>
         public EventWriter(TextWriter stdout, TextWriter stderr, 
             IProgress<EventWrittenProgressReport> progress)
         {
@@ -73,12 +91,20 @@ namespace Splunk.ModularInputs
 
         #endregion
 
-        /// <param name="eventElement">
+        /// <summary>
+        /// Add an event to this EventWriter's shared queue to be written as soon
+        /// as possible. This method is thread-safe, so multiple threads can 
+        /// concurrently queue events without interfering with each other.
+        /// </summary>
+        /// <param name="e">The Event to write.</param>
         public async Task QueueEventForWriting(Event e)
         {
             if (disposed)
                 throw new ObjectDisposedException("EventWriter already disposed.");
             if (eventQueueMonitor == null)
+                // Don't start the eventQueueMonitor up until we actually want to write
+                // events so we don't get empty <stream/> elements in cases where
+                // we don't actually queue anything.
                 eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
             await Task.Run(() => eventQueue.Add(e));
         }
@@ -108,7 +134,13 @@ namespace Splunk.ModularInputs
             disposed = true;
         }
 
-
+        /// <summary>
+        /// Log a message to stderr.
+        /// </summary>
+        /// <param name="severity">A string specifying the
+        /// error level (usually one of "INFO", "DEBUG", "WARNING",
+        /// "ERROR", or "FATAL").</param>
+        /// <param name="message">The message to log.</param>
         public async Task LogAsync(string severity, string message)
         {
             if (disposed) throw new ObjectDisposedException("EventWriter is already disposed.");

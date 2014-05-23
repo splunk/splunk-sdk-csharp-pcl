@@ -24,7 +24,7 @@ namespace Splunk.ModularInputs
 
     /// <summary>
     /// The <see cref="MultiValueParameter"/> class represents a parameter that
-    /// contains a multivalue.
+    /// contains multiple values.
     /// </summary>
     /// <remarks>
     /// <example>Sample XML</example>
@@ -40,6 +40,9 @@ namespace Splunk.ModularInputs
     {
         #region Properties
 
+        /// <summary>
+        /// The values in this parameter.
+        /// </summary>
         [XmlElement("value")]
         public List<string> Values;
 
@@ -77,14 +80,6 @@ namespace Splunk.ModularInputs
             return (from x in parameter.Values select long.Parse(x)).ToList();
         }
         
-        #endregion
-
-        #region Privates/internals
-
-        #endregion
-
-        #region Types
-
         #endregion
     }
 }

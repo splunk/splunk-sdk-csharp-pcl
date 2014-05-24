@@ -39,6 +39,149 @@ namespace Splunk.Client
         /// <param name="value">
         /// Argument value.
         /// </param>
+        public Argument(string name, byte value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, SByte value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, char value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, decimal value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, int value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, uint value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, double value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, float value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, long value)
+            : this(name, value.ToString())
+        {  }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, ulong value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
+        public Argument(string name, object value)
+            : this(name, value.ToString())
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Argument"/> class.
+        /// </summary>
+        /// <param name="name">
+        /// Parameter name.
+        /// </param>
+        /// <param name="value">
+        /// Argument value.
+        /// </param>
         public Argument(string name, string value)
         {
             Contract.Requires<ArgumentNullException>(name != null, "name");

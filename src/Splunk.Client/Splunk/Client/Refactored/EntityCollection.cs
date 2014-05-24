@@ -28,8 +28,10 @@ namespace Splunk.Client.Refactored
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -186,6 +188,28 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
+        /// Asynchronously retrieves a <see cref="TEntity"/> in the current
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/> by name.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        public virtual async Task<TEntity> GetAsync(string name)
+        {
+            var entity = new TEntity();
+
+            entity.Initialize(this.Context, this.Namespace, new ResourceName(this.ResourceName, name));
+
+            using (Response response = await this.Context.GetAsync(this.Namespace, entity.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
+                await entity.UpdateSnapshotAsync(response);
+            }
+
+            return entity;
+        }
+
+        /// <summary>
         /// Asynchronously retrieves a fresh copy of the full list of entities
         /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
@@ -194,10 +218,48 @@ namespace Splunk.Client.Refactored
         /// </returns>
         /// <remarks>
         /// Following completion of the operation the list of entites in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will
-        /// contain all changes since the list was last retrieved.
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
+        /// all changes since the list was last retrieved.
         /// </remarks>
         public virtual async Task GetAllAsync()
+        {
+            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, GetAll))
+            {
+                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
+                await this.UpdateSnapshotAsync(response);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves select entities from the list of entites
+        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        /// <remarks>
+        /// Following completion of the operation the list of entities in the
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
+        /// all changes since the select entites were last retrieved.
+        /// </remarks>
+        public virtual async Task GetSliceAsync(params Argument[] arguments)
+        {
+            await this.GetSliceAsync(arguments.AsEnumerable());
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves select entities from the list of entites
+        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        /// <remarks>
+        /// Following completion of the operation the list of entities in the
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
+        /// all changes since the select entites were last retrieved.
+        /// </remarks>
+        public virtual async Task GetSliceAsync(IEnumerable<Argument> arguments)
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
@@ -262,8 +324,13 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
+
+        static readonly Argument[] GetAll = new Argument[] 
+        {
+            new Argument("count", 0)
+        };
 
         #endregion
-   }
+    }
 }

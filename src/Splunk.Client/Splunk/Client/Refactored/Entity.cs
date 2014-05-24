@@ -280,7 +280,7 @@ namespace Splunk.Client.Refactored
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        protected override async Task<bool> UpdateSnapshotAsync(Response response)
+        protected internal override async Task<bool> UpdateSnapshotAsync(Response response)
         {
             var feed = new AtomFeed();
 

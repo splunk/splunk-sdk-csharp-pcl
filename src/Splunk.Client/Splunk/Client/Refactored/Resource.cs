@@ -17,6 +17,7 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
+//// [ ] Resource aggregates Endpoint (?)
 
 namespace Splunk.Client.Refactored
 {
@@ -74,15 +75,7 @@ namespace Splunk.Client.Refactored
         /// </exception>
         protected internal Resource(Context context, Namespace ns, ResourceName name)
         {
-            Contract.Requires<ArgumentException>(name != null);
-            Contract.Requires<ArgumentNullException>(ns != null);
-            Contract.Requires<ArgumentNullException>(context != null);
-            Contract.Requires<ArgumentOutOfRangeException>(ns.IsSpecific);
-
-            this.context = context;
-            this.ns = ns;
-            this.resourceName = name;
-            this.initialized = true;
+            this.Initialize(context, ns, name);
         }
 
         /// <summary>
@@ -137,9 +130,7 @@ namespace Splunk.Client.Refactored
         /// "Resource"/>.
         /// </summary>
         public Context Context
-        {
-            get { return this.context; }
-        }
+        { get; private set; }
 
         /// <summary>
         /// Gets the title of the current <see cref="Resource"/> which is the 
@@ -154,17 +145,13 @@ namespace Splunk.Client.Refactored
         /// Gets the namespace containing the current <see cref="Resource"/>.
         /// </summary>
         public Namespace Namespace
-        {
-            get { return this.ns; }
-        }
+        { get; private set; }
 
         /// <summary>
         /// Gets the name of the current <see cref="Resource"/>.
         /// </summary>
         public ResourceName ResourceName
-        {
-            get { return this.resourceName; }
-        }
+        { get; private set; }
 
         #endregion
 
@@ -390,6 +377,55 @@ namespace Splunk.Client.Refactored
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
+        /// <param name="ns">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="name">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
+        /// "name"/>are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The current <see cref="Resource"/> is already initialized.
+        /// </exception>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Resource"/>
+        /// instantiated by the default constructor. Override this method to 
+        /// provide special initialization code. Call this base method before 
+        /// initialization is complete. 
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        protected internal virtual void Initialize(Context context, Namespace ns, ResourceName name)
+        {
+            Contract.Requires<ArgumentNullException>(context != null);
+            Contract.Requires<ArgumentNullException>(ns != null);
+            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires<ArgumentException>(!ns.IsSpecific);
+
+            if (this.initialized)
+            {
+                throw new InvalidOperationException(AlreadyInitialized);
+            }
+
+            this.Context = context;
+            this.Namespace = ns;
+            this.ResourceName = name;
+
+            this.initialized = true;
+        }
+
+        /// <summary>
+        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// "Resource"/>.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
         /// </param>
@@ -510,7 +546,7 @@ namespace Splunk.Client.Refactored
         /// <returns>
         /// <c>true</c>.
         /// </returns>
-        protected virtual async Task<bool> UpdateSnapshotAsync(Response response)
+        protected internal virtual async Task<bool> UpdateSnapshotAsync(Response response)
         {
             var feed = new AtomFeed();
             
@@ -536,18 +572,15 @@ namespace Splunk.Client.Refactored
 
         #region Privates
 
+        static readonly string AlreadyInitialized = "Resource was intialized; Initialize operation may not execute again.";
         volatile Snapshot snapshot = Snapshot.Missing;
         bool initialized;
-
-        Context context;
-        Namespace ns;
-        ResourceName resourceName;
 
         void SetIdentity(Context context, Uri id)
         {
             if (this.initialized)
             {
-                throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again");
+                throw new InvalidOperationException(AlreadyInitialized);
             }
 
             // Compute namespace and resource name from entry.Id
@@ -589,9 +622,9 @@ namespace Splunk.Client.Refactored
                 default: throw new InvalidDataException(); // TODO: Diagnostics : conversion error
             }
 
-            this.context = context;
-            this.ns = ns;
-            this.resourceName = name;
+            this.Context = context;
+            this.Namespace = ns;
+            this.ResourceName = name;
 
             this.initialized = true;
         }

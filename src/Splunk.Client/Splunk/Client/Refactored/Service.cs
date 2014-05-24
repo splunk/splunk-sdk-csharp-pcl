@@ -59,6 +59,9 @@ namespace Splunk.Client.Refactored
 
             this.context = context;
             this.ns = ns ?? Namespace.Default;
+
+            this.configurations = new ConfigurationCollection(this);
+            this.applications = new ApplicationCollection(this);
             this.receiver = new Receiver(context, this.Namespace);
             this.server = new Server(context, this.Namespace);
         }
@@ -78,6 +81,11 @@ namespace Splunk.Client.Refactored
         /// <param name="ns">
         /// The namespace for requests issue by the new <see cref="Service"/>.
         /// </param>
+        /// <exception name="ArgumentException">
+        /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
+        /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
+        /// or greater than <c>65535</c>.
+        /// </exception>
         public Service(Scheme scheme, string host, int port, Namespace ns = null)
             : this(new Context(scheme, host, port), ns)
         { }
@@ -397,28 +405,6 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-        /// Asynchronously retrieves a collection of installed applications.
-        /// </summary>
-        /// <param name="args">
-        /// Specification of the collection of applications to retrieve.
-        /// </param>
-        /// <returns>
-        /// An object representing the collection of installed applications
-        /// specified by <paramref name="args"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/iiCmcY">GET apps/local</a> 
-        /// endpoint to construct the <see cref="ApplicationCollection"/> object
-        /// it returns.
-        /// </remarks>
-        public async Task<ApplicationCollection> GetApplicationsAsync(ApplicationCollectionArgs args = null)
-        {
-            var collection = new ApplicationCollection(this.Context, this.Namespace, args);
-            await collection.GetAsync();
-            return collection;
-        }
-
-        /// <summary>
         /// Asynchronously retrieves setup information for an <see cref=
         /// "Application"/> identified by name.
         /// </summary>
@@ -596,48 +582,6 @@ namespace Splunk.Client.Refactored
             var entity = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
             await entity.CreateAsync();
             return entity;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a configuration file.
-        /// </summary>
-        /// <param name="name">
-        /// The name of a configuration file.
-        /// </param>
-        /// <returns>
-        /// An object representing the configuration file.
-        /// <paramref name="name"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/JNbGtL">GET 
-        /// properties/{file_name}</a> endpoint/> to construct the <see cref=
-        /// "Configuration"/> it returns.
-        /// </remarks>
-        public async Task<Configuration> GetConfigurationAsync(string name)
-        {
-            var entity = new Configuration(this.Context, this.Namespace, name);
-            await entity.GetAsync();
-            return entity;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves the collection of all configuration files 
-        /// known to Splunk.
-        /// </summary>
-        /// <returns>
-        /// An object representing the collection of all configuration files
-        /// known to Splunk.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/Unj6fs">GET 
-        /// properties</a> endpoint/> to construct the <see cref=
-        /// "ConfigurationCollection"/> it returns.
-        /// </remarks>
-        public async Task<ConfigurationCollection> GetConfigurationsAsync()
-        {
-            var collection = new ConfigurationCollection(this.Context, this.Namespace);
-            await collection.GetAsync();
-            return collection;
         }
 
         /// <summary>
@@ -1403,6 +1347,7 @@ namespace Splunk.Client.Refactored
         readonly Context context;
         readonly Namespace ns;
 
+        readonly ConfigurationCollection configurations;
         readonly ApplicationCollection applications;
         readonly Receiver receiver;
         readonly Server server;

@@ -1061,6 +1061,7 @@ namespace Splunk.Client.UnitTests
 
         #region System
 
+#if false
         [Trait("class", "Service: Server")]
         [Fact]
         public async Task CanCrudServerMessages()
@@ -1196,7 +1197,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("class", "Service: System")]
+        [Trait("class", "Service: Server")]
         [Fact]
         public async Task CanGetServerInfo()
         {
@@ -1251,6 +1252,7 @@ namespace Splunk.Client.UnitTests
                 await service.LoginAsync("admin", "changeme");
             }
         }
+#endif
 
         [Trait("class", "Service: System")]
         [Fact]

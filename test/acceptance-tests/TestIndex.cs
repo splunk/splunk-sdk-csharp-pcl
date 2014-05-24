@@ -114,12 +114,13 @@ namespace Splunk.Client.UnitTests
 
                 // use setters to update most
                 indexAttributes.BlockSignSize = index.BlockSignSize + 1;
+#if false
                 if (TestHelper.VersionCompare(service, "4.3") > 0)
                 {
                     indexAttributes.EnableOnlineBucketRepair = !index.EnableOnlineBucketRepair;
                     indexAttributes.MaxBloomBackfillBucketAge = "20d";
                 }
-
+#endif
                 indexAttributes.FrozenTimePeriodInSecs = index.FrozenTimePeriodInSecs + 1;
                 indexAttributes.MaxConcurrentOptimizes = index.MaxConcurrentOptimizes + 1;
                 indexAttributes.MaxDataSize = "auto";
@@ -142,8 +143,9 @@ namespace Splunk.Client.UnitTests
                 await index.UpdateAsync(indexAttributes);
                 await index.DisableAsync();
                 Assert.True(index.Disabled);
-
+#if false
                 await TestHelper.RestartServer();
+#endif
             }
 
             using (Service service = await SDKHelper.CreateService())
@@ -304,7 +306,9 @@ namespace Splunk.Client.UnitTests
                     }
                     catch (Exception)
                     {
+#if false
                         TestHelper.RestartServer().Wait();
+#endif
                         Service service1 = SDKHelper.CreateService().Result;
                         service1.RemoveIndexAsync(indexName).Wait();
                     }

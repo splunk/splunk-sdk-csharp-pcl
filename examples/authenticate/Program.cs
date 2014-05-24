@@ -48,7 +48,9 @@ namespace Splunk.Examples.Authenticate
         {
             using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port))
             {
+#if false
                 Console.WriteLine("Connected to {0}:{1} ", service.Server.Context.Host, service.Server.Context.Port);
+#endif
                 Run(service).Wait();
             }
         }

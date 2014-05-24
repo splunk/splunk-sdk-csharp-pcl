@@ -62,8 +62,8 @@ namespace Splunk.Client.Refactored
 
             this.configurations = new ConfigurationCollection(this);
             this.applications = new ApplicationCollection(this);
-            this.receiver = new Receiver(context, this.Namespace);
-            this.server = new Server(context, this.Namespace);
+            this.receiver = new Receiver(this);
+            this.server = new Server(this);
         }
 
         /// <summary>

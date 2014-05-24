@@ -329,11 +329,12 @@ namespace Splunk.Client.UnitTests
             dummyString = job.Keywords;
             //dummyString = job.Label;
 
+#if false
             if (TestHelper.VersionCompare(service, "6.0") < 0)
             {
                 dummyDateTime = job.LatestTime;
             }
-
+#endif
             dummyInt = job.NumPreviews;
             dummyInt = job.Priority;
             dummyString = job.RemoteSearch;

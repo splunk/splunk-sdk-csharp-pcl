@@ -21,14 +21,14 @@ namespace Splunk.Client.UnitTests
 
     using System;
     using System.Linq;
-    
+
     using Xunit;
 
     /// <summary>
     /// Tests the configurations
     /// </summary>
-    public class ConfTest 
-    {     
+    public class ConfTest
+    {
         /// <summary>
         /// Basic conf touch test
         /// </summary>
@@ -80,7 +80,7 @@ namespace Splunk.Client.UnitTests
         [Trait("class", "Service")]
         [Fact]
         public async void ConfCRUD()
-        {            
+        {
             // Create a fresh app to use as the container for confs that we will
             // create in this test. There is no way to delete a conf once it's
             // created so we make sure to create in the context of this test app
@@ -89,10 +89,11 @@ namespace Splunk.Client.UnitTests
             string app = "sdk-tests";
             string owner = "nobody";
 
-           
-           TestHelper.CreateApp(app);
-           Service service =await SDKHelper.CreateService();
-            
+#if false
+            TestHelper.CreateApp(app);
+#endif
+            Service service = await SDKHelper.CreateService();
+
             var apps = service.GetApplicationsAsync().Result;
             Assert.True(apps.Any(a => a.ResourceName.Title == app));
 
@@ -151,7 +152,9 @@ namespace Splunk.Client.UnitTests
             Assert.Equal(1, testconf.Count);
 
             // Cleanup after ourselves
+#if false
             TestHelper.RemoveApp(app);
+#endif
         }
     }
 }

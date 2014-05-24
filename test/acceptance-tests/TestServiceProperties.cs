@@ -69,6 +69,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
+#if false
         /// <summary>
         /// Tests the getting of service info (there are no set arguments)
         /// </summary>
@@ -105,6 +106,7 @@ namespace Splunk.Client.UnitTests
                 dummyBool = info.IsTrial;
             }
         }
+#endif
 
         /// <summary>
         /// Test login
@@ -158,6 +160,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
+#if false
         /// <summary>
         /// This method tests geting the events and then sets most, 
         /// and then reverts back to the original
@@ -165,9 +168,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async void Settings()
         {
-            
             Service service = await SDKHelper.CreateService();
-
 
             ServerSettings settings = service.Server.GetSettingsAsync().Result;
             string dummyString;
@@ -250,6 +251,7 @@ namespace Splunk.Client.UnitTests
             Assert.Equal(originalTimeout, settings.SessionTimeout);
             Assert.Equal(originalStartWeb, settings.StartWebServer);
         }
+#endif
 
         ///// <summary>
         ///// Returns a value dermining whether a string is in the

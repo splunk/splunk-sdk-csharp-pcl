@@ -144,7 +144,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public IReadOnlyList<Message> Messages
         {
-            get { return this.snapshot.GetValue("Messages"); }
+            get { return this.Snapshot.GetValue("Messages"); }
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public Pagination Pagination
         {
-            get { return this.snapshot.GetValue("Pagination"); }
+            get { return this.Snapshot.GetValue("Pagination"); }
         }
 
         #endregion
@@ -345,60 +345,6 @@ namespace Splunk.Client.Refactored
             return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
         }
 
-        #region Infrastructure methods
-
-        /// <inheritdoc/>
-        protected internal override void Initialize(Context context, AtomEntry entry, Version generatorVersion)
-        {
-            this.Initialize(context, entry.Id);
-            this.ReconstructSnapshot(entry, generatorVersion);
-        }
-
-        /// <inheritdoc/>
-        protected internal override void Initialize(Context context, AtomFeed feed)
-        {
-            this.Initialize(context, feed.Id);
-            this.snapshot = new Resource(feed);
-        }
-
-        /// <inheritdoc/>
-        protected override void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
-        {
-            this.snapshot = new Resource(entry, generatorVersion);
-        }
-
-        /// <inheritdoc/>
-        protected internal override void Initialize(Context context, Resource resource)
-        {
-            this.Initialize(context, resource.Id);
-            this.snapshot = resource;
-        }
-
-        /// <inheritdoc/>
-        protected override void ReconstructSnapshot(AtomFeed feed)
-        {
-            this.snapshot = new Resource(feed);
-        }
-
-        /// <inheritdoc/>
-        protected override void ReconstructSnapshot(Resource resource)
-        {
-            this.snapshot = resource;
-        }
-
-        /// <inheritdoc/>
-        protected internal override async Task<bool> ReconstructSnapshotAsync(Response response)
-        {
-            var feed = new AtomFeed();
-
-            await feed.ReadXmlAsync(response.XmlReader);
-            this.ReconstructSnapshot(feed);
-
-            return true;
-        }
-
-        #endregion
-
         #endregion
 
         #region Privates/internals
@@ -408,29 +354,27 @@ namespace Splunk.Client.Refactored
             new Argument("count", 0)
         };
 
-        volatile Resource snapshot;
-
         IReadOnlyList<Resource> Resources
         {
             get
             {
-                dynamic snapshot = this.snapshot;
+                dynamic snapshot = this.Snapshot;
 
                 if (snapshot.Resources == null)
                 {
                     throw new InvalidOperationException();
                 }
 
-                return snapshot;
+                return snapshot.Resources;
             }
         }
 
         TEntity Create(Resource resource)
         {
-            var entity = new TEntity();
+            var resourceEndpoint = new TEntity();
 
-            entity.Initialize(this.Context, resource);
-            return entity;
+            resourceEndpoint.Initialize(this.Context, resource);
+            return resourceEndpoint;
         }
 
         #endregion

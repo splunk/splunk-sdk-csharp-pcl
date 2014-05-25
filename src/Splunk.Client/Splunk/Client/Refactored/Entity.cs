@@ -164,7 +164,7 @@ namespace Splunk.Client.Refactored
 
         dynamic Content
         {
-            get { return this.snapshot; }
+            get { return this.Snapshot; }
         }
 
         #endregion
@@ -235,35 +235,8 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
-            return this.snapshot.GetValue(name, valueConverter);
+            return this.Snapshot.GetValue(name, valueConverter);
         }
-
-        /// <inheritdoc/>
-        protected internal override void Initialize(Context context, AtomEntry entry, Version generatorVersion)
-        {
-            this.Initialize(context, entry.Id);
-            this.ReconstructSnapshot(entry, generatorVersion);
-        }
-
-        /// <inheritdoc/>
-        protected internal override void Initialize(Context context, AtomFeed feed)
-        {
-            this.snapshot = new Resource(feed);
-            this.Initialize(context, this.snapshot.Id);
-        }
-
-        /// <inheritdoc/>
-        protected internal override void Initialize(Context context, Resource resource)
-        {
-            this.ReconstructSnapshot(resource);
-            this.Initialize(context, this.snapshot.Id);
-        }
-
-        /// <inheritdoc/>
-        protected override void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
- 	    {
-	        this.snapshot = new Resource(entry, generatorVersion);
- 	    }
 
         /// <inheritdoc/>
         protected override void ReconstructSnapshot(AtomFeed feed)
@@ -280,59 +253,39 @@ namespace Splunk.Client.Refactored
                 throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
             }
 
-            this.snapshot = new Resource(feed.Entries[0], feed.GeneratorVersion);
+            base.ReconstructSnapshot(feed.Entries[0], feed.GeneratorVersion);
         }
 
         /// <inheritdoc/>
         protected override void ReconstructSnapshot(Resource resource)
         {
-            dynamic snapshot = resource;
-            IReadOnlyList<Resource> resources = snapshot.Resources;
+            Contract.Requires<ArgumentNullException>(resource != null);
 
-            int count = resources.Count;
+            IReadOnlyList<Resource> resources = resource.GetValue("Resources");
 
-            if (count == 0)
+            if (resources != null)
             {
-                return;
+                // Resource was constructed from an atom feed response
+
+                int count = resources.Count;
+
+                if (count == 0)
+                {
+                    return;
+                }
+
+                if (count > 1)
+                {
+                    throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
+                }
+
+                resource = resources[0];
             }
 
-            if (count > 1)
-            {
-                throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
-            }
-
-            this.snapshot = resources[0];
-        }
-
-        /// <inheritdoc/>
-        protected internal override async Task<bool> ReconstructSnapshotAsync(Response response)
-        {
-            var feed = new AtomFeed();
-
-            await feed.ReadXmlAsync(response.XmlReader);
-            int count = feed.Entries.Count;
-
-            if (count == 0)
-            {
-                return false;
-            }
-
-            if (count > 1)
-            {
-                throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
-            }
-
-            this.ReconstructSnapshot(feed.Entries[0], feed.GeneratorVersion);
-            return true;
+            base.ReconstructSnapshot(resource);
         }
 
         #endregion
-
-        #endregion
-
-        #region Privates/internals
-
-        volatile Resource snapshot;
 
         #endregion
     }

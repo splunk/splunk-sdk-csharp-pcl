@@ -199,6 +199,15 @@ namespace Splunk.Client.Refactored
             get { return this.snapshot.Updated; }
         }
 
+        /// <summary>
+        /// Gets an object representing the Splunk resource at the time it was
+        /// last retrieved by the current <see cref="ResourceEndpoint"/>.
+        /// </summary>
+        protected Resource Snapshot
+        {
+            get { return this.snapshot; }
+        }
+
         #endregion
 
         #region Methods
@@ -263,8 +272,8 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         protected internal virtual void Initialize(Context context, AtomEntry entry, Version generatorVersion)
         {
-            this.Initialize(context, entry.Id);
             this.ReconstructSnapshot(entry, generatorVersion);
+            this.Initialize(context, this.Snapshot.Id);
         }
 
         /// <summary>
@@ -299,7 +308,11 @@ namespace Splunk.Client.Refactored
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal abstract void Initialize(Context context, AtomFeed feed);
+        protected internal virtual void Initialize(Context context, AtomFeed feed)
+        {
+            this.ReconstructSnapshot(feed);
+            this.Initialize(context, this.Snapshot.Id);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
@@ -328,7 +341,11 @@ namespace Splunk.Client.Refactored
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal abstract void Initialize(Context context, Resource resource);
+        protected internal virtual void Initialize(Context context, Resource resource)
+        {
+            this.ReconstructSnapshot(resource);
+            this.Initialize(context, this.Snapshot.Id);
+        }
 
         /// <summary>
 	    /// Asynchronously updates the <see cref="Content"/> of the current 
@@ -337,16 +354,22 @@ namespace Splunk.Client.Refactored
 	    /// <param name="entry">
 	    /// A Splunk <see cref="AtomEntry"/>.
 	    /// </param>
-        protected abstract void ReconstructSnapshot(AtomEntry entry, Version generatorVersion);
+        protected virtual void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
+        {
+            this.snapshot = new Resource(entry, generatorVersion);
+        }
 
         /// <summary>
-        /// Asynchronously updates the <see cref="Content"/> of the current 
+        /// Asynchronously updates the <see cref="Snapshot"/> of the current 
         /// <see cref="ResourceEndpoint"/>
         /// </summary>
         /// <param name="feed">
         /// A Splunk <see cref="AtomFeed"/>.
         /// </param>
-        protected abstract void ReconstructSnapshot(AtomFeed feed);
+        protected virtual void ReconstructSnapshot(AtomFeed feed)
+        {
+            this.snapshot = new Resource(feed);
+        }
 
         /// <summary>
         /// Asynchronously updates the <see cref="Content"/> of the current <see
@@ -358,7 +381,10 @@ namespace Splunk.Client.Refactored
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        protected abstract void ReconstructSnapshot(Resource resource);
+        protected virtual void ReconstructSnapshot(Resource resource)
+        {
+            this.snapshot = resource;
+        }
 
         /// <summary>
         /// Asynchronously updates the <see cref="Content"/> of the current <see
@@ -370,7 +396,16 @@ namespace Splunk.Client.Refactored
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        protected internal abstract Task<bool> ReconstructSnapshotAsync(Response response);
+        protected internal virtual async Task<bool> ReconstructSnapshotAsync(Response response)
+        {
+            var feed = new AtomFeed();
+
+            await feed.ReadXmlAsync(response.XmlReader);
+            this.ReconstructSnapshot(feed);
+
+            return true;
+        }
+
 
         #endregion
 

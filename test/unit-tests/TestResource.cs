@@ -61,24 +61,24 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                dynamic collection = new EntityCollection<Entity>(context, feed);
+                var collection = new EntityCollection<Entity>(context, feed);
 
                 Assert.DoesNotThrow(() => { var p = collection.Pagination; });
-                CheckCommonStaticPropertiesOfResource(collection);
+                CheckCommonStaticPropertiesOfResourceEndpoint(collection);
                 Assert.Equal("jobs", collection.Name);
                 Assert.NotNull(collection.Links);
                 Assert.NotNull(collection.Messages);
                 Assert.Equal(1, collection.Count);
 
-                dynamic entity = collection.Resources[0];
+                var entity = collection[0];
                 
-                CheckCommonStaticPropertiesOfResource(entity);
+                CheckCommonStaticPropertiesOfResourceEndpoint(entity);
                 Assert.Equal("1392687998.313", entity.Name);
                 Assert.NotNull(entity.Links);
-                Assert.NotNull(entity.Messages);
-                Assert.NotNull(entity.Resources);
-                Assert.Equal(0, entity.Resources.Count);
-                CheckDynamicPropertiesOfJob(entity);
+//                Assert.NotNull(entity.Messages);
+//                Assert.NotNull(entity.Resources);
+//                Assert.Equal(0, entity.Resources.Count);
+//                CheckDynamicPropertiesOfJob(entity);
             }
         }
 
@@ -170,7 +170,7 @@ namespace Splunk.Client.UnitTests
 
         #region Privates/internals
 
-        void CheckDynamicPropertiesOfJob(dynamic job)
+        static void CheckDynamicPropertiesOfJob(dynamic job)
         {
             Assert.DoesNotThrow(() => { var p = job.Published; });
             Assert.IsType(typeof(DateTime), job.Published);
@@ -205,7 +205,7 @@ namespace Splunk.Client.UnitTests
             //// More...
         }
 
-        void CheckCommonStaticPropertiesOfResource(Resource resource)
+        static void CheckCommonStaticPropertiesOfResource(Resource resource)
         {
             Assert.DoesNotThrow(() =>
             {
@@ -244,7 +244,7 @@ namespace Splunk.Client.UnitTests
             });
         }
 
-        void CheckCommonStaticPropertiesOfResourceEndpoint(ResourceEndpoint resource)
+        static void CheckCommonStaticPropertiesOfResourceEndpoint(ResourceEndpoint resource)
         {
             Assert.DoesNotThrow(() => 
             { 

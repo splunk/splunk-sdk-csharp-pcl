@@ -41,15 +41,8 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                dynamic entity = new Entity(context, feed);
-
-                CheckCommonStaticPropertiesOfResource(entity);
-                Assert.Equal("1392687998.313", entity.Name);
-                Assert.NotNull(entity.Links);
-                Assert.NotNull(entity.Messages);
-                Assert.NotNull(entity.Resources);
-                Assert.Equal(0, entity.Resources.Count);
-                AssertExistenceOfDynamicPropertiesOfJob(entity);
+                var entity = new Entity(context, feed);
+                CheckJob(entity);
             }
         }
 
@@ -76,24 +69,7 @@ namespace Splunk.Client.UnitTests
                 Assert.NotNull(collection.Messages);
                 Assert.Equal(1, collection.Count);
 
-                //// Entity checks
-
-                var entity = collection[0];
-                
-                CheckCommonStaticPropertiesOfResourceEndpoint(entity);
-
-                Assert.Equal("https://localhost:8089/services/search/jobs/1392687998.313", entity.Id.ToString());
-                Assert.Equal(collection.GeneratorVersion, entity.GeneratorVersion);
-                Assert.Equal("2014-02-17 17:46:39Z", entity.Updated.ToString("u"));
-                Assert.Equal("1392687998.313", entity.Name);
-                Assert.Equal("search *", entity.Title);
-                Assert.Equal("admin", entity.Author);
-                Assert.NotNull(entity.Links);
-                Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, entity.Links.Keys);
-
-                AssertExistenceOfDynamicPropertiesOfJob(entity.Content);
-                Assert.IsType(typeof(DateTime), entity.Content.Published);
-                Assert.Equal("2014-02-17 17:46:39Z", entity.Content.Published.ToString("u"));
+                CheckJob(collection[0]);
             }
         }
 
@@ -312,7 +288,24 @@ namespace Splunk.Client.UnitTests
             });
         }
 
-        async Task<AtomFeed> ReadAtomFeed(string path)
+        static void CheckJob(Entity entity)
+        {
+            CheckCommonStaticPropertiesOfResourceEndpoint(entity);
+
+            Assert.Equal("6.0.1.187445", entity.GeneratorVersion.ToString());
+            Assert.Equal("2014-02-17 17:46:39Z", entity.Updated.ToString("u"));
+            Assert.Equal("1392687998.313", entity.Name);
+            Assert.Equal("search *", entity.Title);
+            Assert.Equal("admin", entity.Author);
+            Assert.NotNull(entity.Links);
+            Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, entity.Links.Keys);
+
+            AssertExistenceOfDynamicPropertiesOfJob(entity.Content);
+            Assert.IsType(typeof(DateTime), entity.Content.Published);
+            Assert.Equal("2014-02-17 17:46:39Z", entity.Content.Published.ToString("u"));
+        }
+
+        static async Task<AtomFeed> ReadAtomFeed(string path)
         {
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {

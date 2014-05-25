@@ -24,6 +24,7 @@ namespace Splunk.Client.Refactored
     using Splunk.Client;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
     using System.IO;
@@ -291,7 +292,7 @@ namespace Splunk.Client.Refactored
             Contract.Requires<ArgumentNullException>(entry != null);
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
 
-            this.EnsureUninitialized();
+            this.MarkInitialized();
             dynamic content;
 
             if (entry.Content == null)
@@ -351,8 +352,7 @@ namespace Splunk.Client.Refactored
         {
             Contract.Requires<ArgumentNullException>(feed != null);
 
-            this.EnsureUninitialized();
-
+            this.MarkInitialized();
             dynamic content = new ExpandoObject();
 
             this.adapter = new ExpandoAdapter(content);
@@ -374,7 +374,7 @@ namespace Splunk.Client.Refactored
                 resources.Add(resource);
             }
 
-            content.Resources = resources;
+            content.Resources = new ReadOnlyCollection<Resource>(resources);
         }
 
         /// <summary>
@@ -426,6 +426,7 @@ namespace Splunk.Client.Refactored
 
         internal static readonly Resource Missing = new Resource();
         ExpandoAdapter adapter = ExpandoAdapter.Empty;
+        bool initialized;
 
         static Resource()
         {
@@ -438,12 +439,14 @@ namespace Splunk.Client.Refactored
             Missing.Updated = DateTime.MinValue;
         }
 
-        void EnsureUninitialized()
+        void MarkInitialized()
         {
-            if (this.adapter != null)
+            if (this.initialized)
             {
                 throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again.");
             }
+
+            initialized = true;
         }
 
         #endregion

@@ -35,6 +35,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
@@ -153,7 +154,7 @@ namespace Splunk.Client
 
             reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
             var links = new Dictionary<string, Uri>();
-            this.Links = links;
+            this.Links = new ReadOnlyDictionary<string, Uri>(links);
 
             await reader.ReadAsync();
 

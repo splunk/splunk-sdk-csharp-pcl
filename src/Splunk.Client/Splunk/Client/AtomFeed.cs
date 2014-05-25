@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Threading.Tasks;
@@ -146,9 +147,9 @@ namespace Splunk.Client
             var links = new Dictionary<string, Uri>();
             var messages = new List<Message>();
 
-            this.Entries = entries;
-            this.Links = links;
-            this.Messages = messages;
+            this.Entries = new ReadOnlyCollection<AtomEntry>(entries);
+            this.Links = new ReadOnlyDictionary<string, Uri>(links);
+            this.Messages = new ReadOnlyCollection<Message>(messages);
 
             await reader.ReadAsync();
 

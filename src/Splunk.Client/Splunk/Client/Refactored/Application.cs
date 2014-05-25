@@ -370,44 +370,5 @@ namespace Splunk.Client.Refactored
         }
 
         #endregion
-
-        #region Types
-
-        class CreationArgs : Args<CreationArgs>
-        {
-            [DataMember(Name = "explicit_appname", IsRequired = true)]
-            public string ExplicitApplicationName
-            { get; set; }
-
-            [DataMember(Name = "filename", IsRequired = true)]
-            public bool? Filename
-            { get; set; }
-
-            [DataMember(Name = "name", IsRequired = true)]
-            public string Name
-            { get; set; }
-
-            [DataMember(Name = "template", EmitDefaultValue = true)]
-            public string Template
-            { get; set; }
-
-            [DataMember(Name = "update", EmitDefaultValue = false)]
-            public bool? Update
-            { get; set; }
-        }
-
-        class UpdateArgs : Args<UpdateArgs>
-        {
-            /// <summary>
-            /// Gets a value that indicates whether Splunk should check Splunkbase
-            /// for updates to an <see cref="Application"/>.
-            /// </summary>
-            [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
-            [DefaultValue(false)]
-            public bool CheckForUpdates
-            { get; set; }
-        }
-
-        #endregion
     }
 }

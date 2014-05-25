@@ -95,7 +95,8 @@ namespace Splunk.Client.Refactored
                 Template = template
             };
 
-            await this.CreateAsync(attributes == null ? args : args.Concat(attributes));
+            var resourceEndpoint = await this.CreateAsync(attributes == null ? args : args.Concat(attributes));
+            return resourceEndpoint;
         }
 
         /// <summary>
@@ -152,7 +153,9 @@ namespace Splunk.Client.Refactored
             using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.CreateAsync(response);
+                
+                var resourceEndpoint = await ResourceEndpoint.CreateAsync<Application>(this.Context, response);
+                return resourceEndpoint;
             }
         }
 
@@ -165,6 +168,41 @@ namespace Splunk.Client.Refactored
         #endregion
 
         #region Types
+
+        class CreationArgs : Args<CreationArgs>
+        {
+            [DataMember(Name = "explicit_appname", IsRequired = true)]
+            public string ExplicitApplicationName
+            { get; set; }
+
+            [DataMember(Name = "filename", IsRequired = true)]
+            public bool? Filename
+            { get; set; }
+
+            [DataMember(Name = "name", IsRequired = true)]
+            public string Name
+            { get; set; }
+
+            [DataMember(Name = "template", EmitDefaultValue = true)]
+            public string Template
+            { get; set; }
+
+            [DataMember(Name = "update", EmitDefaultValue = false)]
+            public bool? Update
+            { get; set; }
+        }
+
+        class UpdateArgs : Args<UpdateArgs>
+        {
+            /// <summary>
+            /// Gets a value that indicates whether Splunk should check Splunkbase
+            /// for updates to an <see cref="Application"/>.
+            /// </summary>
+            [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
+            [DefaultValue(false)]
+            public bool CheckForUpdates
+            { get; set; }
+        }
 
         /// <summary>
         /// Provides selection criteria for retrieving a slice of an <see cref=

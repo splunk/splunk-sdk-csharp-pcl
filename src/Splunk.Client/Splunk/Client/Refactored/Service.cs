@@ -356,34 +356,6 @@ namespace Splunk.Client.Refactored
         #region Applications
 
         /// <summary>
-        /// Asynchronously creates an application from an application template.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the application to create.
-        /// </param>
-        /// <param name="template">
-        /// 
-        /// </param>
-        /// <param name="attributes">
-        /// 
-        /// </param>
-        /// <returns>
-        /// An object representing the application created.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to construct the <see cref=
-        /// "Application"/> object it returns.
-        /// </remarks>
-        public async Task<Application> CreateApplicationAsync(string name, string template, 
-            ApplicationAttributes attributes = null)
-        {
-            var resource = new Application(this.Context, this.Namespace, name);
-            await resource.CreateAsync(template, attributes);
-            return resource;
-        }
-
-        /// <summary>
         /// Asynchronously retrieves an <see cref="Application"/>.
         /// </summary>
         /// <param name="name">
@@ -444,55 +416,6 @@ namespace Splunk.Client.Refactored
         public async Task<ApplicationUpdateInfo> GetApplicationUpdateInfoAsync(string name)
         {
             var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, name);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously creates an application from an application package.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the application to create.
-        /// </param>
-        /// <param name="path">
-        /// 
-        /// </param>
-        /// <param name="update">
-        /// 
-        /// </param>
-        /// <returns>
-        /// An object representing the application created.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to construct the <see cref="Application"/>
-        /// object it returns.
-        /// </remarks>
-        public async Task<Application> InstallApplicationAsync(string name, string path, bool update = false)
-        {
-            var resource = new Application(this.Context, this.Namespace, name);
-            await resource.InstallAsync(path, update);
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously creates an application archive.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the application to be archived.
-        /// </param>
-        /// <returns>
-        /// An object containing information about the archive created.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">GET 
-        /// apps/local/{name}/package</a> endpoint to create an archive of the
-        /// application identified by <paramref name="name"/> and construct the <see 
-        /// cref="ApplicationArchiveInfo"/> object it returns.
-        /// </remarks>
-        public async Task<ApplicationArchiveInfo> PackageApplicationAsync(string name)
-        {
-            var resource = new ApplicationArchiveInfo(this.Context, this.Namespace, name);
             await resource.GetAsync();
             return resource;
         }

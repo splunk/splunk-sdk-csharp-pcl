@@ -162,7 +162,7 @@ namespace Splunk.Client.Refactored
 
         #region Properties
 
-        dynamic Content
+        public dynamic Content
         {
             get { return this.Snapshot; }
         }
@@ -259,8 +259,6 @@ namespace Splunk.Client.Refactored
         /// <inheritdoc/>
         protected override void ReconstructSnapshot(Resource resource)
         {
-            Contract.Requires<ArgumentNullException>(resource != null);
-
             IReadOnlyList<Resource> resources = resource.GetValue("Resources");
 
             if (resources != null)

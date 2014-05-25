@@ -28,6 +28,7 @@ namespace Splunk.Client.Refactored
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Diagnostics.Contracts;
     using System.Linq;
@@ -144,7 +145,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public IReadOnlyList<Message> Messages
         {
-            get { return this.Snapshot.GetValue("Messages"); }
+            get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
         }
 
         /// <summary>
@@ -153,7 +154,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public Pagination Pagination
         {
-            get { return this.Snapshot.GetValue("Pagination"); }
+            get { return this.Snapshot.GetValue("Pagination") ?? Pagination.None; }
         }
 
         #endregion
@@ -349,24 +350,13 @@ namespace Splunk.Client.Refactored
 
         #region Privates/internals
 
-        static readonly Argument[] GetAll = new Argument[] 
-        {
-            new Argument("count", 0)
-        };
+        static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
+        static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
+        static readonly IReadOnlyList<Resource> NoResources = new ReadOnlyCollection<Resource>(new List<Resource>());
 
         IReadOnlyList<Resource> Resources
         {
-            get
-            {
-                dynamic snapshot = this.Snapshot;
-
-                if (snapshot.Resources == null)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                return snapshot.Resources;
-            }
+            get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
         }
 
         TEntity Create(Resource resource)

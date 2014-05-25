@@ -49,7 +49,7 @@ namespace Splunk.Client.UnitTests
                 Assert.NotNull(entity.Messages);
                 Assert.NotNull(entity.Resources);
                 Assert.Equal(0, entity.Resources.Count);
-                CheckDynamicPropertiesOfJob(entity);
+                AssertExistenceOfDynamicPropertiesOfJob(entity);
             }
         }
 
@@ -61,24 +61,39 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
+                //// EntityCollection<TEntity> checks
+
                 var collection = new EntityCollection<Entity>(context, feed);
 
                 Assert.DoesNotThrow(() => { var p = collection.Pagination; });
+
                 CheckCommonStaticPropertiesOfResourceEndpoint(collection);
+
+                Assert.Equal("https://localhost:8089/services/search/jobs", collection.Id.ToString());
+                Assert.Equal("6.0.1.187445", collection.GeneratorVersion.ToString());
                 Assert.Equal("jobs", collection.Name);
                 Assert.NotNull(collection.Links);
                 Assert.NotNull(collection.Messages);
                 Assert.Equal(1, collection.Count);
 
+                //// Entity checks
+
                 var entity = collection[0];
                 
                 CheckCommonStaticPropertiesOfResourceEndpoint(entity);
+
+                Assert.Equal("https://localhost:8089/services/search/jobs/1392687998.313", entity.Id.ToString());
+                Assert.Equal(collection.GeneratorVersion, entity.GeneratorVersion);
+                Assert.Equal("2014-02-17 17:46:39Z", entity.Updated.ToString("u"));
                 Assert.Equal("1392687998.313", entity.Name);
+                Assert.Equal("search *", entity.Title);
+                Assert.Equal("admin", entity.Author);
                 Assert.NotNull(entity.Links);
-//                Assert.NotNull(entity.Messages);
-//                Assert.NotNull(entity.Resources);
-//                Assert.Equal(0, entity.Resources.Count);
-//                CheckDynamicPropertiesOfJob(entity);
+                Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, entity.Links.Keys);
+
+                AssertExistenceOfDynamicPropertiesOfJob(entity.Content);
+                Assert.IsType(typeof(DateTime), entity.Content.Published);
+                Assert.Equal("2014-02-17 17:46:39Z", entity.Content.Published.ToString("u"));
             }
         }
 
@@ -90,23 +105,21 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                dynamic collection = new EntityCollection<EntityCollection<Entity>>(context, feed);
+                var collection = new EntityCollection<EntityCollection<Entity>>(context, feed);
 
                 Assert.DoesNotThrow(() => { var p = collection.Pagination; });
-                CheckCommonStaticPropertiesOfResource(collection);
+                CheckCommonStaticPropertiesOfResourceEndpoint(collection);
                 Assert.Equal("properties", collection.Name);
                 Assert.NotNull(collection.Links);
                 Assert.NotNull(collection.Messages);
                 Assert.Equal(83, collection.Count);
 
-                foreach (var resource in collection)
+                foreach (EntityCollection<Entity> entity in collection)
                 {
-                    Assert.IsType(typeof(EntityCollection<Entity>), resource);
-                    Assert.NotNull(resource.Links);
-                    Assert.NotNull(resource.Messages);
-                    Assert.NotNull(resource.Resources);
-                    Assert.Equal(0, resource.Count);
-                    Assert.Equal(resource.Pagination, Pagination.None);
+                    Assert.Equal(0, entity.Count);
+                    Assert.NotNull(entity.Links);
+                    Assert.NotNull(entity.Messages);
+                    Assert.Equal(entity.Pagination, Pagination.None);
                 }
             }
         }
@@ -164,17 +177,15 @@ namespace Splunk.Client.UnitTests
 
                 Assert.Throws<RuntimeBinderException>(() => entity.Resources);
                 
-                CheckDynamicPropertiesOfJob(entity);
+                AssertExistenceOfDynamicPropertiesOfJob(entity);
             }
         }
 
         #region Privates/internals
 
-        static void CheckDynamicPropertiesOfJob(dynamic job)
+        static void AssertExistenceOfDynamicPropertiesOfJob(dynamic job)
         {
             Assert.DoesNotThrow(() => { var p = job.Published; });
-            Assert.IsType(typeof(DateTime), job.Published);
-            Assert.Equal("2014-02-17 17:46:39Z", job.Published.ToString("u"));
             Assert.DoesNotThrow(() => { var p = job.CanSummarize; });
             Assert.DoesNotThrow(() => { var p = job.CursorTime; });
             Assert.DoesNotThrow(() => { var p = job.DefaultSaveTTL; });

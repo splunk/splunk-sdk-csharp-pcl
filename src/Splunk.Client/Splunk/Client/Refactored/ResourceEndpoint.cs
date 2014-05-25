@@ -272,6 +272,10 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         protected internal virtual void Initialize(Context context, AtomEntry entry, Version generatorVersion)
         {
+            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+            Contract.Requires<ArgumentNullException>(context != null);
+            Contract.Requires<ArgumentNullException>(entry != null);
+
             this.ReconstructSnapshot(entry, generatorVersion);
             this.Initialize(context, this.Snapshot.Id);
         }
@@ -310,6 +314,9 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         protected internal virtual void Initialize(Context context, AtomFeed feed)
         {
+            Contract.Requires<ArgumentNullException>(context != null);
+            Contract.Requires<ArgumentNullException>(feed != null);
+
             this.ReconstructSnapshot(feed);
             this.Initialize(context, this.Snapshot.Id);
         }
@@ -343,6 +350,9 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         protected internal virtual void Initialize(Context context, Resource resource)
         {
+            Contract.Requires<ArgumentNullException>(resource != null);
+            Contract.Requires<ArgumentNullException>(context != null);
+
             this.ReconstructSnapshot(resource);
             this.Initialize(context, this.Snapshot.Id);
         }
@@ -356,6 +366,8 @@ namespace Splunk.Client.Refactored
 	    /// </param>
         protected virtual void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
         {
+            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+            Contract.Requires<ArgumentNullException>(entry != null);
             this.snapshot = new Resource(entry, generatorVersion);
         }
 
@@ -368,6 +380,7 @@ namespace Splunk.Client.Refactored
         /// </param>
         protected virtual void ReconstructSnapshot(AtomFeed feed)
         {
+            Contract.Requires<ArgumentNullException>(feed != null);
             this.snapshot = new Resource(feed);
         }
 
@@ -383,6 +396,7 @@ namespace Splunk.Client.Refactored
         /// </returns>
         protected virtual void ReconstructSnapshot(Resource resource)
         {
+            Contract.Requires<ArgumentNullException>(resource != null);
             this.snapshot = resource;
         }
 
@@ -398,6 +412,7 @@ namespace Splunk.Client.Refactored
         /// </returns>
         protected internal virtual async Task<bool> ReconstructSnapshotAsync(Response response)
         {
+            Contract.Requires<ArgumentNullException>(response != null);
             var feed = new AtomFeed();
 
             await feed.ReadXmlAsync(response.XmlReader);

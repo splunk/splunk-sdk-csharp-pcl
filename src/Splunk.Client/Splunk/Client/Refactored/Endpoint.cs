@@ -47,7 +47,7 @@ namespace Splunk.Client.Refactored
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
-        protected internal Endpoint(Service service, ResourceName name)
+        public Endpoint(Service service, ResourceName name)
             : this(service.Context, service.Namespace, name)
         {
             Contract.Requires<ArgumentNullException>(service != null);
@@ -72,17 +72,35 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        protected internal Endpoint(Context context, Namespace ns, ResourceName name)
+        public Endpoint(Context context, Namespace ns, ResourceName name)
         {
-            Contract.Requires<ArgumentException>(name != null);
-            Contract.Requires<ArgumentNullException>(ns != null);
-            Contract.Requires<ArgumentNullException>(context != null);
-            Contract.Requires<ArgumentOutOfRangeException>(ns.IsSpecific);
-
-            this.context = context;
-            this.ns = ns;
-            this.resourceName = name;
+            this.Initialize(context, ns, name);
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Endpoint"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="id">
+        /// The address of an endpoint in <paramref name="context"/>.
+        /// </param>
+        public Endpoint(Context context, Uri id)
+        {
+            this.Initialize(context, id);
+        }
+
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref="Endpoint"/> 
+        /// class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </remarks>
+        public Endpoint()
+        { }
 
         #endregion
 
@@ -93,12 +111,10 @@ namespace Splunk.Client.Refactored
         /// "Endpoint"/>.
         /// </summary>
         public Context Context
-        {
-            get { return this.context; }
-        }
+        { get; private set; }
 
         /// <summary>
-        /// Gets the title of the current <see cref="Endpoint"/> which is the 
+        /// Gets the name of the current <see cref="Endpoint"/>, which is the 
         /// final part of <see cref="ResourceName"/>.
         /// </summary>
         public string Name
@@ -110,17 +126,13 @@ namespace Splunk.Client.Refactored
         /// Gets the namespace containing the current <see cref="Endpoint"/>.
         /// </summary>
         public Namespace Namespace
-        {
-            get { return this.ns; }
-        }
+        { get; private set; }
 
         /// <summary>
         /// Gets the name of the current <see cref="Endpoint"/>.
         /// </summary>
         public ResourceName ResourceName
-        {
-            get { return this.resourceName; }
-        }
+        { get; private set; }
 
         #endregion
 
@@ -227,6 +239,123 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
+        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// "Endpoint"/>.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="id">
+        /// The address of the current <see cref="Endpoint"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="id"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The current <see cref="Endpoint"/> is already initialized.
+        /// </exception>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Endpoint"/>
+        /// instantiated by the default constructor.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        protected internal void Initialize(Context context, Uri id)
+        {
+            Contract.Requires<ArgumentNullException>(context != null);
+            Contract.Requires<ArgumentNullException>(id != null);
+            //// TODO: Ensure that context can reach id (?)
+
+            this.EnsureUninitialized();
+
+            // Compute namespace and resource name from id
+
+            var path = id.AbsolutePath.Split('/');
+
+            if (path.Length < 3)
+            {
+                throw new InvalidDataException(); // TODO: Diagnostics : conversion error
+            }
+
+            for (int i = 0; i < path.Length; i++)
+            {
+                path[i] = Uri.UnescapeDataString(path[i]);
+            }
+
+            Namespace ns;
+            ResourceName name;
+
+            switch (path[1])
+            {
+                case "services":
+
+                    ns = Namespace.Default;
+                    name = new ResourceName(new ArraySegment<string>(path, 2, path.Length - 2));
+                    break;
+
+                case "servicesNS":
+
+                    if (path.Length < 5)
+                    {
+                        throw new InvalidDataException(); // TODO: Diagnostics : conversion error
+                    }
+
+                    ns = new Namespace(user: path[2], app: path[3]);
+                    name = new ResourceName(new ArraySegment<string>(path, 4, path.Length - 4));
+                    break;
+
+                default: throw new InvalidDataException(); // TODO: Diagnostics : conversion error
+            }
+
+            this.Initialize(context, ns, name);
+        }
+
+
+        /// <summary>
+        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// "Endpoint"/>.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="name">
+        /// An object identifying a Splunk resource within <paramref name="ns"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
+        /// "name"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
+        /// </exception>
+        /// The current <see cref="Endpoint"/> is already initialized.
+        /// </exception>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Endpoint"/>
+        /// instantiated by the default constructor.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        protected internal void Initialize(Context context, Namespace ns, ResourceName name)
+        {
+            Contract.Requires<ArgumentException>(name != null);
+            Contract.Requires<ArgumentNullException>(ns != null);
+            Contract.Requires<ArgumentNullException>(context != null);
+            Contract.Requires<ArgumentOutOfRangeException>(ns.IsSpecific);
+
+            this.Context = context;
+            this.Namespace = ns;
+            this.ResourceName = name;
+        }
+
+        /// <summary>
         /// Gets a string identifying the current <see cref="Endpoint"/>.
         /// </summary>
         /// <returns>
@@ -240,11 +369,15 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Privates
+        #region
 
-        Context context;
-        Namespace ns;
-        ResourceName resourceName;
+        void EnsureUninitialized()
+        {
+            if (this.Context != null)
+            {
+                throw new InvalidOperationException("Endpoint was intialized; Initialize operation may not execute again.");
+            }
+        }
 
         #endregion
     }

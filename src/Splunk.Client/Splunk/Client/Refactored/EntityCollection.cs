@@ -29,8 +29,9 @@ namespace Splunk.Client.Refactored
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Linq;
+    using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
@@ -52,7 +53,7 @@ namespace Splunk.Client.Refactored
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class EntityCollection<TEntity> : Resource, IReadOnlyList<TEntity> where TEntity : Resource, new()
+    public class EntityCollection<TEntity> : ResourceEndpoint, IEntityCollection<TEntity> where TEntity : ResourceEndpoint, new()
     {
         #region Constructors
 
@@ -72,7 +73,7 @@ namespace Splunk.Client.Refactored
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -99,8 +100,10 @@ namespace Splunk.Client.Refactored
         /// A entry in a Splunk atom feed response.
         /// </param>
         protected internal EntityCollection(Context context, AtomEntry entry, Version generatorVersion)
-            : base(context, entry, generatorVersion)
-        { }
+        {
+            // We cannot use the base constructor because it will use base.CreateEntity, not this.CreateEntity
+            this.Initialize(context, entry, generatorVersion);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
@@ -136,12 +139,21 @@ namespace Splunk.Client.Refactored
         #region AtomFeed properties
 
         /// <summary>
-        /// Gets the pagination attributes for the current <see cref=
+        /// Gets the Splunk server messages delivered with the current <see cref=
+        /// "EntityCollection&lt;TEntity&gt;"/> when it was last updated.
+        /// </summary>
+        public IReadOnlyList<Message> Messages
+        {
+            get { return this.snapshot.GetValue("Messages"); }
+        }
+
+        /// <summary>
+        /// Gets the pagination properties for the current <see cref=
         /// "EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
         public Pagination Pagination
         {
-            get { return this.CurrentSnapshot.Pagination; }
+            get { return this.snapshot.GetValue("Pagination"); }
         }
 
         #endregion
@@ -159,7 +171,7 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public TEntity this[int index]
         {
-            get { return (TEntity)this.Resources[index]; }
+            get { return this.Create(this.Resources[index]); }
         }
 
         /// <summary>
@@ -177,14 +189,20 @@ namespace Splunk.Client.Refactored
 
         #region Methods
 
-        #region Request-related methods
+        #region Operational interface
 
-        protected override Resource CreateResource(Context context, AtomEntry entry, Version generatorVersion)
+        public virtual async Task<TEntity> CreateAsync(params Argument[] arguments)
         {
-            var entity = new TEntity();
+            return await this.CreateAsync(arguments.AsEnumerable());
+        }
 
-            entity.Initialize(context, entry, generatorVersion);
-            return entity;
+        public virtual async Task<TEntity> CreateAsync(IEnumerable<Argument> arguments)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                return await ResourceEndpoint.CreateAsync<TEntity>(this.Context, response);
+            }
         }
 
         /// <summary>
@@ -196,17 +214,13 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public virtual async Task<TEntity> GetAsync(string name)
         {
-            var entity = new TEntity();
+            var resourceName = new ResourceName(this.ResourceName, name);
 
-            entity.Initialize(this.Context, this.Namespace, new ResourceName(this.ResourceName, name));
-
-            using (Response response = await this.Context.GetAsync(this.Namespace, entity.ResourceName))
+            using (Response response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
                 await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
-                await entity.UpdateSnapshotAsync(response);
+                return await ResourceEndpoint.CreateAsync<TEntity>(this.Context, response);
             }
-
-            return entity;
         }
 
         /// <summary>
@@ -226,7 +240,7 @@ namespace Splunk.Client.Refactored
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, GetAll))
             {
                 await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
-                await this.UpdateSnapshotAsync(response);
+                await this.ReconstructSnapshotAsync(response);
             }
         }
 
@@ -264,7 +278,7 @@ namespace Splunk.Client.Refactored
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
                 await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
-                await this.UpdateSnapshotAsync(response);
+                await this.ReconstructSnapshotAsync(response);
             }
         }
 
@@ -312,12 +326,61 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {
-            if (this.Resources == null)
-            {
-                throw new InvalidOperationException();
-            }
+            return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
+        }
 
-            return this.Resources.Cast<TEntity>().GetEnumerator();
+        #endregion
+
+        #region Infrastructure methods
+
+        /// <inheritdoc/>
+        protected internal override void Initialize(Context context, AtomEntry entry, Version generatorVersion)
+        {
+            this.Initialize(context, entry.Id);
+            this.ReconstructSnapshot(entry, generatorVersion);
+        }
+
+        /// <inheritdoc/>
+        protected internal override void Initialize(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed.Id);
+            this.snapshot = new Resource(feed);
+        }
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
+        {
+            this.snapshot = new Resource(entry, generatorVersion);
+        }
+
+        /// <inheritdoc/>
+        protected internal override void Initialize(Context context, Resource resource)
+        {
+            this.Initialize(context, resource.Id);
+            this.snapshot = resource;
+        }
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(AtomFeed feed)
+        {
+            this.snapshot = new Resource(feed);
+        }
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(Resource resource)
+        {
+            this.snapshot = resource;
+        }
+
+        /// <inheritdoc/>
+        protected internal override async Task<bool> ReconstructSnapshotAsync(Response response)
+        {
+            var feed = new AtomFeed();
+
+            await feed.ReadXmlAsync(response.XmlReader);
+            this.ReconstructSnapshot(feed);
+
+            return true;
         }
 
         #endregion
@@ -330,6 +393,31 @@ namespace Splunk.Client.Refactored
         {
             new Argument("count", 0)
         };
+
+        volatile Resource snapshot;
+
+        IReadOnlyList<Resource> Resources
+        {
+            get
+            {
+                dynamic snapshot = this.snapshot;
+
+                if (snapshot.Resources == null)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return snapshot;
+            }
+        }
+
+        TEntity Create(Resource resource)
+        {
+            var entity = new TEntity();
+
+            entity.Initialize(this.Context, resource);
+            return entity;
+        }
 
         #endregion
     }

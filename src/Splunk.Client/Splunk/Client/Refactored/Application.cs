@@ -242,41 +242,6 @@ namespace Splunk.Client.Refactored
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates the current <see cref="Application"/>.
-        /// instance.
-        /// </summary>
-        /// <param name="template">
-        /// 
-        /// </param>
-        /// <param name="attributes">
-        /// 
-        /// </param>
-        /// <returns></returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to create the current <see cref=
-        /// "Application"/>.
-        /// </remarks>
-        public async Task CreateAsync(string template, ApplicationAttributes attributes = null)
-        {
-            var resourceName = ApplicationCollection.ClassResourceName;
-
-            var args = new CreationArgs()
-            {
-                ExplicitApplicationName = this.Name,
-                Filename = false,
-                Name = this.Name,
-                Template = template
-            };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateSnapshotAsync(response);
-            }
-        }
-
-        /// <summary>
         /// Asynchronously disables the current <see cref="Application"/>.
         /// </summary>
         /// <returns></returns>
@@ -327,7 +292,7 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public async Task<ApplicationSetupInfo> GetSetupInfoAsync()
         {
-            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, this.Name);
+            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, this.Title);
             await resource.GetAsync();
             return resource;
         }
@@ -347,45 +312,9 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public async Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
         {
-            var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, this.Name);
+            var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, this.Title);
             await resource.GetAsync();
             return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously installs an application from a Splunk application
-        /// archive file.
-        /// </summary>
-        /// <param name="path">
-        /// Specifies the location of a Splunk application archive file.
-        /// </param>
-        /// <param name="update">
-        /// <c>true</c> if Splunk should allow the installation to update an
-        /// existing application. The default value is <c>false</c>.
-        /// </param>
-        /// <returns></returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to install the application from the archive
-        /// file on <paramref name="path"/>.
-        /// </remarks>
-        public async Task InstallAsync(string path, bool update = false)
-        {
-            var resourceName = ApplicationCollection.ClassResourceName;
-
-            var args = new CreationArgs()
-            {
-                ExplicitApplicationName = this.Name,
-                Filename = true,
-                Name = path,
-                Update = update
-            };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateSnapshotAsync(response);
-            }
         }
 
         /// <summary>
@@ -401,9 +330,15 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public async Task<ApplicationArchiveInfo> PackageAsync()
         {
-            var resource = new ApplicationArchiveInfo(this.Context, this.Namespace, this.Name);
-            await resource.GetAsync();
-            return resource;
+            var resourceName = new ResourceName(this.ResourceName, "package");
+
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var resource = await Resource.CreateAsync<ApplicationArchiveInfo>(response);
+                return resource;
+            }
         }
 
         /// <summary>

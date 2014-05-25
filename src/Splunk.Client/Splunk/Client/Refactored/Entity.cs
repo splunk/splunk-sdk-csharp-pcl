@@ -50,7 +50,7 @@ namespace Splunk.Client.Refactored
     /// <remarks>
     /// This is the base class for all Splunk entities.
     /// </remarks>
-    public class Entity : Resource
+    public class Entity : ResourceEndpoint, IEntity
     {
         #region Constructors
 
@@ -144,19 +144,7 @@ namespace Splunk.Client.Refactored
         /// </exception>
         public Entity(Context context, AtomFeed feed)
         {
-            int count = feed.Entries.Count;
-
-            if (count == 0)
-            {
-                return;
-            }
-
-            if (count > 1)
-            {
-                throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
-            }
-
-            this.Initialize(context, feed.Entries[0], feed.GeneratorVersion);
+            this.Initialize(context, feed);
         }
 
         /// <summary>
@@ -172,24 +160,57 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
+        #region Properties
+
+        dynamic Content
+        {
+            get { return this.snapshot; }
+        }
+
+        #endregion
+
         #region Methods
 
-        /// <summary>
-        /// Asynchronously retrieves a fresh copy of the current <see cref=
-        /// "Entity"/> that contains all changes to it since it was last 
-        /// retrieved.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing the operation.
-        /// </returns>
+        #region Operational interface
+
+        /// <inheritdoc/>
         public virtual async Task GetAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateSnapshotAsync(response);
+                await this.ReconstructSnapshotAsync(response);
             }
         }
+
+        /// <inheritdoc/>
+        public virtual async Task RemoveAsync()
+        {
+            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> UpdateAsync(params Argument[] arguments)
+        {
+            return await this.UpdateAsync(arguments.AsEnumerable());
+        }
+
+        /// <inheritdoc/>
+        public async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                return await this.ReconstructSnapshotAsync(response);
+            }
+        }
+
+        #endregion
+
+        #region Infrastructure methods
 
         /// <summary>
         /// Gets a converted property value from the <see cref="CurrentSnapshot"/>
@@ -214,73 +235,77 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
-            return this.CurrentSnapshot.GetValue(name, valueConverter);
+            return this.snapshot.GetValue(name, valueConverter);
         }
 
-        /// <summary>
-        /// Asynchronously removes the current <see cref="Entity"/> from Splunk.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing the operation.
-        /// </returns>
-        public virtual async Task RemoveAsync()
+        /// <inheritdoc/>
+        protected internal override void Initialize(Context context, AtomEntry entry, Version generatorVersion)
         {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            this.Initialize(context, entry.Id);
+            this.ReconstructSnapshot(entry, generatorVersion);
+        }
+
+        /// <inheritdoc/>
+        protected internal override void Initialize(Context context, AtomFeed feed)
+        {
+            this.snapshot = new Resource(feed);
+            this.Initialize(context, this.snapshot.Id);
+        }
+
+        /// <inheritdoc/>
+        protected internal override void Initialize(Context context, Resource resource)
+        {
+            this.ReconstructSnapshot(resource);
+            this.Initialize(context, this.snapshot.Id);
+        }
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
+ 	    {
+	        this.snapshot = new Resource(entry, generatorVersion);
+ 	    }
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(AtomFeed feed)
+        {
+            int count = feed.Entries.Count;
+
+            if (count == 0)
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                return;
             }
-        }
 
-        /// <summary>
-        /// Asynchronously updates the attributes of the current <see cref=
-        /// "Entity"/> on Splunk.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
-        /// </returns>
-        /// <remarks>
-        /// Splunk usually returns an updated snapshot on completion of the
-        /// operation. When it does the <see cref="CurrentSnapshot"/> will
-        /// also be updated.
-        /// </remarks>
-        public async Task<bool> UpdateAsync(params Argument[] arguments)
-        {
-            return await this.UpdateAsync(arguments.AsEnumerable());
-        }
-
-        /// <summary>
-        /// Asynchronously updates the attributes of the current <see cref=
-        /// "Entity"/> on Splunk.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
-        /// </returns>
-        /// <remarks>
-        /// Splunk usually returns an updated snapshot on completion of the
-        /// operation. When it does the <see cref="CurrentSnapshot"/> will
-        /// be updated and returns <c>true</c>; otherwise, this method returns
-        /// <c>false</c>.
-        /// </remarks>
-        public async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
-        {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName))
+            if (count > 1)
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                return await this.UpdateSnapshotAsync(response);
+                throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
             }
+
+            this.snapshot = new Resource(feed.Entries[0], feed.GeneratorVersion);
         }
 
-        /// <summary>
-        /// Asynchronously updates the <see cref="CurrentSnapshot"/> for the
-        /// current <see cref="Resource"/>
-        /// </summary>
-        /// <param name="response">
-        /// A Splunk atom feed <see cref="Response"/>.
-        /// </param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the operation.
-        /// </returns>
-        protected internal override async Task<bool> UpdateSnapshotAsync(Response response)
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(Resource resource)
+        {
+            dynamic snapshot = resource;
+            IReadOnlyList<Resource> resources = snapshot.Resources;
+
+            int count = resources.Count;
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            if (count > 1)
+            {
+                throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
+            }
+
+            this.snapshot = resources[0];
+        }
+
+        /// <inheritdoc/>
+        protected internal override async Task<bool> ReconstructSnapshotAsync(Response response)
         {
             var feed = new AtomFeed();
 
@@ -297,9 +322,17 @@ namespace Splunk.Client.Refactored
                 throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
             }
 
-            this.UpdateSnapshotAsync(feed.Entries[0], feed.GeneratorVersion);
+            this.ReconstructSnapshot(feed.Entries[0], feed.GeneratorVersion);
             return true;
         }
+
+        #endregion
+
+        #endregion
+
+        #region Privates/internals
+
+        volatile Resource snapshot;
 
         #endregion
     }

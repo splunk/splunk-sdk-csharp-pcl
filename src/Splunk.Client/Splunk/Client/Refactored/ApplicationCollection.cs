@@ -66,6 +66,38 @@ namespace Splunk.Client.Refactored
         #region Methods
 
         /// <summary>
+        /// Asynchronously creates a new Splunk application from a template.
+        /// </summary>
+        /// <param name="template">
+        /// 
+        /// </param>
+        /// <param name="attributes">
+        /// 
+        /// </param>
+        /// <returns>
+        /// An object representing the Splunk application created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local</a> endpoint to create the current <see cref=
+        /// "Application"/>.
+        /// </remarks>
+        public async Task<Applicaion> CreateAsync(string template, ApplicationAttributes attributes = null)
+        {
+            var resourceName = ClassResourceName;
+
+            var args = new CreationArgs()
+            {
+                ExplicitApplicationName = this.Title,
+                Filename = false,
+                Name = this.Title,
+                Template = template
+            };
+
+            await this.CreateAsync(attributes == null ? args : args.Concat(attributes));
+        }
+
+        /// <summary>
         /// Asynchronously retrieves select entities from the list of entites
         /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
@@ -80,6 +112,47 @@ namespace Splunk.Client.Refactored
         public virtual async Task GetSliceAsync(SelectionCriteria criteria)
         {
             await this.GetSliceAsync(criteria.AsEnumerable());
+        }
+
+        /// <summary>
+        /// Asynchronously installs an application from a Splunk application
+        /// archive file.
+        /// </summary>
+        /// <param name="path">
+        /// Specifies the location of a Splunk application archive file.
+        /// </param>
+        /// <param name="name">
+        /// Optionally specifies an explicit name for the application. This
+        /// value overrides the name of the application as specified in the
+        /// archive file.
+        /// </param>
+        /// <param name="update">
+        /// <c>true</c> if Splunk should allow the installation to update an
+        /// existing application. The default value is <c>false</c>.
+        /// </param>
+        /// <returns></returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
+        /// apps/local</a> endpoint to install the application from the archive
+        /// file on <paramref name="path"/>.
+        /// </remarks>
+        public async Task<Application> InstallAsync(string path, string name = null, bool update = false)
+        {
+            var resourceName = ClassResourceName;
+
+            var args = new CreationArgs()
+            {
+                ExplicitApplicationName = this.Title,
+                Filename = true,
+                Name = path,
+                Update = update
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await this.CreateAsync(response);
+            }
         }
 
         #endregion

@@ -204,7 +204,7 @@ namespace Splunk.Client.UnitTests
             Assert.DoesNotThrow(() => { var p = resource.Id; });
             Assert.DoesNotThrow(() => { var p = resource.Links; });
             Assert.DoesNotThrow(() => { var p = resource.Messages; });
-            Assert.DoesNotThrow(() => { var p = resource.Name; });
+            Assert.DoesNotThrow(() => { var p = resource.Title; });
             Assert.DoesNotThrow(() => { var p = resource.Namespace; });
             Assert.DoesNotThrow(() => { var p = resource.Published; });
             Assert.DoesNotThrow(() => { var p = resource.ResourceName; });

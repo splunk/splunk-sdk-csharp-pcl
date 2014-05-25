@@ -193,20 +193,20 @@
     <Compile Include="Splunk\Client\VersionConverter.cs" />
     <Compile Include="Splunk\Client\XmlReaderExtensions.cs" />
     <Compile Include="Splunk\Client\Refactored\Application.cs" />
-    <None Include="Splunk\Client\Refactored\ApplicationCollection.cs" />
-    <None Include="Splunk\Client\Refactored\Configuration.cs" />
-    <None Include="Splunk\Client\Refactored\ConfigurationCollection.cs" />
-    <None Include="Splunk\Client\Refactored\ConfigurationStanza.cs" />
+    <Compile Include="Splunk\Client\Refactored\ApplicationCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\Configuration.cs" />
+    <Compile Include="Splunk\Client\Refactored\ConfigurationCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\ConfigurationStanza.cs" />
     <Compile Include="Splunk\Client\Refactored\Endpoint.cs" />
     <Compile Include="Splunk\Client\Refactored\Entity.cs" />
     <Compile Include="Splunk\Client\Refactored\EntityCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\IEntity.cs" />
     <Compile Include="Splunk\Client\Refactored\IEntityCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\IResource.cs" />
-    <Compile Include="Splunk\Client\Refactored\Receiver.cs" />
+    <Compile Include="Splunk\Client\Refactored\Transmitter.cs" />
     <Compile Include="Splunk\Client\Refactored\Resource.cs" />
     <Compile Include="Splunk\Client\Refactored\Server.cs" />
-    <None Include="Splunk\Client\Refactored\Service.cs" />
+    <Compile Include="Splunk\Client\Refactored\Service.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

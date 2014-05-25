@@ -62,7 +62,7 @@ namespace Splunk.Client.Refactored
 
             this.configurations = new ConfigurationCollection(this);
             this.applications = new ApplicationCollection(this);
-            this.receiver = new Receiver(this);
+            this.transmitter = new Transmitter(this);
             this.server = new Server(this);
         }
 
@@ -122,9 +122,9 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// 
         /// </summary>
-        public Receiver Receiver
+        public Transmitter Transmitter
         {
-            get { return this.receiver; }
+            get { return this.transmitter; }
         }
 
         /// <summary>
@@ -1349,7 +1349,7 @@ namespace Splunk.Client.Refactored
 
         readonly ConfigurationCollection configurations;
         readonly ApplicationCollection applications;
-        readonly Receiver receiver;
+        readonly Transmitter transmitter;
         readonly Server server;
 
         bool disposed;

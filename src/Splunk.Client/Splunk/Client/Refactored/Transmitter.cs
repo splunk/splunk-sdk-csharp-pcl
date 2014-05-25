@@ -32,7 +32,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides a class for sending events to Splunk.
     /// </summary>
-    public class Receiver : Endpoint
+    public class Transmitter : Endpoint
     {
         #region Constructors
 
@@ -47,12 +47,12 @@ namespace Splunk.Client.Refactored
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
-        protected internal Receiver(Service service)
+        protected internal Transmitter(Service service)
             : base(service, ClassResourceName)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Receiver"/> class.
+        /// Initializes a new instance of the <see cref="Transmitter"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -69,7 +69,7 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        protected internal Receiver(Context context, Namespace ns)
+        protected internal Transmitter(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
         { }
 

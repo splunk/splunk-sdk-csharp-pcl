@@ -22,6 +22,7 @@ namespace Splunk.Client.Refactored
     using Splunk.Client;
     using System.ComponentModel;
     using System.Linq;
+    using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
@@ -82,7 +83,7 @@ namespace Splunk.Client.Refactored
         /// apps/local</a> endpoint to create the current <see cref=
         /// "Application"/>.
         /// </remarks>
-        public async Task<Applicaion> CreateAsync(string template, ApplicationAttributes attributes = null)
+        public async Task<Application> CreateAsync(string template, ApplicationAttributes attributes = null)
         {
             var resourceName = ClassResourceName;
 

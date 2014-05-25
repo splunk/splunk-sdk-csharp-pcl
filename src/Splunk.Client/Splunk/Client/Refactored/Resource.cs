@@ -123,6 +123,30 @@ namespace Splunk.Client.Refactored
         #region Methods
 
         /// <summary>
+        /// Asynchronously creates a <see cref="Resource"/> from a Splunk atom
+        /// feed <see cref="Response"/>.
+        /// </summary>
+        /// <typeparam name="TResource">
+        /// The type of <see cref="Resource"/> to be created.
+        /// </typeparam>
+        /// <param name="response">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Resource"/> created.
+        /// </returns>
+        internal static async Task<TResource> CreateAsync<TResource>(Response response) where TResource : Resource, new()
+        {
+            var feed = new AtomFeed();
+
+            await feed.ReadXmlAsync(response.XmlReader);
+            var resource = new TResource();
+            resource.Initialize(feed);
+
+            return resource;
+        }
+
+        /// <summary>
         /// Determines whether the specified <see cref="Resource"/> refers to 
         /// the same resource as the current one.
         /// </summary>
@@ -231,30 +255,6 @@ namespace Splunk.Client.Refactored
         public TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
             return this.adapter.GetValue(name, valueConverter);
-        }
-
-        /// <summary>
-        /// Asynchronously creates a <see cref="Resource"/> from a Splunk atom
-        /// feed <see cref="Response"/>.
-        /// </summary>
-        /// <typeparam name="TResource">
-        /// The type of <see cref="Resource"/> to be created.
-        /// </typeparam>
-        /// <param name="response">
-        /// An object representing a Splunk atom feed response.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Resource"/> created.
-        /// </returns>
-        internal static async Task<TResource> CreateAsync<TResource>(Response response) where TResource : Resource, new()
-        {
-            var feed = new AtomFeed();
-
-            await feed.ReadXmlAsync(response.XmlReader);
-            var resource = new TResource();
-            resource.Initialize(feed);
-
-            return resource;
         }
 
         /// <summary>

@@ -191,11 +191,29 @@ namespace Splunk.Client.Refactored
 
         #region Operational interface
 
+        /// <summary>
+        /// Asynchronously creates a new Splunk entity.
+        /// </summary>
+        /// <param name="arguments">
+        /// Arguments to the Splunk REST API for creating the desired entity.
+        /// </param>
+        /// <returns>
+        /// An object representing the entity created.
+        /// </returns>
         public virtual async Task<TEntity> CreateAsync(params Argument[] arguments)
         {
             return await this.CreateAsync(arguments.AsEnumerable());
         }
 
+        /// <summary>
+        /// Asynchronously creates a new Splunk entity.
+        /// </summary>
+        /// <param name="arguments">
+        /// Arguments to the Splunk REST API for creating the desired entity.
+        /// </param>
+        /// <returns>
+        /// An object representing the entity created.
+        /// </returns>
         public virtual async Task<TEntity> CreateAsync(IEnumerable<Argument> arguments)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
@@ -301,8 +319,6 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region IReadOnlyList<TEntity> methods
-
         /// <summary>
         /// Gets an enumerator that iterates through the current <see cref=
         /// "EntityCollection&lt;TEntity&gt;"/>.
@@ -328,8 +344,6 @@ namespace Splunk.Client.Refactored
         {
             return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
         }
-
-        #endregion
 
         #region Infrastructure methods
 

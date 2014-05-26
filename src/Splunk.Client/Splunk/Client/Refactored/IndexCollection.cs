@@ -21,6 +21,8 @@ namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
     using System.ComponentModel;
+    using System.Linq;
+    using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
@@ -104,6 +106,60 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Asyncrhonously creates the index represented by the current index
+        /// </summary>
+        /// <param name="attributes">
+        /// Attributes to set on the newly created index.
+        /// </param>
+        /// <param name="coldPath">
+        /// Location for storing the cold databases for the current <see cref=
+        /// "Index"/>. A value of <c>null</c> or <c>""</c> specifies that the 
+        /// cold databases should be stored at the default location.
+        /// </param>
+        /// <param name="homePath">
+        /// Location for storing the hot and warm buckets for the current 
+        /// index. A value of <c>null</c> or <c>""</c> specifies that the hot
+        /// and warm buckets should be stored at the default location.
+        /// </param>
+        /// <param name="thawedPath">
+        /// Location for storing the resurrected databases for the current <see
+        /// cref="Index"/>. A value of <c>null</c> or <c>""</c> specifies that 
+        /// the resurrected databases should be stored at the default location.
+        /// </param>
+        /// <returns>
+        /// An object representing the newly created index.
+        /// </returns>
+        public async Task CreateAsync(IndexAttributes attributes, string coldPath = null, string homePath = null, 
+            string thawedPath = null)
+        {
+            var resourceName = IndexCollection.ClassResourceName;
+
+            var args = new CreationArgs()
+            {
+                Name = this.Name,
+                ColdPath = coldPath,
+                HomePath = homePath,
+                ThawedPath = thawedPath
+            };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await this.ReconstructSnapshotAsync(response);
+            }
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task GetSliceAsync(SelectionCriteria criteria)
+        {
+            await this.GetSliceAsync(criteria.AsEnumerable());
+        }
+
+        #endregion
+
         #region Privates/internals
 
         internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");
@@ -111,6 +167,77 @@ namespace Splunk.Client.Refactored
         #endregion
 
         #region Types
+
+        #region Types
+
+        class CreationArgs : Args<CreationArgs>
+        {
+             /// <summary>
+            /// Gets or sets a name for an index.
+            /// </summary>
+            /// <remarks>
+            /// This value is required.
+            /// </remarks>
+            [DataMember(Name = "name", IsRequired = true)]
+            public string Name
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets the absolute path for the cold databases of an 
+            /// index.
+            /// </summary>
+            /// <remarks>
+            /// <para>
+            /// The path must be readable and writable. The path may be defined
+            /// in terms of a volume definition. The default value is <c>""</c>
+            /// indicating that the cold databases should be stored at the 
+            /// default location.</para>
+            /// <para>
+            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
+            /// <see cref="ColdPath"/>.</para>
+            /// </remarks>
+            [DataMember(Name = "coldPath")]
+            [DefaultValue("")]
+            public string ColdPath
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets an absolute path that contains the hot and warm 
+            /// buckets for an index.
+            /// </summary>
+            /// <remarks>
+            /// The specified path must be readable and writable. The default 
+            /// value is <c>""</c> indicating that the hot and warm buckets
+            /// should be stored at the default location.
+            /// <para>
+            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
+            /// <see cref="HomePath"/>.</para>
+            /// </remarks>
+            [DataMember(Name = "homePath")]
+            [DefaultValue("")]
+            public string HomePath
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets an absolute path that contains the thawed 
+            /// (resurrected) databases for an index.
+            /// </summary>
+            /// <remarks>
+            /// The path must be readable and writable. The path cannot be 
+            /// defined in terms of a volume definition. The default value is 
+            /// <c>""</c> indicating that resurrected databases should be 
+            /// stored at the default location.
+            /// <para>
+            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
+            /// <see cref="ThawedPath"/>.</para>
+            /// </remarks>
+            [DataMember(Name = "thawedPath")]
+            [DefaultValue("")]
+            public string ThawedPath
+            { get; set; }
+        }
+
+        #endregion
 
         /// <summary>
         /// Provides arguments for retrieving an <see cref="IndexCollection"/>.
@@ -123,7 +250,7 @@ namespace Splunk.Client.Refactored
         /// </description></item>
         /// </list>
         /// </remarks>
-        public sealed class IndexCollectionArgs : Args<IndexCollectionArgs>
+        public sealed class SelectionCriteria : Args<SelectionCriteria>
         {
             #region Properties
 

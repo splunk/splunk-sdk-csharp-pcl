@@ -209,7 +209,7 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return ((IDictionary<string, object>)(this.adapter.ExpandoObject)).Keys;
+            return ((IDictionary<string, object>)(this.adapter)).Keys;
         }
 
         /// <summary>
@@ -411,13 +411,7 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            if (binder.IgnoreCase)
-            {
-                throw new NotSupportedException("Case insensitive language bindings are not supported");
-            }
-
-            result = this.adapter.GetValue(binder.Name);
-            return result != null;
+            return this.adapter.TryGetMember(binder, out result);
         }
 
         #endregion

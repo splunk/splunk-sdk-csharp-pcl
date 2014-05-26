@@ -153,6 +153,8 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
             reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
+
+            this.Author = "Splunk"; // until told otherwise
             var links = new Dictionary<string, Uri>();
             this.Links = new ReadOnlyDictionary<string, Uri>(links);
 

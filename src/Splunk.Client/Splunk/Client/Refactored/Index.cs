@@ -718,45 +718,6 @@ namespace Splunk.Client.Refactored
         #region Methods
 
         /// <summary>
-        /// Asyncrhonously creates the index represented by the current index
-        /// </summary>
-        /// <param name="coldPath">
-        /// Location for storing the cold databases for the current <see cref=
-        /// "Index"/>. A value of <c>null</c> or <c>""</c> specifies that the 
-        /// cold databases should be stored at the default location.
-        /// </param>
-        /// <param name="homePath">
-        /// Location for storing the hot and warm buckets for the current 
-        /// index. A value of <c>null</c> or <c>""</c> specifies that the hot
-        /// and warm buckets should be stored at the default location.
-        /// </param>
-        /// <param name="thawedPath">
-        /// Location for storing the resurrected databases for the current <see
-        /// cref="Index"/>. A value of <c>null</c> or <c>""</c> specifies that 
-        /// the resurrected databases should be stored at the default location.
-        /// </param>
-        /// <param name="attributes">
-        /// Attributes to set on the newly created index.
-        /// </param>
-        /// <returns></returns>
-        public async Task CreateAsync(string coldPath = null, string homePath = null, string thawedPath = null, 
-            IndexAttributes attributes = null)
-        {
-            var resourceName = IndexCollection.ClassResourceName;
-
-            var args = new CreationArgs() 
-            { 
-                Name = this.Name, ColdPath = coldPath, HomePath = homePath, ThawedPath = thawedPath 
-            };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.ReconstructSnapshotAsync(response);
-            }
-        }
-
-        /// <summary>
         /// Asynchronously disables the current <see cref="Index"/>.
         /// </summary>
         /// <remarks>

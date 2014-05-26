@@ -34,7 +34,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
-    public class Resource : DynamicObject, IResource<Resource>
+    public class Resource : ExpandoAdapter, IResource<Resource>
     {
         #region Constructors
 
@@ -202,63 +202,6 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-        /// Returns the enumeration of all dynamic member names.
-        /// </summary>
-        /// <returns>
-        /// The list of dynamic member names.
-        /// </returns>
-        public override IEnumerable<string> GetDynamicMemberNames()
-        {
-            return this.adapter.GetDynamicMemberNames();
-        }
-
-        /// <summary>
-        /// Gets a property value from the current <see cref="Resoure"/>.
-        /// </summary>
-        /// <param name="name">
-        /// The name of a property.
-        /// </param>
-        /// <returns>
-        /// The value or <c>null</c>, if <paramref name=""/> does not exist.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="name"/> is <c>null</c>.
-        /// </exception>
-        /// <remarks>
-        /// Use this method to create static properties from the dynamic 
-        /// properties exposed by the current <see cref="Resource"/>.
-        /// </remarks>
-        public dynamic GetValue(string name)
-        {
-            return this.adapter.GetValue(name);
-        }
-
-        /// <summary>
-        /// Gets a converted property value from the current <see cref="Resource"/>
-        /// </summary>
-        /// <param name="name">
-        /// The name of a property.
-        /// </param>
-        /// <param name="valueConverter">
-        /// A value converter for converting property <paramref name="name"/>.
-        /// </param>
-        /// <returns>
-        /// The converted value or <paramref name="valueConverter"/><c>.DefaultValue</c>,
-        /// if <paramref name="name"/> does not exist.
-        /// </returns>
-        /// <exception cref="InvalidDataException">
-        /// The conversion failed.
-        /// </exception>
-        /// <remarks>
-        /// Use this method to create static properties from the dynamic 
-        /// properties exposed by the <see cref="CurrentSnapshot"/>.
-        /// </remarks>
-        public TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
-        {
-            return this.adapter.GetValue(name, valueConverter);
-        }
-
-        /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
         /// "Resource"/>.
         /// class.
@@ -310,8 +253,7 @@ namespace Splunk.Client.Refactored
                 }
             }
 
-            this.adapter = new ExpandoAdapter(content);
-
+            this.ExpandoObject = content;
             this.Author = entry.Author;
             this.Id = entry.Id;
             this.GeneratorVersion = generatorVersion;
@@ -355,7 +297,7 @@ namespace Splunk.Client.Refactored
             this.MarkInitialized();
             dynamic content = new ExpandoObject();
 
-            this.adapter = new ExpandoAdapter(content);
+            this.ExpandoObject = content;
             this.Author = feed.Author;
             this.Id = feed.Id;
             this.GeneratorVersion = feed.GeneratorVersion;
@@ -389,42 +331,15 @@ namespace Splunk.Client.Refactored
             return this.Id.ToString();
         }
 
-        /// <summary>
-        /// Provides the implementation for operations that get dynamic member
-        /// values.
-        /// </summary>
-        /// <param name="binder">
-        /// Provides information about the object that called the dynamic 
-        /// operation. The <paramref name="binder"/>.Name property provides the
-        /// name of the member on which the dynamic operation is performed.
-        /// The <paramref name="binder"/>.IgnoreCase property specifies whether
-        /// the member name is case-sensitive.
-        /// </param>
-        /// <param name="result">
-        /// The result of the operation.
-        /// </param>
-        /// <returns>
-        /// <c>true</c> if the operation is successful; otherwise, <c>false</c>.
-        /// If this method returns <c>false</c>, the run-time binder of the 
-        /// language determines the behavior. In most cases, a run-time 
-        /// exception is thrown.
-        /// </returns>
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            return this.adapter.TryGetMember(binder, out result);
-        }
-
         #endregion
 
         #region Privates/internals
 
         internal static readonly Resource Missing = new Resource();
-        ExpandoAdapter adapter = ExpandoAdapter.Empty;
         bool initialized;
 
         static Resource()
         {
-            Missing.adapter = ExpandoAdapter.Empty;
             Missing.Author = null;
             Missing.Id = null;
             Missing.GeneratorVersion = null;

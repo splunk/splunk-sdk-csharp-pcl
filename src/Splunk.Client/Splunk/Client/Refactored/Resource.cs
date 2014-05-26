@@ -209,7 +209,7 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return ((IDictionary<string, object>)(this.adapter)).Keys;
+            return this.adapter.GetDynamicMemberNames();
         }
 
         /// <summary>

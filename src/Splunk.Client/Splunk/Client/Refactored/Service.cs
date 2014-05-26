@@ -384,50 +384,6 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-        /// Asynchronously retrieves setup information for an <see cref=
-        /// "Application"/> identified by name.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the application for which to retrieve setup information.
-        /// </param>
-        /// <returns>
-        /// An object representing the setup information retrieved.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">GET 
-        /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
-        /// "ApplicationSetupInfo"/> object it returns.
-        /// </remarks>
-        public async Task<ApplicationSetupInfo> GetApplicationSetupInfoAsync(string name)
-        {
-            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, name);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves update information for an <see cref=
-        /// "Application"/>.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the application for which to retrieve update information.
-        /// </param>
-        /// <returns>
-        /// An object representing the update information retrieved.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">GET 
-        /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
-        /// "ApplicationUpdateInfo"/> object it returns.
-        /// </remarks>
-        public async Task<ApplicationUpdateInfo> GetApplicationUpdateInfoAsync(string name)
-        {
-            var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, name);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
         /// Asynchronously removes an <see cref="Application"/>.
         /// </summary>
         /// <param name="name">

@@ -245,17 +245,29 @@ namespace Splunk.Client.Refactored
         /// <inheritdoc/>
         public async Task<ApplicationSetupInfo> GetSetupInfoAsync()
         {
-            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, this.Title);
-            await resource.GetAsync();
-            return resource;
+            var resourceName = new ResourceName(this.ResourceName, "setup");
+
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var resource = await Resource.CreateAsync<ApplicationSetupInfo>(response);
+                return resource;
+            }
         }
 
         /// <inheritdoc/>
         public async Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
         {
-            var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, this.Title);
-            await resource.GetAsync();
-            return resource;
+            var resourceName = new ResourceName(this.ResourceName, "update");
+
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var resource = await Resource.CreateAsync<ApplicationUpdateInfo>(response);
+                return resource;
+            }
         }
 
         /// <inheritdoc/>

@@ -279,7 +279,7 @@ namespace Splunk.Client.Refactored
                 resource = resources[0];
             }
 
-            base.ReconstructSnapshot(resource);
+            this.Snapshot = resource;
         }
 
         #endregion

@@ -388,11 +388,7 @@ namespace Splunk.Client.Refactored
         /// <remarks>
         /// You must provide an implementation for this method.
         /// </remarks>
-        protected virtual void ReconstructSnapshot(Resource resource)
-        {
-            Contract.Requires<ArgumentNullException>(resource != null);
-            this.snapshot = resource;
-        }
+        protected abstract void ReconstructSnapshot(Resource resource);
 
         /// <summary>
         /// Asynchronously updates the <see cref="Content"/> of the current <see

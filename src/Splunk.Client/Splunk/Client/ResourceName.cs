@@ -37,10 +37,10 @@ namespace Splunk.Client
         /// Initializes a new instance of the <see cref="ResourceName"/> class.
         /// </summary>
         /// <param name="resourceName">
-        /// 
+        /// Another resource name.
         /// </param>
         /// <param name="parts">
-        /// 
+        /// Names to be appended <paramref name="resourceName"/>.
         /// </param>
         public ResourceName(ResourceName resourceName, params string[] parts)
             : this(resourceName.Concat(parts))
@@ -53,6 +53,7 @@ namespace Splunk.Client
         /// Intializes a new instance of the <see cref="ResourceName"/> class.
         /// </summary>
         /// <param name="parts">
+        /// 
         /// </param>
         public ResourceName(params string[] parts)
             : this(parts.AsEnumerable<string>())
@@ -63,7 +64,9 @@ namespace Splunk.Client
         /// <summary>
         /// Intializes a new instance of the <see cref="ResourceName"/> class.
         /// </summary>
-        /// <param name="parts"></param>
+        /// <param name="parts">
+        /// 
+        /// </param>
         public ResourceName(IEnumerable<string> parts)
         {
             this.parts = parts.Select((part, i) =>
@@ -349,6 +352,7 @@ namespace Splunk.Client
         /// A <see cref="ResourceName"/> representing the parent of the current
         /// instance.
         /// </returns>
+        [Obsolete] // TODO: Remove this.
         public ResourceName GetParent()
         {
             return new ResourceName(parts.Take(parts.Count - 1));

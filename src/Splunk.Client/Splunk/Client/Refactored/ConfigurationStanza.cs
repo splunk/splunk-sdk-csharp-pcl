@@ -23,6 +23,7 @@ namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
     using System.Diagnostics.Contracts;
+    using System.IO;
     using System.Net;
     using System.Threading.Tasks;
 
@@ -32,6 +33,31 @@ namespace Splunk.Client.Refactored
     public class ConfigurationStanza : Entity
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationStanza"/>
+        /// class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a stanza within <paramref name="fileName"/> containing the 
+        /// configuration stanza to be represented by the current instance.
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="fileName"/>, or <paramref name="stanzaName"/> are 
+        /// <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
+        /// </exception>
+        protected internal ConfigurationStanza(Service service, string fileName, string stanzaName)
+            : this(service.Context, service.Namespace, fileName, stanzaName)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationStanza"/>
@@ -50,9 +76,37 @@ namespace Splunk.Client.Refactored
         /// Name of a stanza within <paramref name="fileName"/> containing the 
         /// configuration stanza to be represented by the current instance.
         /// </param>
-        internal ConfigurationStanza(Context context, Namespace ns, string fileName, string stanzaName)
+        /// <exception cref="ArgumentException">
+        /// <paramref name="fileName"/> or <paramref name="stanzaName"/> are 
+        /// <c>null</c> or <paramref name="ns"/> is non-specific. 
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
+        /// </exception>
+        protected internal ConfigurationStanza(Context context, Namespace ns, string fileName, string stanzaName)
             : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName))
         { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationStanza"/> 
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal ConfigurationStanza(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -111,36 +165,17 @@ namespace Splunk.Client.Refactored
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously creates the configuration stanza represented by the
-        /// current instance.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/jae44k">POST 
-        /// properties/{file_name></a> endpoint to create the configuration
-        /// stanza identified by the current instance.
-        /// </remarks>
-        public async Task CreateAsync()
-        {
-            var args = new Argument[] { new Argument("__stanza", this.ResourceName.Title) };
-            var resourceName = this.ResourceName.GetParent();
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-            }
-        }
+        #region Operational interface
 
         /// <summary>
-        /// Asynchronously retrieves a configuration setting from the current
-        /// instance.
+        /// Asynchronously retrieves a configuration setting value from the 
+        /// current <see cref="ConfigurationStanza"/>
         /// </summary>
         /// <param name="keyName">
         /// The name of a configuration setting.
         /// </param>
         /// <returns>
-        /// An object representing the configuration setting identified by
-        /// <paramref name="keyName"/>.
+        /// The string value of <paramref name="keyName"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/cqT50u">GET 
@@ -148,19 +183,24 @@ namespace Splunk.Client.Refactored
         /// construct the <see cref="ConfigurationSetting"/> identified by 
         /// <paramref name="keyName"/>.
         /// </remarks>
-        public async Task<ConfigurationSetting> GetSettingAsync(string keyName)
+        public async Task<string> GetAsync(string keyName)
         {
-            var resource = new ConfigurationSetting(this.Context, this.Namespace,
-                fileName: this.ResourceName.Collection,
-                stanzaName: this.ResourceName.Title,
-                keyName: keyName);
-            await resource.GetAsync();
-            return resource;
+            var resourceName = new ResourceName(this.ResourceName, keyName);
+
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var reader = new StreamReader(response.Stream);
+                var value = await reader.ReadToEndAsync();
+
+                return value;
+            }
         }
 
         /// <summary>
-        /// Asynchronously updates the value of a setting in the current <see 
-        /// cref="ConfigurationStanza"/>.
+        /// Asynchronously updates the value of an existing setting in the 
+        /// current <see cref="ConfigurationStanza"/>.
         /// </summary>
         /// <param name="keyName">
         /// The name of a configuration setting in the current <see cref=
@@ -170,7 +210,7 @@ namespace Splunk.Client.Refactored
         /// A new value for the setting identified by <paramref name="keyName"/>.
         /// </param>
         /// <returns>
-        /// An object representing the configuration setting that was updated.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
@@ -178,16 +218,35 @@ namespace Splunk.Client.Refactored
         /// update the <see cref="ConfigurationSetting"/> identified by <paramref 
         /// name="keyName"/>.
         /// </remarks>
-        public async Task<ConfigurationSetting> UpdateSettingAsync(string keyName, string value)
+        public async Task UpdateAsync(string keyName, string value)
         {
-            var resource = new ConfigurationSetting(this.Context, this.Namespace, 
-                fileName: this.ResourceName.Collection, 
-                stanzaName: this.ResourceName.Title, 
-                keyName: keyName); 
-            await resource.UpdateAsync(value);
-            return resource;
+            var resourceName = new ResourceName(this.ResourceName, keyName);
+            var arguments = new Argument[] { new Argument("value", value) };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
         }
 
+        #endregion
+
+        #region Infrastructure methods
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(AtomFeed feed)
+        {
+            this.Snapshot = new Resource(feed);
+        }
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(Resource resource)
+        {
+            this.Snapshot = resource;
+        }
+
+        #endregion
+        
         #endregion
     }
 }

@@ -25,17 +25,11 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides the operational interface common to all Splunk entity collections.
+    /// Provides an operational interface common to all Splunk entity collections.
     /// </summary>
     /// <typeparam name="TEntity">
     /// The type of the entity in the collection.

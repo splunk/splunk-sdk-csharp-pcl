@@ -55,10 +55,10 @@ namespace Splunk.Client.Refactored
         #region Constructors
 
         /// <summary>
-        /// Initializes a new <see cref="Entity"/> instance.
+        /// Initializes a new instance of the <see cref="Entity"/> class.
         /// </summary>
         /// <param name="service">
-        /// An object representing a Splunk service endpoint.
+        /// An object representing a root Splunk service endpoint.
         /// <param name="name">
         /// An object identifying a Splunk resource within <paramref name=
         /// "service"/>.<see cref="Namespace"/>.
@@ -70,9 +70,32 @@ namespace Splunk.Client.Refactored
         { }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="entity"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref 
+        /// name="collection"/>, or <paramref name="entity"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
+        /// </exception>
+        protected internal Entity(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> 
-        /// class as specified by <paramref name="context"/>, <paramref name="ns"/>
-        /// and "<paramref name="resourceName"/>.
+        /// class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -90,7 +113,7 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        public Entity(Context context, Namespace ns, ResourceName resourceName)
+        protected internal Entity(Context context, Namespace ns, ResourceName resourceName)
             : base(context, ns, resourceName)
         { }
 
@@ -119,33 +142,9 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        public Entity(Context context, Namespace ns, ResourceName collection, string name)
+        protected internal Entity(Context context, Namespace ns, ResourceName collection, string name)
             : this(context, ns, new ResourceName(collection, name))
         { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
-        /// </summary>
-        /// <param name="context">
-        /// An object representing a Splunk server session.
-        /// </param>
-        /// <param name="feed">
-        /// A Splunk response atom feed.
-        /// </param>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="entity"/> is <c>null</c> or empty.
-        /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref 
-        /// name="collection"/>, or <paramref name="entity"/> are <c>null</c>.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="ns"/> is not specific.
-        /// </exception>
-        public Entity(Context context, AtomFeed feed)
-        {
-            this.Initialize(context, feed);
-        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref="Entity"/> 

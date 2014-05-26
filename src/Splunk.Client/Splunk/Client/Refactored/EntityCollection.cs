@@ -62,7 +62,7 @@ namespace Splunk.Client.Refactored
         /// Initializes a new <see cref="EntityCollection"/> instance.
         /// </summary>
         /// <param name="service">
-        /// An object representing a Splunk service endpoint.
+        /// An object representing a root Splunk service endpoint.
         /// <param name="name">
         /// An object identifying a Splunk resource within <paramref name=
         /// "service"/>.<see cref="Namespace"/>.
@@ -320,6 +320,8 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
+        #region IReadOnlyList<TEntity> methods
+
         /// <summary>
         /// Gets an enumerator that iterates through the current <see cref=
         /// "EntityCollection&lt;TEntity&gt;"/>.
@@ -345,6 +347,24 @@ namespace Splunk.Client.Refactored
         {
             return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
         }
+
+        #endregion
+
+        #region Infrastructure methods
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(AtomFeed feed)
+        {
+            this.Snapshot = new Resource(feed);
+        }
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(Resource resource)
+        {
+            this.Snapshot = resource;
+        }
+
+        #endregion
 
         #endregion
 

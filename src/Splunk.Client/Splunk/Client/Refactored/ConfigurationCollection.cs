@@ -26,12 +26,50 @@ namespace Splunk.Client.Refactored
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Represents a collection of Splunk configuration files.
+    /// Provides an object representation of a collection of Splunk configuration 
+    /// files.
     /// </summary>
     public class ConfigurationCollection : EntityCollection<Configuration>
     {
+        #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationCollection"/>
+        /// class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
+        /// </exception>
+        protected internal ConfigurationCollection(Service service)
+            : base(service, ClassResourceName)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationCollection"/> 
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal ConfigurationCollection(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationCollection"/> 
         /// class.
         /// </summary>
         /// <param name="context">
@@ -40,8 +78,17 @@ namespace Splunk.Client.Refactored
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        internal ConfigurationCollection(Service service)
-            : base(service, ClassResourceName)
+        /// <exception cref="ArgumentException">
+        /// <paramref name="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
+        /// </exception>
+        protected internal ConfigurationCollection(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>
@@ -51,16 +98,37 @@ namespace Splunk.Client.Refactored
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
         /// intended to be used directly from your code. Use <see cref=
-        /// "Service.GetConfigurationsAsync"/> to asynchronously retrieve the 
-        /// collection of all configuration files known to Splunk.
+        /// "Service.GetApplicationsAsync"/> to asynchronously retrieve a 
+        /// collection of installed Splunk applications.
         /// </remarks>
         public ConfigurationCollection()
         { }
 
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Asynchronously creates a configuration file.
+        /// </summary>
+        /// <param name="name">
+        /// Name of the configuration file to create.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/CBWes7">POST 
+        /// properties</a> endpoint to create the configuration file represented
+        /// by this instance.
+        /// </remarks>
+        public async Task CreateAsync(string name)
+        {
+            var arguments = new Argument[] { new Argument("__conf", name) };
+            await base.CreateAsync(arguments);
+        }
+
         /// <summary>
         /// Unsupported. This method is not supported by the <see cref=
         /// "ConfigurationCollection"/> class because it is not supported by 
-        /// the <a href="http://goo.gl/Unj6fs"> Splunk properties endpoint</a>.
+        /// the <a href="http://goo.gl/Unj6fs">Splunk properties endpoint</a>.
         /// </summary>
         /// <returns></returns>
         public override async Task GetSliceAsync(params Argument[] arguments)
@@ -71,7 +139,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Unsupported. This method is not supported by the <see cref=
         /// "ConfigurationCollection"/> class because it is not supported by 
-        /// the <a href="http://goo.gl/Unj6fs"> Splunk properties endpoint</a>.
+        /// the <a href="http://goo.gl/Unj6fs">Splunk properties endpoint</a>.
         /// </summary>
         /// <returns></returns>
         public override Task GetSliceAsync(IEnumerable<Argument> arguments)
@@ -81,6 +149,8 @@ namespace Splunk.Client.Refactored
                 HelpLink = "http://docs.splunk.com/Documentation/Splunk/latest/RESTAPI/RESTconfig#GET_properties"
             };
         }
+
+        #endregion
 
         #region Privates/internals
 

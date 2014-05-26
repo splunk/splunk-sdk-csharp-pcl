@@ -74,7 +74,17 @@ namespace Splunk.Client
         /// the current <see cref="Response.Stream"/>.
         /// </summary>
         public XmlReader XmlReader
-        { get; private set; }
+        { 
+            get 
+            { 
+                if (this.XmlReader == null)
+                {
+                    this.reader = XmlReader.Create(this.Stream, XmlReaderSettings);
+                }
+
+                return this.reader;
+            }
+        }
 
         #endregion
 
@@ -96,9 +106,7 @@ namespace Splunk.Client
             Contract.Requires(message != null);
 
             var response = new Response(message);
-            
             response.Stream = await message.Content.ReadAsStreamAsync();
-            response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
 
             return response;
         }
@@ -176,7 +184,8 @@ namespace Splunk.Client
             IgnoreWhitespace = true
         };
 
-        HttpResponseMessage message;
+        readonly HttpResponseMessage message;
+        XmlReader reader;
         bool disposed;
 
         #endregion

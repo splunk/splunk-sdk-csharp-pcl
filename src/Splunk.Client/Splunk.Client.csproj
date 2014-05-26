@@ -144,6 +144,10 @@
     <Compile Include="Splunk\Client\Receiver.cs" />
     <Compile Include="Splunk\Client\ReceiverArgs.cs" />
     <Compile Include="Splunk\Client\Refactored\ApplicationArchiveInfo.cs" />
+    <Compile Include="Splunk\Client\Refactored\ConfigurationSetting.cs" />
+    <Compile Include="Splunk\Client\Refactored\IConfigurationCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\IApplicationCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\IApplication.cs" />
     <Compile Include="Splunk\Client\Refactored\ResourceEndpoint.cs" />
     <Compile Include="Splunk\Client\RequestException.cs" />
     <Compile Include="Splunk\Client\Resource.cs" />

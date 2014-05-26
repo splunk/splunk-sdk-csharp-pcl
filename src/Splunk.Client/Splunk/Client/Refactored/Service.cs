@@ -113,10 +113,17 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// 
         /// </summary>
-
         public ApplicationCollection Applications
         {
             get { return this.applications; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ConfigurationCollection Configurations
+        {
+            get { return this.configurations; }
         }
 
         /// <summary>
@@ -502,27 +509,9 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public async Task<ConfigurationStanza> CreateConfigurationStanzaAsync(string fileName, string stanzaName)
         {
-            var entity = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
-            await entity.CreateAsync();
-            return entity;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a single configuration setting.
-        /// </summary>
-        /// <returns>
-        /// An object representing the configuration setting.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/1jeyog">GET 
-        /// properties/{file_name}/{stanza_name}/{key_name}</a> endpoint/> to 
-        /// construct the <see cref="ConfigurationSetting"/> it returns.
-        /// </remarks>
-        public async Task<ConfigurationSetting> GetConfigurationSettingAsync(string fileName, string stanzaName, string keyName)
-        {
-            var entity = new ConfigurationSetting(this.Context, this.Namespace, fileName, stanzaName, keyName);
-            await entity.GetAsync();
-            return entity;
+            var configuration = new Configuration(this.Context, this.Namespace, fileName);
+            var configurationStanza = await configuration.CreateAsync(stanzaName);
+            return configurationStanza;
         }
 
         /// <summary>
@@ -562,38 +551,6 @@ namespace Splunk.Client.Refactored
         {
             var entity = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
             await entity.RemoveAsync();
-        }
-
-        /// <summary>
-        /// Asynchronously updates an existing configuration setting.
-        /// </summary>
-        /// <param name="fileName">
-        /// Name of a configuration file.
-        /// </param>
-        /// <param name="stanzaName">
-        /// Name of a configuration stanza.
-        /// </param>
-        /// <param name="keyName">
-        /// Name of the configuration setting to update.
-        /// </param>
-        /// <param name="value">
-        /// A new value for the configuration setting identified by <paramref 
-        /// name="fileName"/>, <paramref name="stanzaName"/>, and <paramref 
-        /// name="keyName"/>.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
-        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// update the configuration setting identified by <paramref name=
-        /// "fileName"/>, <paramref name="stanzaName"/>, and <paramref name="keyName"/>.
-        /// </remarks>
-        public async Task<ConfigurationSetting> UpdateConfigurationSettingAsync(string fileName, string stanzaName, 
-            string keyName, string value)
-        {
-            ConfigurationSetting resource = new ConfigurationSetting(this.Context, this.Namespace, fileName, 
-                stanzaName, keyName);
-            await resource.UpdateAsync(value);
-            return resource;
         }
 
         /// <summary>

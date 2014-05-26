@@ -15,7 +15,7 @@
  */
 
 //// TODO:
-//// [ ] Contracts
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client.Refactored
@@ -40,7 +40,7 @@ namespace Splunk.Client.Refactored
         /// Initializes a new instance of the <see cref="Receiver"/> class
         /// </summary>
         /// <param name="service">
-        /// An object representing a Splunk service endpoint.
+        /// An object representing a root Splunk service endpoint.
         /// <param name="name">
         /// An object identifying a Splunk resource within <paramref name=
         /// "service"/>.<see cref="Namespace"/>.

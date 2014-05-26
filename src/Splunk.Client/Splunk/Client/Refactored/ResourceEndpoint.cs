@@ -58,7 +58,7 @@ namespace Splunk.Client.Refactored
         /// Initializes a new <see cref="ResourceEndpoint"/> instance.
         /// </summary>
         /// <param name="service">
-        /// An object representing a Splunk service endpoint.
+        /// An object representing a root Splunk service endpoint.
         /// <param name="name">
         /// An object identifying a Splunk resource within <paramref name=
         /// "service"/>.<see cref="Namespace"/>.
@@ -160,7 +160,7 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Properties (guaranteed to be present in every snapshot)
+        #region Properties (present in most snapshots)
 
         /// <inheritdoc cref="Resource.Author"/>
         public string Author
@@ -206,6 +206,7 @@ namespace Splunk.Client.Refactored
         protected Resource Snapshot
         {
             get { return this.snapshot; }
+            set { this.snapshot = value; }
         }
 
         #endregion
@@ -227,7 +228,8 @@ namespace Splunk.Client.Refactored
         /// <returns>
         /// The <see cref="ResourceEndpoint"/> created.
         /// </returns>
-        internal static async Task<TEntity> CreateAsync<TEntity>(Context context, Response response) where TEntity : ResourceEndpoint, new()
+        internal static async Task<TEntity> CreateAsync<TEntity>(Context context, Response response) 
+            where TEntity : ResourceEndpoint, new()
         {
             var feed = new AtomFeed();
 
@@ -270,7 +272,7 @@ namespace Splunk.Client.Refactored
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal virtual void Initialize(Context context, AtomEntry entry, Version generatorVersion)
+        protected internal void Initialize(Context context, AtomEntry entry, Version generatorVersion)
         {
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
             Contract.Requires<ArgumentNullException>(context != null);
@@ -312,7 +314,7 @@ namespace Splunk.Client.Refactored
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal virtual void Initialize(Context context, AtomFeed feed)
+        protected internal void Initialize(Context context, AtomFeed feed)
         {
             Contract.Requires<ArgumentNullException>(context != null);
             Contract.Requires<ArgumentNullException>(feed != null);
@@ -327,7 +329,7 @@ namespace Splunk.Client.Refactored
         /// class.
         /// </summary>
         /// <param name="context">
-        /// /// An object representing a Splunk server session.
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="resource">
         /// An object representing a Splunk resource.
@@ -348,7 +350,7 @@ namespace Splunk.Client.Refactored
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal virtual void Initialize(Context context, Resource resource)
+        protected internal void Initialize(Context context, Resource resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null);
             Contract.Requires<ArgumentNullException>(context != null);
@@ -358,13 +360,13 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-	    /// Asynchronously updates the <see cref="Content"/> of the current 
-        /// <see cref="ResourceEndpoint"/>
+	    /// Updates the <see cref="Content"/> of the current <see cref=
+        /// "ResourceEndpoint"/>.
 	    /// </summary>
 	    /// <param name="entry">
 	    /// A Splunk <see cref="AtomEntry"/>.
 	    /// </param>
-        protected virtual void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
+        protected void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
         {
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
             Contract.Requires<ArgumentNullException>(entry != null);
@@ -372,28 +374,27 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-        /// Asynchronously updates the <see cref="Snapshot"/> of the current 
-        /// <see cref="ResourceEndpoint"/>
+        /// Updates the <see cref="Snapshot"/> of the current <see cref=
+        /// "ResourceEndpoint"/> in derived types.
         /// </summary>
         /// <param name="feed">
         /// A Splunk <see cref="AtomFeed"/>.
         /// </param>
-        protected virtual void ReconstructSnapshot(AtomFeed feed)
-        {
-            Contract.Requires<ArgumentNullException>(feed != null);
-            this.snapshot = new Resource(feed);
-        }
+        /// <remarks>
+        /// You must provide an implementation for this method.
+        /// </remarks>
+        protected abstract void ReconstructSnapshot(AtomFeed feed);
 
         /// <summary>
-        /// Asynchronously updates the <see cref="Content"/> of the current <see
-        /// cref="ResourceEndpoint"/>
+        /// Updates the <see cref="Content"/> of the current <see cref=
+        /// "ResourceEndpoint"/> in derived types.
         /// </summary>
         /// <param name="resource">
         /// An object representing a Splunk resource.
         /// </param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the operation.
-        /// </returns>
+        /// <remarks>
+        /// You must provide an implementation for this method.
+        /// </remarks>
         protected virtual void ReconstructSnapshot(Resource resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null);

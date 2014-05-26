@@ -15,6 +15,7 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client.Refactored
@@ -29,12 +30,47 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides an object representation of a collection of Splunk applications.
     /// </summary>
-    public class ApplicationCollection : EntityCollection<Application>
+    public class ApplicationCollection : EntityCollection<Application>, IApplicationCollection<Application>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationCollection"/>
+        /// Initializes a new instance of the <see cref="ConfigurationCollection"/>
+        /// class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
+        /// </exception>
+        protected internal ApplicationCollection(Service service)
+            : base(service, ClassResourceName)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationCollection"/> 
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal ApplicationCollection(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationCollection"/> 
         /// class.
         /// </summary>
         /// <param name="context">
@@ -43,10 +79,17 @@ namespace Splunk.Client.Refactored
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="args">
-        /// </param>
-        internal ApplicationCollection(Service service)
-            : base(service, ClassResourceName)
+        /// <exception cref="ArgumentException">
+        /// <paramref name="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
+        /// </exception>
+        protected internal ApplicationCollection(Context context, Namespace ns)
+            : base(context, ns, ApplicationCollection.ClassResourceName)
         { }
 
         /// <summary>
@@ -66,23 +109,7 @@ namespace Splunk.Client.Refactored
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously creates a new Splunk application from a template.
-        /// </summary>
-        /// <param name="template">
-        /// 
-        /// </param>
-        /// <param name="attributes">
-        /// 
-        /// </param>
-        /// <returns>
-        /// An object representing the Splunk application created.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to create the current <see cref=
-        /// "Application"/>.
-        /// </remarks>
+        /// <inheritdoc/>
         public async Task<Application> CreateAsync(string template, ApplicationAttributes attributes = null)
         {
             var resourceName = ClassResourceName;
@@ -99,45 +126,13 @@ namespace Splunk.Client.Refactored
             return resourceEndpoint;
         }
 
-        /// <summary>
-        /// Asynchronously retrieves select entities from the list of entites
-        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing the operation.
-        /// </returns>
-        /// <remarks>
-        /// Following completion of the operation the list of entities in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
-        /// all changes since the select entites were last retrieved.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task GetSliceAsync(SelectionCriteria criteria)
         {
             await this.GetSliceAsync(criteria.AsEnumerable());
         }
 
-        /// <summary>
-        /// Asynchronously installs an application from a Splunk application
-        /// archive file.
-        /// </summary>
-        /// <param name="path">
-        /// Specifies the location of a Splunk application archive file.
-        /// </param>
-        /// <param name="name">
-        /// Optionally specifies an explicit name for the application. This
-        /// value overrides the name of the application as specified in the
-        /// archive file.
-        /// </param>
-        /// <param name="update">
-        /// <c>true</c> if Splunk should allow the installation to update an
-        /// existing application. The default value is <c>false</c>.
-        /// </param>
-        /// <returns></returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to install the application from the archive
-        /// file on <paramref name="path"/>.
-        /// </remarks>
+        /// <inheritdoc/>
         public async Task<Application> InstallAsync(string path, string name = null, bool update = false)
         {
             var resourceName = ClassResourceName;

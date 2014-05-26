@@ -37,12 +37,7 @@ namespace Splunk.Client.Refactored
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Dynamic;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// Provides an object representation of a Splunk entity.
@@ -160,7 +155,7 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Properties (present in most snapshots)
+        #region Properties
 
         /// <inheritdoc cref="Resource.Author"/>
         public string Author
@@ -212,8 +207,6 @@ namespace Splunk.Client.Refactored
         #endregion
 
         #region Methods
-
-        #region Infrastructure methods
 
         /// <summary>
         /// Asynchronously creates a <see cref="ResourceEndpoint"/> from a
@@ -422,8 +415,6 @@ namespace Splunk.Client.Refactored
             return true;
         }
 
-
-        #endregion
 
         #endregion
 

@@ -17,7 +17,7 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
-//// [ ] Resource aggregates Endpoint (?)
+//// [X] ResourceEndpoint is an Endpoint that aggregates Resource
 
 namespace Splunk.Client.Refactored
 {
@@ -254,6 +254,7 @@ namespace Splunk.Client.Refactored
             }
 
             this.ExpandoObject = content;
+
             this.Author = entry.Author;
             this.Id = entry.Id;
             this.GeneratorVersion = generatorVersion;
@@ -298,6 +299,7 @@ namespace Splunk.Client.Refactored
             dynamic content = new ExpandoObject();
 
             this.ExpandoObject = content;
+
             this.Author = feed.Author;
             this.Id = feed.Id;
             this.GeneratorVersion = feed.GeneratorVersion;

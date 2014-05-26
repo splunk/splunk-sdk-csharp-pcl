@@ -62,6 +62,7 @@ namespace Splunk.Client.Refactored
 
             this.configurations = new ConfigurationCollection(this);
             this.applications = new ApplicationCollection(this);
+            this.indexes = new IndexCollection(this);
             this.transmitter = new Transmitter(this);
             this.server = new Server(this);
         }
@@ -129,9 +130,9 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// 
         /// </summary>
-        public Transmitter Transmitter
+        public ConfigurationCollection Indexes
         {
-            get { return this.transmitter; }
+            get { return this.configurations; }
         }
 
         /// <summary>
@@ -149,6 +150,14 @@ namespace Splunk.Client.Refactored
         {
             get { return this.Context.SessionKey; }
             set { this.Context.SessionKey = value; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Transmitter Transmitter
+        {
+            get { return this.transmitter; }
         }
 
         #endregion
@@ -603,27 +612,6 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-        /// Asynchronously retrieves a collection of indexes.
-        /// </summary>
-        /// <param name="args">
-        /// Specification of the collection of indexes to retrieve.
-        /// </param>
-        /// <returns>
-        /// An object representing the collection of indexes retrieved.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/qVZ6wJ">GET
-        /// data/indexes</a> endpoint to construct the <see cref=
-        /// "IndexCollection"/> object it returns.
-        /// </remarks>
-        public async Task<IndexCollection> GetIndexesAsync(IndexCollectionArgs args = null)
-        {
-            var collection = new IndexCollection(this.Context, this.Namespace);
-            await collection.GetAsync();
-            return collection;
-        }
-
-        /// <summary>
         /// Asynchronously removes an <see cref="Index"/>.
         /// </summary>
         /// <param name="name">
@@ -638,27 +626,6 @@ namespace Splunk.Client.Refactored
         {
             var entity = new Index(this.Context, this.Namespace, name);
             await entity.RemoveAsync();
-        }
-
-        /// <summary>
-        /// Asynchronously updates an index.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the index to update.
-        /// </param>
-        /// <param name="attributes">
-        /// Attributes to set on the index.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/n3S22S">POST
-        /// data/indexes/{name}</a> endpoint to update the <see cref=
-        /// "Index"/> identified by <paramref name="name"/> with a new set of <paramref 
-        /// name="attributes"/>.
-        /// </remarks>
-        public async Task UpdateIndexAsync(string name, IndexAttributes attributes)
-        {
-            var entity = new Index(this.Context, this.Namespace, name);
-            await entity.UpdateAsync(attributes);
         }
 
         #endregion
@@ -1185,6 +1152,7 @@ namespace Splunk.Client.Refactored
 
         readonly ConfigurationCollection configurations;
         readonly ApplicationCollection applications;
+        readonly IndexCollection indexes;
         readonly Transmitter transmitter;
         readonly Server server;
 

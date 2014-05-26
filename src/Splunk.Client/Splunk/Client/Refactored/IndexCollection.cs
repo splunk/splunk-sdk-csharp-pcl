@@ -15,22 +15,19 @@
  */
 
 //// TODO:
-//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
     using System.ComponentModel;
-    using System.Linq;
-    using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides an object representation of a collection of Splunk applications.
+    /// Represents a collection of Splunk data indexes.
     /// </summary>
-    public class ApplicationCollection : EntityCollection<Application>, IApplicationCollection<Application>
+    public class IndexCollection : EntityCollection<Index>
     {
         #region Constructors
 
@@ -44,12 +41,12 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
-        protected internal ApplicationCollection(Service service)
+        protected internal IndexCollection(Service service)
             : base(service, ClassResourceName)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationCollection"/> 
+        /// Initializes a new instance of the <see cref="IndexCollection"/> 
         /// class.
         /// </summary>
         /// <param name="context">
@@ -64,13 +61,13 @@ namespace Splunk.Client.Refactored
         /// <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
-        protected internal ApplicationCollection(Context context, AtomFeed feed)
+        protected internal IndexCollection(Context context, AtomFeed feed)
         {
             this.Initialize(context, feed);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationCollection"/> 
+        /// Initializes a new instance of the <see cref="IndexCollection"/> 
         /// class.
         /// </summary>
         /// <param name="context">
@@ -88,13 +85,13 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        protected internal ApplicationCollection(Context context, Namespace ns)
+        protected internal IndexCollection(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ApplicationCollection"/> class.
+        /// "IndexCollection"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
@@ -102,126 +99,40 @@ namespace Splunk.Client.Refactored
         /// "Service.GetApplicationsAsync"/> to asynchronously retrieve a 
         /// collection of installed Splunk applications.
         /// </remarks>
-        public ApplicationCollection()
+        public IndexCollection()
         { }
-
-        #endregion
-
-        #region Methods
-
-        /// <inheritdoc/>
-        public async Task<Application> CreateAsync(string template, ApplicationAttributes attributes = null)
-        {
-            var resourceName = ClassResourceName;
-
-            var args = new CreationArgs()
-            {
-                ExplicitApplicationName = this.Title,
-                Filename = false,
-                Name = this.Title,
-                Template = template
-            };
-
-            var resourceEndpoint = await this.CreateAsync(attributes == null ? args : args.Concat(attributes));
-            return resourceEndpoint;
-        }
-
-        /// <inheritdoc/>
-        public virtual async Task GetSliceAsync(SelectionCriteria criteria)
-        {
-            await this.GetSliceAsync(criteria.AsEnumerable());
-        }
-
-        /// <inheritdoc/>
-        public async Task<Application> InstallAsync(string path, string name = null, bool update = false)
-        {
-            var resourceName = ClassResourceName;
-
-            var args = new CreationArgs()
-            {
-                ExplicitApplicationName = this.Title,
-                Filename = true,
-                Name = path,
-                Update = update
-            };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                
-                var resourceEndpoint = await ResourceEndpoint.CreateAsync<Application>(this.Context, response);
-                return resourceEndpoint;
-            }
-        }
 
         #endregion
 
         #region Privates/internals
 
-        internal static readonly ResourceName ClassResourceName = new ResourceName("apps", "local");
+        internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");
 
         #endregion
 
         #region Types
 
-        class CreationArgs : Args<CreationArgs>
-        {
-            [DataMember(Name = "explicit_appname", IsRequired = true)]
-            public string ExplicitApplicationName
-            { get; set; }
-
-            [DataMember(Name = "filename", IsRequired = true)]
-            public bool? Filename
-            { get; set; }
-
-            [DataMember(Name = "name", IsRequired = true)]
-            public string Name
-            { get; set; }
-
-            [DataMember(Name = "template", EmitDefaultValue = true)]
-            public string Template
-            { get; set; }
-
-            [DataMember(Name = "update", EmitDefaultValue = false)]
-            public bool? Update
-            { get; set; }
-        }
-
-        class UpdateArgs : Args<UpdateArgs>
-        {
-            /// <summary>
-            /// Gets a value that indicates whether Splunk should check Splunkbase
-            /// for updates to an <see cref="Application"/>.
-            /// </summary>
-            [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
-            [DefaultValue(false)]
-            public bool CheckForUpdates
-            { get; set; }
-        }
-
         /// <summary>
-        /// Provides selection criteria for retrieving a slice of an <see cref=
-        /// "ApplicationCollection"/>.
+        /// Provides arguments for retrieving an <see cref="IndexCollection"/>.
         /// </summary>
         /// <remarks>
         /// <para><b>References:</b></para>
         /// <list type="number">
         /// <item><description>
-        ///   <a href="http://goo.gl/pqZJco">REST API: GET apps/local</a>
+        ///   <a href="http://goo.gl/qVZ6wJ">REST API Reference: GET data/indexes</a>.
         /// </description></item>
         /// </list>
         /// </remarks>
-        public sealed class SelectionCriteria : Args<SelectionCriteria>
+        public sealed class IndexCollectionArgs : Args<IndexCollectionArgs>
         {
             #region Properties
 
             /// <summary>
-            /// Gets or sets a value specifying the maximum number of <see cref=
-            /// "Application"/> entries to return.
+            /// The maximum number of <see cref="Index"/> entries to return.
             /// </summary>
             /// <remarks>
-            /// If the value of <c>Count</c> is set to zero, then all <see cref=
-            /// "Application"/> entries are returned. The default value is 30.
+            /// If the value of <c>Count</c> is set to zero, then all available
+            /// results are returned. The default value is 30.
             /// </remarks>
             [DataMember(Name = "count", EmitDefaultValue = false)]
             [DefaultValue(30)]
@@ -246,34 +157,20 @@ namespace Splunk.Client.Refactored
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value indicating whether to scan for new <see cref=
-            /// "Application"/> instances and reload any objects those new <see 
-            /// cref="Application"/> instances contain.
+            /// Search expression to filter <see cref="Index"/> entries. 
             /// </summary>
             /// <remarks>
-            /// The default is <c>false</c>.
-            /// </remarks>
-            [DataMember(Name = "refresh", EmitDefaultValue = false)]
-            [DefaultValue(false)]
-            public bool Refresh // TODO: Verify default value (it's not in the docs)
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets a search expression to filter <see cref="Application"/> 
-            /// entries. 
-            /// </summary>
-            /// <remarks>
-            /// Use this expression to filter the entries returned based on <see
-            /// cref="Application"/> properties.
+            /// Use this expression to filter the entries returned based on 
+            /// search <see cref="Index"/> properties. The default is <c>null</c>.
             /// </remarks>
             [DataMember(Name = "search", EmitDefaultValue = false)]
             [DefaultValue(null)]
-            public string Search // TODO: Good search example for App
+            public string Search
             { get; set; }
 
             /// <summary>
             /// Gets or sets a value indicating whether to sort returned <see cref=
-            /// "Application"/>entries in ascending or descending order.
+            /// "Index"/> entries in ascending or descending order.
             /// </summary>
             /// <remarks>
             /// The default value is <see cref="SortDirection"/>.Ascending.
@@ -284,8 +181,20 @@ namespace Splunk.Client.Refactored
             { get; set; }
 
             /// <summary>
+            /// <see cref="Index"/> property to use for sorting.
+            /// </summary>
+            /// <remarks>
+            /// The default <see cref="Index"/> property to use for sorting is 
+            /// <c>"name"</c>.
+            /// </remarks>
+            [DataMember(Name = "sort_key", EmitDefaultValue = false)]
+            [DefaultValue("name")]
+            public string SortKey
+            { get; set; }
+
+            /// <summary>
             /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-            /// cref="Application"/> entries.
+            /// cref="Index"/> entries.
             /// </summary>
             /// <remarks>
             /// The default value is <see cref="SortMode"/>.Automatic.
@@ -293,6 +202,18 @@ namespace Splunk.Client.Refactored
             [DataMember(Name = "sort_mode", EmitDefaultValue = false)]
             [DefaultValue(SortMode.Automatic)]
             public SortMode SortMode
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether to leave out certain index 
+            /// details in order to provide a faster response.
+            /// </summary>
+            /// <remarks>
+            /// The default value is <c>false</c>.
+            /// </remarks>
+            [DataMember(Name = "summarize", EmitDefaultValue = false)]
+            [DefaultValue(false)]
+            public bool Summarize
             { get; set; }
 
             #endregion

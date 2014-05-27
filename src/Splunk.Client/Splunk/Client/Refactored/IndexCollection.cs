@@ -172,7 +172,7 @@ namespace Splunk.Client.Refactored
 
         class CreationArgs : Args<CreationArgs>
         {
-             /// <summary>
+            /// <summary>
             /// Gets or sets a name for an index.
             /// </summary>
             /// <remarks>

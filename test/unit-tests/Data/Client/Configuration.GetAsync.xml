@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest">
+  <title>alert_actions</title>
+  <id>https://localhost:8089/services/properties/alert_actions</id>
+  <updated>2014-05-26T14:14:23-07:00</updated>
+  <generator build="207789" version="6.1.1"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <entry>
+    <title>default</title>
+    <id>https://localhost:8089/services/properties/alert_actions/default</id>
+    <updated>2014-05-26T14:14:23-07:00</updated>
+    <link href="/services/properties/alert_actions/default" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>email</title>
+    <id>https://localhost:8089/services/properties/alert_actions/email</id>
+    <updated>2014-05-26T14:14:23-07:00</updated>
+    <link href="/services/properties/alert_actions/email" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>populate_lookup</title>
+    <id>https://localhost:8089/services/properties/alert_actions/populate_lookup</id>
+    <updated>2014-05-26T14:14:23-07:00</updated>
+    <link href="/services/properties/alert_actions/populate_lookup" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>rss</title>
+    <id>https://localhost:8089/services/properties/alert_actions/rss</id>
+    <updated>2014-05-26T14:14:23-07:00</updated>
+    <link href="/services/properties/alert_actions/rss" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>script</title>
+    <id>https://localhost:8089/services/properties/alert_actions/script</id>
+    <updated>2014-05-26T14:14:23-07:00</updated>
+    <link href="/services/properties/alert_actions/script" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>summary_index</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index</id>
+    <updated>2014-05-26T14:14:23-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index" rel="alternate"/>
+  </entry>
+</feed>

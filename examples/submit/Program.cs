@@ -16,15 +16,12 @@
 
 namespace Splunk.Examples.Submit
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System;
     using System.Linq;
     using System.Net;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client;
-    using SDKHelper;
 
     /// <summary>
     /// An example program to submit events into Splunk.

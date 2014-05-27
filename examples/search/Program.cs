@@ -16,7 +16,9 @@
 
 namespace Splunk.Client.Examples.Search
 {
+    using Splunk.Client.Helpers;
     using System;
+    using System.Net;
     using System.Reactive.Linq;
     using System.Threading.Tasks;
 

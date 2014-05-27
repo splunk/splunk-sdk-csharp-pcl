@@ -14,9 +14,11 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
+    using Splunk.Client.Helpers;
+    
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -28,7 +30,7 @@ namespace Splunk.Client.UnitTesting
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Security;
-    using SDKHelper;
+    
     using Xunit;
 
     public class TestService : IUseFixture<AcceptanceTestingSetup>
@@ -1059,6 +1061,7 @@ namespace Splunk.Client.UnitTesting
 
         #region System
 
+#if false
         [Trait("class", "Service: Server")]
         [Fact]
         public async Task CanCrudServerMessages()
@@ -1194,7 +1197,7 @@ namespace Splunk.Client.UnitTesting
             }
         }
 
-        [Trait("class", "Service: System")]
+        [Trait("class", "Service: Server")]
         [Fact]
         public async Task  CanGetServerInfo()
         {
@@ -1249,6 +1252,7 @@ namespace Splunk.Client.UnitTesting
                 await service.LoginAsync("admin", "changeme");
             }
         }
+#endif
 
         [Trait("class", "Service: System")]
         [Fact]

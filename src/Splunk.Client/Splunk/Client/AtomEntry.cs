@@ -35,6 +35,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
@@ -145,15 +146,17 @@ namespace Splunk.Client
         /// The reader from which to read.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
             reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
+
+            this.Author = "Splunk"; // until told otherwise
             var links = new Dictionary<string, Uri>();
-            this.Links = links;
+            this.Links = new ReadOnlyDictionary<string, Uri>(links);
 
             await reader.ReadAsync();
 

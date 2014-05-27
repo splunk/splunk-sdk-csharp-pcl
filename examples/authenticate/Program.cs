@@ -16,11 +16,11 @@
 
 namespace Splunk.Examples.Authenticate
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System;
     using System.Net;
     using System.Threading.Tasks;
-    using Splunk.Client;
-    using SDKHelper;
 
     /// <summary>
     /// An example program to authenticate to the server and print the received
@@ -48,7 +48,9 @@ namespace Splunk.Examples.Authenticate
         {
             using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port))
             {
+#if false
                 Console.WriteLine("Connected to {0}:{1} ", service.Server.Context.Host, service.Server.Context.Port);
+#endif
                 Run(service).Wait();
             }
         }

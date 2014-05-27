@@ -14,21 +14,17 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
-    using System;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Threading;
     using Splunk.Client;
-    using Splunk.Client.UnitTesting;
-    using Xunit;
+    using Splunk.Client.Helpers;
+
+    using System;
     using System.Diagnostics;
-    using System.IO;
-    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
-    using SDKHelper;
+    
+    using Xunit;
 
     /// <summary>
     /// Test helper class
@@ -39,12 +35,14 @@ namespace Splunk.Client.UnitTesting
         {
         }
 
+#if false
         public static int VersionCompare(Service service, string versionToCompare)
         {
             Version info = service.Server.GetInfoAsync().Result.Version;
             string version = info.ToString();
             return (string.Compare(version, versionToCompare, StringComparison.InvariantCulture));
         }
+#endif
 
         public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds = 60)
         {
@@ -59,6 +57,7 @@ namespace Splunk.Client.UnitTesting
             Assert.True(index.TotalEventCount == expectEventCount);
         }
 
+#if false
         public static async Task RestartServer()
         {
             Stopwatch watch = Stopwatch.StartNew();
@@ -79,7 +78,6 @@ namespace Splunk.Client.UnitTesting
 
             watch.Stop();
         }
-
         /// <summary>
         /// Create a fresh test app with the given name, delete the existing
         /// test app and reboot Splunk.
@@ -133,5 +131,6 @@ namespace Splunk.Client.UnitTesting
             apps = service.GetApplicationsAsync().Result;
             Assert.False(apps.Any(a => a.Name == name));
         }
+#endif
     }
 }

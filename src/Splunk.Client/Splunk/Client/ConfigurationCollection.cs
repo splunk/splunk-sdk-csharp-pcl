@@ -34,7 +34,7 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        internal ConfigurationCollection(Context context, Namespace ns)
+        internal ConfigurationCollection(Context context, Namespace ns = null)
             : base(context, ns, ClassResourceName)
         { }
 

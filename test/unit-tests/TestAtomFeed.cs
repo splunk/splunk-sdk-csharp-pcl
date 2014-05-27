@@ -26,11 +26,23 @@ namespace Splunk.Client.UnitTests
 
     public class TestAtomFeed
     {
+        public static readonly string Directory = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Data", "Client"));
+        public static readonly string Path = System.IO.Path.Combine(Directory, "JobCollection.GetAsync.xml");
+        
+        public static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()
+        {
+            Async = true,
+            ConformanceLevel = ConformanceLevel.Fragment,
+            IgnoreComments = true,
+            IgnoreProcessingInstructions = true,
+            IgnoreWhitespace = true
+        };
+
         [Trait("unit-test", "AtomFeed: operation: read")]
         [Fact]
         public async Task CanReadAtomFeed()
         {
-            using (var stream = new FileStream(AtomFeedPath, FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(Path, FileMode.Open, FileAccess.Read))
             {
                 var reader = XmlReader.Create(stream, XmlReaderSettings);
                 var feed = new AtomFeed();
@@ -44,7 +56,7 @@ namespace Splunk.Client.UnitTests
         public async Task CanReadAtomEntry()
         {
             var expected = "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=2/17/2014 5:46:39 PM, Updated=2/17/2014 5:46:39 PM)";
-            var stream = new FileStream(AtomFeedPath, FileMode.Open, FileAccess.Read);
+            var stream = new FileStream(Path, FileMode.Open, FileAccess.Read);
             var reader = XmlReader.Create(stream, XmlReaderSettings);
 
             bool result = await reader.ReadToFollowingAsync("entry");
@@ -55,15 +67,16 @@ namespace Splunk.Client.UnitTests
             Assert.Equal(expected, entry.ToString());
         }
 
-        static readonly string AtomFeedPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "data", "Client", "AtomFeed.xml"));
-
-        static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()
+        internal static async Task<AtomFeed> Read(string path)
         {
-            Async = true,
-            ConformanceLevel = ConformanceLevel.Fragment,
-            IgnoreComments = true,
-            IgnoreProcessingInstructions = true,
-            IgnoreWhitespace = true
-        };
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
+                var feed = new AtomFeed();
+
+                await feed.ReadXmlAsync(reader);
+                return feed;
+            }
+        }
     }
 }

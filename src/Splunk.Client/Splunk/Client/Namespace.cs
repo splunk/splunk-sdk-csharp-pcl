@@ -311,7 +311,7 @@ namespace Splunk.Client
         /// </remarks>
         public string ToUriString()
         {
-            return ToString(Uri.EscapeDataString);
+            return this.ToString(Uri.EscapeDataString);
         }
 
         #endregion

@@ -51,17 +51,10 @@ namespace Splunk.Client.Refactored
         #region Properties
 
         /// <summary>
-        /// Gets the Splunk server messages delivered with the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/> when it was last updated.
+        /// Gets the Splunk server messages delivered with the current Splunk
+        /// entity collection when it was last updated.
         /// </summary>
         IReadOnlyList<Message> Messages
-        { get; }
-
-        /// <summary>
-        /// Gets the pagination attributes for the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
-        /// </summary>
-        Pagination Pagination
         { get; }
 
         #endregion

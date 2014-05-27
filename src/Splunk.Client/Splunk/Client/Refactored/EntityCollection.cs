@@ -54,7 +54,8 @@ namespace Splunk.Client.Refactored
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class EntityCollection<TEntity> : ResourceEndpoint, IEntityCollection<TEntity> where TEntity : ResourceEndpoint, new()
+    public class EntityCollection<TEntity> : ResourceEndpoint, IEntityCollection<TEntity> 
+        where TEntity : ResourceEndpoint, new()
     {
         #region Constructors
 
@@ -146,15 +147,6 @@ namespace Splunk.Client.Refactored
         public IReadOnlyList<Message> Messages
         {
             get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
-        }
-
-        /// <summary>
-        /// Gets the pagination properties for the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
-        /// </summary>
-        public Pagination Pagination
-        {
-            get { return this.Snapshot.GetValue("Pagination") ?? Pagination.None; }
         }
 
         #endregion

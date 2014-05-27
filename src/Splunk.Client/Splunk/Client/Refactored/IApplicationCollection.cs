@@ -17,7 +17,7 @@
 //// TODO:
 //// [0] Contracts
 //// [O] Documentation
-
+//// 
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
@@ -26,11 +26,9 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides an operational interface to the Splunk application collection.
     /// </summary>
-    public interface IApplicationCollection<TApplication> : IEntityCollection<TApplication> 
+    public interface IApplicationCollection<TApplication> : IPaginated, IEntityCollection<TApplication> 
         where TApplication : ResourceEndpoint, IApplication, new()
     {
-        #region Methods
-
         /// <summary>
         /// Asynchronously creates a new Splunk application from a template.
         /// </summary>
@@ -87,7 +85,5 @@ namespace Splunk.Client.Refactored
         /// file on <paramref name="path"/>.
         /// </remarks>
         Task<TApplication> InstallAsync(string path, string name = null, bool update = false);
-
-        #endregion
     }
 }

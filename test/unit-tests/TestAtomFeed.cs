@@ -27,7 +27,7 @@ namespace Splunk.Client.UnitTests
     public class TestAtomFeed
     {
         public static readonly string Directory = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Data", "Client"));
-        public static readonly string Path = System.IO.Path.Combine(Directory, "AtomFeed.xml");
+        public static readonly string Path = System.IO.Path.Combine(Directory, "JobCollection.GetAsync.xml");
         
         public static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()
         {
@@ -65,6 +65,18 @@ namespace Splunk.Client.UnitTests
             var entry = new AtomEntry();
             await entry.ReadXmlAsync(reader);
             Assert.Equal(expected, entry.ToString());
+        }
+
+        internal static async Task<AtomFeed> Read(string path)
+        {
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
+                var feed = new AtomFeed();
+
+                await feed.ReadXmlAsync(reader);
+                return feed;
+            }
         }
     }
 }

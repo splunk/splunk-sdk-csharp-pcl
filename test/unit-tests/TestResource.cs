@@ -17,94 +17,24 @@
 namespace Splunk.Client.UnitTests
 {
     using Microsoft.CSharp.RuntimeBinder;
+
     using Splunk.Client;
     using Splunk.Client.Refactored;
 
     using System;
-    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Dynamic;
-    using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
-    using System.Xml;
 
     using Xunit;
 
     public class TestResource
     {
-        [Trait("unit-test", "class Entity")]
-        [Fact]
-        async Task CanConstructEntity()
-        {
-            var feed = await ReadAtomFeed(TestAtomFeed.Path);
-
-            using (var context = new Context(Scheme.Https, "localhost", 8089))
-            {
-                var entity = new Entity(context, feed);
-                CheckJob(entity);
-            }
-        }
-
-        [Trait("unit-test", "class EntityCollection<Entity>")]
-        [Fact]
-        async Task CanConstructEntityCollectionOfEntity()
-        {
-            var feed = await ReadAtomFeed(TestAtomFeed.Path);
-
-            using (var context = new Context(Scheme.Https, "localhost", 8089))
-            {
-                //// EntityCollection<TEntity> checks
-
-                var collection = new EntityCollection<Entity>(context, feed);
-
-                Assert.DoesNotThrow(() => { var p = collection.Pagination; });
-
-                CheckCommonStaticPropertiesOfResourceEndpoint(collection);
-
-                Assert.Equal("https://localhost:8089/services/search/jobs", collection.Id.ToString());
-                Assert.Equal("6.0.1.187445", collection.GeneratorVersion.ToString());
-                Assert.Equal("jobs", collection.Name);
-                Assert.NotNull(collection.Links);
-                Assert.NotNull(collection.Messages);
-                Assert.Equal(1, collection.Count);
-
-                CheckJob(collection[0]);
-            }
-        }
-
-        [Trait("unit-test", "class EntityCollection<EntityCollection<Entity>")]
-        [Fact]
-        async Task CanConstructEntityCollectionOfEntityCollectionOfEntity()
-        {
-            var feed = await ReadAtomFeed(Path.Combine(TestAtomFeed.Directory, "ConfigurationCollection.GetAsync.xml"));
-
-            using (var context = new Context(Scheme.Https, "localhost", 8089))
-            {
-                var collection = new EntityCollection<EntityCollection<Entity>>(context, feed);
-
-                Assert.DoesNotThrow(() => { var p = collection.Pagination; });
-                CheckCommonStaticPropertiesOfResourceEndpoint(collection);
-                Assert.Equal("properties", collection.Name);
-                Assert.NotNull(collection.Links);
-                Assert.NotNull(collection.Messages);
-                Assert.Equal(83, collection.Count);
-
-                foreach (EntityCollection<Entity> entity in collection)
-                {
-                    Assert.Equal(0, entity.Count);
-                    Assert.NotNull(entity.Links);
-                    Assert.NotNull(entity.Messages);
-                    Assert.Equal(entity.Pagination, Pagination.None);
-                }
-            }
-        }
-
         [Trait("class", "Resource")]
         [Fact]
         async Task CanConstructResource()
         {
-            var feed = await ReadAtomFeed(TestAtomFeed.Path);
+            var feed = await TestAtomFeed.Read(TestAtomFeed.Path);
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
@@ -134,63 +64,30 @@ namespace Splunk.Client.UnitTests
                 Assert.IsType(typeof(ReadOnlyCollection<Resource>), collection.Resources);
                 Assert.Equal(1, collection.Resources.Count);
 
-                dynamic entity = collection.Resources[0];
+                dynamic resource = collection.Resources[0];
 
-                CheckCommonStaticPropertiesOfResource(entity);
+                CheckCommonStaticPropertiesOfResource(resource);
                 
-                Assert.IsType(typeof(Uri), entity.Id);
-                Assert.Equal("https://localhost:8089/services/search/jobs/1392687998.313", entity.Id.ToString());
+                Assert.IsType(typeof(Uri), resource.Id);
+                Assert.Equal("https://localhost:8089/services/search/jobs/1392687998.313", resource.Id.ToString());
                 
-                Assert.IsType(typeof(string), entity.Sid);
-                Assert.Equal("1392687998.313", entity.Sid);
+                Assert.IsType(typeof(string), resource.Sid);
+                Assert.Equal("1392687998.313", resource.Sid);
 
-                Assert.IsType(typeof(string), entity.Title);
-                Assert.Equal("search *", entity.Title);
+                Assert.IsType(typeof(string), resource.Title);
+                Assert.Equal("search *", resource.Title);
 
-                Assert.NotNull(entity.Links);
-                Assert.IsType(typeof(ReadOnlyDictionary<string, Uri>), entity.Links);
-                Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, entity.Links.Keys);
+                Assert.NotNull(resource.Links);
+                Assert.IsType(typeof(ReadOnlyDictionary<string, Uri>), resource.Links);
+                Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, resource.Links.Keys);
 
-                Assert.Throws<RuntimeBinderException>(() => entity.Resources);
+                Assert.Throws<RuntimeBinderException>(() => resource.Resources);
                 
-                AssertExistenceOfDynamicPropertiesOfJob(entity);
+                CheckExistenceOfDynamicPropertiesOfJobResource(resource);
             }
         }
 
         #region Privates/internals
-
-        static void AssertExistenceOfDynamicPropertiesOfJob(dynamic job)
-        {
-            Assert.DoesNotThrow(() => { var p = job.Published; });
-            Assert.DoesNotThrow(() => { var p = job.CanSummarize; });
-            Assert.DoesNotThrow(() => { var p = job.CursorTime; });
-            Assert.DoesNotThrow(() => { var p = job.DefaultSaveTTL; });
-            Assert.DoesNotThrow(() => { var p = job.DefaultTTL; });
-            Assert.DoesNotThrow(() => { var p = job.DiskUsage; });
-            Assert.DoesNotThrow(() => { var p = job.DispatchState; });
-            Assert.DoesNotThrow(() => { var p = job.DoneProgress; });
-            Assert.DoesNotThrow(() => { var p = job.DropCount; });
-            Assert.DoesNotThrow(() => { Assert.IsType(typeof(ExpandoObject), job.Eai); });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.App; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.CanWrite; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Modifiable; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Owner; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms.Read; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms.Write; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Sharing; });
-            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Ttl; });
-            Assert.DoesNotThrow(() => { var p = job.EarliestTime; });
-            Assert.DoesNotThrow(() => { var p = job.EventAvailableCount; });
-            Assert.DoesNotThrow(() => { var p = job.EventCount; });
-
-            //// More...
-
-            Assert.DoesNotThrow(() => { Assert.IsType(typeof(ExpandoObject), job.Messages); });
-
-            //// More...
-        }
 
         static void CheckCommonStaticPropertiesOfResource(Resource resource)
         {
@@ -231,90 +128,37 @@ namespace Splunk.Client.UnitTests
             });
         }
 
-        static void CheckCommonStaticPropertiesOfResourceEndpoint(ResourceEndpoint resource)
+        internal static void CheckExistenceOfDynamicPropertiesOfJobResource(dynamic job)
         {
-            Assert.DoesNotThrow(() => 
-            { 
-                dynamic o = resource; 
-                Assert.True(o.Context.Equals(resource.Context));
-            });
+            Assert.DoesNotThrow(() => { var p = job.Published; });
+            Assert.DoesNotThrow(() => { var p = job.CanSummarize; });
+            Assert.DoesNotThrow(() => { var p = job.CursorTime; });
+            Assert.DoesNotThrow(() => { var p = job.DefaultSaveTTL; });
+            Assert.DoesNotThrow(() => { var p = job.DefaultTTL; });
+            Assert.DoesNotThrow(() => { var p = job.DiskUsage; });
+            Assert.DoesNotThrow(() => { var p = job.DispatchState; });
+            Assert.DoesNotThrow(() => { var p = job.DoneProgress; });
+            Assert.DoesNotThrow(() => { var p = job.DropCount; });
+            Assert.DoesNotThrow(() => { Assert.IsType(typeof(ExpandoObject), job.Eai); });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.App; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.CanWrite; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Modifiable; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Owner; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms.Read; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Perms.Write; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Sharing; });
+            Assert.DoesNotThrow(() => { var p = job.Eai.Acl.Ttl; });
+            Assert.DoesNotThrow(() => { var p = job.EarliestTime; });
+            Assert.DoesNotThrow(() => { var p = job.EventAvailableCount; });
+            Assert.DoesNotThrow(() => { var p = job.EventCount; });
 
-            Assert.DoesNotThrow(() => 
-            { 
-                dynamic o = resource; 
-                Assert.True(o.Namespace.Equals(resource.Namespace)); 
-            });
+            //// More...
 
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
-                Assert.True(o.ResourceName.Equals(resource.ResourceName));
-            });
+            Assert.DoesNotThrow(() => { Assert.IsType(typeof(ExpandoObject), job.Messages); });
 
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
-                Assert.True(o.Author.Equals(resource.Author));
-            });
-            
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
-                Assert.True(o.GeneratorVersion.Equals(resource.GeneratorVersion));
-            });
-            
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
-                Assert.True(o.Id.Equals(resource.Id));
-            });
-
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
-                Assert.True(o.Links.Equals(resource.Links));
-            });
-
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
-                Assert.True(o.Title.Equals(resource.Title));
-            });
-            
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
-                Assert.True(o.Updated.Equals(resource.Updated)); 
-            });
-        }
-
-        static void CheckJob(Entity entity)
-        {
-            CheckCommonStaticPropertiesOfResourceEndpoint(entity);
-
-            Assert.Equal("6.0.1.187445", entity.GeneratorVersion.ToString());
-            Assert.Equal("2014-02-17 17:46:39Z", entity.Updated.ToString("u"));
-            Assert.Equal("1392687998.313", entity.Name);
-            Assert.Equal("search *", entity.Title);
-            Assert.Equal("admin", entity.Author);
-            Assert.NotNull(entity.Links);
-            Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, entity.Links.Keys);
-
-            AssertExistenceOfDynamicPropertiesOfJob(entity.Content);
-            Assert.IsType(typeof(DateTime), entity.Content.Published);
-            Assert.Equal("2014-02-17 17:46:39Z", entity.Content.Published.ToString("u"));
-        }
-
-        static async Task<AtomFeed> ReadAtomFeed(string path)
-        {
-            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
-                var feed = new AtomFeed();
-
-                await feed.ReadXmlAsync(reader);
-                return feed;
-            }
+            //// More...
         }
 
         #endregion

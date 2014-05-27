@@ -65,6 +65,23 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Resource"/> class.
+        /// </summary>
+        /// <param name="other">
+        /// Another resource.
+        /// </param>
+        protected internal Resource(Resource other)
+        {
+            this.Author = other.Author;
+            this.ExpandoObject = other.ExpandoObject;
+            this.GeneratorVersion = other.GeneratorVersion;
+            this.Id = other.Id;
+            this.Links = other.Links;
+            this.Title = other.Title;
+            this.Updated = other.Updated;
+        }
+
+        /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "Resource"/> class.
         /// </summary>
@@ -235,7 +252,7 @@ namespace Splunk.Client.Refactored
             Contract.Requires<ArgumentNullException>(entry != null);
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
 
-            this.MarkInitialized();
+            this.EnsureUninitialized();
             dynamic content;
 
             if (entry.Content == null)
@@ -266,6 +283,8 @@ namespace Splunk.Client.Refactored
             {
                 content.Published = entry.Published;
             }
+
+            this.MarkInitialized();
         }
 
         /// <summary>
@@ -295,7 +314,7 @@ namespace Splunk.Client.Refactored
         {
             Contract.Requires<ArgumentNullException>(feed != null);
 
-            this.MarkInitialized();
+            this.EnsureUninitialized();
             dynamic content = new ExpandoObject();
 
             this.ExpandoObject = content;
@@ -319,6 +338,7 @@ namespace Splunk.Client.Refactored
             }
 
             content.Resources = new ReadOnlyCollection<Resource>(resources);
+            this.MarkInitialized();
         }
 
         /// <summary>
@@ -350,13 +370,16 @@ namespace Splunk.Client.Refactored
             Missing.Updated = DateTime.MinValue;
         }
 
-        void MarkInitialized()
+        void EnsureUninitialized()
         {
             if (this.initialized)
             {
                 throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again.");
             }
+        }
 
+        void MarkInitialized()
+        {
             initialized = true;
         }
 

@@ -198,7 +198,7 @@ namespace Splunk.Client.Refactored
         /// Gets an object representing the Splunk resource at the time it was
         /// last retrieved by the current <see cref="ResourceEndpoint"/>.
         /// </summary>
-        protected Resource Snapshot
+        protected internal Resource Snapshot
         {
             get { return this.snapshot; }
             set { this.snapshot = value; }
@@ -400,7 +400,7 @@ namespace Splunk.Client.Refactored
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        protected internal virtual async Task<bool> ReconstructSnapshotAsync(Response response)
+        protected internal async Task<bool> ReconstructSnapshotAsync(Response response)
         {
             Contract.Requires<ArgumentNullException>(response != null);
             var feed = new AtomFeed();

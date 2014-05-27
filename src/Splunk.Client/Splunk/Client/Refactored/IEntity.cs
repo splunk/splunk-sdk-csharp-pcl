@@ -29,6 +29,13 @@ namespace Splunk.Client.Refactored
     /// </summary>
     public interface IEntity
     {
+        #region Properties
+
+        
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the current <see cref=
         /// "Entity"/> that contains all changes to it since it was last 
@@ -75,5 +82,7 @@ namespace Splunk.Client.Refactored
         /// <c>false</c>.
         /// </remarks>
         Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
+
+        #endregion
     }
 }

@@ -107,6 +107,16 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
+        #region Properties
+
+        /// <inheritdoc/>
+        public Pagination Pagination
+        {
+            get { return this.Snapshot.GetValue("Pagination") ?? Pagination.None; }
+        }
+
+        #endregion
+
         #region Methods
 
         /// <inheritdoc/>

@@ -268,7 +268,7 @@ namespace Splunk.Client.Refactored
             Contract.Requires<ArgumentNullException>(id != null);
             //// TODO: Ensure that context can reach id (?)
 
-            this.MarkInitialized();
+            this.EnsureUninitialized();
 
             // Compute namespace and resource name from id
 
@@ -350,9 +350,13 @@ namespace Splunk.Client.Refactored
             Contract.Requires<ArgumentNullException>(context != null);
             Contract.Requires<ArgumentOutOfRangeException>(ns.IsSpecific);
 
+            this.EnsureUninitialized();
+
             this.Context = context;
             this.Namespace = ns;
             this.ResourceName = name;
+
+            this.MarkInitialized();
         }
 
         /// <summary>
@@ -373,13 +377,16 @@ namespace Splunk.Client.Refactored
 
         bool initialized;
 
-        void MarkInitialized()
+        void EnsureUninitialized()
         {
             if (initialized)
             {
                 throw new InvalidOperationException("Endpoint was intialized; Initialize operation may not execute again.");
             }
+        }
 
+        void MarkInitialized()
+        {
             this.initialized = true;
         }
 

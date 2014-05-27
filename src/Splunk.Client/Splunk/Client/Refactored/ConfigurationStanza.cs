@@ -22,15 +22,19 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Provides an object representation of a Splunk configuration stanza.
     /// </summary>
-    public class ConfigurationStanza : Entity
+    public class ConfigurationStanza : Entity, IReadOnlyList<ConfigurationSetting>
     {
         #region Constructors
 
@@ -163,6 +167,20 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
+        #region Properties
+
+        public ConfigurationSetting this[int index]
+        {
+            get { return this.Create(this.Resources[index]); }
+        }
+
+        public int Count
+        {
+            get { return this.Resources.Count; }
+        }
+
+        #endregion
+
         #region Methods
 
         #region Operational interface
@@ -196,6 +214,30 @@ namespace Splunk.Client.Refactored
 
                 return value;
             }
+        }
+
+        /// <summary>
+        /// Gets an enumerator that iterates through the current <see cref=
+        /// "ConfigurationStanza"/>.
+        /// </summary>
+        /// <returns>
+        /// An object for iterating through the current <see cref="ConfigurationStanza"/>.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an enumerator that iterates through the current <see cref=
+        /// "ConfigurationStanza"/>.
+        /// </summary>
+        /// <returns>
+        /// An object for iterating through the current <see cref="ConfigurationStanza"/>.
+        /// </returns>
+        public IEnumerator<ConfigurationSetting> GetEnumerator()
+        {
+            return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
         }
 
         /// <summary>
@@ -247,6 +289,22 @@ namespace Splunk.Client.Refactored
 
         #endregion
         
+        #endregion
+
+        #region Privates/internals
+
+        static readonly IReadOnlyList<Resource> NoResources = new ReadOnlyCollection<Resource>(new List<Resource>());
+
+        IReadOnlyList<Resource> Resources
+        {
+            get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
+        }
+
+        ConfigurationSetting Create(Resource resource)
+        {
+            return new ConfigurationSetting(resource);
+        }
+
         #endregion
     }
 }

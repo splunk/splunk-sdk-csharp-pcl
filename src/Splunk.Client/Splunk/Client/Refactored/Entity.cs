@@ -159,15 +159,6 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Properties
-
-        public dynamic Content
-        {
-            get { return this.Snapshot; }
-        }
-
-        #endregion
-
         #region Methods
 
         #region Operational interface

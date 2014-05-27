@@ -51,6 +51,10 @@ namespace Splunk.Client.Refactored
             this.Initialize(entry, generatorVersion);
         }
 
+        protected internal ConfigurationSetting(Resource resource)
+            : base(resource)
+        { }
+
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "ConfigurationSetting"/> class.

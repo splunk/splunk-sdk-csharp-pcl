@@ -45,24 +45,22 @@ namespace Splunk.Client.UnitTests
                 //// Static property checks
 
                 Assert.Equal("jobs", collection.Title);
+                Assert.Throws<RuntimeBinderException>(() => { var p = collection.Links; });
+                Assert.Throws<RuntimeBinderException>(() => { var p = collection.Messages; });
 
-                Assert.NotNull(collection.Links);
-                Assert.IsType(typeof(ReadOnlyDictionary<string, Uri>), collection.Links);
-                Assert.Throws<RuntimeBinderException>(() => collection.Links["foobar"] = new Uri("/services/search/jobs/1392687998.313/foobar", UriKind.Relative));
-                Assert.Equal(0, collection.Links.Count);
+                Assert.DoesNotThrow(() => 
+                { 
+                    Pagination p = collection.Pagination;
+                    Assert.Equal(1, p.TotalResults);
+                    Assert.Equal(0, p.StartIndex);
+                    Assert.Equal(0, p.ItemsPerPage);
+                });
 
-                //// Dynamic property checks
-                
-                Assert.DoesNotThrow(() => { var p = collection.Messages; } );
-                Assert.IsType(typeof(ReadOnlyCollection<Message>), collection.Messages);
-                Assert.Equal(0, collection.Messages.Count);
-
-                Assert.DoesNotThrow(() => { var p = collection.Pagination; });
-                Assert.IsType(typeof(Pagination), collection.Pagination);
-
-                Assert.DoesNotThrow(() => { var p = collection.Resources; });
-                Assert.IsType(typeof(ReadOnlyCollection<Resource>), collection.Resources);
-                Assert.Equal(1, collection.Resources.Count);
+                Assert.DoesNotThrow(() => 
+                { 
+                    ReadOnlyCollection<Resource> p = collection.Resources;
+                    Assert.Equal(1, p.Count);
+                });
 
                 dynamic resource = collection.Resources[0];
 

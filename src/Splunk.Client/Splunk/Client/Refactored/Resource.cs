@@ -225,8 +225,8 @@ namespace Splunk.Client.Refactored
         {
             Contract.Requires<ArgumentNullException>(entry != null);
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
-
             this.EnsureUninitialized();
+
             dynamic expando = new ExpandoObject();
 
             if (entry.Content != null)
@@ -243,16 +243,20 @@ namespace Splunk.Client.Refactored
                 }
             }
 
+            expando.GeneratorVersion = generatorVersion;
+            expando.Id = entry.Id;
+            expando.Title = entry.Title;
+            expando.Updated = entry.Updated;
+
             if (entry.Author != null)
             {
                 expando.Author = entry.Author;
             }
 
-            expando.GeneratorVersion = generatorVersion;
-            expando.Id = entry.Id;
-            expando.Links = entry.Links;
-            expando.Title = entry.Title;
-            expando.Updated = entry.Updated;
+            if (entry.Links.Count > 0)
+            {
+                expando.Links = entry.Links;
+            }
 
             if (entry.Published != DateTime.MinValue)
             {
@@ -289,19 +293,31 @@ namespace Splunk.Client.Refactored
         protected internal void Initialize(AtomFeed feed)
         {
             Contract.Requires<ArgumentNullException>(feed != null);
-
             this.EnsureUninitialized();
 
             dynamic expando = new ExpandoObject();
 
-            expando.Author = feed.Author;
-            expando.Id = feed.Id;
             expando.GeneratorVersion = feed.GeneratorVersion;
-            expando.Links = feed.Links;
-            expando.Messages = feed.Messages;
-            expando.Pagination = feed.Pagination;
+            expando.Id = feed.Id;
             expando.Title = feed.Title;
             expando.Updated = feed.Updated;
+
+            expando.Author = feed.Author;
+
+            if (feed.Links != null)
+            {
+                expando.Links = feed.Links;
+            }
+
+            if (feed.Messages != null)
+            {
+                expando.Messages = feed.Messages;
+            }
+
+            if (!feed.Pagination.Equals(Pagination.None))
+            {
+                expando.Pagination = feed.Pagination;
+            }
 
             var resources = new List<Resource>();
 
@@ -312,7 +328,6 @@ namespace Splunk.Client.Refactored
             }
 
             expando.Resources = new ReadOnlyCollection<Resource>(resources);
-
             this.Expando = expando;
             this.MarkInitialized();
         }

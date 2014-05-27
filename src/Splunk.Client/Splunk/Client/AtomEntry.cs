@@ -152,11 +152,17 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
+            this.Author = null;
+            this.Content = null;
+            this.Id = null;
+            this.Links = null;
+            this.Published = DateTime.MinValue;
+            this.Title = null;
+            this.Updated = DateTime.MinValue;
+
             reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
 
-            var links = new Dictionary<string, Uri>();
-            this.Links = new ReadOnlyDictionary<string, Uri>(links);
-
+            Dictionary<string, Uri> links = null;
             await reader.ReadAsync();
 
             while (reader.NodeType == XmlNodeType.Element)
@@ -196,6 +202,11 @@ namespace Splunk.Client
 
                     case "link":
 
+                        if (links == null)
+                        {
+                            links = new Dictionary<string, Uri>();
+                        }
+
                         var href = reader.GetRequiredAttribute("href");
                         var rel = reader.GetRequiredAttribute("rel");
                         links[rel] = UriConverter.Instance.Convert(href);
@@ -213,6 +224,11 @@ namespace Splunk.Client
 
             reader.EnsureMarkup(XmlNodeType.EndElement, "entry");
             await reader.ReadAsync();
+
+            if (links != null)
+            {
+                this.Links = new ReadOnlyDictionary<string, Uri>(links);
+            }
         }
 
         /// <summary>

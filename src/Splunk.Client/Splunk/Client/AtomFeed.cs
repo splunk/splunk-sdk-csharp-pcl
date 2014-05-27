@@ -141,15 +141,22 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
+            this.Author = null;
+            this.Entries = null;
+            this.GeneratorVersion = null;
+            this.Id = null;
+            this.Links = null;
+            this.Messages = null;
+            this.Pagination = Pagination.None;
+            this.Title = null;
+            this.Updated = DateTime.MinValue;
+
             reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));
             var documentElementName = reader.Name;
-            var entries = new List<AtomEntry>();
-            var links = new Dictionary<string, Uri>();
-            var messages = new List<Message>();
 
-            this.Entries = new ReadOnlyCollection<AtomEntry>(entries);
-            this.Links = new ReadOnlyDictionary<string, Uri>(links);
-            this.Messages = new ReadOnlyCollection<Message>(messages);
+            List<AtomEntry> entries = null;
+            Dictionary<string, Uri> links = null;
+            List<Message> messages = null;
 
             await reader.ReadAsync();
 
@@ -195,14 +202,26 @@ namespace Splunk.Client
 
                         var entry = new AtomEntry();
 
-                        await entry.ReadXmlAsync(reader);
+                        if (entries == null)
+                        {
+                            entries = new List<AtomEntry>();
+                        }
+
                         entries.Add(entry);
+
+                        await entry.ReadXmlAsync(reader);
                         break;
 
                     case "link":
 
                         var href = reader.GetRequiredAttribute("href");
                         var rel = reader.GetRequiredAttribute("rel");
+
+                        if (links == null)
+                        {
+                            links = new Dictionary<string, Uri>();
+                        }
+
                         links[rel] = UriConverter.Instance.Convert(href);
                         await reader.ReadAsync();
                         break;
@@ -211,6 +230,11 @@ namespace Splunk.Client
 
                         bool isEmptyElement = reader.IsEmptyElement;
                         await reader.ReadAsync();
+
+                        if (messages == null)
+                        {
+                            messages = new List<Message>();
+                        }
 
                         if (isEmptyElement)
                         {
@@ -258,6 +282,21 @@ namespace Splunk.Client
 
             reader.EnsureMarkup(XmlNodeType.EndElement, documentElementName);
             await reader.ReadAsync();
+
+            if (entries != null)
+            {
+                this.Entries = new ReadOnlyCollection<AtomEntry>(entries);
+            }
+
+            if (links != null)
+            {
+                this.Links = new ReadOnlyDictionary<string, Uri>(links);
+            }
+
+            if (messages != null)
+            {
+                this.Messages = new ReadOnlyCollection<Message>(messages);
+            }
         }
 
         /// <summary>

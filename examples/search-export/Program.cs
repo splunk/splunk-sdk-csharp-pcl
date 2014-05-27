@@ -25,16 +25,16 @@ namespace search_export
             {
                 int previewNumber = 0;
 
-                foreach (var searchPreview in searchPreviewStream)
-                {
-                    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, searchPreview.IsFinal ? "final" : "partial");
-                    int recordNumber = 0;
+                //foreach (var searchPreview in searchPreviewStream)
+                //{
+                //    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, searchPreview.IsFinal ? "final" : "partial");
+                //    int recordNumber = 0;
 
-                    foreach (var result in searchPreview.SearchResults)
-                    {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
-                    }
-                }
+                //    foreach (var result in searchPreview.SearchResults)
+                //    {
+                //        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
+                //    }
+                //}
             }
         }
     }

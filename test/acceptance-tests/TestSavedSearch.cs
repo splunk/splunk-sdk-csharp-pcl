@@ -21,7 +21,7 @@ namespace Splunk.Client.UnitTesting
     using System.Linq.Expressions;
     using System.Linq;
     using System.Threading.Tasks;
-    using SDKHelper;
+    using Splunk.Client.Helper;
     using Xunit;
 
     /// <summary>

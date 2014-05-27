@@ -36,16 +36,16 @@ namespace search_realtime
             var tokenSource = new CancellationTokenSource();
 
             SearchResultStream searchResults;
-            while (!tokenSource.IsCancellationRequested)
-            {
-                searchResults = await realtimeJob.GetSearchResultsPreviewAsync();
-                foreach (var result in searchResults)
-                {
-                    Console.WriteLine(result.ToString());
-                }
-                Console.WriteLine("");
-                await Task.Delay(500, tokenSource.Token);
-            }
+            //while (!tokenSource.IsCancellationRequested)
+            //{
+            //    searchResults = await realtimeJob.GetSearchResultsPreviewAsync();
+            //    foreach (var result in searchResults)
+            //    {
+            //        Console.WriteLine(result.ToString());
+            //    }
+            //    Console.WriteLine("");
+            //    await Task.Delay(500, tokenSource.Token);
+            //}
 
             Task.Run(() =>
             {

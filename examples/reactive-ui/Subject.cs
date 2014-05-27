@@ -19,7 +19,7 @@ namespace Splunk.Client.Examples.ReactiveUI
     using System.Collections.Generic;
     using System.Reactive.Subjects;
     using Splunk.Client;
-    using SDKHelper;
+    using Splunk.Client.Helper;
 
     static class Subject
     {

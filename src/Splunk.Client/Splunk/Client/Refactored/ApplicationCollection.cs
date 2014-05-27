@@ -21,6 +21,9 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
+
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
     using System.Net;
@@ -108,6 +111,12 @@ namespace Splunk.Client.Refactored
         #endregion
 
         #region Properties
+
+        /// <inheritdoc/>
+        public IReadOnlyList<Message> Messages
+        {
+            get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
+        }
 
         /// <inheritdoc/>
         public Pagination Pagination

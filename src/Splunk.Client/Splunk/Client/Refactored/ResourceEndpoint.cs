@@ -157,48 +157,40 @@ namespace Splunk.Client.Refactored
 
         #region Properties
 
-        /// <inheritdoc cref="Resource.Author"/>
-        public string Author
+        /// <inheritdoc cref="Resource.GeneratorVersion"/>
+        public Version GeneratorVersion
         {
-            get { return this.snapshot.Author; }
+            get { return this.Snapshot.GeneratorVersion; }
         }
 
         /// <inheritdoc cref="Resource.Id"/>
         public Uri Id
         {
-            get { return this.snapshot.Id; }
-        }
-
-        /// <inheritdoc cref="Resource.GeneratorVersion"/>
-        public Version GeneratorVersion
-        {
-            get { return this.snapshot.GeneratorVersion; }
-        }
-
-        /// <inheritdoc cref="Resource.Links"/>
-
-        public IReadOnlyDictionary<string, Uri> Links
-        {
-            get { return this.snapshot.Links; }
+            get { return this.Snapshot.Id; }
         }
 
         /// <inheritdoc cref="Resource.Title"/>
         public string Title
         {
-            get { return this.snapshot.Title; }
+            get { return ((dynamic)this.snapshot).Title; }
         }
 
         /// <inheritdoc cref="Resource.Updated"/>
         public DateTime Updated
         {
-            get { return this.snapshot.Updated; }
+            get { return this.Snapshot.Updated; }
+        }
+
+        public dynamic Resource
+        {
+            get { return this.snapshot; }
         }
 
         /// <summary>
         /// Gets an object representing the Splunk resource at the time it was
         /// last retrieved by the current <see cref="ResourceEndpoint"/>.
         /// </summary>
-        protected internal Resource Snapshot
+        protected Resource Snapshot
         {
             get { return this.snapshot; }
             set { this.snapshot = value; }
@@ -374,7 +366,7 @@ namespace Splunk.Client.Refactored
         /// A Splunk <see cref="AtomFeed"/>.
         /// </param>
         /// <remarks>
-        /// You must provide an implementation for this method.
+        /// Derived types must implement this method.
         /// </remarks>
         protected abstract void ReconstructSnapshot(AtomFeed feed);
 
@@ -386,7 +378,7 @@ namespace Splunk.Client.Refactored
         /// An object representing a Splunk resource.
         /// </param>
         /// <remarks>
-        /// You must provide an implementation for this method.
+        /// Derived types must implement this method.
         /// </remarks>
         protected abstract void ReconstructSnapshot(Resource resource);
 
@@ -411,12 +403,11 @@ namespace Splunk.Client.Refactored
             return true;
         }
 
-
         #endregion
 
         #region Privates/internals
 
-        volatile Resource snapshot = Resource.Missing;
+        volatile Resource snapshot = Refactored.Resource.Missing;
 
         #endregion
     }

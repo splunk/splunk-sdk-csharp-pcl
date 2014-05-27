@@ -59,6 +59,7 @@ namespace Splunk.Client
             this.context = context;
             this.ns = ns ?? Namespace.Default;
             this.receiver = new Receiver(context, this.Namespace);
+            this.server = new Server(context, this.Namespace);
         }
 
         /// <summary>
@@ -106,6 +107,14 @@ namespace Splunk.Client
         public Receiver Receiver
         {
             get { return this.receiver; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Server Server
+        {
+            get { return this.Server; }
         }
 
         /// <summary>
@@ -1384,6 +1393,7 @@ namespace Splunk.Client
         readonly Context context;
         readonly Namespace ns;
         readonly Receiver receiver;
+        readonly Server server;
 
         bool disposed;
 

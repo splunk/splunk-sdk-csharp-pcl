@@ -15,7 +15,7 @@
  */
 
 //// TODO:
-//// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
+//// [X] Remove EntityCollection.args and put optional arguments on the GetAsync
 ////     method (?) args does NOT belong on the constructor. One difficulty:
 ////     not all collections take arguments. Examples: ConfigurationCollection
 ////     and IndexCollection.
@@ -138,21 +138,6 @@ namespace Splunk.Client.Refactored
 
         #region Properties
 
-        #region AtomFeed properties
-
-        /// <summary>
-        /// Gets the Splunk server messages delivered with the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/> when it was last updated.
-        /// </summary>
-        public IReadOnlyList<Message> Messages
-        {
-            get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
-        }
-
-        #endregion
-
-        #region IReadOnlyList<TEntity> properties
-
         /// <summary>
         /// Gets the entity at the specified <paramref name="index"/>.
         /// </summary>
@@ -175,8 +160,6 @@ namespace Splunk.Client.Refactored
         {
             get { return this.Resources.Count; }
         }
-
-        #endregion
 
         #endregion
 
@@ -362,9 +345,9 @@ namespace Splunk.Client.Refactored
 
         #region Privates/internals
 
+        internal static readonly IReadOnlyList<Resource> NoResources = new ReadOnlyCollection<Resource>(new List<Resource>());
+        internal static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
-        static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
-        static readonly IReadOnlyList<Resource> NoResources = new ReadOnlyCollection<Resource>(new List<Resource>());
 
         IReadOnlyList<Resource> Resources
         {

@@ -56,15 +56,19 @@ namespace Splunk.Client.UnitTests
         public async Task CanReadAtomEntry()
         {
             var expected = "AtomEntry(Title=search *, Author=admin, Id=https://localhost:8089/services/search/jobs/1392687998.313, Published=2/17/2014 5:46:39 PM, Updated=2/17/2014 5:46:39 PM)";
-            var stream = new FileStream(Path, FileMode.Open, FileAccess.Read);
-            var reader = XmlReader.Create(stream, XmlReaderSettings);
 
-            bool result = await reader.ReadToFollowingAsync("entry");
-            Assert.True(result);
+            using (var stream = new FileStream(Path, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = XmlReader.Create(stream, XmlReaderSettings))
+                {
+                    bool result = await reader.ReadToFollowingAsync("entry");
+                    Assert.True(result);
 
-            var entry = new AtomEntry();
-            await entry.ReadXmlAsync(reader);
-            Assert.Equal(expected, entry.ToString());
+                    var entry = new AtomEntry();
+                    await entry.ReadXmlAsync(reader);
+                    Assert.Equal(expected, entry.ToString());
+                }
+            }
         }
 
         internal static async Task<AtomFeed> Read(string path)

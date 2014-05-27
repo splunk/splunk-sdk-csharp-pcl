@@ -179,6 +179,11 @@ namespace Splunk.Client.Refactored
             get { return this.Resources.Count; }
         }
 
+        public string Author 
+        {
+            get { return ((dynamic)this.Snapshot).Author; }
+        }
+
         #endregion
 
         #region Methods

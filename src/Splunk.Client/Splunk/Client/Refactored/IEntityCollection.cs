@@ -15,10 +15,6 @@
  */
 
 //// TODO:
-//// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
-////     method (?) args does NOT belong on the constructor. One difficulty:
-////     not all collections take arguments. Examples: ConfigurationCollection
-////     and IndexCollection.
 //// [O] Contracts
 //// [O] Documentation
 
@@ -48,19 +44,6 @@ namespace Splunk.Client.Refactored
     /// </remarks>
     public interface IEntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : ResourceEndpoint, new()
     {
-        #region Properties
-
-        /// <summary>
-        /// Gets the Splunk server messages delivered with the current Splunk
-        /// entity collection when it was last updated.
-        /// </summary>
-        IReadOnlyList<Message> Messages
-        { get; }
-
-        #endregion
-
-        #region Methods
-
         /// <summary>
         /// Asynchronously retrieves a <see cref="TEntity"/> in the current
         /// <see cref="EntityCollection&lt;TEntity&gt;"/> by name.
@@ -120,7 +103,5 @@ namespace Splunk.Client.Refactored
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
         Task ReloadAsync();
-
-        #endregion
     }
 }

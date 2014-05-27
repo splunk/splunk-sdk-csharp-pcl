@@ -62,8 +62,6 @@ namespace Splunk.Client.UnitTests
                 Assert.Equal("https://localhost:8089/services/search/jobs", collection.Id.ToString());
                 Assert.Equal("6.0.1.187445", collection.GeneratorVersion.ToString());
                 Assert.Equal("jobs", collection.Name);
-                Assert.NotNull(collection.Links);
-                Assert.NotNull(collection.Messages);
                 Assert.Equal(1, collection.Count);
 
                 CheckJob(collection[0]);
@@ -82,15 +80,11 @@ namespace Splunk.Client.UnitTests
 
                 CheckCommonStaticPropertiesOfResourceEndpoint(collection);
                 Assert.Equal("properties", collection.Name);
-                Assert.NotNull(collection.Links);
-                Assert.NotNull(collection.Messages);
                 Assert.Equal(83, collection.Count);
 
                 foreach (EntityCollection<Entity> entity in collection)
                 {
                     Assert.Equal(0, entity.Count);
-                    Assert.NotNull(entity.Links);
-                    Assert.NotNull(entity.Messages);
                 }
             }
         }
@@ -120,12 +114,6 @@ namespace Splunk.Client.UnitTests
             Assert.DoesNotThrow(() =>
             {
                 dynamic o = resource; 
-                Assert.True(o.Author.Equals(resource.Author));
-            });
-            
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
                 Assert.True(o.GeneratorVersion.Equals(resource.GeneratorVersion));
             });
             
@@ -133,12 +121,6 @@ namespace Splunk.Client.UnitTests
             {
                 dynamic o = resource; 
                 Assert.True(o.Id.Equals(resource.Id));
-            });
-
-            Assert.DoesNotThrow(() =>
-            {
-                dynamic o = resource; 
-                Assert.True(o.Links.Equals(resource.Links));
             });
 
             Assert.DoesNotThrow(() =>
@@ -162,11 +144,11 @@ namespace Splunk.Client.UnitTests
             Assert.Equal("2014-02-17 17:46:39Z", job.Updated.ToString("u"));
             Assert.Equal("1392687998.313", job.Name);
             Assert.Equal("search *", job.Title);
-            Assert.Equal("admin", job.Author);
-            Assert.NotNull(job.Links);
-            Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, job.Links.Keys);
+            Assert.Equal("admin", job.Resource.Author);
+            Assert.NotNull(job.Resource.Links);
+            Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, job.Resource.Links.Keys);
 
-            TestResource.CheckExistenceOfDynamicPropertiesOfJobResource(job.Snapshot);
+            TestResource.CheckExistenceOfDynamicPropertiesOfJobResource(job.Resource);
         }
 
         #endregion

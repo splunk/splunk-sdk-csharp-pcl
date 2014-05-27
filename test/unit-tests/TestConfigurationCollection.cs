@@ -60,9 +60,8 @@ namespace Splunk.Client.UnitTests
                 {
                     Assert.Equal(expectedConfigurationStanzaNames[i], configuration[i].Title);
 
-                    Assert.DoesNotThrow(() => { var value = configuration[i].Author; });
+                    Assert.DoesNotThrow(() => { var value = configuration[i].GeneratorVersion; });
                     Assert.DoesNotThrow(() => { var value = configuration[i].Id; });
-                    Assert.DoesNotThrow(() => { var value = configuration[i].Links; });
                     Assert.DoesNotThrow(() => { var value = configuration[i].Updated; });
 
                     Assert.Equal(0, configuration[i].Count);
@@ -175,9 +174,8 @@ namespace Splunk.Client.UnitTests
                 {
                     Assert.Equal(expectedConfigurationNames[i], configurations[i].Title);
 
-                    Assert.DoesNotThrow(() => { var value = configurations[i].Author; });
+                    Assert.DoesNotThrow(() => { var value = configurations[i].GeneratorVersion; });
                     Assert.DoesNotThrow(() => { var value = configurations[i].Id; });
-                    Assert.DoesNotThrow(() => { var value = configurations[i].Links; });
                     Assert.DoesNotThrow(() => { var value = configurations[i].Updated; });
                 }
             }
@@ -212,7 +210,6 @@ namespace Splunk.Client.UnitTests
                 {
                     Assert.Equal(expectedConfigurationSettingNames[i], configurationStanza[i].Title);
 
-                    Assert.DoesNotThrow(() => { var value = configurationStanza[i].Author; });
                     Assert.DoesNotThrow(() => { var value = configurationStanza[i].Id; });
                     Assert.DoesNotThrow(() => { var value = configurationStanza[i].Links; });
                     Assert.DoesNotThrow(() => { var value = configurationStanza[i].Updated; });

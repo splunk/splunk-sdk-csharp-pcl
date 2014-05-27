@@ -89,7 +89,7 @@ namespace Splunk.Client.UnitTests
             // away.
             string app = "sdk-tests";
             string owner = "nobody";
-            TestHelper.CreateApp(app);
+            await TestHelper.CreateApp(app);
             await TestHelper.CreateApp(app);
             Service service =await SDKHelper.CreateService();
 

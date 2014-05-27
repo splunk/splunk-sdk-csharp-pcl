@@ -34,7 +34,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
-    public class Resource : ExpandoAdapter, IResource<Resource>
+    public class Resource : ExpandoAdapter
     {
         #region Constructors
 
@@ -72,13 +72,7 @@ namespace Splunk.Client.Refactored
         /// </param>
         protected internal Resource(Resource other)
         {
-            this.Author = other.Author;
-            this.ExpandoObject = other.ExpandoObject;
-            this.GeneratorVersion = other.GeneratorVersion;
-            this.Id = other.Id;
-            this.Links = other.Links;
-            this.Title = other.Title;
-            this.Updated = other.Updated;
+            this.Initialize(other);
         }
 
         /// <summary>
@@ -94,47 +88,27 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Properties backed by a Snapshot
+        #region Properties
 
-        /// <summary>
-        /// Gets the author of the current <see cref="Resource"/>.
-        /// </summary>
-        public string Author
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the version of the Atom Feed generator that produced the
-        /// current <see cref="Resource"/>.
-        /// </summary>
         public Version GeneratorVersion
-        { get; private set; }
+        {
+            get { return this.GetValue("GeneratorVersion"); }
+        }
 
-        /// <summary>
-        /// Gets the Splunk management URI for accessing the current <see cref=
-        /// "Resource"/>.
-        /// </summary>
         public Uri Id
-        { get; private set; }
+        {
+            get { return this.GetValue("Id"); }
+        }
 
-        /// <summary>
-        /// Gets the collection of service addresses supported by the current
-        /// <see cref="Resource"/>.
-        /// </summary>
-        public IReadOnlyDictionary<string, Uri> Links
-        { get; private set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
         public string Title
-        { get; private set; }
+        {
+            get { return this.GetValue("Title"); }
+        }
 
-        /// <summary>
-        /// Gets the date that the interface to this resource type was introduced
-        /// or updated by Splunk.
-        /// </summary>
         public DateTime Updated
-        { get; private set; }
+        {
+            get { return this.GetValue("Updated"); }
+        }
 
         #endregion
 
@@ -247,43 +221,45 @@ namespace Splunk.Client.Refactored
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal virtual void Initialize(AtomEntry entry, Version generatorVersion)
+        protected internal void Initialize(AtomEntry entry, Version generatorVersion)
         {
             Contract.Requires<ArgumentNullException>(entry != null);
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
 
             this.EnsureUninitialized();
-            dynamic content;
+            dynamic expando = new ExpandoObject();
 
-            if (entry.Content == null)
+            if (entry.Content != null)
             {
-                content = new ExpandoObject();
-            }
-            else
-            {
-                content = entry.Content as ExpandoObject;
+                var content = entry.Content as ExpandoObject;
 
                 if (content == null)
                 {
-                    content = new ExpandoObject();
-                    content.Value = entry.Content;
+                    expando.Value = entry.Content;
+                }
+                else
+                {
+                    expando.Content = entry.Content;
                 }
             }
 
-            this.ExpandoObject = content;
+            if (entry.Author != null)
+            {
+                expando.Author = entry.Author;
+            }
 
-            this.Author = entry.Author;
-            this.Id = entry.Id;
-            this.GeneratorVersion = generatorVersion;
-            this.Links = entry.Links;
-            this.Title = entry.Title;
-            this.Updated = entry.Updated;
+            expando.GeneratorVersion = generatorVersion;
+            expando.Id = entry.Id;
+            expando.Links = entry.Links;
+            expando.Title = entry.Title;
+            expando.Updated = entry.Updated;
 
             if (entry.Published != DateTime.MinValue)
             {
-                content.Published = entry.Published;
+                expando.Published = entry.Published;
             }
 
+            this.Expando = expando;
             this.MarkInitialized();
         }
 
@@ -310,24 +286,22 @@ namespace Splunk.Client.Refactored
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal virtual void Initialize(AtomFeed feed)
+        protected internal void Initialize(AtomFeed feed)
         {
             Contract.Requires<ArgumentNullException>(feed != null);
 
             this.EnsureUninitialized();
-            dynamic content = new ExpandoObject();
 
-            this.ExpandoObject = content;
+            dynamic expando = new ExpandoObject();
 
-            this.Author = feed.Author;
-            this.Id = feed.Id;
-            this.GeneratorVersion = feed.GeneratorVersion;
-            this.Links = feed.Links;
-            this.Title = feed.Title;
-            this.Updated = feed.Updated;
-
-            content.Messages = feed.Messages;
-            content.Pagination = feed.Pagination;
+            expando.Author = feed.Author;
+            expando.Id = feed.Id;
+            expando.GeneratorVersion = feed.GeneratorVersion;
+            expando.Links = feed.Links;
+            expando.Messages = feed.Messages;
+            expando.Pagination = feed.Pagination;
+            expando.Title = feed.Title;
+            expando.Updated = feed.Updated;
 
             var resources = new List<Resource>();
 
@@ -337,7 +311,41 @@ namespace Splunk.Client.Refactored
                 resources.Add(resource);
             }
 
-            content.Resources = new ReadOnlyCollection<Resource>(resources);
+            expando.Resources = new ReadOnlyCollection<Resource>(resources);
+
+            this.Expando = expando;
+            this.MarkInitialized();
+        }
+
+        /// <summary>
+        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// "Resource"/>.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The current <see cref="Resource"/> is already initialized.
+        /// </exception>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Resource"/>
+        /// instantiated by the default constructor. Override this method to 
+        /// provide special initialization code. Call this base method before 
+        /// initialization is complete. 
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        protected internal void Initialize(Resource other)
+        {
+            Contract.Requires<ArgumentNullException>(other != null);
+            
+            this.EnsureUninitialized();
+            this.Expando = other.Expando;
             this.MarkInitialized();
         }
 
@@ -357,18 +365,8 @@ namespace Splunk.Client.Refactored
 
         #region Privates/internals
 
-        internal static readonly Resource Missing = new Resource();
+        protected internal static readonly Resource Missing = new Resource();
         bool initialized;
-
-        static Resource()
-        {
-            Missing.Author = null;
-            Missing.Id = null;
-            Missing.GeneratorVersion = null;
-            Missing.Links = new Dictionary<string, Uri>(0);
-            Missing.Title = null;
-            Missing.Updated = DateTime.MinValue;
-        }
 
         void EnsureUninitialized()
         {

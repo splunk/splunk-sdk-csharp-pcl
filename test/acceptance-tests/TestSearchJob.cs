@@ -24,6 +24,7 @@ namespace Splunk.Client.UnitTests
     using System.Diagnostics;
     using System.Globalization;
     using System.Threading;
+    using System.Threading.Tasks;
     
     using Xunit;
 

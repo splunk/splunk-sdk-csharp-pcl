@@ -154,7 +154,6 @@ namespace Splunk.Client
 
             reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
 
-            this.Author = "Splunk"; // until told otherwise
             var links = new Dictionary<string, Uri>();
             this.Links = new ReadOnlyDictionary<string, Uri>(links);
 
@@ -224,7 +223,9 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Updated={3})", this.Title, this.Author, this.Id, this.Updated);
+            var text= string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", 
+                this.Title, this.Author, this.Id, this.Published, this.Updated);
+            return text;
         }
 
         #endregion

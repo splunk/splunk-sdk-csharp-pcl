@@ -22,6 +22,7 @@ namespace Splunk.Client.Refactored
 {
     using Splunk;
     using System;
+    using System.Collections.Generic;
     using System.Dynamic;
     using System.IO;
     using System.Net;
@@ -69,6 +70,11 @@ namespace Splunk.Client.Refactored
         #endregion
 
         #region Properties
+
+        public IReadOnlyDictionary<string, Uri> Links
+        {
+            get { return this.GetValue("Links"); }
+        }
 
         /// <summary>
         /// Gets the cached value of the current <see cref="ConfigurationSetting"/>.

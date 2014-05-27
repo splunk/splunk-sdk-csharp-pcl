@@ -44,7 +44,7 @@ namespace Splunk.Client
         public ExpandoAdapter(ExpandoObject expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
-            this.ExpandoObject = expandoObject;
+            this.Expando = expandoObject;
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Splunk.Client
         /// Gets the <see cref="System.Dynamic.ExpandoObject"/> backing the 
         /// current <see cref="ExpandoAdapter"/> instance.
         /// </summary>
-        internal ExpandoObject ExpandoObject
+        internal ExpandoObject Expando
         { get; set; }
                             
         #endregion
@@ -85,7 +85,7 @@ namespace Splunk.Client
         /// </returns>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return ((IDictionary<string, object>)(this.ExpandoObject)).Keys;
+            return ((IDictionary<string, object>)(this.Expando)).Keys;
         }
 
         /// <summary>
@@ -102,12 +102,12 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(name != null);
 
-            if (this.ExpandoObject == null)
+            if (this.Expando == null)
             {
                 throw new InvalidOperationException(); // TODO: diagnostics
             }
 
-            var dictionary = (IDictionary<string, object>)this.ExpandoObject;
+            var dictionary = (IDictionary<string, object>)this.Expando;
             
             object value;
             dictionary.TryGetValue(name, out value);
@@ -116,7 +116,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets a named item from the underlying <see cref="ExpandoObject"/>"/>
+        /// Gets a named item from the underlying <see cref="Expando"/>"/>
         /// and applies a <see cref="ValueConverter&lt;TValue&gt;"/>.
         /// </summary>
         /// <typeparam name="TValue">
@@ -142,12 +142,12 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(name != null);
             Contract.Requires<ArgumentNullException>(valueConverter != null);
 
-            if (this.ExpandoObject == null)
+            if (this.Expando == null)
             {
                 throw new InvalidOperationException(); // TODO: diagnostics
             }
 
-            var dictionary = (IDictionary<string, object>)this.ExpandoObject;
+            var dictionary = (IDictionary<string, object>)this.Expando;
             object value;
 
             if (!dictionary.TryGetValue(name, out value) || value == null)
@@ -332,7 +332,7 @@ namespace Splunk.Client
 
                 if (expandoObject != null)
                 {
-                    return new TExpandoAdapter() { ExpandoObject = expandoObject };
+                    return new TExpandoAdapter() { Expando = expandoObject };
                 }
 
                 throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices

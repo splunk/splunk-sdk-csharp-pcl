@@ -35,14 +35,12 @@ namespace Splunk.Client.UnitTests
         {
         }
 
-#if false
         public static int VersionCompare(Service service, string versionToCompare)
         {
             Version info = service.Server.GetInfoAsync().Result.Version;
             string version = info.ToString();
             return (string.Compare(version, versionToCompare, StringComparison.InvariantCulture));
         }
-#endif
 
         public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds = 60)
         {
@@ -57,7 +55,6 @@ namespace Splunk.Client.UnitTests
             Assert.True(index.TotalEventCount == expectEventCount);
         }
 
-#if false
         public static async Task RestartServer()
         {
             Stopwatch watch = Stopwatch.StartNew();
@@ -131,6 +128,5 @@ namespace Splunk.Client.UnitTests
             apps = service.GetApplicationsAsync().Result;
             Assert.False(apps.Any(a => a.Name == name));
         }
-#endif
     }
 }

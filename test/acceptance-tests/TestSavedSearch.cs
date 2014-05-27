@@ -19,6 +19,7 @@ namespace Splunk.Client.UnitTests
     using Splunk.Client;
     using Splunk.Client.Helpers;
 
+    using System;
     using System.Linq;
     using System.Threading.Tasks;
     

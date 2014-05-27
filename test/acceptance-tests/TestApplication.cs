@@ -22,6 +22,7 @@ namespace Splunk.Sdk.UnitTesting
 
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     
     using Xunit;
     
@@ -40,7 +41,7 @@ namespace Splunk.Sdk.UnitTesting
         /// </summary>
         [Trait("class", "Application")]
         [Fact]
-        public async void Application()
+        public async Task Application()
         {
             string dummyString;
             bool dummyBool;
@@ -68,12 +69,12 @@ namespace Splunk.Sdk.UnitTesting
                 dummyBool = app.Refresh;
                 dummyString = app.Version;
                 dummyBool = app.Configured;
-#if false
+
                 if (TestHelper.VersionCompare(service, "5.0") < 0)
                 {
                     //dummyBool = app.IsManageable;
                 }
-#endif
+
                 dummyBool = app.Visible;
                 dummyBool = app.StateChangeRequiresRestart;
 
@@ -94,9 +95,7 @@ namespace Splunk.Sdk.UnitTesting
 
             if (apps.Any(a => a.Name == "sdk-tests"))
             {
-#if false
-                TestHelper.RemoveApp("sdk-tests");
-#endif
+                await TestHelper.RemoveApp("sdk-tests");
                 service = await SDKHelper.CreateService();
             }
 
@@ -106,20 +105,19 @@ namespace Splunk.Sdk.UnitTesting
             ApplicationAttributes createArgs = new ApplicationAttributes();
             createArgs.ApplicationAuthor = "me";
 
-#if false
             if (TestHelper.VersionCompare(service, "4.2.4") >= 0)
             {
                 createArgs.Configured = false;
             }
-#endif
+
             createArgs.Description = "this is a description";
             createArgs.Label = "SDKTEST";
-#if false
+
             if (TestHelper.VersionCompare(service, "5.0") < 0)
             {
                 //createArgs.manageable", false);
             }
-#endif
+
             //createArgs.template", "barebones");
             createArgs.Visible = false;
             service.CreateApplicationAsync("sdk-tests", "barebones", createArgs).Wait();
@@ -132,12 +130,12 @@ namespace Splunk.Sdk.UnitTesting
             Assert.Equal("SDKTEST", app2.Label);
             Assert.Equal("me", app2.ApplicationAuthor);
             Assert.False(app2.Configured, assertRoot + "#5");
-#if false
+
             if (TestHelper.VersionCompare(service, "5.0") < 0)
             {
                 //Assert.False(app2.Manageable, assertRoot + "#6");
             }
-#endif
+
             Assert.False(app2.Visible, assertRoot + "#7");
 
             // update the app
@@ -148,12 +146,11 @@ namespace Splunk.Sdk.UnitTesting
             attr.Visible = false;
             attr.Version = "1.5";
 
-#if false
             if (TestHelper.VersionCompare(service, "5.0") < 0)
             {
                 //app2.IsManageable = false;
             }
-#endif
+
             //attr.Version = "5.0.0";
             app2.UpdateAsync(attr, true).Wait();
             app2.GetAsync().Wait();
@@ -177,9 +174,8 @@ namespace Splunk.Sdk.UnitTesting
 
             //ApplicationUpdate appUpdate = app2.AppUpdate();
             //Assert.True(appUpdate.ContainsKey("eai:acl"), assertRoot + "#16");
-#if false
-            TestHelper.RemoveApp("sdk-tests");
-#endif
+
+            await  TestHelper.RemoveApp("sdk-tests");
             service = await SDKHelper.CreateService();
             apps = service.GetApplicationsAsync().Result;
             Assert.False(apps.Any(a => a.Name == "sdk-tests"), assertRoot + "#17");

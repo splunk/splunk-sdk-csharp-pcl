@@ -14,43 +14,48 @@
  * under the License.
  */
 
-//// TODO: 
-//// [ ] Splunk.ModularInputs.EventElement really needs to be a class
-////     Issue: Simply renaming it as a class breaks StreamEvents test
-
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.Xml.Serialization;
 
     /// <summary>
-    /// The <see cref="EventElement"/> struct represents an event element
+    /// The <see cref="Event"/> struct represents an event element
     /// for XML event streaming.
     /// </summary>
-    public struct EventElement
+    [XmlRoot("event")]
+    public struct Event
     {
+        private static long ticksSinceEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
+
         /// <summary>
         /// Event data.
         /// </summary>
+        [XmlElement("data")]
         public string Data { get; set; }
 
         /// <summary>
         /// The event source.
         /// </summary>
+        [XmlElement("source")]
         public string Source { get; set; }
 
         /// <summary>
         /// The source type.
         /// </summary>
+        [XmlElement("sourcetype")]
         public string SourceType { get; set; }
 
         /// <summary>
         /// The index.
         /// </summary>
+        [XmlElement("index")]
         public string Index { get; set; }
 
         /// <summary>
         /// The host.
         /// </summary>
+        [XmlElement("host")]
         public string Host { get; set; }
 
         /// <summary>
@@ -61,13 +66,54 @@ namespace Splunk.ModularInputs
         /// according to current time, or in case of "unbroken" event, the
         /// timestamp supplied earlier for the event will be used.
         /// </remarks>
+        [XmlIgnore]            
         public DateTime? Time { get; set; }
+
+        // This property is used to serialize the Time attribute to XML.
+        // The Time property is a C# DateTime? instance. This property serializes
+        // it as a timestamp of seconds since the epoch.
+        [System.ComponentModel.DefaultValueAttribute(-1)]
+        [XmlElement("time")]
+        public long DateTimeElementElement
+        {
+            get
+            {
+                if (Time.HasValue)
+                {
+                    long timestamp = Time.Value.Ticks - ticksSinceEpoch;
+                    timestamp /= TimeSpan.TicksPerSecond;
+                    return timestamp;
+                }
+                else
+                {
+                    return -1; // Timestamp should not be written
+                }
+            }
+            set
+            {
+                return;
+            }
+        }
 
         /// <summary>
         /// A value indicating whether the event stream has
         /// completed a set of events and can be flushed.
         /// </summary>
+        /// 
+        [XmlIgnore]
         public bool Done { get; set; }
+
+        // This property is used to serialize the Done attribute to XML.
+        // If the Done property is true, this should serialize to <done />. If
+        // it is false, no element should be written.
+        [System.ComponentModel.DefaultValue(null)]
+        [XmlElement("done")]
+        public string DoneXmlElement
+        {
+            get { return Done ? string.Empty : null; }
+            set { return; }
+        }
+
 
         /// <summary>
         /// A value indicating whether the element contains
@@ -77,11 +123,22 @@ namespace Splunk.ModularInputs
         /// If this property is false, the element represents a single, 
         /// whole event.
         /// </remarks>
+        [System.ComponentModel.DefaultValue(true)]
+        [XmlIgnore]
         public bool Unbroken { get; set; }
+
+        [XmlAttribute("unbroken")]
+        public string UnbrokenXmlElement 
+        {
+            get { return Unbroken ? "1" : "0"; }
+            set { return; }
+        }
+
 
         /// <summary>
         /// The name of the stanza of the input this event belongs to.
         /// </summary>
+        [XmlAttribute("stanza")]
         public string Stanza { get; set; }
     }
 }

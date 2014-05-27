@@ -45,7 +45,7 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("class", "Search")]
         [Fact]
-        public async void BadOutputMode()
+        public async Task BadOutputMode()
         {
             
             using (Service service = await SDKHelper.CreateService())
@@ -79,7 +79,7 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("class", "Search")]
         [Fact]
-        public async void JobSearchMode()
+        public async Task JobSearchMode()
         {
             
             using (Service service = await SDKHelper.CreateService())
@@ -103,7 +103,7 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("class", "Search")]
         [Fact]
-        public async void JobExecutionMode()
+        public async Task JobExecutionMode()
         {
             
             using (Service service = await SDKHelper.CreateService())
@@ -243,7 +243,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("class", "Search")]
         [Fact]
-        public async void JobRefreshTest()
+        public async Task JobRefreshTest()
         {
             string search = "search index=_internal * | head 10 ";
             

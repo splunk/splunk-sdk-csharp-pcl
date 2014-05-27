@@ -20,135 +20,152 @@ namespace Splunk.ModularInputs
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
+    using System.Xml.Serialization;
+
+    /// <summary>
+    /// Structure emitted on an IProgress instance by EventWriter when it has finished
+    /// writing an event, or when it has terminated, in which case the event has no properties
+    /// set.
+    /// </summary>
+    public struct EventWrittenProgressReport
+    {
+        public DateTime Timestamp { get; set; }
+        public Event WrittenEvent { get; set; }
+    }
 
     /// <summary>
     /// 
     /// </summary>
-    static class EventWriter
+    public class EventWriter : IDisposable
     {
+        #region Private fields
+        private static XmlSerializer serializer = new XmlSerializer(typeof(Event));
+        private BlockingCollection<Event> eventQueue = new BlockingCollection<Event>();
+        private XmlWriter writer;
+        private Task eventQueueMonitor = null;
+        private object synchronizationObject = new object();
+        private bool disposed;
+        #endregion
+
+        #region Properties
+        protected readonly TextWriter Stdout;
+        protected readonly TextWriter Stderr;
+        protected readonly IProgress<EventWrittenProgressReport> Progress;
+        #endregion
+
+
+        #region Constructors
+
         /// <summary>
-        /// 
+        /// Create a new EventWriter instance writing to the provided streams
+        /// and emitting progress reports to the provided IProgress instance
+        /// after each event is written.
         /// </summary>
-        static EventWriter()
+        /// <param name="stdout">A writer on which to write events (usually 
+        /// Console.Stdout in production, or a StringWriter in testing).</param>
+        /// <param name="stderr">A writer on which to log errors and messages
+        /// (usually Console.Stderr in production, or a StringWriter in testing).</param>
+        /// <param name="progress">An IProgress instance to write progress reports to.
+        /// This is the easiest way to trigger behavior after events are actually
+        /// written to Splunk. In production, it will usually be an instance
+        /// of Progress&lt;EventWrittenProgressReport&gt;</param>
+        public EventWriter(TextWriter stdout, TextWriter stderr, 
+            IProgress<EventWrittenProgressReport> progress)
         {
-            var settings = new XmlWriterSettings
+            this.Stdout = stdout;
+            this.Stderr = stderr;
+            this.Progress = progress;
+
+            writer = XmlWriter.Create(stdout, new XmlWriterSettings
             {
                 Async = true,
-                ConformanceLevel = ConformanceLevel.Fragment
-            };
+                ConformanceLevel = ConformanceLevel.Document
+            });
+        }
 
-            eventCollection = new BlockingCollection<EventElement>();
-            eventWriter = XmlWriter.Create(Console.Out, settings);
+        #endregion
 
-            writeEventElements = Task.Factory.StartNew(WriteEventElementsAsync);
+        /// <summary>
+        /// Add an event to this EventWriter's shared queue to be written as soon
+        /// as possible. This method is thread-safe, so multiple threads can 
+        /// concurrently queue events without interfering with each other.
+        /// </summary>
+        /// <param name="e">The Event to write.</param>
+        public async Task QueueEventForWriting(Event e)
+        {
+            if (disposed)
+                throw new ObjectDisposedException("EventWriter already disposed.");
+            if (eventQueueMonitor == null)
+                // Don't start the eventQueueMonitor up until we actually want to write
+                // events so we don't get empty <stream/> elements in cases where
+                // we don't actually queue anything.
+                eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
+            await Task.Run(() => eventQueue.Add(e));
+        }
+    
+        public async void Dispose()
+        {
+            await Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual async Task Dispose(bool disposing)
+        {
+            if (disposed) return;
+
+            if (eventQueue.IsAddingCompleted)
+                return;
+            eventQueue.CompleteAdding();
+            if (eventQueueMonitor != null)
+                await eventQueueMonitor;
+            writer.Close();
+            this.Progress.Report(new EventWrittenProgressReport
+            {
+                Timestamp = DateTime.Now,
+                WrittenEvent = new Event { }
+            });
+
+            disposed = true;
         }
 
         /// <summary>
-        /// 
+        /// Log a message to stderr.
         /// </summary>
-        /// <param name="item">
-        /// </param>
-        public static void Add(EventElement item)
+        /// <param name="severity">A string specifying the
+        /// error level (usually one of "INFO", "DEBUG", "WARNING",
+        /// "ERROR", or "FATAL").</param>
+        /// <param name="message">The message to log.</param>
+        public async Task LogAsync(string severity, string message)
         {
-            eventCollection.Add(item);
+            if (disposed) throw new ObjectDisposedException("EventWriter is already disposed.");
+            await this.Stderr.WriteAsync(severity + " " + message + this.Stderr.NewLine);
         }
 
-        #region Privates/internals
-
-        static readonly DateTime UnixUtcEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        static readonly BlockingCollection<EventElement> eventCollection;
-        static readonly XmlWriter eventWriter;
-        static Task writeEventElements;
-
-        internal static void CompleteAdding()
+        protected void WriteEventsFromQueue()
         {
-            eventCollection.CompleteAdding();
-            writeEventElements.Wait();
+            writer.WriteStartDocument();
+            writer.WriteStartElement(prefix: null, localName: "stream", ns: null);
+
+            foreach (Event eventToWrite in eventQueue.GetConsumingEnumerable())
+            {
+                serializer.Serialize(writer, eventToWrite);
+                writer.Flush();
+                this.Progress.Report(new EventWrittenProgressReport {
+                        Timestamp = DateTime.Now,
+                        WrittenEvent = eventToWrite
+                });
+
+            }
+
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Flush();
         }
-
-        static string ConvertDateTimeToUnixTimestamp(DateTime value)
-        {
-            var utcTime = TimeZoneInfo.ConvertTime(value, TimeZoneInfo.Utc);
-            return (utcTime - UnixUtcEpoch).TotalSeconds.ToString();
-        }
-
-        static async Task WriteEventElementAsync(EventElement eventElement)
-        {
-            if (eventWriter.WriteState == WriteState.Start)
-            {
-                await eventWriter.WriteStartElementAsync(prefix: null, localName: "stream", ns: null);
-            }
-
-            await eventWriter.WriteStartElementAsync(prefix: null, localName: "event", ns: null);
-            var stanza = eventElement.Stanza;
-
-            if (stanza != null)
-            {
-                await eventWriter.WriteAttributeStringAsync(prefix: null, localName: "stanza", ns: null, value: stanza);
-            }
-
-            if (eventElement.Unbroken)
-            {
-                await eventWriter.WriteAttributeStringAsync(prefix: null, localName: "unbroken", ns: null, value: "1");
-            }
-
-            if (eventElement.Index != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "index", ns: null, value: eventElement.Index);
-            }
-            
-            if (eventElement.SourceType != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "sourcetype", ns: null, value: eventElement.SourceType);
-            }
-            
-            if (eventElement.Source != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "source", ns: null, value: eventElement.Source);
-            }
-            
-            if (eventElement.Host != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "host", ns: null, value: eventElement.Host);
-            }
-
-            if (eventElement.Data != null)
-            {
-                await eventWriter.WriteElementStringAsync(prefix: null, localName: "data", ns: null, value: eventElement.Data);
-            }
-
-            var time = eventElement.Time;
-
-            if (time != null)
-            {
-                await eventWriter.WriteElementStringAsync(
-                    prefix: null, localName: "time", ns: null, value: ConvertDateTimeToUnixTimestamp(time.Value));
-            }
-
-            if (eventElement.Done)
-            {
-                await eventWriter.WriteStartElementAsync(prefix: null, localName: "done", ns: null);
-                await eventWriter.WriteEndElementAsync();
-                await eventWriter.FlushAsync();
-            }
-
-            await eventWriter.WriteEndElementAsync();
-        }
-
-        static async void WriteEventElementsAsync()
-        {
-            foreach (var eventElement in eventCollection.GetConsumingEnumerable())
-            {
-                await WriteEventElementAsync(eventElement);
-            }
-
-            eventWriter.Close();
-        }
-        
-        #endregion
     }
 }

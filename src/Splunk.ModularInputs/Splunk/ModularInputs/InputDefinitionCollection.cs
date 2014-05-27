@@ -16,13 +16,15 @@
 
 namespace Splunk.ModularInputs
 {
+    using System.Collections.Generic;
     using System.Xml.Serialization;
+    using System.Linq;
 
     /// <summary>
-    /// Base class for input definition.
+    /// The collection of input definitions passed to this program.
     /// </summary>
     [XmlRoot("input")]
-    public class InputDefinitionBase
+    public class InputDefinitionCollection
     {
         /// <summary>
         /// The hostname for the Splunk server that runs the modular input.
@@ -54,5 +56,40 @@ namespace Splunk.ModularInputs
         /// </summary>
         [XmlElement("session_key")]
         public string SessionKey { get; set; }
+
+        /// <summary>
+        /// Represents the data for a single instance of the modular input.
+        /// </summary>
+        public class Stanza
+        {
+            [XmlAttribute("name")]
+            public string Name { get; set; }
+
+            [XmlElement("param", Type=typeof(SingleValueParameter))]
+            [XmlElement("param_list", Type=typeof(MultiValueParameter))]
+            public List<Parameter> Parameters { get; set; }
+        }
+
+        [XmlArray("configuration")]
+        [XmlArrayItem("stanza", Type=typeof(Stanza))]
+        public List<Stanza> Stanzas { get; set; }
+
+        public IEnumerator<InputDefinition> GetEnumerator()
+        {
+            foreach (Stanza stanza in Stanzas)
+            {
+                yield return new InputDefinition {
+                    Name = stanza.Name,
+                    Parameters = stanza.Parameters.ToDictionary(
+                        v => v.Name,
+                        v => v
+                    ),
+                    ServerHost = this.ServerHost,
+                    ServerUri = this.ServerUri,
+                    CheckpointDirectory = this.CheckpointDirectory,
+                    SessionKey = this.SessionKey
+                };
+            }
+        }
     }
 }

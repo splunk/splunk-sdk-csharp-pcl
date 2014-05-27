@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Splunk Inc.")]
-[assembly: AssemblyProduct("splunk-sdk-csharp")]
+[assembly: AssemblyProduct("unit-tests")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

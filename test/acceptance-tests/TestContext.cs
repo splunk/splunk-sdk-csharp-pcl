@@ -19,7 +19,7 @@ namespace Splunk.Client.UnitTests
     using Splunk.Client.Helpers;
     using Xunit;
 
-    public class TestContext : IUseFixture<AcceptanceTestingSetup>
+    public class TestContext
     {
         [Trait("class", "Context")]
         [Fact]
@@ -28,16 +28,14 @@ namespace Splunk.Client.UnitTests
             client = new Context(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
 
             Assert.Equal(client.Scheme, Scheme.Https);
-            Assert.Equal(client.Host, "localhost");
-            Assert.Equal(client.Port, 8089);
+            Assert.Equal(client.Host.ToLower(), SDKHelper.UserConfigure.host);
+            Assert.Equal(client.Port, SDKHelper.UserConfigure.port);
             Assert.Null(client.SessionKey);
 
-            Assert.Equal(client.ToString(), "https://localhost:8089");
+            Assert.Equal(client.ToString().ToLower(), string.Format("https://{0}:{1}", SDKHelper.UserConfigure.host.ToLower(), SDKHelper.UserConfigure.port));
         }
 
         static Context client;
-
-        public void SetFixture(AcceptanceTestingSetup data)
-        { }
+       
     }
 }

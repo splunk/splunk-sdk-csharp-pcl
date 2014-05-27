@@ -16,11 +16,13 @@
 
 namespace Splunk.ModularInputs
 {
+    using System.Collections.Generic;
     using System.IO;
     using System.Xml.Serialization;
+    using System.Linq;
 
     /// <summary>
-    /// The <see cref="ValidationItems"/> class is used to parse and access the
+    /// The <see cref="Validation"/> class is used to parse and access the
     /// XML data for a new input definition from Splunk, pending validation.
     /// </summary>    
     /// <remarks>
@@ -54,13 +56,67 @@ namespace Splunk.ModularInputs
     /// </code>
     /// </remarks>
     [XmlRoot("items")]
-    public class ValidationItems : InputDefinitionBase
+    public class Validation
     {
-        /// <summary>
-        /// Gets or sets an instance of this modular input.
-        /// </summary>
-        /// <remarks>This property is used by unit tests.</remarks>
+        [XmlIgnore]
+        public IReadOnlyDictionary<string, Parameter> Parameters {
+            get
+            {
+                return InputDefinitionElement.Parameters.ToDictionary(
+                    v => v.Name,
+                    v => v
+                );
+            }
+        }
+
+        [XmlIgnore]
+        public string Name {
+            get
+            {
+                return InputDefinitionElement.Name;
+            }
+        }
+
+        public class Item
+        {
+            [XmlAttribute("name")]
+            public string Name { get; set; }
+            
+            [XmlElement("param", Type=typeof(SingleValueParameter))]
+            [XmlElement("param_list", Type=typeof(MultiValueParameter))]
+            public List<Parameter> Parameters { get; set; }
+        }
+
         [XmlElement("item")]
-        public ConfigurationItem Item { get; set; }
+        public Item InputDefinitionElement { get; set; }
+            
+
+        [XmlElement("server_host")]
+        public string ServerHost { get; set; }
+
+        /// <summary>
+        /// The management URI for the Splunk server, identified by host, port,
+        /// and protocol.
+        /// </summary>
+        [XmlElement("server_uri")]
+        public string ServerUri { get; set; }
+
+        /// <summary>
+        /// The directory used for a modular input to save checkpoints.  
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This location is where Splunk tracks the input state from sources
+        /// it is reading from.
+        /// </para>
+        /// </remarks>
+        [XmlElement("checkpoint_dir")]
+        public string CheckpointDirectory { get; set; }
+
+        /// <summary>
+        /// The REST API session key for this modular input.
+        /// </summary>
+        [XmlElement("session_key")]
+        public string SessionKey { get; set; }
     }
 }

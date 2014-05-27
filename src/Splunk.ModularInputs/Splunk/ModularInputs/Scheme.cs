@@ -133,28 +133,22 @@ namespace Splunk.ModularInputs
         public EndpointElement Endpoint { get; set; }
 
         /// <summary>
-        /// The <see cref="EndpointElement"/> class represents the 
-        /// <b>endpoint</b> XML element.
+        /// Gets or sets the list of arguments specified by this Scheme.
         /// </summary>
-        /// <remarks>
-        /// The endpoint is a collection of arguments that represent parameters
-        /// to the inputs.conf stanza.
-        /// </remarks>
-        [XmlRoot("endpoint")]
+        [XmlIgnore]
+        public List<Argument> Arguments
+        {
+            get { return Endpoint.Arguments; }
+            set { Endpoint.Arguments = value; }
+        }
+
         public class EndpointElement
         {
-            /// <summary>
-            /// Initializes a new instance of the <see cref="EndpointElement"/>
-            /// class.
-            /// </summary>
             internal EndpointElement()
             {
                 this.Arguments = new List<Argument>();
             }
 
-            /// <summary>
-            /// Gets or sets the list of arguments to this endpoint.  
-            /// </summary>
             [XmlArray("args")]
             [XmlArrayItem("arg")]
             public List<Argument> Arguments { get; set; }

@@ -83,7 +83,7 @@ namespace Splunk.Client.UnitTests
         /// test app and reboot Splunk.
         /// </summary>
         /// <param name="name">The app name</param>
-        public async static void CreateApp(string name)
+        public async static Task CreateApp(string name)
         {
             //EntityCollection<App> apps;
 
@@ -93,7 +93,7 @@ namespace Splunk.Client.UnitTests
 
             if (apps.Any(a => a.ResourceName.Title == name))
             {
-                service.RemoveApplicationAsync(name).Wait();
+                await service.RemoveApplicationAsync(name);
                 await RestartServer();
                 service = await SDKHelper.CreateService();
                 apps = service.GetApplicationsAsync().Result;
@@ -102,7 +102,7 @@ namespace Splunk.Client.UnitTests
             Assert.False(apps.Any(a => a.ResourceName.Title == name));
 
             //apps.Create(name);
-            service.CreateApplicationAsync(name, "sample_app").Wait();
+            await service.CreateApplicationAsync(name, "sample_app");
 
             await RestartServer();
 
@@ -116,14 +116,14 @@ namespace Splunk.Client.UnitTests
         /// Remove the given app and reboot Splunk if needed.
         /// </summary>
         /// <param name="name">The app name</param>
-        public static async void RemoveApp(string name)
+        public static async Task RemoveApp(string name)
         {
             Service service = await SDKHelper.CreateService();
 
             ApplicationCollection apps = service.GetApplicationsAsync().Result;
             if (apps.Any(a => a.Name == name))
             {
-                service.RemoveApplicationAsync(name).Wait();
+                await service.RemoveApplicationAsync(name);
                 await RestartServer();
                 service = await SDKHelper.CreateService();
             }

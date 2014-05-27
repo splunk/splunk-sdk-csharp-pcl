@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <ProjectGuid>{0777F751-A5A1-42C3-9966-8BE3D41E592F}</ProjectGuid>
     <AssemblyName>Splunk.ModularInputs</AssemblyName>
     <OutputType>Library</OutputType>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform>AnyCPU</Platform>
     <TargetFrameworkProfile />
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +14,7 @@
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <ErrorReport>prompt</ErrorReport>
     <FileAlignment>512</FileAlignment>
+    <RootNamespace />
     <RunCodeAnalysis Condition=" '$(RunCodeAnalysis)' == '' ">False</RunCodeAnalysis>
     <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
@@ -25,29 +26,40 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateDocumentationFile Condition=" '$(GenerateDocumentationFile)' == '' ">False</GenerateDocumentationFile>
-    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' != 'True' ">
-    </DocumentationFile>
-    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'True' ">$(OutputPath)$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Splunk\ModularInputs\*.cs" />
+    <Compile Include="Splunk\ModularInputs\Argument.cs" />
+    <Compile Include="Splunk\ModularInputs\Util.cs" />
+    <Compile Include="Splunk\ModularInputs\DataType.cs" />
+    <Compile Include="Splunk\ModularInputs\Event.cs" />
+    <Compile Include="Splunk\ModularInputs\EventWriter.cs" />
+    <Compile Include="Splunk\ModularInputs\InputDefinition.cs" />
+    <Compile Include="Splunk\ModularInputs\InputDefinitionCollection.cs" />
+    <Compile Include="Splunk\ModularInputs\ModularInput.cs" />
+    <Compile Include="Splunk\ModularInputs\MultiValueParameter.cs" />
+    <Compile Include="Splunk\ModularInputs\Parameter.cs" />
+    <Compile Include="Splunk\ModularInputs\Scheme.cs" />
+    <Compile Include="Splunk\ModularInputs\SingleValueParameter.cs" />
+    <Compile Include="Splunk\ModularInputs\StreamingMode.cs" />
+    <Compile Include="Splunk\ModularInputs\Validation.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Splunk.Client\Splunk.Client.csproj">
+      <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
+      <Name>Splunk.Client</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

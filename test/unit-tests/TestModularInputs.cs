@@ -202,7 +202,9 @@ namespace Splunk.ModularInputs.UnitTesting
                                     catch (InvalidCastException)
                                     {
                                         errorMessage = "min should be a floating point number.";
+                                        return false;
                                     }
+                                    errorMessage = null;
                                     return true;
                                 }
                             },

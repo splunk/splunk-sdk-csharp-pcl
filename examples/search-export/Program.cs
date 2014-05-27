@@ -21,7 +21,7 @@ namespace search_export
 
             //// Search : Export Previews
 
-            using (var earchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
+            using (var searchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
             {
                 int previewNumber = 0;
 

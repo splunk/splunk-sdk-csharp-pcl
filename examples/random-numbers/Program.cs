@@ -11,9 +11,7 @@ namespace random_numbers
 
         public static int Main(string[] args)
         {
-            Task<int> t = new Program().RunAsync(args);
-            t.Wait();
-            return t.Result;
+            return Run<Program>(args);
         }
 
         public override Scheme Scheme

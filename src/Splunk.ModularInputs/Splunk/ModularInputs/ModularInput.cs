@@ -53,6 +53,17 @@ namespace Splunk.ModularInputs
 
         #region Methods
 
+        public static int Run<T>(string[] args) where T : ModularInput, new()
+        {
+            T script = new T();
+            Task<int> run = script.RunAsync(args);
+            run.Wait();
+            if (run.IsCompleted)
+                return run.Result;
+            else
+                return -1;
+        }
+
         /// <summary>
         /// Performs the action specified by the <paramref name="args"/> parameter.
         /// </summary>

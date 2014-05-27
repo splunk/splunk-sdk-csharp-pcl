@@ -196,7 +196,15 @@ namespace Splunk.ModularInputs.UnitTesting
                                 Name = "min",
                                 Description = "Generated value should be at least min",
                                 DataType = DataType.Number,
-                                RequiredOnCreate = true
+                                RequiredOnCreate = true,
+                                ValidationDelegate = delegate (Parameter param, out string errorMessage) {
+                                    try { double x = (double)param; }
+                                    catch (InvalidCastException)
+                                    {
+                                        errorMessage = "min should be a floating point number.";
+                                    }
+                                    return true;
+                                }
                             },
                             new Argument
                             {
@@ -304,6 +312,37 @@ namespace Splunk.ModularInputs.UnitTesting
                 Assert.NotEqual(0, exitCode);
                 Assert.Equal(
                     "<error><message>Max must be greater than min.</message></error>",
+                    stdout.ToString().Trim()
+                );
+                Assert.Equal("", stderr.ToString());
+            }
+        }
+
+        [Trait("class", "splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ValidationFailsOnSingleParameterDelegate()
+        {
+            XDocument doc = new XDocument(
+               new XElement("items",
+                   new XElement("server_host", "tiny"),
+                   new XElement("server_uri", "https://127.0.0.1:8089"),
+                   new XElement("checkpoint_dir", "/somewhere"),
+                   new XElement("session_key", "abcd"),
+                   new XElement("item",
+                       new XAttribute("name", "aaa"),
+                       new XElement("param", new XAttribute("name", "min"), "boris"),
+                       new XElement("param", new XAttribute("name", "max"), 12))));
+            using (StringReader stdin = new StringReader(doc.ToString()))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { "--validate-arguments" };
+                TestInput testInput = new TestInput();
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                Assert.NotEqual(0, exitCode);
+                Assert.Equal(
+                    "<error><message>Min must be a floating point number</message></error>",
                     stdout.ToString().Trim()
                 );
                 Assert.Equal("", stderr.ToString());

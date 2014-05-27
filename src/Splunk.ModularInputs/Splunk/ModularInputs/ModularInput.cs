@@ -150,21 +150,26 @@ namespace Splunk.ModularInputs
                     {
                         string errorMessage = null;
 
-                        try
+                        Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
+                            Deserialize(stdin);
+
+                        bool validationSuccessful = true;
+                        Scheme scheme = this.Scheme;
+                        foreach (Argument arg in scheme.Arguments)
                         {
-                            Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
-                                Deserialize(stdin);
-                            if (this.Validate(validation, out errorMessage))
+                            if (arg.ValidationDelegate != null)
                             {
-                                return 0; // Validation succeeded
+                                if (!arg.ValidationDelegate(validation.Parameters[arg.Name], out errorMessage))
+                                {
+                                    validationSuccessful = false;
+                                    break;
+                                }
                             }
                         }
-                        catch (Exception e)
+
+                        if (validationSuccessful && this.Validate(validation, out errorMessage))
                         {
-                            if (errorMessage == null)
-                            {
-                                ;
-                            }
+                            return 0; // Validation succeeded
                         }
 
                         using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings

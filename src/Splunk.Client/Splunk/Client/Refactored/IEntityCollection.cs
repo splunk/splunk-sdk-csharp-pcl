@@ -21,7 +21,10 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
+    using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -42,7 +45,9 @@ namespace Splunk.Client.Refactored
     /// </description></item>
     /// </list>
     /// </remarks>
-    public interface IEntityCollection<TEntity> : IReadOnlyList<TEntity> where TEntity : ResourceEndpoint, new()
+    [ContractClass(typeof(IEntityCollectionContract<>))]
+    public interface IEntityCollection<TEntity> : IReadOnlyList<TEntity> 
+        where TEntity : ResourceEndpoint, new()
     {
         /// <summary>
         /// Asynchronously retrieves a <see cref="TEntity"/> in the current
@@ -103,5 +108,58 @@ namespace Splunk.Client.Refactored
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
         Task ReloadAsync();
+    }
+
+    [ContractClassFor(typeof(IEntityCollection<>))]
+    abstract class IEntityCollectionContract<TEntity> : IEntityCollection<TEntity>
+        where TEntity : ResourceEndpoint, new()
+    {
+        public Task<TEntity> GetAsync(string name)
+        {
+            Contract.Requires<ArgumentNullException>(name != null);
+            return default(Task<TEntity>);
+        }
+
+        public Task GetAllAsync()
+        {
+            return default(Task);
+        }
+
+        public Task GetSliceAsync(params Argument[] arguments)
+        {
+            Contract.Requires<ArgumentNullException>(arguments != null);
+            return default(Task);
+        }
+
+        public Task GetSliceAsync(IEnumerable<Argument> arguments)
+        {
+            Contract.Requires<ArgumentNullException>(arguments != null);
+            return default(Task);
+        }
+
+        public Task ReloadAsync()
+        {
+            return default(Task);
+        }
+
+        public TEntity this[int index]
+        {
+            get { return default(TEntity); }
+        }
+
+        public int Count
+        {
+            get { return default(int); }
+        }
+
+        public IEnumerator<TEntity> GetEnumerator()
+        {
+            return default(IEnumerator<TEntity>);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return default(IEnumerator);
+        }
     }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+  <messages>
+    <msg type="ERROR">
+ In handler 'server-settings': Could not find object id=info</msg>
+  </messages>
+</response>

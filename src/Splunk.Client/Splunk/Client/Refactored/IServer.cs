@@ -2,16 +2,19 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
 
+    [ContractClass(typeof(IServerContract))]
     public interface IServer
     {
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the server messages collection associated with the current
+        /// <see cref="Server"/>.
         /// </summary>
         ServerMessageCollection Messages
         { get; }
@@ -21,8 +24,7 @@
         #region Methods
 
         /// <summary>
-        /// Asynchronously gets <see cref="ServerInfo"/> from the Splunk server
-        /// represented by the current instance.
+        /// Asynchronously retrieves information about the current <see cref="Server"/>.
         /// </summary>
         /// <returns>
         /// An object representing information about the Splunk server.
@@ -31,7 +33,7 @@
 
         /// <summary>
         /// Asynchronously retrieves <see cref="ServerSettings"/> from the 
-        /// Splunk server represented by the current instance.
+        /// current <see cref="Server"/> endpoint.
         /// </summary>
         /// <returns>
         /// An object representing the server settings from the Splunk server
@@ -40,9 +42,9 @@
         Task<ServerSettings> GetSettingsAsync();
 
         /// <summary>
-        /// Restarts the Splunk server represented by the current instance 
-        /// and then optionally checks for a specified period of time for 
-        /// server availability.
+        /// Asynchronously restarts the current <see cref="Server"/> and then
+        /// optionally checks for a specified period of time for server
+        /// availability.
         /// </summary>
         /// <param name="millisecondsDelay">
         /// The time to wait before canceling the check for server availability.
@@ -70,21 +72,50 @@
         /// <exception cref="UnauthorizedAccessException">
         /// Insufficient privileges to restart the current <see cref="Server"/>.
         /// </exception>
-        Task RestartAsync(int millisecondsDelay, int retryInterval);
+        Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250);
 
         /// <summary>
-        /// Asynchronously updates <see cref="ServerSettings"/> on the Splunk 
-        /// server represented by the current instance.
+        /// Asynchronously updates setting values on the current <see cref="Server"/>.
         /// </summary>
         /// <param name="values">
-        /// An object representing the updated server setting values.
+        /// An object representing the setting values to be changed.
         /// </param>
         /// <returns>
-        /// An object representing the updated server settings on the Splunk 
-        /// server represented by the current instance.
+        /// An object representing the updated server settings.
         /// </returns>
         Task<ServerSettings> UpdateSettingsAsync(ServerSettingValues values);
 
         #endregion
+    }
+
+    [ContractClassFor(typeof(IServer))]
+    abstract class IServerContract : IServer
+    {
+        public ServerMessageCollection Messages
+        {
+            get { return null; }
+        }
+
+        public Task<ServerInfo> GetInfoAsync()
+        {
+            return null;
+        }
+
+        public Task<ServerSettings> GetSettingsAsync()
+        {
+            return null;
+        }
+
+        public Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
+        {
+            Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
+            return null;
+        }
+
+        public Task<ServerSettings> UpdateSettingsAsync(ServerSettingValues values)
+        {
+            Contract.Requires(values != null);
+            return null;
+        }
     }
 }

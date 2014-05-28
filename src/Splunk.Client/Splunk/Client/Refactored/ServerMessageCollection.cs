@@ -29,20 +29,7 @@ namespace Splunk.Client.Refactored
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
-    /// <summary>
-    /// Provides a class for accessing Splunk system messages.
-    /// </summary>
-    /// <remarks>
-    /// Most messages are created by splunkd to inform the user of system 
-    /// problems. Splunk Web typically displays these as bulletin board 
-    /// messages.
-    /// <para><b>References:</b></para>
-    /// <list type="number">
-    /// <item><description>
-    ///   <a href="http://goo.gl/w3Rmjp">REST API: messages</a>.
-    /// </description></item>
-    /// </list>
-    /// </remarks>
+    /// <inheritdoc/>
     public class ServerMessageCollection : EntityCollection<ServerMessage>, IServerMessageCollection<ServerMessage>
     {
         #region Constructors
@@ -123,13 +110,13 @@ namespace Splunk.Client.Refactored
         #region Properties
 
         /// <inheritdoc/>
-        public IReadOnlyList<Message> Messages
+        public virtual IReadOnlyList<Message> Messages
         {
             get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
         }
 
         /// <inheritdoc/>
-        public Pagination Pagination
+        public virtual Pagination Pagination
         {
             get { return this.Snapshot.GetValue("Pagination") ?? Pagination.None; }
         }
@@ -151,11 +138,17 @@ namespace Splunk.Client.Refactored
             return await this.CreateAsync(args.AsEnumerable());
         }
 
+        /// <inheritdoc/>
+        public virtual async Task GetSliceAsync(SelectionCriteria criteria)
+        {
+            await this.GetSliceAsync(criteria.AsEnumerable());
+        }
+
         #endregion
 
         #region Privates/internals
 
-        internal static readonly ResourceName ClassResourceName = new ResourceName("messages");
+        protected internal static readonly ResourceName ClassResourceName = new ResourceName("messages");
 
         #endregion
 
@@ -210,7 +203,7 @@ namespace Splunk.Client.Refactored
         public sealed class SelectionCriteria : Args<SelectionCriteria>
         {
             /// <summary>
-            /// The maximum number of <see cref="Index"/> entries to return.
+            /// The maximum number of <see cref="ServerMessage"/> entries to return.
             /// </summary>
             /// <remarks>
             /// If the value of <c>Count</c> is set to zero, then all available
@@ -243,7 +236,8 @@ namespace Splunk.Client.Refactored
             /// </summary>
             /// <remarks>
             /// Use this expression to filter the entries returned based on 
-            /// search <see cref="Index"/> properties. The default is <c>null</c>.
+            /// search <see cref="ServerMessage"/> properties. The default
+            /// is <c>null</c>.
             /// </remarks>
             [DataMember(Name = "search", EmitDefaultValue = false)]
             [DefaultValue(null)]
@@ -251,8 +245,9 @@ namespace Splunk.Client.Refactored
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value indicating whether to sort returned <see cref=
-            /// "Index"/> entries in ascending or descending order.
+            /// Gets or sets a value indicating whether to sort returned <see 
+            /// cref="ServerMessage"/> entries in ascending or descending 
+            /// order.
             /// </summary>
             /// <remarks>
             /// The default value is <see cref="SortDirection"/>.Ascending.
@@ -266,8 +261,8 @@ namespace Splunk.Client.Refactored
             /// <see cref="ServerMessage"/> property to use for sorting.
             /// </summary>
             /// <remarks>
-            /// The default <see cref="ServerMessage"/> property to use for sorting 
-            /// is <c>"name"</c>.
+            /// The default <see cref="ServerMessage"/> property to use for 
+            /// sorting is <c>"name"</c>.
             /// </remarks>
             [DataMember(Name = "sort_key", EmitDefaultValue = false)]
             [DefaultValue("name")]

@@ -32,59 +32,58 @@ namespace Splunk.Client.UnitTests
 
     using Xunit;
 
-    public class TestIndexCollection
+    public class TestServerMessageCollection
     {
-        [Trait("unit-test", "class Index")]
+        [Trait("unit-test", "class ServerMessage")]
         [Fact]
-        async Task CanConstructIndex()
+        async Task CanConstructServerMessage()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "Index.GetAsync.xml"));
+            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "ServerMessageCollection.CreateAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var index = new Refactored.Index(context, feed);
-                CheckCommonProperties("_audit", index);
+                var message = new Refactored.ServerMessage(context, feed);
+
+                CheckCommonProperties("some_message_name", message);
+                
+                Assert.Equal("some_message_text", message.Text);
+                Assert.Equal(ServerMessageSeverity.Information, message.Severity);
+                Assert.Equal("2014-05-27 15:28:02Z", message.TimeCreated.ToString("u"));
                 
                 Assert.DoesNotThrow(() =>
                 {
-                    bool canList = index.Eai.Acl.CanList;
-                    string app = index.Eai.Acl.App;
-                    dynamic eai = index.Eai;
+                    bool canList = message.Eai.Acl.CanList;
+                    string app = message.Eai.Acl.App;
+                    dynamic eai = message.Eai;
                     Assert.Equal(app, eai.Acl.App);
                     Assert.Equal(canList, eai.Acl.CanList);
                 });
             }
         }
 
-        [Trait("unit-test", "class IndexCollection")]
+        [Trait("unit-test", "class ServerMessageCollection")]
         [Fact]
-        async Task CanConstructIndexCollection()
+        async Task CanConstructServerMessageCollection()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "IndexCollection.GetAsync.xml"));
+            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "ServerMessageCollection.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
                 var expectedNames = new string[] 
                 { 
-                    "_audit",
-                    "_blocksignature",
-                    "_internal",
-                    "_thefishbucket",
-                    "history",
-                    "main",
-                    "splunklogger",
-                    "summary"
+                    "some_message_name",
+                    "some_other_message_name",
                 };
 
-                var indexes = new Refactored.ConfigurationCollection(context, feed);
+                var messages = new Refactored.ConfigurationCollection(context, feed);
 
-                Assert.Equal(expectedNames, from index in indexes select index.Title);
-                Assert.Equal(expectedNames.Length, indexes.Count);
-                CheckCommonProperties("indexes", indexes);
+                Assert.Equal(expectedNames, from message in messages select message.Title);
+                Assert.Equal(expectedNames.Length, messages.Count);
+                CheckCommonProperties("messages", messages);
 
-                for (int i = 0; i < indexes.Count; i++)
+                for (int i = 0; i < messages.Count; i++)
                 {
-                    CheckCommonProperties(expectedNames[i], indexes[i]);
+                    CheckCommonProperties(expectedNames[i], messages[i]);
                 }
             }
         }

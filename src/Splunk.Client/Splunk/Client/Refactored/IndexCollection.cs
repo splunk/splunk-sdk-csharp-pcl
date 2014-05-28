@@ -112,13 +112,13 @@ namespace Splunk.Client.Refactored
         #region Properties
 
         /// <inheritdoc/>
-        public IReadOnlyList<Message> Messages
+        public virtual IReadOnlyList<Message> Messages
         {
             get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
         }
 
         /// <inheritdoc/>
-        public Pagination Pagination
+        public virtual Pagination Pagination
         {
             get { return this.Snapshot.GetValue("Pagination") ?? Pagination.None; }
         }
@@ -128,7 +128,7 @@ namespace Splunk.Client.Refactored
         #region Methods
 
         /// <inheritdoc/>
-        public async Task<Index> CreateAsync(string name, IndexAttributes attributes = null, string coldPath = null, 
+        public virtual async Task<Index> CreateAsync(string name, IndexAttributes attributes = null, string coldPath = null, 
             string homePath = null, string thawedPath = null)
         {
             var resourceName = IndexCollection.ClassResourceName;

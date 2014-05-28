@@ -16,11 +16,11 @@
 
 namespace Splunk.Client.Examples.ReactiveUI
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System.Net;
     using System.Windows;
 
-    using Splunk.Client;
-    using SDKHelper;
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -48,6 +48,7 @@ namespace Splunk.Client.Examples.ReactiveUI
             {
                 return true;
             };
+
             this.Service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
         }
 

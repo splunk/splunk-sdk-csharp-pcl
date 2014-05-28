@@ -14,13 +14,9 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using System.Xml.Linq;
-    using SDKHelper;
+    using Splunk.Client.Helpers;
     using Xunit;
 
     public class TestContext

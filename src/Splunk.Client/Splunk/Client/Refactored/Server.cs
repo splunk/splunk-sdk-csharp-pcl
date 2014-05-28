@@ -21,8 +21,9 @@
 ////     a request to restart the server. It should then poll the server until
 ////     the restart_required message goes away.
 
-namespace Splunk.Client
+namespace Splunk.Client.Refactored
 {
+    using Splunk.Client;
     using System;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
@@ -35,9 +36,24 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk server.
     /// </summary>
-    public class Server : Entity<Server>
+    public class Server : Endpoint
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Receiver"/> class
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// <param name="name">
+        /// An object identifying a Splunk resource within <paramref name=
+        /// "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        protected internal Server(Service service)
+            : base(service, ClassResourceName)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Server"/> class.
@@ -56,18 +72,6 @@ namespace Splunk.Client
         /// </exception>
         internal Server(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
-        { }
-
-        /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Server"/> class.
-        /// </summary>
-        /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use the <see cref=
-        /// "Service.Server"/> property to access a <see cref="Server"/>.
-        /// </remarks>
-        public Server()
         { }
 
         #endregion

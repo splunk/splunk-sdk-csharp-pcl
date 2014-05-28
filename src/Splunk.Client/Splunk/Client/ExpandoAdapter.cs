@@ -14,8 +14,9 @@
  * under the License.
  */
 
-// TODO:
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -30,7 +31,7 @@ namespace Splunk.Client
     /// Provides a base class for implementing strong types backed by <see 
     /// cref="System.Dynamic.ExpandoObject"/> instances.
     /// </summary>
-    public class ExpandoAdapter
+    public class ExpandoAdapter : DynamicObject
     {
         #region Constructors
 
@@ -75,6 +76,17 @@ namespace Splunk.Client
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Returns the enumeration of all dynamic member names.
+        /// </summary>
+        /// <returns>
+        /// The list of dynamic member names.
+        /// </returns>
+        public override IEnumerable<string> GetDynamicMemberNames()
+        {
+            return ((IDictionary<string, object>)(this.ExpandoObject)).Keys;
+        }
 
         /// <summary>
         /// Gets a named item from the <see cref="System.Dynamic.ExpandoObject"/>"/>
@@ -185,6 +197,37 @@ namespace Splunk.Client
             return (TValue)convertedValue;
         }
 
+        /// <summary>
+        /// Provides the implementation for operations that get dynamic member
+        /// values.
+        /// </summary>
+        /// <param name="binder">
+        /// Provides information about the object that called the dynamic 
+        /// operation. The <paramref name="binder"/>.Name property provides the
+        /// name of the member on which the dynamic operation is performed.
+        /// The <paramref name="binder"/>.IgnoreCase property specifies whether
+        /// the member name is case-sensitive.
+        /// </param>
+        /// <param name="result">
+        /// The result of the operation.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the operation is successful; otherwise, <c>false</c>.
+        /// If this method returns <c>false</c>, the run-time binder of the 
+        /// language determines the behavior. In most cases, a run-time 
+        /// exception is thrown.
+        /// </returns>
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            if (binder.IgnoreCase)
+            {
+                throw new NotSupportedException("Case insensitive language bindings are not supported");
+            }
+
+            result = this.GetValue(binder.Name);
+            return result != null;
+        }
+
         #endregion
 
         #region Privates
@@ -193,7 +236,7 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Type
+        #region Types
 
         class ConvertedValue
         {

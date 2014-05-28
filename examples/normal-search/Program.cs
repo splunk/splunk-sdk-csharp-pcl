@@ -16,6 +16,8 @@
 
 namespace Splunk.Client.Examples
 {
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Net;
     using System.Reactive.Concurrency;

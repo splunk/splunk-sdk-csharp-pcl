@@ -14,14 +14,16 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Splunk.Client;
-    using SDKHelper;
+    
     using Xunit;
     using System.Threading.Tasks;
 
@@ -151,9 +153,7 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task Settings()
         {
-
             Service service = await SDKHelper.CreateService();
-
 
             ServerSettings settings = service.Server.GetSettingsAsync().Result;
             string dummyString;
@@ -236,5 +236,24 @@ namespace Splunk.Client.UnitTesting
             Assert.Equal(originalTimeout, settings.SessionTimeout);
             Assert.Equal(originalStartWeb, settings.StartWebServer);
         }
+
+        ///// <summary>
+        ///// Returns a value dermining whether a string is in the
+        ///// non-ordered array of strings.
+        ///// </summary>
+        ///// <param name="array">The array to scan</param>
+        ///// <param name="value">The value to look for</param>
+        ///// <returns>True or false</returns>
+        //private bool Contains(string[] array, string value)
+        //{
+        //    for (int i = 0; i < array.Length; ++i)
+        //    {
+        //        if (array[i].Equals(value))
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
     }
 }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest">
+  <title>summary_index</title>
+  <id>https://localhost:8089/services/properties/alert_actions/summary_index</id>
+  <updated>2014-05-26T16:04:29-07:00</updated>
+  <generator build="207789" version="6.1.1"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <entry>
+    <title>_name</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index/_name</id>
+    <updated>2014-05-26T16:04:29-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index/_name" rel="alternate"/>
+    <content type="text">summary</content>
+  </entry>
+  <entry>
+    <title>command</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index/command</id>
+    <updated>2014-05-26T16:04:29-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index/command" rel="alternate"/>
+    <content type="text">summaryindex spool=t uselb=t addtime=t index="$action.summary_index._name{required=yes}$" file="$name_hash$_$#random$.stash_new" name="$name$" marker="$action.summary_index*{format=$KEY=\\\"$VAL\\\", key_regex="action.summary_index.(?!(?:command|inline|maxresults|maxtime|ttl|track_alert|(?:_.*))$)(.*)"}$"</content>
+  </entry>
+  <entry>
+    <title>hostname</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index/hostname</id>
+    <updated>2014-05-26T16:04:29-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index/hostname" rel="alternate"/>
+    <content type="text"></content>
+  </entry>
+  <entry>
+    <title>inline</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index/inline</id>
+    <updated>2014-05-26T16:04:29-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index/inline" rel="alternate"/>
+    <content type="text">1</content>
+  </entry>
+  <entry>
+    <title>maxresults</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index/maxresults</id>
+    <updated>2014-05-26T16:04:29-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index/maxresults" rel="alternate"/>
+    <content type="text">10000</content>
+  </entry>
+  <entry>
+    <title>maxtime</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index/maxtime</id>
+    <updated>2014-05-26T16:04:29-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index/maxtime" rel="alternate"/>
+    <content type="text">5m</content>
+  </entry>
+  <entry>
+    <title>track_alert</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index/track_alert</id>
+    <updated>2014-05-26T16:04:29-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index/track_alert" rel="alternate"/>
+    <content type="text">0</content>
+  </entry>
+  <entry>
+    <title>ttl</title>
+    <id>https://localhost:8089/services/properties/alert_actions/summary_index/ttl</id>
+    <updated>2014-05-26T16:04:29-07:00</updated>
+    <link href="/services/properties/alert_actions/summary_index/ttl" rel="alternate"/>
+    <content type="text">120</content>
+  </entry>
+</feed>

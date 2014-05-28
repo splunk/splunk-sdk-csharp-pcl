@@ -55,7 +55,7 @@ namespace Splunk.Client
         /// A readonly instance of the <see cref="Pagination"/> structure that
         /// is all zeros.
         /// </summary>
-        public static readonly Pagination Empty;
+        public static readonly Pagination None;
 
         #endregion
 

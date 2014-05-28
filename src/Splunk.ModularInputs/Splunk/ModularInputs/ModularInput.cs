@@ -153,24 +153,28 @@ namespace Splunk.ModularInputs
                         Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
                             Deserialize(stdin);
 
-                        bool validationSuccessful = true;
-                        Scheme scheme = this.Scheme;
-                        foreach (Argument arg in scheme.Arguments)
+                        try
                         {
-                            if (arg.ValidationDelegate != null)
+                            bool validationSuccessful = true;
+                            Scheme scheme = this.Scheme;
+                            foreach (Argument arg in scheme.Arguments)
                             {
-                                if (!arg.ValidationDelegate(validation.Parameters[arg.Name], out errorMessage))
+                                if (arg.ValidationDelegate != null)
                                 {
-                                    validationSuccessful = false;
-                                    break;
+                                    if (!arg.ValidationDelegate(validation.Parameters[arg.Name], out errorMessage))
+                                    {
+                                        validationSuccessful = false;
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        if (validationSuccessful && this.Validate(validation, out errorMessage))
-                        {
-                            return 0; // Validation succeeded
+                            if (validationSuccessful && this.Validate(validation, out errorMessage))
+                            {
+                                return 0; // Validation succeeded
+                            }
                         }
+                        catch (Exception e) { }
 
                         using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings
                         {

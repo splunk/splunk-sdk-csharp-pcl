@@ -198,14 +198,19 @@ namespace Splunk.ModularInputs.UnitTesting
                                 DataType = DataType.Number,
                                 RequiredOnCreate = true,
                                 ValidationDelegate = delegate (Parameter param, out string errorMessage) {
-                                    try { double x = (double)param; }
-                                    catch (InvalidCastException)
+                                    bool isDouble;
+                                    try { double _ = (double)param; isDouble = true; }
+                                    catch (Exception e) { isDouble = false; }
+                                    if (isDouble)
+                                    {
+                                        errorMessage = "";
+                                        return true;
+                                    }
+                                    else
                                     {
                                         errorMessage = "min should be a floating point number.";
                                         return false;
                                     }
-                                    errorMessage = null;
-                                    return true;
                                 }
                             },
                             new Argument
@@ -344,7 +349,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
                 Assert.NotEqual(0, exitCode);
                 Assert.Equal(
-                    "<error><message>Min must be a floating point number</message></error>",
+                    "<error><message>min should be a floating point number.</message></error>",
                     stdout.ToString().Trim()
                 );
                 Assert.Equal("", stderr.ToString());
@@ -364,8 +369,8 @@ namespace Splunk.ModularInputs.UnitTesting
                 int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
   
                 Assert.NotEqual(0, exitCode);
-                Assert.NotEqual("", stdout.ToString());
-                Assert.Equal("", stderr.ToString());
+                Assert.NotEqual("", stderr.ToString());
+                Assert.Equal("", stdout.ToString());
             }
         }
 

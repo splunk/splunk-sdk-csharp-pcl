@@ -36,7 +36,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides an object representation of a Splunk server.
     /// </summary>
-    public class Server : Endpoint
+    public class Server : Endpoint, IServer
     {
         #region Constructors
 
@@ -72,34 +72,25 @@ namespace Splunk.Client.Refactored
         /// </exception>
         internal Server(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
-        { }
+        {
+            this.messages = new ServerMessageCollection(context, ns);
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public ServerMessageCollection Messages
+        {
+            get { return this.messages; }
+        }
 
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Asynchronously creates a <see cref="ServerMessage"/> on the Splunk 
-        /// server represented by the current instance.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the message to create.
-        /// </param>
-        /// <param name="severity">
-        /// Message severity level.
-        /// </param>
-        /// <param name="text">
-        /// Text of the message.
-        /// </param>
-        /// <returns>
-        /// An object representing the message created.
-        /// </returns>
-        public async Task<ServerMessage> CreateMessageAsync(string name, ServerMessageSeverity severity, string text)
-        {
-            var resource = new ServerMessage(this.Context, this.Namespace, name);
-            await resource.CreateAsync(severity, text);
-            return resource;
-        }
 
         /// <summary>
         /// Asynchronously gets <see cref="ServerInfo"/> from the Splunk server
@@ -110,44 +101,16 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public async Task<ServerInfo> GetInfoAsync()
         {
-            var resource = new ServerInfo(this.Context, this.Namespace);
-            await resource.GetAsync();
-            return resource;
-        }
+            using (var response = await this.Context.GetAsync(this.Namespace, Info))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
-        /// <summary>
-        /// Asynchronously gets a <see cref="ServerMessage"/> from the Splunk 
-        /// server represented by the current instance.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the message to get.
-        /// </param>
-        /// <returns>
-        /// An object representing the server message identified by <paramref name=
-        /// "name"/>.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="name"/> is <c>null</c> or empty.
-        /// </exception>
-        public async Task<ServerMessage> GetMessageAsync(string name)
-        {
-            var resource = new ServerMessage(this.Context, this.Namespace, name);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves the <see cref="ServerMessageCollection"/> 
-        /// from the Splunk server represented by the current instance.
-        /// </summary>
-        /// <returns>
-        /// An object representing the collection of server messages.
-        /// </returns>
-        public async Task<ServerMessageCollection> GetMessagesAsync()
-        {
-            var resource = new ServerMessageCollection(this.Context, this.Namespace);
-            await resource.GetAsync();
-            return resource;
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+                var info = new ServerInfo(feed);
+                
+                return info;
+            }
         }
 
         /// <summary>
@@ -160,25 +123,16 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public async Task<ServerSettings> GetSettingsAsync()
         {
-            var resource = new ServerSettings(this.Context, this.Namespace);
-            await resource.GetAsync();
-            return resource;
-        }
+            using (var response = await this.Context.GetAsync(this.Namespace, Settings))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
-        /// <summary>
-        /// Removes a <see cref="ServerMessage"/> from the Splunk server 
-        /// represented by the current instance.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="ServerMessage"/> to remove.
-        /// </param>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="name"/> is <c>null</c> or empty.
-        /// </exception>
-        public async Task RemoveMessageAsync(string name)
-        {
-            var resource = new ServerMessage(this.Context, this.Namespace, name);
-            await resource.RemoveAsync();
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+                var settings = new ServerSettings(feed);
+
+                return settings;
+            }
         }
 
         /// <summary>
@@ -278,17 +232,28 @@ namespace Splunk.Client.Refactored
         /// </returns>
         public async Task<ServerSettings> UpdateSettingsAsync(ServerSettingValues values)
         {
-            var resource = new ServerSettings(this.Context, this.Namespace);
-            await resource.UpdateAsync(values);
-            return resource;
+            using (var response = await this.Context.PostAsync(this.Namespace, Settings, values))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+                var settings = new ServerSettings(feed);
+
+                return settings;
+            }
         }
 
         #endregion
 
         #region Privates/internals
 
-        internal static readonly ResourceName ClassResourceName = new ResourceName("server", "control");
-        internal static readonly ResourceName Restart = new ResourceName(ClassResourceName, "restart");
+        internal static readonly ResourceName ClassResourceName = new ResourceName("server");
+        internal static readonly ResourceName Info = new ResourceName(ClassResourceName, "info");
+        internal static readonly ResourceName Settings = new ResourceName(ClassResourceName, "settings");
+        internal static readonly ResourceName Restart = new ResourceName(ClassResourceName, "control", "restart");
+
+        ServerMessageCollection messages;
 
         #endregion
     }

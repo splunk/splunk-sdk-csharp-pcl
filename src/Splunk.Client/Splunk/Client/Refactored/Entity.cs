@@ -183,13 +183,13 @@ namespace Splunk.Client.Refactored
         }
 
         /// <inheritdoc/>
-        public async Task<bool> UpdateAsync(params Argument[] arguments)
+        public virtual async Task<bool> UpdateAsync(params Argument[] arguments)
         {
             return await this.UpdateAsync(arguments.AsEnumerable());
         }
 
         /// <inheritdoc/>
-        public async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
+        public virtual async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName))
             {

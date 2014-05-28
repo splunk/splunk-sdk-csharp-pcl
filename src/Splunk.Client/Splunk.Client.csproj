@@ -94,6 +94,8 @@
     <Compile Include="Splunk\Client\Refactored\Endpoint.cs" />
     <Compile Include="Splunk\Client\Refactored\Entity.cs" />
     <Compile Include="Splunk\Client\Refactored\EntityCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\IIndexCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\IIndex.cs" />
     <Compile Include="Splunk\Client\Refactored\IApplication.cs" />
     <Compile Include="Splunk\Client\Refactored\IApplicationCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\IConfigurationCollection.cs" />
@@ -102,9 +104,16 @@
     <Compile Include="Splunk\Client\Refactored\Index.cs" />
     <Compile Include="Splunk\Client\Refactored\IndexCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\IPaginated.cs" />
+    <Compile Include="Splunk\Client\Refactored\IServer.cs" />
     <Compile Include="Splunk\Client\Refactored\Resource.cs" />
     <Compile Include="Splunk\Client\Refactored\ResourceEndpoint.cs" />
     <Compile Include="Splunk\Client\Refactored\Server.cs" />
+    <Compile Include="Splunk\Client\Refactored\IServerMessageCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\IServerMessage.cs" />
+    <Compile Include="Splunk\Client\Refactored\ServerInfo.cs" />
+    <Compile Include="Splunk\Client\Refactored\ServerMessage.cs" />
+    <Compile Include="Splunk\Client\Refactored\ServerMessageCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\ServerSettings.cs" />
     <Compile Include="Splunk\Client\Refactored\Service.cs" />
     <Compile Include="Splunk\Client\Refactored\Transmitter.cs" />
     <None Include="packages.config" />

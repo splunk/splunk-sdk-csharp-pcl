@@ -38,7 +38,7 @@ namespace Splunk.Client.Refactored
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationCollection"/>
+        /// Initializes a new instance of the <see cref="ApplicationCollection"/>
         /// class.
         /// </summary>
         /// <param name="service">

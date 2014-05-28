@@ -15,6 +15,7 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client.Refactored
@@ -46,7 +47,7 @@ namespace Splunk.Client.Refactored
         /// properties</a> endpoint to create the configuration file represented
         /// by this instance.
         /// </remarks>
-        Task CreateAsync(string name);
+        Task CreateAsync(string stanzaName);
 
         #endregion
     }

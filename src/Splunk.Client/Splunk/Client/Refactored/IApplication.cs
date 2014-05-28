@@ -17,6 +17,8 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
+    using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -30,7 +32,7 @@ namespace Splunk.Client.Refactored
         /// Gets the username of the splunk.com account for publishing the
         /// current <see cref="Application"/> to Splunkbase.
         /// </summary>
-        string ApplicationAuthor
+        string Author
         { get; }
 
         /// <summary>
@@ -73,6 +75,12 @@ namespace Splunk.Client.Refactored
         /// in the Splunk GUI and Launcher.
         /// </summary>
         string Label
+        { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        IReadOnlyDictionary<string, Uri> Links
         { get; }
 
         /// <summary>

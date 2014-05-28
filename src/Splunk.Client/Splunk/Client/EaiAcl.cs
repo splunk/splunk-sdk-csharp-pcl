@@ -47,6 +47,14 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
+        public string App
+        {
+            get { return this.GetValue("App", StringConverter.Instance); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public bool CanList
         {
             get { return this.GetValue("CanList", BooleanConverter.Instance); }

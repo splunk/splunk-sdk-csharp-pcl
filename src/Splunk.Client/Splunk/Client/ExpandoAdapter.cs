@@ -50,7 +50,7 @@ namespace Splunk.Client
         /// <summary>
         /// Intializes a new instance of the <see cref="ExpandoAdapter"/> class.
         /// </summary>
-        internal ExpandoAdapter()
+        public ExpandoAdapter()
         { }
 
         #endregion
@@ -230,7 +230,7 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
         object gate = new object();
 
@@ -278,19 +278,19 @@ namespace Splunk.Client
     /// <typeparam name="TExpandoAdapter">
     /// The type inheriting from this class.
     /// </typeparam>
-    public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter<TExpandoAdapter>, new()
+    public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter, new()
     {
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the ExpandoAdapter class.
         /// </summary>
         public ExpandoAdapter()
         { }
 
         #endregion
 
-        #region Type
+        #region Types
 
         /// <summary>
         /// Provides a converter to create <see cref="ExpandoAdapter"/> 

@@ -22,22 +22,33 @@ namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
 
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
-    using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides an object representation of a collection of Splunk data indexes.
+    /// Provides a class for accessing Splunk system messages.
     /// </summary>
-    public class IndexCollection : EntityCollection<Index>, IIndexCollection<Index>
+    /// <remarks>
+    /// Most messages are created by splunkd to inform the user of system 
+    /// problems. Splunk Web typically displays these as bulletin board 
+    /// messages.
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///   <a href="http://goo.gl/w3Rmjp">REST API: messages</a>.
+    /// </description></item>
+    /// </list>
+    /// </remarks>
+    public class ServerMessageCollection : EntityCollection<ServerMessage>, IServerMessageCollection<ServerMessage>
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationCollection"/>
+        /// Initializes a new instance of the <see cref="ServerMessageCollection"/>
         /// class.
         /// </summary>
         /// <param name="service">
@@ -46,12 +57,12 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
-        protected internal IndexCollection(Service service)
+        protected internal ServerMessageCollection(Service service)
             : base(service, ClassResourceName)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IndexCollection"/> 
+        /// Initializes a new instance of the <see cref="ServerMessageCollection"/> 
         /// class.
         /// </summary>
         /// <param name="context">
@@ -66,13 +77,13 @@ namespace Splunk.Client.Refactored
         /// <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
-        protected internal IndexCollection(Context context, AtomFeed feed)
+        protected internal ServerMessageCollection(Context context, AtomFeed feed)
         {
             this.Initialize(context, feed);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IndexCollection"/> 
+        /// Intializes a new instance of the <see cref="ServerMessageCollection"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -90,21 +101,21 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        protected internal IndexCollection(Context context, Namespace ns)
+        protected internal ServerMessageCollection(Context context, Namespace ns)
             : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "IndexCollection"/> class.
+        /// "ServerMessageCollection"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
         /// intended to be used directly from your code. Use <see cref=
-        /// "Service.GetApplicationsAsync"/> to asynchronously retrieve a 
-        /// collection of installed Splunk applications.
+        /// "Server.GetMessagesAsync"/> to asynchronously retrieve the collection
+        /// of messages from a Splunk server.
         /// </remarks>
-        public IndexCollection()
+        public ServerMessageCollection()
         { }
 
         #endregion
@@ -128,107 +139,65 @@ namespace Splunk.Client.Refactored
         #region Methods
 
         /// <inheritdoc/>
-        public async Task<Index> CreateAsync(string name, IndexAttributes attributes = null, string coldPath = null, 
-            string homePath = null, string thawedPath = null)
+        public virtual async Task<ServerMessage> CreateAsync(string name, ServerMessageSeverity type, string text)
         {
-            var resourceName = IndexCollection.ClassResourceName;
-
-            var arguments = new CreationArgs()
+            var args = new CreationArgs
             {
                 Name = name,
-                ColdPath = coldPath,
-                HomePath = homePath,
-                ThawedPath = thawedPath
+                Type = type,
+                Text = text
             };
 
-            return await this.CreateAsync(arguments.Concat(attributes));
-        }
-
-        /// <inheritdoc/>
-        public virtual async Task GetSliceAsync(SelectionCriteria criteria)
-        {
-            await this.GetSliceAsync(criteria.AsEnumerable());
+            return await this.CreateAsync(args.AsEnumerable());
         }
 
         #endregion
 
         #region Privates/internals
 
-        internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");
+        internal static readonly ResourceName ClassResourceName = new ResourceName("messages");
 
         #endregion
 
         #region Types
 
+        /// <summary>
+        /// Provides arguments for creating a new <see cref="ServerMessage"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para><b>References:</b></para>
+        /// <list type="number">
+        /// <item><description>
+        ///   <a href="http://goo.gl/WlDoZx">REST API Reference: POST messages</a>.
+        /// </description></item>
+        /// </list>
+        /// </remarks>
         class CreationArgs : Args<CreationArgs>
         {
             /// <summary>
-            /// Gets or sets a name for an index.
+            /// Gets or sets the name of a <see cref="ServerMessage"/>.
             /// </summary>
-            /// <remarks>
-            /// This value is required.
-            /// </remarks>
             [DataMember(Name = "name", IsRequired = true)]
             public string Name
             { get; set; }
 
             /// <summary>
-            /// Gets or sets the absolute path for the cold databases of an 
-            /// index.
+            /// Gets or sets the type of a <see cref="ServerMessage"/>.
             /// </summary>
-            /// <remarks>
-            /// <para>
-            /// The path must be readable and writable. The path may be defined
-            /// in terms of a volume definition. The default value is <c>""</c>
-            /// indicating that the cold databases should be stored at the 
-            /// default location.</para>
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="ColdPath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "coldPath")]
-            [DefaultValue("")]
-            public string ColdPath
+            [DataMember(Name = "severity", IsRequired = true)]
+            public ServerMessageSeverity Type
             { get; set; }
 
             /// <summary>
-            /// Gets or sets an absolute path that contains the hot and warm 
-            /// buckets for an index.
+            /// Gets or sets the text of a <see cref="ServerMessage"/>.
             /// </summary>
-            /// <remarks>
-            /// The specified path must be readable and writable. The default 
-            /// value is <c>""</c> indicating that the hot and warm buckets
-            /// should be stored at the default location.
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="HomePath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "homePath")]
-            [DefaultValue("")]
-            public string HomePath
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets an absolute path that contains the thawed 
-            /// (resurrected) databases for an index.
-            /// </summary>
-            /// <remarks>
-            /// The path must be readable and writable. The path cannot be 
-            /// defined in terms of a volume definition. The default value is 
-            /// <c>""</c> indicating that resurrected databases should be 
-            /// stored at the default location.
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="ThawedPath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "thawedPath")]
-            [DefaultValue("")]
-            public string ThawedPath
+            [DataMember(Name = "value", IsRequired = true)]
+            public string Text
             { get; set; }
         }
 
         /// <summary>
-        /// Provides arguments for retrieving an <see cref="IndexCollection"/>.
+        /// Provides arguments for retrieving a <see cref="ServerMessageCollection"/>.
         /// </summary>
         /// <remarks>
         /// <para><b>References:</b></para>
@@ -270,7 +239,7 @@ namespace Splunk.Client.Refactored
             { get; set; }
 
             /// <summary>
-            /// Search expression to filter <see cref="Index"/> entries. 
+            /// Search expression to filter <see cref="ServerMessage"/> entries.
             /// </summary>
             /// <remarks>
             /// Use this expression to filter the entries returned based on 
@@ -294,11 +263,11 @@ namespace Splunk.Client.Refactored
             { get; set; }
 
             /// <summary>
-            /// <see cref="Index"/> property to use for sorting.
+            /// <see cref="ServerMessage"/> property to use for sorting.
             /// </summary>
             /// <remarks>
-            /// The default <see cref="Index"/> property to use for sorting is 
-            /// <c>"name"</c>.
+            /// The default <see cref="ServerMessage"/> property to use for sorting 
+            /// is <c>"name"</c>.
             /// </remarks>
             [DataMember(Name = "sort_key", EmitDefaultValue = false)]
             [DefaultValue("name")]
@@ -307,7 +276,7 @@ namespace Splunk.Client.Refactored
 
             /// <summary>
             /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-            /// cref="Index"/> entries.
+            /// cref="ServerMessage"/> entries.
             /// </summary>
             /// <remarks>
             /// The default value is <see cref="SortMode"/>.Automatic.
@@ -315,18 +284,6 @@ namespace Splunk.Client.Refactored
             [DataMember(Name = "sort_mode", EmitDefaultValue = false)]
             [DefaultValue(SortMode.Automatic)]
             public SortMode SortMode
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets a value indicating whether to leave out certain index 
-            /// details in order to provide a faster response.
-            /// </summary>
-            /// <remarks>
-            /// The default value is <c>false</c>.
-            /// </remarks>
-            [DataMember(Name = "summarize", EmitDefaultValue = false)]
-            [DefaultValue(false)]
-            public bool Summarize
             { get; set; }
         }
 

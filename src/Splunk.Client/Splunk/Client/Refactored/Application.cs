@@ -23,6 +23,7 @@ namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Net;
     using System.Runtime.Serialization;
@@ -60,6 +61,7 @@ namespace Splunk.Client.Refactored
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
         protected internal Application(Service service, string name)
             : this(service.Context, service.Namespace, name)
         { }
@@ -150,8 +152,16 @@ namespace Splunk.Client.Refactored
 
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
+        protected ExpandoAdapter Content
+        {
+            get { return this.GetValue("Content", ExpandoAdapter<ExpandoAdapter>.Converter.Instance) ?? ExpandoAdapter.Empty; }
+        }
+
         /// <inheritdoc/>
-        public string ApplicationAuthor
+        public string Author
         {
             get { return this.GetValue("Author", StringConverter.Instance); }
         }
@@ -159,61 +169,66 @@ namespace Splunk.Client.Refactored
         /// <inheritdoc/>
         public bool CheckForUpdates
         {
-            get { return this.GetValue("CheckForUpdates", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("CheckForUpdates", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public bool Configured
         {
-            get { return this.GetValue("Configured", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Configured", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public string Description
         {
-            get { return this.GetValue("Description", StringConverter.Instance); }
+            get { return this.Content.GetValue("Description", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public bool Disabled
         {
-            get { return this.GetValue("Disabled", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <inheritdoc/>
         public string Label
         {
-            get { return this.GetValue("Label", StringConverter.Instance); }
+            get { return this.Content.GetValue("Label", StringConverter.Instance); }
+        }
+
+        public IReadOnlyDictionary<string, Uri> Links
+        {
+            get { return this.Snapshot.GetValue("Links"); }
         }
 
         /// <inheritdoc/>
         public bool Refresh
         {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public bool StateChangeRequiresRestart
         {
-            get { return this.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public string Version
         {
-            get { return this.GetValue("Version", StringConverter.Instance); }
+            get { return this.Content.GetValue("Version", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public bool Visible
         {
-            get { return this.GetValue("Visible", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Visible", BooleanConverter.Instance); }
         }
         
         #endregion

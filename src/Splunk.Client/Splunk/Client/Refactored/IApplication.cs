@@ -19,11 +19,13 @@ namespace Splunk.Client.Refactored
     using Splunk.Client;
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Provides an operational interface to Splunk application entities.
     /// </summary>
+    [ContractClass(typeof(IApplicationContract))]
     public interface IApplication : IEntity
     {
         #region Properties
@@ -220,6 +222,129 @@ namespace Splunk.Client.Refactored
         /// updates on Splunkbase.
         /// </remarks>
         Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false);
+
+        #endregion
+    }
+
+    [ContractClassFor(typeof(IApplication))]
+    abstract class IApplicationContract : IApplication
+    {
+        #region Properties
+
+        public string Author
+        {
+            get { return default(string); }
+        }
+
+        public bool CheckForUpdates
+        {
+            get { return default(bool); }
+        }
+
+        public bool Configured
+        {
+            get { return default(bool); }
+        }
+
+        public string Description
+        {
+            get { return default(string); }
+        }
+
+        public bool Disabled
+        {
+            get { return default(bool); }
+        }
+
+        public Eai Eai
+        {
+            get { return default(Eai); }
+        }
+
+        public string Label
+        {
+            get { return default(string); }
+        }
+
+        public IReadOnlyDictionary<string, Uri> Links
+        {
+            get { return default(IReadOnlyDictionary<string, Uri>); }
+        }
+
+        public bool Refresh
+        {
+            get { return default(bool); }
+        }
+
+        public bool StateChangeRequiresRestart
+        {
+            get { return default(bool); }
+        }
+
+        public string Version
+        {
+            get { return default(string); }
+        }
+
+        public bool Visible
+        {
+            get { return default(bool); }
+        }
+
+        #endregion
+
+        #region Methods
+
+        public Task DisableAsync()
+        {
+            return default(Task);
+        }
+
+        public Task EnableAsync()
+        {
+            return default(Task);
+        }
+
+        public Task GetAsync()
+        {
+            return default(Task);
+        }
+
+        public Task<ApplicationSetupInfo> GetSetupInfoAsync()
+        {
+            return default(Task<ApplicationSetupInfo>);
+        }
+
+        public Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
+        {
+            return default(Task<ApplicationUpdateInfo>);
+        }
+
+        public Task<ApplicationArchiveInfo> PackageAsync()
+        {
+            return default(Task<ApplicationArchiveInfo>);
+        }
+
+        public Task RemoveAsync()
+        {
+            return default(Task);
+        }
+
+        public Task<bool> UpdateAsync(params Argument[] arguments)
+        {
+            return default(Task<bool>);
+        }
+
+        public Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
+        {
+            return default(Task<bool>);
+        }
+
+        public Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates)
+        {
+            Contract.Requires<ArgumentNullException>(attributes != null);
+            return default(Task);
+        }
 
         #endregion
     }

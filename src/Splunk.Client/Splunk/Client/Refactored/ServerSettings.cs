@@ -32,7 +32,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides an object representation of the settings of a Splunk server.
     /// </summary>
-    public class ServerSettings : Resource
+    public class ServerSettings : Resource, IServerSettings
     {
         #region Constructors
 
@@ -118,7 +118,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Gets the access control lists for the Splunk server instance.
         /// </summary>
-        public Eai Eai
+        public virtual Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
@@ -126,7 +126,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Gets the path to the default index for Splunk.
         /// </summary>
-        public string SplunkDB
+        public virtual string SplunkDB
         {
             get { return this.Content.GetValue("SPLUNKDB", StringConverter.Instance); }
         }
@@ -134,7 +134,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Gets the path to the local installation of Splunk. 
         /// </summary>
-        public string SplunkHome
+        public virtual string SplunkHome
         {
             get { return this.Content.GetValue("SPLUNKHOME", StringConverter.Instance); }
         }
@@ -148,7 +148,7 @@ namespace Splunk.Client.Refactored
         /// HTTPS and SSL. A value of <c>false</c> indicates that Splunk Web is
         /// enabled for HTTP and that SSL is disabled.
         /// </remarks>
-        public bool EnableSplunkWebSsl
+        public virtual bool EnableSplunkWebSsl
         {
             get { return this.Content.GetValue("EnableSplunkWebSSL", BooleanConverter.Instance); }
         }
@@ -157,7 +157,7 @@ namespace Splunk.Client.Refactored
         /// Gets the default hostname to use for data inputs that do not 
         /// override this setting.
         /// </summary>
-        public string Host
+        public virtual string Host
         {
             get { return this.Content.GetValue("Host", StringConverter.Instance); }
         }
@@ -165,7 +165,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Gets the port on which Splunk Web is listening.
         /// </summary>
-        public int HttpPort
+        public virtual int HttpPort
         {
             get { return this.Content.GetValue("Httpport", Int32Converter.Instance); }
         }
@@ -174,7 +174,7 @@ namespace Splunk.Client.Refactored
         /// Gets or sets the port on which splunkd is listening for management 
         /// operations.
         /// </summary>
-        public int ManagementHostPort
+        public virtual int ManagementHostPort
         {
             get { return this.Content.GetValue("MgmtHostPort", Int32Converter.Instance); }
         }
@@ -194,7 +194,7 @@ namespace Splunk.Client.Refactored
         /// When you need to clear more disk space indexing is paused and 
         /// Splunk posts a UI banner and warning.
         /// </remarks>
-        public int MinFreeSpace
+        public virtual int MinFreeSpace
         {
             get { return this.Content.GetValue("MinFreeSpace", Int32Converter.Instance); }
         }
@@ -204,7 +204,7 @@ namespace Splunk.Client.Refactored
         /// symmetric key, generating the final key to sign all traffic between
         /// master/slave licensers.
         /// </summary>
-        public string Pass4SymmetricKey
+        public virtual string Pass4SymmetricKey
         {
             get { return this.Content.GetValue("Pass4SymmKey", StringConverter.Instance); }
         }
@@ -216,7 +216,7 @@ namespace Splunk.Client.Refactored
         /// <remarks>
         /// The default value is <![CDATA[<hostname>-<user-running-splunk>]]>.
         /// </remarks>
-        public string ServerName
+        public virtual string ServerName
         {
             get { return this.Content.GetValue("ServerName", StringConverter.Instance); }
         }
@@ -233,7 +233,7 @@ namespace Splunk.Client.Refactored
         /// args.SessionTimeout = 7200s; // 7,200 seconds or two hours
         /// </code>
         /// </remarks>
-        public string SessionTimeout
+        public virtual string SessionTimeout
         {
             get { return this.Content.GetValue("SessionTimeout", StringConverter.Instance); }
         }
@@ -244,7 +244,7 @@ namespace Splunk.Client.Refactored
         /// <remarks>
         /// A value of <c>true</c> indicates that Splunk Web is enabled.
         /// </remarks>
-        public bool StartWebServer
+        public virtual bool StartWebServer
         {
             get { return this.Content.GetValue("Startwebserver", BooleanConverter.Instance); }
         }
@@ -256,7 +256,7 @@ namespace Splunk.Client.Refactored
         /// If the authentication proxy is disabled, a value of <c>null</c> is
         /// returned.
         /// </remarks>
-        public string TrustedIP
+        public virtual string TrustedIP
         {
             get { return this.Content.GetValue("TrustedIP", StringConverter.Instance); }
         }

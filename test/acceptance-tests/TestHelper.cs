@@ -28,7 +28,7 @@ namespace Splunk.Client.UnitTesting
     using System.IO;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using SDKHelper;
+    using Splunk.Client.Helper;
 
     /// <summary>
     /// Test helper class

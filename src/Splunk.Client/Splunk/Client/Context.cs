@@ -32,7 +32,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
+    using System.Diagnostics.Contracts;    
     using System.Linq;
     using System.Net.Http;
     using System.Text;
@@ -228,7 +228,7 @@ namespace Splunk.Client
         /// <param name="argumentSets">
         /// </param>
         /// <returns></returns>
-        public async Task<Response> DeleteAsync(Namespace ns, ResourceName resource,
+        public virtual async Task<Response> DeleteAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
@@ -247,7 +247,7 @@ namespace Splunk.Client
         /// <param name="argumentSets">
         /// </param>
         /// <returns></returns>
-        public async Task<Response> GetAsync(Namespace ns, ResourceName resource,
+        public virtual async Task<Response> GetAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
@@ -273,7 +273,7 @@ namespace Splunk.Client
         /// <returns>
         /// 
         /// </returns>
-        public async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token, 
+        public virtual async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token,
             params IEnumerable<Argument>[] argumentSets)
         {
             var response = await this.SendAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets);
@@ -289,13 +289,11 @@ namespace Splunk.Client
         /// <param name="resource"></param>
         /// <param name="argumentSets"></param>
         /// <returns></returns>
-        public async Task<Response> PostAsync(Namespace ns, ResourceName resource,
+        public virtual async Task<Response> PostAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
             var content = this.CreateStringContent(argumentSets);
-            var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, null);
-            return response;
+            return await PostAsync(ns, resource, content, null);
         }
 
         /// <summary>
@@ -316,7 +314,7 @@ namespace Splunk.Client
         /// <returns>
         /// 
         /// </returns>
-        public async Task<Response> PostAsync(Namespace ns, ResourceName resource,
+        public virtual async Task<Response> PostAsync(Namespace ns, ResourceName resource,
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;

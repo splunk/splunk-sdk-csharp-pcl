@@ -1,4 +1,4 @@
-# Splunk SDK for C# 
+﻿# Splunk SDK for C# 
 ### Version 2.0 pre-release
 
 **Note: The Splunk SDK for C# is in development and is not currently supported.**
@@ -108,6 +108,11 @@ running Splunk Enterprise and system requirements, see the
 * The Splunk SDK for C# supports development in Microsoft Visual Studio 2012 and later.  Visual Studio downloads are available on the 
 [Visual Studio Downloads webpage](http://www.microsoft.com/visualstudio/downloads).
 * Support for Xamarin Studio and MonoDevelop is in progress.
+
+You will need to install [Code Contracts for .NET](http://visualstudiogallery.msdn.microsoft.com/1ec7db13-3363-46c9-851f-1ce455f66970)
+(be sure to close Visual Studio before you install it or the install will not work, despite appearing to) and a way of running
+the xUnit tests. If you use Resharper, install its [xUnit.net Test Support](https://resharper-plugins.jetbrains.com/packages/xunitcontrib/1.6.2),
+Otherwise, install the [xUnit.net runner for Visual Studio 2012 and 2013](http://visualstudiogallery.msdn.microsoft.com/463c5987-f82b-46c8-a97e-b1cde42b9099).
 
 #### Splunk SDK for C# 
 

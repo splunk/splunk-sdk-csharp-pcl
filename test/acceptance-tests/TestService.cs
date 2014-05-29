@@ -28,7 +28,7 @@ namespace Splunk.Client.UnitTesting
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Security;
-    using SDKHelper;
+    using Splunk.Client.Helper;
     using Xunit;
 
     public class TestService : IUseFixture<AcceptanceTestingSetup>
@@ -242,7 +242,7 @@ namespace Splunk.Client.UnitTesting
 
                     //// Create an app from one of the built-in templates
 
-                    var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                    var name = string.Format("delete-me-{0}", Guid.NewGuid());
 
                     var creationAttributes = new ApplicationAttributes()
                     {
@@ -322,7 +322,7 @@ namespace Splunk.Client.UnitTesting
         {
             using (var service = await SDKHelper.CreateService())
             {
-                var fileName = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var fileName = string.Format("delete-me-{0}", Guid.NewGuid());
 
                 //// Create
 
@@ -565,9 +565,9 @@ namespace Splunk.Client.UnitTesting
         {
             using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
-                var indexName = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var indexName = string.Format("delete-me-{0}", Guid.NewGuid());
                 Index index;
-
+                
                 //// Create
 
                 index = await service.CreateIndexAsync(indexName);
@@ -612,7 +612,7 @@ namespace Splunk.Client.UnitTesting
             {
                 //// Create
 
-                var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var name = string.Format("delete-me-{0}", Guid.NewGuid());
                 var search = "search index=_internal | head 1000";
 
                 var originalAttributes = new SavedSearchAttributes()
@@ -705,7 +705,7 @@ namespace Splunk.Client.UnitTesting
         {
             using (var service = await SDKHelper.CreateService())
             {
-                var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var name = string.Format("delete-me-{0}", Guid.NewGuid());
                 var search = "search index=_internal * earliest=-1m";
                 var savedSearch = await service.CreateSavedSearchAsync(name, search);
 
@@ -1067,7 +1067,7 @@ namespace Splunk.Client.UnitTesting
             {
                 //// Create
 
-                var name = string.Format("delete-me-{0:N}", Guid.NewGuid());
+                var name = string.Format("delete-me-{0}", Guid.NewGuid());
 
                 var messages = new ServerMessage[]
                 {
@@ -1315,7 +1315,9 @@ namespace Splunk.Client.UnitTesting
         #endregion
 
         public void SetFixture(AcceptanceTestingSetup data)
-        { }
+        { 
+            
+        }
 
         #region Privates/internals
 

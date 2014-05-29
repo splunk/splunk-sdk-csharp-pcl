@@ -33,12 +33,9 @@ namespace saved_searches
             SavedSearch savedSearch = await service.CreateSavedSearchAsync(savedSearchName, savedSearchQuery);
             Job savedSearchJob = await savedSearch.DispatchAsync();
 
-            using (var searchResults = await savedSearchJob.GetSearchResultsAsync())
+            using (SearchResultStream searchResults = await savedSearchJob.GetSearchResultsAsync())
             {
-                foreach (var result in searchResults)
-                {
-                    Console.WriteLine(result.ToString());
-                }
+       
 
             }
 

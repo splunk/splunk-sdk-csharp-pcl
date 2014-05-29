@@ -63,7 +63,7 @@ namespace Splunk.Client.Refactored
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="username">
+        /// <param name="name">
         /// Username associated with the <see cref="StoragePassword"/>.
         /// </param>
         /// <param name="realm">
@@ -71,7 +71,7 @@ namespace Splunk.Client.Refactored
         /// null</c>. The default value is <c>null</c>.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <paramref name="username"/> is <c>null</c> or empty.
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
@@ -79,11 +79,63 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        internal StoragePassword(Context context, Namespace ns, string username, string realm = "")
-            : base(context, ns, StoragePasswordCollection.ClassResourceName, CreateNameFromRealmAndUsername(
-            realm ?? "", username))
+        protected internal StoragePassword(Service service, string name, string realm = null)
+            : this(service.Context, service.Namespace, name, realm)
         {
-            Contract.Requires<ArgumentNullException>(username != null);
+            Contract.Requires<ArgumentNullException>(service != null);
+            Contract.Requires<ArgumentNullException>(name != null);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StoragePassword"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="name">
+        /// Username associated with the <see cref="StoragePassword"/>.
+        /// </param>
+        /// <param name="realm">
+        /// Realm associated with the <see cref="StoragePassword"/> or <c>
+        /// null</c>. The default value is <c>null</c>.
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
+        /// </exception>
+        internal StoragePassword(Context context, Namespace ns, string name, string realm = null)
+            : base(context, ns, CreateResourceNameFromRealmAndUsername(realm ?? "", name))
+        {
+            Contract.Requires<ArgumentNullException>(name != null);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StoragePassword"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal StoragePassword(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
         }
 
         /// <summary>
@@ -126,57 +178,37 @@ namespace Splunk.Client.Refactored
 
         #region Properties
 
-        /// <summary>
-        /// Gets the plain text version of the current <see cref=
-        /// "StoragePassword"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string ClearPassword
         {
             get { return this.GetValue("ClearPassword", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets the access control lists for the current <see cref=
-        /// "StoragePassword"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Eai Eai
         {
             get { return this.GetValue("Eai", Eai.Converter.Instance); }
         }
 
-        /// <summary>
-        /// Gets an encrypted version of the current <see cref=
-        /// "StoragePassword"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string EncryptedPassword
         {
             get { return this.GetValue("EncrPassword", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets the masked version of the current <see cref="StoragePassword"/>.
-        /// </summary>
-        /// <remarks>
-        ///  This is always stored as <c>"********"</c>.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual string Password
         {
             get { return this.GetValue("Password", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets the realm in which the current <see cref="StoragePassword"/> 
-        /// is valid.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string Realm
         {
             get { return this.GetValue("Realm", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets the Splunk username associated with the current <see cref=
-        /// "StoragePassword"/>. 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string Username
         {
             get { return this.GetValue("Username", StringConverter.Instance); }
@@ -186,37 +218,15 @@ namespace Splunk.Client.Refactored
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously updates the storage password represented by the
-        /// current instance.
-        /// </summary>
-        /// <param name="password">
-        /// New storage password.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="password"/> is <c>null</c>.
-        /// </exception>
-        /// <exception cref="RequestException">
-        /// </exception>
-        /// <exception cref="ResourceNotFoundException">
-        /// </exception>
-        /// <exception cref="UnauthorizedAccessException">
-        /// </exception>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/s0Bw7H">POST 
-        /// storage/passwords/{name}</a> endpoint to update the storage 
-        /// password represented by the current instance.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task UpdateAsync(string password)
         {
-            Contract.Requires<ArgumentException>(password != null);
-
             var attributes = new Argument[] { new Argument("password", password) };
 
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateSnapshotAsync(response);
+                await this.ReconstructSnapshotAsync(response);
             }
         }
 
@@ -224,7 +234,7 @@ namespace Splunk.Client.Refactored
 
         #region Privates/internals
 
-        static string CreateNameFromRealmAndUsername(string realm, string username)
+        static ResourceName CreateResourceNameFromRealmAndUsername(string realm, string username)
         {
             var parts = new string[] { realm, username };
             var builder = new StringBuilder();
@@ -244,7 +254,7 @@ namespace Splunk.Client.Refactored
                 builder.Append(':');
             }
 
-            return builder.ToString();
+            return new ResourceName(StoragePasswordCollection.ClassResourceName, builder.ToString());
         }
 
         static void ParseRealmAndUsernameFromName(string name, out string realm, out string username)

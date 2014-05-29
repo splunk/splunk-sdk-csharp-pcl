@@ -82,6 +82,17 @@ namespace Splunk.Client.Refactored
     abstract class IServerMessageCollectionContract<TServerMessage> : IServerMessageCollection<TServerMessage> 
         where TServerMessage : ResourceEndpoint, IServerMessage, new()
     {
+        #region Properties
+
+        public abstract TServerMessage this[int index] { get; }
+        public abstract int Count { get; }
+        public abstract IReadOnlyList<Message> Messages { get; }
+        public abstract Pagination Pagination { get; }
+
+        #endregion
+
+        #region Methods
+
         public Task<TServerMessage> CreateAsync(string name, ServerMessageSeverity type, string text)
         {
             Contract.Requires<ArgumentNullException>(name != null);
@@ -89,59 +100,32 @@ namespace Splunk.Client.Refactored
             return default(Task<TServerMessage>);
         }
 
-        public Task GetSliceAsync(ServerMessageCollection.SelectionCriteria selectionCriteria)
+        public abstract Task GetAllAsync();
+
+        public abstract Task<TServerMessage> GetAsync(string name);
+
+        public abstract IEnumerator<TServerMessage> GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return default(IEnumerator<TServerMessage>);
         }
 
-        public Pagination Pagination
-        {
-            get { return default(Pagination); }
-        }
-
-        public Task<TServerMessage> GetAsync(string name)
-        {
-            return default(Task<TServerMessage>);
-        }
-
-        public Task GetAllAsync()
-        {
-            return default(Task);
-        }
-
-        public Task GetSliceAsync(params Argument[] arguments)
-        {
-            return default(Task);
-        }
+        public abstract Task GetSliceAsync(params Argument[] arguments);
 
         public Task GetSliceAsync(IEnumerable<Argument> arguments)
         {
             return default(Task);
         }
 
-        public Task ReloadAsync()
+        public Task GetSliceAsync(ServerMessageCollection.SelectionCriteria criteria)
         {
+            Contract.Requires<ArgumentNullException>(criteria != null);
             return default(Task);
         }
 
-        public TServerMessage this[int index]
-        {
-            get { return default(TServerMessage); }
-        }
+        public abstract Task ReloadAsync();
 
-        public int Count
-        {
-            get { return default(int); }
-        }
-
-        public IEnumerator<TServerMessage> GetEnumerator()
-        {
-            return default(IEnumerator<TServerMessage>);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return default(IEnumerator<TServerMessage>);
-        }
+        #endregion
     }
 }

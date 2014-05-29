@@ -108,6 +108,7 @@
     <Compile Include="Splunk\Client\Refactored\IServer.cs" />
     <Compile Include="Splunk\Client\Refactored\IServerSettings.cs" />
     <Compile Include="Splunk\Client\Refactored\IStoragePassword.cs" />
+    <Compile Include="Splunk\Client\Refactored\IStoragePasswordCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\Resource.cs" />
     <Compile Include="Splunk\Client\Refactored\ResourceEndpoint.cs" />
     <Compile Include="Splunk\Client\Refactored\Server.cs" />
@@ -118,10 +119,8 @@
     <Compile Include="Splunk\Client\Refactored\ServerMessageCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\ServerSettings.cs" />
     <Compile Include="Splunk\Client\Refactored\Service.cs" />
-    <None Include="Splunk\Client\Refactored\StoragePassword.cs" />
-    <None Include="Splunk\Client\Refactored\StoragePasswordAttributes.cs" />
-    <None Include="Splunk\Client\Refactored\StoragePasswordCollection.cs" />
-    <None Include="Splunk\Client\Refactored\StoragePasswordCollectionArgs.cs" />
+    <Compile Include="Splunk\Client\Refactored\StoragePassword.cs" />
+    <Compile Include="Splunk\Client\Refactored\StoragePasswordCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\Transmitter.cs" />
     <None Include="packages.config" />
   </ItemGroup>

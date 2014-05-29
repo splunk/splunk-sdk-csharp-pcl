@@ -21,12 +21,19 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Provides an operational interface to the Splunk application collection.
     /// </summary>
     public interface IPaginated
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        IReadOnlyList<Message> Messages
+        { get; }
+
         /// <summary>
         /// Gets the pagination properties for the current Splunk entity collection.
         /// </summary>

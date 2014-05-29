@@ -60,6 +60,7 @@ namespace Splunk.Client.Refactored
             this.context = context;
             this.ns = ns ?? Namespace.Default;
 
+            this.storagePasswords = new StoragePasswordCollection(this);
             this.configurations = new ConfigurationCollection(this);
             this.applications = new ApplicationCollection(this);
             this.indexes = new IndexCollection(this);
@@ -155,6 +156,14 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// 
         /// </summary>
+        public StoragePasswordCollection StoragePasswords
+        {
+            get { return this.StoragePasswords; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public Transmitter Transmitter
         {
             get { return this.transmitter; }
@@ -165,33 +174,6 @@ namespace Splunk.Client.Refactored
         #region Methods
 
         #region Access control
-
-        /// <summary>
-        /// Asynchronously creates a new storage password.
-        /// </summary>
-        /// <param name="password">
-        /// Storage password.
-        /// </param>
-        /// <param name="name">
-        /// Storage password name.
-        /// </param>
-        /// <param name="realm">
-        /// Storage password realm.
-        /// </param>
-        /// <returns>
-        /// An object representing the storage password created.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/JgyIeN">POST 
-        /// storage/passwords</a> endpoint to construct the <see cref=
-        /// "StoragePassword"/> it returns.
-        /// </remarks>
-        public async Task<StoragePassword> CreateStoragePasswordAsync(string password, string name, string realm = null)
-        {
-            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
-            await resource.CreateAsync(password);
-            return resource;
-        }
 
         /// <summary>
         /// Asynchronously retrieves the list of all Splunk system capabilities.
@@ -223,48 +205,6 @@ namespace Splunk.Client.Refactored
 
                 return capabilities;
             }
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a storage password.
-        /// </summary>
-        /// <param name="name">
-        /// Storage password name.
-        /// </param>
-        /// <param name="realm">
-        /// Storage password realm.
-        /// </param>
-        /// <returns>
-        /// An object representing the storage password retrieved.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/HL3c0T">GET 
-        /// storage/passwords/{name}</a> endpoint to construct the <see cref=
-        /// "StoragePassword"/> it returns.
-        /// </remarks>
-        public async Task<StoragePassword> GetStoragePasswordAsync(string name, string realm = null)
-        {
-            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a collection of storage passwords.
-        /// </summary>
-        /// <returns>
-        /// An object representing the collection of storage passwords retrieved.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/XhebMI">GET 
-        /// storage/passwords</a> endpoint to construct the <see cref=
-        /// "StoragePasswordCollection"/> it returns.
-        /// </remarks>
-        public async Task<StoragePasswordCollection> GetStoragePasswordsAsync(StoragePasswordCollectionArgs args = null)
-        {
-            var resource = new StoragePasswordCollection(this.Context, this.Namespace, args);
-            await resource.GetAsync();
-            return resource;
         }
 
         /// <summary>
@@ -889,6 +829,7 @@ namespace Splunk.Client.Refactored
         readonly Context context;
         readonly Namespace ns;
 
+        readonly StoragePasswordCollection storagePasswords;
         readonly ConfigurationCollection configurations;
         readonly ApplicationCollection applications;
         readonly IndexCollection indexes;

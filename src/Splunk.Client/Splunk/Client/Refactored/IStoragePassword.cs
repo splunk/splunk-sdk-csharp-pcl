@@ -111,59 +111,24 @@ namespace Splunk.Client.Refactored
     {
         #region Properties
 
-        public string ClearPassword
-        {
-            get { return default(string); }
-        }
-
-        public Eai Eai
-        {
-            get { throw new System.NotImplementedException(); }
-        }
-
-        public string EncryptedPassword
-        {
-            get { return default(string); }
-        }
-
-        public string Password
-        {
-            get { return default(string); }
-        }
-
-        public string Realm
-        {
-            get { return default(string); }
-        }
-
-        public string Username
-        {
-            get { return default(string); }
-        }
+        public abstract string ClearPassword { get; }
+        public abstract Eai Eai { get; }
+        public abstract string EncryptedPassword { get; }
+        public abstract string Password { get; }
+        public abstract string Realm { get; }
+        public abstract string Username { get; }
 
         #endregion
 
         #region Methods
 
-        public Task GetAsync()
-        {
-            return default(Task);
-        }
+        public abstract Task GetAsync();
 
-        public Task RemoveAsync()
-        {
-            return default(Task);
-        }
+        public abstract Task RemoveAsync();
+        
+        public abstract Task<bool> UpdateAsync(params Argument[] arguments);
 
-        public Task<bool> UpdateAsync(params Argument[] arguments)
-        {
-            return default(Task<bool>);
-        }
-
-        public Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
-        {
-            return default(Task<bool>);
-        }
+        public abstract Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
 
         public Task UpdateAsync(string password)
         {

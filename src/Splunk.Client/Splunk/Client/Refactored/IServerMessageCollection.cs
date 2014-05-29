@@ -75,7 +75,7 @@ namespace Splunk.Client.Refactored
         /// current <see cref="ServerMessageCollection"/> will contain all 
         /// changes since the select entites were last retrieved.
         /// </remarks>
-        Task GetSliceAsync(ServerMessageCollection.SelectionCriteria selectionCriteria);
+        Task GetSliceAsync(ServerMessageCollection.Filter selectionCriteria);
     }
 
     [ContractClassFor(typeof(IServerMessageCollection<>))]
@@ -118,7 +118,7 @@ namespace Splunk.Client.Refactored
             return default(Task);
         }
 
-        public Task GetSliceAsync(ServerMessageCollection.SelectionCriteria criteria)
+        public Task GetSliceAsync(ServerMessageCollection.Filter criteria)
         {
             Contract.Requires<ArgumentNullException>(criteria != null);
             return default(Task);

@@ -71,6 +71,6 @@ namespace Splunk.Client.Refactored
         /// current <see cref="IndexCollection"/> will contain all changes 
         /// since the select entites were last retrieved.
         /// </remarks>
-        Task GetSliceAsync(IndexCollection.SelectionCriteria criteria);
+        Task GetSliceAsync(IndexCollection.Filter criteria);
     }
 }

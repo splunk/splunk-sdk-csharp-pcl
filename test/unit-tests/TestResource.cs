@@ -24,6 +24,7 @@ namespace Splunk.Client.UnitTests
     using System;
     using System.Collections.ObjectModel;
     using System.Dynamic;
+    using System.IO;
     using System.Threading.Tasks;
 
     using Xunit;
@@ -34,7 +35,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructResource()
         {
-            var feed = await TestAtomFeed.Read(TestAtomFeed.Path);
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "JobCollection.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
@@ -51,7 +52,7 @@ namespace Splunk.Client.UnitTests
                 Assert.DoesNotThrow(() => 
                 { 
                     Pagination p = collection.Pagination;
-                    Assert.Equal(1, p.TotalResults);
+                    Assert.Equal(14, p.TotalResults);
                     Assert.Equal(0, p.StartIndex);
                     Assert.Equal(0, p.ItemsPerPage);
                 });
@@ -59,7 +60,7 @@ namespace Splunk.Client.UnitTests
                 Assert.DoesNotThrow(() => 
                 { 
                     ReadOnlyCollection<Resource> p = collection.Resources;
-                    Assert.Equal(1, p.Count);
+                    Assert.Equal(14, p.Count);
                 });
 
                 dynamic resource = collection.Resources[0];
@@ -67,13 +68,13 @@ namespace Splunk.Client.UnitTests
                 CheckCommonStaticPropertiesOfResource(resource);
                 
                 Assert.IsType(typeof(Uri), resource.Id);
-                Assert.Equal("https://localhost:8089/services/search/jobs/1392687998.313", resource.Id.ToString());
+                Assert.Equal("https://localhost:8089/services/search/jobs/scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Id.ToString());
                 
                 Assert.IsType(typeof(string), resource.Content.Sid);
-                Assert.Equal("1392687998.313", resource.Content.Sid);
+                Assert.Equal("scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Content.Sid);
 
                 Assert.IsType(typeof(string), resource.Title);
-                Assert.Equal("search *", resource.Title);
+                Assert.Equal("search search index=_internal | head 1000", resource.Title);
 
                 Assert.NotNull(resource.Links);
                 Assert.IsType(typeof(ReadOnlyDictionary<string, Uri>), resource.Links);
@@ -81,7 +82,7 @@ namespace Splunk.Client.UnitTests
 
                 Assert.Throws<RuntimeBinderException>(() => resource.Resources);
                 
-                CheckExistenceOfDynamicPropertiesOfJobResource(resource);
+                CheckExistenceOfJobProperties(resource);
             }
         }
 
@@ -103,7 +104,18 @@ namespace Splunk.Client.UnitTests
 
         }
 
-        internal static void CheckExistenceOfDynamicPropertiesOfJobResource(dynamic job)
+        internal static void CheckExistenceOfApplicationProperties(dynamic entity)
+        {
+            Assert.DoesNotThrow(() => { var p = entity.Content.CheckForUpdates; });
+            Assert.DoesNotThrow(() => { var p = entity.Content.Configured; });
+            Assert.DoesNotThrow(() => { var p = entity.Content.Disabled; });
+            Assert.DoesNotThrow(() => { var p = entity.Content.Eai; });
+            Assert.DoesNotThrow(() => { var p = entity.Content.Label; });
+            Assert.DoesNotThrow(() => { var p = entity.Content.StateChangeRequiresRestart; });
+            Assert.DoesNotThrow(() => { var p = entity.Content.Visible; });
+        }
+
+        internal static void CheckExistenceOfJobProperties(dynamic job)
         {
             Assert.DoesNotThrow(() => { var p = job.Published; });
             Assert.DoesNotThrow(() => { var p = job.Content.CanSummarize; });
@@ -134,7 +146,6 @@ namespace Splunk.Client.UnitTests
 
             //// More...
         }
-
         #endregion
     }
 }

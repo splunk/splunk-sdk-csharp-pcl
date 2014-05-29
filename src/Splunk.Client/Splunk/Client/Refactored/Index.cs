@@ -138,14 +138,6 @@ namespace Splunk.Client.Refactored
 
         #region Properties
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected ExpandoAdapter Content
-        {
-            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
-        }
-
         /// <inheritdoc/>
         public bool AssureUTF8
         {

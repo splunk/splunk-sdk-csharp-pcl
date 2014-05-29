@@ -38,7 +38,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructIndex()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "Index.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "Index.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
@@ -60,7 +60,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructIndexCollection()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "IndexCollection.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "IndexCollection.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {

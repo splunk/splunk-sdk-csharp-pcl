@@ -54,7 +54,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructServerInfo()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "ServerInfo.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "ServerInfo.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
@@ -77,7 +77,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructServerSettings()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "ServerSettings.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "ServerSettings.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {

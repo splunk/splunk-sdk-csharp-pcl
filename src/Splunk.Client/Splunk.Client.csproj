@@ -109,6 +109,8 @@
     <Compile Include="Splunk\Client\Refactored\IServerSettings.cs" />
     <Compile Include="Splunk\Client\Refactored\IStoragePassword.cs" />
     <Compile Include="Splunk\Client\Refactored\IStoragePasswordCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\Job.cs" />
+    <None Include="Splunk\Client\Refactored\JobCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\Resource.cs" />
     <Compile Include="Splunk\Client\Refactored\ResourceEndpoint.cs" />
     <Compile Include="Splunk\Client\Refactored\Server.cs" />

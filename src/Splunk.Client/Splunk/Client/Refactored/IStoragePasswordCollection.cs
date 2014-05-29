@@ -32,7 +32,7 @@
         /// </remarks>
         Task<TStoragePassword> CreateAsync(string password, string name, string realm);
 
-        Task GetSliceAsync(StoragePasswordCollection.SelectionCriteria criteria);
+        Task GetSliceAsync(StoragePasswordCollection.Filter criteria);
     }
 
     [ContractClassFor(typeof(IStoragePasswordCollection<>))]
@@ -67,7 +67,7 @@
 
         public abstract Task GetSliceAsync(IEnumerable<Argument> arguments);
 
-        public Task GetSliceAsync(StoragePasswordCollection.SelectionCriteria criteria)
+        public Task GetSliceAsync(StoragePasswordCollection.Filter criteria)
         {
             Contract.Requires<ArgumentException>(criteria != null);
             return default(Task);

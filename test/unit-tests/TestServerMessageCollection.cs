@@ -38,7 +38,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructServerMessage()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "ServerMessageCollection.CreateAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "ServerMessageCollection.CreateAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
@@ -65,7 +65,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructServerMessageCollection()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "ServerMessageCollection.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "ServerMessageCollection.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {

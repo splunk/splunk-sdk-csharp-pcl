@@ -37,12 +37,12 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructEntity()
         {
-            var feed = await TestAtomFeed.Read(TestAtomFeed.Path);
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "Application.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
                 var entity = new Entity(context, feed);
-                CheckJob(entity);
+                CheckApplication(entity, feed.Entries[0], feed.GeneratorVersion);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructEntityCollectionOfEntity()
         {
-            var feed = await TestAtomFeed.Read(TestAtomFeed.Path);
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "ApplicationCollection.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
@@ -59,12 +59,17 @@ namespace Splunk.Client.UnitTests
                 var collection = new EntityCollection<Entity>(context, feed);
                 CheckCommonStaticPropertiesOfResourceEndpoint(collection);
 
-                Assert.Equal("https://localhost:8089/services/search/jobs", collection.Id.ToString());
-                Assert.Equal("6.0.1.187445", collection.GeneratorVersion.ToString());
-                Assert.Equal("jobs", collection.Name);
-                Assert.Equal(1, collection.Count);
+                Assert.Equal(feed.Id, collection.Id);
+                Assert.Equal(feed.GeneratorVersion, collection.GeneratorVersion);
+                Assert.Equal(feed.Title, collection.Title);
+                Assert.Equal(feed.Entries.Count, collection.Count);
 
-                CheckJob(collection[0]);
+                for (int i = 0; i < collection.Count; i++)
+                {
+                    var entry = feed.Entries[i];
+                    var entity = collection[i];
+                    CheckApplication(entity, entry, feed.GeneratorVersion);
+                }
             }
         }
 
@@ -72,7 +77,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructEntityCollectionOfEntityCollectionOfEntity()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "ConfigurationCollection.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "ConfigurationCollection.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
@@ -136,19 +141,26 @@ namespace Splunk.Client.UnitTests
             });
         }
 
-        static void CheckJob(Entity job)
+        static void CheckApplication(Entity application, AtomEntry entry, Version generatorVersion)
         {
-            CheckCommonStaticPropertiesOfResourceEndpoint(job);
+            CheckCommonStaticPropertiesOfResourceEndpoint(application);
 
-            Assert.Equal("6.0.1.187445", job.GeneratorVersion.ToString());
-            Assert.Equal("2014-02-17 17:46:39Z", job.Updated.ToString("u"));
-            Assert.Equal("1392687998.313", job.Name);
-            Assert.Equal("search *", job.Title);
-            Assert.Equal("admin", job.Resource.Author);
-            Assert.NotNull(job.Resource.Links);
-            Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, job.Resource.Links.Keys);
+            Assert.Equal(entry.Author, application.Resource.Author);
+            Assert.Equal(entry.Title, application.Name);
+            Assert.Equal(entry.Title, application.Title);
+            Assert.Equal(entry.Updated, application.Updated);
 
-            TestResource.CheckExistenceOfDynamicPropertiesOfJobResource(job.Resource);
+            Assert.NotNull(application.Resource.Links);
+            
+            Assert.DoesNotThrow(() => 
+            {
+                IReadOnlyDictionary<string, Uri> links = application.Resource.Links;
+                Assert.NotEqual(0, links.Count);
+            });
+
+            Assert.Equal(generatorVersion, application.GeneratorVersion);
+
+            TestResource.CheckExistenceOfApplicationProperties(application.Resource);
         }
 
         #endregion

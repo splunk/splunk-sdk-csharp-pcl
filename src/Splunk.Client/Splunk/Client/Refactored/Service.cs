@@ -367,7 +367,7 @@ namespace Splunk.Client.Refactored
         /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
         /// cref="SavedSearch"/> identified by <paramref name="name"/>.
         /// </remarks>
-        public async Task<Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null,
+        public async Task<Splunk.Client.Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null,
             SavedSearchTemplateArgs templateArgs = null)
         {
             var savedSearch = new SavedSearch(this.Context, this.Namespace, name);

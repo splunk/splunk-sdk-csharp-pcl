@@ -20,6 +20,7 @@ namespace Splunk.Client.UnitTests
 
     using Splunk.Client;
     using Splunk.Client.Refactored;
+    using StoragePassword = Splunk.Client.Refactored.StoragePassword;
 
     using System;
     using System.Collections.Generic;
@@ -38,21 +39,12 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructStoragePassword()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "StoragePassword.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "StoragePassword.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var storagePassword = new Refactored.Index(context, feed);
-                CheckCommonProperties("_audit", storagePassword);
-                
-                Assert.DoesNotThrow(() =>
-                {
-                    bool canList = storagePassword.Eai.Acl.CanList;
-                    string app = storagePassword.Eai.Acl.App;
-                    dynamic eai = storagePassword.Eai;
-                    Assert.Equal(app, eai.Acl.App);
-                    Assert.Equal(canList, eai.Acl.CanList);
-                });
+                var password = new StoragePassword(context, feed);
+                CheckStoragePassword(feed.Entries[0], password);
             }
         }
 
@@ -60,31 +52,28 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanConstructStoragePasswordCollection()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "StoragePasswordCollection.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "StoragePasswordCollection.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
                 var expectedNames = new string[] 
                 { 
-                    "_audit",
-                    "_blocksignature",
-                    "_internal",
-                    "_thefishbucket",
-                    "history",
-                    "main",
-                    "splunklogger",
-                    "summary"
+                    ":foobar:",
+                    "splunk.com:foobar:",
+                    "splunk\\:com:foobar:"
                 };
 
-                var storagePasswords = new Refactored.StoragePasswordCollection(context, feed);
+                var passwords = new Refactored.StoragePasswordCollection(context, feed);
 
-                Assert.Equal(expectedNames, from index in storagePasswords select index.Title);
-                Assert.Equal(expectedNames.Length, storagePasswords.Count);
-                CheckCommonProperties("indexes", storagePasswords);
+                Assert.Equal(expectedNames, from password in passwords select password.Title);
+                Assert.Equal(expectedNames.Length, passwords.Count);
+                CheckCommonProperties("passwords", passwords);
 
-                for (int i = 0; i < storagePasswords.Count; i++)
+                for (int i = 0; i < passwords.Count; i++)
                 {
-                    CheckCommonProperties(expectedNames[i], storagePasswords[i]);
+                    var entry = feed.Entries[i];
+                    var password = passwords[i];
+                    CheckStoragePassword(entry, password);
                 }
             }
         }
@@ -118,6 +107,34 @@ namespace Splunk.Client.UnitTests
                 DateTime value = resourceEndpoint.Updated;
                 Assert.NotEqual(DateTime.MinValue, value);
             });
+        }
+
+        void CheckEai(StoragePassword password)
+        {
+            Assert.DoesNotThrow(() =>
+            {
+                bool canList = password.Eai.Acl.CanList;
+                string app = password.Eai.Acl.App;
+                dynamic eai = password.Eai;
+                Assert.Equal(app, eai.Acl.App);
+                Assert.Equal(canList, eai.Acl.CanList);
+            });
+        }
+
+        void CheckStoragePassword(AtomEntry entry, StoragePassword password)
+        {
+            CheckCommonProperties(entry.Title, password);
+            CheckEai(password);
+
+            Assert.Equal(entry.Content.ClearPassword, password.ClearPassword);
+            Assert.Equal(entry.Content.EncrPassword, password.EncryptedPassword);
+            Assert.Equal(entry.Content.Password, password.Password);
+            Assert.Equal(entry.Content.Username, password.Username);
+
+            //// ExpandoObject hides null values so...
+
+            var dictionary = (IDictionary<string, object>)entry.Content;
+            Assert.Equal(dictionary["Realm"], password.Realm);
         }
     }
 }

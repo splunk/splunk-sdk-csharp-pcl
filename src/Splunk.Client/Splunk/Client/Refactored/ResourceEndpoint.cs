@@ -37,6 +37,7 @@ namespace Splunk.Client.Refactored
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.IO;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -204,7 +205,7 @@ namespace Splunk.Client.Refactored
         /// Asynchronously creates a <see cref="ResourceEndpoint"/> from a
         /// Splunk atom feed <see cref="Response"/>.
         /// </summary>
-        /// <typeparam name="TEntity">
+        /// <typeparam name="TResourceEndpoint">
         /// The type of <see cref="ResourceEndpoint"/> to be created.
         /// </typeparam>
         /// <param name="response">
@@ -213,14 +214,30 @@ namespace Splunk.Client.Refactored
         /// <returns>
         /// The <see cref="ResourceEndpoint"/> created.
         /// </returns>
-        internal static async Task<TEntity> CreateAsync<TEntity>(Context context, Response response) 
-            where TEntity : ResourceEndpoint, new()
+        internal static async Task<TResourceEndpoint> CreateAsync<TResourceEndpoint>(Context context, Response response) 
+            where TResourceEndpoint : ResourceEndpoint, new()
         {
-            var feed = new AtomFeed();
+            var reader = response.XmlReader;
+            TResourceEndpoint resourceEndpoint;
 
-            await feed.ReadXmlAsync(response.XmlReader);
-            var resourceEndpoint = new TEntity();
-            resourceEndpoint.Initialize(context, feed);
+            reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));
+
+            if (reader.Name == "entry")
+            {
+                var entry = new AtomEntry();
+
+                await entry.ReadXmlAsync(reader);
+                resourceEndpoint = new TResourceEndpoint();
+                resourceEndpoint.Initialize(context, entry, new Version(0, 0));
+            }
+            else
+            {
+                var feed = new AtomFeed();
+
+                await feed.ReadXmlAsync(reader);
+                resourceEndpoint = new TResourceEndpoint();
+                resourceEndpoint.Initialize(context, feed);
+            }
 
             return resourceEndpoint;
         }

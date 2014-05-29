@@ -66,7 +66,7 @@ namespace Splunk.Client.Refactored
         /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
         /// all changes since the select entites were last retrieved.
         /// </remarks>
-        Task GetSliceAsync(ApplicationCollection.SelectionCriteria criteria);
+        Task GetSliceAsync(ApplicationCollection.Filter criteria);
 
         /// <summary>
         /// Asynchronously installs an application from a Splunk application
@@ -132,7 +132,7 @@ namespace Splunk.Client.Refactored
             return default(Task);
         }
 
-        public Task GetSliceAsync(ApplicationCollection.SelectionCriteria criteria)
+        public Task GetSliceAsync(ApplicationCollection.Filter criteria)
         {
             Contract.Requires<ArgumentNullException>(criteria != null);
             return default(Task);

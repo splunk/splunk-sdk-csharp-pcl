@@ -135,12 +135,6 @@ namespace Splunk.Client.Refactored
         #region Properties
 
         /// <inheritdoc/>
-        protected ExpandoAdapter Content
-        {
-            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
-        }
-
-        /// <inheritdoc/>
         public Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }

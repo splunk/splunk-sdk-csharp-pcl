@@ -160,7 +160,7 @@ namespace Splunk.Client.Refactored
             return await this.CreateAsync(arguments.AsEnumerable());
         }
 
-        public virtual async Task GetSliceAsync(SelectionCriteria criteria)
+        public virtual async Task GetSliceAsync(Filter criteria)
         {
             await this.GetSliceAsync(criteria.AsEnumerable());
         }
@@ -223,7 +223,7 @@ namespace Splunk.Client.Refactored
         /// </description></item>
         /// </list>
         /// </remarks>
-        public sealed class SelectionCriteria : Args<SelectionCriteria>
+        public sealed class Filter : Args<Filter>
         {
             /// <summary>
             /// Gets or sets a value specifying the maximum number of <see cref=

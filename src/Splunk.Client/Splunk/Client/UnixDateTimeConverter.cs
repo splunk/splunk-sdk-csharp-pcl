@@ -58,9 +58,9 @@ namespace Splunk.Client
                 return x.Value;
             }
 
-            Int64 value;
+            Double value;
 
-            if (Int64.TryParse(input.ToString(), result: out value))
+            if (Double.TryParse(input.ToString(), result: out value))
             {
                 var dateTime = UnixEpoch.AddSeconds(value).ToLocalTime();
                 return dateTime;

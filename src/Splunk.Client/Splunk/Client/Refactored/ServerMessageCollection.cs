@@ -139,7 +139,7 @@ namespace Splunk.Client.Refactored
         }
 
         /// <inheritdoc/>
-        public virtual async Task GetSliceAsync(SelectionCriteria criteria)
+        public virtual async Task GetSliceAsync(Filter criteria)
         {
             await this.GetSliceAsync(criteria.AsEnumerable());
         }
@@ -200,7 +200,7 @@ namespace Splunk.Client.Refactored
         /// </description></item>
         /// </list>
         /// </remarks>
-        public sealed class SelectionCriteria : Args<SelectionCriteria>
+        public sealed class Filter : Args<Filter>
         {
             /// <summary>
             /// The maximum number of <see cref="ServerMessage"/> entries to return.

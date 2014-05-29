@@ -159,6 +159,18 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected ExpandoAdapter Content
+        {
+            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
+        }
+
+        #endregion
+
         #region Methods
 
         #region Operational interface

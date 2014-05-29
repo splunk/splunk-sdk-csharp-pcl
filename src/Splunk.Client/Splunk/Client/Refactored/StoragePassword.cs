@@ -63,7 +63,7 @@ namespace Splunk.Client.Refactored
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="name">
+        /// <param name="username">
         /// Username associated with the <see cref="StoragePassword"/>.
         /// </param>
         /// <param name="realm">
@@ -71,7 +71,7 @@ namespace Splunk.Client.Refactored
         /// null</c>. The default value is <c>null</c>.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <paramref name="name"/> is <c>null</c> or empty.
+        /// <paramref name="username"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
@@ -79,11 +79,11 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        protected internal StoragePassword(Service service, string name, string realm = null)
-            : this(service.Context, service.Namespace, name, realm)
+        protected internal StoragePassword(Service service, string username, string realm = null)
+            : this(service.Context, service.Namespace, username, realm)
         {
             Contract.Requires<ArgumentNullException>(service != null);
-            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires<ArgumentNullException>(username != null);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace Splunk.Client.Refactored
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="name">
+        /// <param name="username">
         /// Username associated with the <see cref="StoragePassword"/>.
         /// </param>
         /// <param name="realm">
@@ -103,7 +103,7 @@ namespace Splunk.Client.Refactored
         /// null</c>. The default value is <c>null</c>.
         /// </param>
         /// <exception cref="ArgumentException">
-        /// <paramref name="name"/> is <c>null</c> or empty.
+        /// <paramref name="username"/> is <c>null</c> or empty.
         /// </exception>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
@@ -111,10 +111,10 @@ namespace Splunk.Client.Refactored
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        internal StoragePassword(Context context, Namespace ns, string name, string realm = null)
-            : base(context, ns, CreateResourceNameFromRealmAndUsername(realm ?? "", name))
+        internal StoragePassword(Context context, Namespace ns, string username, string realm = null)
+            : base(context, ns, CreateResourceNameFromRealmAndUsername(realm ?? "", username))
         {
-            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires<ArgumentNullException>(username != null);
         }
 
         /// <summary>
@@ -181,37 +181,37 @@ namespace Splunk.Client.Refactored
         /// <inheritdoc/>
         public virtual string ClearPassword
         {
-            get { return this.GetValue("ClearPassword", StringConverter.Instance); }
+            get { return this.Content.GetValue("ClearPassword", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public virtual Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <inheritdoc/>
         public virtual string EncryptedPassword
         {
-            get { return this.GetValue("EncrPassword", StringConverter.Instance); }
+            get { return this.Content.GetValue("EncrPassword", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public virtual string Password
         {
-            get { return this.GetValue("Password", StringConverter.Instance); }
+            get { return this.Content.GetValue("Password", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public virtual string Realm
         {
-            get { return this.GetValue("Realm", StringConverter.Instance); }
+            get { return this.Content.GetValue("Realm", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
         public virtual string Username
         {
-            get { return this.GetValue("Username", StringConverter.Instance); }
+            get { return this.Content.GetValue("Username", StringConverter.Instance); }
         }
 
         #endregion
@@ -255,36 +255,6 @@ namespace Splunk.Client.Refactored
             }
 
             return new ResourceName(StoragePasswordCollection.ClassResourceName, builder.ToString());
-        }
-
-        static void ParseRealmAndUsernameFromName(string name, out string realm, out string username)
-        {
-            var builder = new StringBuilder();
-            var parts = new List<string>(3);
-            int last = name.Length - 1;
-
-            for (int i = 0; i < name.Length; i++)
-            {
-                if (name[i] == ':')
-                {
-                    parts.Add(builder.ToString());
-                    builder.Clear();
-                    continue;
-                }
-                
-                if (i < last && name[i] == '\\' && name[i + 1] == ':')
-                {
-                    builder.Append(':');
-                    i++;
-                    continue;
-                }
-
-                builder.Append(name[i]);
-            }
-
-            Debug.Assert(builder.Length == 0 && parts.Count == 2 && parts[1].Length > 0);
-            realm = parts[0];
-            username = parts[1];
         }
 
         #endregion

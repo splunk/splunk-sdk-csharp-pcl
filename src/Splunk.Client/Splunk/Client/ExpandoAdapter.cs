@@ -17,6 +17,9 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
+//// [X] ExpandoAdapter.Empty must be immutable
+//// [ ] ExpandoAdapter must expose a converter from which ExpandoAdapter<TExpandoAdapter> can inherit (?)
+////     I should not need to say this: ExpandoAdapter<ExpandoAdapter>.Converter.Instance
 
 namespace Splunk.Client
 {
@@ -36,19 +39,22 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Intializes a new instance of the ExpandoAdapter class.
+        /// Intializes a new instance of the <see cref="ExpandoAdapter"/>
+        /// class.
         /// </summary>
         /// <param name="expandoObject">
         /// The object backing the current <see cref="ExpandoAdapter"/>.
         /// </param>
-        public ExpandoAdapter(ExpandoObject expandoObject)
+        [Obsolete] // TODO: After we delete EntitySnapshot, make this constructor protected so that derivatives can use it.
+        protected internal ExpandoAdapter(ExpandoObject expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
-            this.Expando = expandoObject;
+            this.expandoObject = expandoObject;
         }
 
         /// <summary>
-        /// Intializes a new instance of the <see cref="ExpandoAdapter"/> class.
+        /// Infrastructure. Initializes a new instance of the <see cref="ExpandoAdapter"/>
+        /// class.
         /// </summary>
         public ExpandoAdapter()
         { }
@@ -64,17 +70,6 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// Gets the <see cref="System.Dynamic.ExpandoObject"/> backing the 
-        /// current <see cref="ExpandoAdapter"/> instance.
-        /// </summary>
-        internal ExpandoObject Expando
-        { get; set; }
-                            
-        #endregion
-
         #region Methods
 
         /// <summary>
@@ -85,7 +80,7 @@ namespace Splunk.Client
         /// </returns>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return ((IDictionary<string, object>)(this.Expando)).Keys;
+            return ((IDictionary<string, object>)(this.Object)).Keys;
         }
 
         /// <summary>
@@ -102,13 +97,7 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(name != null);
 
-            if (this.Expando == null)
-            {
-                throw new InvalidOperationException(); // TODO: diagnostics
-            }
-
-            var dictionary = (IDictionary<string, object>)this.Expando;
-            
+            var dictionary = (IDictionary<string, object>)this.Object;
             object value;
             dictionary.TryGetValue(name, out value);
             
@@ -116,7 +105,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets a named item from the underlying <see cref="Expando"/>"/>
+        /// Gets a named item from the underlying <see cref="Object"/>"/>
         /// and applies a <see cref="ValueConverter&lt;TValue&gt;"/>.
         /// </summary>
         /// <typeparam name="TValue">
@@ -142,12 +131,7 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(name != null);
             Contract.Requires<ArgumentNullException>(valueConverter != null);
 
-            if (this.Expando == null)
-            {
-                throw new InvalidOperationException(); // TODO: diagnostics
-            }
-
-            var dictionary = (IDictionary<string, object>)this.Expando;
+            var dictionary = (IDictionary<string, object>)this.Object;
             object value;
 
             if (!dictionary.TryGetValue(name, out value) || value == null)
@@ -233,6 +217,27 @@ namespace Splunk.Client
         #region Privates/internals
 
         object gate = new object();
+        ExpandoObject expandoObject;
+
+        internal ExpandoObject Object
+        { 
+            get
+            {
+                return this.expandoObject;
+            }
+
+            set
+            {
+                Debug.Assert(this.Object == null);
+
+                if (this.expandoObject != null)
+                {
+                    throw new InvalidOperationException("ExpandoAdapter.Object is already initialized."); // TODO: diagnostics
+                }
+
+                this.expandoObject = value;
+            }
+        }
 
         #endregion
 
@@ -268,6 +273,57 @@ namespace Splunk.Client
             readonly object value;
         }
 
+        #region Types
+
+        /// <summary>
+        /// Provides a converter to create <see cref="ExpandoAdapter"/> 
+        /// instances from <see cref="System.Dynamic.ExpandoObject"/> 
+        /// instances.
+        /// </summary>
+        public class Converter : ValueConverter<ExpandoAdapter>
+        {
+            static Converter()
+            {
+                Instance = new Converter();
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public static Converter Instance
+            { get; private set; }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="input">
+            /// 
+            /// </param>
+            /// <returns>
+            /// 
+            /// </returns>
+            public override ExpandoAdapter Convert(object input)
+            {
+                var value = input as ExpandoAdapter;
+
+                if (value != null)
+                {
+                    return value;
+                }
+
+                var expandoObject = input as ExpandoObject;
+
+                if (expandoObject != null)
+                {
+                    return new ExpandoAdapter(expandoObject);
+                }
+
+                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            }
+        }
+
+        #endregion
+
         #endregion
     }
 
@@ -297,7 +353,7 @@ namespace Splunk.Client
         /// instances from <see cref="System.Dynamic.ExpandoObject"/> 
         /// instances.
         /// </summary>
-        public class Converter : ValueConverter<TExpandoAdapter>
+        new public class Converter : ValueConverter<TExpandoAdapter>
         {
             static Converter()
             {
@@ -332,7 +388,7 @@ namespace Splunk.Client
 
                 if (expandoObject != null)
                 {
-                    return new TExpandoAdapter() { Expando = expandoObject };
+                    return new TExpandoAdapter() { Object = expandoObject };
                 }
 
                 throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices

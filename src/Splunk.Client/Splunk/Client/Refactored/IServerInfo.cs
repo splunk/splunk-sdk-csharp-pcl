@@ -21,16 +21,19 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
+    using System.Diagnostics.Contracts;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides an operational interface to the Splunk application collection.
     /// </summary>
-    public interface IPaginated
+    [ContractClass(typeof(IServerInfoContract))]
+    public interface IServerInfo
     {
-        /// <summary>
-        /// Gets the pagination properties for the current Splunk entity collection.
-        /// </summary>
-        Pagination Pagination
-        { get; }
+    }
+
+    [ContractClassFor(typeof(IServerInfo))]
+    abstract class IServerInfoContract : IServerInfo
+    {
     }
 }

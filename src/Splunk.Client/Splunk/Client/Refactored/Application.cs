@@ -157,7 +157,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         protected ExpandoAdapter Content
         {
-            get { return this.GetValue("Content", ExpandoAdapter<ExpandoAdapter>.Converter.Instance) ?? ExpandoAdapter.Empty; }
+            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
         }
 
         /// <inheritdoc/>

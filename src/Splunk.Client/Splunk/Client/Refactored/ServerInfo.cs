@@ -22,12 +22,14 @@ namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
     using System;
+    using System.IO;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// Provides information about a Splunk server instance.
     /// </summary>
-    public class ServerInfo : Resource
+    public class ServerInfo : Resource, IServerInfo
     {
         #region Constructors
 
@@ -42,9 +44,8 @@ namespace Splunk.Client.Refactored
         /// feed containing <paramref name="entry"/>.
         /// </param>
         protected internal ServerInfo(AtomEntry entry, Version generatorVersion)
-        {
-            this.Initialize(entry, generatorVersion);
-        }
+            : base(entry, generatorVersion)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerInfo"/> class.
@@ -84,12 +85,20 @@ namespace Splunk.Client.Refactored
         #region Properties
 
         /// <summary>
+        /// 
+        /// </summary>
+        protected ExpandoAdapter Content
+        {
+            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
+        }
+
+        /// <summary>
         /// Gets the name of the active license group for the Splunk server
         /// instance.
         /// </summary>
         public string ActiveLicenseGroup
         {
-            get { return this.GetValue("ActiveLicenseGroup", StringConverter.Instance); }
+            get { return this.Content.GetValue("ActiveLicenseGroup", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -97,7 +106,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public dynamic AddOns
         {
-            get { return this.GetValue("AddOns"); }
+            get { return this.Content.GetValue("AddOns", ExpandoAdapter.Converter.Instance); }
         }
 
         /// <summary>
@@ -105,7 +114,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public int Build
         {
-            get { return this.GetValue("Build", Int32Converter.Instance); }
+            get { return this.Content.GetValue("Build", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -113,7 +122,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string CpuArchitecture
         {
-            get { return this.GetValue("CpuArch", StringConverter.Instance); }
+            get { return this.Content.GetValue("CpuArch", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -121,7 +130,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -129,7 +138,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public Guid Guid
         {
-            get { return this.GetValue("Guid", GuidConverter.Instance); }
+            get { return this.Content.GetValue("Guid", GuidConverter.Instance); }
         }
 
         /// <summary>
@@ -138,7 +147,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public bool IsFree
         {
-            get { return this.GetValue("IsFree", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("IsFree", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -147,7 +156,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public bool IsRealtimeSearchEnabled
         {
-            get { return this.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -156,7 +165,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public bool IsTrial
         {
-            get { return this.GetValue("IsTrial", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("IsTrial", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -164,7 +173,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public IReadOnlyList<string> LicenseKeys
         {
-            get { return this.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get { return this.Content.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
         /// <summary>
@@ -173,7 +182,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public IReadOnlyList<string> LicenseLabels
         {
-            get { return this.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get { return this.Content.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
         /// <summary>
@@ -182,7 +191,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string LicenseSignature
         {
-            get { return this.GetValue("LicenseSignature", StringConverter.Instance); }
+            get { return this.Content.GetValue("LicenseSignature", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -190,7 +199,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public LicenseState LicenseState
         {
-            get { return this.GetValue("LicenseState", EnumConverter<LicenseState>.Instance); }
+            get { return this.Content.GetValue("LicenseState", EnumConverter<LicenseState>.Instance); }
         }
 
         /// <summary>
@@ -199,7 +208,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public Guid MasterGuid
         {
-            get { return this.GetValue("MasterGuid", GuidConverter.Instance); }
+            get { return this.Content.GetValue("MasterGuid", GuidConverter.Instance); }
         }
 
         /// <summary>
@@ -208,7 +217,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public ServerMode Mode
         {
-            get { return this.GetValue("Mode", EnumConverter<ServerMode>.Instance); }
+            get { return this.Content.GetValue("Mode", EnumConverter<ServerMode>.Instance); }
         }
 
         /// <summary>
@@ -217,7 +226,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public int NumberOfCores
         {
-            get { return this.GetValue("NumberOfCores", Int32Converter.Instance); }
+            get { return this.Content.GetValue("NumberOfCores", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -225,7 +234,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string OSBuild
         {
-            get { return this.GetValue("OsBuild", StringConverter.Instance); }
+            get { return this.Content.GetValue("OsBuild", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -233,7 +242,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string OSName
         {
-            get { return this.GetValue("OsName", StringConverter.Instance); }
+            get { return this.Content.GetValue("OsName", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -241,7 +250,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string OSVersion
         {
-            get { return this.GetValue("OsVersion", StringConverter.Instance); }
+            get { return this.Content.GetValue("OsVersion", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -250,7 +259,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public long PhysicalMemoryMB
         {
-            get { return this.GetValue("PhysicalMemoryMB", Int64Converter.Instance); }
+            get { return this.Content.GetValue("PhysicalMemoryMB", Int64Converter.Instance); }
         }
 
         /// <summary>
@@ -259,7 +268,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public bool RealtimeSearchEnabled
         {
-            get { return this.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -267,7 +276,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string ServerName
         {
-            get { return this.GetValue("ServerName", StringConverter.Instance); }
+            get { return this.Content.GetValue("ServerName", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -275,7 +284,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public DateTime StartupTime
         {
-            get { return this.GetValue("StartupTime", UnixDateTimeConverter.Instance); }
+            get { return this.Content.GetValue("StartupTime", UnixDateTimeConverter.Instance); }
         }
 
         /// <summary>
@@ -283,7 +292,27 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public Version Version
         {
-            get { return this.GetValue("Version", VersionConverter.Instance); }
+            get { return this.Content.GetValue("Version", VersionConverter.Instance); }
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="feed">
+        /// 
+        /// </param>
+        protected internal override void Initialize(AtomFeed feed)
+        {
+            if (feed.Entries.Count != 1)
+            {
+                throw new InvalidDataException(string.Format("Atom feed entry count: {0}", feed.Entries.Count));
+            }
+
+            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
         }
 
         #endregion

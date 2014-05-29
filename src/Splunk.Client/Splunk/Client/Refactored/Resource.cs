@@ -67,6 +67,17 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Initializes a new instance of the <see cref="Resource"/> class.
         /// </summary>
+        /// <param name="expandObject">
+        /// An object containing the dynamic members of the newly created
+        /// <see cref="Resource"/>.
+        /// </param>
+        protected Resource(ExpandoObject expandObject)
+            : base(expandObject)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Resource"/> class.
+        /// </summary>
         /// <param name="other">
         /// Another resource.
         /// </param>
@@ -263,7 +274,7 @@ namespace Splunk.Client.Refactored
                 expando.Published = entry.Published;
             }
 
-            this.Expando = expando;
+            this.Object = expando;
             this.MarkInitialized();
         }
 
@@ -290,7 +301,7 @@ namespace Splunk.Client.Refactored
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal void Initialize(AtomFeed feed)
+        protected internal virtual void Initialize(AtomFeed feed)
         {
             Contract.Requires<ArgumentNullException>(feed != null);
             this.EnsureUninitialized();
@@ -328,7 +339,7 @@ namespace Splunk.Client.Refactored
             }
 
             expando.Resources = new ReadOnlyCollection<Resource>(resources);
-            this.Expando = expando;
+            this.Object = expando;
             this.MarkInitialized();
         }
 
@@ -360,7 +371,7 @@ namespace Splunk.Client.Refactored
             Contract.Requires<ArgumentNullException>(other != null);
             
             this.EnsureUninitialized();
-            this.Expando = other.Expando;
+            this.Object = other.Object;
             this.MarkInitialized();
         }
 
@@ -380,7 +391,7 @@ namespace Splunk.Client.Refactored
 
         #region Privates/internals
 
-        protected internal static readonly Resource Missing = new Resource();
+        protected internal static readonly Resource Missing = new Resource(new ExpandoObject());
         bool initialized;
 
         void EnsureUninitialized()

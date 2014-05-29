@@ -47,9 +47,8 @@ namespace Splunk.Client.Refactored
         /// feed containing <paramref name="entry"/>.
         /// </param>
         protected internal ServerSettings(AtomEntry entry, Version generatorVersion)
-        {
-            this.Initialize(entry, generatorVersion);
-        }
+            : base(entry, generatorVersion)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerSettings"/> class.
@@ -69,9 +68,8 @@ namespace Splunk.Client.Refactored
         /// Another resource.
         /// </param>
         protected internal ServerSettings(Resource other)
-        {
-            this.Initialize(other);
-        }
+            : base(other)
+        { }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -110,11 +108,27 @@ namespace Splunk.Client.Refactored
         #region Properties
 
         /// <summary>
+        /// 
+        /// </summary>
+        protected ExpandoAdapter Content
+        {
+            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
+        }
+
+        /// <summary>
+        /// Gets the access control lists for the Splunk server instance.
+        /// </summary>
+        public Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        /// <summary>
         /// Gets the path to the default index for Splunk.
         /// </summary>
         public string SplunkDB
         {
-            get { return this.GetValue("SplunkDb", StringConverter.Instance); }
+            get { return this.Content.GetValue("SPLUNKDB", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -122,7 +136,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string SplunkHome
         {
-            get { return this.GetValue("SplunkHome", StringConverter.Instance); }
+            get { return this.Content.GetValue("SPLUNKHOME", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -136,7 +150,7 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public bool EnableSplunkWebSsl
         {
-            get { return this.GetValue("EnableSplunkWebSSL", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("EnableSplunkWebSSL", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -145,7 +159,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string Host
         {
-            get { return this.GetValue("Host", StringConverter.Instance); }
+            get { return this.Content.GetValue("Host", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -153,7 +167,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public int HttpPort
         {
-            get { return this.GetValue("Httpport", Int32Converter.Instance); }
+            get { return this.Content.GetValue("Httpport", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -162,7 +176,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public int ManagementHostPort
         {
-            get { return this.GetValue("MgmtHostPort", Int32Converter.Instance); }
+            get { return this.Content.GetValue("MgmtHostPort", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -182,7 +196,7 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public int MinFreeSpace
         {
-            get { return this.GetValue("MinFreeSpace", Int32Converter.Instance); }
+            get { return this.Content.GetValue("MinFreeSpace", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -192,7 +206,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         public string Pass4SymmetricKey
         {
-            get { return this.GetValue("Pass4SymmKey", StringConverter.Instance); }
+            get { return this.Content.GetValue("Pass4SymmKey", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -204,7 +218,7 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public string ServerName
         {
-            get { return this.GetValue("ServerName", StringConverter.Instance); }
+            get { return this.Content.GetValue("ServerName", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -221,7 +235,7 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public string SessionTimeout
         {
-            get { return this.GetValue("SessionTimeout", StringConverter.Instance); }
+            get { return this.Content.GetValue("SessionTimeout", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -232,7 +246,7 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public bool StartWebServer
         {
-            get { return this.GetValue("Startwebserver", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Startwebserver", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -244,9 +258,30 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public string TrustedIP
         {
-            get { return this.GetValue("TrustedIP", StringConverter.Instance); }
+            get { return this.Content.GetValue("TrustedIP", StringConverter.Instance); }
         }
 
         #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="feed">
+        /// 
+        /// </param>
+        protected internal override void Initialize(AtomFeed feed)
+        {
+            if (feed.Entries.Count != 1)
+            {
+                throw new InvalidDataException(string.Format("Atom feed entry count: {0}", feed.Entries.Count));
+            }
+
+            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
+        }
+
+        #endregion
+
     }
 }

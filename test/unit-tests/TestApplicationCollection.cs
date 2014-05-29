@@ -73,7 +73,7 @@ namespace Splunk.Client.UnitTests
                     "SplunkLightForwarder"
                 };
 
-                var applications = new Refactored.ConfigurationCollection(context, feed);
+                var applications = new Refactored.ApplicationCollection(context, feed);
 
                 Assert.Equal(expectedApplicationNames, from application in applications select application.Title);
                 Assert.Equal(expectedApplicationNames.Length, applications.Count);

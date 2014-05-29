@@ -42,14 +42,14 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var index = new Refactored.Index(context, feed);
-                CheckCommonProperties("_audit", index);
+                var storagePassword = new Refactored.Index(context, feed);
+                CheckCommonProperties("_audit", storagePassword);
                 
                 Assert.DoesNotThrow(() =>
                 {
-                    bool canList = index.Eai.Acl.CanList;
-                    string app = index.Eai.Acl.App;
-                    dynamic eai = index.Eai;
+                    bool canList = storagePassword.Eai.Acl.CanList;
+                    string app = storagePassword.Eai.Acl.App;
+                    dynamic eai = storagePassword.Eai;
                     Assert.Equal(app, eai.Acl.App);
                     Assert.Equal(canList, eai.Acl.CanList);
                 });
@@ -76,15 +76,15 @@ namespace Splunk.Client.UnitTests
                     "summary"
                 };
 
-                var indexes = new Refactored.ConfigurationCollection(context, feed);
+                var storagePasswords = new Refactored.StoragePasswordCollection(context, feed);
 
-                Assert.Equal(expectedNames, from index in indexes select index.Title);
-                Assert.Equal(expectedNames.Length, indexes.Count);
-                CheckCommonProperties("indexes", indexes);
+                Assert.Equal(expectedNames, from index in storagePasswords select index.Title);
+                Assert.Equal(expectedNames.Length, storagePasswords.Count);
+                CheckCommonProperties("indexes", storagePasswords);
 
-                for (int i = 0; i < indexes.Count; i++)
+                for (int i = 0; i < storagePasswords.Count; i++)
                 {
-                    CheckCommonProperties(expectedNames[i], indexes[i]);
+                    CheckCommonProperties(expectedNames[i], storagePasswords[i]);
                 }
             }
         }

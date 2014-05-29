@@ -115,13 +115,13 @@ namespace Splunk.Client.Refactored
         #region Properties
 
         /// <inheritdoc/>
-        public IReadOnlyList<Message> Messages
+        public virtual IReadOnlyList<Message> Messages
         {
             get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
         }
 
         /// <inheritdoc/>
-        public Pagination Pagination
+        public virtual Pagination Pagination
         {
             get { return this.Snapshot.GetValue("Pagination") ?? Pagination.None; }
         }

@@ -21,11 +21,17 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
+
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Provides an operational interface to the Splunk application collection.
     /// </summary>
+    [ContractClass(typeof(IApplicationCollectionContract<>))]
     public interface IApplicationCollection<TApplication> : IPaginated, IEntityCollection<TApplication> 
         where TApplication : ResourceEndpoint, IApplication, new()
     {
@@ -85,5 +91,61 @@ namespace Splunk.Client.Refactored
         /// file on <paramref name="path"/>.
         /// </remarks>
         Task<TApplication> InstallAsync(string path, string name = null, bool update = false);
+    }
+
+    [ContractClassFor(typeof(IApplicationCollection<>))]
+    abstract class IApplicationCollectionContract<TApplication> : IApplicationCollection<TApplication>
+        where TApplication : ResourceEndpoint, IApplication, new()
+    {
+        #region Properties
+
+        public abstract TApplication this[int index] { get; }
+        public abstract int Count { get; }
+        public abstract IReadOnlyList<Message> Messages { get; }
+        public abstract Pagination Pagination { get; }
+
+        #endregion
+
+        #region Methods
+
+        public Task<TApplication> CreateAsync(string name, ApplicationAttributes attributes)
+        {
+            Contract.Requires<ArgumentNullException>(name != null);
+            return default(Task<TApplication>);
+        }
+
+        public abstract Task GetAllAsync();
+
+        public abstract Task<TApplication> GetAsync(string name);
+
+        public abstract IEnumerator<TApplication> GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return default(IEnumerator<TApplication>);
+        }
+
+        public abstract Task GetSliceAsync(params Argument[] arguments);
+
+        public Task GetSliceAsync(IEnumerable<Argument> arguments)
+        {
+            return default(Task);
+        }
+
+        public Task GetSliceAsync(ApplicationCollection.SelectionCriteria criteria)
+        {
+            Contract.Requires<ArgumentNullException>(criteria != null);
+            return default(Task);
+        }
+
+        public Task<TApplication> InstallAsync(string path, string name = null, bool update = false)
+        {
+            Contract.Requires<ArgumentNullException>(path != null);
+            return default(Task<TApplication>);
+        }
+
+        public abstract Task ReloadAsync();
+
+        #endregion
     }
 }

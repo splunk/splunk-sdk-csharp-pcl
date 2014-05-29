@@ -4,25 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reactive.Linq;
 using Splunk.Client;
-
+using Splunk.Client.Helper;
 namespace search_realtime
 {
     class Program
     {
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
             {
-                Run(service).Wait();
+                Task task = Run(service);
+                while (!task.IsCanceled)
+                {
+                    Task.Delay(500).Wait();
+                }
             }
         }
 
         private static async Task Run(Service service)
         {
-            await service.LoginAsync("admin", "changeme");
+            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
 
-            Console.WriteLine("Type enter to cancel.");
+            Console.WriteLine("Type any key to cancel.");
 
             string searchQuery = "search index=_internal | stats count by method";
 
@@ -34,25 +39,27 @@ namespace search_realtime
             });
 
             var tokenSource = new CancellationTokenSource();
-
-            SearchResultStream searchResults;
-            //while (!tokenSource.IsCancellationRequested)
-            //{
-            //    searchResults = await realtimeJob.GetSearchResultsPreviewAsync();
-            //    foreach (var result in searchResults)
-            //    {
-            //        Console.WriteLine(result.ToString());
-            //    }
-            //    Console.WriteLine("");
-            //    await Task.Delay(500, tokenSource.Token);
-            //}
-
             Task.Run(() =>
             {
                 Console.ReadLine();
-                tokenSource.Cancel();
                 realtimeJob.CancelAsync().Wait();
+                tokenSource.Cancel();
+
             });
+
+            SearchResultStream searchResults;
+            while (!tokenSource.IsCancellationRequested)
+            {
+                searchResults = await realtimeJob.GetSearchResultsPreviewAsync();
+                Console.WriteLine("fieldnames:" + searchResults.FieldNames.Count);
+                Console.WriteLine("fieldname list:" + string.Join(";", searchResults.FieldNames.ToArray()));
+                foreach (var result in searchResults.ToEnumerable())
+                {
+                    Console.WriteLine("result:" + result.ToString());
+                }
+                Console.WriteLine("");
+                await Task.Delay(2000, tokenSource.Token);
+            }
         }
     }
 }

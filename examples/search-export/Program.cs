@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Splunk.Client;
+using Splunk.Client.Helper;
 
 namespace search_export
 {
@@ -17,11 +18,12 @@ namespace search_export
 
         public static async Task Run(Service service)
         {
-            await service.LoginAsync("admin", "changeme");
+            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+
 
             //// Search : Export Previews
 
-            using (var earchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
+            using (SearchPreviewStream earchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
             {
                 int previewNumber = 0;
 

@@ -221,7 +221,7 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Updated={3})", this.Title, this.Author, this.Id, this.Updated);
+            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", this.Title, this.Author, this.Id, this.Published, this.Updated);
         }
 
         #endregion

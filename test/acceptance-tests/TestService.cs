@@ -55,13 +55,13 @@ namespace Splunk.Client.UnitTesting
                 {
                     StoragePasswordCollection sps = service.GetStoragePasswordsAsync().Result;
 
-                    foreach (StoragePassword pwd in sps)
-                    {
-                        if (pwd.Username.Contains("delete-me-"))
-                        {
-                            await service.RemoveStoragePasswordAsync(pwd.Username, pwd.Realm);
-                        }
-                    }
+                    //foreach (StoragePassword pwd in sps)
+                    //{
+                    //    if (pwd.Username.Contains("delete-me-"))
+                    //    {
+                    //        await service.RemoveStoragePasswordAsync(pwd.Username, pwd.Realm);
+                    //    }
+                    //}
 
                     //// Create and change the password for 50 StoragePassword instances
 
@@ -71,8 +71,10 @@ namespace Splunk.Client.UnitTesting
 
                     for (int i = 0; i < 50; i++)
                     {
-                        var storagePassword = await service.CreateStoragePasswordAsync("foobar", name + i, realm[i % realm.Length]);
+                        StoragePassword storagePassword = await service.CreateStoragePasswordAsync("foobar", name + i, realm[i % realm.Length]);
+                        Console.WriteLine("print:"+storagePassword.Name + "," + storagePassword.Realm);
                         var password = Membership.GeneratePassword(15, 2);
+                        Console.WriteLine("password:" + password);
                         await storagePassword.UpdateAsync(password);
 
                         Assert.Equal(password, storagePassword.ClearPassword);
@@ -402,6 +404,8 @@ namespace Splunk.Client.UnitTesting
                     foreach (ConfigurationStanza stanza in configuration)
                     {
                         Assert.NotNull(stanza);
+                        Console.WriteLine("stanza.Name:"+stanza.Name);
+                        Console.WriteLine("stanza.Namespace:" + stanza.Namespace);
                         await stanza.GetAsync();
                     }
                 }

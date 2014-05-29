@@ -36,7 +36,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk search job.
     /// </summary>
-    public sealed class Job : Entity<Job>
+    public sealed class Job : Entity<Job>, IDisposable
     {
         #region Constructors
 
@@ -730,6 +730,12 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
+        }
+
+        public void Dispose()
+        {
+            this.CancelAsync().Wait();
+            this.RemoveAsync().Wait();
         }
 
         /// <summary>

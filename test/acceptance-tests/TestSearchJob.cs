@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,19 +14,18 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
+
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using System.Threading;
     using System.Threading.Tasks;
-    using System;
-    using System.IO;
-    using System.Net;
-    using System.Text.RegularExpressions;
-    using Splunk.Client;
-    using Splunk.Client.Helper;
+    
     using Xunit;
 
     /// <summary>
@@ -331,11 +330,12 @@ namespace Splunk.Client.UnitTesting
             dummyString = job.Keywords;
             //dummyString = job.Label;
 
+#if false
             if (TestHelper.VersionCompare(service, "6.0") < 0)
             {
                 dummyDateTime = job.LatestTime;
             }
-
+#endif
             dummyInt = job.NumPreviews;
             dummyInt = job.Priority;
             dummyString = job.RemoteSearch;

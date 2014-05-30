@@ -305,7 +305,7 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
         bool initialized;
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2013 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -16,15 +16,12 @@
 
 namespace Splunk.Examples.Submit
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System;
     using System.Linq;
     using System.Net;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client;
-    using Splunk.Client.Helper;
 
     /// <summary>
     /// An example program to list apps installed on the server.

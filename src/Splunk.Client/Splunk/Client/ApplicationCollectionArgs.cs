@@ -70,8 +70,8 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value indicating whether to scan for new <see cref=
-        /// "Application"/> instances and reload any objects those new <see cref="Application"/>
-        /// instances contain.
+        /// "Application"/> instances and reload any objects those new <see 
+        /// cref="Application"/> instances contain.
         /// </summary>
         /// <remarks>
         /// The default is <c>false</c>.

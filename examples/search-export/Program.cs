@@ -1,10 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
-using Splunk.Client;
-using Splunk.Client.Helper;
-
 namespace search_export
 {
+    using Splunk.Client;
+    using System;
+    using System.Threading.Tasks;
+
     class Program
     {
         static void Main(string[] args)

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2013 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -16,13 +16,15 @@
 
 namespace Splunk.Sdk.UnitTesting
 {
-    using System.Linq;
     using Splunk.Client;
-    using Splunk.Client.UnitTesting;
-    using Xunit;
-    using Splunk.Client.Helper;
+    using Splunk.Client.Helpers;
+    using Splunk.Client.UnitTests;
+
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
+    
+    using Xunit;
     
     /// <summary>
     /// Application tests
@@ -67,10 +69,12 @@ namespace Splunk.Sdk.UnitTesting
                 dummyBool = app.Refresh;
                 dummyString = app.Version;
                 dummyBool = app.Configured;
+
                 if (TestHelper.VersionCompare(service, "5.0") < 0)
                 {
                     //dummyBool = app.IsManageable;
                 }
+
                 dummyBool = app.Visible;
                 dummyBool = app.StateChangeRequiresRestart;
 
@@ -100,16 +104,20 @@ namespace Splunk.Sdk.UnitTesting
 
             ApplicationAttributes createArgs = new ApplicationAttributes();
             createArgs.ApplicationAuthor = "me";
+
             if (TestHelper.VersionCompare(service, "4.2.4") >= 0)
             {
                 createArgs.Configured = false;
             }
+
             createArgs.Description = "this is a description";
             createArgs.Label = "SDKTEST";
+
             if (TestHelper.VersionCompare(service, "5.0") < 0)
             {
                 //createArgs.manageable", false);
             }
+
             //createArgs.template", "barebones");
             createArgs.Visible = false;
             service.CreateApplicationAsync("sdk-tests", "barebones", createArgs).Wait();
@@ -122,10 +130,12 @@ namespace Splunk.Sdk.UnitTesting
             Assert.Equal("SDKTEST", app2.Label);
             Assert.Equal("me", app2.ApplicationAuthor);
             Assert.False(app2.Configured, assertRoot + "#5");
+
             if (TestHelper.VersionCompare(service, "5.0") < 0)
             {
                 //Assert.False(app2.Manageable, assertRoot + "#6");
             }
+
             Assert.False(app2.Visible, assertRoot + "#7");
 
             // update the app
@@ -140,6 +150,7 @@ namespace Splunk.Sdk.UnitTesting
             {
                 //app2.IsManageable = false;
             }
+
             //attr.Version = "5.0.0";
             app2.UpdateAsync(attr, true).Wait();
             app2.GetAsync().Wait();

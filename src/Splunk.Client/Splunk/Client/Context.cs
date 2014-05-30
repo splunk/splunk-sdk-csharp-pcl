@@ -60,6 +60,12 @@ namespace Splunk.Client
         /// <param name="port">
         /// The port number used to communicate with <see cref="Host"/>.
         /// </param>
+        /// <exception name="ArgumentException">
+        /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
+        /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
+        /// or greater than <c>65535</c>.
+        /// </exception>
+
         public Context(Scheme scheme, string host, int port)
             : this(scheme, host, port, null)
         {
@@ -88,6 +94,11 @@ namespace Splunk.Client
         /// <c>true</c> if the inner handler should be disposed of by Dispose, 
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
+        /// <exception name="ArgumentException">
+        /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
+        /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
+        /// or greater than <c>65535</c>.
+        /// </exception>
         public Context(Scheme scheme, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
         {
             Contract.Requires<ArgumentException>(scheme == Scheme.Http || scheme == Scheme.Https);

@@ -180,7 +180,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
         class TestInput : ModularInput
         {
-            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) {}
+            public override Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) { return Task.FromResult(false); }
 
             public override Scheme Scheme
             {
@@ -439,7 +439,7 @@ namespace Splunk.ModularInputs.UnitTesting
             {
                 
                 var writtenTask = progress.AwaitProgressAsync();
-                eventWriter.QueueEventForWriting(new Event
+                await eventWriter.QueueEventForWriting(new Event
                 {
                     Time = DateTime.FromFileTime(0),
                     Data = "Boris the mad baboon"

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,20 +14,22 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Linq;
-    using Splunk.Client;
-    using Splunk.Client.Helper;
+
     using Xunit;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Tests the configurations
     /// </summary>
-    public class ConfTest 
-    {     
+    public class ConfTest
+    {
         /// <summary>
         /// Basic conf touch test
         /// </summary>
@@ -87,11 +89,10 @@ namespace Splunk.Client.UnitTesting
             // away.
             string app = "sdk-tests";
             string owner = "nobody";
+            await TestHelper.CreateApp(app);
+            await TestHelper.CreateApp(app);
+            Service service =await SDKHelper.CreateService();
 
-           
-           await TestHelper.CreateApp(app);
-           Service service =await SDKHelper.CreateService();
-            
             var apps = service.GetApplicationsAsync().Result;
             Assert.True(apps.Any(a => a.ResourceName.Title == app));
 

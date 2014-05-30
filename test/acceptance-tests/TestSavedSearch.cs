@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,14 +14,15 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
-    using System.Linq.Expressions;
     using System.Linq;
     using System.Threading.Tasks;
-    using Splunk.Client.Helper;
+    
     using Xunit;
 
     /// <summary>

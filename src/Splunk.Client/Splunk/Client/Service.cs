@@ -114,7 +114,7 @@ namespace Splunk.Client
         /// </summary>
         public Server Server
         {
-            get { return this.server; }
+            get { return this.Server; }
         }
 
         /// <summary>

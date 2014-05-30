@@ -39,8 +39,6 @@ namespace Splunk.Client
     /// </remarks>
     public class IndexAttributes : Args<IndexAttributes>
     {
-        #region Properties
-
         /// <summary>
         /// Gets or sets the number of events that make up a block for block
         /// signatures on an index.
@@ -456,7 +454,5 @@ namespace Splunk.Client
         [DefaultValue(null)]
         public string WarmToColdScript
         { get; set; }
-
-        #endregion
     }
 }

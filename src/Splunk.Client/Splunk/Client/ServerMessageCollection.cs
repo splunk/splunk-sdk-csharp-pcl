@@ -37,7 +37,7 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public sealed class ServerMessageCollection : EntityCollection<ServerMessageCollection, ServerMessage>
+    public class ServerMessageCollection : EntityCollection<ServerMessageCollection, ServerMessage>
     {
         #region Constructors
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,17 +14,17 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client.Helper;
+    
     using Xunit;
 
     /// <summary>
@@ -114,6 +114,7 @@ namespace Splunk.Client.UnitTesting
 
                 // use setters to update most
                 indexAttributes.BlockSignSize = index.BlockSignSize + 1;
+
                 if (TestHelper.VersionCompare(service, "4.3") > 0)
                 {
                     indexAttributes.EnableOnlineBucketRepair = !index.EnableOnlineBucketRepair;

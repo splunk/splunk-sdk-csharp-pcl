@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -16,10 +16,8 @@
 
 namespace Splunk.Client.Examples.ReactiveUI
 {
-    using System.Collections.Generic;
-    using System.Reactive.Subjects;
     using Splunk.Client;
-    using Splunk.Client.Helper;
+    using System.Reactive.Subjects;
 
     static class Subject
     {

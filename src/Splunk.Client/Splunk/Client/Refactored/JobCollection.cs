@@ -22,6 +22,15 @@ namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
 
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+    using System.Net;
+    using System.Runtime.Serialization;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// Provides an object representation of a collection of Splunk search jobs.
     /// </summary>
@@ -39,11 +48,8 @@ namespace Splunk.Client.Refactored
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="args">
-        /// Arguments for retrieving the <see cref="JobCollection"/>.
-        /// </param>
-        internal JobCollection(Context context, Namespace ns, JobCollectionArgs args = null)
-            : base(context, ns, ClassResourceName, args)
+        internal JobCollection(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>
@@ -82,9 +88,125 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Asynchronously creates a new search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="search">
+        /// Search string.
+        /// </param>
+        /// <param name="args">
+        /// Optional search arguments.
+        /// </param>
+        /// <param name="customArgs">
+        /// 
+        /// </param>
+        /// <param name="requiredState">
+        /// 
+        /// </param>
+        /// <returns>
+        /// An object representing the search job that was created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/JZcPEb">POST 
+        /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
+        /// specified by <paramref name="args"/>.
+        /// </remarks>
+        public override async Task<Job> CreateAsync(IEnumerable<Argument> arguments)
+        {
+            return await this.CreateAsync(arguments, DispatchState.Running);
+        }
+
+        /// <summary>
+        /// Asynchronously creates a new search <see cref="Job"/>.
+        /// </summary>
+        /// <param name="search">
+        /// Search string.
+        /// </param>
+        /// <param name="args">
+        /// Optional search arguments.
+        /// </param>
+        /// <param name="customArgs">
+        /// 
+        /// </param>
+        /// <param name="requiredState">
+        /// 
+        /// </param>
+        /// <returns>
+        /// An object representing the search job that was created.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/JZcPEb">POST 
+        /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
+        /// specified by <paramref name="args"/>.
+        /// </remarks>
+        public async Task<Job> CreateAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null,
+            DispatchState requiredState = DispatchState.Running)
+        {
+            Contract.Requires<ArgumentNullException>(search != null);
+            Contract.Requires<ArgumentOutOfRangeException>(args == null || args.ExecutionMode != ExecutionMode.Oneshot);
+
+            var arguments = new Argument[] 
+            {
+               new Argument("search", search)
+            }
+            .AsEnumerable();
+
+            if (args != null)
+            {
+                arguments = arguments.Concat(args);
+            }
+
+            if (customArgs != null)
+            {
+                arguments = arguments.Concat(customArgs);
+            }
+
+            var job = await this.CreateAsync(arguments, requiredState);
+            return job;
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves a filtered collection of all running 
+        /// search jobs.
+        /// </summary>
+        /// <param name="args">
+        /// Specification of the collection of running search jobs to retrieve.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/ja2Sev">GET 
+        /// search/jobs</a> endpoint to get the <see cref="JobCollection"/>
+        /// specified by <paramref name="args"/>.
+        /// </remarks>
+        public virtual async Task GetSliceAsync(JobCollection.Filter criteria)
+        {
+            await this.GetSliceAsync(criteria.AsEnumerable());
+        }
+
+        #endregion
+
         #region Privates/internals
 
         internal static readonly ResourceName ClassResourceName = new ResourceName("search", "jobs");
+
+        async Task<Job> CreateAsync(IEnumerable<Argument> arguments, DispatchState requiredState)
+        {
+            string searchId;
+
+            using (var response = await this.Context.PostAsync(this.Namespace, ClassResourceName, arguments))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                searchId = await response.XmlReader.ReadResponseElementAsync("sid");
+            }
+
+            Job job = new Job(this.Context, this.Namespace, name: searchId);
+
+            await job.GetAsync();
+            await job.TransitionAsync(requiredState);
+
+            return job;
+        }
 
         #endregion
 
@@ -101,7 +223,7 @@ namespace Splunk.Client.Refactored
         /// </description></item>
         /// </list>
         /// </remarks>
-        public sealed class JobCollectionArgs : Args<JobCollectionArgs>
+        public sealed class Filter : Args<Filter>
         {
             /// <summary>
             /// The maximum number of <see cref="Job"/> entries to return.

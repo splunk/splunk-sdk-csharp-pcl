@@ -29,6 +29,7 @@ namespace Splunk.Client.Refactored
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
 
@@ -469,6 +470,7 @@ namespace Splunk.Client.Refactored
             return resource;
         }
 
+#if false
         /// <summary>
         /// Asynchronously retrieves the collection of jobs created from a
         /// saved search.
@@ -493,169 +495,10 @@ namespace Splunk.Client.Refactored
             return jobs;
         }
 
+#endif
         #endregion
 
         #region Search jobs
-
-        /// <summary>
-        /// Asynchronously creates a new search <see cref="Job"/>.
-        /// </summary>
-        /// <param name="search">
-        /// Search string.
-        /// </param>
-        /// <param name="args">
-        /// Optional search arguments.
-        /// </param>
-        /// <param name="customArgs">
-        /// 
-        /// </param>
-        /// <param name="requiredState">
-        /// 
-        /// </param>
-        /// <returns>
-        /// An object representing the search job that was created.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/JZcPEb">POST 
-        /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
-        /// specified by <paramref name="args"/>.
-        /// </remarks>
-        public async Task<Job> CreateJobAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null,
-            DispatchState requiredState = DispatchState.Running)
-        {
-            Contract.Requires<ArgumentNullException>(search != null);
-            Contract.Requires<ArgumentOutOfRangeException>(args == null || args.ExecutionMode != ExecutionMode.Oneshot);
-
-            //// FJR: Also check that it's not export, which also won't return a job.
-            //// DSN: JobArgs does not include SearchExportArgs
-
-            var resourceName = JobCollection.ClassResourceName;
-
-            var command = new Argument[] 
-            {
-               new Argument("search", search)
-            };
-
-            string searchId;
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, command, args, customArgs))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                searchId = await response.XmlReader.ReadResponseElementAsync("sid");
-            }
-
-            //// FJR: Jobs need to be handled a little more delicately. Let's talk about the patterns here.
-            //// In the other SDKs, we've been doing functions to wait for ready and for done. Async means
-            //// that we can probably make that a little slicker, but let's talk about how.
-
-            Job job = new Job(this.Context, this.Namespace, name: searchId);
-
-            await job.GetAsync();
-            await job.TransitionAsync(requiredState);
-
-            return job;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves information about a search job.
-        /// </summary>
-        /// <param name="searchId">
-        /// ID of a search job.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SFqSPI">GET 
-        /// search/jobs/{search_id}</a> endpoint to get the <see cref="Job"/> 
-        /// identified by <paramref name="searchId"/>.
-        /// </remarks>
-        public async Task<Job> GetJobAsync(string searchId)
-        {
-            var resource = new Job(this.Context, this.Namespace, searchId);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a collection of running search jobs.
-        /// </summary>
-        /// <param name="args">
-        /// Specification of the collection of running search jobs to retrieve.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/ja2Sev">GET 
-        /// search/jobs</a> endpoint to get the <see cref="JobCollection"/>
-        /// specified by <paramref name="args"/>.
-        /// </remarks>
-        public async Task<JobCollection> GetJobsAsync(JobCollectionArgs args = null)
-        {
-            var jobs = new JobCollection(this.Context, this.Namespace, args);
-            await jobs.GetAsync();
-            return jobs;
-        }
-
-        /// <summary>
-        /// Asynchronously removes a search <see cref="Job"/>.
-        /// </summary>
-        /// <param name="searchId">
-        /// ID of a search job.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/TUqQUc">DELETE 
-        /// search/jobs/{search_id}</a> endpoint to remove the <see cref="Job"/> 
-        /// identified by <paramref name="searchId"/>.
-        /// </remarks>
-        public async Task RemoveJobAsync(string searchId)
-        {
-            var resource = new Job(this.Context, this.Namespace, searchId);
-            await resource.RemoveAsync();
-        }
-
-        /// <summary>
-        /// Executes a oneshot search.
-        /// </summary>
-        /// <param name="search">
-        /// Search string.
-        /// </param>
-        /// <param name="args">
-        /// Optional job arguments.
-        /// </param>
-        /// <returns>
-        /// An object representing the stream search results.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/b02g1d">POST 
-        /// search/jobs</a> endpoint to execute a oneshot search.
-        /// </remarks>
-        public async Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null)
-        {
-            Contract.Requires<ArgumentNullException>(search != null);
-
-            var resourceName = JobCollection.ClassResourceName;
-
-            var command = new Argument[]
-            {
-                new Argument("search", search),
-                new Argument("exec_mode", "oneshot")
-            };
-
-            if (args != null)
-            {
-                args.ExecutionMode = null;
-            }
-
-            Response response = await this.Context.PostAsync(this.Namespace, resourceName, command, args);
-
-            try
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                var stream = await SearchResultStream.CreateAsync(response); // Transfers response ownership
-                return stream;
-            }
-            catch
-            {
-                response.Dispose();
-                throw;
-            }
-        }
 
         /// <summary>
         /// Asynchronously exports an observable sequence of search result previews.
@@ -676,14 +519,20 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public async Task<SearchPreviewStream> ExportSearchPreviewsAsync(string search, SearchExportArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(args != null, "args");
+            Contract.Requires<ArgumentNullException>(search != null);
 
-            var command = new Argument[] 
+            var arguments = new Argument[] 
             { 
                 new Argument("search", search) 
-            };
+            }
+            .AsEnumerable();
 
-            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, command, args);
+            if (args != null)
+            {
+                arguments = arguments.Concat(args);
+            }
+
+            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, arguments);
 
             try
             {
@@ -716,14 +565,20 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public async Task<SearchResultStream> ExportSearchResultsAsync(string search, SearchExportArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(args != null, "args");
+            Contract.Requires<ArgumentNullException>(search != null);
 
-            var command = new Argument[] 
+            var arguments = new Argument[] 
             { 
                 new Argument("search", search) 
-            };
+            }
+            .AsEnumerable();
 
-            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, command, args);
+            if (args != null)
+            {
+                arguments = arguments.Concat(args);
+            }
+
+            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, arguments);
 
             try
             {
@@ -738,24 +593,58 @@ namespace Splunk.Client.Refactored
         }
 
         /// <summary>
-        /// Asynchronously updates custom arguments to a search <see cref=
-        /// "Job"/>.
+        /// Executes a oneshot search.
         /// </summary>
-        /// <param name="searchId">
-        /// ID of the search <see cref="Job"/> to be updated.
+        /// <param name="search">
+        /// Search string.
         /// </param>
         /// <param name="args">
-        /// New custom arguments to the search job.
+        /// Optional job arguments.
         /// </param>
+        /// <returns>
+        /// An object representing the stream search results.
+        /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/bL4tFk">POST 
-        /// search/jobs/{search_id}</a> to update the specificiation of
-        /// search <see cref="Job"/> identified by <paramref name="searchId"/>.
+        /// This method uses the <a href="http://goo.gl/b02g1d">POST 
+        /// search/jobs</a> endpoint to execute a oneshot search.
         /// </remarks>
-        public async Task UpdateJobAsync(string searchId, CustomJobArgs args)
+        public async Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
         {
-            var resource = new Job(this.Context, this.Namespace, searchId);
-            await resource.UpdateAsync(args);
+            Contract.Requires<ArgumentNullException>(search != null);
+
+            var resourceName = JobCollection.ClassResourceName;
+
+            var arguments = new Argument[]
+            {
+                new Argument("search", search),
+                new Argument("exec_mode", "oneshot")
+            }
+            .AsEnumerable();
+
+            if (args != null)
+            {
+                args.ExecutionMode = null; // Ensures that exec_mode is oneshot
+                arguments = arguments.Concat(args);
+            }
+
+            if (customArgs != null)
+            {
+                arguments = arguments.Concat(customArgs);
+            }
+
+            Response response = await this.Context.PostAsync(this.Namespace, resourceName, arguments);
+
+            try
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                var stream = await SearchResultStream.CreateAsync(response); // Transfers response ownership
+                return stream;
+            }
+            catch
+            {
+                response.Dispose();
+                throw;
+            }
         }
 
         #endregion

@@ -201,8 +201,8 @@ namespace Splunk.Client
                         break;
 
                     case "link":
-                        if (links == null)
 
+                        if (links == null)
                         {
                             links = new Dictionary<string, Uri>();
                         }

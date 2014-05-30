@@ -43,8 +43,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-export", "examples\s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-realtime", "examples\search-realtime\search-realtime.csproj", "{D10A0063-A2DA-4F41-B54F-EE6E7FC57C41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDKHelper", "sdkhelper\SDKHelper.csproj", "{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,16 +203,6 @@ Global
 		{D10A0063-A2DA-4F41-B54F-EE6E7FC57C41}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D10A0063-A2DA-4F41-B54F-EE6E7FC57C41}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D10A0063-A2DA-4F41-B54F-EE6E7FC57C41}.Release|x86.ActiveCfg = Release|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -222,7 +210,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{DE65F0D5-7753-483E-8933-E6DB22350F04} = {19A10C52-242D-4B86-8C6C-F6628BBD68C2}
 		{B7C3839F-58F5-4CA9-9317-9655A0BC55D9} = {BBE2BB41-AE8E-4A06-AD72-0ABECE5DC1D0}
-		{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717} = {19A10C52-242D-4B86-8C6C-F6628BBD68C2}
 		{1ECDE3C2-671C-4F44-8965-D6D6A3AFD5E8} = {BBE2BB41-AE8E-4A06-AD72-0ABECE5DC1D0}
 		{BEA5697D-50A0-4927-BA3B-5761A0ABCB5B} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
 		{0777F751-A5A1-42C3-9966-8BE3D41E592F} = {19A10C52-242D-4B86-8C6C-F6628BBD68C2}

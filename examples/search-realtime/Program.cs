@@ -1,6 +1,7 @@
 namespace search_realtime
 {
     using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -38,7 +39,7 @@ namespace search_realtime
             });
 
             var tokenSource = new CancellationTokenSource();
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 Console.ReadLine();
                 realtimeJob.CancelAsync().Wait();
@@ -46,19 +47,25 @@ namespace search_realtime
 
             });
 
+#if false // TODO: Restore this once we've got an enumerator
+
             SearchResultStream searchResults;
+
             while (!tokenSource.IsCancellationRequested)
             {
                 searchResults = await realtimeJob.GetSearchResultsPreviewAsync();
                 Console.WriteLine("fieldnames:" + searchResults.FieldNames.Count);
                 Console.WriteLine("fieldname list:" + string.Join(";", searchResults.FieldNames.ToArray()));
+
                 foreach (var result in searchResults.ToEnumerable())
                 {
                     Console.WriteLine("result:" + result.ToString());
                 }
+
                 Console.WriteLine("");
                 await Task.Delay(2000, tokenSource.Token);
             }
+#endif
         }
     }
 }

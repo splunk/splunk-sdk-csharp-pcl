@@ -1,6 +1,8 @@
 namespace search_export
 {
     using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Threading.Tasks;
 
@@ -24,18 +26,20 @@ namespace search_export
 
             using (SearchPreviewStream earchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
             {
+#if false // TODO: Restore this after we've got an enumerator
                 int previewNumber = 0;
 
-                //foreach (var searchPreview in searchPreviewStream)
-                //{
-                //    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, searchPreview.IsFinal ? "final" : "partial");
-                //    int recordNumber = 0;
+                foreach (var searchPreview in searchPreviewStream)
+                {
+                    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, searchPreview.IsFinal ? "final" : "partial");
+                    int recordNumber = 0;
 
-                //    foreach (var result in searchPreview.SearchResults)
-                //    {
-                //        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
-                //    }
-                //}
+                    foreach (var result in searchPreview.SearchResults)
+                    {
+                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
+                    }
+                }
+#endif
             }
         }
     }

@@ -16,11 +16,12 @@
 
 namespace Splunk.Examples.saved_searches
 {
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Splunk.Client;
-    using SDKHelper;
 
     class Program
     {
@@ -45,7 +46,7 @@ namespace Splunk.Examples.saved_searches
                 SavedSearch preexistingSearch = await service.GetSavedSearchAsync(savedSearchName);
                 await preexistingSearch.RemoveAsync();
             }
-            catch (KeyNotFoundException re) { }
+            catch (KeyNotFoundException) { }
 
             SavedSearch savedSearch = await service.CreateSavedSearchAsync(savedSearchName, savedSearchQuery);
             Job savedSearchJob = await savedSearch.DispatchAsync();

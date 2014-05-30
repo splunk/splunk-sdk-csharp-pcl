@@ -39,8 +39,6 @@ namespace Splunk.ModularInputs
 
     public abstract class ModularInput
     {
-       
-
         #region Properties
 
         /// <summary>
@@ -174,7 +172,7 @@ namespace Splunk.ModularInputs
                                 return 0; // Validation succeeded
                             }
                         }
-                        catch (Exception e) { }
+                        catch (Exception) { }
 
                         using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings
                         {

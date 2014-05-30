@@ -14,17 +14,13 @@
  * under the License.
  */
 
-namespace Splunk.Client.Helper
+namespace Splunk.Client.Helpers
 {
-    using System;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Threading;
     using Splunk.Client;
-    using System.Diagnostics;
-    using System.IO;
+    using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Net;
     using System.Threading.Tasks;
 
     /// <summary>

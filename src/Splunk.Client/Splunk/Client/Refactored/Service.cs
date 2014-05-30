@@ -36,7 +36,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// 
     /// </summary>
-    public class Service : IDisposable
+    public class Service : IDisposable, IService
     {
         #region Constructors
 
@@ -99,91 +99,69 @@ namespace Splunk.Client.Refactored
 
         #region Properties
 
-        /// <summary>
-        /// Gets the <see cref="Context"/> instance for this <see cref="Service"/>.
-        /// </summary>
-        protected internal Context Context
+        /// <inheritdoc/>
+        public virtual Context Context
         {
             get { return this.context; }
         }
 
-        /// <summary>
-        /// Gets the <see cref="Namespace"/> used by this <see cref="Service"/>.
-        /// </summary>
-        public Namespace Namespace
+        /// <inheritdoc/>
+        public virtual Namespace Namespace
         {
             get { return this.ns; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public ApplicationCollection Applications
-        {
-            get { return this.applications; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public ConfigurationCollection Configurations
-        {
-            get { return this.configurations; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public ConfigurationCollection Indexes
-        {
-            get { return this.configurations; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public JobCollection Jobs
-        {
-            get { return this.jobs; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public SavedSearchCollection SavedSearches
-        {
-            get { return this.savedSearches; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public Server Server
-        {
-            get { return this.server; }
-        }
-
-        /// <summary>
-        /// Gets or sets the session key used by this <see cref="Service"/>.
-        /// </summary>
-        public string SessionKey
+        /// <inheritdoc/>
+        public virtual string SessionKey
         {
             get { return this.Context.SessionKey; }
             set { this.Context.SessionKey = value; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public StoragePasswordCollection StoragePasswords
+        /// <inheritdoc/>
+        public virtual ApplicationCollection Applications
+        {
+            get { return this.applications; }
+        }
+
+        /// <inheritdoc/>
+        public virtual ConfigurationCollection Configurations
+        {
+            get { return this.configurations; }
+        }
+
+        /// <inheritdoc/>
+        public virtual ConfigurationCollection Indexes
+        {
+            get { return this.configurations; }
+        }
+
+        /// <inheritdoc/>
+        public virtual JobCollection Jobs
+        {
+            get { return this.jobs; }
+        }
+
+        /// <inheritdoc/>
+        public virtual SavedSearchCollection SavedSearches
+        {
+            get { return this.savedSearches; }
+        }
+
+        /// <inheritdoc/>
+        public virtual Server Server
+        {
+            get { return this.server; }
+        }
+
+        /// <inheritdoc/>
+        public virtual StoragePasswordCollection StoragePasswords
         {
             get { return this.StoragePasswords; }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public Transmitter Transmitter
+        /// <inheritdoc/>
+        public virtual Transmitter Transmitter
         {
             get { return this.transmitter; }
         }
@@ -194,18 +172,8 @@ namespace Splunk.Client.Refactored
 
         #region Access control
 
-        /// <summary>
-        /// Asynchronously retrieves the list of all Splunk system capabilities.
-        /// </summary>
-        /// <returns>
-        /// An object representing the list of all Splunk system capabilities.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/kgTKvM">GET 
-        /// authorization/capabilities</a> endpoint to construct a list of all 
-        /// Splunk system capabilities.
-        /// </remarks>
-        public async Task<dynamic> GetCapabilitiesAsync()
+        /// <inheritdoc/>
+        public virtual async Task<dynamic> GetCapabilitiesAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities))
             {
@@ -226,26 +194,9 @@ namespace Splunk.Client.Refactored
             }
         }
 
-        /// <summary>
-        /// Provides user authentication asynchronously.
-        /// </summary>
-        /// <param name="username">
-        /// Splunk account username.
-        /// </param>
-        /// <param name="password">
-        /// Splunk account password for username.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/hdNhwA">POST 
-        /// auth/login</a> endpoint. The session key this endpoint returns is 
-        /// used for subsequent requests. It is accessible via the <see cref=
-        /// "SessionKey"/> property.
-        /// </remarks>
-        public async Task LoginAsync(string username, string password)
+        /// <inheritdoc/>
+        public virtual async Task LoginAsync(string username, string password)
         {
-            Contract.Requires<ArgumentNullException>(username != null);
-            Contract.Requires<ArgumentNullException>(password != null);
-
             using (var response = await this.Context.PostAsync(Namespace.Default, AuthLogin, new Argument[]
             {
                 new Argument("username", username),
@@ -257,18 +208,9 @@ namespace Splunk.Client.Refactored
             }
         }
 
-        /// <summary>
-        /// Ends the session by associated with the current instance.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/hdNhwA">DELETE 
-        /// authentication/httpauth-tokens/{name}</a> endpoint to end the
-        /// the session by removing <see cref="SessionKey"/>.
-        /// </remarks>
-        public async Task LogoffAsync()
+        /// <inheritdoc/>
+        public virtual async Task LogoffAsync()
         {
-            Contract.Requires<InvalidOperationException>(this.SessionKey != null);
-
             var resourceName = new ResourceName(AuthenticationHttpAuthTokens, this.SessionKey);
 
             using (var response = await this.Context.DeleteAsync(Namespace.Default, resourceName))
@@ -280,30 +222,10 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Saved searches
+        #region Search
 
-        /// <summary>
-        /// Asynchronously dispatches a <see cref="SavedSearch"/> just like the
-        /// scheduler would.
-        /// </summary>
-        /// <param name="name">
-        /// The name of the <see cref="SavedSearch"/> to dispatch.
-        /// </param>
-        /// <param name="dispatchArgs">
-        /// A set of arguments to the dispatcher.
-        /// </param>
-        /// <param name="templateArgs">
-        /// A set of template arguments to the <see cref="SavedSearch"/>.
-        /// </param>
-        /// <returns>
-        /// The search <see cref="Job"/> that was dispatched.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
-        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
-        /// cref="SavedSearch"/> identified by <paramref name="name"/>.
-        /// </remarks>
-        public async Task<Job> DispatchSavedSearchAsync(string name,
+        /// <inheritdoc/>
+        public virtual async Task<Job> DispatchSavedSearchAsync(string name,
             SavedSearchDispatchArgs dispatchArgs = null,
             SavedSearchTemplateArgs templateArgs = null)
         {
@@ -312,31 +234,9 @@ namespace Splunk.Client.Refactored
             return job;
         }
 
-        #endregion
-
-        #region Search jobs
-
-        /// <summary>
-        /// Asynchronously exports an observable sequence of search result previews.
-        /// </summary>
-        /// <param name="search">
-        /// Splunk search command.
-        /// </param>
-        /// <param name="args">
-        /// Optional export arguments.
-        /// </param>
-        /// <returns>
-        /// An object representing an observable sequence of search result 
-        /// previews.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/vJvIXv">GET 
-        /// search/jobs/export</a> endpoint to start the 
-        /// </remarks>
-        public async Task<SearchPreviewStream> ExportSearchPreviewsAsync(string search, SearchExportArgs args = null)
+        /// <inheritdoc/>
+        public virtual async Task<SearchPreviewStream> ExportSearchPreviewsAsync(string search, SearchExportArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
-
             var arguments = new Argument[] 
             { 
                 new Argument("search", search) 
@@ -362,27 +262,9 @@ namespace Splunk.Client.Refactored
             }
         }
 
-        /// <summary>
-        /// Asynchronously exports an observable sequence of search results.
-        /// </summary>
-        /// <param name="search">
-        /// Splunk search command.
-        /// </param>
-        /// <param name="args">
-        /// Optional export arguments.
-        /// </param>
-        /// <returns>
-        /// An object representing an observable sequence of search result 
-        /// previews.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/vJvIXv">GET 
-        /// search/jobs/export</a> endpoint to start the 
-        /// </remarks>
-        public async Task<SearchResultStream> ExportSearchResultsAsync(string search, SearchExportArgs args = null)
+        /// <inheritdoc/>
+        public virtual async Task<SearchResultStream> ExportSearchResultsAsync(string search, SearchExportArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
-
             var arguments = new Argument[] 
             { 
                 new Argument("search", search) 
@@ -408,50 +290,16 @@ namespace Splunk.Client.Refactored
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="search">
-        /// 
-        /// </param>
-        /// <param name="args">
-        /// 
-        /// </param>
-        /// <param name="customArgs">
-        /// 
-        /// </param>
-        /// <param name="blocking">
-        /// 
-        /// </param>
-        /// <returns>
-        /// An object representing a Splunk search job.
-        /// </returns>
-        public async Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        /// <inheritdoc/>
+        public virtual async Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
         {
             var job = await this.Jobs.CreateAsync(search, args, customArgs);
             return job;
         }
 
-        /// <summary>
-        /// Executes a oneshot search.
-        /// </summary>
-        /// <param name="search">
-        /// Search string.
-        /// </param>
-        /// <param name="args">
-        /// Optional job arguments.
-        /// </param>
-        /// <returns>
-        /// An object representing the stream search results.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/b02g1d">POST 
-        /// search/jobs</a> endpoint to execute a oneshot search.
-        /// </remarks>
-        public async Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        /// <inheritdoc/>
+        public virtual async Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
-
             var resourceName = JobCollection.ClassResourceName;
 
             var arguments = new Argument[]

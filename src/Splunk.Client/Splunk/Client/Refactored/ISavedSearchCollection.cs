@@ -24,6 +24,12 @@ namespace Splunk.Client.Refactored
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Provides an operational interface to a Splunk saved search entity collection.
+    /// </summary>
+    /// <typeparam name="TSavedSearch">
+    /// 
+    /// </typeparam>
     [ContractClass(typeof(ISavedSearchCollectionContract<>))]
     public interface ISavedSearchCollection<TSavedSearch> : IPaginated, IEntityCollection<TSavedSearch>
         where TSavedSearch : ResourceEndpoint, ISavedSearch, new()

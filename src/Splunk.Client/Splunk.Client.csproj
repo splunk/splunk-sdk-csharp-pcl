@@ -111,6 +111,7 @@
     <Compile Include="Splunk\Client\Refactored\IPaginated.cs" />
     <Compile Include="Splunk\Client\Refactored\IServer.cs" />
     <Compile Include="Splunk\Client\Refactored\IServerSettings.cs" />
+    <Compile Include="Splunk\Client\Refactored\IService.cs" />
     <Compile Include="Splunk\Client\Refactored\IStoragePassword.cs" />
     <Compile Include="Splunk\Client\Refactored\IStoragePasswordCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\Job.cs" />

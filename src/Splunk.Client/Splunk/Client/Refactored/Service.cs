@@ -66,6 +66,7 @@ namespace Splunk.Client.Refactored
             this.applications = new ApplicationCollection(this);
             this.indexes = new IndexCollection(this);
             this.transmitter = new Transmitter(this);
+            this.jobs = new JobCollection(this);
             this.server = new Server(this);
         }
 
@@ -723,6 +724,7 @@ namespace Splunk.Client.Refactored
         readonly ApplicationCollection applications;
         readonly IndexCollection indexes;
         readonly Transmitter transmitter;
+        readonly JobCollection jobs;
         readonly Server server;
 
         bool disposed;

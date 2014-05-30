@@ -34,7 +34,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides an object representation of a collection of Splunk search jobs.
     /// </summary>
-    public class JobCollection : EntityCollection<Job>
+    public class JobCollection : EntityCollection<Job>, IJobCollection<Job>
     {
         #region Constructors
 
@@ -42,15 +42,36 @@ namespace Splunk.Client.Refactored
         /// Initializes a new instance of the <see cref="JobCollection"/>
         /// class.
         /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
+        /// </exception>
+        protected internal JobCollection(Service service)
+            : base(service, ClassResourceName)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JobCollection"/> 
+        /// class.
+        /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
+        /// <param name="feed">
+        /// A Splunk response atom feed.
         /// </param>
-        internal JobCollection(Context context, Namespace ns)
-            : base(context, ns, ClassResourceName)
-        { }
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal JobCollection(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JobCollection"/>
@@ -62,15 +83,17 @@ namespace Splunk.Client.Refactored
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="resourceName">
-        /// </param>
-        /// <remarks>
-        /// This constructor is used by the <see cref="SavedSearch.GetHistoryAsync"/>
-        /// method to retrieve the collection of jobs created from a saved
-        /// search.
-        /// </remarks>
-        internal JobCollection(Context context, Namespace ns, ResourceName resourceName)
-            : base(context, ns, resourceName)
+        /// <exception cref="ArgumentException">
+        /// <paramref name="name"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
+        /// </exception>
+        protected internal JobCollection(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         /// <summary>
@@ -85,6 +108,22 @@ namespace Splunk.Client.Refactored
         /// </remarks>
         public JobCollection()
         { }
+
+        #endregion
+
+        #region Properties
+
+        /// <inheritdoc/>
+        public IReadOnlyList<Message> Messages
+        {
+            get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
+        }
+
+        /// <inheritdoc/>
+        public Pagination Pagination
+        {
+            get { return this.Snapshot.GetValue("Pagination") ?? Pagination.None; }
+        }
 
         #endregion
 
@@ -141,12 +180,9 @@ namespace Splunk.Client.Refactored
         /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
         /// specified by <paramref name="args"/>.
         /// </remarks>
-        public async Task<Job> CreateAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null,
+        public virtual async Task<Job> CreateAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null,
             DispatchState requiredState = DispatchState.Running)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
-            Contract.Requires<ArgumentOutOfRangeException>(args == null || args.ExecutionMode != ExecutionMode.Oneshot);
-
             var arguments = new Argument[] 
             {
                new Argument("search", search)

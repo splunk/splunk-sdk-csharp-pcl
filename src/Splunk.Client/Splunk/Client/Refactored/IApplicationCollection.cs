@@ -17,7 +17,7 @@
 //// TODO:
 //// [0] Contracts
 //// [O] Documentation
-//// 
+
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;

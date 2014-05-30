@@ -102,6 +102,7 @@
     <Compile Include="Splunk\Client\Refactored\IEntity.cs" />
     <Compile Include="Splunk\Client\Refactored\IEntityCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\IJob.cs" />
+    <Compile Include="Splunk\Client\Refactored\IJobCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\Index.cs" />
     <Compile Include="Splunk\Client\Refactored\IndexCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\IServerInfo.cs" />

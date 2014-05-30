@@ -28,29 +28,45 @@ namespace Splunk.Client
     using System.Threading.Tasks;
     
     /// <summary>
-    /// Provides an object representation of a Splunk server message.
+    /// Provides an object representation of the settings of a Splunk server.
     /// </summary>
-    public sealed class ServerSettings : Entity<ServerSettings>
+    public class ServerSettings : Resource, IServerSettings
     {
         #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerSettings"/> class.
         /// </summary>
-        /// <param name="context">
-        /// An object representing a Splunk server session.
+        /// <param name="entry">
+        /// An object representing a Splunk atom entry response.
         /// </param>
-        /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
+        /// <param name="generatorVersion">
+        /// The version of the generator producing the <see cref="AtomFeed"/>
+        /// feed containing <paramref name="entry"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="ns"/> is not specific.
-        /// </exception>
-        internal ServerSettings(Context context, Namespace ns)
-            : base(context, ns, ClassResourceName)
+        protected internal ServerSettings(AtomEntry entry, Version generatorVersion)
+            : base(entry, generatorVersion)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerSettings"/> class.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        protected internal ServerSettings(AtomFeed feed)
+        {
+            this.Initialize(feed);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerSettings"/> class.
+        /// </summary>
+        /// <param name="other">
+        /// Another resource.
+        /// </param>
+        protected internal ServerSettings(Resource other)
+            : base(other)
         { }
 
         /// <summary>
@@ -90,19 +106,35 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
+        /// 
+        /// </summary>
+        protected ExpandoAdapter Content
+        {
+            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
+        }
+
+        /// <summary>
+        /// Gets the access control lists for the Splunk server instance.
+        /// </summary>
+        public virtual Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        /// <summary>
         /// Gets the path to the default index for Splunk.
         /// </summary>
-        public string SplunkDB
+        public virtual string SplunkDB
         {
-            get { return this.GetValue("SplunkDb", StringConverter.Instance); }
+            get { return this.Content.GetValue("SPLUNKDB", StringConverter.Instance); }
         }
 
         /// <summary>
         /// Gets the path to the local installation of Splunk. 
         /// </summary>
-        public string SplunkHome
+        public virtual string SplunkHome
         {
-            get { return this.GetValue("SplunkHome", StringConverter.Instance); }
+            get { return this.Content.GetValue("SPLUNKHOME", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -114,35 +146,35 @@ namespace Splunk.Client
         /// HTTPS and SSL. A value of <c>false</c> indicates that Splunk Web is
         /// enabled for HTTP and that SSL is disabled.
         /// </remarks>
-        public bool EnableSplunkWebSsl
+        public virtual bool EnableSplunkWebSsl
         {
-            get { return this.GetValue("EnableSplunkWebSSL", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("EnableSplunkWebSSL", BooleanConverter.Instance); }
         }
 
         /// <summary>
         /// Gets the default hostname to use for data inputs that do not 
         /// override this setting.
         /// </summary>
-        public string Host
+        public virtual string Host
         {
-            get { return this.GetValue("Host", StringConverter.Instance); }
+            get { return this.Content.GetValue("Host", StringConverter.Instance); }
         }
 
         /// <summary>
         /// Gets the port on which Splunk Web is listening.
         /// </summary>
-        public int HttpPort
+        public virtual int HttpPort
         {
-            get { return this.GetValue("Httpport", Int32Converter.Instance); }
+            get { return this.Content.GetValue("Httpport", Int32Converter.Instance); }
         }
 
         /// <summary>
         /// Gets or sets the port on which splunkd is listening for management 
         /// operations.
         /// </summary>
-        public int ManagementHostPort
+        public virtual int ManagementHostPort
         {
-            get { return this.GetValue("MgmtHostPort", Int32Converter.Instance); }
+            get { return this.Content.GetValue("MgmtHostPort", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -160,9 +192,9 @@ namespace Splunk.Client
         /// When you need to clear more disk space indexing is paused and 
         /// Splunk posts a UI banner and warning.
         /// </remarks>
-        public int MinFreeSpace
+        public virtual int MinFreeSpace
         {
-            get { return this.GetValue("MinFreeSpace", Int32Converter.Instance); }
+            get { return this.Content.GetValue("MinFreeSpace", Int32Converter.Instance); }
         }
 
         /// <summary>
@@ -170,9 +202,9 @@ namespace Splunk.Client
         /// symmetric key, generating the final key to sign all traffic between
         /// master/slave licensers.
         /// </summary>
-        public string Pass4SymmetricKey
+        public virtual string Pass4SymmetricKey
         {
-            get { return this.GetValue("Pass4SymmKey", StringConverter.Instance); }
+            get { return this.Content.GetValue("Pass4SymmKey", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -182,9 +214,9 @@ namespace Splunk.Client
         /// <remarks>
         /// The default value is <![CDATA[<hostname>-<user-running-splunk>]]>.
         /// </remarks>
-        public string ServerName
+        public virtual string ServerName
         {
-            get { return this.GetValue("ServerName", StringConverter.Instance); }
+            get { return this.Content.GetValue("ServerName", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -199,9 +231,9 @@ namespace Splunk.Client
         /// args.SessionTimeout = 7200s; // 7,200 seconds or two hours
         /// </code>
         /// </remarks>
-        public string SessionTimeout
+        public virtual string SessionTimeout
         {
-            get { return this.GetValue("SessionTimeout", StringConverter.Instance); }
+            get { return this.Content.GetValue("SessionTimeout", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -210,9 +242,9 @@ namespace Splunk.Client
         /// <remarks>
         /// A value of <c>true</c> indicates that Splunk Web is enabled.
         /// </remarks>
-        public bool StartWebServer
+        public virtual bool StartWebServer
         {
-            get { return this.GetValue("Startwebserver", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Startwebserver", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -222,9 +254,9 @@ namespace Splunk.Client
         /// If the authentication proxy is disabled, a value of <c>null</c> is
         /// returned.
         /// </remarks>
-        public string TrustedIP
+        public virtual string TrustedIP
         {
-            get { return this.GetValue("TrustedIP", StringConverter.Instance); }
+            get { return this.Content.GetValue("TrustedIP", StringConverter.Instance); }
         }
 
         #endregion
@@ -232,29 +264,22 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously updates the server settings represented by the 
-        /// current instance.
+        /// 
         /// </summary>
-        /// <param name="values">
-        /// An object representing the updated server setting values.
+        /// <param name="feed">
+        /// 
         /// </param>
-        /// <returns>
-        /// </returns>
-        public async Task UpdateAsync(ServerSettingValues values)
+        protected internal override void Initialize(AtomFeed feed)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, values))
+            if (feed.Entries.Count != 1)
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateSnapshotAsync(response);
+                throw new InvalidDataException(string.Format("Atom feed entry count: {0}", feed.Entries.Count));
             }
+
+            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
         }
 
         #endregion
 
-        #region Privates/internals
-
-        static readonly ResourceName ClassResourceName = new ResourceName("server", "settings", "settings");
-
-        #endregion
     }
 }

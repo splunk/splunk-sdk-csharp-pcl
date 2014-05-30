@@ -43,10 +43,9 @@ namespace Splunk.Client
         /// class.
         /// </summary>
         /// <param name="expandoObject">
-        /// The object backing the current <see cref="ExpandoAdapter"/>.
+        /// An object backing the current <see cref="ExpandoAdapter"/>.
         /// </param>
-        [Obsolete] // TODO: After we delete EntitySnapshot, make this constructor protected so that derivatives can use it.
-        protected internal ExpandoAdapter(ExpandoObject expandoObject)
+        protected ExpandoAdapter(ExpandoObject expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
             this.expandoObject = expandoObject;

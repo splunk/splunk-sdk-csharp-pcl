@@ -48,7 +48,7 @@ namespace Splunk.ModularInputs
         public abstract Scheme Scheme { get; }
 
         #endregion
-
+                      
         #region Methods
 
         public static int Run<T>(string[] args) where T : ModularInput, new()

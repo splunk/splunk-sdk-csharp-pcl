@@ -28,18 +28,8 @@ namespace Splunk.Client.UnitTests
     public class TestAtomFeed
     {
         public static readonly string Directory = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Data", "Client"));
-        //public static readonly string Path = System.IO.Path.Combine(Directory, "JobCollection.GetAsync.xml");
         
-        public static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()
-        {
-            Async = true,
-            ConformanceLevel = ConformanceLevel.Fragment,
-            IgnoreComments = true,
-            IgnoreProcessingInstructions = true,
-            IgnoreWhitespace = true
-        };
-
-        [Trait("unit-test", "AtomEntry: operation: read")]
+        [Trait("unit-test", "Splunk.Client.AtomEntry")]
         [Fact]
         public async Task CanReadAtomEntry()
         {
@@ -49,7 +39,7 @@ namespace Splunk.Client.UnitTests
                 entry.ToString());
         }
 
-        [Trait("unit-test", "AtomFeed: operation: read")]
+        [Trait("unit-test", "Splunk.Client.AtomFeed")]
         [Fact]
         public async Task CanReadAtomFeed()
         {
@@ -59,7 +49,7 @@ namespace Splunk.Client.UnitTests
                 feed.ToString());
         }
 
-        internal static async Task<AtomEntry> ReadEntry(string path)
+        public static async Task<AtomEntry> ReadEntry(string path)
         {
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -71,7 +61,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        internal static async Task<AtomFeed> ReadFeed(string path)
+        public static async Task<AtomFeed> ReadFeed(string path)
         {
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -82,5 +72,18 @@ namespace Splunk.Client.UnitTests
                 return feed;
             }
         }
+
+        #region Privates/internals
+
+        static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()
+        {
+            Async = true,
+            ConformanceLevel = ConformanceLevel.Fragment,
+            IgnoreComments = true,
+            IgnoreProcessingInstructions = true,
+            IgnoreWhitespace = true
+        };
+
+        #endregion
     }
 }

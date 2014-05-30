@@ -15,7 +15,7 @@
  */
 
 //// TODO:
-//// [ ] Contracts
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
@@ -31,31 +31,45 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a class for sending events to Splunk.
     /// </summary>
-    public class Receiver : Resource<Receiver>
+    public class Transmitter : Endpoint
     {
         #region Constructors
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="Receiver"/> class
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// <param name="name">
+        /// An object identifying a Splunk resource within <paramref name=
+        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        internal Receiver(Context context, Namespace ns)
-            : base(context, ns, ClassResourceName)
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        protected internal Transmitter(Service service)
+            : base(service, ClassResourceName)
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Receiver"/> class.
+        /// Initializes a new instance of the <see cref="Transmitter"/> class.
         /// </summary>
-        /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.  Use the <see cref=
-        /// "Service.Receiver"/> property to access a <see cref="Receiver"/>.
-        /// </remarks>
-        public Receiver()
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="name">
+        /// An object identifying a Splunk resource within <paramref name="ns"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
+        /// </exception>
+        protected internal Transmitter(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
         { }
 
         #endregion

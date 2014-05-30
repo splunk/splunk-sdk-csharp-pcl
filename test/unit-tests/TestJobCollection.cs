@@ -19,8 +19,6 @@ namespace Splunk.Client.UnitTests
     using Microsoft.CSharp.RuntimeBinder;
 
     using Splunk.Client;
-    using Splunk.Client.Refactored;
-    using Job = Splunk.Client.Refactored.Job;
 
     using System;
     using System.Collections.Generic;
@@ -35,7 +33,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestJobCollection
     {
-        [Trait("unit-test", "class Job")]
+        [Trait("unit-test", "Splunk.Client.Job")]
         [Fact]
         async Task CanConstructJob()
         {
@@ -48,7 +46,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class JobCollection")]
+        [Trait("unit-test", "Splunk.Client.JobCollection")]
         [Fact]
         async Task CanConstructJobCollection()
         {
@@ -74,7 +72,7 @@ namespace Splunk.Client.UnitTests
                     "scheduler__admin__search__RMD5f8965a6a2fa31c5d_at_1401386400_854"
                 };
 
-                var jobs = new Refactored.JobCollection(context, feed);
+                var jobs = new JobCollection(context, feed);
 
                 Assert.Equal(expectedNames.Length, jobs.Count);
                 var names = from job in jobs select job.Name;
@@ -90,6 +88,54 @@ namespace Splunk.Client.UnitTests
             }
         }
 
+        [Trait("unit-test", "TestJobCollection.Filter")]
+        [Fact]
+        void CanSpecifyFilter()
+        {
+            string[] expectedString = new string[] {
+                "count=30; offset=0; search=null; sort_dir=desc; sort_key=dispatch_time",
+                "count=30; offset=0; search=some_unchecked_string; sort_dir=desc; sort_key=dispatch_time"
+            };
+
+            var expectedArguments = new List<Argument>[]
+            {
+                new List<Argument>() 
+                { 
+                },
+                new List<Argument>() 
+                { 
+                    new Argument("search", "some_unchecked_string")
+                }
+            };
+
+            JobCollection.Filter filter;
+
+            filter = new JobCollection.Filter();
+            Assert.Equal(expectedString[0], filter.ToString());
+            Assert.Equal(expectedArguments[0], filter);
+
+            filter = new JobCollection.Filter()
+            {
+                Count = 100,
+                Offset = 100,
+                Search = "some_unchecked_string",
+                SortDirection = SortDirection.Ascending,
+                SortKey = "some_unchecked_string"
+            };
+
+            Assert.Equal("count=100; offset=100; search=some_unchecked_string; sort_dir=asc; sort_key=some_unchecked_string", filter.ToString());
+
+            Assert.Equal(new List<Argument>()
+                { 
+                    new Argument("count", "100"),
+                    new Argument("offset", "100"),
+                    new Argument("search", "some_unchecked_string"),
+                    new Argument("sort_dir", "asc"),
+                    new Argument("sort_key", "some_unchecked_string"),
+                },
+                filter);
+        }
+        
         void CheckCommonProperties(string expectedName, ResourceEndpoint resourceEndpoint)
         {
             Assert.Equal(expectedName, resourceEndpoint.Title);

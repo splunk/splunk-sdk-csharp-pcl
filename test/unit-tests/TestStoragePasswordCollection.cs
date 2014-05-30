@@ -19,8 +19,6 @@ namespace Splunk.Client.UnitTests
     using Microsoft.CSharp.RuntimeBinder;
 
     using Splunk.Client;
-    using Splunk.Client.Refactored;
-    using StoragePassword = Splunk.Client.Refactored.StoragePassword;
 
     using System;
     using System.Collections.Generic;
@@ -35,7 +33,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestStoragePasswordCollection
     {
-        [Trait("unit-test", "class StoragePassword")]
+        [Trait("unit-test", "Splunk.Client.StoragePassword")]
         [Fact]
         async Task CanConstructStoragePassword()
         {
@@ -48,7 +46,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class StoragePasswordCollection")]
+        [Trait("unit-test", "Splunk.Client.StoragePasswordCollection")]
         [Fact]
         async Task CanConstructStoragePasswordCollection()
         {
@@ -63,7 +61,7 @@ namespace Splunk.Client.UnitTests
                     "splunk\\:com:foobar:"
                 };
 
-                var passwords = new Refactored.StoragePasswordCollection(context, feed);
+                var passwords = new StoragePasswordCollection(context, feed);
 
                 Assert.Equal(expectedNames, from password in passwords select password.Title);
                 Assert.Equal(expectedNames.Length, passwords.Count);

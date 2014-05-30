@@ -13,7 +13,7 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-namespace Splunk.ModularInputs.UnitTesting
+namespace Splunk.ModularInputs.UnitTests
 {
     using System;
     using System.Collections.Generic;
@@ -54,7 +54,7 @@ namespace Splunk.ModularInputs.UnitTesting
     /// </summary>
     public class TestModularInputs
     {
-        [Trait("class", "AwaitableProgress")]
+        [Trait("unit-test", "AwaitableProgress")]
         [Fact]
         public async Task AwaitProgressWorks()
         {
@@ -64,7 +64,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal(true, await triggered);
         }
 
-        [Trait("class", "Splunk.ModularInputs.InputDefinition")]
+        [Trait("unit-test", "Splunk.ModularInputs.InputDefinition")]
         [Fact]
         public void InputDefinitionServiceWorks()
         {
@@ -85,7 +85,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal("abcdefg", service.Context.SessionKey);
         }
 
-        [Trait("class", "Splunk.ModularInputs.InputDefinition")]
+        [Trait("unit-test", "Splunk.ModularInputs.InputDefinition")]
         [Fact]
         public void InputDefinitionServiceFailsWithInvalidUri()
         {
@@ -101,7 +101,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Throws<FormatException>(() => inputDefinition.Service);
         }
 
-        [Trait("class", "Splunk.ModularInputs.SingleValueParameter")]
+        [Trait("unit-test", "Splunk.ModularInputs.SingleValueParameter")]
         [Fact]
         public void SingleValueParameterConversions()
         {
@@ -123,7 +123,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal((long)52, (long)parameter);
         }
 
-        [Trait("class", "Splunk.ModularInputs.SingleValueParameter")]
+        [Trait("unit-test", "Splunk.ModularInputs.SingleValueParameter")]
         [Fact]
         public void SingleValueParameterParsing()
         {
@@ -137,7 +137,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
         }
 
-        [Trait("class", "Splunk.ModularInputs.MultiValueParameter")]
+        [Trait("unit-test", "Splunk.ModularInputs.MultiValueParameter")]
         [Fact]
         public void MultiValueParameterParsing()
         {
@@ -151,7 +151,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.MultiValueParameter")]
+        [Trait("unit-test", "Splunk.ModularInputs.MultiValueParameter")]
         [Fact]
         public void MultiValueParameterConversions()
         {
@@ -200,7 +200,7 @@ namespace Splunk.ModularInputs.UnitTesting
                                 ValidationDelegate = delegate (Parameter param, out string errorMessage) {
                                     bool isDouble;
                                     try { double _ = (double)param; isDouble = true; }
-                                    catch (Exception e) { isDouble = false; }
+                                    catch (Exception) { isDouble = false; }
                                     if (isDouble)
                                     {
                                         errorMessage = "";
@@ -245,7 +245,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
         }
 
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task GeneratesSchemeCorrectly()
         {
@@ -266,7 +266,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task WorkingValidation()
         {
@@ -294,7 +294,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task ValidationFails()
         {
@@ -325,7 +325,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task ValidationFailsOnSingleParameterDelegate()
         {
@@ -356,7 +356,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task ValidationThrows()
         {
@@ -374,7 +374,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.Event")]
+        [Trait("unit-test", "Splunk.ModularInputs.Event")]
         [Fact]
         public void SerializeEventWithoutDone()
         {
@@ -411,7 +411,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
 
-        [Trait("class", "Splunk.ModularInputs.Event")]
+        [Trait("unit-test", "Splunk.ModularInputs.Event")]
         [Fact]
         public void SerializeEventWithDone()
         {
@@ -444,7 +444,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
        
 
-        [Trait("class", "Splunk.ModularInputs.EventWriter")]
+        [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]
         public async Task EventWriterReportsOnDispose()
         {
@@ -468,7 +468,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         
-        [Trait("class", "Splunk.ModularInputs.EventWriter")]
+        [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]
         public async Task EventWriterReportsOnWrite()
         {

@@ -19,7 +19,6 @@ namespace Splunk.Client.UnitTests
     using Microsoft.CSharp.RuntimeBinder;
 
     using Splunk.Client;
-    using Splunk.Client.Refactored;
 
     using System;
     using System.Collections.Generic;
@@ -34,7 +33,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestApplicationCollection
     {
-        [Trait("unit-test", "class Application")]
+        [Trait("unit-test", "Splunk.Client.Application")]
         [Fact]
         async Task CanConstructApplication()
         {
@@ -42,11 +41,11 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var application = new Refactored.Application(context, feed);
+                var application = new Application(context, feed);
             }
         }
 
-        [Trait("unit-test", "class ApplicationCollection")]
+        [Trait("unit-test", "Splunk.Client.ApplicationCollection")]
         [Fact]
         async Task CanConstructApplicationCollection()
         {
@@ -73,7 +72,7 @@ namespace Splunk.Client.UnitTests
                     "SplunkLightForwarder"
                 };
 
-                var applications = new Refactored.ApplicationCollection(context, feed);
+                var applications = new ApplicationCollection(context, feed);
 
                 Assert.Equal(expectedApplicationNames, from application in applications select application.Title);
                 Assert.Equal(expectedApplicationNames.Length, applications.Count);

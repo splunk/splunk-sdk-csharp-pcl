@@ -29,12 +29,19 @@ namespace Splunk.Client
     /// You can produce an application archive using the <see cref=
     /// "Application.PackageAsync"/> method.
     /// </remarks>
-    public sealed class ApplicationArchiveInfo : Entity<ApplicationArchiveInfo>
+    public sealed class ApplicationArchiveInfo : Resource
     {
         #region Constructors
 
-        internal ApplicationArchiveInfo(Context context, Namespace ns, string name)
-            : base(context, ns, new ResourceName(ApplicationCollection.ClassResourceName, name, "package"))
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationArchiveInfo"/> 
+        /// class.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        internal ApplicationArchiveInfo(AtomFeed feed)
+            : base(feed)
         { }
 
         /// <summary>
@@ -54,14 +61,14 @@ namespace Splunk.Client
         /// <item>
         ///   <term><see cref="Application.PackageAsync"/></term>
         ///   <description>
-        ///   Asychronously packages an existing Splunk application into an 
+        ///   Asychronously packages the current Splunk application into an 
         ///   archive file.
         ///   </description>
         /// </item>
         /// <item>
-        ///   <term><see cref="Service.PackageApplicationAsync"/></term>
+        ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
         ///   <description>
-        ///   Asychronously packages an existing Splunk application into an 
+        ///   Asychronously packages the named Splunk application into an 
         ///   archive file.
         ///   </description>
         /// </item>

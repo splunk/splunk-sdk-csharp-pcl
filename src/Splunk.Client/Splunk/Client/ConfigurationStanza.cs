@@ -21,16 +21,46 @@
 
 namespace Splunk.Client
 {
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
+    using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Provides an object representation of a Splunk configuration stanza.
     /// </summary>
-    public class ConfigurationStanza : EntityCollection<ConfigurationStanza, ConfigurationSetting>
+    public class ConfigurationStanza : Entity, IReadOnlyList<ConfigurationSetting>
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationStanza"/>
+        /// class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// Name of a stanza within <paramref name="fileName"/> containing the 
+        /// configuration stanza to be represented by the current instance.
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="fileName"/>, or <paramref name="stanzaName"/> are 
+        /// <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
+        /// </exception>
+        protected internal ConfigurationStanza(Service service, string fileName, string stanzaName)
+            : this(service.Context, service.Namespace, fileName, stanzaName)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationStanza"/>
@@ -49,9 +79,37 @@ namespace Splunk.Client
         /// Name of a stanza within <paramref name="fileName"/> containing the 
         /// configuration stanza to be represented by the current instance.
         /// </param>
-        internal ConfigurationStanza(Context context, Namespace ns, string fileName, string stanzaName)
+        /// <exception cref="ArgumentException">
+        /// <paramref name="fileName"/> or <paramref name="stanzaName"/> are 
+        /// <c>null</c> or <paramref name="ns"/> is non-specific. 
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
+        /// </exception>
+        protected internal ConfigurationStanza(Context context, Namespace ns, string fileName, string stanzaName)
             : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName))
         { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationStanza"/> 
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal ConfigurationStanza(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -108,86 +166,38 @@ namespace Splunk.Client
 
         #endregion
 
+        #region Properties
+
+        public ConfigurationSetting this[int index]
+        {
+            get { return this.Create(this.Resources[index]); }
+        }
+
+        public int Count
+        {
+            get { return this.Resources.Count; }
+        }
+
+        public string Author 
+        {
+            get { return ((dynamic)this.Snapshot).Author; }
+        }
+
+        #endregion
+
         #region Methods
 
-        /// <summary>
-        /// Asynchronously creates the configuration stanza represented by the
-        /// current instance.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/jae44k">POST 
-        /// properties/{file_name></a> endpoint to create the configuration
-        /// stanza identified by the current instance.
-        /// </remarks>
-        public async Task CreateAsync()
-        {
-            var args = new Argument[] { new Argument("__stanza", this.ResourceName.Title) };
-            var resourceName = this.ResourceName.GetParent();
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-            }
-        }
+        #region Operational interface
 
         /// <summary>
-        /// Asynchronously removes the configuration stanza represented by the
-        /// current instance.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
-        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
-        /// stanza identified by the current instance.
-        /// </remarks>
-        public async Task RemoveAsync()
-        {
-            var resourceName = new ResourceName("configs", "conf-" + this.ResourceName.Collection,
-                this.ResourceName.Title);
-
-            using (var response = await this.Context.DeleteAsync(this.Namespace, resourceName))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously adds or updates settings in the configuration stanza
-        /// represented by the current instance.
-        /// </summary>
-        /// <param name="settings">
-        /// A variable-length list of objects representing the settings to be
-        /// added or updated.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/w742jw">POST 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to add or update
-        /// <paramref name="settings"/> in the current <see cref="ConfigurationStanza"/>.
-        /// </remarks>
-        public async Task UpdateAsync(params Argument[] settings)
-        {
-            Contract.Requires(settings != null);
-
-            if (settings.Length <= 0)
-            {
-                return;
-            }
-            
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, settings))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a configuration setting from the current
-        /// instance.
+        /// Asynchronously retrieves a configuration setting value from the 
+        /// current <see cref="ConfigurationStanza"/>
         /// </summary>
         /// <param name="keyName">
         /// The name of a configuration setting.
         /// </param>
         /// <returns>
-        /// An object representing the configuration setting identified by
-        /// <paramref name="keyName"/>.
+        /// The string value of <paramref name="keyName"/>.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/cqT50u">GET 
@@ -195,19 +205,48 @@ namespace Splunk.Client
         /// construct the <see cref="ConfigurationSetting"/> identified by 
         /// <paramref name="keyName"/>.
         /// </remarks>
-        public async Task<ConfigurationSetting> GetSettingAsync(string keyName)
+        public async Task<string> GetAsync(string keyName)
         {
-            var resource = new ConfigurationSetting(this.Context, this.Namespace,
-                fileName: this.ResourceName.Collection,
-                stanzaName: this.ResourceName.Title,
-                keyName: keyName);
-            await resource.GetAsync();
-            return resource;
+            var resourceName = new ResourceName(this.ResourceName, keyName);
+
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var reader = new StreamReader(response.Stream);
+                var value = await reader.ReadToEndAsync();
+
+                return value;
+            }
         }
 
         /// <summary>
-        /// Asynchronously updates the value of a setting in the current <see 
-        /// cref="ConfigurationStanza"/>.
+        /// Gets an enumerator that iterates through the current <see cref=
+        /// "ConfigurationStanza"/>.
+        /// </summary>
+        /// <returns>
+        /// An object for iterating through the current <see cref="ConfigurationStanza"/>.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an enumerator that iterates through the current <see cref=
+        /// "ConfigurationStanza"/>.
+        /// </summary>
+        /// <returns>
+        /// An object for iterating through the current <see cref="ConfigurationStanza"/>.
+        /// </returns>
+        public IEnumerator<ConfigurationSetting> GetEnumerator()
+        {
+            return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Asynchronously updates the value of an existing setting in the 
+        /// current <see cref="ConfigurationStanza"/>.
         /// </summary>
         /// <param name="keyName">
         /// The name of a configuration setting in the current <see cref=
@@ -217,7 +256,7 @@ namespace Splunk.Client
         /// A new value for the setting identified by <paramref name="keyName"/>.
         /// </param>
         /// <returns>
-        /// An object representing the configuration setting that was updated.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
@@ -225,14 +264,49 @@ namespace Splunk.Client
         /// update the <see cref="ConfigurationSetting"/> identified by <paramref 
         /// name="keyName"/>.
         /// </remarks>
-        public async Task<ConfigurationSetting> UpdateSettingAsync(string keyName, string value)
+        public async Task UpdateAsync(string keyName, string value)
         {
-            var resource = new ConfigurationSetting(this.Context, this.Namespace, 
-                fileName: this.ResourceName.Collection, 
-                stanzaName: this.ResourceName.Title, 
-                keyName: keyName); 
-            await resource.UpdateAsync(value);
-            return resource;
+            var resourceName = new ResourceName(this.ResourceName, keyName);
+            var arguments = new Argument[] { new Argument("value", value) };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        #endregion
+
+        #region Infrastructure methods
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(AtomFeed feed)
+        {
+            this.Snapshot = new Resource(feed);
+        }
+
+        /// <inheritdoc/>
+        protected override void ReconstructSnapshot(Resource resource)
+        {
+            this.Snapshot = resource;
+        }
+
+        #endregion
+        
+        #endregion
+
+        #region Privates/internals
+
+        static readonly IReadOnlyList<Resource> NoResources = new ReadOnlyCollection<Resource>(new List<Resource>());
+
+        IReadOnlyList<Resource> Resources
+        {
+            get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
+        }
+
+        ConfigurationSetting Create(Resource resource)
+        {
+            return new ConfigurationSetting(resource);
         }
 
         #endregion

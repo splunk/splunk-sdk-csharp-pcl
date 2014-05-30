@@ -25,9 +25,9 @@ namespace Splunk.Client
 
     public class TestResourceName
     {
-        [Trait("class", "ResourceName")]
+        [Trait("unit-test", "Splunk.Client.ResourceName")]
         [Fact]
-        void CanConstruct()
+        void CanConstructResourceName()
         {
             ResourceName resourceName;
 
@@ -43,9 +43,9 @@ namespace Splunk.Client
             Assert.Throws(typeof(ArgumentNullException), () => new ResourceName((ResourceName)null, "fu", "man", "chu"));
         }
 
-        [Trait("class", "JobArgs")]
+        [Trait("unit-test", "Splunk.Client.ResourceName")]
         [Fact]
-        void CanCompare()
+        void CanCompareResourceName()
         {
             var resourceNames = new ResourceName[] 
             {

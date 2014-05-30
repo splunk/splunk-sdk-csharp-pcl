@@ -25,7 +25,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestRequestException
     {
-        [Trait("unit-test", "RequestException: construction")]
+        [Trait("unit-test", "Splunk.Client.RequestException")]
         [Fact]
         void CanConstructRequestException()
         {

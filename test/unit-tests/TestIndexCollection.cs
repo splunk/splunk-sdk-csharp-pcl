@@ -19,7 +19,6 @@ namespace Splunk.Client.UnitTests
     using Microsoft.CSharp.RuntimeBinder;
 
     using Splunk.Client;
-    using Splunk.Client.Refactored;
 
     using System;
     using System.Collections.Generic;
@@ -33,8 +32,8 @@ namespace Splunk.Client.UnitTests
     using Xunit;
 
     public class TestIndexCollection
-    {
-        [Trait("unit-test", "class Index")]
+    {      
+        [Trait("unit-test", "Splunk.Client.Index")]
         [Fact]
         async Task CanConstructIndex()
         {
@@ -42,7 +41,7 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var index = new Refactored.Index(context, feed);
+                var index = new Index(context, feed);
                 CheckCommonProperties("_audit", index);
                 
                 Assert.DoesNotThrow(() =>
@@ -56,7 +55,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class IndexCollection")]
+        [Trait("unit-test", "Splunk.Client.IndexCollection")]
         [Fact]
         async Task CanConstructIndexCollection()
         {
@@ -76,7 +75,7 @@ namespace Splunk.Client.UnitTests
                     "summary"
                 };
 
-                var indexes = new Refactored.ConfigurationCollection(context, feed);
+                var indexes = new ConfigurationCollection(context, feed);
 
                 Assert.Equal(expectedNames, from index in indexes select index.Title);
                 Assert.Equal(expectedNames.Length, indexes.Count);
@@ -87,6 +86,42 @@ namespace Splunk.Client.UnitTests
                     CheckCommonProperties(expectedNames[i], indexes[i]);
                 }
             }
+        }
+
+        [Trait("unit-test", "Splunk.Client.IndexCollection.Filter")]
+        [Fact]
+        void CanSpecifyFilter()
+        {
+            // Checked against http://docs.splunk.com/Documentation/Splunk/latest/RESTAPI/RESTindex#GET_data.2Findexes
+
+            IndexCollection.Filter criteria = new IndexCollection.Filter();
+            Assert.Equal("count=30; offset=0; search=null; sort_dir=asc; sort_key=name; sort_mode=auto; summarize=0", criteria.ToString());
+            Assert.Equal(0, ((IEnumerable<Argument>)criteria).Count());
+
+            criteria = new IndexCollection.Filter()
+            {
+                Count = 100,
+                Offset = 100,
+                Search = "some_unchecked_string",
+                SortDirection = SortDirection.Descending,
+                SortKey = "some_unchecked_string",
+                SortMode = SortMode.Alphabetic,
+                Summarize = true
+            };
+
+            Assert.Equal("count=100; offset=100; search=some_unchecked_string; sort_dir=desc; sort_key=some_unchecked_string; sort_mode=alpha; summarize=1", criteria.ToString());
+
+            Assert.Equal(new List<Argument>()
+                { 
+                    new Argument("count", 100),
+                    new Argument("offset", 100),
+                    new Argument("search", "some_unchecked_string"),
+                    new Argument("sort_dir", "desc"),
+                    new Argument("sort_key", "some_unchecked_string"),
+                    new Argument("sort_mode", "alpha"),
+                    new Argument("summarize", 1)
+                },
+                criteria.AsEnumerable());
         }
 
         void CheckCommonProperties(string expectedName, ResourceEndpoint resourceEndpoint)

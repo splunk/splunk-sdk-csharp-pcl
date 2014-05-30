@@ -19,10 +19,6 @@ namespace Splunk.Client.UnitTests
     using Microsoft.CSharp.RuntimeBinder;
 
     using Splunk.Client;
-    using Splunk.Client.Refactored;
-    using Server = Splunk.Client.Refactored.Server;
-    using ServerInfo = Splunk.Client.Refactored.ServerInfo;
-    using ServerSettings = Splunk.Client.Refactored.ServerSettings;
 
     using System;
     using System.Collections.Generic;
@@ -37,7 +33,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestServer
     {
-        [Trait("unit-test", "class Server")]
+        [Trait("unit-test", "Splunk.Client.Server")]
         [Fact]
         void CanConstructServer()
         {
@@ -50,7 +46,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class ServerInfo")]
+        [Trait("unit-test", "Splunk.Client.ServerInfo")]
         [Fact]
         async Task CanConstructServerInfo()
         {
@@ -73,7 +69,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class ServerSettings")]
+        [Trait("unit-test", "Splunk.Client.ServerSettings")]
         [Fact]
         async Task CanConstructServerSettings()
         {

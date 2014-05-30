@@ -18,7 +18,6 @@ namespace Splunk.Client.UnitTests
 {
     using Microsoft.CSharp.RuntimeBinder;
     using Splunk.Client;
-    using Splunk.Client.Refactored;
 
     using System;
     using System.Collections.Generic;
@@ -33,7 +32,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestConfigurationCollection
     {
-        [Trait("unit-test", "class Configuration")]
+        [Trait("unit-test", "Splunk.Client.Configuration")]
         [Fact]
         async Task CanConstructConfiguration()
         {
@@ -51,7 +50,7 @@ namespace Splunk.Client.UnitTests
                     "summary_index"
                 };
 
-                var configuration = new Refactored.Configuration(context, feed);
+                var configuration = new Configuration(context, feed);
                 
                 Assert.Equal(expectedConfigurationStanzaNames, from configurationStanza in configuration select configurationStanza.Title);
                 Assert.Equal(expectedConfigurationStanzaNames.Length, configuration.Count);
@@ -70,7 +69,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class ConfigurationCollection")]
+        [Trait("unit-test", "Splunk.Client.ConfigurationCollection")]
         [Fact]
         async Task CanConstructConfigurationCollection()
         {
@@ -165,7 +164,7 @@ namespace Splunk.Client.UnitTests
                     "workflow_actions"
                 };
 
-                var configurations = new Refactored.ConfigurationCollection(context, feed);
+                var configurations = new ConfigurationCollection(context, feed);
 
                 Assert.Equal(expectedConfigurationNames, from configuration in configurations select configuration.Title);
                 Assert.Equal(expectedConfigurationNames.Length, configurations.Count);
@@ -181,7 +180,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class ConfigurationStanza")]
+        [Trait("unit-test", "Splunk.Client.ConfigurationStanza")]
         [Fact]
         async Task CanConstructConfigurationStanza()
         {
@@ -201,7 +200,7 @@ namespace Splunk.Client.UnitTests
                     "ttl" 
                 };
 
-                var configurationStanza = new Refactored.ConfigurationStanza(context, feed);
+                var configurationStanza = new ConfigurationStanza(context, feed);
 
                 Assert.Equal(expectedConfigurationSettingNames, from setting in configurationStanza select setting.Title);
                 Assert.Equal(expectedConfigurationSettingNames.Length, configurationStanza.Count);

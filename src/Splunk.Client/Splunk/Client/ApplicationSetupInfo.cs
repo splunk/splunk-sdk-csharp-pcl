@@ -20,6 +20,7 @@
 
 namespace Splunk.Client
 {
+    using Splunk;
     using System;
     using System.Collections.Generic;
     using System.Net;
@@ -28,24 +29,19 @@ namespace Splunk.Client
     /// <summary>
     /// Represents the setup information for an <see cref="Application"/>.
     /// </summary>
-    public sealed class ApplicationSetupInfo : Entity<ApplicationSetupInfo>
+    public sealed class ApplicationSetupInfo : Resource
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the ApplicationSetupInfo class.
+        /// Initializes a new instance of the <see cref="ApplicationSetupInfo"/> 
+        /// class.
         /// </summary>
-        /// <param name="context">
-        /// An object representing a Splunk server session.
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
         /// </param>
-        /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
-        /// </param>
-        /// <param name="name">
-        /// The name of a Splunk application.
-        /// </param>
-        internal ApplicationSetupInfo(Context context, Namespace ns, string name)
-            : base(context, ns, new ResourceName(ApplicationCollection.ClassResourceName, name, "setup"))
+        internal ApplicationSetupInfo(AtomFeed feed)
+            : base(feed)
         { }
 
         /// <summary>
@@ -63,17 +59,17 @@ namespace Splunk.Client
         ///   <description>Description</description>
         /// </listheader>
         /// <item>
-        ///   <term><see cref="Application.GetSetupInfoAsync"/></term>
+        ///   <term><see cref="Application.PackageAsync"/></term>
         ///   <description>
-        ///   Asynchronously retrieves setup information for the current <see 
-        ///   cref="Application"/>.
-        /// </description>
+        ///   Asychronously packages the current Splunk application into an 
+        ///   archive file.
+        ///   </description>
         /// </item>
         /// <item>
-        ///   <term><see cref="Service.GetApplicationSetupInfoAsync"/></term>
+        ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
         ///   <description>
-        ///   Asynchronously retrieves setup information for an <see cref=
-        ///   "Application"/> identified by name.
+        ///   Asychronously packages the named Splunk application into an 
+        ///   archive file.
         ///   </description>
         /// </item>
         /// </list>

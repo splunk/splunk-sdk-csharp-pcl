@@ -19,7 +19,6 @@ namespace Splunk.Client.UnitTests
     using Microsoft.CSharp.RuntimeBinder;
 
     using Splunk.Client;
-    using Splunk.Client.Refactored;
 
     using System;
     using System.Collections.Generic;
@@ -34,7 +33,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestServerMessageCollection
     {
-        [Trait("unit-test", "class ServerMessage")]
+        [Trait("unit-test", "Splunk.Client.ServerMessage")]
         [Fact]
         async Task CanConstructServerMessage()
         {
@@ -42,7 +41,7 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var message = new Refactored.ServerMessage(context, feed);
+                var message = new ServerMessage(context, feed);
 
                 CheckCommonProperties("some_message_name", message);
                 
@@ -61,7 +60,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class ServerMessageCollection")]
+        [Trait("unit-test", "Splunk.Client.ServerMessageCollection")]
         [Fact]
         async Task CanConstructServerMessageCollection()
         {
@@ -75,7 +74,7 @@ namespace Splunk.Client.UnitTests
                     "some_other_message_name",
                 };
 
-                var messages = new Refactored.ConfigurationCollection(context, feed);
+                var messages = new ConfigurationCollection(context, feed);
 
                 Assert.Equal(expectedNames, from message in messages select message.Title);
                 Assert.Equal(expectedNames.Length, messages.Count);

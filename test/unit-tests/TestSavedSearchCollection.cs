@@ -14,20 +14,27 @@
  * under the License.
  */
 
-namespace Splunk.Client
+namespace Splunk.Client.UnitTests
 {
+    using Microsoft.CSharp.RuntimeBinder;
+    using Splunk.Client;
+
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Dynamic;
+    using System.IO;
     using System.Linq;
-    using System.Runtime.Serialization;
+    using System.Threading.Tasks;
+    using System.Xml;
 
     using Xunit;
 
-    public class TestSavedSearchCollectionArgs
+    class TestSavedSearchCollection
     {
-        [Trait("class", "Args")]
+        [Trait("unit-test", "SavedSearchCollection.Filter")]
         [Fact]
-        void CanConstruct()
+        void CanSpecifyFilter()
         {
             string[] expectedString = new string[] {
                 "count=30; earliest_time=null; latest_time=null; listDefaultActionArgs=f; offset=0; search=null; sort_dir=asc; sort_key=name; sort_mode=auto",
@@ -44,9 +51,9 @@ namespace Splunk.Client
                 }
             };
 
-            SavedSearchCollectionArgs args;
+            SavedSearchCollection.Filter args;
 
-            args = new SavedSearchCollectionArgs();
+            args = new SavedSearchCollection.Filter();
             Assert.Equal(expectedString[0], args.ToString());
             Assert.Equal(expectedArguments[0], args);
         }
@@ -55,7 +62,7 @@ namespace Splunk.Client
         [Fact]
         void CanSetEveryValue()
         {
-            var args = new SavedSearchCollectionArgs()
+            var args = new SavedSearchCollection.Filter()
             {
                 Count = 100,
                 EarliestTime = "some_unchecked_string",

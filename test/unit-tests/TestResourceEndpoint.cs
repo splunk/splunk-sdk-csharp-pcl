@@ -18,7 +18,6 @@ namespace Splunk.Client.UnitTests
 {
     using Microsoft.CSharp.RuntimeBinder;
     using Splunk.Client;
-    using Splunk.Client.Refactored;
 
     using System;
     using System.Collections.Generic;
@@ -33,7 +32,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestResourceEndpoint
     {
-        [Trait("unit-test", "class Entity")]
+        [Trait("unit-test", "Splunk.Client.Entity")]
         [Fact]
         async Task CanConstructEntity()
         {
@@ -46,7 +45,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class EntityCollection<Entity>")]
+        [Trait("unit-test", "Splunk.Client.EntityCollection<Entity>")]
         [Fact]
         async Task CanConstructEntityCollectionOfEntity()
         {
@@ -73,7 +72,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("unit-test", "class EntityCollection<EntityCollection<Entity>")]
+        [Trait("unit-test", "Splunk.Client.EntityCollection<EntityCollection<Entity>")]
         [Fact]
         async Task CanConstructEntityCollectionOfEntityCollectionOfEntity()
         {

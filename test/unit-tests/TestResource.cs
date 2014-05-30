@@ -19,7 +19,6 @@ namespace Splunk.Client.UnitTests
     using Microsoft.CSharp.RuntimeBinder;
 
     using Splunk.Client;
-    using Splunk.Client.Refactored;
 
     using System;
     using System.Collections.ObjectModel;
@@ -31,7 +30,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestResource
     {
-        [Trait("class", "Resource")]
+        [Trait("unit-test", "Splunk.Client.Resource")]
         [Fact]
         async Task CanConstructResource()
         {

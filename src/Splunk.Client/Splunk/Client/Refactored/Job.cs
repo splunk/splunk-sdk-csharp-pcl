@@ -35,7 +35,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides an object representation of a Splunk search job.
     /// </summary>
-    public class Job : Entity
+    public class Job : Entity, Splunk.Client.Refactored.IJob
     {
         #region Constructors
 
@@ -514,7 +514,7 @@ namespace Splunk.Client.Refactored
         /// of a process.
         /// </note>
         /// </remarks>
-        public int Priority
+        public virtual int Priority
         {
             get { return this.Content.GetValue("Priority", Int32Converter.Instance); }
         }
@@ -522,7 +522,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Gets the search string that is sent to every search peer.
         /// </summary>
-        public string RemoteSearch
+        public virtual string RemoteSearch
         {
             get { return this.Content.GetValue("RemoteSearch", StringConverter.Instance); }
         }
@@ -535,7 +535,7 @@ namespace Splunk.Client.Refactored
         /// A value of <c>indicates</c> that search command has no reporting
         /// commands.
         /// </remarks>
-        public string ReportSearch
+        public virtual string ReportSearch
         {
             get { return this.Content.GetValue("ReportSearch", StringConverter.Instance); }
         }
@@ -543,7 +543,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// 
         /// </summary>
-        public dynamic Request
+        public virtual dynamic Request
         {
             get { return this.Content.GetValue("Request"); }
         }
@@ -555,7 +555,7 @@ namespace Splunk.Client.Refactored
         /// This is the subset of scanned events (represented by the <see cref=
         /// "ScanCount"/> property) that actually matches the search terms.
         /// </remarks>
-        public long ResultCount
+        public virtual long ResultCount
         {
             get { return this.Content.GetValue("ResultCount", Int64Converter.Instance); }
         }
@@ -564,7 +564,7 @@ namespace Splunk.Client.Refactored
         /// Gets a value that indicates if the final results of the search are
         /// available using streaming.
         /// </summary>
-        public bool ResultIsStreaming
+        public virtual bool ResultIsStreaming
         {
             get { return this.Content.GetValue("ResultIsStreaming", BooleanConverter.Instance); }
         }
@@ -572,7 +572,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Gets the number of result rows in the latest preview results.
         /// </summary>
-        public long ResultPreviewCount
+        public virtual long ResultPreviewCount
         {
             get { return this.Content.GetValue("ResultPreviewCount", Int64Converter.Instance); }
         }
@@ -581,7 +581,7 @@ namespace Splunk.Client.Refactored
         /// Gets the time in seconds that the current <see cref="Job"/> took
         /// to complete.
         /// </summary>
-        public double RunDuration
+        public virtual double RunDuration
         {
             get { return this.Content.GetValue("RunDuration", DoubleConverter.Instance); }
         }
@@ -589,7 +589,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// 
         /// </summary>
-        public Runtime_t Runtime
+        public virtual Runtime_t Runtime
         {
             get { return this.Content.GetValue("Runtime", Runtime_t.Converter.Instance); }
         }
@@ -597,7 +597,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Gets the number of events that are scanned or read from disk.
         /// </summary>
-        public long ScanCount
+        public virtual long ScanCount
         {
             get { return this.Content.GetValue("ScanCount", Int64Converter.Instance); }
         }
@@ -606,7 +606,7 @@ namespace Splunk.Client.Refactored
         /// Gets the full text of the search command for the current <see cref=
         /// "Job"/>.
         /// </summary>
-        public string Search
+        public virtual string Search
         {
             get { return this.Snapshot.Title; }
         }
@@ -621,7 +621,7 @@ namespace Splunk.Client.Refactored
         /// all-time searches as <see cref="EarliestTime"/> and <see cref=
         /// "LatestTime"/> do.
         /// </remarks>
-        public DateTime SearchEarliestTime
+        public virtual DateTime SearchEarliestTime
         {
             get { return this.Content.GetValue("SearchEarliestTime", UnixDateTimeConverter.Instance); }
         }
@@ -636,7 +636,7 @@ namespace Splunk.Client.Refactored
         /// all-time searches as <see cref="EarliestTime"/> and <see cref=
         /// "LatestTime"/> do.
         /// </remarks>
-        public DateTime SearchLatestTime
+        public virtual DateTime SearchLatestTime
         {
             get { return this.Content.GetValue("SearchLatestTime", UnixDateTimeConverter.Instance); }
         }
@@ -645,7 +645,7 @@ namespace Splunk.Client.Refactored
         /// Gets the list of all search peers that were contacted by the current
         /// <see cref="Job"/>
         /// </summary>
-        public IReadOnlyList<string> SearchProviders
+        public virtual IReadOnlyList<string> SearchProviders
         {
             get { return this.Content.GetValue("SearchProviders", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
@@ -656,7 +656,7 @@ namespace Splunk.Client.Refactored
         /// <remarks>
         /// This property is a synonym for <see cref="Resource&lt;TResource&gt;.Name"/>.
         /// </remarks>
-        public string Sid
+        public virtual string Sid
         {
             get { return this.Name; }
         }
@@ -664,7 +664,7 @@ namespace Splunk.Client.Refactored
         /// <summary>
         /// Gets the maximum number of timeline buckets.
         /// </summary>
-        public int StatusBuckets
+        public virtual int StatusBuckets
         {
             get { return this.Content.GetValue("StatusBuckets", Int32Converter.Instance); }
         }
@@ -673,14 +673,16 @@ namespace Splunk.Client.Refactored
         /// Gets the time in seconds before the current <see cref="Job"/> expires
         /// after it completes.
         /// </summary>
-        public long Ttl
+        public virtual long Ttl
         {
             get { return this.Content.GetValue("Ttl", Int64Converter.Instance); }
         }
 
         #endregion
 
-        #region Methods for getting, removing, and updating
+        #region Methods
+
+        #region Getting, removing, and updating the current Job
 
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the current <see cref=
@@ -807,18 +809,16 @@ namespace Splunk.Client.Refactored
 
         #endregion
 
-        #region Methods for retrieving search results
+        #region Retrieving search results
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResultStream> GetSearchResultsAsync(SearchResultsArgs args = null)
+        public virtual async Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args = null)
         {
-            await this.TransitionAsync(DispatchState.Done);
-
-            var searchResults = await this.GetSearchResultsAsync("results", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args);
             return searchResults;
         }
 
@@ -827,11 +827,9 @@ namespace Splunk.Client.Refactored
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResultStream> GetSearchResultsEventsAsync(SearchEventArgs args = null)
+        public virtual async Task<SearchResultStream> GetSearchResultsEventsAsync(SearchEventArgs args = null)
         {
-            await this.TransitionAsync(DispatchState.Done);
-
-            var searchResults = await this.GetSearchResultsAsync("events", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args);
             return searchResults;
         }
 
@@ -840,23 +838,21 @@ namespace Splunk.Client.Refactored
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResultStream> GetSearchResultsPreviewAsync(SearchResultsArgs args = null)
+        public virtual async Task<SearchResultStream> GetSearchResultsPreviewAsync(SearchResultArgs args = null)
         {
-            await this.TransitionAsync(DispatchState.Running);
-
-            var searchResults = await this.GetSearchResultsAsync("results_preview", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Running, "results_preview", args);
             return searchResults;
         }
 
         #endregion
 
-        #region Job Control methods
+        #region Job control
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task CancelAsync()
+        public virtual async Task CancelAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
             await this.PostControlCommandAsync(Cancel);
@@ -866,7 +862,7 @@ namespace Splunk.Client.Refactored
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task DisablePreviewAsync()
+        public virtual async Task DisablePreviewAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
             await this.PostControlCommandAsync(DisablePreview);
@@ -876,7 +872,7 @@ namespace Splunk.Client.Refactored
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task EnablePreviewAsync()
+        public virtual async Task EnablePreviewAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
             await this.PostControlCommandAsync(EnablePreview);
@@ -886,7 +882,7 @@ namespace Splunk.Client.Refactored
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task FinalizeAsync()
+        public virtual async Task FinalizeAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
             await this.PostControlCommandAsync(Finalize);
@@ -896,7 +892,7 @@ namespace Splunk.Client.Refactored
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task PauseAsync()
+        public virtual async Task PauseAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
             await this.PostControlCommandAsync(Pause);
@@ -906,7 +902,7 @@ namespace Splunk.Client.Refactored
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task SaveAsync()
+        public virtual async Task SaveAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
             await this.PostControlCommandAsync(Save);
@@ -917,7 +913,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         /// <param name="priority"></param>
         /// <returns></returns>
-        public async Task SetPriorityAsync(int priority)
+        public virtual async Task SetPriorityAsync(int priority)
         {
             await this.TransitionAsync(DispatchState.Running);
 
@@ -933,7 +929,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         /// <param name="ttl"></param>
         /// <returns></returns>
-        public async Task SetTtlAsync(int ttl)
+        public virtual async Task SetTtlAsync(int ttl)
         {
             await this.TransitionAsync(DispatchState.Running);
 
@@ -949,7 +945,7 @@ namespace Splunk.Client.Refactored
         /// </summary>
         /// <param name="ttl"></param>
         /// <returns></returns>
-        public async Task TouchAsync(int ttl)
+        public virtual async Task TouchAsync(int ttl)
         {
             await this.TransitionAsync(DispatchState.Running);
 
@@ -964,7 +960,7 @@ namespace Splunk.Client.Refactored
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task UnpauseAsync()
+        public virtual async Task UnpauseAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
             await this.PostControlCommandAsync(Unpause);
@@ -974,71 +970,17 @@ namespace Splunk.Client.Refactored
         /// 
         /// </summary>
         /// <returns></returns>
-        public async Task UnsaveAsync()
+        public virtual async Task UnsaveAsync()
         {
             await this.TransitionAsync(DispatchState.Running);
             await this.PostControlCommandAsync(Unsave);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="args">
-        /// 
-        /// </param>
-        /// <returns></returns>
-        public async Task UpdateJobArgs(JobArgs args)
-        {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
-        }
+        #endregion
 
         #endregion
 
-        #region Infrastructure methods used by our base class, Entity
-
-#if false
-        /// <summary>
-        /// Infrastructure. Asynchronously brings the current <see cref=
-        /// "Job"/> up to date with new metadata and content.
-        /// </summary>
-        /// <param name="response">
-        /// An <see cref="AtomFeed"/> or <see cref="AtomEntry"/> response.
-        /// </param>
-        protected override async Task UpdateSnapshotAsync(Response response)
-        {
-            var reader = response.XmlReader;
-
-            reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));
-            AtomEntry entry;
-
-            if (reader.Name == "feed")
-            {
-                AtomFeed feed = new AtomFeed();
-                await feed.ReadXmlAsync(reader);
-
-                if (feed.Entries.Count != 1)
-                {
-                    throw new InvalidDataException(); // TODO: Diagnostics : cardinality violation
-                }
-
-                entry = feed.Entries[0];
-            }
-            else
-            {
-                entry = new AtomEntry();
-                await entry.ReadXmlAsync(reader);
-            }
-
-            this.Snapshot = new EntitySnapshot(entry);
-        }
-#endif
-
-        #endregion
-
-        #region Privates
+        #region Privates/internals
 
         static readonly Argument[] Cancel = new Argument[] 
         { 
@@ -1080,8 +1022,10 @@ namespace Splunk.Client.Refactored
             new Argument("action", "unsave") 
         };
 
-        async Task<SearchResultStream> GetSearchResultsAsync(string endpoint, IEnumerable<Argument> args)
+        async Task<SearchResultStream> GetSearchResultsAsync(DispatchState dispatchState, string endpoint, IEnumerable<Argument> args)
         {
+            await this.TransitionAsync(dispatchState);
+
             var resourceName = new ResourceName(this.ResourceName, endpoint);
             var response = await this.Context.GetAsync(this.Namespace, resourceName, args);
 

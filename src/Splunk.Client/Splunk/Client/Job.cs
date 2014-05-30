@@ -823,7 +823,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResultStream> GetSearchResultsAsync(SearchResultsArgs args = null)
+        public async Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args = null)
         {
             await this.TransitionAsync(DispatchState.Done);
 
@@ -849,7 +849,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task<SearchResultStream> GetSearchResultsPreviewAsync(SearchResultsArgs args = null)
+        public async Task<SearchResultStream> GetSearchResultsPreviewAsync(SearchResultArgs args = null)
         {
             await this.TransitionAsync(DispatchState.Running);
 

@@ -34,7 +34,7 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public sealed class SearchResultsArgs : Args<SearchResultsArgs>
+    public sealed class SearchResultArgs : Args<SearchResultArgs>
     {
         #region Properties
 

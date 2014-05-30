@@ -48,37 +48,47 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-#if false
         [Trait("unit-test", "class JobCollection")]
         [Fact]
         async Task CanConstructJobCollection()
         {
-            var feed = await TestAtomFeed.Read(Path.Combine(TestAtomFeed.Directory, "JobCollection.GetAsync.xml"));
+            var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "JobCollection.GetAsync.xml"));
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var expectedNames = new string[] 
-                { 
-                    ":foobar:",
-                    "splunk.com:foobar:",
-                    "splunk\\:com:foobar:"
+                var expectedNames = new string[]
+                {
+                    "scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866",
+                    "scheduler__admin__search__RMD54d0063ad31759fca_at_1401390000_867",
+                    "scheduler__admin__search__RMD581bb7159c0bb0bbb_at_1401390000_862",
+                    "scheduler__admin__search__RMD58306e622619a7dcd_at_1401390000_863",
+                    "scheduler__admin__search__RMD5a7321db12d7631bf_at_1401390000_865",
+                    "scheduler__admin__search__RMD5e658dbdf77ae86f8_at_1401390000_864",
+                    "scheduler__admin__search__RMD5f8965a6a2fa31c5d_at_1401390000_861",
+                    "scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401386400_859",
+                    "scheduler__admin__search__RMD54d0063ad31759fca_at_1401386400_860",
+                    "scheduler__admin__search__RMD581bb7159c0bb0bbb_at_1401386400_855",
+                    "scheduler__admin__search__RMD58306e622619a7dcd_at_1401386400_856",
+                    "scheduler__admin__search__RMD5a7321db12d7631bf_at_1401386400_858",
+                    "scheduler__admin__search__RMD5e658dbdf77ae86f8_at_1401386400_857",
+                    "scheduler__admin__search__RMD5f8965a6a2fa31c5d_at_1401386400_854"
                 };
 
-                var passwords = new Refactored.JobCollection(context, feed);
+                var jobs = new Refactored.JobCollection(context, feed);
 
-                Assert.Equal(expectedNames, from password in passwords select password.Title);
-                Assert.Equal(expectedNames.Length, passwords.Count);
-                CheckCommonProperties("passwords", passwords);
+                Assert.Equal(expectedNames.Length, jobs.Count);
+                var names = from job in jobs select job.Name;
+                Assert.Equal(expectedNames, names);
+                CheckCommonProperties("jobs", jobs);
 
-                for (int i = 0; i < passwords.Count; i++)
+                for (int i = 0; i < jobs.Count; i++)
                 {
                     var entry = feed.Entries[i];
-                    var password = passwords[i];
-                    CheckJob(entry, password);
+                    var job = jobs[i];
+                    CheckJob(entry, job);
                 }
             }
         }
-#endif
 
         void CheckCommonProperties(string expectedName, ResourceEndpoint resourceEndpoint)
         {

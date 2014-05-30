@@ -63,6 +63,7 @@ namespace Splunk.Client.Refactored
 
             this.storagePasswords = new StoragePasswordCollection(this);
             this.configurations = new ConfigurationCollection(this);
+            this.savedSearches = new SavedSearchCollection(this);
             this.applications = new ApplicationCollection(this);
             this.indexes = new IndexCollection(this);
             this.transmitter = new Transmitter(this);
@@ -136,6 +137,22 @@ namespace Splunk.Client.Refactored
         public ConfigurationCollection Indexes
         {
             get { return this.configurations; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public JobCollection Jobs
+        {
+            get { return this.jobs; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public SavedSearchCollection SavedSearches
+        {
+            get { return this.savedSearches; }
         }
 
         /// <summary>
@@ -261,92 +278,9 @@ namespace Splunk.Client.Refactored
             }
         }
 
-        /// <summary>
-        /// Asynchronously removes a storage password.
-        /// </summary>
-        /// <param name="name">
-        /// Storage password name.
-        /// </param>
-        /// <param name="realm">
-        /// Storage password realm.
-        /// </param>
-        /// <returns></returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/JGm0JP">DELETE 
-        /// storage/passwords/{name}</a> endpoint to remove the <see cref=
-        /// "StoragePassword"/> identified by <paramref name="name"/>.
-        /// </remarks>
-        public async Task RemoveStoragePasswordAsync(string name, string realm = null)
-        {
-            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
-            await resource.RemoveAsync();
-        }
-
-        /// <summary>
-        /// Asynchronously updates a storage password.
-        /// </summary>
-        /// <param name="password">
-        /// Storage password.
-        /// </param>
-        /// <param name="name">
-        /// Storage password name.
-        /// </param>
-        /// <param name="realm">
-        /// Storage password realm.
-        /// </param>
-        /// <returns>
-        /// An object representing the updated storage password.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/HL3c0T">POST 
-        /// storage/passwords/{name}</a> endpoint to update the storage
-        /// password identified by <paramref name="name"/>.
-        /// </remarks>
-        public async Task<StoragePassword> UpdateStoragePasswordAsync(string password, string name, string realm = null)
-        {
-            var resource = new StoragePassword(this.Context, this.Namespace, name, realm);
-            await resource.UpdateAsync(password);
-            return resource;
-        }
-
         #endregion
 
         #region Saved searches
-
-        /// <summary>
-        /// Asynchronously creates a new saved search.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the saved search to be created.
-        /// </param>
-        /// <param name="search">
-        /// A Splunk search command.
-        /// </param>
-        /// <param name="attributes">
-        /// Attributes of the saved search to be created.
-        /// </param>
-        /// <param name="dispatchArgs">
-        /// Dispatch arguments for the saved search to be created.
-        /// </param>
-        /// <param name="templateArgs">
-        /// Template arguments for the saved search to be created.
-        /// </param>
-        /// <returns>
-        /// An object representing the saved search that was created.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/EPQypw">POST 
-        /// saved/searches</a> endpoint to create the <see cref="SavedSearch"/>
-        /// object it returns.
-        /// </remarks>
-        public async Task<SavedSearch> CreateSavedSearchAsync(string name, string search, 
-            SavedSearchAttributes attributes = null, SavedSearchDispatchArgs dispatchArgs = null, 
-            SavedSearchTemplateArgs templateArgs = null)
-        {
-            var resource = new SavedSearch(this.Context, this.Namespace, name);
-            await resource.CreateAsync(search, attributes, dispatchArgs, templateArgs);
-            return resource;
-        }
 
         /// <summary>
         /// Asynchronously dispatches a <see cref="SavedSearch"/> just like the
@@ -369,7 +303,8 @@ namespace Splunk.Client.Refactored
         /// saved/searches/{name}/dispatch</a> endpoint to dispatch the <see 
         /// cref="SavedSearch"/> identified by <paramref name="name"/>.
         /// </remarks>
-        public async Task<Splunk.Client.Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null,
+        public async Task<Job> DispatchSavedSearchAsync(string name,
+            SavedSearchDispatchArgs dispatchArgs = null,
             SavedSearchTemplateArgs templateArgs = null)
         {
             var savedSearch = new SavedSearch(this.Context, this.Namespace, name);
@@ -377,126 +312,6 @@ namespace Splunk.Client.Refactored
             return job;
         }
 
-        /// <summary>
-        /// Asynchronously retrieves the named <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="SavedSearch"/> to be retrieved.
-        /// </param>
-        /// <param name="args">
-        /// Constrains the information returned about the <see cref=
-        /// "SavedSearch"/>.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
-        /// saved/searches/{name}</a> endpoint to get the <see cref=
-        /// "SavedSearch"/> identified by <paramref name="name"/>.
-        /// </remarks>
-        public async Task<SavedSearch> GetSavedSearchAsync(string name, SavedSearchFilterArgs args = null)
-        {
-            var resource = new SavedSearch(this.Context, this.Namespace, name);
-            await resource.GetAsync(args);
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a collection of saved searches.
-        /// </summary>
-        /// <param name="args">
-        /// Arguments identifying the collection of <see cref="SavedSearch"/>
-        /// entries to retrieve.
-        /// </param>
-        /// <returns>
-        /// A new <see cref="SavedSearchCollection"/> containing the <see cref=
-        /// "SavedSearch"/> entries identified by <paramref name="args"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/bKrRK0">GET 
-        /// saved/searches</a> endpoint to retrieve a new <see cref=
-        /// "SavedSearchCollection"/> containing the <see cref="SavedSearch"/> 
-        /// entries identified by <paramref name="args"/>.
-        /// </remarks>
-        public async Task<SavedSearchCollection> GetSavedSearchesAsync(SavedSearchCollectionArgs args = null)
-        {
-            var resource = new SavedSearchCollection(this.Context, this.Namespace, args);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously removes a saved search.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the saved search to be removed.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/sn7qC5">DELETE 
-        /// saved/searches/{name}</a> endpoint to remove the saved search
-        /// identified by <paramref name="name"/>.
-        /// </remarks>
-        public async Task RemoveSavedSearchAsync(string name)
-        {
-            var resource = new SavedSearch(this.Context, this.Namespace, name);
-            await resource.RemoveAsync();
-        }
-
-        /// <summary>
-        /// Asynchronously updates a saved search.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the saved search to be updated.
-        /// </param>
-        /// <param name="attributes">
-        /// New attributes for the saved search to be updated.
-        /// </param>
-        /// <param name="dispatchArgs">
-        /// New dispatch arguments for the saved search to be updated.
-        /// </param>
-        /// <param name="templateArgs">
-        /// New template arguments for the saved search to be updated.
-        /// </param>
-        /// <returns>
-        /// An object representing the saved search that was updated.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/aV9eiZ">POST 
-        /// saved/searches/{name}</a> endpoint to update the saved search
-        /// identified by <paramref name="name"/>.
-        /// </remarks>
-        public async Task<SavedSearch> UpdateSavedSearchAsync(string name, SavedSearchAttributes attributes = null, 
-            SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
-        {
-            var resource = new SavedSearch(this.Context, this.Namespace, name);
-            await resource.UpdateAsync(attributes, dispatchArgs, templateArgs);
-            return resource;
-        }
-
-#if false
-        /// <summary>
-        /// Asynchronously retrieves the collection of jobs created from a
-        /// saved search.
-        /// </summary>
-        /// <param name="name">
-        /// Name of a saved search.
-        /// </param>
-        /// <returns>
-        /// An object representing the collection of jobs created from the
-        /// saved search identified by <paramref name="name"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/kv9L1l">GET 
-        /// saved/searches/{name}/history</a> endpoint to get the collection of
-        /// jobs created from the <see cref="SavedSearch"/> identified by <paramref 
-        /// name="name"/>.
-        /// </remarks>
-        public async Task<JobCollection> GetSavedSearchHistoryAsync(string name)
-        {
-            var savedSearch = new SavedSearch(this.Context, this.Namespace, name);
-            var jobs = await savedSearch.GetHistoryAsync();
-            return jobs;
-        }
-
-#endif
         #endregion
 
         #region Search jobs
@@ -591,6 +406,30 @@ namespace Splunk.Client.Refactored
                 response.Dispose();
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="search">
+        /// 
+        /// </param>
+        /// <param name="args">
+        /// 
+        /// </param>
+        /// <param name="customArgs">
+        /// 
+        /// </param>
+        /// <param name="blocking">
+        /// 
+        /// </param>
+        /// <returns>
+        /// An object representing a Splunk search job.
+        /// </returns>
+        public async Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        {
+            var job = await this.Jobs.CreateAsync(search, args, customArgs);
+            return job;
         }
 
         /// <summary>
@@ -721,6 +560,7 @@ namespace Splunk.Client.Refactored
 
         readonly StoragePasswordCollection storagePasswords;
         readonly ConfigurationCollection configurations;
+        readonly SavedSearchCollection savedSearches;
         readonly ApplicationCollection applications;
         readonly IndexCollection indexes;
         readonly Transmitter transmitter;

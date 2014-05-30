@@ -145,7 +145,7 @@ namespace Splunk.Client
         /// <remarks>
         /// Not all operations produce messages.
         /// </remarks>
-        public IReadOnlyList<Message> Messages
+        public virtual IReadOnlyList<Message> Messages
         {
             get { return this.data.Messages; }
         }
@@ -154,7 +154,7 @@ namespace Splunk.Client
         /// Gets the pagination attributes for the current <see cref=
         /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
         /// </summary>
-        public Pagination Pagination
+        public virtual Pagination Pagination
         {
             get { return this.data.Pagination; }
         }

@@ -105,6 +105,7 @@
     <Compile Include="Splunk\Client\Refactored\IJobCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\Index.cs" />
     <Compile Include="Splunk\Client\Refactored\IndexCollection.cs" />
+    <Compile Include="Splunk\Client\Refactored\ISavedSearchCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\IServerInfo.cs" />
     <Compile Include="Splunk\Client\Refactored\IPaginated.cs" />
     <Compile Include="Splunk\Client\Refactored\IServer.cs" />
@@ -115,6 +116,8 @@
     <Compile Include="Splunk\Client\Refactored\JobCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\Resource.cs" />
     <Compile Include="Splunk\Client\Refactored\ResourceEndpoint.cs" />
+    <Compile Include="Splunk\Client\Refactored\SavedSearch.cs" />
+    <Compile Include="Splunk\Client\Refactored\SavedSearchCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\Server.cs" />
     <Compile Include="Splunk\Client\Refactored\IServerMessageCollection.cs" />
     <Compile Include="Splunk\Client\Refactored\IServerMessage.cs" />

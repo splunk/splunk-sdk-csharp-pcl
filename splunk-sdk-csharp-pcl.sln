@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-export", "examples\s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-realtime", "examples\search-realtime\search-realtime.csproj", "{D10A0063-A2DA-4F41-B54F-EE6E7FC57C41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDKHelper", "sdkhelper\SDKHelper.csproj", "{0B0C43F2-EA9C-45EE-A8F7-7A2916DD1717}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

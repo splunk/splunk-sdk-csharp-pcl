@@ -33,23 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Reactive.Core">
-      <HintPath>..\..\packages\Rx-Core.2.2.4\lib\net45\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces">
-      <HintPath>..\..\packages\Rx-Interfaces.2.2.4\lib\net45\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq">
-      <HintPath>..\..\packages\Rx-Linq.2.2.4\lib\net45\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -57,14 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Fakes Include="Fakes\System.Data.fakes" />
-    <Fakes Include="Fakes\System.Data.DataSetExtensions.fakes" />
-    <Fakes Include="Fakes\System.Reactive.Core.fakes" />
-    <Fakes Include="Fakes\System.Reactive.Interfaces.fakes" />
-    <Fakes Include="Fakes\System.Reactive.Linq.fakes" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\sdkhelper\SDKHelper.csproj">
+      <Project>{0b0c43f2-ea9c-45ee-a8f7-7a2916dd1717}</Project>
+      <Name>SDKHelper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
       <Project>{DE65F0D5-7753-483E-8933-E6DB22350F04}</Project>
       <Name>Splunk.Client</Name>

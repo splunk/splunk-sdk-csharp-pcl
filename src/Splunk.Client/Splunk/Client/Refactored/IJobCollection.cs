@@ -29,7 +29,7 @@ namespace Splunk.Client.Refactored
     using System.Threading.Tasks;
 
     [ContractClass(typeof(IJobCollectionContract<>))]
-    interface IJobCollection<TJob> : IPaginated, IEntityCollection<TJob> 
+    public interface IJobCollection<TJob> : IPaginated, IEntityCollection<TJob> 
         where TJob : ResourceEndpoint, IJob, new()
     {
         Task<TJob> CreateAsync(string search, JobArgs args, CustomJobArgs customArgs, DispatchState requiredState);

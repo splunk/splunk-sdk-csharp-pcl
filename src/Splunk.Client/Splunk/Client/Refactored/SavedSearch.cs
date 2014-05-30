@@ -36,7 +36,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Provides an object representation of a Splunk saved search.
     /// </summary>
-    public class SavedSearch : Entity
+    public class SavedSearch : Entity, ISavedSearch
     {
         #region Constructors
 
@@ -141,171 +141,121 @@ namespace Splunk.Client.Refactored
 
         #region Properties
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Action_t Actions
         {
             get { return this.Content.GetValue("Action", Action_t.Converter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Alert_t Alert
         {
             get { return this.Content.GetValue("Alert", Alert_t.Converter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual AutoSummarize_t AutoSummarize
         {
             get { return this.Content.GetValue("AutoSummarize", AutoSummarize_t.Converter.Instance); }
         }
 
-        /// <summary>
-        /// Gets or sets the cron schedule to execute the current <see cref=
-        /// "SavedSearch"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string CronSchedule
         {
             get { return this.Content.GetValue("CronSchedule", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets the human-readable description of the current <see cref=
-        /// "SavedSearch"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string Description
         {
             get { return this.Content.GetValue("Description", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Dispatch_t Dispatch
         {
             get { return this.Content.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Display_t Display
         {
             get { return this.Content.GetValue("Display", Display_t.Converter.Instance); }
         }
 
-        /// <summary>
-        /// Gets the access control lists for the current <see cref=
-        /// "SavedSearch"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
-        /// <summary>
-        /// Gets a value that indicates if the current <see cref="SavedSearch"/>
-        /// is disabled.
-        /// </summary>
-        /// <remarks>
-        /// Disabled saved searches are not visible in Splunk Web.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual bool IsDisabled
         {
             get { return this.Content.GetValue("IsDisabled", BooleanConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets a value that indicates whether the current <see cref=
-        /// "SavedSearch"/> runs on a schedule.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual bool IsScheduled
         {
             get { return this.Content.GetValue("IsScheduled", BooleanConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets a value that indicates whether the current <see cref=
-        /// "SavedSearch"/> appears in the list of saved searches on Splunk
-        /// Web.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual bool IsVisible
         {
             get { return this.Content.GetValue("IsVisible", BooleanConverter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual int MaxConcurrent
         {
             get { return this.Content.GetValue("MaxConcurrent", Int32Converter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual DateTime NextScheduledTime
         {
             get { return this.Content.GetValue("NextScheduledTime", DateTimeConverter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual bool RealtimeSchedule
         {
             get { return this.Content.GetValue("RealtimeSchedule", BooleanConverter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual Request_t Request
         {
             get { return this.Content.GetValue("Request", Request_t.Converter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual bool RestartOnSearchPeerAdd
         {
             get { return this.Content.GetValue("RestartOnSearchpeerAdd", BooleanConverter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string QualifiedSearch
         {
             get { return this.Content.GetValue("QualifiedSearch", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual bool RunOnStartup
         {
             get { return this.Content.GetValue("RunOnStartup", BooleanConverter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public virtual IReadOnlyList<DateTime> ScheduledTimes
         {
             get { return this.Content.GetValue("ScheduledTimes", CollectionConverter<DateTime, List<DateTime>, UnixDateTimeConverter>.Instance); }
         }
 
-        /// <summary>
-        /// Gets the search command for the current <see cref="SavedSearch"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public virtual string Search
         {
             get { return this.Content.GetValue("Search", StringConverter.Instance); }
@@ -315,26 +265,7 @@ namespace Splunk.Client.Refactored
 
         #region Methods
 
-        /// <summary>
-        /// Dispatches the current <see cref="SavedSearch"/> just like the 
-        /// scheduler would.
-        /// </summary>
-        /// <param name="dispatchArgs">
-        /// A set of arguments to the dispatcher.
-        /// </param>
-        /// <param name="templateArgs">
-        /// A set of template arguments to the saved search.
-        /// </param>
-        /// <returns>
-        /// An object representing the search job created by the dispatcher.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/AfzBJO">POST 
-        /// saved/searches/{name}/dispatch</a> endpoint to dispatch the 
-        /// current <see cref="SavedSearch"/>. It then uses the <a href=
-        /// "http://goo.gl/C9qc98">GET search/jobs/{search_id}</a> endpoint to 
-        /// retrieve the <see cref="Job"/> object that it returns.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task<Job> DispatchAsync(SavedSearchDispatchArgs dispatchArgs = null, 
             SavedSearchTemplateArgs templateArgs = null)
         {
@@ -353,24 +284,9 @@ namespace Splunk.Client.Refactored
             return job;
         }
 
-        /// <summary>
-        /// Asynchronously retrieves information about the current <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <param name="criteria">
-        /// Constrains the information returned about the current instance.
-        /// </param>
-        /// <returns>
-        /// A <see cref="Task"/> representing this operation.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/L4JLwn">GET 
-        /// saved/searches/{name}</a> endpoint to get information about the
-        /// current <see cref="SavedSearch"/> instance.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task GetAsync(Filter criteria)
         {
-            Contract.Requires<ArgumentNullException>(criteria != null);
-
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, criteria))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
@@ -378,19 +294,7 @@ namespace Splunk.Client.Refactored
             }
         }
 
-        /// <summary>
-        /// Asynchronously retrieves the collection of jobs created from the
-        /// current instance.
-        /// </summary>
-        /// <returns>
-        /// An object representing the collection of jobs created from the
-        /// current instance.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/kv9L1l">GET 
-        /// saved/searches/{name}/history</a> endpoint to construct the <see 
-        /// cref="JobCollection"/> object it returns.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task<JobCollection> GetHistoryAsync()
         {
             var resourceName = new ResourceName(this.ResourceName, "history");
@@ -407,23 +311,7 @@ namespace Splunk.Client.Refactored
             }
         }
 
-        /// <summary>
-        /// Asynchronously retrieves the scheduled times for the current
-        /// <see cref="SavedSearch"/>.
-        /// </summary>
-        /// <param name="earliestTime">
-        /// An absolute or relative time string specifying a lower-bound for
-        /// the scheduled time range.
-        /// </param>
-        /// <param name="latestTime">
-        /// An absolute or relative time string specifying a upper-bound for
-        /// the scheduled time range.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/jFifZ7">GET 
-        /// saved/searches/{name}/scheduled_times</a> endpoint to retrieve
-        /// the scheduled times it returns.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(DateTime earliestTime, 
             DateTime latestTime)
         {
@@ -448,20 +336,7 @@ namespace Splunk.Client.Refactored
             return this.ScheduledTimes;
         }
 
-        /// <summary>
-        /// Asynchronously reschedules the saved search represented by the 
-        /// current instance.
-        /// </summary>
-        /// <param name="scheduleTime">
-        /// A time string specifying the next time to run the search. This 
-        /// value defaults to null indicating that the saved search should
-        /// be run as soon as possible.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SJcEr5">POST 
-        /// saved/searches/{name}/reschedule</a> endpoint to reschedule the 
-        /// saved search represented by the current instance.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task ScheduleAsync(DateTime? scheduleTime = null)
         {
             var resourceName = new ResourceName(this.ResourceName, "reschedule");
@@ -477,37 +352,11 @@ namespace Splunk.Client.Refactored
             }
         }
 
-        /// <summary>
-        /// Asynchronously updates the saved search represented by the current
-        /// instance.
-        /// </summary>
-        /// <param name="attributes">
-        /// New attributes for the saved search to be updated.
-        /// </param>
-        /// <param name="dispatchArgs">
-        /// New dispatch arguments for the saved search to be updated.
-        /// </param>
-        /// <param name="templateArgs">
-        /// New template arguments for the saved search to be updated.
-        /// </param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the operation.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="attributes"/>, <paramref name="dispatchArgs"/>, and <paramref 
-        /// name="templateArgs"/> are <c>null</c>.
-        /// </exception>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/aV9eiZ">POST 
-        /// saved/searches{name}</a> endpoint to update the saved search
-        /// represented by the current instance.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task UpdateAsync(SavedSearchAttributes attributes = null, 
             SavedSearchDispatchArgs dispatchArgs = null, 
             SavedSearchTemplateArgs templateArgs = null)
         {
-            Contract.Requires<ArgumentException>(!(attributes == null && dispatchArgs == null && templateArgs == null));
-
             IEnumerable<Argument> arguments = Enumerable.Empty<Argument>();
 
             if (attributes != null)

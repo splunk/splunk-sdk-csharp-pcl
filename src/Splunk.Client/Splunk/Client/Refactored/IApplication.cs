@@ -17,6 +17,7 @@
 namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
+
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;

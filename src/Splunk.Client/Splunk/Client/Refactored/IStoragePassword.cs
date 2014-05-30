@@ -28,7 +28,7 @@ namespace Splunk.Client.Refactored
     using System.Threading.Tasks;
 
     [ContractClass(typeof(IStoragePasswordContract))]
-    interface IStoragePassword : IEntity
+    public interface IStoragePassword : IEntity
     {
         #region Properties
 

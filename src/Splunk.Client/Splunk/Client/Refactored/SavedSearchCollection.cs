@@ -34,7 +34,7 @@ namespace Splunk.Client.Refactored
     /// <summary>
     /// Represents a collection of saved searches.
     /// </summary>
-    public class SavedSearchCollection : EntityCollection<SavedSearch>, ISavedSearchCollection
+    public class SavedSearchCollection : EntityCollection<SavedSearch>, ISavedSearchCollection<SavedSearch>
     {
         #region Constructors
 
@@ -123,35 +123,10 @@ namespace Splunk.Client.Refactored
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously creates a new saved search.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the saved search to be created.
-        /// </param>
-        /// <param name="search">
-        /// A Splunk search command.
-        /// </param>
-        /// <param name="attributes">
-        /// Attributes of the saved search to be created.
-        /// </param>
-        /// <param name="dispatchArgs">
-        /// Dispatch arguments for the saved search to be created.
-        /// </param>
-        /// <param name="templateArgs">
-        /// Template arguments for the saved search to be created.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/EPQypw">POST 
-        /// saved/searches</a> endpoint to create the <see cref="SavedSearch"/>
-        /// represented by the current instance.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task<SavedSearch> CreateAsync(string name, string search, SavedSearchAttributes attributes, 
             SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
-            Contract.Requires<ArgumentNullException>(name != null);
-
             var args = new Argument[]
             { 
                 new Argument("name", this.Name), 
@@ -178,6 +153,12 @@ namespace Splunk.Client.Refactored
             return savedSearch;
         }
 
+        /// <inheritdoc/>
+        public virtual async Task GetSliceAsync(Filter criteria)
+        {
+            await this.GetSliceAsync(criteria.AsEnumerable());
+        }
+
         #endregion
 
         #region Privates/internals
@@ -187,6 +168,138 @@ namespace Splunk.Client.Refactored
         #endregion
 
         #region Types
+
+        /// <summary>
+        /// Provides the arguments required for retrieving <see cref="SavedSearch"/>
+        /// entries.
+        /// </summary>
+        /// <remarks>
+        /// <para><b>References:</b></para>
+        /// <list type="number">
+        /// <item><description>
+        ///     <a href="http://goo.gl/bKrRK0">REST API: GET saved/searches</a>
+        /// </description></item>
+        /// </list>
+        /// </remarks>
+        public sealed class Filter : Args<Filter>
+        {
+            /// <summary>
+            /// Gets or sets a value specifying the maximum number of <see cref=
+            /// "SavedSearch"/> entries to return.
+            /// </summary>
+            /// <remarks>
+            /// If the value of <c>Count</c> is set to zero, then all <see cref=
+            /// "SavedSearch"/> entries are returned. The default value is 30.
+            /// </remarks>
+            [DataMember(Name = "count", EmitDefaultValue = false)]
+            [DefaultValue(30)]
+            public int Count
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets the lower bound of the time window for which saved 
+            /// search schedules should be returned.
+            /// </summary>
+            /// <remarks>
+            /// This property specifies that all the scheduled times starting from 
+            /// this time (not just the next run time) should be returned.
+            /// </remarks>
+            [DataMember(Name = "earliest_time", EmitDefaultValue = false)]
+            [DefaultValue(null)]
+            public string EarliestTime
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets the upper bound of the time window for which saved 
+            /// search schedules should be returned.
+            /// </summary>
+            /// <remarks>
+            /// This property specifies that all the scheduled times ending with 
+            /// this time (not just the next run time) should be returned.
+            /// </remarks>
+            [DataMember(Name = "latest_time", EmitDefaultValue = false)]
+            [DefaultValue(null)]
+            public string LatestTime
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether to list default actions for
+            /// <see cref="SavedSearch"/> entries.
+            /// </summary>
+            /// <remarks>
+            /// The default value is <c>false</c>.
+            /// </remarks>
+            [DataMember(Name = "listDefaultActionArgs", EmitDefaultValue = false)]
+            [DefaultValue(false)]
+            public bool ListDefaultActions
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value specifying the first result (inclusive) from 
+            /// which to begin returning entries.
+            /// </summary>
+            /// <remarks>
+            /// The <c>Offset</c> property is zero-based and cannot be negative. 
+            /// The default value is zero.
+            /// </remarks>
+            /// <remarks>
+            /// This value is zero-based and cannot be negative. The default value
+            /// is zero.
+            /// </remarks>
+            [DataMember(Name = "offset", EmitDefaultValue = false)]
+            [DefaultValue(0)]
+            public int Offset
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets a search expression to filter <see cref=
+            /// "SavedSearch"/> entries.
+            /// </summary>
+            /// <remarks>
+            /// Use this expression to filter the entries returned based on <see
+            /// cref="SavedSearch"/> properties.
+            /// </remarks>
+            [DataMember(Name = "search", EmitDefaultValue = false)]
+            [DefaultValue(null)]
+            public string Search // TODO: Good search example for App
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value indicating whether to sort returned <see cref=
+            /// "SavedSearch"/>entries in ascending or descending order.
+            /// </summary>
+            /// <remarks>
+            /// The default value is <see cref="SortDirection"/>.Ascending.
+            /// </remarks>
+            [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
+            [DefaultValue(SortDirection.Ascending)]
+            public SortDirection SortDirection
+            { get; set; }
+
+            /// <summary>
+            /// <see cref="Job"/> property to use for sorting.
+            /// </summary>
+            /// <remarks>
+            /// The default <see cref="SavedSearch"/> property to use for sorting 
+            /// is <c>"name"</c>.
+            /// </remarks>
+            [DataMember(Name = "sort_key", EmitDefaultValue = false)]
+            [DefaultValue("name")]
+            public string SortKey
+            { get; set; }
+
+            /// <summary>
+            /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
+            /// cref="Application"/> entries.
+            /// </summary>
+            /// <remarks>
+            /// The default value is <see cref="SortMode"/>.Automatic.
+            /// </remarks>
+            [DataMember(Name = "sort_mode", EmitDefaultValue = false)]
+            [DefaultValue(SortMode.Automatic)]
+            public SortMode SortMode
+            { get; set; }
+        }
 
         #endregion
     }

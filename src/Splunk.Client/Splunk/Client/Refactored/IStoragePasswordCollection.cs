@@ -9,7 +9,7 @@
     using System.Threading.Tasks;
 
     [ContractClass(typeof(IStoragePasswordCollectionContract<>))]
-    interface IStoragePasswordCollection<TStoragePassword> : IPaginated, IEntityCollection<TStoragePassword>
+    public interface IStoragePasswordCollection<TStoragePassword> : IPaginated, IEntityCollection<TStoragePassword>
         where TStoragePassword : ResourceEndpoint, IStoragePassword, new()
     {
         /// <summary>

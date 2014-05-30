@@ -26,7 +26,7 @@ namespace Splunk.Client.Refactored
     using System.Threading.Tasks;
 
     [ContractClass(typeof(IJobContract))]
-    interface IJob : IEntity
+    public interface IJob : IEntity
     {
         #region Properties
 

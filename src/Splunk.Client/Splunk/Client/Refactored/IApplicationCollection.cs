@@ -55,16 +55,16 @@ namespace Splunk.Client.Refactored
         Task<TApplication> CreateAsync(string template, ApplicationAttributes attributes = null);
 
         /// <summary>
-        /// Asynchronously retrieves select entities from the list of entites
-        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// Asynchronously retrieves select entities in the current application 
+        /// entity collection.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
         /// <remarks>
         /// Following completion of the operation the list of entities in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
-        /// all changes since the select entites were last retrieved.
+        /// current application entity collection will contain all changes 
+        /// since the select entities were last retrieved.
         /// </remarks>
         Task GetSliceAsync(ApplicationCollection.Filter criteria);
 

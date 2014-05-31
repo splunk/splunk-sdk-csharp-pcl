@@ -151,72 +151,78 @@ namespace Splunk.Client
         #region Properties
 
         /// <inheritdoc/>
-        public string Author
+        public virtual string ApplicationAuthor
+        {
+            get { return this.Content.GetValue("Author", StringConverter.Instance); }
+        }
+
+        /// <inheritdoc/>
+        public virtual string Author
         {
             get { return this.GetValue("Author", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public bool CheckForUpdates
+        public virtual bool CheckForUpdates
         {
             get { return this.Content.GetValue("CheckForUpdates", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public bool Configured
+        public virtual bool Configured
         {
             get { return this.Content.GetValue("Configured", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public string Description
+        public virtual string Description
         {
             get { return this.Content.GetValue("Description", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public bool Disabled
+        public virtual bool Disabled
         {
             get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public Eai Eai
+        public virtual Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <inheritdoc/>
-        public string Label
+        public virtual string Label
         {
             get { return this.Content.GetValue("Label", StringConverter.Instance); }
         }
 
-        public IReadOnlyDictionary<string, Uri> Links
+        public virtual IReadOnlyDictionary<string, Uri> Links
         {
             get { return this.Snapshot.GetValue("Links"); }
         }
 
         /// <inheritdoc/>
-        public bool Refresh
+        public virtual bool Refresh
         {
             get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public bool StateChangeRequiresRestart
+        public virtual bool StateChangeRequiresRestart
         {
             get { return this.Content.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public string Version
+        public virtual string Version
         {
             get { return this.Content.GetValue("Version", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public bool Visible
+        public virtual bool Visible
         {
             get { return this.Content.GetValue("Visible", BooleanConverter.Instance); }
         }
@@ -226,7 +232,7 @@ namespace Splunk.Client
         #region Methods
 
         /// <inheritdoc/>
-        public async Task DisableAsync()
+        public virtual async Task DisableAsync()
         {
             var resourceName = new ResourceName(this.ResourceName, "disable");
 
@@ -237,7 +243,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public async Task EnableAsync()
+        public virtual async Task EnableAsync()
         {
             var resourceName = new ResourceName(this.ResourceName, "enable");
 
@@ -248,7 +254,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public async Task<ApplicationSetupInfo> GetSetupInfoAsync()
+        public virtual async Task<ApplicationSetupInfo> GetSetupInfoAsync()
         {
             var resourceName = new ResourceName(this.ResourceName, "setup");
 
@@ -262,7 +268,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public async Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
+        public virtual async Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
         {
             var resourceName = new ResourceName(this.ResourceName, "update");
 
@@ -276,7 +282,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public async Task<ApplicationArchiveInfo> PackageAsync()
+        public virtual async Task<ApplicationArchiveInfo> PackageAsync()
         {
             var resourceName = new ResourceName(this.ResourceName, "package");
 
@@ -290,7 +296,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public async Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
+        public virtual async Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
         {
             var arguments = new Argument[] { new Argument("check_for_updates", checkForUpdates) };
 

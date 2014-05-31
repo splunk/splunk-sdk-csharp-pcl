@@ -127,19 +127,25 @@ namespace Splunk.Client
         #region Methods
 
         /// <inheritdoc/>
-        public async Task<Application> CreateAsync(string template, ApplicationAttributes attributes = null)
+        public async Task<Application> CreateAsync(string name, string template, ApplicationAttributes attributes = null)
         {
             var resourceName = ClassResourceName;
 
-            var args = new CreationArgs()
+            var arguments = new CreationArgs()
             {
-                ExplicitApplicationName = this.Title,
+                ExplicitApplicationName = name,
                 Filename = false,
-                Name = this.Title,
+                Name = name,
                 Template = template
-            };
+            }
+            .AsEnumerable();
 
-            var resourceEndpoint = await this.CreateAsync(attributes == null ? args : args.Concat(attributes));
+            if (attributes != null)
+            {
+                arguments = arguments.Concat(attributes);
+            }
+
+            var resourceEndpoint = await this.CreateAsync(arguments);
             return resourceEndpoint;
         }
 

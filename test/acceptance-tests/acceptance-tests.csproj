@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{B7C3839F-58F5-4CA9-9317-9655A0BC55D9}</ProjectGuid>
@@ -55,16 +55,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestApplication.cs" />
-    <Compile Include="TestConfiguration.cs" />
+    <None Include="TestConfiguration.cs" />
     <Compile Include="FakeContext.cs" />
-    <Compile Include="TestServiceProperties.cs" />
-    <Compile Include="TestSearchJob.cs" />
-    <Compile Include="TestSavedSearch.cs" />
-    <Compile Include="TestContext.cs" />
+    <None Include="TestServiceProperties.cs" />
+    <None Include="TestSearchJob.cs" />
+    <None Include="TestSavedSearch.cs" />
+    <None Include="TestContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelper.cs" />
-    <Compile Include="TestIndex.cs" />
-    <Compile Include="TestService.cs" />
+    <None Include="TestIndex.cs" />
+    <None Include="TestService.cs" />
     <Compile Include="AcceptanceTestingSetup.cs" />
   </ItemGroup>
   <ItemGroup>

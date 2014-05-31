@@ -21,9 +21,9 @@ namespace Splunk.Client.UnitTests
 
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
 
     using Xunit;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Tests the configurations
@@ -33,7 +33,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Basic conf touch test
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task Conf()
         {
@@ -78,7 +78,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests config Create Read Update and Delete.
         /// </summary>
-        [Trait("class", "Service")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task ConfCRUD()
         {            

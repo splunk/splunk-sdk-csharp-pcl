@@ -35,7 +35,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Test the expected service capabilities.
         /// </summary>
-        [Trait("class", "ServiceCapabilities")]
+        [Trait("acceptance-test", "Splunk.Client.ServiceCapabilities")]
         [Fact]
         public async Task ServiceCapabilities()
         {
@@ -72,7 +72,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the getting of service info (there are no set arguments)
         /// </summary>
-        [Trait("class", "ServiceInfo")]
+        [Trait("acceptance-test", "Splunk.Client.ServiceInfo")]
         [Fact]
         public async Task ServiceInfo()
         {
@@ -109,7 +109,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Test login
         /// </summary>
-        [Trait("class", "ServiceLogin")]
+        [Trait("acceptance-test", "Splunk.Client.ServiceLogin")]
         [Fact]
         public async Task ServiceLogin()
         {

@@ -44,7 +44,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the result from a bad search argument.
         /// </summary>
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public async Task BadOutputMode()
         {
@@ -78,7 +78,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public async Task JobSearchMode()
         {
@@ -102,7 +102,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public async Task JobExecutionMode()
         {
@@ -160,7 +160,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all output modes for Job.Events
         /// </summary>
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public void JobEventsTruncationModeArgument()
         {
@@ -182,7 +182,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all search modes
         /// </summary>
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public void JobSearchModeArgument()
         {
@@ -203,7 +203,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public void ExportSearchModeArgument()
         {
@@ -224,7 +224,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public void ExportTruncationModeArgument()
         {
@@ -242,7 +242,7 @@ namespace Splunk.Client.UnitTests
                 });
         }
 
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public async Task JobRefreshTest()
         {
@@ -277,7 +277,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests RemoteServerList property
         /// </summary>
-        [Trait("class", "Search")]
+        [Trait("acceptance-test", "Splunk.Client.Search")]
         [Fact]
         public void RemoteServerList()
         {

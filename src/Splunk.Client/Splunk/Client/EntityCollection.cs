@@ -15,10 +15,6 @@
  */
 
 //// TODO:
-//// [X] Remove EntityCollection.args and put optional arguments on the GetAsync
-////     method (?) args does NOT belong on the constructor. One difficulty:
-////     not all collections take arguments. Examples: ConfigurationCollection
-////     and IndexCollection.
 //// [O] Contracts
 //// [O] Documentation
 
@@ -211,7 +207,7 @@ namespace Splunk.Client
 
             using (Response response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
-                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 return await ResourceEndpoint.CreateAsync<TEntity>(this.Context, response);
             }
         }
@@ -230,10 +226,39 @@ namespace Splunk.Client
         /// </remarks>
         public virtual async Task GetAllAsync()
         {
-            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, GetAll))
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, GetAll))
             {
-                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 await this.ReconstructSnapshotAsync(response);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves an entity in the current collection by
+        /// name.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the entity to retrieve.
+        /// </param>
+        /// <returns>
+        /// An object representing entity <param name="name"/> or <c>null</c>, 
+        /// if no such entity exists.
+        /// </returns>
+        public virtual async Task<TEntity> GetOrNullAsync(string name)
+        {
+            var resourceName = new ResourceName(this.ResourceName, name);
+
+            using (Response response = await this.Context.GetAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK, HttpStatusCode.NotFound);
+                TEntity resourceEndpoint = null;
+
+                if (response.Message.StatusCode == HttpStatusCode.OK)
+                {
+                    resourceEndpoint = await ResourceEndpoint.CreateAsync<TEntity>(this.Context, response);
+                }
+
+                return resourceEndpoint;
             }
         }
 
@@ -270,7 +295,7 @@ namespace Splunk.Client
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
-                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 await this.ReconstructSnapshotAsync(response);
             }
         }
@@ -288,7 +313,7 @@ namespace Splunk.Client
 
             using (Response response = await this.Context.GetAsync(this.Namespace, reload))
             {
-                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 

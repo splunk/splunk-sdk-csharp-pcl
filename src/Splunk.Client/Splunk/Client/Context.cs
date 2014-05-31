@@ -192,42 +192,6 @@ namespace Splunk.Client
             }
         }
 
-        // TODO: Remove these comments before release
-
-        // FJR: Having separate GET, POST, and DELETE methods turns out to be less sensible that you would think.
-        // First, you end up repeating a lot of logic. Second, Splunk's REST API doesn't actually respect the different
-        // semantics you expect from them. For example, the HTTP inputs expect to receive arguments as though they were
-        // GET requests and a POST body of data as well. This lack of clarity makes it simpler just to have one method
-        // that takes the method as an argument, and accepts both URI arguments and a POST body (which can be either a
-        // dictionary or a string -- it's always a dictionary, except for those darned HTTP inputs again). I also ended
-        // up adding a request by URL method that the request method called because I had some situation where I had to
-        // use a link from the links element of the Atom body, and rather than parse it and reencode it, I just wanted to
-        // use it directly.			
-
-        // DSN: HttpClient class enforces these semantics on HTTP methods:
-        //
-        // + HttpMethod.Delete    May include a message body
-        //
-        // + HttpMethod.Get       May not include a message body
-        //
-        // + HttpMethod.Post      May include a message body
-        //
-        // The HttpClient class imposes no restrictions on query parameter. Any HTTP method may include a query.
-        // Hence, I've done the following.
-        //
-        // + Consolidated the code into one private method: Context.SendAsync accepts both HttpContent and parameters.
-        //
-        // + Provided these public entry points:
-        //
-        //   o Context.DeleteAsync  Accepts parameters, but not HttpContent. 
-        //
-        //   o Context.GetAsync     Accepts parameters, but not HttpContent.
-        //
-        //   o Context.PostAsync    Two variants. The first accepts parameters and it puts them into the message body. The 
-        //                          other accepts HttpContent and parameters. Parameters are provided on the Service URL.
-        //
-        // TODO: Is there any need for delete to accept HttpContent?
-
         /// <summary>
         /// 
         /// </summary>
@@ -424,9 +388,10 @@ namespace Splunk.Client
                 }
 
                 var completionOption = HttpCompletionOption.ResponseHeadersRead;
-                var response = await this.HttpClient.SendAsync(request, completionOption, cancellationToken);
+                var message = await this.HttpClient.SendAsync(request, completionOption, cancellationToken);
+                var response =  await Response.CreateAsync(message);
 
-                return await Response.CreateAsync(response);
+                return response;
             }
         }
 

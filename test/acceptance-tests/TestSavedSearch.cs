@@ -33,7 +33,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Touch test properties
         /// </summary>
-        [Trait("class", "SavedSearch")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
         public async Task SavedSearchesProperties()
         {
@@ -157,7 +157,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Test Saved Search Create Read Update and Delete.
         /// </summary>
-        [Trait("class", "SavedSearch")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
         public async Task SavedSearchesUpdateProperties()
         {
@@ -342,7 +342,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Test saved search dispatch
         /// </summary>
-        [Trait("class", "SavedSearch")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
         public async Task SavedSearchDispatchProperties()
         {
@@ -456,7 +456,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Test saved search history
         /// </summary>
-        [Trait("class", "SavedSearch")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
         public async Task SavedSearchHistory()
         {

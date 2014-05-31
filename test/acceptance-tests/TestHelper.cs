@@ -55,7 +55,7 @@ namespace Splunk.Client.UnitTests
             Assert.True(index.TotalEventCount == expectEventCount);
         }
 
-        public static async Task RestartServer()
+        public static async Task RestartServerAsync()
         {
             Stopwatch watch = Stopwatch.StartNew();
 
@@ -80,32 +80,42 @@ namespace Splunk.Client.UnitTests
         /// test app and reboot Splunk.
         /// </summary>
         /// <param name="name">The app name</param>
-        public async static Task CreateApp(string name)
+        public static async Task CreateApp(string name)
         {
             //EntityCollection<App> apps;
 
             Service service = await SDKHelper.CreateService();
 
-            ApplicationCollection apps = service.GetApplicationsAsync(new ApplicationCollectionArgs()).Result;
+            ApplicationCollection apps = service.Applications;
+            await apps.GetAllAsync();
 
-            if (apps.Any(a => a.ResourceName.Title == name))
+            var app = apps.FirstOrDefault(a => a.Title == name);
+
+            if (app != null)
             {
-                await service.RemoveApplicationAsync(name);
-                await RestartServer();
+                await app.RemoveAsync();
+                await RestartServerAsync();
+
+                //// Our session is gone and so we must reestablish it
+                //// Alternative: service.LoginAsync
+
                 service = await SDKHelper.CreateService();
-                apps = service.GetApplicationsAsync().Result;
+                apps = service.Applications;
+                await apps.GetAllAsync();
             }
 
-            Assert.False(apps.Any(a => a.ResourceName.Title == name));
+            Assert.False(apps.Any(a => a.Title == name));
 
-            //apps.Create(name);
-            await service.CreateApplicationAsync(name, "sample_app");
+            await apps.CreateAsync(name, "sample_app");
+            await RestartServerAsync();
 
-            await RestartServer();
+            //// Our session is gone and so we must reestablish it
+            //// Alternative: service.LoginAsync
 
             service = await SDKHelper.CreateService();
+            apps = service.Applications;
+            await apps.GetAllAsync();
 
-            apps = service.GetApplicationsAsync().Result;
             Assert.True(apps.Any(a => a.Name == name));
         }
 
@@ -116,17 +126,18 @@ namespace Splunk.Client.UnitTests
         public static async Task RemoveApp(string name)
         {
             Service service = await SDKHelper.CreateService();
+            Application app = await service.Applications.GetOrNullAsync(name);
 
-            ApplicationCollection apps = service.GetApplicationsAsync().Result;
-            if (apps.Any(a => a.Name == name))
+            if (app != null)
             {
-                await service.RemoveApplicationAsync(name);
-                await RestartServer();
-                service = await SDKHelper.CreateService();
+                await app.RemoveAsync();
+                await RestartServerAsync();
             }
+            
+            service = await SDKHelper.CreateService();
+            app = await service.Applications.GetOrNullAsync(name);
 
-            apps = service.GetApplicationsAsync().Result;
-            Assert.False(apps.Any(a => a.Name == name));
+            Assert.Null(app);
         }
     }
 }

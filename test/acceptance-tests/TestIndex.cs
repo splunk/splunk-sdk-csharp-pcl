@@ -35,7 +35,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the basic getters and setters of index
         /// </summary>
-        [Trait("class", "Index")]
+        [Trait("acceptance-test", "Splunk.Client.Index")]
         [Fact]
         public async Task IndexAccessors()
         {
@@ -160,7 +160,7 @@ namespace Splunk.Client.UnitTests
         /// Tests submitting and streaming events to an index given the indexAttributes argument
         /// and also removing all events from the index
         /// </summary>
-        [Trait("class", "Index")]
+        [Trait("acceptance-test", "Splunk.Client.Index")]
         [Fact]
         public async Task IndexArgs()
         {
@@ -207,7 +207,7 @@ namespace Splunk.Client.UnitTests
         /// Test submitting and streaming to a default index given the indexAttributes argument
         /// and also removing all events from the index
         /// </summary>
-        [Trait("class", "Index")]
+        [Trait("acceptance-test", "Splunk.Client.Index")]
         [Fact]
         public async Task DefaultIndexArgs()
         {

@@ -22,15 +22,16 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Net;
     using System.Threading.Tasks;
 
     /// <summary>
     /// 
     /// </summary>
-    public sealed class ApplicationUpdateInfo : Resource
+    public class ApplicationUpdateInfo : Resource
     {
-       #region Constructors
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationUpdateInfo"/> 
@@ -40,8 +41,9 @@ namespace Splunk.Client
         /// An object representing a Splunk atom feed response.
         /// </param>
         internal ApplicationUpdateInfo(AtomFeed feed)
-            : base(feed)
-        { }
+        {
+            this.Initialize(feed);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -81,11 +83,19 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
+        /// 
+        /// </summary>
+        protected ExpandoAdapter Content
+        {
+            get { return this.content; }
+        }
+
+        /// <summary>
         /// Gets the access control lists for the current instance.
         /// </summary>
         public Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -96,7 +106,7 @@ namespace Splunk.Client
         /// </remarks>
         public Update_t Update
         {
-            get { return this.GetValue("Update", Update_t.Converter.Instance); }
+            get { return this.Content.GetValue("Update", Update_t.Converter.Instance); }
         }
 
         /// <summary>
@@ -105,8 +115,29 @@ namespace Splunk.Client
         /// </summary>
         public bool Refresh
         {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
+
+        #endregion
+
+        #region Methods
+
+        protected internal override void Initialize(AtomFeed feed)
+        {
+            if (feed.Entries.Count != 1)
+            {
+                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
+            }
+
+            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
+            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
+        }
+
+        #endregion
+
+        #region Privates/internals
+
+        ExpandoAdapter content;
 
         #endregion
 

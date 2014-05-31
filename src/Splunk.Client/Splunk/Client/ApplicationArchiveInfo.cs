@@ -21,6 +21,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.IO;
 
     /// <summary>
     /// Provides information about an application archive produced by Splunk.
@@ -29,7 +30,7 @@ namespace Splunk.Client
     /// You can produce an application archive using the <see cref=
     /// "Application.PackageAsync"/> method.
     /// </remarks>
-    public sealed class ApplicationArchiveInfo : Resource
+    public class ApplicationArchiveInfo : Resource
     {
         #region Constructors
 
@@ -41,8 +42,9 @@ namespace Splunk.Client
         /// An object representing a Splunk atom feed response.
         /// </param>
         internal ApplicationArchiveInfo(AtomFeed feed)
-            : base(feed)
-        { }
+        {
+            this.Initialize(feed);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -82,12 +84,20 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
+        /// 
+        /// </summary>
+        protected ExpandoAdapter Content
+        {
+            get { return this.content; }
+        }
+
+        /// <summary>
         /// Gets the access control lists for the current <see cref=
         /// "ApplicationArchiveInfo"/>.
         /// </summary>
         public Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -100,7 +110,7 @@ namespace Splunk.Client
         /// </remarks>
         public string ApplicationName
         {
-            get { return this.GetValue("Name", StringConverter.Instance); }
+            get { return this.Content.GetValue("Name", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -109,7 +119,7 @@ namespace Splunk.Client
         /// </summary>
         public string Path
         {
-            get { return this.GetValue("Path", StringConverter.Instance); }
+            get { return this.Content.GetValue("Path", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -118,7 +128,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Refresh
         {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -127,8 +137,29 @@ namespace Splunk.Client
         /// </summary>
         public Uri Uri
         {
-            get { return this.GetValue("Url", UriConverter.Instance); }
+            get { return this.Content.GetValue("Url", UriConverter.Instance); }
         }
+
+        #endregion
+
+        #region Methods
+
+        protected internal override void Initialize(AtomFeed feed)
+        {
+            if (feed.Entries.Count != 1)
+            {
+                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
+            }
+
+            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
+            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
+        }
+
+        #endregion
+
+        #region Privates/internals
+
+        ExpandoAdapter content;
 
         #endregion
     }

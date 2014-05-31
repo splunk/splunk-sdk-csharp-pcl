@@ -110,7 +110,7 @@ namespace Splunk.Client
         /// </summary>
         protected ExpandoAdapter Content
         {
-            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
+            get { return this.content; }
         }
 
         /// <summary>
@@ -273,13 +273,19 @@ namespace Splunk.Client
         {
             if (feed.Entries.Count != 1)
             {
-                throw new InvalidDataException(string.Format("Atom feed entry count: {0}", feed.Entries.Count));
+                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
             }
 
             base.Initialize(feed.Entries[0], feed.GeneratorVersion);
+            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
         }
 
         #endregion
 
+        #region Privates/internals
+
+        ExpandoAdapter content;
+
+        #endregion
     }
 }

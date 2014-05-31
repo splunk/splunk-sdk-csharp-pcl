@@ -258,7 +258,7 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "setup");
 
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
@@ -272,7 +272,7 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "update");
 
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
@@ -286,7 +286,7 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "package");
 
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 

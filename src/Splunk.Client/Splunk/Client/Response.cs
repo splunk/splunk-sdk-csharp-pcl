@@ -203,6 +203,9 @@ namespace Splunk.Client
                 case HttpStatusCode.Forbidden:
                     requestException = new UnauthorizedAccessException(this.Message, details);
                     break;
+                case HttpStatusCode.InternalServerError:
+                    requestException = new InternalServerErrorException(this.Message, details);
+                    break;
                 case HttpStatusCode.NotFound:
                     requestException = new ResourceNotFoundException(this.Message, details);
                     break;

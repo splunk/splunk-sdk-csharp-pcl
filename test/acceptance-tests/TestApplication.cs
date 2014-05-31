@@ -31,11 +31,6 @@ namespace Splunk.Client.UnitTests
     public class ApplicationTest
     {
         /// <summary>
-        /// The assert root string
-        /// </summary>
-        private static string assertRoot = "Application assert: ";
-
-        /// <summary>
         /// The app tests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Application")]
@@ -52,17 +47,22 @@ namespace Splunk.Client.UnitTests
 
             foreach (Application app in apps)
             {
+                ApplicationSetupInfo setupInfo = null;
+
                 try
                 {
-                    ApplicationSetupInfo setupInfo = await app.GetSetupInfoAsync();
-                    //string setupXml = applicationSetup.SetupXml;
+                    setupInfo = await app.GetSetupInfoAsync();
+                    //// TODO: Install an app which hits this code before this test runs
+                    Assert.NotNull(setupInfo.Eai);
+                    dummyBool = setupInfo.Refresh;
                 }
-                catch (Exception e)
+                catch (InternalServerErrorException e)
                 {
-                    // silent exception, if setup doesn't exist, exception occurs
+                    Assert.Contains("Setup configuration file does not exist", e.Message);
                 }
+                
+                ApplicationArchiveInfo applicationArchive = await app.PackageAsync();
 
-                ApplicationArchiveInfo applicationArchive = app.PackageAsync().Result;
                 dummyString = app.Author;
                 dummyBool = app.CheckForUpdates;
                 dummyString = app.Description;
@@ -70,11 +70,6 @@ namespace Splunk.Client.UnitTests
                 dummyBool = app.Refresh;
                 dummyString = app.Version;
                 dummyBool = app.Configured;
-
-                if (TestHelper.VersionCompare(service, "5.0") < 0)
-                {
-                    //dummyBool = app.IsManageable;
-                }
 
                 dummyBool = app.Visible;
                 dummyBool = app.StateChangeRequiresRestart;
@@ -103,87 +98,101 @@ namespace Splunk.Client.UnitTests
             apps = service.Applications;
             await apps.GetAllAsync();
 
-            Assert.False(apps.Any(a => a.Name == "sdk-tests"), assertRoot + "#1");
+            Assert.False(apps.Any(a => a.Name == "sdk-tests"));
 
-            ApplicationAttributes createArgs = new ApplicationAttributes();
-            createArgs.Author = "me";
+            ApplicationAttributes attributes = new ApplicationAttributes();
+            attributes.Author = "me";
 
-            if (TestHelper.VersionCompare(service, "4.2.4") >= 0)
-            {
-                createArgs.Configured = false;
-            }
+            attributes.Description = "this is a description";
+            attributes.Label = "SDKTEST";
+            attributes.Visible = false;
 
-            createArgs.Description = "this is a description";
-            createArgs.Label = "SDKTEST";
-
-            if (TestHelper.VersionCompare(service, "5.0") < 0)
-            {
-                //createArgs.manageable", false);
-            }
-
-            createArgs.Visible = false;
-
-            var testApp = await service.Applications.CreateAsync("sdk-tests", "barebones", createArgs);
-
-            Assert.DoesNotThrow(() =>
-            {
-                var app = service.Applications.GetAsync("sdk-tests").Result;
-                dummyBool = app.CheckForUpdates;
+            var testApp = await service.Applications.CreateAsync("sdk-tests", "barebones", attributes);
+            testApp = await service.Applications.GetAsync("sdk-tests");
+            dummyBool = testApp.CheckForUpdates;
                 
-                Assert.Equal("SDKTEST", app.Label);
-                Assert.Equal("me", app.ApplicationAuthor);
-                Assert.Equal("nobody", app.Author);
-                Assert.False(app.Configured);
-                Assert.False(app.Visible);
+            Assert.Equal("SDKTEST", testApp.Label);
+            Assert.Equal("me", testApp.ApplicationAuthor);
+            Assert.Equal("nobody", testApp.Author);
+            Assert.False(testApp.Configured);
+            Assert.False(testApp.Visible);
 
-                ApplicationAttributes attributes = new ApplicationAttributes()
-                {
-                    Author = "not me",
-                    Description = "new description",
-                    Label = "new label",
-                    Visible = false,
-                    Version = "1.5"
-                };
+            attributes = new ApplicationAttributes()
+            {
+                Author = "not me",
+                Description = "new description",
+                Label = "new label",
+                Visible = false,
+                Version = "1.5"
+            };
 
-                //// Update the application
+            //// Update the application
 
-                app.UpdateAsync(attributes, true).Wait();
-                app.GetAsync().Wait();
+            await testApp.UpdateAsync(attributes, true);
+            await testApp.GetAsync();
 
-                Assert.Equal("not me", app.ApplicationAuthor);
-                Assert.Equal("nobody", app.Author);
-                Assert.Equal("new description", app.Description);
-                Assert.Equal("new label", app.Label);
-                Assert.Equal("1.5", app.Version);
-                Assert.False(app.Visible);
+            Assert.Equal("not me", testApp.ApplicationAuthor);
+            Assert.Equal("nobody", testApp.Author);
+            Assert.Equal("new description", testApp.Description);
+            Assert.Equal("new label", testApp.Label);
+            Assert.Equal("1.5", testApp.Version);
+            Assert.False(testApp.Visible);
 
-                ApplicationUpdateInfo updateInfo = app.GetUpdateInfoAsync().Result;
-                Assert.NotNull(updateInfo.Eai.Acl);
+            ApplicationUpdateInfo updateInfo = await testApp.GetUpdateInfoAsync();
+            Assert.NotNull(updateInfo.Eai.Acl);
 
-                //// Package the application
+            //// Package the application
 
-                ApplicationArchiveInfo archiveInfo = app.PackageAsync().Result;
+            ApplicationArchiveInfo archiveInfo = await testApp.PackageAsync();
+            
+            Assert.Equal("Package", archiveInfo.Title);
+            Assert.NotEqual(DateTime.MinValue, archiveInfo.Updated);
 
-                Assert.True(archiveInfo.ApplicationName.Length > 0);
-                Assert.True(archiveInfo.Path.Length > 0);
-                Assert.True(archiveInfo.Uri.AbsolutePath.Length > 0);
-            });
+            Assert.DoesNotThrow(() => { string p = archiveInfo.ApplicationName; });
+            Assert.True(archiveInfo.ApplicationName.Length > 0);
+
+            Assert.DoesNotThrow(() => { Eai p = archiveInfo.Eai; });
+            Assert.NotNull(archiveInfo.Eai);
+            Assert.NotNull(archiveInfo.Eai.Acl);
+
+            Assert.DoesNotThrow(() => { string p = archiveInfo.Path; });
+            Assert.True(archiveInfo.Path.Length > 0);
+
+            Assert.DoesNotThrow(() => { bool p = archiveInfo.Refresh; });
+
+            Assert.DoesNotThrow(() => { Uri p = archiveInfo.Uri; });
+            Assert.True(archiveInfo.Uri.AbsolutePath.Length > 0);
 
             await TestHelper.RemoveApp("sdk-tests");
 
             //// TODO: Incorporate or remove these bits
 
-            if (TestHelper.VersionCompare(service, "5.0") < 0)
-            {
-                //Assert.False(app2.Manageable, assertRoot + "#6");
-            }
+            //if (TestHelper.VersionCompare(service, "5.0") < 0)
+            //{
+            //    //createArgs.manageable", false);
+            //}
 
-            // update the app
+            //if (TestHelper.VersionCompare(service, "5.0") < 0)
+            //{
+            //    //Assert.False(app2.Manageable, assertRoot + "#6");
+            //}
 
-            if (TestHelper.VersionCompare(service, "5.0") < 0)
-            {
-                //app2.IsManageable = false;
-            }
+            //// update the app
+
+            //if (TestHelper.VersionCompare(service, "5.0") < 0)
+            //{
+            //    //app2.IsManageable = false;
+            //}
+
+            //if (TestHelper.VersionCompare(service, "4.2.4") >= 0)
+            //{
+            //    attributes.Configured = false;
+            //}
+
+            //if (TestHelper.VersionCompare(service, "5.0") < 0)
+            //{
+            //    //dummyBool = app.IsManageable;
+            //}
         }
     }
 }

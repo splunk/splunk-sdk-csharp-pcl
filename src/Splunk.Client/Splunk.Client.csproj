@@ -163,6 +163,7 @@
     <Compile Include="Splunk\Client\Resource.cs" />
     <Compile Include="Splunk\Client\ResourceEndpoint.cs" />
     <Compile Include="Splunk\Client\ResourceName.cs" />
+    <Compile Include="Splunk\Client\InternalServerErrorException.cs" />
     <Compile Include="Splunk\Client\ResourceNotFoundException.cs" />
     <Compile Include="Splunk\Client\Response.cs" />
     <Compile Include="Splunk\Client\SavedSearch.cs" />

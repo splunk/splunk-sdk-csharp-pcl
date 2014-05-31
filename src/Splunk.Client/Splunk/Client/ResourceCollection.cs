@@ -17,6 +17,7 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
+//// [X] ResourceEndpoint is an Endpoint that aggregates Resource
 
 namespace Splunk.Client
 {
@@ -32,12 +33,12 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
-    public class Resource : BaseResource
+    public class ResourceCollection : BaseResource
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Resource"/> class.
+        /// Initializes a new instance of the <see cref="ResourceCollection"/> class.
         /// </summary>
         /// <param name="entry">
         /// An object representing a Splunk atom entry response.
@@ -46,64 +47,64 @@ namespace Splunk.Client
         /// The version of the generator producing the <see cref="AtomFeed"/>
         /// feed containing <paramref name="entry"/>.
         /// </param>
-        protected internal Resource(AtomEntry entry, Version generatorVersion)
+        protected internal ResourceCollection(AtomEntry entry, Version generatorVersion)
             : base(entry, generatorVersion)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Resource"/> class.
+        /// Initializes a new instance of the <see cref="ResourceCollection"/> class.
         /// </summary>
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
         /// </param>
-        protected internal Resource(AtomFeed feed)
+        protected internal ResourceCollection(AtomFeed feed)
         {
             this.Initialize(feed);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Resource"/> class.
+        /// Initializes a new instance of the <see cref="ResourceCollection"/> class.
         /// </summary>
         /// <param name="expandObject">
         /// An object containing the dynamic members of the newly created
-        /// <see cref="Resource"/>.
+        /// <see cref="ResourceCollection"/>.
         /// </param>
-        protected Resource(ExpandoObject expandObject)
+        protected ResourceCollection(ExpandoObject expandObject)
             : base(expandObject)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Resource"/> class.
+        /// Initializes a new instance of the <see cref="ResourceCollection"/> class.
         /// </summary>
         /// <param name="other">
         /// Another resource.
         /// </param>
-        protected internal Resource(Resource other)
+        protected internal ResourceCollection(ResourceCollection other)
             : base(other)
         { }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Resource"/> class.
+        /// "ResourceCollection"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
         /// intended to be used directly from your code. 
         /// </remarks>
-        public Resource()
+        public ResourceCollection()
         { }
 
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// 
-        /// </summary>
-        protected ExpandoAdapter Content
-        {
-            get { return this.content; }
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //protected ExpandoAdapter Content
+        //{
+        //    get { return this.content; }
+        //}
 
         #endregion
 
@@ -111,7 +112,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "Resource"/>.
+        /// "ResourceCollection"/>.
         /// </summary>
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
@@ -120,10 +121,10 @@ namespace Splunk.Client
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The current <see cref="Resource"/> is already initialized.
+        /// The current <see cref="ResourceCollection"/> is already initialized.
         /// </exception>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="Resource"/>
+        /// This method may be called once to intialize a <see cref="ResourceCollection"/>
         /// instantiated by the default constructor. Override this method to 
         /// provide special initialization code. Call this base method before 
         /// initialization is complete. 
@@ -134,21 +135,63 @@ namespace Splunk.Client
         /// </remarks>
         protected internal override void Initialize(AtomFeed feed)
         {
-            if (feed.Entries.Count != 1)
+            Contract.Requires<ArgumentNullException>(feed != null);
+            //this.EnsureUninitialized();
+
+            dynamic expando = new ExpandoObject();
+
+            expando.GeneratorVersion = feed.GeneratorVersion;
+            expando.Id = feed.Id;
+            expando.Title = feed.Title;
+            expando.Updated = feed.Updated;
+
+            expando.Author = feed.Author;
+
+            if (feed.Links != null)
             {
-                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
+                expando.Links = feed.Links;
             }
 
-            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
-            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
+            if (feed.Messages != null)
+            {
+                expando.Messages = feed.Messages;
+            }
+
+            if (!feed.Pagination.Equals(Pagination.None))
+            {
+                expando.Pagination = feed.Pagination;
+            }
+
+            var resources = new List<ResourceCollection>();
+
+            foreach (var entry in feed.Entries)
+            {
+                var resource = new ResourceCollection(entry, feed.GeneratorVersion);
+                resources.Add(resource);
+            }
+
+            expando.Resources = new ReadOnlyCollection<ResourceCollection>(resources);
+            this.Object = expando;
+            //this.MarkInitialized();
         }
-        
+
+        /// <summary>
+        /// Gets a string identifying the current <see cref="ResourceCollection"/>.
+        /// </summary>
+        /// <returns>
+        /// A string representing the identity of the current <see cref=
+        /// "ResourceCollection"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            return this.Id.ToString();
+        }
+
         #endregion
 
         #region Privates/internals
 
-        protected internal static readonly Resource Missing = new Resource(new ExpandoObject());
-        ExpandoAdapter content;
+        protected internal static readonly ResourceCollection Missing = new ResourceCollection(new ExpandoObject());
 
         #endregion
     }

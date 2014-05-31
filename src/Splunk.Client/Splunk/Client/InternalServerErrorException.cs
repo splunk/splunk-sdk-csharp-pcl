@@ -26,7 +26,7 @@ namespace Splunk.Client
 
     /// <summary>
     /// The exception that is thrown when a request to retrieve a <see cref=
-    /// "Resource"/> results in <see cref="HttpStatusCode"/>.InternalServerError.
+    /// "BaseResource"/> results in <see cref="HttpStatusCode"/>.InternalServerError.
     /// </summary>
     public sealed class InternalServerErrorException : RequestException
     {

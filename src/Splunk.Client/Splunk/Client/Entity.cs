@@ -202,7 +202,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 return await this.ReconstructSnapshotAsync(response);
@@ -258,9 +258,9 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        protected override void ReconstructSnapshot(Resource resource)
+        protected override void ReconstructSnapshot(BaseResource resource)
         {
-            IReadOnlyList<Resource> resources = resource.GetValue("Resources");
+            IReadOnlyList<BaseResource> resources = resource.GetValue("Resources");
 
             if (resources != null)
             {

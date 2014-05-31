@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of the settings of a Splunk server.
     /// </summary>
-    public class ServerSettings : Resource, IServerSettings
+    public class ServerSettings : BaseResource, IServerSettings
     {
         #region Constructors
 
@@ -65,7 +65,7 @@ namespace Splunk.Client
         /// <param name="other">
         /// Another resource.
         /// </param>
-        protected internal ServerSettings(Resource other)
+        protected internal ServerSettings(BaseResource other)
             : base(other)
         { }
 

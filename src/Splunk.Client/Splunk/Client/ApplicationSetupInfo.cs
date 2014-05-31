@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// <summary>
     /// Represents the setup information for an <see cref="Application"/>.
     /// </summary>
-    public class ApplicationSetupInfo : Resource
+    public class ApplicationSetupInfo : BaseResource
     {
         #region Constructors
 
@@ -92,83 +92,19 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the 
         /// </summary>
-        public string ApplicationAuthor
+        public Eai Eai
         {
-            get { return this.Content.GetValue("Author", StringConverter.Instance); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool CheckForUpdates
-        {
-            get { return this.Content.GetValue("CheckForUpdates", BooleanConverter.Instance); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool Configured
-        {
-            get { return this.Content.GetValue("Configured", BooleanConverter.Instance); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Description
-        {
-            get { return this.Content.GetValue("Description", StringConverter.Instance); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool Disabled
-        {
-            get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Label
-        {
-            get { return this.Content.GetValue("Label", StringConverter.Instance); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool StateChangeRequiresRestart
-        {
-            get { return this.Content.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Version
-        {
-            get { return this.Content.GetValue("Version", StringConverter.Instance); }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public bool Visible
-        {
-            get { return this.Content.GetValue("Visible", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
         /// Gets the 
         /// </summary>
-        public Eai Eai
+        public dynamic Setup
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Eai.GetValue("Setup"); }
         }
 
         /// <summary>
@@ -177,7 +113,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Refresh
         {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         #endregion

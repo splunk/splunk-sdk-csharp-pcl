@@ -22,6 +22,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -118,10 +119,26 @@ namespace Splunk.Client
         /// properties</a> endpoint to create the configuration file represented
         /// by this instance.
         /// </remarks>
-        public async Task CreateAsync(string name)
+        public override async Task<Configuration> CreateAsync(IEnumerable<Argument> arguments)
+        {
+            //// We override this method because the "POST properties" endpoint returns nothing.
+
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                
+                var fileName = arguments.First(arg => arg.Name == "__conf").Value;
+                var configuration = new Configuration(this.Context, this.Namespace, fileName);
+
+                return configuration;
+            }
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<Configuration> CreateAsync(string name)
         {
             var arguments = new Argument[] { new Argument("__conf", name) };
-            await base.CreateAsync(arguments);
+            return await this.CreateAsync(arguments);
         }
 
         /// <summary>
@@ -154,7 +171,8 @@ namespace Splunk.Client
         #region Privates/internals
 
         internal static readonly ResourceName ClassResourceName = new ResourceName("properties");
-        
+        internal static readonly ResourceName Configs = new ResourceName("configs");
+
         #endregion
     }
 }

@@ -178,9 +178,9 @@ namespace Splunk.Client
             get { return this.Resources.Count; }
         }
 
-        public string Author 
+        public string Author
         {
-            get { return ((dynamic)this.Snapshot).Author; }
+            get { return this.GetValue("Author", StringConverter.Instance); }
         }
 
         #endregion
@@ -245,6 +245,28 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Asynchronously removes the current <see cref="ConfigurationStanza"/>
+        /// from its configuration file.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/79v7H3">DELETE 
+        /// configs/conf-{file}/{name}</a> endpoint to remove the current
+        /// <see cref="ConfigurationStanza"/>.
+        /// </remarks>
+        public override async Task RemoveAsync()
+        {
+            var rn = new ResourceName("configs", string.Concat("conf-", this.ResourceName[1]), this.ResourceName[2]);
+
+            using (var response = await this.Context.DeleteAsync(this.Namespace, rn))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        /// <summary>
         /// Asynchronously updates the value of an existing setting in the 
         /// current <see cref="ConfigurationStanza"/>.
         /// </summary>
@@ -264,12 +286,12 @@ namespace Splunk.Client
         /// update the <see cref="ConfigurationSetting"/> identified by <paramref 
         /// name="keyName"/>.
         /// </remarks>
-        public async Task UpdateAsync(string keyName, string value)
+        public virtual async Task UpdateAsync(string keyName, string value)
         {
             var resourceName = new ResourceName(this.ResourceName, keyName);
             var arguments = new Argument[] { new Argument("value", value) };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
@@ -282,13 +304,22 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void ReconstructSnapshot(AtomFeed feed)
         {
-            this.Snapshot = new Resource(feed);
+            this.Snapshot = new BaseResource(feed);
         }
 
         /// <inheritdoc/>
-        protected override void ReconstructSnapshot(Resource resource)
+        protected override void ReconstructSnapshot(BaseResource resource)
         {
             this.Snapshot = resource;
+        }
+
+        public override async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                return false;
+            }
         }
 
         #endregion
@@ -297,14 +328,14 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        static readonly IReadOnlyList<Resource> NoResources = new ReadOnlyCollection<Resource>(new List<Resource>());
+        static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new List<BaseResource>());
 
-        IReadOnlyList<Resource> Resources
+        IReadOnlyList<BaseResource> Resources
         {
             get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
         }
 
-        ConfigurationSetting Create(Resource resource)
+        ConfigurationSetting Create(BaseResource resource)
         {
             return new ConfigurationSetting(resource);
         }

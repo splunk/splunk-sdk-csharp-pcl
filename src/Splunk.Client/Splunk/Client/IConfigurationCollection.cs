@@ -33,8 +33,6 @@ namespace Splunk.Client
         where TConfiguration : ResourceEndpoint, IEntityCollection<TConfigurationStanza>, new()
         where TConfigurationStanza : ResourceEndpoint, IEntity, new()
     {
-        #region Methods
-
         /// <summary>
         /// Asynchronously creates a configuration file.
         /// </summary>
@@ -46,8 +44,6 @@ namespace Splunk.Client
         /// properties</a> endpoint to create the configuration file represented
         /// by this instance.
         /// </remarks>
-        Task CreateAsync(string stanzaName);
-
-        #endregion
+        Task CreateAsync(string fileName);
     }
 }

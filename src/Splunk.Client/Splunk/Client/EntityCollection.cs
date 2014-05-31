@@ -354,11 +354,11 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void ReconstructSnapshot(AtomFeed feed)
         {
-            this.Snapshot = new Resource(feed);
+            this.Snapshot = new BaseResource(feed);
         }
 
         /// <inheritdoc/>
-        protected override void ReconstructSnapshot(Resource resource)
+        protected override void ReconstructSnapshot(BaseResource resource)
         {
             this.Snapshot = resource;
         }
@@ -369,16 +369,16 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        internal static readonly IReadOnlyList<Resource> NoResources = new ReadOnlyCollection<Resource>(new List<Resource>());
+        internal static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new List<BaseResource>());
         internal static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
 
-        IReadOnlyList<Resource> Resources
+        IReadOnlyList<BaseResource> Resources
         {
             get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
         }
 
-        TEntity Create(Resource resource)
+        TEntity Create(BaseResource resource)
         {
             var resourceEndpoint = new TEntity();
 

@@ -28,7 +28,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides information about a Splunk server instance.
     /// </summary>
-    public class ServerInfo : Resource, IServerInfo
+    public class ServerInfo : BaseResource, IServerInfo
     {
         #region Constructors
 
@@ -63,14 +63,14 @@ namespace Splunk.Client
         /// <param name="other">
         /// Another resource.
         /// </param>
-        protected internal ServerInfo(Resource other)
+        protected internal ServerInfo(BaseResource other)
         {
             this.Initialize(other);
         }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Resource"/> class.
+        /// "BaseResource"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 

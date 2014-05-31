@@ -262,7 +262,7 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
-                var resource = await Resource.CreateAsync<ApplicationSetupInfo>(response);
+                var resource = await BaseResource.CreateAsync<ApplicationSetupInfo>(response);
                 return resource;
             }
         }
@@ -276,7 +276,7 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
-                var resource = await Resource.CreateAsync<ApplicationUpdateInfo>(response);
+                var resource = await BaseResource.CreateAsync<ApplicationUpdateInfo>(response);
                 return resource;
             }
         }
@@ -290,7 +290,7 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
 
-                var resource = await Resource.CreateAsync<ApplicationArchiveInfo>(response);
+                var resource = await BaseResource.CreateAsync<ApplicationArchiveInfo>(response);
                 return resource;
             }
         }

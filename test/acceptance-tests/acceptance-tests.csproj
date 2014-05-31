@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestApplication.cs" />
-    <None Include="TestConfiguration.cs" />
+    <Compile Include="TestConfiguration.cs" />
     <Compile Include="FakeContext.cs" />
     <None Include="TestServiceProperties.cs" />
     <None Include="TestSearchJob.cs" />

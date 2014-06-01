@@ -137,9 +137,15 @@ namespace Splunk.Client
                 ColdPath = coldPath,
                 HomePath = homePath,
                 ThawedPath = thawedPath
-            };
+            }
+            .AsEnumerable();
 
-            return await this.CreateAsync(arguments.Concat(attributes));
+            if (attributes != null)
+            {
+                arguments = arguments.Concat(attributes);
+            }
+
+            return await this.CreateAsync(arguments);
         }
 
         /// <inheritdoc/>

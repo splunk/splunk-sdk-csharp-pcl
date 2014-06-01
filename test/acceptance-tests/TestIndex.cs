@@ -37,7 +37,7 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.IndexCollection")]
         [Fact]
-        public async Task IndexAccessors()
+        public async Task IndexCollection()
         {
             string indexName = "sdk-tests2_indexaccessors";
             await this.RemoveIndexAsync(indexName);
@@ -172,7 +172,6 @@ namespace Splunk.Client.UnitTests
                     dummyBool = index.Disabled;
                     dummyBool = index.IsInternal;
                 }
-
 
                 var attributes = GetIndexAttributes(testIndex);
                 attributes.BlockSignSize = testIndex.BlockSignSize + 1;

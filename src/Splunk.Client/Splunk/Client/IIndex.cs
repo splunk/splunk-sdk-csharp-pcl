@@ -86,7 +86,7 @@ namespace Splunk.Client
         /// Gets the maximum size in MB for the cold database to reach before
         /// a roll to the frozen archive is triggered.
         /// </summary>
-        string ColdPathMaxDataSizeMB
+        long ColdPathMaxDataSizeMB
         { get; }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace Splunk.Client
         /// Gets the maximum size in MB for the hot and warm buckets for the
         /// current <see cref="Index"/> to reach.
         /// </summary>
-        string HomePathMaxDataSizeMB
+        long HomePathMaxDataSizeMB
         { get; }
 
         /// <summary>

@@ -179,9 +179,9 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public string ColdPathMaxDataSizeMB
+        public long ColdPathMaxDataSizeMB
         {
-            get { return this.Content.GetValue("ColdPathMaxDataSizeMB", StringConverter.Instance); }
+            get { return this.Content.GetValue("ColdPathMaxDataSizeMB", Int64Converter.Instance); }
         }
 
         /// <inheritdoc/>
@@ -257,9 +257,9 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public string HomePathMaxDataSizeMB
+        public long HomePathMaxDataSizeMB
         {
-            get { return this.Content.GetValue("HomePathMaxDataSizeMB", StringConverter.Instance); }
+            get { return this.Content.GetValue("HomePathMaxDataSizeMB", Int64Converter.Instance); }
         }
 
         /// <inheritdoc/>

@@ -62,7 +62,7 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        ConfigurationCollection Indexes
+        IndexCollection Indexes
         { get; }
         
         /// <summary>
@@ -254,67 +254,29 @@ namespace Splunk.Client
     {
         #region Properties
 
-        public Context Context
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract Context Context
+        { get; }
 
-        public Namespace Namespace
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract Namespace Namespace{ get; }
 
-        public string SessionKey
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public abstract string SessionKey
+        { get; set; }
 
-        public ApplicationCollection Applications
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract ApplicationCollection Applications{ get; }
 
-        public ConfigurationCollection Configurations
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract ConfigurationCollection Configurations{ get; }
 
-        public ConfigurationCollection Indexes
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract IndexCollection Indexes{ get; }
 
-        public JobCollection Jobs
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract JobCollection Jobs{ get; }
 
-        public SavedSearchCollection SavedSearches
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract SavedSearchCollection SavedSearches{ get; }
 
-        public Server Server
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract Server Server{ get; }
 
-        public StoragePasswordCollection StoragePasswords
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract StoragePasswordCollection StoragePasswords{ get; }
 
-        public Transmitter Transmitter
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public abstract Transmitter Transmitter{ get; }
 
         #endregion
 
@@ -322,10 +284,7 @@ namespace Splunk.Client
 
         #region Access control
 
-        public Task<dynamic> GetCapabilitiesAsync()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<dynamic> GetCapabilitiesAsync();
 
         public Task LoginAsync(string username, string password)
         {
@@ -344,10 +303,7 @@ namespace Splunk.Client
 
         #region Search
 
-        public Task<Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<Job> DispatchSavedSearchAsync(string name, SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null);
 
         public Task<SearchPreviewStream> ExportSearchPreviewsAsync(string search, SearchExportArgs args = null)
         {
@@ -361,10 +317,7 @@ namespace Splunk.Client
             return default(Task<SearchResultStream>);
         }
 
-        public Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null);
 
         public Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
         {

@@ -34,7 +34,7 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public sealed class ReceiverArgs : Args<ReceiverArgs>
+    public sealed class TransmitterArgs : Args<TransmitterArgs>
     {
         #region Properties
 

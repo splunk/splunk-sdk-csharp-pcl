@@ -87,7 +87,7 @@ namespace Splunk.Client
         /// receivers/stream</a> endpoint to send raw events to Splunk as
         /// they become available on <paramref name="eventStream"/>.
         /// </remarks>
-        public async Task SendAsync(Stream eventStream, ReceiverArgs args = null)
+        public async Task SendAsync(Stream eventStream, TransmitterArgs args = null)
         {
             using (var content = new StreamContent(eventStream))
             {
@@ -118,7 +118,7 @@ namespace Splunk.Client
         /// receivers/simple</a> endpoint to obtain the <see cref=
         /// "SearchResult"/> that it returns.
         /// </remarks>
-        public async Task<SearchResult> SendAsync(string eventText, ReceiverArgs args = null)
+        public async Task<SearchResult> SendAsync(string eventText, TransmitterArgs args = null)
         {
             using (var content = new StringContent(eventText))
             {

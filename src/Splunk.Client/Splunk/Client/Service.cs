@@ -130,9 +130,9 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual ConfigurationCollection Indexes
+        public virtual IndexCollection Indexes
         {
-            get { return this.configurations; }
+            get { return this.indexes; }
         }
 
         /// <inheritdoc/>

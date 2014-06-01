@@ -60,10 +60,10 @@
     <None Include="TestServiceProperties.cs" />
     <None Include="TestSearchJob.cs" />
     <None Include="TestSavedSearch.cs" />
-    <None Include="TestContext.cs" />
+    <Compile Include="TestContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelper.cs" />
-    <None Include="TestIndex.cs" />
+    <Compile Include="TestIndex.cs" />
     <None Include="TestService.cs" />
     <Compile Include="AcceptanceTestingSetup.cs" />
   </ItemGroup>

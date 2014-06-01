@@ -151,7 +151,7 @@ namespace Splunk.Client
             this.Title = null;
             this.Updated = DateTime.MinValue;
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));
+            reader.Requires(await reader.MoveToDocumentElementAsync("feed"));
             var documentElementName = reader.Name;
 
             List<AtomEntry> entries = null;
@@ -276,7 +276,7 @@ namespace Splunk.Client
                         this.Pagination = new Pagination(this.Pagination.ItemsPerPage, this.Pagination.StartIndex, totalResults);
                         break;
 
-                    default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
+                    default: throw new InvalidDataException(string.Format("Unexpected start tag: {0}", reader.Name)); // TODO: Improved diagnostics
                 }
             }
 

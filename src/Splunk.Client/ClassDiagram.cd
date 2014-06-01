@@ -31,14 +31,14 @@
   <Class Name="Splunk.Client.BaseEntity" Collapsed="true">
     <Position X="20" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAACACAAAAAgAUABAAAAAAAAIAAAAAAAYAAIAIAAAAA=</HashCode>
+      <HashCode>AAACACAAAAAgAUABAAAAAAgAAAAAAAAAYAAIAIAAAAA=</HashCode>
       <FileName>Splunk\Client\BaseEntity.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Client.Entity">
     <Position X="8.25" Y="2" Width="2.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIgAAAAAAAAgAAAAAIAAAAAgAAAAAIAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAIgAAAAAAAAgAAAgAAAAAAAgAAAAAIAAAAAA=</HashCode>
       <FileName>Splunk\Client\Entity.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -46,7 +46,7 @@
   <Class Name="Splunk.Client.EntityCollection&lt;TEntity&gt;" Collapsed="true">
     <Position X="28" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAEAAAgAIAAAABQACAAAAAQAIAAAAEAEAgAAIIAAAAA=</HashCode>
+      <HashCode>AAEAAAgAIAAAABQACAAAAAwAAAAAAEAEAgAAIIAAAAA=</HashCode>
       <FileName>Splunk\Client\EntityCollection.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -62,7 +62,7 @@
   <Class Name="Splunk.Client.ConfigurationStanza" Collapsed="true">
     <Position X="4.5" Y="5.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAIAAAABAAiAgAAAQAIAAAAEgEAAAAIAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAIAAAABAAiAgAAAwAAAAAAEgEAAAAIAAAAAA=</HashCode>
       <FileName>Splunk\Client\ConfigurationStanza.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />

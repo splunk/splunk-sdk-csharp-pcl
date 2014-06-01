@@ -351,7 +351,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task UpdateAsync(SavedSearchAttributes attributes = null, 
+        public virtual async Task<bool> UpdateAsync(SavedSearchAttributes attributes = null, 
             SavedSearchDispatchArgs dispatchArgs = null, 
             SavedSearchTemplateArgs templateArgs = null)
         {
@@ -372,7 +372,7 @@ namespace Splunk.Client
                 arguments = arguments.Concat(templateArgs);
             }
 
-            await this.UpdateAsync(arguments);
+            return await this.UpdateAsync(arguments);
         }
 
         #endregion

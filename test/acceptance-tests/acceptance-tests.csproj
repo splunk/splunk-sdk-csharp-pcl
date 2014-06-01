@@ -59,7 +59,7 @@
     <Compile Include="FakeContext.cs" />
     <None Include="TestServiceProperties.cs" />
     <None Include="TestSearchJob.cs" />
-    <None Include="TestSavedSearch.cs" />
+    <Compile Include="TestSavedSearch.cs" />
     <Compile Include="TestContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelper.cs" />

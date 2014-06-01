@@ -37,22 +37,26 @@ namespace Splunk.Client
         /// Initializes a new instance of the <see cref="ArgumentSet"/>
         /// class.
         /// </summary>
-        public ArgumentSet(string argumentPrefix = null)
+        public ArgumentSet(string argumentPrefix)
         {
             this.argumentPrefix = string.IsNullOrEmpty(argumentPrefix) ? null : argumentPrefix;
             this.set = new HashSet<Argument>();
         }
 
+        public ArgumentSet(string argumentPrefix, params Argument[] arguments)
+            : this(argumentPrefix, arguments.AsEnumerable())
+        { }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ArgumentSet"/>
         /// class from a collection of <see cref="Argument"/> values.
         /// </summary>
-        public ArgumentSet(IEnumerable<Argument> collection, string argumentPrefix)
+        public ArgumentSet(string argumentPrefix, IEnumerable<Argument> arguments)
         {
-            Contract.Requires<ArgumentNullException>(collection != null);
+            Contract.Requires<ArgumentNullException>(arguments != null);
             
             this.argumentPrefix = string.IsNullOrEmpty(argumentPrefix) ? null : argumentPrefix;
-            this.set = new HashSet<Argument>(collection);
+            this.set = new HashSet<Argument>(arguments);
         }
 
         #endregion

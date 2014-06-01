@@ -122,12 +122,14 @@ namespace Splunk.Client
         #region Methods
 
         /// <inheritdoc/>
-        public virtual async Task<SavedSearch> CreateAsync(string name, string search, SavedSearchAttributes attributes, 
-            SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
+        public virtual async Task<SavedSearch> CreateAsync(string name, string search, 
+            SavedSearchAttributes attributes = null, 
+            SavedSearchDispatchArgs dispatchArgs = null, 
+            SavedSearchTemplateArgs templateArgs = null)
         {
             var args = new Argument[]
             { 
-                new Argument("name", this.Name), 
+                new Argument("name", name), 
                 new Argument("search", search) 
             }
             .AsEnumerable();

@@ -25,7 +25,7 @@ namespace Splunk.Client
     /// Provids an operational interface to Splunk saved search entities. 
     /// </summary>
     [ContractClass(typeof(ISavedSearchContract))]
-    public interface ISavedSearch
+    public interface ISavedSearch : IEntity
     {
         #region Properties
 
@@ -265,7 +265,7 @@ namespace Splunk.Client
         /// New template arguments for the saved search to be updated.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing the operation.
+        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
         /// </returns>
         /// <exception cref="ArgumentException">
         /// <paramref name="attributes"/>, <paramref name="dispatchArgs"/>, and <paramref 
@@ -276,7 +276,8 @@ namespace Splunk.Client
         /// saved/searches{name}</a> endpoint to update the saved search
         /// represented by the current instance.
         /// </remarks>
-        Task UpdateAsync(SavedSearchAttributes attributes = null, SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null);
+        Task<bool> UpdateAsync(SavedSearchAttributes attributes = null, SavedSearchDispatchArgs dispatchArgs = null,
+            SavedSearchTemplateArgs templateArgs = null);
 
         #endregion
     }
@@ -326,10 +327,20 @@ namespace Splunk.Client
 
         public abstract Task ScheduleAsync(DateTime? scheduleTime = null);
 
-        public Task UpdateAsync(SavedSearchAttributes attributes = null, SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
+        public abstract Task GetAsync();
+
+        public abstract Task RemoveAsync();
+
+        public abstract Task<bool> UpdateAsync(params Argument[] arguments);
+
+        public abstract Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
+
+        public Task<bool> UpdateAsync(SavedSearchAttributes attributes = null, 
+            SavedSearchDispatchArgs dispatchArgs = null, 
+            SavedSearchTemplateArgs templateArgs = null)
         {
             Contract.Requires<ArgumentException>(!(attributes == null && dispatchArgs == null && templateArgs == null));
-            return default(Task);
+            return default(Task<bool>);
         }
 
         #endregion

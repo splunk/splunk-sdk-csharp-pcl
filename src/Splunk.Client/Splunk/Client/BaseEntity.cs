@@ -405,7 +405,7 @@ namespace Splunk.Client
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        protected internal async Task<bool> ReconstructSnapshotAsync(Response response)
+        protected internal virtual async Task<bool> ReconstructSnapshotAsync(Response response)
         {
             Contract.Requires<ArgumentNullException>(response != null);
             var feed = new AtomFeed();

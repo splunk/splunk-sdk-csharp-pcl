@@ -39,12 +39,16 @@ namespace Splunk.Client
             : base("args.")
         { }
 
+        public SavedSearchTemplateArgs(params Argument[] arguments)
+            : this(arguments.AsEnumerable())
+        { }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SavedSearchTemplateArgs"/>
         /// class from a collection of <see cref="Argument"/> values.
         /// </summary>
-        public SavedSearchTemplateArgs(IEnumerable<Argument> collection)
-            : base(collection, "args.")
+        public SavedSearchTemplateArgs(IEnumerable<Argument> arguments)
+            : base("args.", arguments)
         { }
 
         #endregion

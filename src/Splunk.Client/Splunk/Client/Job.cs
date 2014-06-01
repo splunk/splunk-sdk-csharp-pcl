@@ -976,6 +976,21 @@ namespace Splunk.Client
 
         #endregion
 
+        #region Infrastructure
+
+        protected internal override async Task<bool> ReconstructSnapshotAsync(Response response)
+        {
+            Contract.Requires<ArgumentNullException>(response != null);
+            var entry = new AtomEntry();
+
+            await entry.ReadXmlAsync(response.XmlReader);
+            this.CreateSnapshot(entry, new Version(0, 0));
+
+            return true;
+        }
+
+        #endregion
+
         #endregion
 
         #region Privates/internals

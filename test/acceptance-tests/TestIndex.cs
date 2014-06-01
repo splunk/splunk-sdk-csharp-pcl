@@ -224,7 +224,7 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Transmitter")]
         [Fact]
-        public async Task CanSendStrings()
+        public async Task Transmitter1()
         {
             string indexName = "sdk-tests2_indexargs";
 
@@ -258,8 +258,8 @@ namespace Splunk.Client.UnitTests
                 {
                     using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
-                        writer.Write(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
-                        writer.Write(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
+                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
+                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);
@@ -267,7 +267,7 @@ namespace Splunk.Client.UnitTests
                     await transmitter.SendAsync(stream, transmitterArgs);
                 }
 
-                await TestHelper.WaitIndexTotalEventCountUpdated(index, 2);
+                await TestHelper.WaitIndexTotalEventCountUpdated(index, 4);
 
                 SearchResultStream result = await service.SearchOneshotAsync(
                         string.Format(
@@ -287,7 +287,7 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Transmitter")]
         [Fact]
-        public async Task CanSendStream()
+        public async Task Transmitter2()
         {
             string indexName = "main";
 
@@ -313,8 +313,8 @@ namespace Splunk.Client.UnitTests
                 {
                     using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
-                        writer.Write(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
-                        writer.Write(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
+                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
+                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);

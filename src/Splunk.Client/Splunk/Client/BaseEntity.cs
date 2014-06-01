@@ -157,35 +157,6 @@ namespace Splunk.Client
 
         #region Properties
 
-        public dynamic ResourceCache
-        {
-            get { return this.snapshot; }
-        }
-
-        /// <inheritdoc cref="ResourceCache.GeneratorVersion"/>
-        public Version GeneratorVersion
-        {
-            get { return this.Snapshot.GeneratorVersion; }
-        }
-
-        /// <inheritdoc cref="ResourceCache.Id"/>
-        public Uri Id
-        {
-            get { return this.Snapshot.Id; }
-        }
-
-        /// <inheritdoc cref="ResourceCache.Title"/>
-        public string Title
-        {
-            get { return this.Snapshot.GetValue("Title"); }
-        }
-
-        /// <inheritdoc cref="ResourceCache.Updated"/>
-        public DateTime Updated
-        {
-            get { return this.Snapshot.Updated; }
-        }
-
         /// <summary>
         /// Gets an object representing the Splunk resource at the time it was
         /// last retrieved by the current <see cref="BaseEntity"/>.
@@ -194,6 +165,38 @@ namespace Splunk.Client
         {
             get { return this.snapshot; }
             set { this.snapshot = value; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public dynamic Dynamic
+        {
+            get { return this.Snapshot; }
+        }
+        
+        /// <inheritdoc cref="Dynamic.GeneratorVersion"/>
+        public Version GeneratorVersion
+        {
+            get { return this.Snapshot.GeneratorVersion; }
+        }
+
+        /// <inheritdoc cref="Dynamic.Id"/>
+        public Uri Id
+        {
+            get { return this.Snapshot.Id; }
+        }
+
+        /// <inheritdoc cref="Dynamic.Title"/>
+        public string Title
+        {
+            get { return this.Snapshot.GetValue("Title"); }
+        }
+
+        /// <inheritdoc cref="Dynamic.Updated"/>
+        public DateTime Updated
+        {
+            get { return this.Snapshot.Updated; }
         }
 
         #endregion
@@ -423,7 +426,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        volatile BaseResource snapshot = Splunk.Client.BaseResource.Missing;
+        volatile BaseResource snapshot = BaseResource.Missing;
 
         #endregion
     }

@@ -144,22 +144,22 @@ namespace Splunk.Client.UnitTests
         {
             CheckCommonStaticPropertiesOfResourceEndpoint(application);
 
-            Assert.Equal(entry.Author, application.ResourceCache.Author);
+            Assert.Equal(entry.Author, application.Dynamic.Author);
             Assert.Equal(entry.Title, application.Name);
             Assert.Equal(entry.Title, application.Title);
             Assert.Equal(entry.Updated, application.Updated);
 
-            Assert.NotNull(application.ResourceCache.Links);
+            Assert.NotNull(application.Dynamic.Links);
             
             Assert.DoesNotThrow(() => 
             {
-                IReadOnlyDictionary<string, Uri> links = application.ResourceCache.Links;
+                IReadOnlyDictionary<string, Uri> links = application.Dynamic.Links;
                 Assert.NotEqual(0, links.Count);
             });
 
             Assert.Equal(generatorVersion, application.GeneratorVersion);
 
-            TestResource.CheckExistenceOfApplicationProperties(application.ResourceCache);
+            TestResource.CheckExistenceOfApplicationProperties(application.Dynamic);
         }
 
         #endregion

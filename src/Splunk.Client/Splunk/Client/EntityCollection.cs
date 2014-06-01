@@ -380,10 +380,10 @@ namespace Splunk.Client
 
         TEntity Create(BaseResource resource)
         {
-            var resourceEndpoint = new TEntity();
+            var entity = new TEntity();
 
-            resourceEndpoint.Initialize(this.Context, resource);
-            return resourceEndpoint;
+            entity.Initialize(this.Context, resource);
+            return entity;
         }
 
         #endregion

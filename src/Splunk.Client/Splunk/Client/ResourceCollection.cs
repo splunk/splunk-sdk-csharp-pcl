@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
-    public class ResourceCollection : BaseResource
+    public class ResourceCollection<TResource> : BaseResource where TResource : BaseResource, new()
     {
         #region Constructors
 
@@ -79,7 +79,7 @@ namespace Splunk.Client
         /// <param name="other">
         /// Another resource.
         /// </param>
-        protected internal ResourceCollection(ResourceCollection other)
+        protected internal ResourceCollection(ResourceCollection<TResource> other)
             : base(other)
         { }
 
@@ -96,15 +96,25 @@ namespace Splunk.Client
 
         #endregion
 
+        #region Fields
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected internal static readonly ResourceCollection<TResource> Missing =
+            new ResourceCollection<TResource>(new ExpandoObject());
+
+        #endregion
+
         #region Properties
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //protected ExpandoAdapter Content
-        //{
-        //    get { return this.content; }
-        //}
+        /// <summary>
+        /// 
+        /// </summary>
+        protected internal IReadOnlyCollection<TResource> Entries
+        {
+            get { return this.resources; }
+        }
 
         #endregion
 
@@ -162,16 +172,21 @@ namespace Splunk.Client
                 expando.Pagination = feed.Pagination;
             }
 
-            var resources = new List<ResourceCollection>();
+            var resources = new List<TResource>();
 
-            foreach (var entry in feed.Entries)
+            if (feed.Entries != null)
             {
-                var resource = new ResourceCollection(entry, feed.GeneratorVersion);
-                resources.Add(resource);
+                foreach (var entry in feed.Entries)
+                {
+                    var resource = new TResource();
+                    resource.Initialize(entry, feed.GeneratorVersion);
+                    resources.Add(resource);
+                }
             }
 
-            expando.Resources = new ReadOnlyCollection<ResourceCollection>(resources);
+            this.resources = new ReadOnlyCollection<TResource>(resources);
             this.Object = expando;
+            
             //this.MarkInitialized();
         }
 
@@ -191,7 +206,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        protected internal static readonly ResourceCollection Missing = new ResourceCollection(new ExpandoObject());
+        IReadOnlyList<TResource> resources;
 
         #endregion
     }

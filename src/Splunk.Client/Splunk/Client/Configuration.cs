@@ -75,7 +75,7 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class Configuration : EntityCollection<ConfigurationStanza>
+    public class Configuration : EntityCollection<ConfigurationStanza>, IConfiguration<ConfigurationStanza>
     {
         #region Constructors
 

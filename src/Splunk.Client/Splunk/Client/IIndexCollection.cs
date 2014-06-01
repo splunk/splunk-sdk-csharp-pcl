@@ -26,7 +26,7 @@ namespace Splunk.Client
     /// Provides an operational interface to the Splunk application collection.
     /// </summary>
     public interface IIndexCollection<TIndex> : IPaginated, IEntityCollection<TIndex> 
-        where TIndex : ResourceEndpoint, IIndex, new()
+        where TIndex : BaseEntity, IIndex, new()
     {
         /// <summary>
         /// Asyncrhonously creates the index represented by the current index.

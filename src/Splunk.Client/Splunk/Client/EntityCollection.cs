@@ -49,8 +49,8 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class EntityCollection<TEntity> : ResourceEndpoint, IEntityCollection<TEntity> 
-        where TEntity : ResourceEndpoint, new()
+    public class EntityCollection<TEntity> : BaseEntity, IEntityCollection<TEntity> 
+        where TEntity : BaseEntity, new()
     {
         #region Constructors
 
@@ -190,7 +190,7 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                return await ResourceEndpoint.CreateAsync<TEntity>(this.Context, response);
+                return await BaseEntity.CreateAsync<TEntity>(this.Context, response);
             }
         }
 
@@ -208,7 +208,7 @@ namespace Splunk.Client
             using (Response response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                return await ResourceEndpoint.CreateAsync<TEntity>(this.Context, response);
+                return await BaseEntity.CreateAsync<TEntity>(this.Context, response);
             }
         }
 
@@ -255,7 +255,7 @@ namespace Splunk.Client
 
                 if (response.Message.StatusCode == HttpStatusCode.OK)
                 {
-                    resourceEndpoint = await ResourceEndpoint.CreateAsync<TEntity>(this.Context, response);
+                    resourceEndpoint = await BaseEntity.CreateAsync<TEntity>(this.Context, response);
                 }
 
                 return resourceEndpoint;

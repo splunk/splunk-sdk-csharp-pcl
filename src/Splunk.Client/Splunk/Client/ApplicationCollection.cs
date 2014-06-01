@@ -172,7 +172,7 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 
-                var resourceEndpoint = await ResourceEndpoint.CreateAsync<Application>(this.Context, response);
+                var resourceEndpoint = await BaseEntity.CreateAsync<Application>(this.Context, response);
                 return resourceEndpoint;
             }
         }

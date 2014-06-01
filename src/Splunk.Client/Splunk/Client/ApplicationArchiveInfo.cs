@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// You can produce an application archive using the <see cref=
     /// "Application.PackageAsync"/> method.
     /// </remarks>
-    public class ApplicationArchiveInfo : BaseResource
+    public class ApplicationArchiveInfo : Resource
     {
         #region Constructors
 
@@ -84,14 +84,6 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
-        /// </summary>
-        protected ExpandoAdapter Content
-        {
-            get { return this.content; }
-        }
-
-        /// <summary>
         /// Gets the access control lists for the current <see cref=
         /// "ApplicationArchiveInfo"/>.
         /// </summary>
@@ -139,27 +131,6 @@ namespace Splunk.Client
         {
             get { return this.Content.GetValue("Url", UriConverter.Instance); }
         }
-
-        #endregion
-
-        #region Methods
-
-        protected internal override void Initialize(AtomFeed feed)
-        {
-            if (feed.Entries.Count != 1)
-            {
-                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
-            }
-
-            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
-            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
-        }
-
-        #endregion
-
-        #region Privates/internals
-
-        ExpandoAdapter content;
 
         #endregion
     }

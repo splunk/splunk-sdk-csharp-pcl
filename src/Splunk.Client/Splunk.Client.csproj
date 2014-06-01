@@ -97,6 +97,8 @@
     <Compile Include="Splunk\Client\AtomEntry.cs" />
     <Compile Include="Splunk\Client\AtomFeed.cs" />
     <Compile Include="Splunk\Client\AuthenticationFailureException.cs" />
+    <Compile Include="Splunk\Client\IConfiguration.cs" />
+    <Compile Include="Splunk\Client\IConfigurationStanza.cs" />
     <Compile Include="Splunk\Client\ResourceCollection.cs" />
     <Compile Include="Splunk\Client\Resource.cs" />
     <Compile Include="Splunk\Client\BooleanConverter.cs" />
@@ -163,7 +165,7 @@
     <Compile Include="Splunk\Client\ReceiverArgs.cs" />
     <Compile Include="Splunk\Client\RequestException.cs" />
     <Compile Include="Splunk\Client\BaseResource.cs" />
-    <Compile Include="Splunk\Client\ResourceEndpoint.cs" />
+    <Compile Include="Splunk\Client\BaseEntity.cs" />
     <Compile Include="Splunk\Client\ResourceName.cs" />
     <Compile Include="Splunk\Client\InternalServerErrorException.cs" />
     <Compile Include="Splunk\Client\ResourceNotFoundException.cs" />
@@ -209,6 +211,7 @@
     <Compile Include="Splunk\Client\ValueConverter.cs" />
     <Compile Include="Splunk\Client\VersionConverter.cs" />
     <Compile Include="Splunk\Client\XmlReaderExtensions.cs" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

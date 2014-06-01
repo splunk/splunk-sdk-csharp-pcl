@@ -87,7 +87,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        void CheckCommonProperties(string expectedName, ResourceEndpoint resourceEndpoint)
+        void CheckCommonProperties(string expectedName, BaseEntity resourceEndpoint)
         {
             Assert.Equal(expectedName, resourceEndpoint.Title);
 

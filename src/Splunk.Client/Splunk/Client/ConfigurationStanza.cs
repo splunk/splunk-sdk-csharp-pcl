@@ -32,7 +32,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk configuration stanza.
     /// </summary>
-    public class ConfigurationStanza : Entity, IReadOnlyList<ConfigurationSetting>
+    public class ConfigurationStanza : Entity, IConfigurationStanza
     {
         #region Constructors
 
@@ -167,17 +167,20 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <inheritdoc/>
         public ConfigurationSetting this[int index]
         {
             get { return this.Create(this.Resources[index]); }
         }
 
+        /// <inheritdoc/>
         public int Count
         {
             get { return this.Resources.Count; }
         }
 
-        public string Author
+        /// <inheritdoc/>
+        public virtual string Author
         {
             get { return this.GetValue("Author", StringConverter.Instance); }
         }
@@ -188,23 +191,8 @@ namespace Splunk.Client
 
         #region Operational interface
 
-        /// <summary>
-        /// Asynchronously retrieves a configuration setting value from the 
-        /// current <see cref="ConfigurationStanza"/>
-        /// </summary>
-        /// <param name="keyName">
-        /// The name of a configuration setting.
-        /// </param>
-        /// <returns>
-        /// The string value of <paramref name="keyName"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/cqT50u">GET 
-        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// construct the <see cref="ConfigurationSetting"/> identified by 
-        /// <paramref name="keyName"/>.
-        /// </remarks>
-        public async Task<string> GetAsync(string keyName)
+        /// <inheritdoc/>
+        public virtual async Task<string> GetAsync(string keyName)
         {
             var resourceName = new ResourceName(this.ResourceName, keyName);
 
@@ -265,26 +253,7 @@ namespace Splunk.Client
             }
         }
 
-        /// <summary>
-        /// Asynchronously updates the value of an existing setting in the 
-        /// current <see cref="ConfigurationStanza"/>.
-        /// </summary>
-        /// <param name="keyName">
-        /// The name of a configuration setting in the current <see cref=
-        /// "ConfigurationStanza"/>.
-        /// </param>
-        /// <param name="value">
-        /// A new value for the setting identified by <paramref name="keyName"/>.
-        /// </param>
-        /// <returns>
-        /// A <see cref="Task"/> representing the operation.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
-        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// update the <see cref="ConfigurationSetting"/> identified by <paramref 
-        /// name="keyName"/>.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task UpdateAsync(string keyName, string value)
         {
             var resourceName = new ResourceName(this.ResourceName, keyName);
@@ -294,6 +263,12 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task UpdateAsync(string keyName, object value)
+        {
+            await this.UpdateAsync(keyName, value.ToString());
         }
 
         #endregion
@@ -336,7 +311,10 @@ namespace Splunk.Client
 
         ConfigurationSetting Create(BaseResource resource)
         {
-            return new ConfigurationSetting(resource);
+            var setting = new ConfigurationSetting();
+            setting.Object = resource.Object;
+            
+            return setting;
         }
 
         #endregion

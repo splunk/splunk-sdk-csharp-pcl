@@ -49,7 +49,7 @@ namespace Splunk.Client
     /// <remarks>
     /// This is the base class for all Splunk entities.
     /// </remarks>
-    public class Entity : ResourceEndpoint, IEntity
+    public class Entity : BaseEntity, IEntity
     {
         #region Constructors
 

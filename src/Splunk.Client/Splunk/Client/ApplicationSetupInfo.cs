@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// <summary>
     /// Represents the setup information for an <see cref="Application"/>.
     /// </summary>
-    public class ApplicationSetupInfo : BaseResource
+    public class ApplicationSetupInfo : Resource
     {
         #region Constructors
 
@@ -84,14 +84,6 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
-        /// </summary>
-        protected ExpandoAdapter Content
-        {
-            get { return this.content; }
-        }
-
-        /// <summary>
         /// Gets the 
         /// </summary>
         public Eai Eai
@@ -115,27 +107,6 @@ namespace Splunk.Client
         {
             get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
-
-        #endregion
-
-        #region Methods
-
-        protected internal override void Initialize(AtomFeed feed)
-        {
-            if (feed.Entries.Count != 1)
-            {
-                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
-            }
-
-            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
-            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
-        }
-
-        #endregion
-
-        #region Privates/internals
-
-        ExpandoAdapter content;
 
         #endregion
     }

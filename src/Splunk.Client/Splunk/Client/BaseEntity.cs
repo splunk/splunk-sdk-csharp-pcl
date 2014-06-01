@@ -45,7 +45,7 @@ namespace Splunk.Client
     /// <remarks>
     /// This is the base class for all Splunk entities.
     /// </remarks>
-    public abstract class ResourceEndpoint : Endpoint
+    public abstract class BaseEntity : Endpoint
     {
         #region Constructors
 
@@ -60,12 +60,12 @@ namespace Splunk.Client
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
-        protected internal ResourceEndpoint(Service service, ResourceName name)
+        protected internal BaseEntity(Service service, ResourceName name)
             : base(service.Context, service.Namespace, name)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceEndpoint"/> 
+        /// Initializes a new instance of the <see cref="BaseEntity"/> 
         /// class as specified by <paramref name="context"/>, <paramref name="ns"/>
         /// and "<paramref name="resourceName"/>.
         /// </summary>
@@ -85,12 +85,12 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        public ResourceEndpoint(Context context, Namespace ns, ResourceName resourceName)
+        public BaseEntity(Context context, Namespace ns, ResourceName resourceName)
             : base(context, ns, resourceName)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceEndpoint"/> class.
+        /// Initializes a new instance of the <see cref="BaseEntity"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -114,12 +114,12 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        public ResourceEndpoint(Context context, Namespace ns, ResourceName collection, string name)
+        public BaseEntity(Context context, Namespace ns, ResourceName collection, string name)
             : base(context, ns, new ResourceName(collection, name))
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceEndpoint"/> class.
+        /// Initializes a new instance of the <see cref="BaseEntity"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -137,20 +137,20 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        public ResourceEndpoint(Context context, AtomFeed feed)
+        public BaseEntity(Context context, AtomFeed feed)
         {
             this.Initialize(context, feed);
         }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ResourceEndpoint"/> class.
+        /// "BaseEntity"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
         /// intended to be used directly from your code.
         /// </remarks>
-        public ResourceEndpoint()
+        public BaseEntity()
         { }
 
         #endregion
@@ -188,7 +188,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets an object representing the Splunk resource at the time it was
-        /// last retrieved by the current <see cref="ResourceEndpoint"/>.
+        /// last retrieved by the current <see cref="BaseEntity"/>.
         /// </summary>
         protected BaseResource Snapshot
         {
@@ -201,20 +201,20 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates a <see cref="ResourceEndpoint"/> from a
+        /// Asynchronously creates a <see cref="BaseEntity"/> from a
         /// Splunk atom feed <see cref="Response"/>.
         /// </summary>
         /// <typeparam name="TResourceEndpoint">
-        /// The type of <see cref="ResourceEndpoint"/> to be created.
+        /// The type of <see cref="BaseEntity"/> to be created.
         /// </typeparam>
         /// <param name="response">
         /// An object representing a Splunk atom feed response.
         /// </param>
         /// <returns>
-        /// The <see cref="ResourceEndpoint"/> created.
+        /// The <see cref="BaseEntity"/> created.
         /// </returns>
         internal static async Task<TResourceEndpoint> CreateAsync<TResourceEndpoint>(Context context, Response response) 
-            where TResourceEndpoint : ResourceEndpoint, new()
+            where TResourceEndpoint : BaseEntity, new()
         {
             var reader = response.XmlReader;
             TResourceEndpoint resourceEndpoint;
@@ -243,7 +243,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "ResourceEndpoint"/>.
+        /// "BaseEntity"/>.
         /// class.
         /// </summary>
         /// <param name="context">
@@ -261,10 +261,10 @@ namespace Splunk.Client
         /// name="generatorVersion"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The current <see cref="ResourceEndpoint"/> is already initialized.
+        /// The current <see cref="BaseEntity"/> is already initialized.
         /// </exception>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="ResourceEndpoint"/>
+        /// This method may be called once to intialize a <see cref="BaseEntity"/>
         /// instantiated by the default constructor. Override this method to 
         /// provide special initialization code. Call this base method before 
         /// initialization is complete. 
@@ -285,7 +285,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "ResourceEndpoint"/>.
+        /// "BaseEntity"/>.
         /// class.
         /// </summary>
         /// <param name="context">
@@ -303,10 +303,10 @@ namespace Splunk.Client
         /// name="generatorVersion"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The current <see cref="ResourceEndpoint"/> is already initialized.
+        /// The current <see cref="BaseEntity"/> is already initialized.
         /// </exception>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="ResourceEndpoint"/>
+        /// This method may be called once to intialize a <see cref="BaseEntity"/>
         /// instantiated by the default constructor. Override this method to 
         /// provide special initialization code. Call this base method before 
         /// initialization is complete. 
@@ -326,7 +326,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "ResourceEndpoint"/>.
+        /// "BaseEntity"/>.
         /// class.
         /// </summary>
         /// <param name="context">
@@ -339,10 +339,10 @@ namespace Splunk.Client
         /// <paramref name="context"/> or <paramref name="resource"/>.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The current <see cref="ResourceEndpoint"/> is already initialized.
+        /// The current <see cref="BaseEntity"/> is already initialized.
         /// </exception>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="ResourceEndpoint"/>
+        /// This method may be called once to intialize a <see cref="BaseEntity"/>
         /// instantiated by the default constructor. Override this method to 
         /// provide special initialization code. Call this base method before 
         /// initialization is complete. 
@@ -362,7 +362,7 @@ namespace Splunk.Client
 
         /// <summary>
 	    /// Updates the <see cref="Content"/> of the current <see cref=
-        /// "ResourceEndpoint"/>.
+        /// "BaseEntity"/>.
 	    /// </summary>
 	    /// <param name="entry">
 	    /// A Splunk <see cref="AtomEntry"/>.
@@ -376,7 +376,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Updates the <see cref="Snapshot"/> of the current <see cref=
-        /// "ResourceEndpoint"/> in derived types.
+        /// "BaseEntity"/> in derived types.
         /// </summary>
         /// <param name="feed">
         /// A Splunk <see cref="AtomFeed"/>.
@@ -388,7 +388,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Updates the <see cref="Content"/> of the current <see cref=
-        /// "ResourceEndpoint"/> in derived types.
+        /// "BaseEntity"/> in derived types.
         /// </summary>
         /// <param name="resource">
         /// An object representing a Splunk resource.
@@ -400,7 +400,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously updates the <see cref="Content"/> of the current <see
-        /// cref="ResourceEndpoint"/>
+        /// cref="BaseEntity"/>
         /// </summary>
         /// <param name="response">
         /// A Splunk atom feed <see cref="Response"/>.

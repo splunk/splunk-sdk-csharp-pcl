@@ -29,9 +29,9 @@ namespace Splunk.Client
     /// Provides an operational interface over a collection of Splunk 
     /// configuration files.
     /// </summary>
-    public interface ConfigurationCollection<TConfiguration, TConfigurationStanza> : IEntityCollection<TConfiguration>
-        where TConfiguration : ResourceEndpoint, IEntityCollection<TConfigurationStanza>, new()
-        where TConfigurationStanza : ResourceEndpoint, IEntity, new()
+    public interface IConfigurationCollection<TConfiguration, TConfigurationStanza> : IEntityCollection<TConfiguration>
+        where TConfiguration : BaseEntity, IConfiguration<TConfigurationStanza>, new()
+        where TConfigurationStanza : BaseEntity, IConfigurationStanza, new()
     {
         /// <summary>
         /// Asynchronously creates a configuration file.
@@ -44,6 +44,6 @@ namespace Splunk.Client
         /// properties</a> endpoint to create the configuration file represented
         /// by this instance.
         /// </remarks>
-        Task CreateAsync(string fileName);
+        Task<TConfiguration> CreateAsync(string fileName);
     }
 }

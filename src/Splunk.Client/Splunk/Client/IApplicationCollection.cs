@@ -31,7 +31,7 @@ namespace Splunk.Client
     /// </summary>
     [ContractClass(typeof(IApplicationCollectionContract<>))]
     public interface IApplicationCollection<TApplication> : IPaginated, IEntityCollection<TApplication> 
-        where TApplication : ResourceEndpoint, IApplication, new()
+        where TApplication : BaseEntity, IApplication, new()
     {
         /// <summary>
         /// Asynchronously creates a new Splunk application from a template.
@@ -96,7 +96,7 @@ namespace Splunk.Client
 
     [ContractClassFor(typeof(IApplicationCollection<>))]
     abstract class IApplicationCollectionContract<TApplication> : IApplicationCollection<TApplication>
-        where TApplication : ResourceEndpoint, IApplication, new()
+        where TApplication : BaseEntity, IApplication, new()
     {
         #region Properties
 

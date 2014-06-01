@@ -8,7 +8,7 @@
 
     [ContractClass(typeof(IStoragePasswordCollectionContract<>))]
     public interface IStoragePasswordCollection<TStoragePassword> : IPaginated, IEntityCollection<TStoragePassword>
-        where TStoragePassword : ResourceEndpoint, IStoragePassword, new()
+        where TStoragePassword : BaseEntity, IStoragePassword, new()
     {
         /// <summary>
         /// Asynchronously creates a new <see cref="StoragePassword"/>.
@@ -35,7 +35,7 @@
 
     [ContractClassFor(typeof(IStoragePasswordCollection<>))]
     abstract class IStoragePasswordCollectionContract<TStoragePassword> : IStoragePasswordCollection<TStoragePassword>
-        where TStoragePassword : ResourceEndpoint, IStoragePassword, new()
+        where TStoragePassword : BaseEntity, IStoragePassword, new()
     {
 
         public abstract TStoragePassword this[int index] { get; }

@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk configuration setting.
     /// </summary>
-    public class ConfigurationSetting : BaseResource
+    public class ConfigurationSetting : Resource
     {
         #region Constructors
 
@@ -51,10 +51,6 @@ namespace Splunk.Client
         {
             this.Initialize(entry, generatorVersion);
         }
-
-        protected internal ConfigurationSetting(BaseResource resource)
-            : base(resource)
-        { }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=

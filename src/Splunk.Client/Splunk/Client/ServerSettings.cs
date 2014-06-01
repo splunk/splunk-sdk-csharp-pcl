@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of the settings of a Splunk server.
     /// </summary>
-    public class ServerSettings : BaseResource, IServerSettings
+    public class ServerSettings : Resource, IServerSettings
     {
         #region Constructors
 
@@ -58,16 +58,6 @@ namespace Splunk.Client
         {
             this.Initialize(feed);
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ServerSettings"/> class.
-        /// </summary>
-        /// <param name="other">
-        /// Another resource.
-        /// </param>
-        protected internal ServerSettings(BaseResource other)
-            : base(other)
-        { }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -104,14 +94,6 @@ namespace Splunk.Client
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected ExpandoAdapter Content
-        {
-            get { return this.content; }
-        }
 
         /// <summary>
         /// Gets the access control lists for the Splunk server instance.
@@ -258,33 +240,6 @@ namespace Splunk.Client
         {
             get { return this.Content.GetValue("TrustedIP", StringConverter.Instance); }
         }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="feed">
-        /// 
-        /// </param>
-        protected internal override void Initialize(AtomFeed feed)
-        {
-            if (feed.Entries.Count != 1)
-            {
-                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
-            }
-
-            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
-            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
-        }
-
-        #endregion
-
-        #region Privates/internals
-
-        ExpandoAdapter content;
 
         #endregion
     }

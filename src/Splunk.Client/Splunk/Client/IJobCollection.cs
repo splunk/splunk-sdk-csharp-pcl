@@ -28,7 +28,7 @@ namespace Splunk.Client
 
     [ContractClass(typeof(IJobCollectionContract<>))]
     public interface IJobCollection<TJob> : IPaginated, IEntityCollection<TJob> 
-        where TJob : ResourceEndpoint, IJob, new()
+        where TJob : BaseEntity, IJob, new()
     {
         Task<TJob> CreateAsync(string search, JobArgs args, CustomJobArgs customArgs, DispatchState requiredState);
         Task GetSliceAsync(JobCollection.Filter criteria);
@@ -36,7 +36,7 @@ namespace Splunk.Client
 
     [ContractClassFor(typeof(IJobCollection<>))]
     abstract class IJobCollectionContract<TJob> : IJobCollection<TJob>
-        where TJob : ResourceEndpoint, IJob, new()
+        where TJob : BaseEntity, IJob, new()
     {
         #region Properties
 

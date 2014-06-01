@@ -95,7 +95,7 @@ namespace Splunk.Client.UnitTests
 
         #region Privates/internals
 
-        static void CheckCommonStaticPropertiesOfResourceEndpoint(ResourceEndpoint resource)
+        static void CheckCommonStaticPropertiesOfResourceEndpoint(BaseEntity resource)
         {
             Assert.DoesNotThrow(() => 
             { 

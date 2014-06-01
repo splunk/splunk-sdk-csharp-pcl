@@ -28,7 +28,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides information about a Splunk server instance.
     /// </summary>
-    public class ServerInfo : BaseResource, IServerInfo
+    public class ServerInfo : Resource, IServerInfo
     {
         #region Constructors
 
@@ -82,14 +82,6 @@ namespace Splunk.Client
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected ExpandoAdapter Content
-        {
-            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
-        }
 
         /// <summary>
         /// Gets the name of the active license group for the Splunk server
@@ -292,26 +284,6 @@ namespace Splunk.Client
         public virtual Version Version
         {
             get { return this.Content.GetValue("Version", VersionConverter.Instance); }
-        }
-
-        #endregion
-
-        #region Methods
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="feed">
-        /// 
-        /// </param>
-        protected internal override void Initialize(AtomFeed feed)
-        {
-            if (feed.Entries.Count != 1)
-            {
-                throw new InvalidDataException(string.Format("Atom feed entry count: {0}", feed.Entries.Count));
-            }
-
-            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
         }
 
         #endregion

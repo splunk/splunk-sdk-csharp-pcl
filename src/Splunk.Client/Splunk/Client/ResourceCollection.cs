@@ -74,16 +74,6 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceCollection"/> class.
-        /// </summary>
-        /// <param name="other">
-        /// Another resource.
-        /// </param>
-        protected internal ResourceCollection(ResourceCollection<TResource> other)
-            : base(other)
-        { }
-
-        /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "ResourceCollection"/> class.
         /// </summary>
@@ -179,6 +169,7 @@ namespace Splunk.Client
                 foreach (var entry in feed.Entries)
                 {
                     var resource = new TResource();
+
                     resource.Initialize(entry, feed.GeneratorVersion);
                     resources.Add(resource);
                 }

@@ -240,7 +240,15 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        protected override void ReconstructSnapshot(AtomFeed feed)
+        protected override void CreateSnapshot(AtomEntry entry, Version generatorVersion)
+        {
+            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+            Contract.Requires<ArgumentNullException>(entry != null);
+            this.Snapshot = new Resource(entry, generatorVersion);
+        }
+
+        /// <inheritdoc/>
+        protected override void CreateSnapshot(AtomFeed feed)
         {
             int count = feed.Entries.Count;
 
@@ -254,11 +262,11 @@ namespace Splunk.Client
                 throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
             }
 
-            base.ReconstructSnapshot(feed.Entries[0], feed.GeneratorVersion);
+            this.CreateSnapshot(feed.Entries[0], feed.GeneratorVersion);
         }
 
         /// <inheritdoc/>
-        protected override void ReconstructSnapshot(BaseResource resource)
+        protected override void CreateSnapshot(BaseResource resource)
         {
             IReadOnlyList<BaseResource> resources = resource.GetValue("Resources");
 

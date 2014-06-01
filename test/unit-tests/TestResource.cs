@@ -38,50 +38,56 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                dynamic collection = new BaseResource(feed);
-
+                dynamic collection = new ResourceCollection<Resource>(feed);
                 CheckCommonStaticPropertiesOfResource(collection);
-                
+
                 //// Static property checks
 
                 Assert.Equal("jobs", collection.Title);
                 Assert.Throws<RuntimeBinderException>(() => { var p = collection.Links; });
                 Assert.Throws<RuntimeBinderException>(() => { var p = collection.Messages; });
 
-                Assert.DoesNotThrow(() => 
-                { 
+                Assert.DoesNotThrow(() =>
+                {
                     Pagination p = collection.Pagination;
                     Assert.Equal(14, p.TotalResults);
                     Assert.Equal(0, p.StartIndex);
                     Assert.Equal(0, p.ItemsPerPage);
                 });
 
-                Assert.DoesNotThrow(() => 
-                { 
-                    ReadOnlyCollection<BaseResource> p = collection.Resources;
+                Assert.DoesNotThrow(() =>
+                {
+                    ReadOnlyCollection<Resource> p = collection.Entries;
                     Assert.Equal(14, p.Count);
                 });
 
-                dynamic resource = collection.Resources[0];
+                foreach (var resource in collection.Entries)
+                {
+                    CheckCommonStaticPropertiesOfResource(resource);
+                    CheckExistenceOfJobProperties(resource);
+                }
 
-                CheckCommonStaticPropertiesOfResource(resource);
-                
-                Assert.IsType(typeof(Uri), resource.Id);
-                Assert.Equal("https://localhost:8089/services/search/jobs/scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Id.ToString());
-                
-                Assert.IsType(typeof(string), resource.Content.Sid);
-                Assert.Equal("scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Content.Sid);
+                {   dynamic resource = collection.Entries[0];
 
-                Assert.IsType(typeof(string), resource.Title);
-                Assert.Equal("search search index=_internal | head 1000", resource.Title);
+                    CheckCommonStaticPropertiesOfResource(resource);
 
-                Assert.NotNull(resource.Links);
-                Assert.IsType(typeof(ReadOnlyDictionary<string, Uri>), resource.Links);
-                Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, resource.Links.Keys);
+                    Assert.IsType(typeof(Uri), resource.Id);
+                    Assert.Equal("https://localhost:8089/services/search/jobs/scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Id.ToString());
 
-                Assert.Throws<RuntimeBinderException>(() => resource.Resources);
-                
-                CheckExistenceOfJobProperties(resource);
+                    Assert.IsType(typeof(string), resource.Content.Sid);
+                    Assert.Equal("scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Content.Sid);
+
+                    Assert.IsType(typeof(string), resource.Title);
+                    Assert.Equal("search search index=_internal | head 1000", resource.Title);
+
+                    Assert.NotNull(resource.Links);
+                    Assert.IsType(typeof(ReadOnlyDictionary<string, Uri>), resource.Links);
+                    Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, resource.Links.Keys);
+
+                    Assert.Throws<RuntimeBinderException>(() => resource.Resources);
+
+                    CheckExistenceOfJobProperties(resource);
+                }
             }
         }
 

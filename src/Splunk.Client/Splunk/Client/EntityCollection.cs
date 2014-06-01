@@ -352,13 +352,21 @@ namespace Splunk.Client
         #region Infrastructure methods
 
         /// <inheritdoc/>
-        protected override void ReconstructSnapshot(AtomFeed feed)
+        protected override void CreateSnapshot(AtomEntry entry, Version generatorVersion)
+        {
+            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+            Contract.Requires<ArgumentNullException>(entry != null);
+            this.Snapshot = new BaseResource(entry, generatorVersion);
+        }
+
+        /// <inheritdoc/>
+        protected override void CreateSnapshot(AtomFeed feed)
         {
             this.Snapshot = new BaseResource(feed);
         }
 
         /// <inheritdoc/>
-        protected override void ReconstructSnapshot(BaseResource resource)
+        protected override void CreateSnapshot(BaseResource resource)
         {
             this.Snapshot = resource;
         }

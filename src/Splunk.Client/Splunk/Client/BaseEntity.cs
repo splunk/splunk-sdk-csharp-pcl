@@ -245,6 +245,39 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Updates the <see cref="Content"/> of the current <see cref=
+        /// "BaseEntity"/>.
+        /// </summary>
+        /// <param name="entry">
+        /// A Splunk <see cref="AtomEntry"/>.
+        /// </param>
+        protected abstract void CreateSnapshot(AtomEntry entry, Version generatorVersion);
+
+        /// <summary>
+        /// Updates the <see cref="Snapshot"/> of the current <see cref=
+        /// "BaseEntity"/> in derived types.
+        /// </summary>
+        /// <param name="feed">
+        /// A Splunk <see cref="AtomFeed"/>.
+        /// </param>
+        /// <remarks>
+        /// Derived types must implement this method.
+        /// </remarks>
+        protected abstract void CreateSnapshot(AtomFeed feed);
+
+        /// <summary>
+        /// Updates the <see cref="Content"/> of the current <see cref=
+        /// "BaseEntity"/> in derived types.
+        /// </summary>
+        /// <param name="resource">
+        /// An object representing a Splunk resource.
+        /// </param>
+        /// <remarks>
+        /// Derived types must implement this method.
+        /// </remarks>
+        protected abstract void CreateSnapshot(BaseResource resource);
+
+        /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
         /// "BaseEntity"/>.
         /// class.
@@ -282,7 +315,7 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(context != null);
             Contract.Requires<ArgumentNullException>(entry != null);
 
-            this.ReconstructSnapshot(entry, generatorVersion);
+            this.CreateSnapshot(entry, generatorVersion);
             this.Initialize(context, this.Snapshot.Id);
         }
 
@@ -323,7 +356,7 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(context != null);
             Contract.Requires<ArgumentNullException>(feed != null);
 
-            this.ReconstructSnapshot(feed);
+            this.CreateSnapshot(feed);
             this.Initialize(context, this.Snapshot.Id);
         }
 
@@ -359,51 +392,12 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(resource != null);
             Contract.Requires<ArgumentNullException>(context != null);
 
-            this.ReconstructSnapshot(resource);
+            this.CreateSnapshot(resource);
             this.Initialize(context, this.Snapshot.Id);
         }
 
         /// <summary>
-	    /// Updates the <see cref="Content"/> of the current <see cref=
-        /// "BaseEntity"/>.
-	    /// </summary>
-	    /// <param name="entry">
-	    /// A Splunk <see cref="AtomEntry"/>.
-	    /// </param>
-        protected void ReconstructSnapshot(AtomEntry entry, Version generatorVersion)
-        {
-            Contract.Requires<ArgumentNullException>(generatorVersion != null);
-            Contract.Requires<ArgumentNullException>(entry != null);
-            this.snapshot = new BaseResource(entry, generatorVersion);
-        }
-
-        /// <summary>
-        /// Updates the <see cref="Snapshot"/> of the current <see cref=
-        /// "BaseEntity"/> in derived types.
-        /// </summary>
-        /// <param name="feed">
-        /// A Splunk <see cref="AtomFeed"/>.
-        /// </param>
-        /// <remarks>
-        /// Derived types must implement this method.
-        /// </remarks>
-        protected abstract void ReconstructSnapshot(AtomFeed feed);
-
-        /// <summary>
-        /// Updates the <see cref="Content"/> of the current <see cref=
-        /// "BaseEntity"/> in derived types.
-        /// </summary>
-        /// <param name="resource">
-        /// An object representing a Splunk resource.
-        /// </param>
-        /// <remarks>
-        /// Derived types must implement this method.
-        /// </remarks>
-        protected abstract void ReconstructSnapshot(BaseResource resource);
-
-        /// <summary>
-        /// Asynchronously updates the <see cref="Content"/> of the current <see
-        /// cref="BaseEntity"/>
+        /// Asynchronously updates the content of the current <see cref="BaseEntity"/>.
         /// </summary>
         /// <param name="response">
         /// A Splunk atom feed <see cref="Response"/>.
@@ -417,7 +411,7 @@ namespace Splunk.Client
             var feed = new AtomFeed();
 
             await feed.ReadXmlAsync(response.XmlReader);
-            this.ReconstructSnapshot(feed);
+            this.CreateSnapshot(feed);
 
             return true;
         }

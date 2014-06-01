@@ -60,7 +60,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Splunk.Client.ConfigurationStanza" Collapsed="true">
-    <Position X="4.5" Y="5.25" Width="1.5" />
+    <Position X="4.5" Y="5.25" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAIAAAABAAiAgAAAQAIAAAAEgEAAAAIAAAAAA=</HashCode>
       <FileName>Splunk\Client\ConfigurationStanza.cs</FileName>
@@ -213,21 +213,21 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Splunk.Client.ApplicationArchiveInfo" Collapsed="true">
-    <Position X="4.75" Y="10.5" Width="1.5" />
+    <Position X="4.75" Y="10.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAEABEAAIAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Client\ApplicationArchiveInfo.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Client.ApplicationSetupInfo" Collapsed="true">
-    <Position X="7" Y="10.5" Width="1.5" />
+    <Position X="7" Y="10.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAGABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Client\ApplicationSetupInfo.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Splunk.Client.ApplicationUpdateInfo" Collapsed="true">
-    <Position X="9.25" Y="10.5" Width="1.5" />
+    <Position X="9.25" Y="10.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Splunk\Client\ApplicationUpdateInfo.cs</FileName>

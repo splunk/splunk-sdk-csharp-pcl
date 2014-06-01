@@ -73,16 +73,6 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Resource"/> class.
-        /// </summary>
-        /// <param name="other">
-        /// Another resource.
-        /// </param>
-        protected internal Resource(Resource other)
-            : base(other)
-        { }
-
-        /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "Resource"/> class.
         /// </summary>

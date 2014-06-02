@@ -74,7 +74,7 @@ namespace Splunk.Client.UnitTests
 
                     for (int i = 0; i < 50; i++)
                     {
-                        StoragePassword storagePassword = await sps.CreateAsync("foobar", name + i, realm[i % realm.Length]);
+                        StoragePassword storagePassword = await sps.CreateAsync(name + i, "foobar", realm[i % realm.Length]);
                         Console.WriteLine("print:"+storagePassword.Name + "," + storagePassword.Realm);
                         var password = Membership.GeneratePassword(15, 2);
                         Console.WriteLine("password:" + password);

@@ -189,9 +189,9 @@ namespace Splunk.Client
 
         protected internal static readonly ResourceName ClassResourceName = new ResourceName("server");
         protected internal static readonly ResourceName Info = new ResourceName("server", "info");
-        protected internal static readonly ResourceName Settings = new ResourceName("server", "settings");
         protected internal static readonly ResourceName Restart = new ResourceName("server", "control", "restart");
-
+        protected internal static readonly ResourceName Settings = new ResourceName("server", "settings", "settings");
+        
         ServerMessageCollection messages;
 
         #endregion

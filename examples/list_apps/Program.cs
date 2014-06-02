@@ -59,8 +59,9 @@ namespace Splunk.Examples.Submit
 
             // Load connection info for Splunk server in .splunkrc file.
             Console.WriteLine("List of Apps:");
+            await service.Applications.GetAllAsync();
 
-            foreach (var app in await service.GetApplicationsAsync())
+            foreach (var app in service.Applications)
             {
                 Console.WriteLine(app.Name);
                 // Write a seperator between the name and the description of an app.

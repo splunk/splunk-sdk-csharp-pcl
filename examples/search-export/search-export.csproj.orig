@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{90F02CAF-BFC0-446F-8FB9-5DAC11668DC6}</ProjectGuid>
+    <ProjectGuid>{907193BC-937D-4353-93FC-53F8B7AF0092}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Proposal</RootNamespace>
-    <AssemblyName>Proposal</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <RootNamespace>search_export</RootNamespace>
+    <AssemblyName>search_export</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,13 +49,19 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Splunk.Client\Splunk.Client.csproj">
+<<<<<<< HEAD
+    <ProjectReference Include="..\..\src\Splunk.Client.Helper\Splunk.Client.Helper.csproj">
+      <Project>{0b0c43f2-ea9c-45ee-a8f7-7a2916dd1717}</Project>
+      <Name>Splunk.Client.Helper</Name>
+=======
+    <ProjectReference Include="..\..\sdkhelper\SDKHelper.csproj">
+      <Project>{0b0c43f2-ea9c-45ee-a8f7-7a2916dd1717}</Project>
+      <Name>SDKHelper</Name>
+>>>>>>> fross/modinputs
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>Splunk.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\test\acceptance-tests\acceptance-tests.csproj">
-      <Project>{b7c3839f-58f5-4ca9-9317-9655a0bc55d9}</Project>
-      <Name>acceptance-tests</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

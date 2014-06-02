@@ -43,17 +43,16 @@ namespace Splunk.Examples.saved_searches
             // Delete the saved search if it exists before we start.
             try
             {
-                SavedSearch preexistingSearch = await service.GetSavedSearchAsync(savedSearchName);
+                SavedSearch preexistingSearch = await service.SavedSearches.GetAsync(savedSearchName);
                 await preexistingSearch.RemoveAsync();
             }
             catch (KeyNotFoundException) { }
 
-            SavedSearch savedSearch = await service.CreateSavedSearchAsync(savedSearchName, savedSearchQuery);
+            SavedSearch savedSearch = await service.SavedSearches.CreateAsync(savedSearchName, savedSearchQuery);
             Job savedSearchJob = await savedSearch.DispatchAsync();
 
             using (SearchResultStream searchResults = await savedSearchJob.GetSearchResultsAsync())
             {
-       
 
             }
 

@@ -62,11 +62,11 @@ namespace Splunk.Examples.Authenticate
         {
             try
             {
-                await service.GetConfigurationsAsync();
+                await service.Configurations.GetAllAsync();
             }
             catch (AuthenticationFailureException)
             {
-                Console.WriteLine("Can't get service configuration without log in");
+                Console.WriteLine("Can't get service configuration without logging in.");
             }
 
             Console.WriteLine("Login as admin");
@@ -75,8 +75,9 @@ namespace Splunk.Examples.Authenticate
             await service.LoginAsync(username, password);
 
             Console.WriteLine("List all configurations of the Splunk service:");
-            ConfigurationCollection configs = service.GetConfigurationsAsync().Result;
-            foreach (Configuration config in configs)
+            await service.Configurations.GetAllAsync();
+
+            foreach (Configuration config in service.Configurations)
             {
                 Console.WriteLine(config.Id);
             }

@@ -65,18 +65,22 @@ namespace Splunk.Examples.Submit
             //string source = "*\\splunkd.log";
             //string sourceType = "splunkd";
 
-            if (service.GetIndexesAsync().Result.Any(a => a.Name == indexName))
+            Index index = await service.Indexes.GetOrNullAsync("indexName");
+
+            if (index != null)
             {
-                await service.RemoveIndexAsync(indexName);
+                await index.RemoveAsync();
             }
 
-            Index index = await service.CreateIndexAsync(indexName);
+            index = await service.Indexes.CreateAsync(indexName);
+            Exception exception = null;
+
             try
             {
                 await index.EnableAsync();
 
-                Receiver receiver = service.Receiver;
-                ReceiverArgs args = new ReceiverArgs()
+                Transmitter receiver = service.Transmitter;
+                TransmitterArgs args = new TransmitterArgs()
                 {
                     Index = indexName,
                     ////Source = source,
@@ -96,9 +100,16 @@ namespace Splunk.Examples.Submit
 
                 Console.WriteLine(results);              
             }
-            finally
+            catch (Exception e)
             {
-                service.RemoveIndexAsync(indexName).Wait();
+                exception = e;
+            }
+
+            await index.RemoveAsync();
+
+            if (exception != null)
+            {
+                throw exception;
             }
         }
     }

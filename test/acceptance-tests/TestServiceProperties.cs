@@ -143,7 +143,6 @@ namespace Splunk.Client.UnitTests
             }
         }
     
-
         /// <summary>
         /// This method tests geting the events and then sets most, 
         /// and then reverts back to the original
@@ -151,107 +150,110 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task Settings()
         {
-            Service service = await SDKHelper.CreateService();
+            ServerSettingValues original = null, replacement = null;
 
-            ServerSettings settings = await service.Server.GetSettingsAsync();
-            string dummyString;
-            bool dummBool;
-            int dummyInt;
-            dummyString = settings.SplunkDB;
-            dummyString = settings.SplunkHome;
-            dummBool = settings.EnableSplunkWebSsl;
-            dummyString = settings.Host;
-            dummyInt = settings.HttpPort;
-            dummyInt = settings.ManagementHostPort;
-            dummyInt = settings.MinFreeSpace;
-            dummyString = settings.Pass4SymmetricKey;
-            dummyString = settings.ServerName;
-            dummyString = settings.SessionTimeout;
-            dummBool = settings.StartWebServer;
-            dummyString = settings.TrustedIP;
+            using (Service service = await SDKHelper.CreateService())
+            {
+                ServerSettings settings = await service.Server.GetSettingsAsync();
+                string dummyString;
+                bool dummBool;
+                int dummyInt;
 
-            // set aside original settings
-            string originalTimeout = settings.SessionTimeout;
-            bool originalSSL = settings.EnableSplunkWebSsl;
-            string originalHost = settings.Host;
-            int originalHttpPort = settings.HttpPort;
-            int originalMinSpace = settings.MinFreeSpace;
-            //int originalMgmtPort = settings.MgmtPort();
-            string originalServerName = settings.ServerName;
-            bool originalStartWeb = settings.StartWebServer;
+                dummyString = settings.SplunkDB;
+                dummyString = settings.SplunkHome;
+                dummBool = settings.EnableSplunkWebSsl;
+                dummyString = settings.Host;
+                dummyInt = settings.HttpPort;
+                dummyInt = settings.ManagementHostPort;
+                dummyInt = settings.MinFreeSpace;
+                dummyString = settings.Pass4SymmetricKey;
+                dummyString = settings.ServerName;
+                dummyString = settings.SessionTimeout;
+                dummBool = settings.StartWebServer;
+                dummyString = settings.TrustedIP;
 
-            // test update
-            ServerSettingValues serverSettingValues = new ServerSettingValues();
-            serverSettingValues.EnableSplunkWebSsl = !originalSSL;
-            bool updatedSSL = serverSettingValues.EnableSplunkWebSsl.Value;
-            serverSettingValues.Host = "sdk-host";
-            serverSettingValues.HttpPort = 8001;
-            serverSettingValues.MinFreeSpace = originalMinSpace - 100;
-            //settings.MgmtHostPort(originalMgmtPort+1);
-            serverSettingValues.ServerName = "sdk-test-name";
-            serverSettingValues.SessionTimeout = "2h";
-            //settings.StartWebServer(!originalStartWeb);
-            await service.Server.UpdateSettingsAsync(serverSettingValues);
+                //// Set aside original settings
 
-            // changing ports require a restart
-            await TestHelper.RestartServerAsync();
+                original = new ServerSettingValues()
+                {
+                    EnableSplunkWebSsl = settings.EnableSplunkWebSsl,
+                    Host = settings.Host,
+                    //HttpPort = settings.HttpPort,
+                    //ManagementHostPort = settings.ManagementHostPort,
+                    MinFreeSpace = settings.MinFreeSpace,
+                    ServerName = settings.ServerName,
+                    SessionTimeout = settings.SessionTimeout,
+                    StartWebServer = settings.StartWebServer
+                };
 
+                //// Update
+                
+                replacement = new ServerSettingValues()
+                {
+                    EnableSplunkWebSsl = !original.EnableSplunkWebSsl,
+                    Host = "sdk-test",
+                    //HttpPort = 8001,
+                    //ManagementHostPort = original.ManagementHostPort + 1,
+                    MinFreeSpace = original.MinFreeSpace - 100,
+                    ServerName = "sdk-test-name",
+                    SessionTimeout = "2h",
+                    StartWebServer = !original.StartWebServer
+                };
 
-            service = await SDKHelper.CreateService();
+                await service.Server.UpdateSettingsAsync(replacement);
+                //await TestHelper.RestartServerAsync(); // because changing ports requires a restart
+            }
 
-            settings = service.Server.GetSettingsAsync().Result;
+            using (Service service = await SDKHelper.CreateService())
+            {
+                ServerSettings settings = await service.Server.GetSettingsAsync();
 
-            Assert.NotEqual(originalSSL, updatedSSL);
-            Assert.Equal("sdk-host", settings.Host);
-            Assert.Equal(8001, settings.HttpPort);
-            Assert.Equal(originalMinSpace - 100, settings.MinFreeSpace);
-            Assert.Equal("sdk-test-name", settings.ServerName);
-            Assert.Equal("2h", settings.SessionTimeout);
-            //assertEquals(settings.StartWebServer(), !originalStartWeb);
+                //// Verify update
 
-            // restore original
-            serverSettingValues = new ServerSettingValues();
-            serverSettingValues.EnableSplunkWebSsl = originalSSL;
-            serverSettingValues.Host = originalHost;
-            serverSettingValues.HttpPort = originalHttpPort;
-            serverSettingValues.MinFreeSpace = originalMinSpace;
-            serverSettingValues.ServerName = originalServerName;
-            serverSettingValues.SessionTimeout = originalTimeout;
-            serverSettingValues.StartWebServer = originalStartWeb;
-            await service.Server.UpdateSettingsAsync(serverSettingValues);
+                Assert.Equal(replacement.EnableSplunkWebSsl, settings.EnableSplunkWebSsl);
+                Assert.Equal(replacement.Host, settings.Host);
+                //Assert.Equal(replacement.HttpPort, settings.HttpPort);
+                //Assert.Equal(replacement.ManagementHostPort, settings.ManagementHostPort);
+                Assert.Equal(replacement.MinFreeSpace, settings.MinFreeSpace);
+                Assert.Equal(replacement.ServerName, settings.ServerName);
+                Assert.Equal(replacement.SessionTimeout, settings.SessionTimeout);
+                Assert.Equal(replacement.StartWebServer, settings.StartWebServer);
 
-            // changing ports require a restart
-            await TestHelper.RestartServerAsync();
-            service = await SDKHelper.CreateService();
+                //// Restore original settings
 
-            settings = service.Server.GetSettingsAsync().Result;
+                replacement = new ServerSettingValues()
+                {
+                    EnableSplunkWebSsl = original.EnableSplunkWebSsl,
+                    Host = original.Host,
+                    //HttpPort = original.HttpPort,
+                    //ManagementHostPort = original.ManagementHostPort,
+                    MinFreeSpace = original.MinFreeSpace,
+                    ServerName = original.ServerName,
+                    SessionTimeout = original.SessionTimeout,
+                    StartWebServer = original.StartWebServer
+                };
 
-            Assert.Equal(originalSSL, settings.EnableSplunkWebSsl);
-            Assert.Equal(originalHost, settings.Host);
-            Assert.Equal(originalHttpPort, settings.HttpPort);
-            Assert.Equal(originalMinSpace, settings.MinFreeSpace);
-            Assert.Equal(originalServerName, settings.ServerName);
-            Assert.Equal(originalTimeout, settings.SessionTimeout);
-            Assert.Equal(originalStartWeb, settings.StartWebServer);
+                await service.Server.UpdateSettingsAsync(replacement);
+                //await TestHelper.RestartServerAsync(); // because changing ports requires a restart
+            }
+
+            using (var service = await SDKHelper.CreateService())
+            {
+                //// Verify restore operation
+
+                ServerSettings settings = await service.Server.GetSettingsAsync();
+
+                Assert.Equal(original.EnableSplunkWebSsl, settings.EnableSplunkWebSsl);
+                Assert.Equal(original.Host, settings.Host);
+                //Assert.Equal(original.HttpPort, settings.HttpPort);
+                //Assert.Equal(original.ManagementHostPort, settings.ManagementHostPort);
+                Assert.Equal(original.MinFreeSpace, settings.MinFreeSpace);
+                Assert.Equal(original.ServerName, settings.ServerName);
+                Assert.Equal(original.SessionTimeout, settings.SessionTimeout);
+                Assert.Equal(original.StartWebServer, settings.StartWebServer);
+
+                //await TestHelper.RestartServerAsync(); // because changing ports requires a restart
+            }
         }
-
-        ///// <summary>
-        ///// Returns a value dermining whether a string is in the
-        ///// non-ordered array of strings.
-        ///// </summary>
-        ///// <param name="array">The array to scan</param>
-        ///// <param name="value">The value to look for</param>
-        ///// <returns>True or false</returns>
-        //private bool Contains(string[] array, string value)
-        //{
-        //    for (int i = 0; i < array.Length; ++i)
-        //    {
-        //        if (array[i].Equals(value))
-        //        {
-        //            return true;
-        //        }
-        //    }
-        //    return false;
-        //}
     }
 }

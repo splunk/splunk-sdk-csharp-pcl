@@ -156,7 +156,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual StoragePasswordCollection StoragePasswords
         {
-            get { return this.StoragePasswords; }
+            get { return this.storagePasswords; }
         }
 
         /// <inheritdoc/>

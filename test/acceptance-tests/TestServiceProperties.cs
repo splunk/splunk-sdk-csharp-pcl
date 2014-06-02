@@ -114,12 +114,11 @@ namespace Splunk.Client.UnitTests
         public async Task ServiceLogin()
         {
             Service service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
-            ConfigurationCollection config = null;
 
             // Not logged in, should fail with 401
             try
             {
-                config = await service.GetConfigurationsAsync();
+                await service.Configurations.GetAllAsync();
                 Assert.True(false, "Expected AuthenticationFailureException");
             }
             catch (AuthenticationFailureException e)
@@ -129,14 +128,13 @@ namespace Splunk.Client.UnitTests
 
             // Logged in, request should succeed
             await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
-            config = await service.GetConfigurationsAsync();
-            Assert.NotNull(config);
+            await service.Configurations.GetAllAsync();
 
             //// Logout, the request should fail with a 401
             service.LogoffAsync().Wait();
             try
             {
-                config = await service.GetConfigurationsAsync();
+                await service.Configurations.GetAllAsync();
                 Assert.True(false, "Expected AuthenticationFailureException");
             }
             catch (AuthenticationFailureException ex)
@@ -155,7 +153,7 @@ namespace Splunk.Client.UnitTests
         {
             Service service = await SDKHelper.CreateService();
 
-            ServerSettings settings = service.Server.GetSettingsAsync().Result;
+            ServerSettings settings = await service.Server.GetSettingsAsync();
             string dummyString;
             bool dummBool;
             int dummyInt;
@@ -193,10 +191,10 @@ namespace Splunk.Client.UnitTests
             serverSettingValues.ServerName = "sdk-test-name";
             serverSettingValues.SessionTimeout = "2h";
             //settings.StartWebServer(!originalStartWeb);
-            settings.UpdateAsync(serverSettingValues).Wait();
+            await service.Server.UpdateSettingsAsync(serverSettingValues);
 
             // changing ports require a restart
-            await TestHelper.RestartServer();
+            await TestHelper.RestartServerAsync();
 
 
             service = await SDKHelper.CreateService();
@@ -220,10 +218,10 @@ namespace Splunk.Client.UnitTests
             serverSettingValues.ServerName = originalServerName;
             serverSettingValues.SessionTimeout = originalTimeout;
             serverSettingValues.StartWebServer = originalStartWeb;
-            settings.UpdateAsync(serverSettingValues).Wait();
+            await service.Server.UpdateSettingsAsync(serverSettingValues);
 
             // changing ports require a restart
-            await TestHelper.RestartServer();
+            await TestHelper.RestartServerAsync();
             service = await SDKHelper.CreateService();
 
             settings = service.Server.GetSettingsAsync().Result;

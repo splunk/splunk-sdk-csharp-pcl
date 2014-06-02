@@ -980,7 +980,6 @@ namespace Splunk.Client
 
         protected internal override async Task<bool> ReconstructSnapshotAsync(Response response)
         {
-            Contract.Requires<ArgumentNullException>(response != null);
             var entry = new AtomEntry();
 
             await entry.ReadXmlAsync(response.XmlReader);

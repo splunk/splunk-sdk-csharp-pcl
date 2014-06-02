@@ -59,7 +59,7 @@ namespace Splunk.Client.UnitTests
                 {
                     job = await service.Jobs.CreateAsync(search);
                 }
-                catch (BadRequestException e)
+                catch (BadRequestException)
                 {
                     return;
                 }

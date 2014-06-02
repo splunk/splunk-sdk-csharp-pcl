@@ -33,7 +33,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Basic conf touch test
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection")]
+        [Trait("acceptance-test", "Splunk.Client.Configuration")]
         [Fact]
         public async Task ConfigurationCollection()
         {

@@ -96,6 +96,7 @@
     <Compile Include="Splunk\Client\ArgumentSet.cs" />
     <Compile Include="Splunk\Client\AtomEntry.cs" />
     <Compile Include="Splunk\Client\AtomFeed.cs" />
+    <Compile Include="Splunk\Client\BadRequestException.cs" />
     <Compile Include="Splunk\Client\AuthenticationFailureException.cs" />
     <Compile Include="Splunk\Client\IConfiguration.cs" />
     <Compile Include="Splunk\Client\IConfigurationStanza.cs" />

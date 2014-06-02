@@ -200,6 +200,9 @@ namespace Splunk.Client
 
             switch (this.Message.StatusCode)
             {
+                case HttpStatusCode.BadRequest:
+                    requestException = new BadRequestException(this.Message, details);
+                    break;
                 case HttpStatusCode.Forbidden:
                     requestException = new UnauthorizedAccessException(this.Message, details);
                     break;

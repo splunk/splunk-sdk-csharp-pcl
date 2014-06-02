@@ -25,14 +25,13 @@ namespace Splunk.Client
     using System.Net.Http;
 
     /// <summary>
-    /// The exception that is thrown when invalid credentials are passed to
-    /// <see cref="Service.LoginAsync"/> or a request fails because the session 
-    /// timed out.
+    /// The exception that is thrown when a request is rejected by Splunk 
+    /// because it is poorly formed.
     /// </summary>
-    public sealed class AuthenticationFailureException : RequestException
+    public sealed class BadRequestException : RequestException
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AuthenticationFailureException"/>
+        /// Initializes a new instance of the <see cref="BadRequestException"/>
         /// class.
         /// </summary>
         /// <param name="message">
@@ -41,12 +40,12 @@ namespace Splunk.Client
         /// </param>
         /// <param name="details">
         /// A sequence of <see cref="Message"/> instances detailing the cause
-        /// of the <see cref="AuthenticationFailureException"/>.
+        /// of the <see cref="BadRequestException"/>.
         /// </param>
-        internal AuthenticationFailureException(HttpResponseMessage message, IEnumerable<Message> details)
+        internal BadRequestException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(message, details)
         {
-            Debug.Assert(message.StatusCode == HttpStatusCode.Unauthorized);
+            Debug.Assert(message.StatusCode == HttpStatusCode.BadRequest);
         }
     }
 }

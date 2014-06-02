@@ -35,7 +35,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the basic getters and setters of index
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.IndexCollection")]
+        [Trait("acceptance-test", "Splunk.Client.Index")]
         [Fact]
         public async Task IndexCollection()
         {

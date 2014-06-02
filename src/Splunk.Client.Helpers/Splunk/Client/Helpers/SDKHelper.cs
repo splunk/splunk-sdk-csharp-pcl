@@ -62,8 +62,19 @@ namespace Splunk.Client.Helpers
         /// </returns>
         public static async Task<Service> CreateService(Namespace ns = null)
         {
-            var service = new Service(UserConfigure.scheme, UserConfigure.host, UserConfigure.port, ns);
+            Service service = null;
+            if (bool.Parse(System.Configuration.ConfigurationSettings.AppSettings["UseMockContext"]))
+            {
+                MockContext context = new MockContext(UserConfigure.scheme, UserConfigure.host, UserConfigure.port);
+                service = new Service(context);
+            }
+            else
+            {
+                service = new Service(UserConfigure.scheme, UserConfigure.host, UserConfigure.port, ns);
+            }
+
             await service.LoginAsync(UserConfigure.username, UserConfigure.password);
+
             return service;
         }
 

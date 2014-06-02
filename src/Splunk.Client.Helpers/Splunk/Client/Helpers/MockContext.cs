@@ -16,7 +16,7 @@
 
 using System.Configuration;
 
-namespace Splunk.Client.Helper
+namespace Splunk.Client.Helpers
 {
     using Splunk.Client;
     using System;

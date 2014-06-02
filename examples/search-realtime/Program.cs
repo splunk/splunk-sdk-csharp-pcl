@@ -39,18 +39,19 @@ namespace search_realtime
             });
 
             var tokenSource = new CancellationTokenSource();
-            await Task.Run(() =>
+
+            var task = Task.Run(async () =>
             {
                 Console.ReadLine();
-                realtimeJob.CancelAsync().Wait();
+
+                await realtimeJob.CancelAsync();
                 tokenSource.Cancel();
-
             });
-
-            SearchResultStream searchResults;
 
             while (!tokenSource.IsCancellationRequested)
             {
+                SearchResultStream searchResults;
+
                 searchResults = await realtimeJob.GetSearchResultsPreviewAsync();
                 Console.WriteLine("fieldnames:" + searchResults.FieldNames.Count);
                 Console.WriteLine("fieldname list:" + string.Join(";", searchResults.FieldNames.ToArray()));

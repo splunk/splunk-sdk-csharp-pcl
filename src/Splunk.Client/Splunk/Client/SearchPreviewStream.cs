@@ -47,6 +47,7 @@ namespace Splunk.Client
     using System.Collections;
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -54,7 +55,7 @@ namespace Splunk.Client
     /// The <see cref="SearchPreviewStream"/> class represents a streaming XML 
     /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
-    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable
+    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<SearchPreview>
     {
         #region Constructors
 
@@ -88,11 +89,55 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Returns an enumerator that iterates through <see cref=
+        /// "SearchPreview"/> objects on the current <see cref=
+        /// "SearchPreviewStream"/> asynchronously.
+        /// </summary>
+        /// <returns>
+        /// An enumerator structure for the <see cref="SearchPreviewStream"/>.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// The current <see cref="SearchPreviewStream"/> has already been
+        /// enumerated.
+        /// </exception>
+        /// <remarks>
+        /// You can use the <see cref="GetEnumerator"/> method to
+        /// <list type="bullet">
+        /// <item><description>
+        ///     Perform LINQ to Objects queries to obtain a filtered set of 
+        ///     search previews.</description></item>
+        /// <item><description>
+        ///     Append search previews to an existing collection of search
+        ///     previews.</description></item>
+        /// </list>
+        /// </remarks>
+        public IEnumerator<Task<SearchPreview>> GetEnumerator()
+        {
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) == 1)
+            {
+                throw new InvalidOperationException("Search previews have been enumerated; The enumeration operation may not execute again.");
+            }
+
+            for (var preview = this.ReadSearchPreviewAsync(); preview != null; preview = this.ReadSearchPreviewAsync())
+            {
+                yield return preview;
+            }
+        }
+
+        /// <inheritdoc cref="GetEnumerator"/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+ 
+        /// <summary>
         /// Pushes <see cref="SearchPreview"/> instances to subscribers 
         /// and then completes.
         /// </summary>
-        /// <returns></returns>
-        override protected async Task PushObservations()
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        protected override async Task PushObservations()
         {
             do
             {
@@ -111,6 +156,20 @@ namespace Splunk.Client
 
         readonly Response response;
         bool disposed;
+        int enumerated;
+
+        async Task<SearchPreview> ReadSearchPreviewAsync()
+        {
+            if (await this.response.XmlReader.ReadToFollowingAsync("results"))
+            {
+                var preview = new SearchPreview();
+
+                await preview.ReadXmlAsync(this.response.XmlReader);
+                return preview;
+            }
+
+            return null;
+        }
 
         #endregion
     }

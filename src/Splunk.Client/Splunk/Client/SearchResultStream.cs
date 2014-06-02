@@ -25,6 +25,7 @@ namespace Splunk.Client
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -32,7 +33,7 @@ namespace Splunk.Client
     /// Represents an enumerable, observable stream of <see cref="SearchResult"/> 
     /// records.
     /// </summary>
-    public sealed class SearchResultStream : Observable<SearchResult>, IDisposable
+    public sealed class SearchResultStream : Observable<SearchResult>, IDisposable, IEnumerable<SearchResult>
     {
         #region Constructors
 
@@ -102,20 +103,56 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Returns an enumerator that iterates through search result <see 
+        /// cref="Result"/> objects synchronously.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Result"/> enumerator structure for the <see 
+        /// cref="SearchResults"/>.
+        /// </returns>
+        /// <remarks>
+        /// You can use the <see cref="GetEnumerator"/> method to
+        /// <list type="bullet">
+        /// <item><description>
+        ///     Perform LINQ to Objects queries to obtain a filtered set of 
+        ///     search result records.</description></item>
+        /// <item><description>
+        ///     Append search results to an existing <see cref="Result"/>
+        ///     collection.</description></item>
+        /// </list>
+        /// </remarks>
+        public IEnumerator<SearchResult> GetEnumerator()
+        {
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
+            {
+                throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
+            }
+
+            for (var task = this.ReadResultAsync(); task.Result != null; task = this.ReadResultAsync())
+            {
+                yield return task.Result;
+            }
+        }
+
+        /// <inheritdoc cref="GetEnumerator">
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+ 
+        /// <summary>
         /// Asynchronously pushes <see cref="SearchResult"/> objects to observers 
         /// and then completes.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        override protected async Task PushObservations()
+        protected override async Task PushObservations()
         {
-            if (this.enumerated)
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
             {
-                throw new InvalidOperationException(); // TODO: diagnostics
+                throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
             }
-
-            this.enumerated = true;
 
             for (SearchResult result; (result = await this.ReadResultAsync()) != null; )
             {
@@ -130,7 +167,7 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly Response response;
-        bool enumerated;
+        int enumerated;
         Metadata metadata;
 
         /// <summary>

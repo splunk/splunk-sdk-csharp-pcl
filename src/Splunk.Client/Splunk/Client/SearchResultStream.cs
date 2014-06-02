@@ -106,7 +106,7 @@ namespace Splunk.Client
         /// and then completes.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         override protected async Task PushObservations()
         {
@@ -221,7 +221,7 @@ namespace Splunk.Client
             /// The <see cref="XmlReader"/> from which to read.
             /// </param>
             /// <returns>
-            /// A <see cref="Task"/> representing this operation.
+            /// A <see cref="Task"/> representing the operation.
             /// </returns>
             public async Task ReadXmlAsync(XmlReader reader)
             {

@@ -44,7 +44,7 @@ namespace Splunk.Client
         /// class from a collection of <see cref="Argument"/> values.
         /// </summary>
         public CustomJobArgs(IEnumerable<Argument> collection)
-            : base(collection, "custom.")
+            : base("custom.", collection)
         { }
 
         #endregion

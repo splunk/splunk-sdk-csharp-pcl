@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Splunk.Client.BaseResource" Collapsed="true">
+    <Position X="9.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgACAAAAIBAAAUAkgAAAAAAAAAAAAIAAQAAIAIAAAAA=</HashCode>
+      <FileName>Splunk\Client\BaseResource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Client.ConfigurationSetting" Collapsed="true">
+    <Position X="1.25" Y="10.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAgAAAAAAA=</HashCode>
+      <FileName>Splunk\Client\ConfigurationSetting.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Client.Resource" Collapsed="true">
+    <Position X="6.75" Y="9" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAIgAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Client\Resource.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Client.ResourceCollection&lt;TResource&gt;" Collapsed="true">
+    <Position X="16" Y="9" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAASAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Client\ResourceCollection.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Client.BaseEntity" Collapsed="true">
+    <Position X="20" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACACAAAAAgAUABAAAAAAgAAAAAAAAAYAAIAIAAAAA=</HashCode>
+      <FileName>Splunk\Client\BaseEntity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Client.Entity">
+    <Position X="8.25" Y="2" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIgAAAAAAAAgAAAgAAAAAAAgAAAAAIAAAAAA=</HashCode>
+      <FileName>Splunk\Client\Entity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.EntityCollection&lt;TEntity&gt;" Collapsed="true">
+    <Position X="28" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAgAIAAAABQACAAAAAwAAAAAAEAEAgAAIIAAAAA=</HashCode>
+      <FileName>Splunk\Client\EntityCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.Application" Collapsed="true">
+    <Position X="2.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>YAIAQAAAEABgAACAgACAAAAAAAAQAQgICRAAAAAQAAA=</HashCode>
+      <FileName>Splunk\Client\Application.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ConfigurationStanza" Collapsed="true">
+    <Position X="4.5" Y="5.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAABAAiAgAAAwAAAAAAEgEAAAAIAAAAAA=</HashCode>
+      <FileName>Splunk\Client\ConfigurationStanza.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.Index" Collapsed="true">
+    <Position X="6.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QwJAEIRIkMYhAAGCQMGIggowNCpHQUi4CQ4EIEiABxg=</HashCode>
+      <FileName>Splunk\Client\Index.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.Job" Collapsed="true">
+    <Position X="9" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EACggKJE0CTAARiFCGkmoAeQjoQCgB5AGUCg5Ag0gAE=</HashCode>
+      <FileName>Splunk\Client\Job.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.SavedSearch" Collapsed="true">
+    <Position X="11.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AggAAAQIMQCgUAQAAAAAQQAEIAAAgAkAIBQAIAAgAAI=</HashCode>
+      <FileName>Splunk\Client\SavedSearch.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ServerMessage" Collapsed="true">
+    <Position X="13.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAAQAAAAAAAAAAAAAgAAAAACAQAAAA=</HashCode>
+      <FileName>Splunk\Client\ServerMessage.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.StoragePassword" Collapsed="true">
+    <Position X="15.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAABQAAAAAAAQEAAAgCAAAAAAAAABA=</HashCode>
+      <FileName>Splunk\Client\StoragePassword.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ApplicationCollection">
+    <Position X="18" Y="3.5" Width="2.75" />
+    <NestedTypes>
+      <Class Name="Splunk.Client.ApplicationCollection.CreationArgs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Splunk\Client\ApplicationCollection.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Splunk.Client.ApplicationCollection.UpdateArgs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Splunk\Client\ApplicationCollection.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Splunk.Client.ApplicationCollection.Filter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Splunk\Client\ApplicationCollection.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAQAAAIYAAAAA=</HashCode>
+      <FileName>Splunk\Client\ApplicationCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.Configuration" Collapsed="true">
+    <Position X="21.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABEAAAAAAAAAAAAAAgAAAAAAAAAAAgAAAAAAIAAAAA=</HashCode>
+      <FileName>Splunk\Client\Configuration.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ConfigurationCollection">
+    <Position X="23.75" Y="3.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAQAAAAAAAAAAAAAAAAAAAAAIIAAAAA=</HashCode>
+      <FileName>Splunk\Client\ConfigurationCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.IndexCollection">
+    <Position X="27.75" Y="3.5" Width="1.5" />
+    <NestedTypes>
+      <Class Name="Splunk.Client.IndexCollection.CreationArgs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Splunk\Client\IndexCollection.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Splunk.Client.IndexCollection.Filter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Splunk\Client\IndexCollection.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAAAIYAAAAA=</HashCode>
+      <FileName>Splunk\Client\IndexCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.JobCollection" Collapsed="true">
+    <Position X="30" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAAAIYAAAAA=</HashCode>
+      <FileName>Splunk\Client\JobCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.SavedSearchCollection" Collapsed="true">
+    <Position X="32.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAAAIYAAAAA=</HashCode>
+      <FileName>Splunk\Client\SavedSearchCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ServerMessageCollection" Collapsed="true">
+    <Position X="34.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAAAIYAAAAA=</HashCode>
+      <FileName>Splunk\Client\ServerMessageCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.StoragePasswordCollection">
+    <Position X="36.75" Y="3.5" Width="2.75" />
+    <NestedTypes>
+      <Class Name="Splunk.Client.StoragePasswordCollection.CreationArgs" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Splunk\Client\StoragePasswordCollection.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="Splunk.Client.StoragePasswordCollection.Filter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Splunk\Client\StoragePasswordCollection.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAAAIYAAAAA=</HashCode>
+      <FileName>Splunk\Client\StoragePasswordCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ApplicationArchiveInfo" Collapsed="true">
+    <Position X="4.75" Y="10.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEABEAAIAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Client\ApplicationArchiveInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Client.ApplicationSetupInfo" Collapsed="true">
+    <Position X="7" Y="10.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAGABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Client\ApplicationSetupInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Client.ApplicationUpdateInfo" Collapsed="true">
+    <Position X="9.25" Y="10.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAEABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Splunk\Client\ApplicationUpdateInfo.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Splunk.Client.ServerInfo" Collapsed="true">
+    <Position X="11.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KAAAIAAAEIAAYADAAgAAgAQAQCAAhAQGCIACAAAAAAA=</HashCode>
+      <FileName>Splunk\Client\ServerInfo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ServerSettings" Collapsed="true">
+    <Position X="13.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAQEQAAACCBAAkAAAAABAAACAAAAAAAABAAAgA=</HashCode>
+      <FileName>Splunk\Client\ServerSettings.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -15,299 +15,130 @@
  */
 
 //// TODO:
-////
 //// [O] Contracts
-////
 //// [O] Documentation
-////
-//// [X] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
-////     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
-////
-//// [X] Remove Resource<TResource>.Invalidate method
-////     FJR: This gets called when we set the record value. Add a comment saying what it's
-////     supposed to do when it's overridden.
-////     DSN: I've adopted an alternative method for getting strongly-typed values. See, for
-////     example, Job.DispatchState or ServerInfo.Guid.
 
 namespace Splunk.Client
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
+    using System.Dynamic;
     using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a base class for representing a Splunk resource as an object.
+    /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
-    /// <typeparam name="TResource">
-    /// The resource type inheriting from this class.
-    /// </typeparam>
-    public abstract class Resource<TResource> : IComparable, IComparable<Resource<TResource>>,
-        IEquatable<Resource<TResource>> where TResource : Resource<TResource>, new()
+    public class Resource : BaseResource
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new <see cref="Resource&lt;TResource&gt;"/> instance.
+        /// Initializes a new instance of the <see cref="Resource"/> class.
         /// </summary>
-        /// <param name="context">
-        /// An object representing a Splunk server session.
+        /// <param name="entry">
+        /// An object representing a Splunk atom entry response.
         /// </param>
-        /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
+        /// <param name="generatorVersion">
+        /// The version of the generator producing the <see cref="AtomFeed"/>
+        /// feed containing <paramref name="entry"/>.
         /// </param>
-        /// <param name="resourceName">
-        /// An object identifying a Splunk resource within <paramref name="ns"/>.
+        protected internal Resource(AtomEntry entry, Version generatorVersion)
+            : base(entry, generatorVersion)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Resource"/> class.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
-        /// "resourceName"/> are <c>null</c>.
-        /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="ns"/> is not specific.
-        /// </exception>
-        protected Resource(Context context, Namespace ns, ResourceName resourceName)
+        protected internal Resource(AtomFeed feed)
         {
-            Contract.Requires<ArgumentException>(resourceName != null, "resourceName");
-            Contract.Requires<ArgumentNullException>(ns != null, "namespace");
-            Contract.Requires<ArgumentNullException>(context != null, "context");
-            Contract.Requires<ArgumentOutOfRangeException>(ns.IsSpecific);
-
-            this.Context = context;
-            this.Namespace = ns;
-            this.ResourceName = resourceName;
-
-            this.initialized = true;
+            this.Initialize(feed);
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Resource"/> class.
+        /// </summary>
+        /// <param name="expandObject">
+        /// An object containing the dynamic members of the newly created
+        /// <see cref="Resource"/>.
+        /// </param>
+        protected Resource(ExpandoObject expandObject)
+            : base(expandObject)
+        { }
+
+        /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Resource&lt;TResource&gt;"/> class.
+        /// "Resource"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// intended to be used directly from your code. 
         /// </remarks>
         public Resource()
         { }
 
         #endregion
 
-        #region Properties (stable for the lifetime of an instance)
+        #region Properties
 
         /// <summary>
-        /// Gets the <see cref="Context"/> instance for the current <see cref=
-        /// "Resource&lt;TResource&gt;"/>.
+        /// 
         /// </summary>
-        public Context Context
-        { get; internal set; }
-
-        /// <summary>
-        /// Gets the name of the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        public string Name
+        protected ExpandoAdapter Content
         {
-            get { return this.ResourceName.Title; }
+            get { return this.content; }
         }
-
-        /// <summary>
-        /// Gets the namespace containing the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        public Namespace Namespace
-        { get; private set; }
-
-        /// <summary>
-        /// Gets the resource name of the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        public ResourceName ResourceName
-        { get; private set; }
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Compares the specified object with the current <see cref=
-        /// "Resource&lt;TResource&gt;"/> instance and indicates whether the 
-        /// identity of the current instance precedes, follows, or appears in 
-        /// the same position in the sort order as the specified object.
+        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// "Resource"/>.
         /// </summary>
-        /// <param name="other">
-        /// An object to compare or <c>null</c>.
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
         /// </param>
-        /// <returns>
-        /// A signed number indicating the relative values of this instance and
-        /// value.
-        /// </returns>
-        public int CompareTo(object other)
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The current <see cref="Resource"/> is already initialized.
+        /// </exception>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Resource"/>
+        /// instantiated by the default constructor. Override this method to 
+        /// provide special initialization code. Call this base method before 
+        /// initialization is complete. 
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        protected internal override void Initialize(AtomFeed feed)
         {
-            return this.CompareTo(other as Resource<TResource>);
+            if (feed.Entries.Count != 1)
+            {
+                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
+            }
+
+            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
+            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
         }
-
-        /// <summary>
-        /// Compares the specified <see cref="Resource&lt;TResource&gt;"/> with 
-        /// the current instance and indicates whether the identity of the 
-        /// current instance precedes, follows, or appears in the same position
-        /// in the sort order as the specified instance.
-        /// </summary>
-        /// <param name="other">
-        /// An instance to compare or <c>null</c>.
-        /// </param>
-        /// <returns>
-        /// A signed number indicating the relative values of the current 
-        /// instance and <paramref name="other"/>.
-        /// </returns>
-        public int CompareTo(Resource<TResource> other)
-        {
-            if (other == null)
-            {
-                return 1;
-            }
-
-            if (object.ReferenceEquals(this, other))
-            {
-                return 0;
-            }
-
-            return this.ResourceName.CompareTo(other.ResourceName);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="Resource&lt;TResource&gt;"/> 
-        /// refers to the same resource as the current one.
-        /// </summary>
-        /// <param name="other">
-        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the
-        /// current one.
-        /// </param>
-        /// <returns>
-        /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool Equals(object other)
-        {
-            return this.Equals(other as Resource<TResource>);
-        }
-
-        /// <summary>
-        /// Determines whether the specified <see cref="Resource&lt;TResource&gt;"/>
-        /// refers to the same resource as the current one.
-        /// </summary>
-        /// <param name="other">
-        /// The <see cref="Resource&lt;TResource&gt;"/> to compare with the 
-        /// current one.
-        /// </param>
-        /// <returns>
-        /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="Resource&lt;TResource&gt;"/>; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Equals(Resource<TResource> other)
-        {
-            if (other == null)
-            {
-                return false;
-            }
-
-            if (object.ReferenceEquals(this, other))
-            {
-                return true;
-            }
-
-            bool result = this.ResourceName.Equals(other.ResourceName);
-            return result;
-        }
-
-        /// <summary>
-        /// Returns the hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        /// <returns>
-        /// Hash code for the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </returns>
-        public override int GetHashCode()
-        {
-            return this.ToString().GetHashCode();
-        }
-
-        /// <summary>
-        /// Initializes the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        /// <param name="context">
-        /// An object representing a Splunk server session.
-        /// </param>
-        /// <param name="entry">
-        /// An object representing a Splunk atom entry response.
-        /// </param>
-        protected internal virtual void Initialize(Context context, AtomEntry entry)
-        {
-            Contract.Requires<ArgumentNullException>(context != null);
-            Contract.Requires<ArgumentNullException>(entry != null);
-
-            if (this.initialized)
-            {
-                throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again");
-            }
-
-            // Compute namespace and resource name from entry.Id
-
-            var path = entry.Id.AbsolutePath.Split('/');
-
-            if (path.Length < 3)
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics : conversion error
-            }
-
-            for (int i = 0; i < path.Length; i++)
-            {
-                path[i] = Uri.UnescapeDataString(path[i]);
-            }
-
-            Namespace ns;
-            ResourceName resourceName;
-
-            switch (path[1])
-            {
-                case "services":
-
-                    ns = Namespace.Default;
-                    resourceName = new ResourceName(new ArraySegment<string>(path, 2, path.Length - 2));
-                    break;
-
-                case "servicesNS":
-
-                    if (path.Length < 5)
-                    {
-                        throw new InvalidDataException(); // TODO: Diagnostics : conversion error
-                    }
-
-                    ns = new Namespace(user: path[2], app: path[3]);
-                    resourceName = new ResourceName(new ArraySegment<string>(path, 4, path.Length - 4));
-                    break;
-
-                default: throw new InvalidDataException(); // TODO: Diagnostics : conversion error
-            }
-
-            this.Context = context;
-            this.Namespace = ns;
-            this.ResourceName = resourceName;
-
-            this.initialized = true;
-        }
-
-        /// <summary>
-        /// Gets a string identifying the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </summary>
-        /// <returns>
-        /// A string representing the identity of the current <see cref="Resource&lt;TResource&gt;"/>.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Join("/", this.Context.ToString(), this.Namespace.ToString(), this.ResourceName.ToString());
-        }
-
+        
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
-        bool initialized;
+        protected internal static readonly Resource Missing = new Resource(new ExpandoObject());
+        ExpandoAdapter content;
 
         #endregion
     }

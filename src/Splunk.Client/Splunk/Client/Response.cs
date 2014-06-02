@@ -74,7 +74,17 @@ namespace Splunk.Client
         /// the current <see cref="Response.Stream"/>.
         /// </summary>
         public XmlReader XmlReader
-        { get; private set; }
+        { 
+            get 
+            { 
+                if (this.reader == null)
+                {
+                    this.reader = XmlReader.Create(this.Stream, XmlReaderSettings);
+                }
+
+                return this.reader;
+            }
+        }
 
         #endregion
 
@@ -96,9 +106,7 @@ namespace Splunk.Client
             Contract.Requires(message != null);
 
             var response = new Response(message);
-            
             response.Stream = await message.Content.ReadAsStreamAsync();
-            response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
 
             return response;
         }
@@ -124,42 +132,47 @@ namespace Splunk.Client
 
         /// <summary>
         /// Throws a <see cref="RequestException"/> if the current <see cref=
-        /// "Response"/>.Message.StatusCode is different than <paramref name=
-        /// "expected"/>.
+        /// "Response"/>.Message.StatusCode is different than expected.
         /// </summary>
         /// <param name="expected">
         /// The expected <see cref="HttpStatusCode"/>.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected)
         {
-            var statusCode = this.Message.StatusCode;
-
-            if (statusCode == expected)
-                return;
-
-            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
-            RequestException requestException;
-
-            switch (statusCode)
+            if (this.Message.StatusCode == expected)
             {
-                case HttpStatusCode.Forbidden:
-                    requestException = new UnauthorizedAccessException(this.Message, details);
-                    break;
-                case HttpStatusCode.NotFound:
-                    requestException = new ResourceNotFoundException(this.Message, details);
-                    break;
-                case HttpStatusCode.Unauthorized:
-                    requestException = new AuthenticationFailureException(this.Message, details);
-                    break;
-                default:
-                    requestException = new RequestException(this.Message, details);
-                    break;
+                return;
             }
 
-            throw requestException;
+            await ThrowRequestExceptionAsync();
+        }
+
+        /// <summary>
+        /// Throws a <see cref="RequestException"/> if the current <see cref=
+        /// "Response"/>.Message.StatusCode is different than expecteds.
+        /// </summary>
+        /// <param name="expected0">
+        /// One expected <see cref="HttpStatusCode"/>.
+        /// </param>
+        /// <param name="expected1">
+        /// Another expected <see cref="HttpStatusCode"/>.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        public async Task EnsureStatusCodeAsync(HttpStatusCode expected1, HttpStatusCode expected2)
+        {
+            var statusCode = this.Message.StatusCode;
+
+            if (statusCode == expected1 || statusCode == expected2)
+            {
+                return;
+            }
+
+            await ThrowRequestExceptionAsync();
         }
 
         #endregion
@@ -176,8 +189,39 @@ namespace Splunk.Client
             IgnoreWhitespace = true
         };
 
-        HttpResponseMessage message;
+        readonly HttpResponseMessage message;
+        XmlReader reader;
         bool disposed;
+
+        async Task ThrowRequestExceptionAsync()
+        {
+            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
+            RequestException requestException;
+
+            switch (this.Message.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    requestException = new BadRequestException(this.Message, details);
+                    break;
+                case HttpStatusCode.Forbidden:
+                    requestException = new UnauthorizedAccessException(this.Message, details);
+                    break;
+                case HttpStatusCode.InternalServerError:
+                    requestException = new InternalServerErrorException(this.Message, details);
+                    break;
+                case HttpStatusCode.NotFound:
+                    requestException = new ResourceNotFoundException(this.Message, details);
+                    break;
+                case HttpStatusCode.Unauthorized:
+                    requestException = new AuthenticationFailureException(this.Message, details);
+                    break;
+                default:
+                    requestException = new RequestException(this.Message, details);
+                    break;
+            }
+
+            throw requestException;
+        }
 
         #endregion
     }

@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Client
+namespace Splunk.Client.UnitTests
 {
     using System;
     using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace Splunk.Client
 
     public class TestIndexAttributes
     {
-        [Trait("class", "Args")]
+        [Trait("unit-test", "Splunk.Client.IndexAttributes")]
         [Fact]
         void CanConstruct()
         {
@@ -70,7 +70,7 @@ namespace Splunk.Client
             Assert.Equal(0, ((IEnumerable<Argument>)attributes).Count());
         }
 
-        [Trait("class", "Args")]
+        [Trait("unit-test", "Splunk.Client.IndexAttributes")]
         [Fact]
         void CanSetEveryValue()
         {
@@ -117,8 +117,8 @@ namespace Splunk.Client
                     new Argument("bucketRebuildMemoryHint", "auto"),
                     new Argument("coldToFrozenDir", ""),
                     new Argument("coldToFrozenScript", ""),
-                    new Argument("compressRawdata", "t"),
-                    new Argument("enableOnlineBucketRepair", "t"),
+                    new Argument("compressRawdata", 1),
+                    new Argument("enableOnlineBucketRepair", 1),
                     new Argument("frozenTimePeriodInSecs", "188697600"),
                     new Argument("maxBloomBackfillBucketAge", "30d"),
                     new Argument("maxConcurrentOptimizes", "6"),
@@ -142,7 +142,7 @@ namespace Splunk.Client
                     new Argument("repFactor", "0"),
                     new Argument("rotatePeriodInSecs", "60"),
                     new Argument("serviceMetaPeriod", "25"),
-                    new Argument("syncMeta", "t"),
+                    new Argument("syncMeta", 1),
                     new Argument("throttleCheckPeriod", "15"),
                     new Argument("tstatsHomePath", ""),
                     new Argument("warmToColdScript", ""),
@@ -191,8 +191,8 @@ namespace Splunk.Client
                 "bucketRebuildMemoryHint=some_unchecked_string_value; " +
                 "coldToFrozenDir=some_unchecked_string_value; " +
                 "coldToFrozenScript=some_unchecked_string_value; " +
-                "compressRawdata=f; " +
-                "enableOnlineBucketRepair=f; " +
+                "compressRawdata=0; " +
+                "enableOnlineBucketRepair=0; " +
                 "frozenTimePeriodInSecs=2147483647; " +
                 "maxBloomBackfillBucketAge=some_unchecked_string_value; " +
                 "maxConcurrentOptimizes=2; " +
@@ -216,7 +216,7 @@ namespace Splunk.Client
                 "repFactor=some_unchecked_string_value; " +
                 "rotatePeriodInSecs=79; " +
                 "serviceMetaPeriod=45; " +
-                "syncMeta=f; " +
+                "syncMeta=0; " +
                 "throttleCheckPeriod=36; " +
                 "tstatsHomePath=some_unchecked_string_value; " +
                 "warmToColdScript=some_unchecked_string_value",
@@ -228,8 +228,8 @@ namespace Splunk.Client
                     new Argument("bucketRebuildMemoryHint", "some_unchecked_string_value"),
                     new Argument("coldToFrozenDir", "some_unchecked_string_value"),
                     new Argument("coldToFrozenScript", "some_unchecked_string_value"),
-                    new Argument("compressRawdata", "f"),
-                    new Argument("enableOnlineBucketRepair", "f"),
+                    new Argument("compressRawdata", 0),
+                    new Argument("enableOnlineBucketRepair", 0),
                     new Argument("frozenTimePeriodInSecs", "2147483647"),
                     new Argument("maxBloomBackfillBucketAge", "some_unchecked_string_value"),
                     new Argument("maxConcurrentOptimizes", "2"),
@@ -253,7 +253,7 @@ namespace Splunk.Client
                     new Argument("repFactor", "some_unchecked_string_value"),
                     new Argument("rotatePeriodInSecs", "79"),
                     new Argument("serviceMetaPeriod", "45"),
-                    new Argument("syncMeta", "f"),
+                    new Argument("syncMeta", 0),
                     new Argument("throttleCheckPeriod", "36"),
                     new Argument("tstatsHomePath", "some_unchecked_string_value"),
                     new Argument("warmToColdScript", "some_unchecked_string_value")

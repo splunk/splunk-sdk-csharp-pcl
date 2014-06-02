@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest">
+  <title>properties</title>
+  <id>https://localhost:8089/services/properties</id>
+  <updated>2014-05-23T12:17:08-07:00</updated>
+  <generator build="207789" version="6.1.1"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <entry>
+    <title>alert_actions</title>
+    <id>https://localhost:8089/services/properties/alert_actions</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/alert_actions" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>app</title>
+    <id>https://localhost:8089/services/properties/app</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/app" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>audit</title>
+    <id>https://localhost:8089/services/properties/audit</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/audit" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>authentication</title>
+    <id>https://localhost:8089/services/properties/authentication</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/authentication" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>authorize</title>
+    <id>https://localhost:8089/services/properties/authorize</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/authorize" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>commands</title>
+    <id>https://localhost:8089/services/properties/commands</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/commands" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>conf</title>
+    <id>https://localhost:8089/services/properties/conf</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/conf" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>crawl</title>
+    <id>https://localhost:8089/services/properties/crawl</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/crawl" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>datatypesbnf</title>
+    <id>https://localhost:8089/services/properties/datatypesbnf</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/datatypesbnf" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>default-mode</title>
+    <id>https://localhost:8089/services/properties/default-mode</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/default-mode" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-0af59d05d0124e4ab915398500a45262</title>
+    <id>https://localhost:8089/services/properties/delete-me-0af59d05d0124e4ab915398500a45262</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-0af59d05d0124e4ab915398500a45262" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-1c58e9c0851d435aba8b5c53b0c73959</title>
+    <id>https://localhost:8089/services/properties/delete-me-1c58e9c0851d435aba8b5c53b0c73959</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-1c58e9c0851d435aba8b5c53b0c73959" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-233bbea06392457c9f38b629a912baff</title>
+    <id>https://localhost:8089/services/properties/delete-me-233bbea06392457c9f38b629a912baff</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-233bbea06392457c9f38b629a912baff" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-24d778d67e7b4f4e9704c8118e9cbc75</title>
+    <id>https://localhost:8089/services/properties/delete-me-24d778d67e7b4f4e9704c8118e9cbc75</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-24d778d67e7b4f4e9704c8118e9cbc75" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-2a38f8d7bfa542c9a09b201ee29da2a8</title>
+    <id>https://localhost:8089/services/properties/delete-me-2a38f8d7bfa542c9a09b201ee29da2a8</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-2a38f8d7bfa542c9a09b201ee29da2a8" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-2f884142c52b4c0883399dfa30fff5bf</title>
+    <id>https://localhost:8089/services/properties/delete-me-2f884142c52b4c0883399dfa30fff5bf</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-2f884142c52b4c0883399dfa30fff5bf" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-3322c0339fb849d98605559cf119a369</title>
+    <id>https://localhost:8089/services/properties/delete-me-3322c0339fb849d98605559cf119a369</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-3322c0339fb849d98605559cf119a369" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-33bc32518a364599a08d4bfb226a0975</title>
+    <id>https://localhost:8089/services/properties/delete-me-33bc32518a364599a08d4bfb226a0975</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-33bc32518a364599a08d4bfb226a0975" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-35a847f36e8a491d962d04a037310dfd</title>
+    <id>https://localhost:8089/services/properties/delete-me-35a847f36e8a491d962d04a037310dfd</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-35a847f36e8a491d962d04a037310dfd" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-42cecdc8e72f4645b75616c94cd93399</title>
+    <id>https://localhost:8089/services/properties/delete-me-42cecdc8e72f4645b75616c94cd93399</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-42cecdc8e72f4645b75616c94cd93399" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-446ee1261b424ae3aec66b67e391df69</title>
+    <id>https://localhost:8089/services/properties/delete-me-446ee1261b424ae3aec66b67e391df69</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-446ee1261b424ae3aec66b67e391df69" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-4d5457f77b6d49479d518cc4204f300d</title>
+    <id>https://localhost:8089/services/properties/delete-me-4d5457f77b6d49479d518cc4204f300d</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-4d5457f77b6d49479d518cc4204f300d" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-59aa7746422549368e550e1bded488af</title>
+    <id>https://localhost:8089/services/properties/delete-me-59aa7746422549368e550e1bded488af</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-59aa7746422549368e550e1bded488af" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-6d374e8b93014515b506918ada66026e</title>
+    <id>https://localhost:8089/services/properties/delete-me-6d374e8b93014515b506918ada66026e</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-6d374e8b93014515b506918ada66026e" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-6d4d46fe88f0444cb330f2a6f022477a</title>
+    <id>https://localhost:8089/services/properties/delete-me-6d4d46fe88f0444cb330f2a6f022477a</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-6d4d46fe88f0444cb330f2a6f022477a" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-71e7fd0fc0fc420e9dd034a3fd6ae989</title>
+    <id>https://localhost:8089/services/properties/delete-me-71e7fd0fc0fc420e9dd034a3fd6ae989</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-71e7fd0fc0fc420e9dd034a3fd6ae989" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-7311a03780674f5dbff082fe5f09b458</title>
+    <id>https://localhost:8089/services/properties/delete-me-7311a03780674f5dbff082fe5f09b458</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-7311a03780674f5dbff082fe5f09b458" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-7a48db483d73412480efd9883af53001</title>
+    <id>https://localhost:8089/services/properties/delete-me-7a48db483d73412480efd9883af53001</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-7a48db483d73412480efd9883af53001" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-7a4ad0da232f45dab041343c2235a5b0</title>
+    <id>https://localhost:8089/services/properties/delete-me-7a4ad0da232f45dab041343c2235a5b0</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-7a4ad0da232f45dab041343c2235a5b0" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-980b1cb1b2f34884a972ed8bf0c680e2</title>
+    <id>https://localhost:8089/services/properties/delete-me-980b1cb1b2f34884a972ed8bf0c680e2</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-980b1cb1b2f34884a972ed8bf0c680e2" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-9940cceaeaf74309b415c43e648ff9eb</title>
+    <id>https://localhost:8089/services/properties/delete-me-9940cceaeaf74309b415c43e648ff9eb</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-9940cceaeaf74309b415c43e648ff9eb" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-9bd517dbec464d32a3b0b51f79bcdad9</title>
+    <id>https://localhost:8089/services/properties/delete-me-9bd517dbec464d32a3b0b51f79bcdad9</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-9bd517dbec464d32a3b0b51f79bcdad9" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-9d0b6101094141eab7a69d0daabdce76</title>
+    <id>https://localhost:8089/services/properties/delete-me-9d0b6101094141eab7a69d0daabdce76</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-9d0b6101094141eab7a69d0daabdce76" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-9fd99ef85a3641b09a2d5a512bc692c0</title>
+    <id>https://localhost:8089/services/properties/delete-me-9fd99ef85a3641b09a2d5a512bc692c0</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-9fd99ef85a3641b09a2d5a512bc692c0" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-a017f23857f14f9fa66e060fbdbd0b37</title>
+    <id>https://localhost:8089/services/properties/delete-me-a017f23857f14f9fa66e060fbdbd0b37</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-a017f23857f14f9fa66e060fbdbd0b37" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-a5999e197618423ab0c9afffd052c7a9</title>
+    <id>https://localhost:8089/services/properties/delete-me-a5999e197618423ab0c9afffd052c7a9</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-a5999e197618423ab0c9afffd052c7a9" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-b8b05d95822a4552bc9c67f863975f0f</title>
+    <id>https://localhost:8089/services/properties/delete-me-b8b05d95822a4552bc9c67f863975f0f</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-b8b05d95822a4552bc9c67f863975f0f" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-c5c6edfa1ccc470981e794d50f2940c6</title>
+    <id>https://localhost:8089/services/properties/delete-me-c5c6edfa1ccc470981e794d50f2940c6</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-c5c6edfa1ccc470981e794d50f2940c6" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-c6d66b4d921242608962431036860b50</title>
+    <id>https://localhost:8089/services/properties/delete-me-c6d66b4d921242608962431036860b50</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-c6d66b4d921242608962431036860b50" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-d7e1572f83644e658ccc926c1a736a7f</title>
+    <id>https://localhost:8089/services/properties/delete-me-d7e1572f83644e658ccc926c1a736a7f</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-d7e1572f83644e658ccc926c1a736a7f" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-d8dc0fb200ab4be9862d7e042e919b2c</title>
+    <id>https://localhost:8089/services/properties/delete-me-d8dc0fb200ab4be9862d7e042e919b2c</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-d8dc0fb200ab4be9862d7e042e919b2c" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-f8565b63b2af4c0993481440e81ee018</title>
+    <id>https://localhost:8089/services/properties/delete-me-f8565b63b2af4c0993481440e81ee018</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-f8565b63b2af4c0993481440e81ee018" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>delete-me-fd46773243cc4b5a8b731483a13e55fb</title>
+    <id>https://localhost:8089/services/properties/delete-me-fd46773243cc4b5a8b731483a13e55fb</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/delete-me-fd46773243cc4b5a8b731483a13e55fb" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>distsearch</title>
+    <id>https://localhost:8089/services/properties/distsearch</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/distsearch" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>event_renderers</title>
+    <id>https://localhost:8089/services/properties/event_renderers</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/event_renderers" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>eventdiscoverer</title>
+    <id>https://localhost:8089/services/properties/eventdiscoverer</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/eventdiscoverer" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>eventtypes</title>
+    <id>https://localhost:8089/services/properties/eventtypes</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/eventtypes" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>fields</title>
+    <id>https://localhost:8089/services/properties/fields</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/fields" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>indexes</title>
+    <id>https://localhost:8089/services/properties/indexes</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/indexes" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>inputs</title>
+    <id>https://localhost:8089/services/properties/inputs</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/inputs" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>launcher</title>
+    <id>https://localhost:8089/services/properties/launcher</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/launcher" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>limits</title>
+    <id>https://localhost:8089/services/properties/limits</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/limits" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>literals</title>
+    <id>https://localhost:8089/services/properties/literals</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/literals" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>lookups</title>
+    <id>https://localhost:8089/services/properties/lookups</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/lookups" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>macros</title>
+    <id>https://localhost:8089/services/properties/macros</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/macros" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>manager</title>
+    <id>https://localhost:8089/services/properties/manager</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/manager" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>migration</title>
+    <id>https://localhost:8089/services/properties/migration</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/migration" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>multikv</title>
+    <id>https://localhost:8089/services/properties/multikv</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/multikv" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>nav</title>
+    <id>https://localhost:8089/services/properties/nav</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/nav" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>outputs</title>
+    <id>https://localhost:8089/services/properties/outputs</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/outputs" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>pdf_server</title>
+    <id>https://localhost:8089/services/properties/pdf_server</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/pdf_server" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>prefs</title>
+    <id>https://localhost:8089/services/properties/prefs</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/prefs" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>procmon-filters</title>
+    <id>https://localhost:8089/services/properties/procmon-filters</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/procmon-filters" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>props</title>
+    <id>https://localhost:8089/services/properties/props</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/props" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>quickstart</title>
+    <id>https://localhost:8089/services/properties/quickstart</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/quickstart" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>restmap</title>
+    <id>https://localhost:8089/services/properties/restmap</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/restmap" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>savedsearches</title>
+    <id>https://localhost:8089/services/properties/savedsearches</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/savedsearches" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>searchbnf</title>
+    <id>https://localhost:8089/services/properties/searchbnf</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/searchbnf" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>searchscripts</title>
+    <id>https://localhost:8089/services/properties/searchscripts</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/searchscripts" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>segmenters</title>
+    <id>https://localhost:8089/services/properties/segmenters</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/segmenters" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>server</title>
+    <id>https://localhost:8089/services/properties/server</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/server" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>serverclass</title>
+    <id>https://localhost:8089/services/properties/serverclass</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/serverclass" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>source-classifier</title>
+    <id>https://localhost:8089/services/properties/source-classifier</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/source-classifier" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>sourcetypes</title>
+    <id>https://localhost:8089/services/properties/sourcetypes</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/sourcetypes" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>times</title>
+    <id>https://localhost:8089/services/properties/times</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/times" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>transactiontypes</title>
+    <id>https://localhost:8089/services/properties/transactiontypes</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/transactiontypes" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>transforms</title>
+    <id>https://localhost:8089/services/properties/transforms</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/transforms" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>ui-prefs</title>
+    <id>https://localhost:8089/services/properties/ui-prefs</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/ui-prefs" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>user-prefs</title>
+    <id>https://localhost:8089/services/properties/user-prefs</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/user-prefs" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>views</title>
+    <id>https://localhost:8089/services/properties/views</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/views" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>viewstates</title>
+    <id>https://localhost:8089/services/properties/viewstates</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/viewstates" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>web</title>
+    <id>https://localhost:8089/services/properties/web</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/web" rel="alternate"/>
+  </entry>
+  <entry>
+    <title>workflow_actions</title>
+    <id>https://localhost:8089/services/properties/workflow_actions</id>
+    <updated>2014-05-23T12:17:08-07:00</updated>
+    <link href="/services/properties/workflow_actions" rel="alternate"/>
+  </entry>
+</feed>

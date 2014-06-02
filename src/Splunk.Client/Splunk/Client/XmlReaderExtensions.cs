@@ -231,7 +231,7 @@ namespace Splunk.Client
         /// the visited elements.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<XmlReader, Task> task)
         {
@@ -274,7 +274,7 @@ namespace Splunk.Client
         /// The sequence of element start tag names to match.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> or <paramref name="names"/> is <c>null</c>.
@@ -313,7 +313,7 @@ namespace Splunk.Client
         /// The sequence of element end tag names to match.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> or <paramref name="names"/> is <c>null</c>.

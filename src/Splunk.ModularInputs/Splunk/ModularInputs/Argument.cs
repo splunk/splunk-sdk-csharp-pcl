@@ -81,6 +81,15 @@ namespace Splunk.ModularInputs
         [XmlElement("validation")]
         public string Validation { get; set; }
 
+        public delegate bool ValidationHandler(Parameter parameter, out string errorMessage);
+
+        /// <summary>
+        /// Specify a delegate to run on the argument's value during validation (before the overall
+        /// Validate method is called).
+        /// </summary>
+        [XmlIgnore]
+        public ValidationHandler ValidationDelegate { get; set; }
+
         /// <summary>
         /// The value for use with scripts that return data in JSON format.
         /// </summary>

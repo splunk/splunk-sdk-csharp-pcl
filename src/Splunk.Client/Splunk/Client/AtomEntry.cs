@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -35,6 +35,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
@@ -145,16 +146,23 @@ namespace Splunk.Client
         /// The reader from which to read.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
-            var links = new Dictionary<string, Uri>();
-            this.Links = links;
+            this.Author = null;
+            this.Content = null;
+            this.Id = null;
+            this.Links = null;
+            this.Published = DateTime.MinValue;
+            this.Title = null;
+            this.Updated = DateTime.MinValue;
 
+            reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
+
+            Dictionary<string, Uri> links = null;
             await reader.ReadAsync();
 
             while (reader.NodeType == XmlNodeType.Element)
@@ -194,6 +202,11 @@ namespace Splunk.Client
 
                     case "link":
 
+                        if (links == null)
+                        {
+                            links = new Dictionary<string, Uri>();
+                        }
+
                         var href = reader.GetRequiredAttribute("href");
                         var rel = reader.GetRequiredAttribute("rel");
                         links[rel] = UriConverter.Instance.Convert(href);
@@ -211,6 +224,11 @@ namespace Splunk.Client
 
             reader.EnsureMarkup(XmlNodeType.EndElement, "entry");
             await reader.ReadAsync();
+
+            if (links != null)
+            {
+                this.Links = new ReadOnlyDictionary<string, Uri>(links);
+            }
         }
 
         /// <summary>
@@ -221,7 +239,9 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", this.Title, this.Author, this.Id, this.Published, this.Updated);
+            var text= string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", 
+                this.Title, this.Author, this.Id, this.Published, this.Updated);
+            return text;
         }
 
         #endregion

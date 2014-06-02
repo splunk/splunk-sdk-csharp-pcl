@@ -21,6 +21,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.IO;
 
     /// <summary>
     /// Provides information about an application archive produced by Splunk.
@@ -29,13 +30,21 @@ namespace Splunk.Client
     /// You can produce an application archive using the <see cref=
     /// "Application.PackageAsync"/> method.
     /// </remarks>
-    public sealed class ApplicationArchiveInfo : Entity<ApplicationArchiveInfo>
+    public class ApplicationArchiveInfo : Resource
     {
         #region Constructors
 
-        internal ApplicationArchiveInfo(Context context, Namespace ns, string name)
-            : base(context, ns, new ResourceName(ApplicationCollection.ClassResourceName, name, "package"))
-        { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationArchiveInfo"/> 
+        /// class.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        internal ApplicationArchiveInfo(AtomFeed feed)
+        {
+            this.Initialize(feed);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -54,14 +63,14 @@ namespace Splunk.Client
         /// <item>
         ///   <term><see cref="Application.PackageAsync"/></term>
         ///   <description>
-        ///   Asychronously packages an existing Splunk application into an 
+        ///   Asychronously packages the current Splunk application into an 
         ///   archive file.
         ///   </description>
         /// </item>
         /// <item>
-        ///   <term><see cref="Service.PackageApplicationAsync"/></term>
+        ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
         ///   <description>
-        ///   Asychronously packages an existing Splunk application into an 
+        ///   Asychronously packages the named Splunk application into an 
         ///   archive file.
         ///   </description>
         /// </item>
@@ -80,7 +89,7 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -93,7 +102,7 @@ namespace Splunk.Client
         /// </remarks>
         public string ApplicationName
         {
-            get { return this.GetValue("Name", StringConverter.Instance); }
+            get { return this.Content.GetValue("Name", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -102,7 +111,7 @@ namespace Splunk.Client
         /// </summary>
         public string Path
         {
-            get { return this.GetValue("Path", StringConverter.Instance); }
+            get { return this.Content.GetValue("Path", StringConverter.Instance); }
         }
 
         /// <summary>
@@ -111,7 +120,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Refresh
         {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         /// <summary>
@@ -120,7 +129,7 @@ namespace Splunk.Client
         /// </summary>
         public Uri Uri
         {
-            get { return this.GetValue("Url", UriConverter.Instance); }
+            get { return this.Content.GetValue("Url", UriConverter.Instance); }
         }
 
         #endregion

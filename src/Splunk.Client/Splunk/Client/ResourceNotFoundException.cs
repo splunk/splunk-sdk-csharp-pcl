@@ -30,8 +30,6 @@ namespace Splunk.Client
     /// </summary>
     public sealed class ResourceNotFoundException : RequestException
     {
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ResourceNotFoundException"/>
         /// class.
@@ -49,7 +47,5 @@ namespace Splunk.Client
         {
             Debug.Assert(message.StatusCode == HttpStatusCode.NotFound);
         }
-
-        #endregion
     }
 }

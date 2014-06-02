@@ -36,7 +36,6 @@
     <Reference Include="System" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\..\packages\Rx-Core.2.2.2\lib\portable-windows8+net45+wp8\System.Reactive.Core.dll</HintPath>
     </Reference>
@@ -69,9 +68,9 @@
     <Compile Include="AcceptanceTestingSetup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Splunk.Client.Helper\Splunk.Client.Helper.csproj">
+    <ProjectReference Include="..\..\src\Splunk.Client.Helpers\Splunk.Client.Helpers.csproj">
       <Project>{0b0c43f2-ea9c-45ee-a8f7-7a2916dd1717}</Project>
-      <Name>Splunk.Client.Helper</Name>
+      <Name>Splunk.Client.Helpers</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>

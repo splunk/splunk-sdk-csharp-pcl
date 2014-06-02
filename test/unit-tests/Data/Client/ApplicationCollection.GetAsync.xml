@@ -1,0 +1,851 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>localapps</title>
+  <id>https://localhost:8089/services/apps/local</id>
+  <updated>2014-05-27T10:19:27-07:00</updated>
+  <generator build="207789" version="6.1.1"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <link href="/services/apps/local/_new" rel="create"/>
+  <link href="/services/apps/local/_reload" rel="_reload"/>
+  <opensearch:totalResults>15</opensearch:totalResults>
+  <opensearch:itemsPerPage>30</opensearch:itemsPerPage>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <s:messages/>
+  <entry>
+    <title>delete-me-cc314e4eda254dec885f9465e55729e5</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/delete-me-cc314e4eda254dec885f9465e55729e5</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-cc314e4eda254dec885f9465e55729e5" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-cc314e4eda254dec885f9465e55729e5" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-cc314e4eda254dec885f9465e55729e5/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-cc314e4eda254dec885f9465e55729e5" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-cc314e4eda254dec885f9465e55729e5" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-cc314e4eda254dec885f9465e55729e5/disable" rel="disable"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-cc314e4eda254dec885f9465e55729e5/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="author">Splunk</s:key>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="description">This app confirms that an app can be created from a template</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">delete-me-cc314e4eda254dec885f9465e55729e5</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="version">2.0.0</s:key>
+        <s:key name="visible">1</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>delete-me-db1bc2678174495a9f91d0c2360f53bc</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/delete-me-db1bc2678174495a9f91d0c2360f53bc</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-db1bc2678174495a9f91d0c2360f53bc" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-db1bc2678174495a9f91d0c2360f53bc" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-db1bc2678174495a9f91d0c2360f53bc/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-db1bc2678174495a9f91d0c2360f53bc" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-db1bc2678174495a9f91d0c2360f53bc" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-db1bc2678174495a9f91d0c2360f53bc/disable" rel="disable"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-db1bc2678174495a9f91d0c2360f53bc/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="author">Splunk</s:key>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="description">This app confirms that an app can be created from a template</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">delete-me-db1bc2678174495a9f91d0c2360f53bc</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="version">2.0.0</s:key>
+        <s:key name="visible">1</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>delete-me-decd5a97569440768914cd0629c5501d</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/delete-me-decd5a97569440768914cd0629c5501d</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-decd5a97569440768914cd0629c5501d" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-decd5a97569440768914cd0629c5501d" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-decd5a97569440768914cd0629c5501d/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-decd5a97569440768914cd0629c5501d" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-decd5a97569440768914cd0629c5501d" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-decd5a97569440768914cd0629c5501d/disable" rel="disable"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-decd5a97569440768914cd0629c5501d/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="author">Splunk</s:key>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="description">This app confirms that an app can be created from a template</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">delete-me-decd5a97569440768914cd0629c5501d</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="version">2.0.0</s:key>
+        <s:key name="visible">1</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>delete-me-e341f711346a4898b15accd7f77c5c92</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/delete-me-e341f711346a4898b15accd7f77c5c92</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-e341f711346a4898b15accd7f77c5c92" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-e341f711346a4898b15accd7f77c5c92" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-e341f711346a4898b15accd7f77c5c92/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-e341f711346a4898b15accd7f77c5c92" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-e341f711346a4898b15accd7f77c5c92" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-e341f711346a4898b15accd7f77c5c92/disable" rel="disable"/>
+    <link href="/servicesNS/nobody/system/apps/local/delete-me-e341f711346a4898b15accd7f77c5c92/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="author">Splunk, Inc.</s:key>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="description">This app update confirms that an app can be updated from a template</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">delete-me-e341f711346a4898b15accd7f77c5c92</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="version">2.0.1</s:key>
+        <s:key name="visible">1</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>framework</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/framework</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/framework" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/framework" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework/disable" rel="disable"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">0</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">framework</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>gettingstarted</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/gettingstarted</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/gettingstarted" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/gettingstarted" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/gettingstarted/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/gettingstarted" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/gettingstarted" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/gettingstarted/enable" rel="enable"/>
+    <link href="/servicesNS/nobody/system/apps/local/gettingstarted/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="author">Splunk</s:key>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="description">Get started with Splunk.  This app introduces you to many of Splunk's features.  You'll learn how to use Splunk to index data, search and investigate, add knowledge, monitor and alert, report and analyze.</s:key>
+        <s:key name="disabled">1</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">Getting started</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="version">1.0</s:key>
+        <s:key name="visible">1</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>introspection_generator_addon</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/introspection_generator_addon</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/introspection_generator_addon" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/introspection_generator_addon" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/introspection_generator_addon/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/introspection_generator_addon" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/introspection_generator_addon" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/introspection_generator_addon/disable" rel="disable"/>
+    <link href="/servicesNS/nobody/system/apps/local/introspection_generator_addon/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="author">Splunk</s:key>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="description">Affords and supports the Platform Instrumentation initiative.</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">introspection_generator_addon</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="version">6.1.1</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>launcher</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/launcher</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/launcher" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/launcher" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/launcher/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/launcher" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/launcher/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">Home</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="visible">1</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>learned</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/learned</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/learned" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/learned" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/learned/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/learned" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/learned" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/learned/disable" rel="disable"/>
+    <link href="/servicesNS/nobody/system/apps/local/learned/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">0</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">learned</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>legacy</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/legacy</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/legacy" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/legacy" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/legacy/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/legacy" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/legacy" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/legacy/enable" rel="enable"/>
+    <link href="/servicesNS/nobody/system/apps/local/legacy/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">0</s:key>
+        <s:key name="disabled">1</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">legacy</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>sample_app</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/sample_app</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/sample_app" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/sample_app" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/sample_app/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/sample_app" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/sample_app" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/sample_app/enable" rel="enable"/>
+    <link href="/servicesNS/nobody/system/apps/local/sample_app/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">0</s:key>
+        <s:key name="disabled">1</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">sample data</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>search</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/search</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/search" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/search" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/search/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/search" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/search/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="author">Splunk</s:key>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="description"><![CDATA[The Search app is Splunk's default interface for searching and analyzing IT data. It allows you to index data into Splunk, add knowledge, build reports, and create alerts. The Search app can be used across many areas of IT including application management, operations management, security, and compliance.]]></s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">Search &amp; Reporting</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="version">6.1.1</s:key>
+        <s:key name="visible">1</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>splunk_datapreview</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/splunk_datapreview</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/splunk_datapreview" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/splunk_datapreview" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/splunk_datapreview/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/splunk_datapreview" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/splunk_datapreview/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="author">Splunk, Inc.</s:key>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">1</s:key>
+        <s:key name="description">Provides interactive timestamping and event breaking facilities for data inputs.</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">Splunk Data Preview</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="version">0.1</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>SplunkForwarder</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/SplunkForwarder</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkForwarder" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkForwarder" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkForwarder/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkForwarder" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkForwarder" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkForwarder/enable" rel="enable"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkForwarder/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">0</s:key>
+        <s:key name="disabled">1</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">SplunkForwarder</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>SplunkLightForwarder</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/SplunkLightForwarder</id>
+    <updated>2014-05-27T10:19:27-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkLightForwarder" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkLightForwarder" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkLightForwarder/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkLightForwarder" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkLightForwarder" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkLightForwarder/enable" rel="enable"/>
+    <link href="/servicesNS/nobody/system/apps/local/SplunkLightForwarder/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">0</s:key>
+        <s:key name="disabled">1</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>power</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">SplunkLightForwarder</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+</feed>

@@ -16,6 +16,8 @@
 
 namespace Splunk.Client.Examples
 {
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Net;
     using System.Reactive.Concurrency;
@@ -42,7 +44,7 @@ namespace Splunk.Client.Examples
 
             //// Search : Pull model (foreach loop => IEnumerable)
 
-            Job job = await service.CreateJobAsync("search index=_internal | head 10");
+            Job job = await service.Jobs.CreateAsync("search index=_internal | head 10");
             SearchResultStream searchResultStream;
 
             using (searchResultStream = await job.GetSearchResultsAsync())
@@ -63,7 +65,7 @@ namespace Splunk.Client.Examples
 
             //// Search : Push model (by way of subscription to search result records => IObservable)
 
-            job = await service.CreateJobAsync("search index=_internal | head 10");
+            job = await service.Jobs.CreateAsync("search index=_internal | head 10");
 
             using (searchResultStream = await job.GetSearchResultsAsync())
             {

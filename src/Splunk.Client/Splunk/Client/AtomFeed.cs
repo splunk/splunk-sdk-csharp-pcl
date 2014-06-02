@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Threading.Tasks;
@@ -134,21 +135,28 @@ namespace Splunk.Client
         /// The reader from which to read.
         /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));
-            var documentElementName = reader.Name;
-            var entries = new List<AtomEntry>();
-            var links = new Dictionary<string, Uri>();
-            var messages = new List<Message>();
+            this.Author = null;
+            this.Entries = null;
+            this.GeneratorVersion = null;
+            this.Id = null;
+            this.Links = null;
+            this.Messages = null;
+            this.Pagination = Pagination.None;
+            this.Title = null;
+            this.Updated = DateTime.MinValue;
 
-            this.Entries = entries;
-            this.Links = links;
-            this.Messages = messages;
+            reader.Requires(await reader.MoveToDocumentElementAsync("feed"));
+            var documentElementName = reader.Name;
+
+            List<AtomEntry> entries = null;
+            Dictionary<string, Uri> links = null;
+            List<Message> messages = null;
 
             await reader.ReadAsync();
 
@@ -194,14 +202,26 @@ namespace Splunk.Client
 
                         var entry = new AtomEntry();
 
-                        await entry.ReadXmlAsync(reader);
+                        if (entries == null)
+                        {
+                            entries = new List<AtomEntry>();
+                        }
+
                         entries.Add(entry);
+
+                        await entry.ReadXmlAsync(reader);
                         break;
 
                     case "link":
 
                         var href = reader.GetRequiredAttribute("href");
                         var rel = reader.GetRequiredAttribute("rel");
+
+                        if (links == null)
+                        {
+                            links = new Dictionary<string, Uri>();
+                        }
+
                         links[rel] = UriConverter.Instance.Convert(href);
                         await reader.ReadAsync();
                         break;
@@ -210,6 +230,11 @@ namespace Splunk.Client
 
                         bool isEmptyElement = reader.IsEmptyElement;
                         await reader.ReadAsync();
+
+                        if (messages == null)
+                        {
+                            messages = new List<Message>();
+                        }
 
                         if (isEmptyElement)
                         {
@@ -251,12 +276,27 @@ namespace Splunk.Client
                         this.Pagination = new Pagination(this.Pagination.ItemsPerPage, this.Pagination.StartIndex, totalResults);
                         break;
 
-                    default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
+                    default: throw new InvalidDataException(string.Format("Unexpected start tag: {0}", reader.Name)); // TODO: Improved diagnostics
                 }
             }
 
             reader.EnsureMarkup(XmlNodeType.EndElement, documentElementName);
             await reader.ReadAsync();
+
+            if (entries != null)
+            {
+                this.Entries = new ReadOnlyCollection<AtomEntry>(entries);
+            }
+
+            if (links != null)
+            {
+                this.Links = new ReadOnlyDictionary<string, Uri>(links);
+            }
+
+            if (messages != null)
+            {
+                this.Messages = new ReadOnlyCollection<Message>(messages);
+            }
         }
 
         /// <summary>

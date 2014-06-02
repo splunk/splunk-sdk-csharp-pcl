@@ -39,8 +39,6 @@ namespace Splunk.ModularInputs
 
     public abstract class ModularInput
     {
-       
-
         #region Properties
 
         /// <summary>
@@ -50,8 +48,19 @@ namespace Splunk.ModularInputs
         public abstract Scheme Scheme { get; }
 
         #endregion
-
+                      
         #region Methods
+
+        public static int Run<T>(string[] args) where T : ModularInput, new()
+        {
+            T script = new T();
+            Task<int> run = script.RunAsync(args);
+            run.Wait();
+            if (run.IsCompleted)
+                return run.Result;
+            else
+                return -1;
+        }
 
         /// <summary>
         /// Performs the action specified by the <paramref name="args"/> parameter.
@@ -139,22 +148,31 @@ namespace Splunk.ModularInputs
                     {
                         string errorMessage = null;
 
+                        Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
+                            Deserialize(stdin);
+
                         try
                         {
-                            Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
-                                Deserialize(stdin);
-                            if (this.Validate(validation, out errorMessage))
+                            bool validationSuccessful = true;
+                            Scheme scheme = this.Scheme;
+                            foreach (Argument arg in scheme.Arguments)
+                            {
+                                if (arg.ValidationDelegate != null)
+                                {
+                                    if (!arg.ValidationDelegate(validation.Parameters[arg.Name], out errorMessage))
+                                    {
+                                        validationSuccessful = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (validationSuccessful && this.Validate(validation, out errorMessage))
                             {
                                 return 0; // Validation succeeded
                             }
                         }
-                        catch (Exception e)
-                        {
-                            if (errorMessage == null)
-                            {
-                                ;
-                            }
-                        }
+                        catch (Exception) { }
 
                         using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings
                         {

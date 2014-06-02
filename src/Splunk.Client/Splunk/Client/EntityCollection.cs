@@ -15,10 +15,6 @@
  */
 
 //// TODO:
-//// [ ] Remove EntityCollection.args and put optional arguments on the GetAsync
-////     method (?) args does NOT belong on the constructor. One difficulty:
-////     not all collections take arguments. Examples: ConfigurationCollection
-////     and IndexCollection.
 //// [O] Contracts
 //// [O] Documentation
 
@@ -27,15 +23,17 @@ namespace Splunk.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Diagnostics;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
+    using System.Net;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a base class for representing a collection of Splunk resources.
     /// </summary>
-    /// <typeparam name="TCollection">
-    /// The entity collection type inheriting from this class.
-    /// </typeparam>
     /// <typeparam name="TEntity">
     /// The type of the entity in <typeparamref name="TCollection"/>.
     /// </typeparam>
@@ -51,15 +49,29 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public abstract class EntityCollection<TCollection, TEntity> : Resource<TCollection>, IReadOnlyList<TEntity> 
-        where TCollection : EntityCollection<TCollection, TEntity>, new() 
-        where TEntity : Resource<TEntity>, new()
+    public class EntityCollection<TEntity> : BaseEntity, IEntityCollection<TEntity> 
+        where TEntity : BaseEntity, new()
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/> class.
+        /// Initializes a new <see cref="EntityCollection"/> instance.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// <param name="name">
+        /// An object identifying a Splunk resource within <paramref name=
+        /// "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        protected internal EntityCollection(Service service, ResourceName name)
+            : base(service, name)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/>
+        /// class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -67,22 +79,48 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="resource">
-        /// 
+        /// <param name="name">
+        /// An object identifying a Splunk entity collection within <paramref name="ns"/>.
         /// </param>
-        /// <param name="args">
-        /// 
+        protected internal EntityCollection(Context context, Namespace ns, ResourceName name)
+            : base(context, ns, name)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
         /// </param>
-        internal EntityCollection(Context context, Namespace ns, ResourceName resource, IEnumerable<Argument> 
-            args = null)
-            : base(context, ns, resource)
+        /// <param name="feed">
+        /// A entry in a Splunk atom feed response.
+        /// </param>
+        protected internal EntityCollection(Context context, AtomEntry entry, Version generatorVersion)
         {
-            this.args = args;
+            // We cannot use the base constructor because it will use base.CreateEntity, not this.CreateEntity
+            this.Initialize(context, entry, generatorVersion);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk atom feed response.
+        /// </param>
+        protected internal EntityCollection(Context context, AtomFeed feed)
+        {
+            // We cannot use the base constructor because it will use base.CreateResource, not this.CreateResource
+            this.Initialize(context, feed);
         }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/> class.
+        /// "EntityCollection&lt;TEntity&gt;"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
@@ -95,94 +133,6 @@ namespace Splunk.Client
 
         #region Properties
 
-        #region AtomFeed properties
-
-        /// <summary>
-        /// Gets the author of the current <see cref="EntityCollection&lt;
-        /// TCollection, TEntity&gt;"/>.
-        /// </summary>
-        /// <remarks>
-        /// <c>"Splunk"</c> is the author of all <see cref="Entity&lt;TEntity&gt;"/> 
-        /// and <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>
-        /// instances.
-        /// </remarks>
-        public string Author
-        {
-            get { return this.data.Author; }
-        }
-
-        /// <summary>
-        /// Gets the version of the Atom Feed generator that produced the
-        /// current <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
-        /// </summary>
-        public Version GeneratorVersion
-        {
-            get { return this.data.GeneratorVersion; }
-        }
-
-        /// <summary>
-        /// Gets the Splunk management URI for accessing the current <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
-        /// </summary>
-        public Uri Id
-        {
-            get { return this.data.Id; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public IReadOnlyDictionary<string, Uri> Links
-        {
-            get { return this.data.Links; }
-        }
-
-        /// <summary>
-        /// Gets the list of info, warning, or error messages associated with 
-        /// the operation that produced the current <see cref="EntityCollection
-        /// &lt;TCollection, TEntity&gt;"/>.
-        /// </summary>
-        /// <remarks>
-        /// Not all operations produce messages.
-        /// </remarks>
-        public IReadOnlyList<Message> Messages
-        {
-            get { return this.data.Messages; }
-        }
-
-        /// <summary>
-        /// Gets the pagination attributes for the current <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
-        /// </summary>
-        public Pagination Pagination
-        {
-            get { return this.data.Pagination; }
-        }
-
-        /// <summary>
-        /// Gets the human readable name of the current <see cref="EntityCollection
-        /// &lt;TCollection, TEntity&gt;"/>.
-        /// </summary>
-        /// <remarks>
-        /// This value is derived from the last segment of <see cref="Id"/>;
-        /// </remarks>
-        public string Title
-        {
-            get { return this.data.Title; }
-        }
-
-        /// <summary>
-        /// Gets the date that <see cref="Id"/> was implemented in Splunk.
-        /// </summary>
-        public DateTime Updated
-        {
-            get { return this.data.Updated; }
-        }
-
-        #endregion
-
-        #region IReadOnlyList<TEntity> properties
-
         /// <summary>
         /// Gets the entity at the specified <paramref name="index"/>.
         /// </summary>
@@ -194,75 +144,168 @@ namespace Splunk.Client
         /// </returns>
         public TEntity this[int index]
         {
-            get { return this.data.Entities[index]; }
+            get { return this.Create(this.Resources[index]); }
         }
 
         /// <summary>
         /// Gets the number of entities in the current <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
+        /// "EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
         public int Count
         {
-            get { return this.data.Entities.Count; }
+            get { return this.Resources.Count; }
         }
-
-        #endregion
 
         #endregion
 
         #region Methods
 
-        #region Request-related methods
+        #region Operational interface
 
         /// <summary>
-        /// Infrastructure. Initializes the current <see cref="EntityCollection
-        /// &lt;TCollection, TEntity&gt;"/>.
+        /// Asynchronously creates a new Splunk entity.
         /// </summary>
-        /// <param name="context">
-        /// An object representing a Splunk server session.
+        /// <param name="arguments">
+        /// Arguments to the Splunk REST API for creating the desired entity.
         /// </param>
-        /// <param name="entry">
-        /// An atom entry containing metadata, plus the content for the current
-        /// <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
-        /// </param>
-        /// <remarks>
-        /// Override this method to provide special initialization code. Call
-        /// the base implementation before initialization is complete. This
-        /// method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </remarks>
-        protected internal override void Initialize(Context context, AtomEntry entry)
+        /// <returns>
+        /// An object representing the entity created.
+        /// </returns>
+        public virtual async Task<TEntity> CreateAsync(params Argument[] arguments)
         {
-            this.data = new DataCache(entry);
-            base.Initialize(context, entry);
+            return await this.CreateAsync(arguments.AsEnumerable());
         }
 
         /// <summary>
-        /// Asynchronously retrieves a fresh copy of the entities in the 
-        /// current <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/> 
-        /// that contains all changes to it since it was last retrieved.
+        /// Asynchronously creates a new Splunk entity.
+        /// </summary>
+        /// <param name="arguments">
+        /// Arguments to the Splunk REST API for creating the desired entity.
+        /// </param>
+        /// <returns>
+        /// An object representing the entity created.
+        /// </returns>
+        public virtual async Task<TEntity> CreateAsync(IEnumerable<Argument> arguments)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                return await BaseEntity.CreateAsync<TEntity>(this.Context, response);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves a <see cref="TEntity"/> in the current
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/> by name.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        public virtual async Task GetAsync()
+        public virtual async Task<TEntity> GetAsync(string name)
         {
-            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName, this.args))
-            {
-                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
-                var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+            var resourceName = new ResourceName(this.ResourceName, name);
 
-                this.data = new DataCache(this.Context, feed);
+            using (Response response = await this.Context.GetAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                return await BaseEntity.CreateAsync<TEntity>(this.Context, response);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves a fresh copy of the full list of entities
+        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        /// <remarks>
+        /// Following completion of the operation the list of entites in the
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
+        /// all changes since the list was last retrieved.
+        /// </remarks>
+        public virtual async Task GetAllAsync()
+        {
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, GetAll))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await this.ReconstructSnapshotAsync(response);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves an entity in the current collection by
+        /// name.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the entity to retrieve.
+        /// </param>
+        /// <returns>
+        /// An object representing entity <param name="name"/> or <c>null</c>, 
+        /// if no such entity exists.
+        /// </returns>
+        public virtual async Task<TEntity> GetOrNullAsync(string name)
+        {
+            var resourceName = new ResourceName(this.ResourceName, name);
+
+            using (Response response = await this.Context.GetAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK, HttpStatusCode.NotFound);
+                TEntity resourceEndpoint = null;
+
+                if (response.Message.StatusCode == HttpStatusCode.OK)
+                {
+                    resourceEndpoint = await BaseEntity.CreateAsync<TEntity>(this.Context, response);
+                }
+
+                return resourceEndpoint;
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves select entities from the list of entites
+        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        /// <remarks>
+        /// Following completion of the operation the list of entities in the
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
+        /// all changes since the select entites were last retrieved.
+        /// </remarks>
+        public virtual async Task GetSliceAsync(params Argument[] arguments)
+        {
+            await this.GetSliceAsync(arguments.AsEnumerable());
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves select entities from the list of entites
+        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        /// <remarks>
+        /// Following completion of the operation the list of entities in the
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
+        /// all changes since the select entites were last retrieved.
+        /// </remarks>
+        public virtual async Task GetSliceAsync(IEnumerable<Argument> arguments)
+        {
+            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await this.ReconstructSnapshotAsync(response);
             }
         }
 
         /// <summary>
         /// Asynchronously forces the Splunk server to reload data for the current
-        /// <see cref="EntityCollection&lt;TCollection, TEntity&gt;"/>.
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task"/> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public async Task ReloadAsync()
         {
@@ -270,7 +313,7 @@ namespace Splunk.Client
 
             using (Response response = await this.Context.GetAsync(this.Namespace, reload))
             {
-                await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
         }
 
@@ -280,11 +323,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets an enumerator that iterates through the current <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
+        /// "EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
         /// <returns>
         /// An object for iterating through the current <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
+        /// "EntityCollection&lt;TEntity&gt;"/>.
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -293,160 +336,62 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets an enumerator that iterates through the current <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
+        /// "EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
         /// <returns>
         /// An object for iterating through the current <see cref=
-        /// "EntityCollection&lt;TCollection, TEntity&gt;"/>.
+        /// "EntityCollection&lt;TEntity&gt;"/>.
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {
-            if (this.data == null)
-            {
-                throw new InvalidOperationException();
-            }
-            return this.data.Entities.GetEnumerator();
+            return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
+        }
+
+        #endregion
+
+        #region Infrastructure methods
+
+        /// <inheritdoc/>
+        protected override void CreateSnapshot(AtomEntry entry, Version generatorVersion)
+        {
+            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+            Contract.Requires<ArgumentNullException>(entry != null);
+            this.Snapshot = new BaseResource(entry, generatorVersion);
+        }
+
+        /// <inheritdoc/>
+        protected override void CreateSnapshot(AtomFeed feed)
+        {
+            this.Snapshot = new BaseResource(feed);
+        }
+
+        /// <inheritdoc/>
+        protected override void CreateSnapshot(BaseResource resource)
+        {
+            this.Snapshot = resource;
         }
 
         #endregion
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
-        volatile DataCache data = DataCache.Missing;
-        readonly IEnumerable<Argument> args;
+        internal static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new List<BaseResource>());
+        internal static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
+        static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
 
-        #endregion
-
-        #region Types
-
-        class DataCache
+        IReadOnlyList<BaseResource> Resources
         {
-            #region Constructors
+            get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
+        }
 
-            public DataCache(AtomEntry entry)
-            {
-                this.author = entry.Author;
-                this.id = entry.Id;
-                this.generatorVersion = null; // TODO: figure out a way to inherit the enclosing feed's generator version or is it in each entry too?
-                this.links = entry.Links;
-                this.messages = new List<Message>(); // TODO: does an entry contain messages?
-                this.pagination = Pagination.Empty;
-                this.title = entry.Title;
-                this.updated = entry.Updated;
+        TEntity Create(BaseResource resource)
+        {
+            var entity = new TEntity();
 
-                this.entities = new List<TEntity>();
-            }
-
-            public DataCache(Context context, AtomFeed feed)
-            {
-                this.author = feed.Author;
-                this.id = feed.Id;
-                this.generatorVersion = feed.GeneratorVersion;
-                this.links = feed.Links;
-                this.messages = feed.Messages;
-                this.pagination = feed.Pagination;
-                this.title = feed.Title;
-                this.updated = feed.Updated;
-
-                var entities = new List<TEntity>(feed.Entries.Count);
-
-                foreach (var entry in feed.Entries)
-                {
-                    TEntity entity = new TEntity();
-
-                    entity.Initialize(context, entry);
-                    entities.Add(entity);
-                }
-
-                this.entities = entities;
-            }
-
-            DataCache()
-            {
-                this.author = null;
-                this.id = null;
-                this.generatorVersion = null;
-                this.links = new Dictionary<string, Uri>();
-                this.messages = new List<Message>();
-                this.pagination = Pagination.Empty;
-                this.title = null;
-                this.updated = DateTime.MinValue;
-
-                this.entities = new List<TEntity>();
-            }
-
-            #endregion
-
-            #region Fields
-
-            public static readonly DataCache Missing = new DataCache();
-
-            #endregion
-
-            #region Properties
-
-            public string Author
-            {
-                get { return this.author; }
-            }
-
-            public Uri Id
-            {
-                get { return this.id; }
-            }
-
-            public IReadOnlyList<TEntity> Entities
-            { 
-                get { return this.entities; } 
-            }
-
-            public Version GeneratorVersion
-            {
-                get { return this.generatorVersion; }
-            }
-
-            public IReadOnlyDictionary<string, Uri> Links
-            {
-                get { return this.links; }
-            }
-
-            public IReadOnlyList<Message> Messages
-            {
-                get { return this.messages; }
-            }
-
-            public Pagination Pagination
-            {
-                get { return this.pagination; }
-            }
-
-            public string Title
-            {
-                get { return this.title; }
-            }
-
-            public DateTime Updated
-            {
-                get { return this.updated; }
-            }
-
-            #endregion
-
-            #region Privates
-
-            readonly IReadOnlyList<TEntity> entities;
-            readonly string author;
-            readonly Uri id;
-            readonly Version generatorVersion;
-            readonly IReadOnlyDictionary<string, Uri> links;
-            readonly IReadOnlyList<Message> messages;
-            readonly Pagination pagination;
-            readonly string title;
-            readonly DateTime updated;
-
-            #endregion
+            entity.Initialize(this.Context, resource);
+            return entity;
         }
 
         #endregion

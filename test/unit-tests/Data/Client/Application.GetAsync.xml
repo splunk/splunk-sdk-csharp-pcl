@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>localapps</title>
+  <id>https://localhost:8089/services/apps/local</id>
+  <updated>2014-05-27T10:20:25-07:00</updated>
+  <generator build="207789" version="6.1.1"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <link href="/services/apps/local/_new" rel="create"/>
+  <link href="/services/apps/local/_reload" rel="_reload"/>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:itemsPerPage>30</opensearch:itemsPerPage>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <s:messages/>
+  <entry>
+    <title>framework</title>
+    <id>https://localhost:8089/servicesNS/nobody/system/apps/local/framework</id>
+    <updated>2014-05-27T10:20:25-07:00</updated>
+    <link href="/servicesNS/nobody/system/apps/local/framework" rel="alternate"/>
+    <author>
+      <name>nobody</name>
+    </author>
+    <link href="/servicesNS/nobody/system/apps/local/framework" rel="list"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework/_reload" rel="_reload"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework" rel="edit"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework" rel="remove"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework/disable" rel="disable"/>
+    <link href="/servicesNS/nobody/system/apps/local/framework/package" rel="package"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="check_for_updates">1</s:key>
+        <s:key name="configured">0</s:key>
+        <s:key name="disabled">0</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app">system</s:key>
+            <s:key name="can_change_perms">1</s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_share_app">1</s:key>
+            <s:key name="can_share_global">1</s:key>
+            <s:key name="can_share_user">0</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">1</s:key>
+            <s:key name="owner">nobody</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">app</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="eai:attributes">
+          <s:dict>
+            <s:key name="optionalFields">
+              <s:list>
+                <s:item>author</s:item>
+                <s:item>check_for_updates</s:item>
+                <s:item>configured</s:item>
+                <s:item>description</s:item>
+                <s:item>label</s:item>
+                <s:item>version</s:item>
+                <s:item>visible</s:item>
+              </s:list>
+            </s:key>
+            <s:key name="requiredFields">
+              <s:list/>
+            </s:key>
+            <s:key name="wildcardFields">
+              <s:list/>
+            </s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="label">framework</s:key>
+        <s:key name="state_change_requires_restart">0</s:key>
+        <s:key name="visible">0</s:key>
+      </s:dict>
+    </content>
+  </entry>
+</feed>

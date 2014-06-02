@@ -31,8 +31,6 @@ namespace Splunk.Client
     /// </summary>
     public sealed class AuthenticationFailureException : RequestException
     {
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AuthenticationFailureException"/>
         /// class.
@@ -50,7 +48,5 @@ namespace Splunk.Client
         {
             Debug.Assert(message.StatusCode == HttpStatusCode.Unauthorized);
         }
-
-        #endregion
     }
 }

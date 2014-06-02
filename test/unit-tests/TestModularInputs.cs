@@ -13,7 +13,7 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-namespace Splunk.ModularInputs.UnitTesting
+namespace Splunk.ModularInputs.UnitTests
 {
     using System;
     using System.Collections.Generic;
@@ -54,7 +54,7 @@ namespace Splunk.ModularInputs.UnitTesting
     /// </summary>
     public class TestModularInputs
     {
-        [Trait("class", "AwaitableProgress")]
+        [Trait("unit-test", "AwaitableProgress")]
         [Fact]
         public async Task AwaitProgressWorks()
         {
@@ -64,7 +64,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal(true, await triggered);
         }
 
-        [Trait("class", "Splunk.ModularInputs.InputDefinition")]
+        [Trait("unit-test", "Splunk.ModularInputs.InputDefinition")]
         [Fact]
         public void InputDefinitionServiceWorks()
         {
@@ -85,7 +85,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal("abcdefg", service.Context.SessionKey);
         }
 
-        [Trait("class", "Splunk.ModularInputs.InputDefinition")]
+        [Trait("unit-test", "Splunk.ModularInputs.InputDefinition")]
         [Fact]
         public void InputDefinitionServiceFailsWithInvalidUri()
         {
@@ -101,7 +101,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Throws<FormatException>(() => inputDefinition.Service);
         }
 
-        [Trait("class", "Splunk.ModularInputs.SingleValueParameter")]
+        [Trait("unit-test", "Splunk.ModularInputs.SingleValueParameter")]
         [Fact]
         public void SingleValueParameterConversions()
         {
@@ -123,7 +123,7 @@ namespace Splunk.ModularInputs.UnitTesting
             Assert.Equal((long)52, (long)parameter);
         }
 
-        [Trait("class", "Splunk.ModularInputs.SingleValueParameter")]
+        [Trait("unit-test", "Splunk.ModularInputs.SingleValueParameter")]
         [Fact]
         public void SingleValueParameterParsing()
         {
@@ -137,7 +137,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
         }
 
-        [Trait("class", "Splunk.ModularInputs.MultiValueParameter")]
+        [Trait("unit-test", "Splunk.ModularInputs.MultiValueParameter")]
         [Fact]
         public void MultiValueParameterParsing()
         {
@@ -151,7 +151,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.MultiValueParameter")]
+        [Trait("unit-test", "Splunk.ModularInputs.MultiValueParameter")]
         [Fact]
         public void MultiValueParameterConversions()
         {
@@ -180,7 +180,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
         class TestInput : ModularInput
         {
-            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) {}
+            public override Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) { return Task.FromResult(false); }
 
             public override Scheme Scheme
             {
@@ -196,7 +196,22 @@ namespace Splunk.ModularInputs.UnitTesting
                                 Name = "min",
                                 Description = "Generated value should be at least min",
                                 DataType = DataType.Number,
-                                RequiredOnCreate = true
+                                RequiredOnCreate = true,
+                                ValidationDelegate = delegate (Parameter param, out string errorMessage) {
+                                    bool isDouble;
+                                    try { double _ = (double)param; isDouble = true; }
+                                    catch (Exception) { isDouble = false; }
+                                    if (isDouble)
+                                    {
+                                        errorMessage = "";
+                                        return true;
+                                    }
+                                    else
+                                    {
+                                        errorMessage = "min should be a floating point number.";
+                                        return false;
+                                    }
+                                }
                             },
                             new Argument
                             {
@@ -230,7 +245,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
         }
 
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task GeneratesSchemeCorrectly()
         {
@@ -251,7 +266,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task WorkingValidation()
         {
@@ -279,7 +294,7 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task ValidationFails()
         {
@@ -310,7 +325,38 @@ namespace Splunk.ModularInputs.UnitTesting
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.ModularInput")]
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ValidationFailsOnSingleParameterDelegate()
+        {
+            XDocument doc = new XDocument(
+               new XElement("items",
+                   new XElement("server_host", "tiny"),
+                   new XElement("server_uri", "https://127.0.0.1:8089"),
+                   new XElement("checkpoint_dir", "/somewhere"),
+                   new XElement("session_key", "abcd"),
+                   new XElement("item",
+                       new XAttribute("name", "aaa"),
+                       new XElement("param", new XAttribute("name", "min"), "boris"),
+                       new XElement("param", new XAttribute("name", "max"), 12))));
+            using (StringReader stdin = new StringReader(doc.ToString()))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { "--validate-arguments" };
+                TestInput testInput = new TestInput();
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                Assert.NotEqual(0, exitCode);
+                Assert.Equal(
+                    "<error><message>min should be a floating point number.</message></error>",
+                    stdout.ToString().Trim()
+                );
+                Assert.Equal("", stderr.ToString());
+            }
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public async Task ValidationThrows()
         {
@@ -323,12 +369,12 @@ namespace Splunk.ModularInputs.UnitTesting
                 int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
   
                 Assert.NotEqual(0, exitCode);
-                Assert.NotEqual("", stdout.ToString());
-                Assert.Equal("", stderr.ToString());
+                Assert.NotEqual("", stderr.ToString());
+                Assert.Equal("", stdout.ToString());
             }
         }
 
-        [Trait("class", "Splunk.ModularInputs.Event")]
+        [Trait("unit-test", "Splunk.ModularInputs.Event")]
         [Fact]
         public void SerializeEventWithoutDone()
         {
@@ -365,7 +411,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
 
-        [Trait("class", "Splunk.ModularInputs.Event")]
+        [Trait("unit-test", "Splunk.ModularInputs.Event")]
         [Fact]
         public void SerializeEventWithDone()
         {
@@ -398,7 +444,7 @@ namespace Splunk.ModularInputs.UnitTesting
 
        
 
-        [Trait("class", "Splunk.ModularInputs.EventWriter")]
+        [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]
         public async Task EventWriterReportsOnDispose()
         {
@@ -422,7 +468,7 @@ namespace Splunk.ModularInputs.UnitTesting
         }
 
         
-        [Trait("class", "Splunk.ModularInputs.EventWriter")]
+        [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]
         public async Task EventWriterReportsOnWrite()
         {
@@ -439,7 +485,7 @@ namespace Splunk.ModularInputs.UnitTesting
             {
                 
                 var writtenTask = progress.AwaitProgressAsync();
-                eventWriter.QueueEventForWriting(new Event
+                await eventWriter.QueueEventForWriting(new Event
                 {
                     Time = DateTime.FromFileTime(0),
                     Data = "Boris the mad baboon"

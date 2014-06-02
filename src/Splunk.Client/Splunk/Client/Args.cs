@@ -264,7 +264,7 @@ namespace Splunk.Client
 
         static string FormatBoolean(object value)
         {
-            return (bool)value ? "t" : "f";
+            return (bool)value ? "1" : "0";
         }
 
         static string FormatNumber(object value)

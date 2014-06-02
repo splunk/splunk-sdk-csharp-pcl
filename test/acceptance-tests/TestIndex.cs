@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,17 +14,17 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client.Helper;
+    
     using Xunit;
 
     /// <summary>
@@ -35,123 +35,186 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests the basic getters and setters of index
         /// </summary>
-        [Trait("class", "Index")]
+        [Trait("acceptance-test", "Splunk.Client.Index")]
         [Fact]
-        public async Task IndexAccessors()
+        public async Task IndexCollection()
         {
             string indexName = "sdk-tests2_indexaccessors";
+            await this.RemoveIndexAsync(indexName);
 
-            await this.RemoveIndex(indexName);
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
-                await service.CreateIndexAsync(indexName);
-                var x = service.GetIndexesAsync().Result;
+                IndexCollection indexes = service.Indexes;
 
-                IndexCollection indexes = await service.GetIndexesAsync();
-                foreach (Index idx in indexes)
+                Index testIndex = await indexes.CreateAsync(indexName);
+                /// TODO: Verify testIndex
+
+                await testIndex.GetAsync();
+                /// TODO: Reverify testIndex
+
+                await indexes.GetAllAsync();
+                Assert.NotNull(indexes.SingleOrDefault(index => index.Title == indexName));
+
+                foreach (Index index in indexes)
                 {
                     int dummyInt;
                     string dummyString;
                     bool dummyBool;
                     DateTime dummyTime;
-                    dummyBool = idx.AssureUTF8;
-                    dummyString = idx.BlockSignatureDatabase;
-                    dummyInt = idx.BlockSignSize;
-                    dummyInt = idx.BloomFilterTotalSizeKB;
-                    dummyString = idx.ColdPath;
-                    dummyString = idx.ColdPathExpanded;
-                    dummyString = idx.ColdToFrozenDir;
-                    dummyString = idx.ColdToFrozenScript;
-                    dummyBool = idx.CompressRawData;
-                    long size = idx.CurrentDBSizeMB;
-                    dummyString = idx.DefaultDatabase;
-                    dummyBool = idx.EnableRealtimeSearch;
-                    dummyInt = idx.FrozenTimePeriodInSecs;
-                    dummyString = idx.HomePath;
-                    dummyString = idx.HomePathExpanded;
-                    dummyString = idx.IndexThreads;
-                    long time = idx.LastInitTime;
-                    dummyString = idx.MaxBloomBackfillBucketAge;
-                    dummyInt = idx.MaxConcurrentOptimizes;
-                    dummyString = idx.MaxDataSize;
-                    dummyInt = idx.MaxHotBuckets;
-                    dummyInt = idx.MaxHotIdleSecs;
-                    dummyInt = idx.MaxHotSpanSecs;
-                    dummyInt = idx.MaxMemMB;
-                    dummyInt = idx.MaxMetaEntries;
-                    dummyInt = idx.MaxRunningProcessGroups;
-                    dummyTime = idx.MaxTime;
-                    dummyInt = idx.MaxTotalDataSizeMB;
-                    dummyInt = idx.MaxWarmDBCount;
-                    dummyString = idx.MemPoolMB;
-                    dummyString = idx.MinRawFileSyncSecs;
-                    dummyTime = idx.MinTime;
-                    dummyInt = idx.NumBloomFilters;
-                    dummyInt = idx.NumHotBuckets;
-                    dummyInt = idx.NumWarmBuckets;
-                    dummyInt = idx.PartialServiceMetaPeriod;
-                    dummyInt = idx.QuarantineFutureSecs;
-                    dummyInt = idx.QuarantinePastSecs;
-                    dummyInt = idx.RawChunkSizeBytes;
-                    dummyInt = idx.RotatePeriodInSecs;
-                    dummyInt = idx.ServiceMetaPeriod;
-                    dummyString = idx.SuppressBannerList;
-                    bool sync = idx.Sync;
-                    dummyBool = idx.SyncMeta;
-                    dummyString = idx.ThawedPath;
-                    dummyString = idx.ThawedPathExpanded;
-                    dummyInt = idx.ThrottleCheckPeriod;
-                    long eventCount = idx.TotalEventCount;
-                    dummyBool = idx.Disabled;
-                    dummyBool = idx.IsInternal;
+                    dummyBool = index.AssureUTF8;
+                    dummyString = index.BlockSignatureDatabase;
+                    dummyInt = index.BlockSignSize;
+                    dummyInt = index.BloomFilterTotalSizeKB;
+                    dummyString = index.ColdPath;
+                    dummyString = index.ColdPathExpanded;
+                    dummyString = index.ColdToFrozenDir;
+                    dummyString = index.ColdToFrozenScript;
+                    dummyBool = index.CompressRawData;
+                    long size = index.CurrentDBSizeMB;
+                    dummyString = index.DefaultDatabase;
+                    dummyBool = index.EnableRealtimeSearch;
+                    dummyInt = index.FrozenTimePeriodInSecs;
+                    dummyString = index.HomePath;
+                    dummyString = index.HomePathExpanded;
+                    dummyString = index.IndexThreads;
+                    long time = index.LastInitTime;
+                    dummyString = index.MaxBloomBackfillBucketAge;
+                    dummyInt = index.MaxConcurrentOptimizes;
+                    dummyString = index.MaxDataSize;
+                    dummyInt = index.MaxHotBuckets;
+                    dummyInt = index.MaxHotIdleSecs;
+                    dummyInt = index.MaxHotSpanSecs;
+                    dummyInt = index.MaxMemMB;
+                    dummyInt = index.MaxMetaEntries;
+                    dummyInt = index.MaxRunningProcessGroups;
+                    dummyTime = index.MaxTime;
+                    dummyInt = index.MaxTotalDataSizeMB;
+                    dummyInt = index.MaxWarmDBCount;
+                    dummyString = index.MemPoolMB;
+                    dummyString = index.MinRawFileSyncSecs;
+                    dummyTime = index.MinTime;
+                    dummyInt = index.NumBloomFilters;
+                    dummyInt = index.NumHotBuckets;
+                    dummyInt = index.NumWarmBuckets;
+                    dummyInt = index.PartialServiceMetaPeriod;
+                    dummyInt = index.QuarantineFutureSecs;
+                    dummyInt = index.QuarantinePastSecs;
+                    dummyInt = index.RawChunkSizeBytes;
+                    dummyInt = index.RotatePeriodInSecs;
+                    dummyInt = index.ServiceMetaPeriod;
+                    dummyString = index.SuppressBannerList;
+                    bool sync = index.Sync;
+                    dummyBool = index.SyncMeta;
+                    dummyString = index.ThawedPath;
+                    dummyString = index.ThawedPathExpanded;
+                    dummyInt = index.ThrottleCheckPeriod;
+                    long eventCount = index.TotalEventCount;
+                    dummyBool = index.Disabled;
+                    dummyBool = index.IsInternal;
                 }
 
-                await this.RemoveIndex(indexName);
+                for (int i = 0; i < indexes.Count; i++)
+                {
+                    Index index = indexes[i];
 
-                await service.CreateIndexAsync(indexName);
-                Index index = await service.GetIndexAsync(indexName);
-                var indexAttributes = GetIndexAttributes(index);
+                    int dummyInt;
+                    string dummyString;
+                    bool dummyBool;
+                    DateTime dummyTime;
+                    dummyBool = index.AssureUTF8;
+                    dummyString = index.BlockSignatureDatabase;
+                    dummyInt = index.BlockSignSize;
+                    dummyInt = index.BloomFilterTotalSizeKB;
+                    dummyString = index.ColdPath;
+                    dummyString = index.ColdPathExpanded;
+                    dummyString = index.ColdToFrozenDir;
+                    dummyString = index.ColdToFrozenScript;
+                    dummyBool = index.CompressRawData;
+                    long size = index.CurrentDBSizeMB;
+                    dummyString = index.DefaultDatabase;
+                    dummyBool = index.EnableRealtimeSearch;
+                    dummyInt = index.FrozenTimePeriodInSecs;
+                    dummyString = index.HomePath;
+                    dummyString = index.HomePathExpanded;
+                    dummyString = index.IndexThreads;
+                    long time = index.LastInitTime;
+                    dummyString = index.MaxBloomBackfillBucketAge;
+                    dummyInt = index.MaxConcurrentOptimizes;
+                    dummyString = index.MaxDataSize;
+                    dummyInt = index.MaxHotBuckets;
+                    dummyInt = index.MaxHotIdleSecs;
+                    dummyInt = index.MaxHotSpanSecs;
+                    dummyInt = index.MaxMemMB;
+                    dummyInt = index.MaxMetaEntries;
+                    dummyInt = index.MaxRunningProcessGroups;
+                    dummyTime = index.MaxTime;
+                    dummyInt = index.MaxTotalDataSizeMB;
+                    dummyInt = index.MaxWarmDBCount;
+                    dummyString = index.MemPoolMB;
+                    dummyString = index.MinRawFileSyncSecs;
+                    dummyTime = index.MinTime;
+                    dummyInt = index.NumBloomFilters;
+                    dummyInt = index.NumHotBuckets;
+                    dummyInt = index.NumWarmBuckets;
+                    dummyInt = index.PartialServiceMetaPeriod;
+                    dummyInt = index.QuarantineFutureSecs;
+                    dummyInt = index.QuarantinePastSecs;
+                    dummyInt = index.RawChunkSizeBytes;
+                    dummyInt = index.RotatePeriodInSecs;
+                    dummyInt = index.ServiceMetaPeriod;
+                    dummyString = index.SuppressBannerList;
+                    bool sync = index.Sync;
+                    dummyBool = index.SyncMeta;
+                    dummyString = index.ThawedPath;
+                    dummyString = index.ThawedPathExpanded;
+                    dummyInt = index.ThrottleCheckPeriod;
+                    long eventCount = index.TotalEventCount;
+                    dummyBool = index.Disabled;
+                    dummyBool = index.IsInternal;
+                }
 
-                // use setters to update most
-                indexAttributes.BlockSignSize = index.BlockSignSize + 1;
+                var attributes = GetIndexAttributes(testIndex);
+                attributes.BlockSignSize = testIndex.BlockSignSize + 1;
+
                 if (TestHelper.VersionCompare(service, "4.3") > 0)
                 {
-                    indexAttributes.EnableOnlineBucketRepair = !index.EnableOnlineBucketRepair;
-                    indexAttributes.MaxBloomBackfillBucketAge = "20d";
+                    attributes.EnableOnlineBucketRepair = !testIndex.EnableOnlineBucketRepair;
+                    attributes.MaxBloomBackfillBucketAge = "20d";
                 }
 
-                indexAttributes.FrozenTimePeriodInSecs = index.FrozenTimePeriodInSecs + 1;
-                indexAttributes.MaxConcurrentOptimizes = index.MaxConcurrentOptimizes + 1;
-                indexAttributes.MaxDataSize = "auto";
-                indexAttributes.MaxHotBuckets = index.MaxHotBuckets + 1;
-                indexAttributes.MaxHotIdleSecs = index.MaxHotIdleSecs + 1;
-                indexAttributes.MaxMemMB = index.MaxMemMB + 1;
-                indexAttributes.MaxMetaEntries = index.MaxMetaEntries + 1;
-                indexAttributes.MaxTotalDataSizeMB = index.MaxTotalDataSizeMB + 1;
-                indexAttributes.MaxWarmDBCount = index.MaxWarmDBCount + 1;
-                indexAttributes.MinRawFileSyncSecs = "disable";
-                indexAttributes.PartialServiceMetaPeriod = index.PartialServiceMetaPeriod + 1;
-                indexAttributes.QuarantineFutureSecs = index.QuarantineFutureSecs + 1;
-                indexAttributes.QuarantinePastSecs = index.QuarantinePastSecs + 1;
-                indexAttributes.RawChunkSizeBytes = index.RawChunkSizeBytes + 1;
-                indexAttributes.RotatePeriodInSecs = index.RotatePeriodInSecs + 1;
-                indexAttributes.ServiceMetaPeriod = index.ServiceMetaPeriod + 1;
-                indexAttributes.SyncMeta = !index.SyncMeta;
-                indexAttributes.ThrottleCheckPeriod = index.ThrottleCheckPeriod + 1;
+                attributes.FrozenTimePeriodInSecs = testIndex.FrozenTimePeriodInSecs + 1;
+                attributes.MaxConcurrentOptimizes = testIndex.MaxConcurrentOptimizes + 1;
+                attributes.MaxDataSize = "auto";
+                attributes.MaxHotBuckets = testIndex.MaxHotBuckets + 1;
+                attributes.MaxHotIdleSecs = testIndex.MaxHotIdleSecs + 1;
+                attributes.MaxMemMB = testIndex.MaxMemMB + 1;
+                attributes.MaxMetaEntries = testIndex.MaxMetaEntries + 1;
+                attributes.MaxTotalDataSizeMB = testIndex.MaxTotalDataSizeMB + 1;
+                attributes.MaxWarmDBCount = testIndex.MaxWarmDBCount + 1;
+                attributes.MinRawFileSyncSecs = "disable";
+                attributes.PartialServiceMetaPeriod = testIndex.PartialServiceMetaPeriod + 1;
+                attributes.QuarantineFutureSecs = testIndex.QuarantineFutureSecs + 1;
+                attributes.QuarantinePastSecs = testIndex.QuarantinePastSecs + 1;
+                attributes.RawChunkSizeBytes = testIndex.RawChunkSizeBytes + 1;
+                attributes.RotatePeriodInSecs = testIndex.RotatePeriodInSecs + 1;
+                attributes.ServiceMetaPeriod = testIndex.ServiceMetaPeriod + 1;
+                attributes.SyncMeta = !testIndex.SyncMeta;
+                attributes.ThrottleCheckPeriod = testIndex.ThrottleCheckPeriod + 1;
 
-                await index.UpdateAsync(indexAttributes);
-                await index.DisableAsync();
-                Assert.True(index.Disabled);
+                bool updatedSnapshot = await testIndex.UpdateAsync(attributes);
+                Assert.True(updatedSnapshot);
+                await testIndex.DisableAsync();
+                Assert.True(testIndex.Disabled); // because DisableAsync returns an updated snapshot
 
-                await TestHelper.RestartServer();
+                await TestHelper.RestartServerAsync();
             }
 
             using (Service service = await SDKHelper.CreateService())
             {
-                Index index = await service.GetIndexAsync(indexName);
+                Index index = await service.Indexes.GetAsync(indexName);
                 await index.EnableAsync();
                 Assert.False(index.Disabled);
-                await RemoveIndex(indexName);
+                await RemoveIndexAsync(indexName);
             }
         }
 
@@ -159,25 +222,26 @@ namespace Splunk.Client.UnitTesting
         /// Tests submitting and streaming events to an index given the indexAttributes argument
         /// and also removing all events from the index
         /// </summary>
-        [Trait("class", "Index")]
+        [Trait("acceptance-test", "Splunk.Client.Transmitter")]
         [Fact]
-        public async Task IndexArgs()
+        public async Task Transmitter1()
         {
             string indexName = "sdk-tests2_indexargs";
 
-            await this.RemoveIndex(indexName);
+            await this.RemoveIndexAsync(indexName);
 
             using (Service service = await SDKHelper.CreateService())
             {
-                await service.CreateIndexAsync(indexName);
-                Index index = await service.GetIndexAsync(indexName);
+                Index index = await service.Indexes.CreateAsync(indexName);
                 Assert.False(index.Disabled);
 
-                // submit event using ReceiverSubmitArgs
+                // submit event using TransmitterArgs
+
                 const string Source = "splunk-sdk-tests";
                 const string SourceType = "splunk-sdk-test-event";
                 const string Host = "test-host";
-                var args = new ReceiverArgs
+
+                var transmitterArgs = new TransmitterArgs
                 {
                     Index = indexName,
                     Host = Host,
@@ -185,10 +249,25 @@ namespace Splunk.Client.UnitTesting
                     SourceType = SourceType,
                 };
 
-                Receiver receiver = service.Receiver;
-                await receiver.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now, indexName), args);
-                await receiver.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now, indexName), args);
-                await TestHelper.WaitIndexTotalEventCountUpdated(index, 2);
+                Transmitter transmitter = service.Transmitter;
+
+                await transmitter.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now, indexName), transmitterArgs);
+                await transmitter.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now, indexName), transmitterArgs);
+
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
+                    {
+                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
+                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
+                    }
+
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    await transmitter.SendAsync(stream, transmitterArgs);
+                }
+
+                await TestHelper.WaitIndexTotalEventCountUpdated(index, 4);
 
                 SearchResultStream result = await service.SearchOneshotAsync(
                         string.Format(
@@ -206,43 +285,45 @@ namespace Splunk.Client.UnitTesting
         /// Test submitting and streaming to a default index given the indexAttributes argument
         /// and also removing all events from the index
         /// </summary>
-        [Trait("class", "Index")]
+        [Trait("acceptance-test", "Splunk.Client.Transmitter")]
         [Fact]
-        public async Task DefaultIndexArgs()
+        public async Task Transmitter2()
         {
             string indexName = "main";
 
             using (Service service = await SDKHelper.CreateService())
             {
-                Index index = await service.GetIndexAsync(indexName);
+                Index index = await service.Indexes.GetAsync(indexName);
                 long currentEventCount = index.TotalEventCount;
                 Assert.NotNull(index);
 
-                //Receiver receiver = service.GetReceiver();
-                Receiver receiver = service.Receiver;
+                Transmitter transmitter = service.Transmitter;
                 IndexAttributes indexAttributes = GetIndexAttributes(index);
-                ReceiverArgs receiverArgs = new ReceiverArgs() { Index = index.Name, };
+                TransmitterArgs transmitterArgs = new TransmitterArgs() { Index = index.Name, };
 
-                // submit event to default index using variable arguments
-                await receiver.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World", DateTime.Now), receiverArgs);
-                await receiver.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now), receiverArgs);
+                // Submit event to default index using variable arguments
+
+                await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World", DateTime.Now), transmitterArgs);
+                await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now), transmitterArgs);
 
                 await TestHelper.WaitIndexTotalEventCountUpdated(index, currentEventCount + 2);
+                currentEventCount += 2;
 
-                currentEventCount = currentEventCount + 2;
                 using (MemoryStream stream = new MemoryStream())
                 {
                     using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
-                        writer.Write(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
-                        writer.Write(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
+                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
+                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);
-                    await receiver.SendAsync(stream, receiverArgs);
+
+                    await transmitter.SendAsync(stream, transmitterArgs);
                 }
 
-                await TestHelper.WaitIndexTotalEventCountUpdated(index, currentEventCount + 1);
+                await TestHelper.WaitIndexTotalEventCountUpdated(index, currentEventCount + 2);
+                currentEventCount += 2;
             }
         }
 
@@ -251,7 +332,7 @@ namespace Splunk.Client.UnitTesting
         /// </summary>
         /// <param name="index">The Index</param>
         /// <returns>The argument getIndexProperties</returns>
-        private IndexAttributes GetIndexAttributes(Index index)
+        IndexAttributes GetIndexAttributes(Index index)
         {
             IndexAttributes indexAttributes = new IndexAttributes();
 
@@ -285,29 +366,23 @@ namespace Splunk.Client.UnitTesting
         /// <param name="service">A service</param>
         /// <param name="indexName">The index name</param>
         /// <param name="index">The index object</param>
-        private async Task RemoveIndex(string indexName)
+        async Task RemoveIndexAsync(string indexName)
         {
-            using (Service service = SDKHelper.CreateService().Result)
+            using (Service service = await SDKHelper.CreateService())
             {
-                try
+                Index index = await service.Indexes.GetOrNullAsync(indexName);
+                
+                if (index == null)
                 {
-                    await service.RemoveIndexAsync(indexName);
+                    return;
                 }
-                catch (RequestException e)
+
+                if (index.Disabled)
                 {
-                    if (e.Message.Contains("is disabled"))
-                    {
-                        Index index = service.GetIndexAsync(indexName).Result;
-                        index.EnableAsync().Wait();
-                        TestHelper.RestartServer().Wait();
-                        Service service1 = SDKHelper.CreateService().Result;
-                        service1.RemoveIndexAsync(indexName).Wait();
-                    }
-                    else if (!e.Message.Contains("Not found"))
-                    {
-                        Console.WriteLine(e);
-                    }
+                    await index.EnableAsync();
                 }
+
+                await index.RemoveAsync();
             }
         }
     }

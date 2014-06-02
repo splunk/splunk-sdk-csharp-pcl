@@ -32,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.XML" />
@@ -39,19 +40,6 @@
     <Reference Include="xunit">
       <HintPath>..\..\packages\xunit.1.9.2\lib\net20\xunit.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="TestAtomFeed.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestRequestException.cs" />
-    <Compile Include="TestIndexAttributes.cs" />
-    <Compile Include="TestIndexCollectionArgs.cs" />
-    <Compile Include="TestModularInputs.cs" />
-    <Compile Include="TestResourceName.cs" />
-    <Compile Include="TestSavedSearchAttributes.cs" />
-    <Compile Include="TestSavedSearchCollectionArgs.cs" />
-    <Compile Include="TestJobCollectionArgs.cs" />
-    <Compile Include="TestJobArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
@@ -64,23 +52,31 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Data\Client\AtomFeed.xml">
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestApplicationCollection.cs" />
+    <Compile Include="TestAtomFeed.cs" />
+    <Compile Include="TestConfigurationCollection.cs" />
+    <Compile Include="TestIndexAttributes.cs" />
+    <Compile Include="TestIndexCollection.cs" />
+    <Compile Include="TestJobArgs.cs" />
+    <Compile Include="TestJobCollection.cs" />
+    <Compile Include="TestModularInputs.cs" />
+    <Compile Include="TestRequestException.cs" />
+    <Compile Include="TestResource.cs" />
+    <Compile Include="TestResourceEndpoint.cs" />
+    <Compile Include="TestResourceName.cs" />
+    <Compile Include="TestSavedSearchAttributes.cs" />
+    <Compile Include="TestSavedSearchCollection.cs" />
+    <Compile Include="TestServer.cs" />
+    <Compile Include="TestServerMessageCollection.cs" />
+    <Compile Include="TestStoragePasswordCollection.cs" />
+    <Content Include="Data\Client\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Client\IndexCollection.GetAsync.xml">
+    <Content Include="Data\ModularInputs\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Client\SearchJobSummary.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Client\SearchResults.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

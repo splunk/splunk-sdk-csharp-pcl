@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2013 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -16,15 +16,12 @@
 
 namespace Splunk.Examples.Submit
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System;
     using System.Linq;
     using System.Net;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client;
-    using Splunk.Client.Helper;
 
     /// <summary>
     /// An example program to submit events into Splunk.
@@ -68,18 +65,22 @@ namespace Splunk.Examples.Submit
             //string source = "*\\splunkd.log";
             //string sourceType = "splunkd";
 
-            if (service.GetIndexesAsync().Result.Any(a => a.Name == indexName))
+            Index index = await service.Indexes.GetOrNullAsync("indexName");
+
+            if (index != null)
             {
-                await service.RemoveIndexAsync(indexName);
+                await index.RemoveAsync();
             }
 
-            Index index = await service.CreateIndexAsync(indexName);
+            index = await service.Indexes.CreateAsync(indexName);
+            Exception exception = null;
+
             try
             {
                 await index.EnableAsync();
 
-                Receiver receiver = service.Receiver;
-                ReceiverArgs args = new ReceiverArgs()
+                Transmitter receiver = service.Transmitter;
+                TransmitterArgs args = new TransmitterArgs()
                 {
                     Index = indexName,
                     ////Source = source,
@@ -99,9 +100,16 @@ namespace Splunk.Examples.Submit
 
                 Console.WriteLine(results);              
             }
-            finally
+            catch (Exception e)
             {
-                service.RemoveIndexAsync(indexName).Wait();
+                exception = e;
+            }
+
+            await index.RemoveAsync();
+
+            if (exception != null)
+            {
+                throw exception;
             }
         }
     }

@@ -39,8 +39,6 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class JobArgs : Args<JobArgs>
     {
-        #region Properties
-
         /// <summary>
         /// Gets or sets a value that specifies how long a <see cref="Job"/> 
         /// may be inactive before it is automatically cancelled.
@@ -336,7 +334,5 @@ namespace Splunk.Client
         [DataMember(Name = "timeout", EmitDefaultValue = false)]
         public int? Timeout
         { get; set; }
-
-        #endregion
     }
 }

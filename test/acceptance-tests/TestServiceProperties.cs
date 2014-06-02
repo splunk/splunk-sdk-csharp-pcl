@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,14 +14,16 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using Splunk.Client;
-    using Splunk.Client.Helper;
+    
     using Xunit;
     using System.Threading.Tasks;
 
@@ -33,7 +35,7 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test the expected service capabilities.
         /// </summary>
-        [Trait("class", "ServiceCapabilities")]
+        [Trait("acceptance-test", "Splunk.Client.ServiceCapabilities")]
         [Fact]
         public async Task ServiceCapabilities()
         {
@@ -70,7 +72,7 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Tests the getting of service info (there are no set arguments)
         /// </summary>
-        [Trait("class", "ServiceInfo")]
+        [Trait("acceptance-test", "Splunk.Client.ServiceInfo")]
         [Fact]
         public async Task ServiceInfo()
         {
@@ -107,17 +109,16 @@ namespace Splunk.Client.UnitTesting
         /// <summary>
         /// Test login
         /// </summary>
-        [Trait("class", "ServiceLogin")]
+        [Trait("acceptance-test", "Splunk.Client.ServiceLogin")]
         [Fact]
         public async Task ServiceLogin()
         {
             Service service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
-            ConfigurationCollection config = null;
 
             // Not logged in, should fail with 401
             try
             {
-                config = await service.GetConfigurationsAsync();
+                await service.Configurations.GetAllAsync();
                 Assert.True(false, "Expected AuthenticationFailureException");
             }
             catch (AuthenticationFailureException e)
@@ -127,14 +128,13 @@ namespace Splunk.Client.UnitTesting
 
             // Logged in, request should succeed
             await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
-            config = await service.GetConfigurationsAsync();
-            Assert.NotNull(config);
+            await service.Configurations.GetAllAsync();
 
             //// Logout, the request should fail with a 401
             service.LogoffAsync().Wait();
             try
             {
-                config = await service.GetConfigurationsAsync();
+                await service.Configurations.GetAllAsync();
                 Assert.True(false, "Expected AuthenticationFailureException");
             }
             catch (AuthenticationFailureException ex)
@@ -151,11 +151,9 @@ namespace Splunk.Client.UnitTesting
         [Fact]
         public async Task Settings()
         {
-
             Service service = await SDKHelper.CreateService();
 
-
-            ServerSettings settings = service.Server.GetSettingsAsync().Result;
+            ServerSettings settings = await service.Server.GetSettingsAsync();
             string dummyString;
             bool dummBool;
             int dummyInt;
@@ -193,10 +191,10 @@ namespace Splunk.Client.UnitTesting
             serverSettingValues.ServerName = "sdk-test-name";
             serverSettingValues.SessionTimeout = "2h";
             //settings.StartWebServer(!originalStartWeb);
-            settings.UpdateAsync(serverSettingValues).Wait();
+            await service.Server.UpdateSettingsAsync(serverSettingValues);
 
             // changing ports require a restart
-            await TestHelper.RestartServer();
+            await TestHelper.RestartServerAsync();
 
 
             service = await SDKHelper.CreateService();
@@ -220,10 +218,10 @@ namespace Splunk.Client.UnitTesting
             serverSettingValues.ServerName = originalServerName;
             serverSettingValues.SessionTimeout = originalTimeout;
             serverSettingValues.StartWebServer = originalStartWeb;
-            settings.UpdateAsync(serverSettingValues).Wait();
+            await service.Server.UpdateSettingsAsync(serverSettingValues);
 
             // changing ports require a restart
-            await TestHelper.RestartServer();
+            await TestHelper.RestartServerAsync();
             service = await SDKHelper.CreateService();
 
             settings = service.Server.GetSettingsAsync().Result;
@@ -236,5 +234,24 @@ namespace Splunk.Client.UnitTesting
             Assert.Equal(originalTimeout, settings.SessionTimeout);
             Assert.Equal(originalStartWeb, settings.StartWebServer);
         }
+
+        ///// <summary>
+        ///// Returns a value dermining whether a string is in the
+        ///// non-ordered array of strings.
+        ///// </summary>
+        ///// <param name="array">The array to scan</param>
+        ///// <param name="value">The value to look for</param>
+        ///// <returns>True or false</returns>
+        //private bool Contains(string[] array, string value)
+        //{
+        //    for (int i = 0; i < array.Length; ++i)
+        //    {
+        //        if (array[i].Equals(value))
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
     }
 }

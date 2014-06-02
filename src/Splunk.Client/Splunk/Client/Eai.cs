@@ -55,14 +55,6 @@ namespace Splunk.Client
             get { return this.GetValue("Attributes", EaiAttributes.Converter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Setup
-        {
-            get { return this.GetValue("Setup", StringConverter.Instance); }
-        }
-
         #endregion
     }
 }

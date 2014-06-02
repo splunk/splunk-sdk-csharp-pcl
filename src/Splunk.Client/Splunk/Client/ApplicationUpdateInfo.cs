@@ -15,39 +15,35 @@
  */
 
 //// TODO:
-//// [ ] Contracts
-//// [ ] Documentation
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Net;
     using System.Threading.Tasks;
 
     /// <summary>
     /// 
     /// </summary>
-    public sealed class ApplicationUpdateInfo : Entity<ApplicationUpdateInfo>
+    public class ApplicationUpdateInfo : Resource
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationUpdateInfo"/>
+        /// Initializes a new instance of the <see cref="ApplicationUpdateInfo"/> 
         /// class.
         /// </summary>
-        /// <param name="context">
-        /// An object representing a Splunk server session.
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
         /// </param>
-        /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
-        /// </param>
-        /// <param name="name">
-        /// The name of a Splunk application.
-        /// </param>
-        internal ApplicationUpdateInfo(Context context, Namespace ns, string name)
-            : base(context, ns, new ResourceName(ApplicationCollection.ClassResourceName, name, "update"))
-        { }
+        internal ApplicationUpdateInfo(AtomFeed feed)
+        {
+            this.Initialize(feed);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -64,17 +60,17 @@ namespace Splunk.Client
         ///   <description>Description</description>
         /// </listheader>
         /// <item>
-        ///   <term><see cref="Application.GetUpdateInfoAsync"/></term>
+        ///   <term><see cref="Application.PackageAsync"/></term>
         ///   <description>
-        ///   Asynchronously retrieves update information for the current <see 
-        ///   cref="Application"/>.
-        /// </description>
+        ///   Asychronously packages the current Splunk application into an 
+        ///   archive file.
+        ///   </description>
         /// </item>
         /// <item>
-        ///   <term><see cref="Service.GetApplicationUpdateInfoAsync"/></term>
+        ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
         ///   <description>
-        ///   Asynchronously retrieves update information for an <see cref=
-        ///   "Application"/> identified by name.
+        ///   Asychronously packages the named Splunk application into an 
+        ///   archive file.
         ///   </description>
         /// </item>
         /// </list>
@@ -91,7 +87,7 @@ namespace Splunk.Client
         /// </summary>
         public Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
@@ -102,7 +98,7 @@ namespace Splunk.Client
         /// </remarks>
         public Update_t Update
         {
-            get { return this.GetValue("Update", Update_t.Converter.Instance); }
+            get { return this.Content.GetValue("Update", Update_t.Converter.Instance); }
         }
 
         /// <summary>
@@ -111,7 +107,7 @@ namespace Splunk.Client
         /// </summary>
         public bool Refresh
         {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         #endregion

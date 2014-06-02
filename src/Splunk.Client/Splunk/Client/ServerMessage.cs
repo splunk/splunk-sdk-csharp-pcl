@@ -17,25 +17,61 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
-//// [X] Property accessors should not throw, but return default value if the underlying field is undefined (?)
-////     Guaranteed across the code base by ExpandoAdapter.GetValue.
 
 namespace Splunk.Client
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
     
     /// <summary>
-    /// Provides an object representation of a Splunk server message resource.
+    /// Provides an object representation of a Splunk server message entity.
     /// </summary>
-    public sealed class ServerMessage : Entity<ServerMessage>
+    public class ServerMessage : Entity, IServerMessage
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerMessage"/> class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// <param name="name">
+        /// An object identifying a Splunk resource within <paramref name=
+        /// "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
+        protected internal ServerMessage(Service service, string name)
+            : this(service.Context, service.Namespace, name)
+        { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerMessage"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal ServerMessage(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerMessage"/> class.
@@ -47,7 +83,7 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
-        /// The name of the <see cref="ServerMessage"/>
+        /// The name of the <see cref="ServerMessage"/>.
         /// </param>
         /// <exception cref="ArgumentException">
         /// <paramref name="name"/> is <c>null</c> or empty.
@@ -58,7 +94,7 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        internal ServerMessage(Context context, Namespace ns, string name)
+        protected internal ServerMessage(Context context, Namespace ns, string name)
             : base(context, ns, ServerMessageCollection.ClassResourceName, name)
         { }
 
@@ -96,28 +132,28 @@ namespace Splunk.Client
 
         #region Properties
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
+        public Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        /// <inheritdoc/>
         public ServerMessageSeverity Severity
         {
-            get { return this.GetValue("Severity", EnumConverter<ServerMessageSeverity>.Instance); }
+            get { return this.Content.GetValue("Severity", EnumConverter<ServerMessageSeverity>.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <inheritdoc/>
         public string Text
         {
-            get { return this.GetValue("Message", StringConverter.Instance); }
+            get { return this.Content.GetValue("Message", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public long TimeCreatedEpochSecs
+        /// <inheritdoc/>
+        public DateTime TimeCreated
         {
-            get { return this.GetValue("TimeCreatedEpochSecs", Int64Converter.Instance); }
+            get { return this.Content.GetValue("TimeCreatedEpochSecs", UnixDateTimeConverter.Instance); }
         }
 
         #endregion
@@ -125,82 +161,28 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// 
+        /// Unsupported. This method is not supported by the <see cref=
+        /// "ServerMessage"/> class because it is not supported by the <a href=
+        /// "http://goo.gl/S13BE0">Splunk messages/{name} endpoint</a>.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="text"></param>
         /// <returns></returns>
-        public async Task CreateAsync(ServerMessageSeverity type, string text)
+        public override async Task<bool> UpdateAsync(params Argument[] arguments)
         {
-            var resourceName = ServerMessageCollection.ClassResourceName;
+            return await this.UpdateAsync(arguments.AsEnumerable());
+        }
 
-            var args = new CreationArgs
+        /// <summary>
+        /// Unsupported. This method is not supported by the <see cref=
+        /// "ServerMessage"/> class because it is not supported by the <a href=
+        /// "http://goo.gl/S13BE0">Splunk messages/{name} endpoint</a>.
+        /// </summary>
+        /// <returns></returns>
+        public override Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
+        {
+            throw new NotSupportedException("The Splunk messages/{name} endpoint does not provide an update method.")
             {
-                Name = this.Name,
-                Type = type,
-                Text = text
+                HelpLink = "http://docs.splunk.com/Documentation/Splunk/latest/RESTAPI/RESTsystem#messages.2F.7Bname.7D"
             };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateSnapshotAsync(response);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public async Task RemoveAsync()
-        {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
-        }
-
-        #endregion
-
-        #region Types
-
-        /// <summary>
-        /// Provides arguments for creating a new <see cref="ServerMessage"/>.
-        /// </summary>
-        /// <remarks>
-        /// <para><b>References:</b></para>
-        /// <list type="number">
-        /// <item><description>
-        ///   <a href="http://goo.gl/WlDoZx">REST API Reference: POST messages</a>.
-        /// </description></item>
-        /// </list>
-        /// </remarks>
-        public class CreationArgs : Args<CreationArgs>
-        {
-            #region Properties
-
-            /// <summary>
-            /// Gets or sets the name of a <see cref="ServerMessage"/>.
-            /// </summary>
-            [DataMember(Name = "name", IsRequired = true)]
-            public string Name
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets the type of a <see cref="ServerMessage"/>.
-            /// </summary>
-            [DataMember(Name = "severity", IsRequired = true)]
-            public ServerMessageSeverity Type
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets the text of a <see cref="ServerMessage"/>.
-            /// </summary>
-            [DataMember(Name = "value", IsRequired = true)]
-            public string Text
-            { get; set; }
-
-            #endregion
         }
 
         #endregion

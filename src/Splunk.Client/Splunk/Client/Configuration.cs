@@ -15,12 +15,13 @@
  */
 
 //// TODO:
-//// [ ] Contracts
+//// [O] Contracts
 //// [O] Documentation
-//// [O] Properties & Methods
 
 namespace Splunk.Client
 {
+    using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Net;
     using System.Net.Http;
@@ -74,9 +75,28 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class Configuration : EntityCollection<Configuration, ConfigurationStanza>
+    public class Configuration : EntityCollection<ConfigurationStanza>, IConfiguration<ConfigurationStanza>
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configuration"/> class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <param name="fileName">
+        /// Name of a configuration file.
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="fileName"/> is <c>null</c> or empty.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
+        /// </exception>
+        protected internal Configuration(Service service, string fileName)
+            : this(service.Context, service.Namespace, fileName)
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Configuration"/> class.
@@ -91,9 +111,29 @@ namespace Splunk.Client
         /// Name of the configuration file to be represented by the current
         /// instance.
         /// </param>
-        internal Configuration(Context context, Namespace ns, string fileName)
+        protected internal Configuration(Context context, Namespace ns, string fileName)
             : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName))
         { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Configuration"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal Configuration(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
@@ -131,33 +171,78 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates the configuration file represented by this
-        /// instance.
+        /// Asynchronously creates a new configuration stanza in the current 
+        /// <see cref="Configuration"/>.
         /// </summary>
+        /// <param name="stanzaName">
+        /// Name of the configuration stanza to create.
+        /// </param>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/CBWes7">POST 
-        /// properties</a> endpoint to create the configuration file represented
-        /// by this instance.
+        /// This method uses the <a href="http://goo.gl/jae44k">POST 
+        /// properties/{file_name}</a> endpoint to create the configuration
+        /// stanza identified by <paramref name="stanzaName"/>.
         /// </remarks>
-        public async Task CreateAsync()
+        public override async Task<ConfigurationStanza> CreateAsync(IEnumerable<Argument> arguments)
         {
-            var args = new Argument[] { new Argument("__conf", this.ResourceName.Title) };
+            //// These gymnastics are required because:
+            //// * The POST properties/{file_name} endpoint returns nothing in the
+            ////   response body. 
+            //// * This method is obliged to return a ConfigurationStanza and we can
+            ////   do that, if we can do that without an extra round trip by probing
+            ////   arguments for the stanza name.
 
-            using (var response = await this.Context.PostAsync(this.Namespace, ConfigurationCollection.ClassResourceName, args))
+            foreach (var argument in arguments)
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                if (argument.Name == "__stanza")
+                {
+                    await base.CreateAsync(arguments);
+                    return new ConfigurationStanza(this.Context, this.Namespace, this.Name, argument.Name);
+                }
             }
+
+            //// We throw this exception instead of sending a request we know will fail due to the missing __stanza
+            //// argument.
+
+            throw new ArgumentException("The arguments list does not include '__stanza' as required by the POST properties/{file_name} endpoint.")
+            {
+                HelpLink = "http://docs.splunk.com/Documentation/Splunk/latest/RESTAPI/RESTconfig#POST_properties.2F.7Bfile_name.7D"
+            };
         }
 
         /// <summary>
-        /// Asynchronously retrieves a setting from the configuration file 
-        /// represented by this instance.
+        /// Asynchronously creates a new configuration stanza in the current 
+        /// <see cref="Configuration"/>.
+        /// </summary>
+        /// <param name="stanzaName">
+        /// Name of the configuration stanza to create.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/jae44k">POST 
+        /// properties/{file_name}</a> endpoint to create the configuration
+        /// stanza identified by <paramref name="stanzaName"/>.
+        /// </remarks>
+        public async Task<ConfigurationStanza> CreateAsync(string stanzaName)
+        {
+            var arguments = new Argument[] { new Argument("__stanza", stanzaName) };
+
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+            }
+
+            return new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves a setting from a configuration stanza in
+        /// the current <see cref="Configuration"/>.
         /// </summary>
         /// <param name="stanzaName">
         /// Name of a configuration stanza in the current instance.
         /// </param>
         /// <param name="keyName">
-        /// Name of a configuration setting in <paramref name="stanzaName"/>.
+        /// Name of a setting in the <see cref="ConfigurationStanza"/> identified
+        /// by <paramref name="stanzaName"/>.
         /// </param>
         /// <returns>
         /// An object representing the configuration setting identified by <paramref 
@@ -168,98 +253,26 @@ namespace Splunk.Client
         /// properties/{file_name}/{stanza_name}/{key_name}</a> endpoint to 
         /// construct the <see cref="ConfigurationSetting"/> it returns.
         /// </remarks>
-        public async Task<ConfigurationSetting> GetSettingAsync(string stanzaName, string keyName)
+        public async Task<string> GetSettingAsync(string stanzaName, string keyName)
         {
-            var resource = new ConfigurationSetting(this.Context, this.Namespace, this.ResourceName.Title, stanzaName, 
-                keyName);
-            await resource.GetAsync();
-            return resource;
+            var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
+            var value = await resourceEndpoint.GetAsync(keyName);
+            return value;
         }
 
         /// <summary>
-        /// Asynchronously updates a configuration stanza from the configuration
-        /// file represented by this instance.
+        /// Asynchronously removes a configuration stanza from the current <see
+        /// cref="Configuration">.
         /// </summary>
         /// <param name="stanzaName">
-        /// Name of a <see cref="ConfigurationStanza"/> in the current <see 
-        /// cref="Configuration"/>.
-        /// </param>
-        /// <param name="keyName">
-        /// Name of a <see cref="ConfigurationSetting"/> in <paramref name=
-        /// "stanzaName"/>.
-        /// </param>
-        /// <param name="value">
-        /// A string value for <paramref name="keyName"/>.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/w742jw">POST 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
-        /// setting identified by <paramref name="stanzaName"/> and <paramref 
-        /// name="keyName"/>.
-        /// </remarks>
-        public async Task<ConfigurationSetting> UpdateSettingAsync(string stanzaName, string keyName, string value)
-        {
-            var resource = new ConfigurationSetting(this.Context, this.Namespace, this.ResourceName.Title, stanzaName, 
-                keyName);
-            await resource.UpdateAsync(value);
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously creates a configuration stanza in the configuration
-        /// file represented by this instance.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of the configuration stanza to be created.
-        /// </param>
-        /// <returns>
-        /// An object representing the newly created configuration stanza.
-        /// </returns>
-        public async Task<ConfigurationStanza> CreateStanzaAsync(string stanzaName)
-        {
-            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
-            await resource.CreateAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves a configuration stanza from the configuration
-        /// file represented by this instance.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of the configuration stanza to be retrieved.
-        /// </param>
-        /// <returns>
-        /// An object representing the configuration stanza identified by <paramref 
-        /// name="stanzaName"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/dpbuhQ">GET 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to construct the 
-        /// <see cref="ConfigurationStanza"/> identified by <paramref name=
-        /// "stanzaName"/>.
-        /// </remarks>
-        public async Task<ConfigurationStanza> GetStanzaAsync(string stanzaName)
-        {
-            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously removes a configuration stanza from the configuration
-        /// file represented by this instance.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of a configuration stanza in the current <see cref=
-        /// "Configuration"/>.
+        /// Name of a configuration stanza to remove.
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
         /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
         /// stanza identified by <paramref name="stanzaName"/>.
         /// </remarks>
-        public async Task RemoveStanzaAsync(string stanzaName)
+        public async Task RemoveAsync(string stanzaName)
         {
             var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
             await resource.RemoveAsync();
@@ -267,7 +280,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously updates a configuration stanza from the configuration
-        /// file represented by this instance.
+        /// file represented by the current instance.
         /// </summary>
         /// <param name="stanzaName">
         /// Name of a configuration stanza in the current <see cref=
@@ -282,11 +295,38 @@ namespace Splunk.Client
         /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
         /// stanza identified by <paramref name="stanzaName"/>.
         /// </remarks>
-        public async Task<ConfigurationStanza> UpdateStanzaAsync(string stanzaName, params Argument[] settings)
+        public async Task<ConfigurationStanza> UpdateAsync(string stanzaName, params Argument[] settings)
         {
-            var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
-            await resource.UpdateAsync(settings);
-            return resource;
+            var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
+            await resourceEndpoint.UpdateAsync(settings);
+            return resourceEndpoint;
+        }
+
+        /// <summary>
+        /// Asynchronously updates a configuration stanza from the configuration
+        /// file represented by the current <see cref="Configuration">.
+        /// </summary>
+        /// <param name="stanzaName">
+        /// Name of a <see cref="ConfigurationStanza"/> in the current <see 
+        /// cref="Configuration"/>.
+        /// </param>
+        /// <param name="keyName">
+        /// Name of a setting in the <see cref="ConfigurationStanza"/> identified
+        /// by <paramref name="stanzaName"/>.
+        /// </param>
+        /// <param name="value">
+        /// A string value for <paramref name="keyName"/>.
+        /// </param>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/w742jw">POST 
+        /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
+        /// setting identified by <paramref name="stanzaName"/> and <paramref 
+        /// name="keyName"/>.
+        /// </remarks>
+        public async Task UpdateSettingAsync(string stanzaName, string keyName, string value)
+        {
+            var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
+            await resourceEndpoint.UpdateAsync(keyName, value);
         }
 
         #endregion

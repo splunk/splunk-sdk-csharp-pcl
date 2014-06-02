@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2013 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -16,15 +16,12 @@
 
 namespace Splunk.Examples.Submit
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System;
     using System.Linq;
     using System.Net;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client;
-    using Splunk.Client.Helper;
 
     /// <summary>
     /// An example program to list apps installed on the server.
@@ -62,8 +59,9 @@ namespace Splunk.Examples.Submit
 
             // Load connection info for Splunk server in .splunkrc file.
             Console.WriteLine("List of Apps:");
+            await service.Applications.GetAllAsync();
 
-            foreach (var app in await service.GetApplicationsAsync())
+            foreach (var app in service.Applications)
             {
                 Console.WriteLine(app.Name);
                 // Write a seperator between the name and the description of an app.

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,18 +14,14 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.UnitTests
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using System.Xml.Linq;
-    using Splunk.Client.Helper;
+    using Splunk.Client.Helpers;
     using Xunit;
 
     public class TestContext
     {
-        [Trait("class", "Context")]
+        [Trait("acceptance-test", "Splunk.Client.Context")]
         [Fact]
         public void CanConstructContext()
         {

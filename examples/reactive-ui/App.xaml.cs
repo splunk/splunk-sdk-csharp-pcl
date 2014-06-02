@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -16,11 +16,11 @@
 
 namespace Splunk.Client.Examples.ReactiveUI
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System.Net;
     using System.Windows;
 
-    using Splunk.Client;
-    using Splunk.Client.Helper;
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -48,6 +48,7 @@ namespace Splunk.Client.Examples.ReactiveUI
             {
                 return true;
             };
+
             this.Service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
         }
 

@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Client
+namespace Splunk.Client.UnitTests
 {
     using System;
     using System.Collections.Generic;
@@ -25,9 +25,9 @@ namespace Splunk.Client
 
     public class TestJobArgs
     {
-        [Trait("class", "Args")]
+        [Trait("unit-test", "Splunk.Client.JobArgs")]
         [Fact]
-        void CanConstruct()
+        void CanConstructJobArgs()
         {
             var args = new JobArgs();
             
@@ -68,7 +68,7 @@ namespace Splunk.Client
             Assert.Equal(0, args.Count());
         }
 
-        [Trait("class", "Args")]
+        [Trait("unit-test", "Splunk.Client.JobArgs")]
         [Fact]
         void CanSetEveryValue()
         {
@@ -112,9 +112,9 @@ namespace Splunk.Client
                 "auto_finalize_ec=2; " +
                 "auto_pause=3; " + 
                 "earliest_time=some_unchecked_string; " + 
-                "enable_lookups=f; " +
+                "enable_lookups=0; " +
                 "exec_mode=blocking; " +
-                "force_bundle_replication=t; " +
+                "force_bundle_replication=1; " +
                 "id=some_unchecked_string; " +
                 "index_earliest=some_unchecked_string; " +
                 "index_latest=some_unchecked_string; " +
@@ -124,20 +124,20 @@ namespace Splunk.Client
                 "namespace=some_unchecked_string; " +
                 "now=some_unchecked_string; " +
                 "reduce_freq=8; " +
-                "reload_macros=f; " +
+                "reload_macros=0; " +
                 "remote_server_list=some_unchecked_string; " +
                 "reuse_max_seconds_ago=9; " +
                 "rf=some_unchecked_string; " +
                 "rf=some_other_uncheck_string; " +
-                "rt_blocking=t; " +
-                "rt_indexfilter=t; " +
+                "rt_blocking=1; " +
+                "rt_indexfilter=1; " +
                 "rt_maxblocksecs=6; " +
                 "rt_queue_size=7; " +
                 "search_listener=some_unchecked_string; " +
                 "search_mode=realtime; " +
-                "spawn_process=f; " +
+                "spawn_process=0; " +
                 "status_buckets=10; " +
-                "sync_bundle_replication=t; " +
+                "sync_bundle_replication=1; " +
                 "time_format=some_unchecked_string; " +
                 "timeout=11", 
                 args.ToString());
@@ -148,9 +148,9 @@ namespace Splunk.Client
                     new Argument("auto_finalize_ec", "2"),
                     new Argument("auto_pause", "3"),
                     new Argument("earliest_time", "some_unchecked_string"),
-                    new Argument("enable_lookups", "f"),
+                    new Argument("enable_lookups", 0),
                     new Argument("exec_mode", "blocking"),
-                    new Argument("force_bundle_replication", "t"),
+                    new Argument("force_bundle_replication", 1),
                     new Argument("id", "some_unchecked_string"),
                     new Argument("index_earliest", "some_unchecked_string"),
                     new Argument("index_latest", "some_unchecked_string"),
@@ -160,20 +160,20 @@ namespace Splunk.Client
                     new Argument("namespace", "some_unchecked_string"),
                     new Argument("now", "some_unchecked_string"),
                     new Argument("reduce_freq", "8"),
-                    new Argument("reload_macros", "f"),
+                    new Argument("reload_macros", 0),
                     new Argument("remote_server_list", "some_unchecked_string"),
                     new Argument("reuse_max_seconds_ago", "9"),
                     new Argument("rf", "some_unchecked_string"),
                     new Argument("rf", "some_other_uncheck_string"),
-                    new Argument("rt_blocking", "t"),
-                    new Argument("rt_indexfilter", "t"),
+                    new Argument("rt_blocking", 1),
+                    new Argument("rt_indexfilter", 1),
                     new Argument("rt_maxblocksecs", "6"),
                     new Argument("rt_queue_size", "7"),
                     new Argument("search_listener", "some_unchecked_string"),
                     new Argument("search_mode", "realtime"),
-                    new Argument("spawn_process", "f"),
+                    new Argument("spawn_process", 0),
                     new Argument("status_buckets", "10"),
-                    new Argument("sync_bundle_replication", "t"),
+                    new Argument("sync_bundle_replication", 1),
                     new Argument("time_format", "some_unchecked_string"),
                     new Argument("timeout", "11")
                 },

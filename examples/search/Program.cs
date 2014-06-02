@@ -19,7 +19,6 @@ namespace Splunk.Client.Examples.Search
     using Splunk.Client.Helpers;
     using System;
     using System.Net;
-    using System.Reactive.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -48,9 +47,11 @@ namespace Splunk.Client.Examples.Search
             // Simple oneshot search
             using (SearchResultStream searchResults = await service.SearchOneshotAsync("search index=_internal | head 5"))
             {
-                foreach (SearchResult record in searchResults.ToEnumerable())
+                foreach (SearchResult record in searchResults)
                 {
+                    Console.WriteLine("===============================");
                     Console.WriteLine(record);
+                    Console.WriteLine();
                 }
             }
         }

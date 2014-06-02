@@ -47,8 +47,6 @@ namespace search_realtime
 
             });
 
-#if false // TODO: Restore this once we've got an enumerator
-
             SearchResultStream searchResults;
 
             while (!tokenSource.IsCancellationRequested)
@@ -57,7 +55,7 @@ namespace search_realtime
                 Console.WriteLine("fieldnames:" + searchResults.FieldNames.Count);
                 Console.WriteLine("fieldname list:" + string.Join(";", searchResults.FieldNames.ToArray()));
 
-                foreach (var result in searchResults.ToEnumerable())
+                foreach (var result in searchResults)
                 {
                     Console.WriteLine("result:" + result.ToString());
                 }
@@ -65,7 +63,6 @@ namespace search_realtime
                 Console.WriteLine("");
                 await Task.Delay(2000, tokenSource.Token);
             }
-#endif
         }
     }
 }

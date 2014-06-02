@@ -5,7 +5,7 @@ namespace search_export
 
     using System;
     using System.Threading.Tasks;
-
+    using System.Linq;
     class Program
     {
         static void Main(string[] args)
@@ -21,26 +21,26 @@ namespace search_export
         {
             await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
 
-
             //// Search : Export Previews
-
-            using (SearchPreviewStream earchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
+            using (SearchPreviewStream searchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
             {
-#if false // TODO: Restore this after we've got an enumerator
                 int previewNumber = 0;
 
-                foreach (var searchPreview in searchPreviewStream)
+                //Console.WriteLine("*************" + searchPreviewStream.Count());
+                foreach (Task<SearchPreview> task in searchPreviewStream)
                 {
-                    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, searchPreview.IsFinal ? "final" : "partial");
+                    previewNumber++;
+                    Console.WriteLine("==================== {0}=================", previewNumber);
+                    SearchPreview preview = await task;
                     int recordNumber = 0;
-
-                    foreach (var result in searchPreview.SearchResults)
+                    foreach (SearchResult result in preview.SearchResults)
                     {
                         Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
+                        Console.WriteLine("===============" + result.ToString().Substring(0, 200));
                     }
                 }
-#endif
             }
         }
     }
 }
+

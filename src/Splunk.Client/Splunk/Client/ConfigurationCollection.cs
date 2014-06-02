@@ -142,6 +142,14 @@ namespace Splunk.Client
             return await this.CreateAsync(arguments);
         }
 
+        /// <inheritdoc/>
+        public virtual async Task<ConfigurationStanza> GetAsync(string fileName, string stanzaName)
+        {
+            var stanza = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
+            await stanza.GetAsync();
+            return stanza;
+        }
+
         /// <summary>
         /// Unsupported. This method is not supported by the <see cref=
         /// "ConfigurationCollection"/> class because it is not supported by 

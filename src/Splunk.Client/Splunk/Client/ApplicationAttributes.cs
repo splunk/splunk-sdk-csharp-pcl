@@ -50,7 +50,7 @@ namespace Splunk.Client
         /// an application to Splunkbase.
         /// </summary>
         [DataMember(Name = "author", EmitDefaultValue = false)]
-        public string Author
+        public string ApplicationAuthor
         { get; set; }
 
         /// <summary>

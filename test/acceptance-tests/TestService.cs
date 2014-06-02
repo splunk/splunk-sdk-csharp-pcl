@@ -47,7 +47,7 @@ namespace Splunk.Client.UnitTests
 
         #region Access Control
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Saved Searches")]
+        [Trait("acceptance-test", "Splunk.Client.Service: Access control")]
         [Fact]
         public async Task  CanCrudStoragePasswords()
         {
@@ -55,15 +55,16 @@ namespace Splunk.Client.UnitTests
             {
                 using (var service = await SDKHelper.CreateService(ns))
                 {
-                    StoragePasswordCollection sps = service.GetStoragePasswordsAsync().Result;
+                    StoragePasswordCollection sps = service.StoragePasswords;
+                    await sps.GetAllAsync();
 
-                    //foreach (StoragePassword pwd in sps)
-                    //{
-                    //    if (pwd.Username.Contains("delete-me-"))
-                    //    {
-                    //        await service.RemoveStoragePasswordAsync(pwd.Username, pwd.Realm);
-                    //    }
-                    //}
+                    foreach (StoragePassword sp in sps)
+                    {
+                        if (sp.Username.Contains("delete-me-"))
+                        {
+                            await sp.RemoveAsync();
+                        }
+                    }
 
                     //// Create and change the password for 50 StoragePassword instances
 
@@ -73,7 +74,7 @@ namespace Splunk.Client.UnitTests
 
                     for (int i = 0; i < 50; i++)
                     {
-                        StoragePassword storagePassword = await service.CreateStoragePasswordAsync("foobar", name + i, realm[i % realm.Length]);
+                        StoragePassword storagePassword = await sps.CreateAsync("foobar", name + i, realm[i % realm.Length]);
                         Console.WriteLine("print:"+storagePassword.Name + "," + storagePassword.Realm);
                         var password = Membership.GeneratePassword(15, 2);
                         Console.WriteLine("password:" + password);
@@ -85,16 +86,13 @@ namespace Splunk.Client.UnitTests
 
                     //// Fetch the entire collection of StoragePassword instances
 
-                    var collection = await service.GetStoragePasswordsAsync(new StoragePasswordCollectionArgs()
-                    {
-                        Count = 0
-                    });
+                    await sps.GetAllAsync();
 
                     //// Verify and then remove each of the StoragePassword instances we created
 
                     for (int i = 0; i < 50; i++)
                     {
-                        Assert.Contains(storagePasswords[i], collection);
+                        Assert.Contains(storagePasswords[i], sps);
                         await storagePasswords[i].RemoveAsync();
                     }
                 }
@@ -140,9 +138,7 @@ namespace Splunk.Client.UnitTests
             {
                 using (var service = await SDKHelper.CreateService(ns))
                 {
-                    ApplicationCollection collection;
-
-                    var args = new ApplicationCollectionArgs()
+                    var args = new ApplicationCollection.Filter()
                     {
                         Offset = 0,
                         Count = 10
@@ -150,10 +146,10 @@ namespace Splunk.Client.UnitTests
 
                     do
                     {
-                        collection = await service.GetApplicationsAsync(args);
-                        await collection.ReloadAsync();
+                        await service.Applications.GetSliceAsync(args);
+                        await service.Applications.ReloadAsync();
 
-                        foreach (var application in collection)
+                        foreach (var application in service.Applications)
                         {
                             string value;
 
@@ -169,7 +165,7 @@ namespace Splunk.Client.UnitTests
                             Assert.DoesNotThrow(() => value = string.Format("Links = {0}", application.Links));
                             Assert.DoesNotThrow(() => value = string.Format("Name = {0}", application.Name));
                             Assert.DoesNotThrow(() => value = string.Format("Namespace = {0}", application.Namespace));
-                            Assert.DoesNotThrow(() => value = string.Format("Published = {0}", application.Published));
+                            // Assert.DoesNotThrow(() => value = string.Format("Published = {0}", application.Published));
                             Assert.DoesNotThrow(() => value = string.Format("ResourceName = {0}", application.ResourceName));
                             Assert.DoesNotThrow(() => value = string.Format("StateChangeRequiresRestart = {0}", application.StateChangeRequiresRestart));
                             Assert.DoesNotThrow(() => value = string.Format("Updated = {0}", application.Updated));
@@ -190,9 +186,9 @@ namespace Splunk.Client.UnitTests
                             }
                         }
 
-                        args.Offset += collection.Pagination.ItemsPerPage;
+                        args.Offset += service.Applications.Pagination.ItemsPerPage;
                     }
-                    while (args.Offset < collection.Pagination.TotalResults);
+                    while (args.Offset < service.Applications.Pagination.TotalResults);
 
                     //// Install, update, and remove the Splunk App for Twitter Data, version 2.3.1
 
@@ -204,7 +200,7 @@ namespace Splunk.Client.UnitTests
                         var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
                         Assert.True(File.Exists(path));
 
-                        var twitterApplication = await service.InstallApplicationAsync("twitter2", path, update: true);
+                        var twitterApplication = await service.Applications.InstallAsync("twitter2", path, update: true);
 
                         //// Other asserts on the contents of the update
 
@@ -258,7 +254,7 @@ namespace Splunk.Client.UnitTests
                         Visible = true
                     };
 
-                    var templatedApplication = await service.CreateApplicationAsync(name, "barebones", creationAttributes);
+                    var templatedApplication = await service.Applications.CreateAsync(name, "barebones", creationAttributes);
 
                     Assert.Equal(creationAttributes.ApplicationAuthor, templatedApplication.ApplicationAuthor);
                     Assert.Equal(true, templatedApplication.CheckForUpdates);
@@ -330,52 +326,66 @@ namespace Splunk.Client.UnitTests
 
                 //// Create
 
-                var configuration = await service.CreateConfigurationAsync(fileName);
+                var configuration = await service.Configurations.CreateAsync(fileName);
 
                 //// Read
 
-                configuration = await service.GetConfigurationAsync(fileName);
+                configuration = await service.Configurations.GetAsync(fileName);
 
                 //// Update the default stanza through a ConfigurationStanza object
 
-                var defaultStanza = await configuration.UpdateStanzaAsync("default", new Argument("foo", "1"), new Argument("bar", "2"));
-                await defaultStanza.UpdateAsync(new Argument("bar", "3"), new Argument("foobar", "4"));
-                await defaultStanza.UpdateSettingAsync("foobar", "5");
+                var defaultStanza = await configuration.UpdateAsync("default", new Argument("foo", 1), new Argument("bar", 2));
+                await defaultStanza.UpdateAsync(new Argument("bar", 3), new Argument("foobar", 4));
+                await defaultStanza.UpdateAsync("non_existent_setting", "some_value");
 
                 await defaultStanza.GetAsync(); // because the rest api does not return settings unless you ask for them
-                Assert.Equal(3, defaultStanza.Count);
-                List<ConfigurationSetting> settings;
+                Assert.Equal(4, defaultStanza.Count);
 
-                settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
-                Assert.Equal(1, settings.Count);
-                Assert.Equal("1", settings[0].Value);
+                ConfigurationSetting setting;
 
-                settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "bar").ToList();
-                Assert.Equal(1, settings.Count);
-                Assert.Equal("3", settings[0].Value);
+                setting = defaultStanza.SingleOrDefault(s => s.Title == "foo");
+                Assert.NotNull(setting);
+                Assert.Equal("1", setting.Value);
 
-                settings = defaultStanza.Select(setting => setting).Where(setting => setting.Name == "foobar").ToList();
-                Assert.Equal(1, settings.Count);
-                Assert.Equal("5", settings[0].Value);
+                setting = defaultStanza.SingleOrDefault(s => s.Title == "bar");
+                Assert.NotNull(setting);
+                Assert.Equal("3", setting.Value);
+
+                setting = defaultStanza.SingleOrDefault(s => s.Title == "foobar");
+                Assert.NotNull(setting);
+                Assert.Equal("4", setting.Value);
+
+                setting = defaultStanza.SingleOrDefault(s => s.Title == "non_existent_setting");
+                Assert.NotNull(setting);
+                Assert.Equal("some_value", setting.Value);
 
                 //// Create, read, update, and delete a stanza through the Service object
 
-                await service.CreateConfigurationStanzaAsync(fileName, "stanza");
+                ConfigurationStanza configurationStanza = await configuration.CreateAsync("stanza");
 
-                await service.UpdateConfigurationSettingsAsync(fileName, "stanza", new Argument("foo", "1"), new Argument("bar", "2"));
-                await service.UpdateConfigurationSettingAsync(fileName, "stanza", "bar", "3");
+                await configurationStanza.UpdateAsync(new Argument("foo", 1), new Argument("bar", 2));
+                await configurationStanza.UpdateAsync("bar", "3"); // succeeds because bar exists
+                setting = configurationStanza.SingleOrDefault(s => s.Title == "foo");
 
-                var stanza = await service.GetConfigurationStanzaAsync(fileName, "stanza");
+                Assert.NotNull(setting);
+                Assert.Equal("1", setting.Value);
 
-                settings = stanza.Select(setting => setting).Where(setting => setting.Name == "foo").ToList();
-                Assert.Equal(1, settings.Count);
-                Assert.Equal("1", settings[0].Value);
+                setting = configurationStanza.SingleOrDefault(s => s.Title == "bar");
+                Assert.NotNull(setting);
+                Assert.Equal("3", setting.Value);
 
-                settings = stanza.Select(setting => setting).Where(setting => setting.Name == "bar").ToList();
-                Assert.Equal(1, settings.Count);
-                Assert.Equal("3", settings[0].Value);
+                await configurationStanza.RemoveAsync();
 
-                await service.RemoveConfigurationStanzaAsync(fileName, "stanza");
+                try
+                {
+                    await configurationStanza.GetAsync();
+                    Assert.True(false);
+                }
+                catch (ResourceNotFoundException)
+                { }
+
+                configurationStanza = await configuration.GetOrNullAsync("stanza");
+                Assert.Null(configurationStanza);
             }
         }
 
@@ -385,7 +395,7 @@ namespace Splunk.Client.UnitTests
         {
             using (var service = await SDKHelper.CreateService())
             {
-                var collection = await service.GetConfigurationsAsync();
+                await service.Configurations.GetAllAsync();
             }
         }
 
@@ -397,11 +407,11 @@ namespace Splunk.Client.UnitTests
             {
                 //// Read the entire configuration system
 
-                var configurations = await service.GetConfigurationsAsync();
+                await service.Configurations.GetAllAsync();
 
-                foreach (var configuration in configurations)
+                foreach (var configuration in service.Configurations)
                 {
-                    await configuration.GetAsync();
+                    await configuration.GetAllAsync();
 
                     foreach (ConfigurationStanza stanza in configuration)
                     {
@@ -424,9 +434,9 @@ namespace Splunk.Client.UnitTests
         {
             using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
-                var collection = await service.GetIndexesAsync();
+                await service.Indexes.GetAllAsync();
 
-                foreach (var entity in collection)
+                foreach (var entity in service.Indexes)
                 {
                     await entity.GetAsync();
 
@@ -495,7 +505,7 @@ namespace Splunk.Client.UnitTests
                     Assert.DoesNotThrow(() => { string value = entity.TStatsHomePath; });
                     Assert.DoesNotThrow(() => { string value = entity.TStatsHomePathExpanded; });
 
-                    var sameEntity = await service.GetIndexAsync(entity.ResourceName.Title);
+                    var sameEntity = await service.Indexes.GetAsync(entity.ResourceName.Title);
 
                     Assert.Equal(entity.ResourceName, sameEntity.ResourceName);
 
@@ -576,12 +586,12 @@ namespace Splunk.Client.UnitTests
                 
                 //// Create
 
-                index = await service.CreateIndexAsync(indexName);
+                index = await service.Indexes.CreateAsync(indexName);
                 Assert.Equal(true, index.EnableOnlineBucketRepair);
 
                 //// Read
 
-                index = await service.GetIndexAsync(indexName);
+                index = await service.Indexes.GetAsync(indexName);
 
                 //// Update
 
@@ -602,7 +612,18 @@ namespace Splunk.Client.UnitTests
 
                 //// Delete
 
-                await service.RemoveIndexAsync(indexName);
+                await index.RemoveAsync();
+
+                try
+                {
+                    await index.GetAsync();
+                    Assert.True(false);
+                }
+                catch (ResourceNotFoundException)
+                { }
+
+                index = await service.Indexes.GetOrNullAsync(indexName);
+                Assert.Null(index);
             }
         }
 
@@ -628,7 +649,7 @@ namespace Splunk.Client.UnitTests
                     IsVisible = false
                 };
 
-                var savedSearch = await service.CreateSavedSearchAsync(name, search, originalAttributes);
+                var savedSearch = await service.SavedSearches.CreateAsync(name, search, originalAttributes);
 
                 Assert.Equal(search, savedSearch.Search);
                 Assert.Equal(originalAttributes.CronSchedule, savedSearch.CronSchedule);
@@ -637,7 +658,7 @@ namespace Splunk.Client.UnitTests
 
                 //// Read
 
-                savedSearch = await service.GetSavedSearchAsync(name);
+                savedSearch = await service.SavedSearches.GetAsync(name);
                 Assert.Equal(false, savedSearch.IsVisible);
 
                 //// Read schedule
@@ -663,7 +684,7 @@ namespace Splunk.Client.UnitTests
                     IsVisible = true
                 };
 
-                savedSearch = await service.UpdateSavedSearchAsync(name, updatedAttributes);
+                await savedSearch.UpdateAsync(updatedAttributes);
 
                 Assert.Equal(updatedAttributes.ActionEmailBcc, savedSearch.Actions.Email.Bcc);
                 Assert.Equal(updatedAttributes.ActionEmailCC, savedSearch.Actions.Email.CC);
@@ -713,7 +734,7 @@ namespace Splunk.Client.UnitTests
             {
                 var name = string.Format("delete-me-{0}", Guid.NewGuid());
                 var search = "search index=_internal * earliest=-1m";
-                var savedSearch = await service.CreateSavedSearchAsync(name, search);
+                var savedSearch = await service.SavedSearches.CreateAsync(name, search);
 
                 var jobHistory = await savedSearch.GetHistoryAsync();
                 Assert.Equal(0, jobHistory.Count);
@@ -758,17 +779,34 @@ namespace Splunk.Client.UnitTests
         {
             using (var service = await SDKHelper.CreateService())
             {
-                var collection = await service.GetSavedSearchesAsync();
+                var savedSearches = service.SavedSearches;
+                await savedSearches.GetAllAsync();
+
+                foreach (SavedSearch savedSearch in savedSearches)
+                {
+                }
+
+                for (int i = 0; i < savedSearches.Count; i++)
+                {
+                    SavedSearch savedSearch = savedSearches[i];
+                }
             }
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service: Saved Searches")]
         [Fact]
-        public async Task  CanUpdateSavedSearch()
+        public async Task CanUpdateSavedSearch()
         {
             using (var service = await SDKHelper.CreateService())
             {
-                await service.UpdateSavedSearchAsync("Errors in the last 24 hours", new SavedSearchAttributes() { IsVisible = false });
+                SavedSearch savedSearch = await service.SavedSearches.GetAsync("Errors in the last 24 hours");
+                bool isVisible = savedSearch.IsVisible;
+                
+                bool updatedSnapshot = await savedSearch.UpdateAsync(new SavedSearchAttributes() { IsVisible = !isVisible });
+                Assert.True(updatedSnapshot);
+                Assert.Equal(!isVisible, savedSearch.IsVisible);
+
+                await savedSearch.UpdateAsync(new SavedSearchAttributes() { IsVisible = isVisible });
             }
         }
 
@@ -784,20 +822,19 @@ namespace Splunk.Client.UnitTests
             {
                 Job job1 = null, job2 = null;
 
-                job1 = await service.CreateJobAsync("search index=_internal | head 100");
+                job1 = await service.Jobs.CreateAsync("search index=_internal | head 100");
                 await job1.GetSearchResultsAsync();
                 await job1.GetSearchResultsEventsAsync();
                 await job1.GetSearchResultsPreviewAsync();
 
-                job2 = await service.GetJobAsync(job1.ResourceName.Title);
+                job2 = await service.Jobs.GetAsync(job1.ResourceName.Title);
                 Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
                 Assert.Equal(job1.Name, job1.ResourceName.Title);
                 Assert.Equal(job1.Name, job2.Name);
                 Assert.Equal(job1.Sid, job1.Name);
                 Assert.Equal(job1.Sid, job2.Sid);
                 Assert.Equal(job1.Id, job2.Id);
-
-                Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
+                //Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
             }
         }
 
@@ -809,21 +846,18 @@ namespace Splunk.Client.UnitTests
             {
                 var jobs = new Job[]
                 {
-                    await service.CreateJobAsync("search index=_internal | head 1000"),
-                    await service.CreateJobAsync("search index=_internal | head 1000"),
-                    await service.CreateJobAsync("search index=_internal | head 1000"),
-                    await service.CreateJobAsync("search index=_internal | head 1000"),
-                    await service.CreateJobAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
                 };
 
-                JobCollection collection = null;
-                collection = await service.GetJobsAsync();
-                Assert.NotNull(collection);
-                Assert.Equal(collection.ToString(), collection.Id.ToString());
+                await service.Jobs.GetAllAsync();
 
                 foreach (var job in jobs)
                 {
-                    Assert.Contains(job, collection, EqualityComparer<Job>.Default);
+                    Assert.Contains(job, service.Jobs);
                 }
             }
         }
@@ -877,7 +911,7 @@ namespace Splunk.Client.UnitTests
             {
                 foreach (var search in searches)
                 {
-                    var job = await service.CreateJobAsync(search.Command, search.JobArgs);
+                    var job = await service.Jobs.CreateAsync(search.Command, search.JobArgs);
                     Assert.NotNull(job);
 
                     SearchResultStream resultStream = null;
@@ -1051,7 +1085,7 @@ namespace Splunk.Client.UnitTests
                 };
 
 
-                await service.CreateIndexAsync(indexName);
+                await service.Indexes.CreateAsync(indexName);
 
                 foreach (var command in searchCommands)
                 {
@@ -1264,12 +1298,13 @@ namespace Splunk.Client.UnitTests
         {
             using (var service = await SDKHelper.CreateService())
             {
-                //default index
-                Index index = await service.GetIndexAsync("main");
+                // default index
+
+                Index index = await service.Indexes.GetAsync("main");
                 Assert.NotNull(index);
                 Assert.False(index.Disabled);
 
-                var receiver = service.Receiver;
+                var receiver = service.Transmitter;
 
                 long currentEventCount = index.TotalEventCount;
                 Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);

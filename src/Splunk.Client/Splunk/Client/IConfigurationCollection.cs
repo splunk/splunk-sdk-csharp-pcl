@@ -41,9 +41,30 @@ namespace Splunk.Client
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/CBWes7">POST 
-        /// properties</a> endpoint to create the configuration file represented
-        /// by this instance.
+        /// properties</a> endpoint to create the configuration stanza 
+        /// represented by the object it returns.
         /// </remarks>
         Task<TConfiguration> CreateAsync(string fileName);
+
+        /// <summary>
+        /// Asynchronously retrieves a configuration stanza by name.
+        /// </summary>
+        /// <param name="fileName">
+        /// The name of a configuration file.
+        /// </param>
+        /// <param name="stanzaName">
+        /// The name of a stanza within the configuration file identifeied by
+        /// <paramref name="fileName"/>.
+        /// </param>
+        /// <returns>
+        /// An object representing the configuration stanza identified by 
+        /// <paramref name="fileName"/> and <paramref name="stanzaName"/>.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/sM63fa">GET 
+        /// properties/{file_name}/{stanza_name}</a> endpoint to construct the 
+        /// <see cref="ConfigurationStanza"/> it returns.
+        /// </remarks>
+        Task<TConfigurationStanza> GetAsync(string fileName, string stanzaName);
     }
 }

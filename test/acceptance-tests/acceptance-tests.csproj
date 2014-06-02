@@ -64,7 +64,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="TestIndex.cs" />
-    <None Include="TestService.cs" />
+    <Compile Include="TestService.cs" />
     <Compile Include="AcceptanceTestingSetup.cs" />
   </ItemGroup>
   <ItemGroup>

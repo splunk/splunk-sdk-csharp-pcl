@@ -101,7 +101,7 @@ namespace Splunk.Client.UnitTests
             Assert.False(apps.Any(a => a.Name == "sdk-tests"));
 
             ApplicationAttributes attributes = new ApplicationAttributes();
-            attributes.Author = "me";
+            attributes.ApplicationAuthor = "me";
 
             attributes.Description = "this is a description";
             attributes.Label = "SDKTEST";
@@ -119,7 +119,7 @@ namespace Splunk.Client.UnitTests
 
             attributes = new ApplicationAttributes()
             {
-                Author = "not me",
+                ApplicationAuthor = "not me",
                 Description = "new description",
                 Label = "new label",
                 Visible = false,

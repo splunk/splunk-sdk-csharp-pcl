@@ -259,7 +259,7 @@ namespace Splunk.Client
             var resourceName = new ResourceName(this.ResourceName, keyName);
             var arguments = new Argument[] { new Argument("value", value) };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, arguments))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }

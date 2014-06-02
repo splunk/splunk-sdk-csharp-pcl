@@ -532,7 +532,7 @@ namespace Splunk.Client.UnitTesting
                     Assert.Equal(entity.MaxMetaEntries, sameEntity.MaxMetaEntries);
                     Assert.Equal(entity.MaxRunningProcessGroups, sameEntity.MaxRunningProcessGroups);
                     Assert.Equal(entity.MaxRunningProcessGroupsLowPriority, sameEntity.MaxRunningProcessGroupsLowPriority);
-                    Assert.Equal(entity.MaxTime, sameEntity.MaxTime);
+                    Assert.True((sameEntity.MaxTime - entity.MaxTime)<=new TimeSpan(0,0,20));//expect the test finish run within 20s which means new events comes only within 20s
                     Assert.Equal(entity.MaxTimeUnreplicatedNoAcks, sameEntity.MaxTimeUnreplicatedNoAcks);
                     Assert.Equal(entity.MaxTimeUnreplicatedWithAcks, sameEntity.MaxTimeUnreplicatedWithAcks);
                     Assert.Equal(entity.MaxTotalDataSizeMB, sameEntity.MaxTotalDataSizeMB);

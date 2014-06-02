@@ -130,7 +130,7 @@ namespace Splunk.Client
 
         public Task UpdateAsync(string password)
         {
-            Contract.Requires<ArgumentNullException>(password == null);
+            Contract.Requires<ArgumentNullException>(password != null);
             return default(Task);
         }
 

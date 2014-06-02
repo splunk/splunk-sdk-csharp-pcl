@@ -32,7 +32,7 @@ namespace Splunk.Client
     /// Represents an enumerable, observable stream of <see cref="SearchResult"/> 
     /// records.
     /// </summary>
-    public sealed class SearchResultStream : Observable<SearchResult>, IDisposable
+    public sealed class SearchResultStream : Observable<SearchResult>, IDisposable, IEnumerable<SearchResult>
     {
         #region Constructors
 
@@ -102,13 +102,52 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Returns an enumerator that iterates through search result <see 
+        /// cref="Result"/> objects synchronously.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Result"/> enumerator structure for the <see 
+        /// cref="SearchResults"/>.
+        /// </returns>
+        /// <remarks>
+        /// You can use the <see cref="GetEnumerator"/> method to
+        /// <list type="bullet">
+        /// <item><description>
+        ///     Perform LINQ to Objects queries to obtain a filtered set of 
+        ///     search result records.</description></item>
+        /// <item><description>
+        ///     Append search results to an existing <see cref="Result"/>
+        ///     collection.</description></item>
+        /// </list>
+        /// </remarks>
+        public IEnumerator<SearchResult> GetEnumerator()
+        {
+            if (this.enumerated)
+            {
+                throw new InvalidOperationException("Search results have been enumerated; The enumeration operation may not execute again.");
+            }
+
+            this.enumerated = true;
+
+            for (var task = this.ReadResultAsync(); task.Result != null; task = this.ReadResultAsync())
+            {
+                yield return task.Result;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+ 
+        /// <summary>
         /// Asynchronously pushes <see cref="SearchResult"/> objects to observers 
         /// and then completes.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        override protected async Task PushObservations()
+        protected override async Task PushObservations()
         {
             if (this.enumerated)
             {

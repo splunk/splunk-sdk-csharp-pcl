@@ -55,7 +55,7 @@ namespace Splunk.Client
     /// The <see cref="SearchPreviewStream"/> class represents a streaming XML 
     /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
-    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<SearchPreview>
+    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<Task<SearchPreview>>
     {
         #region Constructors
 
@@ -113,12 +113,12 @@ namespace Splunk.Client
         /// </remarks>
         public IEnumerator<Task<SearchPreview>> GetEnumerator()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) == 1)
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
             {
-                throw new InvalidOperationException("Search previews have been enumerated; The enumeration operation may not execute again.");
+                throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
             }
 
-            for (var preview = this.ReadSearchPreviewAsync(); preview != null; preview = this.ReadSearchPreviewAsync())
+            for (Task<SearchPreview> preview; (preview = this.ReadSearchPreviewAsync()) != null; )
             {
                 yield return preview;
             }
@@ -139,13 +139,15 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
-            do
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
             {
-                var preview = new SearchPreview();
-                await preview.ReadXmlAsync(this.response.XmlReader);
+                throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
+            }
+
+            for (SearchPreview preview; (preview = await this.ReadSearchPreviewAsync()) != null; )
+            {
                 this.OnNext(preview);
             }
-            while (await this.response.XmlReader.ReadToFollowingAsync("results"));
 
             this.OnCompleted();
         }

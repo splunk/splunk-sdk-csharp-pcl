@@ -179,7 +179,7 @@
     <Compile Include="Splunk\Client\Scheme.cs" />
     <Compile Include="Splunk\Client\SearchEventArgs.cs" />
     <Compile Include="Splunk\Client\SearchExportArgs.cs" />
-    <Compile Include="Splunk\Client\SearchExportStream.cs" />
+    <None Include="Splunk\Client\SearchExportStream.cs" />
     <Compile Include="Splunk\Client\SearchMode.cs" />
     <Compile Include="Splunk\Client\SearchPreview.cs" />
     <Compile Include="Splunk\Client\SearchPreviewStream.cs" />

@@ -162,7 +162,7 @@ namespace Splunk.Client
 
             var args = new CreationArgs()
             {
-                ExplicitApplicationName = this.Title,
+                ExplicitApplicationName = name ?? "",
                 Filename = true,
                 Name = path,
                 Update = update

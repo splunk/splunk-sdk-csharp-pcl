@@ -25,6 +25,7 @@ namespace Splunk.Client
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -122,12 +123,10 @@ namespace Splunk.Client
         /// </remarks>
         public IEnumerator<SearchResult> GetEnumerator()
         {
-            if (this.enumerated)
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
             {
-                throw new InvalidOperationException("Search results have been enumerated; The enumeration operation may not execute again.");
+                throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
             }
-
-            this.enumerated = true;
 
             for (var task = this.ReadResultAsync(); task.Result != null; task = this.ReadResultAsync())
             {
@@ -135,6 +134,7 @@ namespace Splunk.Client
             }
         }
 
+        /// <inheritdoc cref="GetEnumerator">
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
@@ -149,12 +149,10 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
-            if (this.enumerated)
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
             {
-                throw new InvalidOperationException(); // TODO: diagnostics
+                throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
             }
-
-            this.enumerated = true;
 
             for (SearchResult result; (result = await this.ReadResultAsync()) != null; )
             {
@@ -169,7 +167,7 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly Response response;
-        bool enumerated;
+        int enumerated;
         Metadata metadata;
 
         /// <summary>

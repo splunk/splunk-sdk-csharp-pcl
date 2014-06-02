@@ -165,7 +165,7 @@ namespace Splunk.Client.UnitTests
                             Assert.DoesNotThrow(() => value = string.Format("Links = {0}", application.Links));
                             Assert.DoesNotThrow(() => value = string.Format("Name = {0}", application.Name));
                             Assert.DoesNotThrow(() => value = string.Format("Namespace = {0}", application.Namespace));
-                            // Assert.DoesNotThrow(() => value = string.Format("Published = {0}", application.Published));
+                            //Assert.DoesNotThrow(() => value = string.Format("Published = {0}", application.Published));
                             Assert.DoesNotThrow(() => value = string.Format("ResourceName = {0}", application.ResourceName));
                             Assert.DoesNotThrow(() => value = string.Format("StateChangeRequiresRestart = {0}", application.StateChangeRequiresRestart));
                             Assert.DoesNotThrow(() => value = string.Format("Updated = {0}", application.Updated));
@@ -200,7 +200,7 @@ namespace Splunk.Client.UnitTests
                         var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
                         Assert.True(File.Exists(path));
 
-                        var twitterApplication = await service.Applications.InstallAsync("twitter2", path, update: true);
+                        var twitterApplication = await service.Applications.InstallAsync(path, update: true);
 
                         //// Other asserts on the contents of the update
 
@@ -1358,9 +1358,7 @@ namespace Splunk.Client.UnitTests
         #endregion
 
         public void SetFixture(AcceptanceTestingSetup data)
-        { 
-            
-        }
+        { } // TODO: Implement or remove
 
         #region Privates/internals
 

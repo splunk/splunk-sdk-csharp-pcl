@@ -243,7 +243,6 @@ namespace Splunk.Client.UnitTests
 
                 var transmitterArgs = new TransmitterArgs
                 {
-                    Index = indexName,
                     Host = Host,
                     Source = Source,
                     SourceType = SourceType,
@@ -251,20 +250,23 @@ namespace Splunk.Client.UnitTests
 
                 Transmitter transmitter = service.Transmitter;
 
-                await transmitter.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now, indexName), transmitterArgs);
-                await transmitter.SendAsync(string.Format("{0}, {1}, Hello World.", DateTime.Now, indexName), transmitterArgs);
+                await transmitter.SendAsync(string.Format("1, {0}, {1}, simple event", DateTime.Now, indexName), 
+                    indexName, transmitterArgs);
+                
+                await transmitter.SendAsync(string.Format("2, {0}, {1}, simple event", DateTime.Now, indexName), 
+                    indexName, transmitterArgs);
 
                 using (MemoryStream stream = new MemoryStream())
                 {
                     using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
-                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
-                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
+                        writer.WriteLine(string.Format("1, {0}, {1}, stream event ", DateTime.Now, indexName));
+                        writer.WriteLine(string.Format("2, {0}, {1}, stream event", DateTime.Now, indexName));
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);
 
-                    await transmitter.SendAsync(stream, transmitterArgs);
+                    await transmitter.SendAsync(stream, indexName, transmitterArgs);
                 }
 
                 await TestHelper.WaitIndexTotalEventCountUpdated(index, 4);
@@ -299,12 +301,11 @@ namespace Splunk.Client.UnitTests
 
                 Transmitter transmitter = service.Transmitter;
                 IndexAttributes indexAttributes = GetIndexAttributes(index);
-                TransmitterArgs transmitterArgs = new TransmitterArgs() { Index = index.Name, };
 
                 // Submit event to default index using variable arguments
 
-                await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World", DateTime.Now), transmitterArgs);
-                await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now), transmitterArgs);
+                await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World", DateTime.Now), indexName);
+                await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now), indexName);
 
                 await TestHelper.WaitIndexTotalEventCountUpdated(index, currentEventCount + 2);
                 currentEventCount += 2;
@@ -319,7 +320,7 @@ namespace Splunk.Client.UnitTests
 
                     stream.Seek(0, SeekOrigin.Begin);
 
-                    await transmitter.SendAsync(stream, transmitterArgs);
+                    await transmitter.SendAsync(stream, indexName);
                 }
 
                 await TestHelper.WaitIndexTotalEventCountUpdated(index, currentEventCount + 2);

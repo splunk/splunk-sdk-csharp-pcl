@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -31,7 +32,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a class for sending events to Splunk.
     /// </summary>
-    public class Transmitter : Endpoint
+    public class Transmitter : Endpoint, ITransmitter
     {
         #region Constructors
 
@@ -47,7 +48,7 @@ namespace Splunk.Client
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         protected internal Transmitter(Service service)
-            : base(service, ClassResourceName)
+            : this(service.Context)
         { }
 
         /// <summary>
@@ -68,8 +69,8 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        protected internal Transmitter(Context context, Namespace ns)
-            : base(context, ns, ClassResourceName)
+        protected internal Transmitter(Context context)
+            : base(context, Namespace.Default, ClassResourceName)
         { }
 
         #endregion
@@ -87,13 +88,24 @@ namespace Splunk.Client
         /// receivers/stream</a> endpoint to send raw events to Splunk as
         /// they become available on <paramref name="eventStream"/>.
         /// </remarks>
-        public async Task SendAsync(Stream eventStream, TransmitterArgs args = null)
+        public virtual async Task SendAsync(Stream eventStream, string indexName = null, TransmitterArgs args = null)
         {
             using (var content = new StreamContent(eventStream))
             {
                 content.Headers.Add("x-splunk-input-mode", "streaming");
+                var arguments = Enumerable.Empty<Argument>();
+                
+                if (indexName != null)
+                {
+                    arguments = arguments.Concat(new Argument[] { new Argument("index", indexName) });
+                }
 
-                using (var response = await this.Context.PostAsync(this.Namespace, StreamReceiver, content, args))
+                if (args != null)
+                {
+                    arguments = arguments.Concat(args);
+                }
+
+                using (var response = await this.Context.PostAsync(this.Namespace, StreamReceiver, content, arguments))
                 {
                     await response.EnsureStatusCodeAsync(HttpStatusCode.NoContent);
                 }
@@ -118,10 +130,22 @@ namespace Splunk.Client
         /// receivers/simple</a> endpoint to obtain the <see cref=
         /// "SearchResult"/> that it returns.
         /// </remarks>
-        public async Task<SearchResult> SendAsync(string eventText, TransmitterArgs args = null)
+        public virtual async Task<SearchResult> SendAsync(string eventText, string indexName = null, TransmitterArgs args = null)
         {
             using (var content = new StringContent(eventText))
             {
+                var arguments = Enumerable.Empty<Argument>();
+
+                if (indexName != null)
+                {
+                    arguments = arguments.Concat(new Argument[] { new Argument("index", indexName) });
+                }
+
+                if (args != null)
+                {
+                    arguments = arguments.Concat(args);
+                }
+                
                 using (var response = await this.Context.PostAsync(this.Namespace, SimpleReceiver, content, args))
                 {
                     await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
@@ -131,8 +155,8 @@ namespace Splunk.Client
                     await reader.ReadElementSequenceAsync("results", "result");
 
                     var result = new SearchResult();
-                    await result.ReadXmlAsync(reader);
                     
+                    await result.ReadXmlAsync(reader);
                     await reader.ReadEndElementSequenceAsync("result", "results", "response");
 
                     return result;

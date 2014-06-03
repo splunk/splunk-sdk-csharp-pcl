@@ -36,8 +36,6 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class TransmitterArgs : Args<TransmitterArgs>
     {
-        #region Properties
-
         /// <summary>
         /// The value to populate in the host field for events from this data input.
         /// </summary>
@@ -53,13 +51,6 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// default	 The index to send events from this input to.
-        /// </summary>
-        [DataMember(Name = "index", EmitDefaultValue = false)]
-        public string Index
-        { get; set; }
-
-        /// <summary>
         /// The source value to fill in the metadata for this input's events.
         /// </summary>
         [DataMember(Name = "source", EmitDefaultValue = false)]
@@ -72,7 +63,5 @@ namespace Splunk.Client
         [DataMember(Name = "sourcetype", EmitDefaultValue = false)]
         public string SourceType
         { get; set; }
-
-        #endregion
     }
 }

@@ -362,17 +362,22 @@ namespace Splunk.Client.UnitTests
                 //// Create, read, update, and delete a stanza through the Service object
 
                 ConfigurationStanza configurationStanza = await configuration.CreateAsync("stanza");
+                Assert.Equal(0, configurationStanza.Count);
 
-                await configurationStanza.UpdateAsync(new Argument("foo", 1), new Argument("bar", 2));
-                await configurationStanza.UpdateAsync("bar", "3"); // succeeds because bar exists
+                bool isUpdatedSnapshot = await configurationStanza.UpdateAsync(new Argument("foo", 5), new Argument("bar", 6));
+                Assert.False(isUpdatedSnapshot);
+                Assert.Equal(0, configurationStanza.Count);
+
+                await configurationStanza.GetAsync();
+                Assert.Equal(4, configurationStanza.Count); // because all stanzas inherit from the default stanza
+
                 setting = configurationStanza.SingleOrDefault(s => s.Title == "foo");
-
                 Assert.NotNull(setting);
-                Assert.Equal("1", setting.Value);
+                Assert.Equal("5", setting.Value);
 
                 setting = configurationStanza.SingleOrDefault(s => s.Title == "bar");
                 Assert.NotNull(setting);
-                Assert.Equal("3", setting.Value);
+                Assert.Equal("6", setting.Value);
 
                 await configurationStanza.RemoveAsync();
 

@@ -47,6 +47,9 @@ namespace Splunk.Examples.Submit
             {
                 Run(service).Wait();
             }
+
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -56,16 +59,13 @@ namespace Splunk.Examples.Submit
         static async Task Run(Service service)
         {
             Console.WriteLine("Login as admin");
-            string username = "admin";
-            string password = "changeme";
-            await service.LoginAsync(username, password);
 
-            Console.WriteLine("create a  index");
+            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+
+            Console.WriteLine("Create an index");
+
             string indexName = "user-index";
-            //string source = "*\\splunkd.log";
-            //string sourceType = "splunkd";
-
-            Index index = await service.Indexes.GetOrNullAsync("indexName");
+            Index index = await service.Indexes.GetOrNullAsync(indexName);
 
             if (index != null)
             {
@@ -79,25 +79,12 @@ namespace Splunk.Examples.Submit
             {
                 await index.EnableAsync();
 
-                Transmitter receiver = service.Transmitter;
-                TransmitterArgs args = new TransmitterArgs()
-                {
-                    Index = indexName,
-                    ////Source = source,
-                    ////SourceType = sourceType,
-                };
+                Transmitter transmitter = service.Transmitter;
 
-                await receiver.SendAsync("Hello World.", args);
-                await receiver.SendAsync("Goodbye world.", args);
+                await transmitter.SendAsync("Hello World.", indexName);
+                await transmitter.SendAsync("Goodbye world.", indexName);
 
-                SearchResultStream results = service.SearchOneshotAsync(
-                    string.Format(
-                        "search index={0}",// source={2} sourcetype={3}",
-                        indexName
-                        ////source,
-                        ////sourceType
-                        )).Result;
-
+                var results = await service.SearchOneshotAsync(string.Format("search index={0}", indexName));
                 Console.WriteLine(results);              
             }
             catch (Exception e)

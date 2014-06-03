@@ -42,17 +42,20 @@ namespace Splunk.Client.UnitTests
             return (string.Compare(version, versionToCompare, StringComparison.InvariantCulture));
         }
 
-        public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectEventCount, int seconds = 60)
+        public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectedEventCount, int seconds = 60)
         {
             Stopwatch watch = Stopwatch.StartNew();
-            while (watch.Elapsed < new TimeSpan(0, 0, seconds) && index.TotalEventCount != expectEventCount)
+
+            while (watch.Elapsed < new TimeSpan(0, 0, seconds) && index.TotalEventCount != expectedEventCount)
             {
                 await Task.Delay(1000);
                 await index.GetAsync();
             }
 
-            Console.WriteLine("Sleep {0}s to wait index {2} 'TotalEventCount got updated, current index.TotalEventCount={1}", watch.Elapsed, index.TotalEventCount, index.Name);
-            Assert.True(index.TotalEventCount == expectEventCount);
+            Console.WriteLine("Waited {0} seconds for index {1} event count to reach {2}, but it only reached {3}.", 
+                watch.Elapsed, expectedEventCount, index.TotalEventCount, index.Name);
+
+            Assert.Equal(expectedEventCount, index.TotalEventCount);
         }
 
         public static async Task RestartServerAsync()

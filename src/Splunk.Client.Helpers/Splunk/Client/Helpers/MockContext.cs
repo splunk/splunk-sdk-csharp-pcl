@@ -45,10 +45,10 @@ namespace Splunk.Client.Helpers
 
         public MockContext(Scheme protocol, string host, int port)
             : base(protocol, host, port,
-            new MockHttpMessageHandler(System.Configuration.ConfigurationSettings.AppSettings["MockContextFilePath"], bool.Parse(ConfigurationSettings.AppSettings["IsRecording"])))
+            new MockHttpMessageHandler(ConfigurationManager.AppSettings["MockContextFilePath"], bool.Parse(ConfigurationManager.AppSettings["IsRecording"])))
         {
-            filePath = System.Configuration.ConfigurationSettings.AppSettings["MockContextFilePath"];
-            record = bool.Parse(ConfigurationSettings.AppSettings["IsRecording"]);
+            filePath = ConfigurationManager.AppSettings["MockContextFilePath"];
+            record = bool.Parse(ConfigurationManager.AppSettings["IsRecording"]);
             this.LoadRequestResponseXml();
         }
 

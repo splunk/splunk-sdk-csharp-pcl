@@ -19,6 +19,7 @@ namespace Splunk.Client.Helpers
     using Splunk.Client;
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
@@ -63,7 +64,8 @@ namespace Splunk.Client.Helpers
         public static async Task<Service> CreateService(Namespace ns = null)
         {
             Service service = null;
-            if (bool.Parse(System.Configuration.ConfigurationSettings.AppSettings["UseMockContext"]))
+
+            if (bool.Parse(ConfigurationManager.AppSettings["UseMockContext"]))
             {
                 MockContext context = new MockContext(UserConfigure.scheme, UserConfigure.host, UserConfigure.port);
                 service = new Service(context);

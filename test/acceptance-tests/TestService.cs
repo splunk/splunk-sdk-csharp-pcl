@@ -980,7 +980,7 @@ namespace Splunk.Client.UnitTests
 
                         if (preview.IsFinal)
                         {
-                            results.AddRange(preview.SearchResults);
+                            results.AddRange(preview.Results);
                         }
                     },
                     onError: (e) =>

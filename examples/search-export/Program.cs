@@ -5,7 +5,7 @@ namespace search_export
 
     using System;
     using System.Threading.Tasks;
-    using System.Linq;
+
     class Program
     {
         static void Main(string[] args)
@@ -14,33 +14,34 @@ namespace search_export
             {
                 Run(service).Wait();
             }
-        }
 
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
+        }
 
         public static async Task Run(Service service)
         {
             await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
 
             //// Search : Export Previews
-            using (SearchPreviewStream searchPreviewStream = service.ExportSearchPreviewsAsync("search index=_internal | head 100").Result)
+
+            using (SearchPreviewStream previewStream = await service.ExportSearchPreviewsAsync("search index=_internal | head 100"))
             {
                 int previewNumber = 0;
 
-                //Console.WriteLine("*************" + searchPreviewStream.Count());
-                foreach (Task<SearchPreview> task in searchPreviewStream)
+                foreach (Task<SearchPreview> task in previewStream)
                 {
-                    previewNumber++;
-                    Console.WriteLine("==================== {0}=================", previewNumber);
                     SearchPreview preview = await task;
-                    int recordNumber = 0;
-                    foreach (SearchResult result in preview.SearchResults)
+                    int resultNumber = 0;
+
+                    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, preview.IsFinal ? "final" : "partial");
+
+                    foreach (var result in preview.Results)
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result));
-                        Console.WriteLine("===============" + result.ToString().Substring(0, 200));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", ++resultNumber, result));
                     }
                 }
             }
         }
     }
 }
-

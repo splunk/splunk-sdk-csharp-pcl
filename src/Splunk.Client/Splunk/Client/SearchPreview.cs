@@ -63,7 +63,7 @@ namespace Splunk.Client
         /// Be aware that any given result will contain a subset of these 
         /// fields.
         /// </remarks>
-        public IReadOnlyList<SearchResult> SearchResults
+        public IReadOnlyList<SearchResult> Results
         { get; private set; }
 
         #endregion
@@ -88,8 +88,8 @@ namespace Splunk.Client
             var fieldNames = new List<string>();
             this.FieldNames = fieldNames;
             
-            var searchResults = new List<SearchResult>();
-            this.SearchResults = searchResults;
+            var results = new List<SearchResult>();
+            this.Results = results;
 
             this.IsFinal = true;
 
@@ -131,7 +131,7 @@ namespace Splunk.Client
                 var searchResult = new SearchResult();
                 
                 await searchResult.ReadXmlAsync(reader);
-                searchResults.Add(searchResult);
+                results.Add(searchResult);
                 await reader.ReadAsync();
             }
         }

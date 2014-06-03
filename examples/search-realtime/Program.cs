@@ -26,7 +26,6 @@ namespace search_realtime
         private static async Task Run(Service service)
         {
             await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
-
             Console.WriteLine("Type any key to cancel.");
 
             string searchQuery = "search index=_internal | stats count by method";

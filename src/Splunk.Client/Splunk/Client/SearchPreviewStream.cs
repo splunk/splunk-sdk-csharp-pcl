@@ -123,8 +123,8 @@ namespace Splunk.Client
             /// Thought: check xml reader state for end of file
 
             XmlReader reader = this.response.XmlReader;
-
-            while (reader.ReadState == ReadState.Interactive)
+            
+            while (reader.ReadState <= ReadState.Interactive)
             {
                 yield return ReadSearchPreviewAsync(reader);
             }
@@ -154,7 +154,7 @@ namespace Splunk.Client
 
             XmlReader reader = this.response.XmlReader;
 
-            while (reader.ReadState == ReadState.Interactive)
+            while (reader.ReadState <= ReadState.Interactive)
             {
                 this.OnNext(await ReadSearchPreviewAsync(reader));
             }
@@ -173,16 +173,13 @@ namespace Splunk.Client
 
         static async Task<SearchPreview> ReadSearchPreviewAsync(XmlReader reader)
         {
-            if (await reader.ReadToFollowingAsync("results"))
-            {
-                var preview = new SearchPreview();
+            reader.Requires(await reader.MoveToDocumentElementAsync("results"));
 
-                await preview.ReadXmlAsync(reader);
-                return preview;
-            }
+            var preview = new SearchPreview();
+            await preview.ReadXmlAsync(reader);
+            await reader.ReadAsync();
 
-            Debug.Assert(reader.ReadState == ReadState.EndOfFile);
-            return null;
+            return preview;
         }
 
         #endregion

@@ -36,11 +36,10 @@ namespace Splunk.Client.Helpers
 
         public bool IsRecording { get; set; }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             System.Threading.CancellationToken cancellationToken)
         {
-            return null;
-
+            return Task.FromResult<HttpResponseMessage>(null);
         }
 
         private HttpResponseMessage GetResponseMessages()
@@ -49,9 +48,7 @@ namespace Splunk.Client.Helpers
             {
                 StatusCode = HttpStatusCode.OK,
                 ReasonPhrase = this.ContextName,
-                Content =
-                    new StringContent(string.Format("<feed><title>{0}</title></feed>",
-                        this.ContextName))
+                Content = new StringContent(string.Format("<feed><title>{0}</title></feed>", this.ContextName))
             };
 
             return response;

@@ -22,7 +22,7 @@ namespace Splunk.Client.Examples.Search
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Starts a normal search and polls for completion to find out when the search has finished.
+    /// Executes a oneshot search and prints the results.
     /// </summary>
     class Program
     {
@@ -50,9 +50,9 @@ namespace Splunk.Client.Examples.Search
 
             using (SearchResultStream resultStream = await service.SearchOneshotAsync("search index=_internal | head 5"))
             {
-                foreach (SearchResult result in resultStream)
+                foreach (Task<SearchResult> result in resultStream)
                 {
-                    Console.WriteLine(result);
+                    Console.WriteLine(await result);
                 }
             }
         }

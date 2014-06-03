@@ -482,14 +482,23 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Throws an <see cref="InvalidDataException"/> based on the source
+        /// <see cref="XmlReader"/> position, if the specified <paramref name=
+        /// "condition"/> is <c>false</c>.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="condition">
-        /// 
+        /// A value indicating whether the required condition is met.
         /// </param>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="condition"/> is <c>false</c>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The source <paramref name="reader"/> is in an error state, is 
+        /// closed, or has not yet been called.
+        /// </exception>
         public static void Requires(this XmlReader reader, bool condition)
         {
             if (condition)

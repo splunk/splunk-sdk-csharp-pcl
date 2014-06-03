@@ -138,9 +138,9 @@ namespace Splunk.Client.UnitTests
         /// <param name="jobFunction">
         /// A function for a job and an enum value
         /// </param>
-        private async Task RunJobFuntionForEachEnum(
+        async Task RunJobFuntionForEachEnum(
             Type enumType,
-            Func<Job, string, SearchResultStream> jobFunction)
+            Func<Job, string, Task<SearchResultStream>> jobFunction)
         {
             
             using (Service service = await SDKHelper.CreateService())
@@ -150,7 +150,7 @@ namespace Splunk.Client.UnitTests
                 await ForEachEnum(enumType, async enumValue =>
                 {
                     var job = await service.Jobs.CreateAsync(Query, jobArgs);
-                    jobFunction(job, enumValue);
+                    await jobFunction(job, enumValue);
                     await job.CancelAsync();
                 });
             }
@@ -161,21 +161,16 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
-        public void JobEventsTruncationModeArgument()
+        public async Task JobEventsTruncationModeArgument()
         {
             var type = typeof(TruncationMode);
 
-            RunJobFuntionForEachEnum(
-                type,
-                (job, mode) =>
-                    job.GetSearchResultsEventsAsync(
-                        new SearchEventArgs
-                        {
-                            TruncationMode =
-                                (TruncationMode)Enum.Parse(
-                                    type,
-                                    mode)
-                        }).Result);
+            await RunJobFuntionForEachEnum(type, async (job, mode) =>
+                await job.GetSearchResultsEventsAsync(
+                    new SearchEventArgs
+                    {
+                        TruncationMode = (TruncationMode)Enum.Parse(type, mode)
+                    }));
         }
 
         /// <summary>
@@ -183,20 +178,16 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
-        public void JobSearchModeArgument()
+        public async Task JobSearchModeArgument()
         {
             var type = typeof(SearchMode);
             JobArgs jobArgs = new JobArgs();
 
-            RunJobForEachEnum(
-                type,
-                (mode) => new JobArgs()
-                    {
-                        SearchMode =
-                            (SearchMode)Enum.Parse(
-                                    type,
-                                    mode)
-                    });
+            await RunJobForEachEnum(type, mode => 
+                new JobArgs()
+                {
+                    SearchMode = (SearchMode)Enum.Parse(type, mode)
+                });
         }
 
         /// <summary>

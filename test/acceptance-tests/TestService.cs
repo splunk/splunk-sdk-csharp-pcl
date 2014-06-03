@@ -1021,26 +1021,6 @@ namespace Splunk.Client.UnitTests
                 resultStream.Subscribe(
                     onNext: (result) =>
                     {
-                        Assert.Equal<IEnumerable<string>>(new List<string> 
-                            {
-                                "_bkt",
-                                "_cd",
-                                "_indextime",
-                                "_raw",
-                                "_serial",
-                                "_si",
-                                "_sourcetype",
-                                "_subsecond",
-                                "_time",
-                                "host",
-                                "index",
-                                "linecount",
-                                "source",
-                                "sourcetype",
-                                "splunk_server",
-                            },
-                            resultStream.FieldNames);
-
                         var count = resultStream.FieldNames.Intersect(result.Keys).Count();
                         Assert.Equal(count, result.Count);
 
@@ -1053,7 +1033,6 @@ namespace Splunk.Client.UnitTests
                     {
                         exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
                         manualResetEvent.Set();
-
                     },
                     onCompleted: () =>
                     {

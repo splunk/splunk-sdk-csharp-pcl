@@ -32,17 +32,21 @@ namespace search_realtime
             using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
             {
                 Task task = Run(service);
+
                 while (!task.IsCanceled)
                 {
                     Task.Delay(500).Wait();
                 }
             }
+
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
         }
 
-        private static async Task Run(Service service)
+        static async Task Run(Service service)
         {
             await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
-            Console.WriteLine("Type any key to cancel.");
+            Console.WriteLine("Press return to cancel.");
 
             string searchQuery = "search index=_internal | stats count by method";
 
@@ -65,15 +69,16 @@ namespace search_realtime
 
             while (!tokenSource.IsCancellationRequested)
             {
-                SearchResultStream searchResults;
+                SearchResultStream resultStream = await realtimeJob.GetSearchResultsPreviewAsync();
 
-                searchResults = await realtimeJob.GetSearchResultsPreviewAsync();
-                Console.WriteLine("fieldnames:" + searchResults.FieldNames.Count);
-                Console.WriteLine("fieldname list:" + string.Join(";", searchResults.FieldNames.ToArray()));
+                Console.WriteLine("fieldnames: " + string.Join(";", resultStream.FieldNames));
+                Console.WriteLine("fieldname count: " + resultStream.FieldNames.Count);
+                Console.WriteLine("final result: " + resultStream.IsFinal);
 
-                foreach (var result in searchResults)
+                foreach (Task<SearchResult> item in resultStream)
                 {
-                    Console.WriteLine("result:" + result.ToString());
+                    SearchResult result = await item;
+                    Console.WriteLine(result);
                 }
 
                 Console.WriteLine("");

@@ -138,7 +138,7 @@ namespace Splunk.Client.UnitTests
         /// <param name="jobFunction">
         /// A function for a job and an enum value
         /// </param>
-        private async void RunJobFuntionForEachEnum(
+        private async Task RunJobFuntionForEachEnum(
             Type enumType,
             Func<Job, string, SearchResultStream> jobFunction)
         {
@@ -204,19 +204,14 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
-        public void ExportSearchModeArgument()
+        public async Task ExportSearchModeArgument()
         {
             var type = typeof(SearchMode);
 
-            RunExportForEachEnum(
-                Query,
-                type,
-                (mode) => new SearchExportArgs()
+            await RunExportForEachEnum(Query, type, (mode) => 
+                new SearchExportArgs()
                 {
-                    SearchMode =
-                        (SearchMode)Enum.Parse(
-                                type,
-                                mode)
+                    SearchMode = (SearchMode)Enum.Parse(type, mode)
                 });
         }
 
@@ -225,19 +220,14 @@ namespace Splunk.Client.UnitTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
-        public void ExportTruncationModeArgument()
+        public async Task ExportTruncationModeArgument()
         {
             var type = typeof(TruncationMode);
 
-            RunExportForEachEnum(
-                Query,
-                type,
-                (mode) => new SearchExportArgs()
+            await RunExportForEachEnum(Query, type, (mode) => 
+                new SearchExportArgs()
                 {
-                    TruncationMode =
-                        (TruncationMode)Enum.Parse(
-                                type,
-                                mode)
+                    TruncationMode = (TruncationMode)Enum.Parse(type, mode)
                 });
         }
 
@@ -370,7 +360,7 @@ namespace Splunk.Client.UnitTests
         /// <param name="getJobExportArgs">
         /// The funtion to get arguments to run a job.
         /// </param>
-        private async void RunExportForEachEnum(
+        async Task RunExportForEachEnum(
             string search,
             Type enumType,
             Func<string, SearchExportArgs> getJobExportArgs)
@@ -378,7 +368,7 @@ namespace Splunk.Client.UnitTests
             
             using (Service service = await SDKHelper.CreateService())
             {
-                await ForEachEnum(enumType, async @enum => 
+                await ForEachEnum(enumType, async @enum =>
                     await service.ExportSearchPreviewsAsync(search, getJobExportArgs(@enum)));
             }
         }
@@ -390,7 +380,7 @@ namespace Splunk.Client.UnitTests
         /// <param name="getJobArgs">
         /// The funtion to get arguments to run a job.
         /// </param>
-        async void RunJobForEachEnum(
+        async Task RunJobForEachEnum(
             Type enumType,
             Func<string, JobArgs> getJobArgs)
         {

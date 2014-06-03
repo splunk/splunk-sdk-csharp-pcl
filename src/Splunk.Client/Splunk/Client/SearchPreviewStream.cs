@@ -46,6 +46,7 @@ namespace Splunk.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -113,15 +114,22 @@ namespace Splunk.Client
         /// </remarks>
         public IEnumerator<Task<SearchPreview>> GetEnumerator()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
             {
                 throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
             }
 
-            for (Task<SearchPreview> preview; (preview = this.ReadSearchPreviewAsync()) != null; )
+            /// TODO: Correct bad check for end of sequence; ReadSearchPreviewAsync never returns null
+            /// Thought: check xml reader state for end of file
+
+            XmlReader reader = this.response.XmlReader;
+
+            while (reader.ReadState == ReadState.Interactive)
             {
-                yield return preview;
+                yield return ReadSearchPreviewAsync(reader);
             }
+
+            this.enumerated = 2;
         }
 
         /// <inheritdoc cref="GetEnumerator"/>
@@ -139,17 +147,20 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
             {
                 throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
             }
 
-            for (SearchPreview preview; (preview = await this.ReadSearchPreviewAsync()) != null; )
+            XmlReader reader = this.response.XmlReader;
+
+            while (reader.ReadState == ReadState.Interactive)
             {
-                this.OnNext(preview);
+                this.OnNext(await ReadSearchPreviewAsync(reader));
             }
 
             this.OnCompleted();
+            this.enumerated = 2;
         }
 
         #endregion
@@ -160,16 +171,17 @@ namespace Splunk.Client
         bool disposed;
         int enumerated;
 
-        async Task<SearchPreview> ReadSearchPreviewAsync()
+        static async Task<SearchPreview> ReadSearchPreviewAsync(XmlReader reader)
         {
-            if (await this.response.XmlReader.ReadToFollowingAsync("results"))
+            if (await reader.ReadToFollowingAsync("results"))
             {
                 var preview = new SearchPreview();
 
-                await preview.ReadXmlAsync(this.response.XmlReader);
+                await preview.ReadXmlAsync(reader);
                 return preview;
             }
 
+            Debug.Assert(reader.ReadState == ReadState.EndOfFile);
             return null;
         }
 

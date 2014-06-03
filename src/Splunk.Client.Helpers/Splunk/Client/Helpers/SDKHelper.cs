@@ -76,7 +76,6 @@ namespace Splunk.Client.Helpers
             }
 
             await service.LoginAsync(UserConfigure.username, UserConfigure.password);
-
             return service;
         }
 

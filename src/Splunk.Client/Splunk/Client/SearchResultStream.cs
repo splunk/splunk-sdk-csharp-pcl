@@ -123,15 +123,17 @@ namespace Splunk.Client
         /// </remarks>
         public IEnumerator<SearchResult> GetEnumerator()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
             {
                 throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
             }
 
-            for (var task = this.ReadResultAsync(); task.Result != null; task = this.ReadResultAsync())
+            for (Task<SearchResult> task; (task = this.ReadResultAsync()) != null; )
             {
                 yield return task.Result;
             }
+
+            this.enumerated = 2;
         }
 
         /// <inheritdoc cref="GetEnumerator">
@@ -149,17 +151,18 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 1) != 0)
+            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
             {
                 throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
             }
 
-            for (SearchResult result; (result = await this.ReadResultAsync()) != null; )
+            for (Task<SearchResult> result; (result = this.ReadResultAsync()) != null; )
             {
-                this.OnNext(result);
+                this.OnNext(await result);
             }
 
             this.OnCompleted();
+            this.enumerated = 2;
         }
 
         #endregion
@@ -189,8 +192,8 @@ namespace Splunk.Client
         /// "SearchResultStream"/> stream.
         /// </summary>
         /// <returns>
-        /// A <see cref="SearchResult"/> if the next result was read successfully;
-        /// <c>null</c> if there are no more records to read.
+        /// A <see cref="Task<SearchResult>"/> if the next result was read 
+        /// successfully; <c>null</c> if there are no more records to read.
         /// </returns>
         async Task<SearchResult> ReadResultAsync()
         {

@@ -128,9 +128,12 @@ namespace Splunk.Client
                 throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
             }
 
-            for (Task<SearchResult> task; (task = this.ReadResultAsync()) != null; )
+            XmlReader reader = this.response.XmlReader;
+
+            while (reader.ReadState <= ReadState.Interactive)
             {
-                yield return task.Result;
+                var result = this.ReadResultAsync().Result;
+                yield return result;
             }
 
             this.enumerated = 2;
@@ -156,9 +159,11 @@ namespace Splunk.Client
                 throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
             }
 
-            for (Task<SearchResult> result; (result = this.ReadResultAsync()) != null; )
+            XmlReader reader = this.response.XmlReader;
+
+            while (reader.ReadState <= ReadState.Interactive)
             {
-                this.OnNext(await result);
+                this.OnNext(await this.ReadResultAsync());
             }
 
             this.OnCompleted();

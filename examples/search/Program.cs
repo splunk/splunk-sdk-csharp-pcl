@@ -30,8 +30,11 @@ namespace Splunk.Client.Examples.Search
         {
             using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
             {
-                OneshotSearch(service).Wait();
+                Run(service).Wait();
             }
+
+            Console.WriteLine("Press return to continue: ");
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -39,19 +42,17 @@ namespace Splunk.Client.Examples.Search
         /// </summary>
         /// <param name="service">The service.</param>
         /// <returns></returns>
-        static async Task OneshotSearch(Service service)
+        static async Task Run(Service service)
         {
-            //// Login
             await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
 
-            // Simple oneshot search
-            using (SearchResultStream searchResults = await service.SearchOneshotAsync("search index=_internal | head 5"))
+            //// Simple oneshot search
+
+            using (SearchResultStream resultStream = await service.SearchOneshotAsync("search index=_internal | head 5"))
             {
-                foreach (SearchResult record in searchResults)
+                foreach (SearchResult result in resultStream)
                 {
-                    Console.WriteLine("===============================");
-                    Console.WriteLine(record);
-                    Console.WriteLine();
+                    Console.WriteLine(result);
                 }
             }
         }

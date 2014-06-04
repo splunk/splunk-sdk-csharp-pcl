@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk server message entity.
     /// </summary>
-    public class ServerMessage : Entity, IServerMessage
+    public class ServerMessage : Entity<Resource>, IServerMessage
     {
         #region Constructors
 

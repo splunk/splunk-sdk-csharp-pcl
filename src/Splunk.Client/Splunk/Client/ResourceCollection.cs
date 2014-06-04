@@ -86,15 +86,6 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Fields
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected internal static readonly ResourceCollection Missing = new ResourceCollection(new ExpandoObject());
-
-        #endregion
-
         #region Properties
 
         /// <summary>
@@ -134,7 +125,6 @@ namespace Splunk.Client
         /// </remarks>
         protected internal override void Initialize(AtomFeed feed)
         {
-            Contract.Requires<ArgumentNullException>(feed != null);
             //this.EnsureUninitialized();
 
             dynamic expando = new ExpandoObject();

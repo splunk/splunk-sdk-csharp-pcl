@@ -49,7 +49,7 @@ namespace Splunk.Client
     /// <remarks>
     /// This is the base class for all Splunk entities.
     /// </remarks>
-    public class Entity : BaseEntity, IEntity
+    public class Entity<TResource> : BaseEntity<TResource>, IEntity where TResource : BaseResource, new()
     {
         #region Constructors
 
@@ -242,9 +242,8 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void CreateSnapshot(AtomEntry entry, Version generatorVersion)
         {
-            Contract.Requires<ArgumentNullException>(generatorVersion != null);
-            Contract.Requires<ArgumentNullException>(entry != null);
-            this.Snapshot = new Resource(entry, generatorVersion);
+            this.Snapshot = new TResource();
+            this.Snapshot.Initialize(entry, generatorVersion);
         }
 
         /// <inheritdoc/>
@@ -266,9 +265,9 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        protected override void CreateSnapshot(BaseResource resource)
+        protected override void CreateSnapshot(TResource resource)
         {
-            IReadOnlyList<BaseResource> resources = resource.GetValue("Resources");
+            IReadOnlyList<TResource> resources = resource.GetValue("Resources");
 
             if (resources != null)
             {

@@ -41,8 +41,8 @@ namespace Splunk.Client
     /// </list>
     /// </remarks>
     [ContractClass(typeof(IServerMessageCollectionContract<>))]
-    public interface IServerMessageCollection<TServerMessage> : IPaginated, IEntityCollection<TServerMessage>
-        where TServerMessage : BaseEntity, IServerMessage, new()
+    public interface IServerMessageCollection<TServerMessage> : IPaginated, IEntityCollection<TServerMessage, Resource>
+        where TServerMessage : BaseEntity<Resource>, IServerMessage, new()
     {
         /// <summary>
         /// Asyncrhonously creates a new <see cref="ServerMessage"/>.
@@ -78,7 +78,7 @@ namespace Splunk.Client
 
     [ContractClassFor(typeof(IServerMessageCollection<>))]
     abstract class IServerMessageCollectionContract<TServerMessage> : IServerMessageCollection<TServerMessage> 
-        where TServerMessage : BaseEntity, IServerMessage, new()
+        where TServerMessage : BaseEntity<Resource>, IServerMessage, new()
     {
         #region Properties
 

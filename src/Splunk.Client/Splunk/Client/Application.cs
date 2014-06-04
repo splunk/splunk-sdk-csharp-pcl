@@ -44,7 +44,7 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class Application : Entity, IApplication
+    public class Application : Entity<Resource>, IApplication
     {
         #region Constructors
 

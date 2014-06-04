@@ -27,8 +27,8 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     [ContractClass(typeof(IStoragePasswordCollectionContract<>))]
-    public interface IStoragePasswordCollection<TStoragePassword> : IPaginated, IEntityCollection<TStoragePassword>
-        where TStoragePassword : BaseEntity, IStoragePassword, new()
+    public interface IStoragePasswordCollection<TStoragePassword> : IPaginated, IEntityCollection<TStoragePassword, Resource>
+        where TStoragePassword : BaseEntity<Resource>, IStoragePassword, new()
     {
         /// <summary>
         /// Asynchronously creates a new <see cref="StoragePassword"/>.
@@ -55,7 +55,7 @@ namespace Splunk.Client
 
     [ContractClassFor(typeof(IStoragePasswordCollection<>))]
     abstract class IStoragePasswordCollectionContract<TStoragePassword> : IStoragePasswordCollection<TStoragePassword>
-        where TStoragePassword : BaseEntity, IStoragePassword, new()
+        where TStoragePassword : BaseEntity<Resource>, IStoragePassword, new()
     {
         public abstract TStoragePassword this[int index] { get; }
         public abstract int Count { get; }

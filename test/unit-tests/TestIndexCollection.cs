@@ -124,33 +124,33 @@ namespace Splunk.Client.UnitTests
                 criteria.AsEnumerable());
         }
 
-        void CheckCommonProperties(string expectedName, BaseEntity resourceEndpoint)
+        static void CheckCommonProperties<TResource>(string expectedName, BaseEntity<TResource> entity) where TResource : BaseResource, new()
         {
-            Assert.Equal(expectedName, resourceEndpoint.Title);
+            Assert.Equal(expectedName, entity.Title);
 
             //// Properties common to all resources
 
             Assert.DoesNotThrow(() =>
             {
-                Version value = resourceEndpoint.GeneratorVersion;
+                Version value = entity.GeneratorVersion;
                 Assert.NotNull(value);
             });
 
             Assert.DoesNotThrow(() =>
             {
-                Uri value = resourceEndpoint.Id;
+                Uri value = entity.Id;
                 Assert.NotNull(value);
             });
 
             Assert.DoesNotThrow(() =>
             {
-                string value = resourceEndpoint.Title;
+                string value = entity.Title;
                 Assert.NotNull(value);
             });
 
             Assert.DoesNotThrow(() =>
             {
-                DateTime value = resourceEndpoint.Updated;
+                DateTime value = entity.Updated;
                 Assert.NotEqual(DateTime.MinValue, value);
             });
         }

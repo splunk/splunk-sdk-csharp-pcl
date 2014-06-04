@@ -34,7 +34,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk saved search.
     /// </summary>
-    public class SavedSearch : Entity, ISavedSearch
+    public class SavedSearch : Entity<Resource>, ISavedSearch
     {
         #region Constructors
 

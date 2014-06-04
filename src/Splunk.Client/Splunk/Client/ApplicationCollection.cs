@@ -31,7 +31,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a collection of Splunk applications.
     /// </summary>
-    public class ApplicationCollection : EntityCollection<Application>, IApplicationCollection<Application>
+    public class ApplicationCollection : EntityCollection<Application, Resource>, IApplicationCollection<Application>
     {
         #region Constructors
 
@@ -172,7 +172,7 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
                 
-                var resourceEndpoint = await BaseEntity.CreateAsync<Application>(this.Context, response);
+                var resourceEndpoint = await Entity<Resource>.CreateAsync<Application>(this.Context, response);
                 return resourceEndpoint;
             }
         }

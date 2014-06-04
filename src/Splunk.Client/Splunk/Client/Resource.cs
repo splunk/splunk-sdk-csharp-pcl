@@ -137,7 +137,6 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        protected internal static readonly Resource Missing = new Resource(new ExpandoObject());
         ExpandoAdapter content;
 
         #endregion

@@ -44,9 +44,10 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    [ContractClass(typeof(IEntityCollectionContract<>))]
-    public interface IEntityCollection<TEntity> : IReadOnlyList<TEntity> 
-        where TEntity : BaseEntity, new()
+    [ContractClass(typeof(IEntityCollectionContract<,>))]
+    public interface IEntityCollection<TEntity, TResource> : IReadOnlyList<TEntity> 
+        where TEntity : BaseEntity<TResource>, new()
+        where TResource : BaseResource, new()
     {
         /// <summary>
         /// Asynchronously retrieves a <see cref="TEntity"/> in the current
@@ -109,9 +110,10 @@ namespace Splunk.Client
         Task ReloadAsync();
     }
 
-    [ContractClassFor(typeof(IEntityCollection<>))]
-    abstract class IEntityCollectionContract<TEntity> : IEntityCollection<TEntity>
-        where TEntity : BaseEntity, new()
+    [ContractClassFor(typeof(IEntityCollection<,>))]
+    abstract class IEntityCollectionContract<TEntity, TResource> : IEntityCollection<TEntity, TResource>
+        where TEntity : BaseEntity<TResource>, new()
+        where TResource : BaseResource, new()
     {
         public Task<TEntity> GetAsync(string name)
         {

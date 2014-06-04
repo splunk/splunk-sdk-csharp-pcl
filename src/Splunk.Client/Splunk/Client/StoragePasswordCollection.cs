@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// Provides an object representation of a collection of Splunk storage
     /// passwords.
     /// </summary>
-    public class StoragePasswordCollection : EntityCollection<StoragePassword>, 
+    public class StoragePasswordCollection : EntityCollection<StoragePassword, Resource>, 
         IStoragePasswordCollection<StoragePassword>
     {
         #region Constructors

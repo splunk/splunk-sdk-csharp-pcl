@@ -31,8 +31,8 @@ namespace Splunk.Client
     /// configuration files.
     /// </summary>
     [ContractClass(typeof(IConfigurationContract<>))]
-    public interface IConfiguration<TConfigurationStanza> : IEntityCollection<TConfigurationStanza>
-        where TConfigurationStanza : BaseEntity, IConfigurationStanza, new()
+    public interface IConfiguration<TConfigurationStanza> : IEntityCollection<TConfigurationStanza, Resource>
+        where TConfigurationStanza : BaseEntity<Resource>, IConfigurationStanza, new()
     {
         /// <summary>
         /// Asynchronously creates a new configuration stanza.
@@ -126,7 +126,7 @@ namespace Splunk.Client
 
     [ContractClassFor(typeof(IConfiguration<>))]
     abstract class IConfigurationContract<TConfigurationStanza> : IConfiguration<TConfigurationStanza>
-        where TConfigurationStanza : BaseEntity, IConfigurationStanza, new()
+        where TConfigurationStanza : BaseEntity<Resource>, IConfigurationStanza, new()
     {
         public abstract TConfigurationStanza this[int index] { get; }
         public abstract int Count { get; }

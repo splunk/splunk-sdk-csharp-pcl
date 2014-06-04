@@ -45,7 +45,8 @@ namespace Splunk.Client
     /// <remarks>
     /// This is the base class for all Splunk entities.
     /// </remarks>
-    public abstract class BaseEntity : Endpoint
+    [ContractClass(typeof(BaseEntityContract<>))]
+    public abstract class BaseEntity<TResource> : Endpoint where TResource : BaseResource, new()
     {
         #region Constructors
 
@@ -161,7 +162,7 @@ namespace Splunk.Client
         /// Gets an object representing the Splunk resource at the time it was
         /// last retrieved by the current <see cref="BaseEntity"/>.
         /// </summary>
-        protected BaseResource Snapshot
+        protected TResource Snapshot
         {
             get { return this.snapshot; }
             set { this.snapshot = value; }
@@ -207,7 +208,7 @@ namespace Splunk.Client
         /// Asynchronously creates a <see cref="BaseEntity"/> from a
         /// Splunk atom feed <see cref="Response"/>.
         /// </summary>
-        /// <typeparam name="TResourceEndpoint">
+        /// <typeparam name="TEntity">
         /// The type of <see cref="BaseEntity"/> to be created.
         /// </typeparam>
         /// <param name="response">
@@ -216,11 +217,11 @@ namespace Splunk.Client
         /// <returns>
         /// The <see cref="BaseEntity"/> created.
         /// </returns>
-        internal static async Task<TResourceEndpoint> CreateAsync<TResourceEndpoint>(Context context, Response response) 
-            where TResourceEndpoint : BaseEntity, new()
+        internal static async Task<TEntity> CreateAsync<TEntity>(Context context, Response response) 
+            where TEntity : BaseEntity<TResource>, new()
         {
             var reader = response.XmlReader;
-            TResourceEndpoint resourceEndpoint;
+            TEntity resourceEndpoint;
 
             reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry"));
 
@@ -229,7 +230,7 @@ namespace Splunk.Client
                 var entry = new AtomEntry();
 
                 await entry.ReadXmlAsync(reader);
-                resourceEndpoint = new TResourceEndpoint();
+                resourceEndpoint = new TEntity();
                 resourceEndpoint.Initialize(context, entry, new Version(0, 0));
             }
             else
@@ -237,7 +238,7 @@ namespace Splunk.Client
                 var feed = new AtomFeed();
 
                 await feed.ReadXmlAsync(reader);
-                resourceEndpoint = new TResourceEndpoint();
+                resourceEndpoint = new TEntity();
                 resourceEndpoint.Initialize(context, feed);
             }
 
@@ -275,7 +276,7 @@ namespace Splunk.Client
         /// <remarks>
         /// Derived types must implement this method.
         /// </remarks>
-        protected abstract void CreateSnapshot(BaseResource resource);
+        protected abstract void CreateSnapshot(TResource resource);
 
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
@@ -387,7 +388,7 @@ namespace Splunk.Client
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal void Initialize(Context context, BaseResource resource)
+        protected internal void Initialize(Context context, TResource resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null);
             Contract.Requires<ArgumentNullException>(context != null);
@@ -420,8 +421,28 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        volatile BaseResource snapshot = BaseResource.Missing;
+        volatile TResource snapshot = new TResource();
 
         #endregion
+    }
+
+    [ContractClassFor(typeof(BaseEntity<>))]
+    public abstract class BaseEntityContract<TResource> : BaseEntity<TResource> where TResource : BaseResource, new()
+    {
+        protected override void CreateSnapshot(AtomEntry entry, Version generatorVersion)
+        {
+            Contract.Requires<ArgumentNullException>(entry != null);
+            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+        }
+
+        protected override void CreateSnapshot(AtomFeed feed)
+        {
+            Contract.Requires<ArgumentNullException>(feed != null);
+        }
+
+        protected override void CreateSnapshot(TResource resource)
+        {
+            Contract.Requires<ArgumentNullException>(resource != null);
+        }
     }
 }

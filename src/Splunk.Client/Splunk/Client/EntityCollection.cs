@@ -49,8 +49,9 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class EntityCollection<TEntity> : BaseEntity, IEntityCollection<TEntity> 
-        where TEntity : BaseEntity, new()
+    public class EntityCollection<TEntity, TResource> : BaseEntity<ResourceCollection>, IEntityCollection<TEntity, TResource> 
+        where TEntity : BaseEntity<TResource>, new()
+        where TResource : BaseResource, new()
     {
         #region Constructors
 
@@ -190,7 +191,7 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                return await BaseEntity.CreateAsync<TEntity>(this.Context, response);
+                return await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response);
             }
         }
 
@@ -208,7 +209,7 @@ namespace Splunk.Client
             using (Response response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                return await BaseEntity.CreateAsync<TEntity>(this.Context, response);
+                return await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response);
             }
         }
 
@@ -255,7 +256,7 @@ namespace Splunk.Client
 
                 if (response.Message.StatusCode == HttpStatusCode.OK)
                 {
-                    resourceEndpoint = await BaseEntity.CreateAsync<TEntity>(this.Context, response);
+                    resourceEndpoint = await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response);
                 }
 
                 return resourceEndpoint;
@@ -344,7 +345,7 @@ namespace Splunk.Client
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {
-            return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
+            return this.Resources.Select(resource => Create(resource)).GetEnumerator();
         }
 
         #endregion
@@ -354,21 +355,24 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void CreateSnapshot(AtomEntry entry, Version generatorVersion)
         {
-            Contract.Requires<ArgumentNullException>(generatorVersion != null);
-            Contract.Requires<ArgumentNullException>(entry != null);
-            this.Snapshot = new BaseResource(entry, generatorVersion);
+            this.Snapshot = new ResourceCollection();
+            this.Snapshot.Initialize(entry, generatorVersion);
+            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
         }
 
         /// <inheritdoc/>
         protected override void CreateSnapshot(AtomFeed feed)
         {
-            this.Snapshot = new BaseResource(feed);
+            this.Snapshot = new ResourceCollection();
+            this.Snapshot.Initialize(feed);
+            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
         }
 
         /// <inheritdoc/>
-        protected override void CreateSnapshot(BaseResource resource)
+        protected override void CreateSnapshot(ResourceCollection resource)
         {
             this.Snapshot = resource;
+            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
         }
 
         #endregion
@@ -377,21 +381,17 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        internal static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new List<BaseResource>());
+        internal static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<TResource>(new List<TResource>());
         internal static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
 
-        IReadOnlyList<BaseResource> Resources
-        {
-            get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
-        }
+        IReadOnlyList<TResource> Resources
+        { get; set; }
 
-        TEntity Create(BaseResource resource)
+        TEntity Create(TResource resource)
         {
             var entity = new TEntity();
-
-            entity.Initialize(this.Context, resource);
-            return entity;
+            throw new NotImplementedException("Reconstruct snapshot from resource");
         }
 
         #endregion

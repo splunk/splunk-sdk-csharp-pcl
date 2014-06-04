@@ -63,7 +63,7 @@
     <Compile Include="TestModularInputs.cs" />
     <Compile Include="TestRequestException.cs" />
     <Compile Include="TestResource.cs" />
-    <Compile Include="TestResourceEndpoint.cs" />
+    <Compile Include="TestEntity.cs" />
     <Compile Include="TestResourceName.cs" />
     <Compile Include="TestSavedSearchAttributes.cs" />
     <Compile Include="TestSavedSearchCollection.cs" />

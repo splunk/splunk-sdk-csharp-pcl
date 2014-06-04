@@ -48,7 +48,7 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
-    public class StoragePassword : Entity, IStoragePassword
+    public class StoragePassword : Entity<Resource>, IStoragePassword
     {
         #region Constructors
 

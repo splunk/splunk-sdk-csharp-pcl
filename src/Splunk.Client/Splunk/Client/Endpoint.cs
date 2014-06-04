@@ -311,7 +311,6 @@ namespace Splunk.Client
             this.Initialize(context, ns, name);
         }
 
-
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
         /// "Endpoint"/>.

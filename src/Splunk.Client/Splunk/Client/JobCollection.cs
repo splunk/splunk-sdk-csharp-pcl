@@ -32,7 +32,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a collection of Splunk search jobs.
     /// </summary>
-    public class JobCollection : EntityCollection<Job>, IJobCollection<Job>
+    public class JobCollection : EntityCollection<Job, Resource>, IJobCollection<Job>
     {
         #region Constructors
 

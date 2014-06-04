@@ -40,7 +40,7 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var entity = new Entity(context, feed);
+                var entity = new Entity<Resource>(context, feed);
                 CheckApplication(entity, feed.Entries[0], feed.GeneratorVersion);
             }
         }
@@ -55,8 +55,8 @@ namespace Splunk.Client.UnitTests
             {
                 //// EntityCollection<TEntity> checks
 
-                var collection = new EntityCollection<Entity>(context, feed);
-                CheckCommonStaticPropertiesOfResourceEndpoint(collection);
+                var collection = new EntityCollection<Entity<Resource>, Resource>(context, feed);
+                CheckCommonStaticPropertiesEntity(collection);
 
                 Assert.Equal(feed.Id, collection.Id);
                 Assert.Equal(feed.GeneratorVersion, collection.GeneratorVersion);
@@ -80,13 +80,13 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var collection = new EntityCollection<EntityCollection<Entity>>(context, feed);
+                var collection = new EntityCollection<EntityCollection<Entity<Resource>, Resource>, ResourceCollection>(context, feed);
 
-                CheckCommonStaticPropertiesOfResourceEndpoint(collection);
+                CheckCommonStaticPropertiesEntity(collection);
                 Assert.Equal("properties", collection.Name);
                 Assert.Equal(83, collection.Count);
 
-                foreach (EntityCollection<Entity> entity in collection)
+                foreach (EntityCollection<Entity<Resource>, Resource> entity in collection)
                 {
                     Assert.Equal(0, entity.Count);
                 }
@@ -95,54 +95,54 @@ namespace Splunk.Client.UnitTests
 
         #region Privates/internals
 
-        static void CheckCommonStaticPropertiesOfResourceEndpoint(BaseEntity resource)
+        static void CheckCommonStaticPropertiesEntity<TResource>(BaseEntity<TResource> entity) where TResource : BaseResource, new()
         {
             Assert.DoesNotThrow(() => 
             { 
-                dynamic o = resource; 
-                Assert.True(o.Context.Equals(resource.Context));
+                dynamic o = entity; 
+                Assert.True(o.Context.Equals(entity.Context));
             });
 
             Assert.DoesNotThrow(() => 
             { 
-                dynamic o = resource; 
-                Assert.True(o.Namespace.Equals(resource.Namespace)); 
+                dynamic o = entity; 
+                Assert.True(o.Namespace.Equals(entity.Namespace)); 
             });
 
             Assert.DoesNotThrow(() =>
             {
-                dynamic o = resource; 
-                Assert.True(o.ResourceName.Equals(resource.ResourceName));
+                dynamic o = entity; 
+                Assert.True(o.ResourceName.Equals(entity.ResourceName));
             });
 
             Assert.DoesNotThrow(() =>
             {
-                dynamic o = resource; 
-                Assert.True(o.GeneratorVersion.Equals(resource.GeneratorVersion));
+                dynamic o = entity; 
+                Assert.True(o.GeneratorVersion.Equals(entity.GeneratorVersion));
             });
             
             Assert.DoesNotThrow(() =>
             {
-                dynamic o = resource; 
-                Assert.True(o.Id.Equals(resource.Id));
+                dynamic o = entity; 
+                Assert.True(o.Id.Equals(entity.Id));
             });
 
             Assert.DoesNotThrow(() =>
             {
-                dynamic o = resource; 
-                Assert.True(o.Title.Equals(resource.Title));
+                dynamic o = entity; 
+                Assert.True(o.Title.Equals(entity.Title));
             });
             
             Assert.DoesNotThrow(() =>
             {
-                dynamic o = resource; 
-                Assert.True(o.Updated.Equals(resource.Updated)); 
+                dynamic o = entity; 
+                Assert.True(o.Updated.Equals(entity.Updated)); 
             });
         }
 
-        static void CheckApplication(Entity application, AtomEntry entry, Version generatorVersion)
+        static void CheckApplication(Entity<Resource> application, AtomEntry entry, Version generatorVersion)
         {
-            CheckCommonStaticPropertiesOfResourceEndpoint(application);
+            CheckCommonStaticPropertiesEntity(application);
 
             Assert.Equal(entry.Author, application.Dynamic.Author);
             Assert.Equal(entry.Title, application.Name);

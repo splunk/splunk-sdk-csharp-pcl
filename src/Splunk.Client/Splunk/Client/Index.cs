@@ -40,7 +40,7 @@ namespace Splunk.Client
     /// </list>
     /// </para>
     /// </remarks>
-    public class Index : Entity, IIndex
+    public class Index : Entity<Resource>, IIndex
     {
         #region Constructors
 

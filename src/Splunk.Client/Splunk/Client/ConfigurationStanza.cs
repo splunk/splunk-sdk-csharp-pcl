@@ -32,7 +32,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk configuration stanza.
     /// </summary>
-    public class ConfigurationStanza : Entity, IConfigurationStanza
+    public class ConfigurationStanza : Entity<Resource>, IConfigurationStanza
     {
         #region Constructors
 
@@ -170,7 +170,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public ConfigurationSetting this[int index]
         {
-            get { return this.Create(this.Resources[index]); }
+            get { return this.Resources[index]; }
         }
 
         /// <inheritdoc/>
@@ -228,7 +228,7 @@ namespace Splunk.Client
         /// </returns>
         public IEnumerator<ConfigurationSetting> GetEnumerator()
         {
-            return this.Resources.Select(resource => this.Create(resource)).GetEnumerator();
+            return this.Resources.GetEnumerator();
         }
 
         /// <summary>
@@ -250,6 +250,16 @@ namespace Splunk.Client
             using (var response = await this.Context.DeleteAsync(this.Namespace, rn))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+            }
+        }
+
+        /// <inheritdoc/>
+        public override async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                return false;
             }
         }
 
@@ -278,22 +288,15 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void CreateSnapshot(AtomFeed feed)
         {
-            this.Snapshot = new BaseResource(feed);
+            base.CreateSnapshot(feed);
+            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
         }
 
         /// <inheritdoc/>
-        protected override void CreateSnapshot(BaseResource resource)
+        protected override void CreateSnapshot(Resource resource)
         {
             this.Snapshot = resource;
-        }
-
-        public override async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
-        {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                return false;
-            }
+            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
         }
 
         #endregion
@@ -304,18 +307,8 @@ namespace Splunk.Client
 
         static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new List<BaseResource>());
 
-        IReadOnlyList<BaseResource> Resources
-        {
-            get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
-        }
-
-        ConfigurationSetting Create(BaseResource resource)
-        {
-            var setting = new ConfigurationSetting();
-            setting.Object = resource.Object;
-            
-            return setting;
-        }
+        IReadOnlyList<ConfigurationSetting> Resources
+        { get; set; }
 
         #endregion
     }

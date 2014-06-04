@@ -29,7 +29,7 @@ namespace Splunk.Client
     /// Provides an object representation of a collection of Splunk configuration 
     /// files.
     /// </summary>
-    public class ConfigurationCollection : EntityCollection<Configuration>, 
+    public class ConfigurationCollection : EntityCollection<Configuration, ResourceCollection>, 
         IConfigurationCollection<Configuration, ConfigurationStanza>
     {
         #region Constructors

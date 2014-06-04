@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a collection of Splunk data indexes.
     /// </summary>
-    public class IndexCollection : EntityCollection<Index>, IIndexCollection<Index>
+    public class IndexCollection : EntityCollection<Index, Resource>, IIndexCollection<Index>
     {
         #region Constructors
 

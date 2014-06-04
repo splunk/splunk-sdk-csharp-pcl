@@ -28,7 +28,8 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <inheritdoc/>
-    public class ServerMessageCollection : EntityCollection<ServerMessage>, IServerMessageCollection<ServerMessage>
+    public class ServerMessageCollection : EntityCollection<ServerMessage, Resource>, 
+        IServerMessageCollection<ServerMessage>
     {
         #region Constructors
 

@@ -32,7 +32,7 @@ namespace Splunk.Client
     /// <summary>
     /// Represents a collection of saved searches.
     /// </summary>
-    public class SavedSearchCollection : EntityCollection<SavedSearch>, ISavedSearchCollection<SavedSearch>
+    public class SavedSearchCollection : EntityCollection<SavedSearch, Resource>, ISavedSearchCollection<SavedSearch>
     {
         #region Constructors
 

@@ -29,8 +29,8 @@ namespace Splunk.Client
     /// 
     /// </typeparam>
     [ContractClass(typeof(ISavedSearchCollectionContract<>))]
-    public interface ISavedSearchCollection<TSavedSearch> : IPaginated, IEntityCollection<TSavedSearch>
-        where TSavedSearch : BaseEntity, ISavedSearch, new()
+    public interface ISavedSearchCollection<TSavedSearch> : IPaginated, IEntityCollection<TSavedSearch, Resource>
+        where TSavedSearch : BaseEntity<Resource>, ISavedSearch, new()
     {
         /// <summary>
         /// Asynchronously creates a new saved search.
@@ -75,7 +75,7 @@ namespace Splunk.Client
 
     [ContractClassFor(typeof(ISavedSearchCollection<>))]
     abstract class ISavedSearchCollectionContract<TSavedSearch> : ISavedSearchCollection<TSavedSearch>
-        where TSavedSearch : BaseEntity, ISavedSearch, new()
+        where TSavedSearch : BaseEntity<Resource>, ISavedSearch, new()
     {
         #region Properties
 

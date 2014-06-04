@@ -77,17 +77,7 @@ namespace Splunk.Client
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously sends a stream of raw events to Splunk.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Stream"/> used to send events to Splunk.
-        /// </returns>
-        /// <remarks>
-        /// This method the <a href="http://goo.gl/zFKzMp">POST 
-        /// receivers/stream</a> endpoint to send raw events to Splunk as
-        /// they become available on <paramref name="eventStream"/>.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task SendAsync(Stream eventStream, string indexName = null, TransmitterArgs args = null)
         {
             using (var content = new StreamContent(eventStream))
@@ -112,24 +102,7 @@ namespace Splunk.Client
             }
         }
 
-        /// <summary>
-        /// Asynchronously send raw event text to Splunk.
-        /// </summary>
-        /// <param name="eventText">
-        /// Raw event text.
-        /// </param>
-        /// <param name="args">
-        /// Arguments identifying the event type and destination.
-        /// </param>
-        /// <returns>
-        /// A <see cref="SearchResult"/> object representing the event created by
-        /// Splunk.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/GPLUVg">POST 
-        /// receivers/simple</a> endpoint to obtain the <see cref=
-        /// "SearchResult"/> that it returns.
-        /// </remarks>
+        /// <inheritdoc/>
         public virtual async Task<SearchResult> SendAsync(string eventText, string indexName = null, TransmitterArgs args = null)
         {
             using (var content = new StringContent(eventText))

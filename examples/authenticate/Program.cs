@@ -51,6 +51,9 @@ namespace Splunk.Examples.Authenticate
                 Console.WriteLine("Connected to {0}:{1} ", service.Server.Context.Host, service.Server.Context.Port);
                 Run(service).Wait();
             }
+
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
         }
 
         /// <summary>

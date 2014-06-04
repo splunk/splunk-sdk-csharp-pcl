@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
-    public class ResourceCollection<TResource> : BaseResource where TResource : BaseResource, new()
+    public class ResourceCollection : BaseResource
     {
         #region Constructors
 
@@ -91,8 +91,7 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        protected internal static readonly ResourceCollection<TResource> Missing =
-            new ResourceCollection<TResource>(new ExpandoObject());
+        protected internal static readonly ResourceCollection Missing = new ResourceCollection(new ExpandoObject());
 
         #endregion
 
@@ -101,7 +100,7 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        protected internal IReadOnlyCollection<TResource> Entries
+        protected internal IReadOnlyCollection<BaseResource> Entries
         {
             get { return this.resources; }
         }
@@ -162,20 +161,28 @@ namespace Splunk.Client
                 expando.Pagination = feed.Pagination;
             }
 
-            var resources = new List<TResource>();
+            var resources = new List<BaseResource>();
 
             if (feed.Entries != null)
             {
                 foreach (var entry in feed.Entries)
                 {
-                    var resource = new TResource();
+                    BaseResource resource;
 
-                    resource.Initialize(entry, feed.GeneratorVersion);
+                    if (entry.Content == null)
+                    {
+                        resource = new ResourceCollection(entry, feed.GeneratorVersion);
+                    }
+                    else
+                    {
+                        resource = new Resource(entry, feed.GeneratorVersion);
+                    }
+
                     resources.Add(resource);
                 }
             }
 
-            this.resources = new ReadOnlyCollection<TResource>(resources);
+            this.resources = new ReadOnlyCollection<BaseResource>(resources);
             this.Object = expando;
             
             //this.MarkInitialized();
@@ -197,7 +204,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        IReadOnlyList<TResource> resources;
+        IReadOnlyList<BaseResource> resources;
 
         #endregion
     }

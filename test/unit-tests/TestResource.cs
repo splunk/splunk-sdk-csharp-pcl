@@ -38,7 +38,7 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                dynamic collection = new ResourceCollection<Resource>(feed);
+                dynamic collection = new ResourceCollection(feed);
                 CheckCommonStaticPropertiesOfResource(collection);
 
                 //// Static property checks
@@ -57,7 +57,7 @@ namespace Splunk.Client.UnitTests
 
                 Assert.DoesNotThrow(() =>
                 {
-                    ReadOnlyCollection<Resource> p = collection.Entries;
+                    ReadOnlyCollection<BaseResource> p = collection.Entries;
                     Assert.Equal(14, p.Count);
                 });
 
@@ -65,6 +65,7 @@ namespace Splunk.Client.UnitTests
                 {
                     CheckCommonStaticPropertiesOfResource(resource);
                     CheckExistenceOfJobProperties(resource);
+                    Assert.IsType(typeof(Resource), resource);
                 }
 
                 {   dynamic resource = collection.Entries[0];

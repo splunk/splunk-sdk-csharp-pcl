@@ -48,6 +48,9 @@ namespace Splunk.Examples.Submit
             {
                 Run(service).Wait();
             }
+
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
         }
 
         /// <summary>

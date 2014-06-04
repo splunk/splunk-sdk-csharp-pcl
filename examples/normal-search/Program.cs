@@ -20,8 +20,6 @@ namespace Splunk.Client.Examples
 
     using System;
     using System.Net;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -32,10 +30,13 @@ namespace Splunk.Client.Examples
     {
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
+
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
         }
 
         static async Task Run(Service service)
@@ -49,13 +50,14 @@ namespace Splunk.Client.Examples
 
             using (searchResultStream = await job.GetSearchResultsAsync())
             {
-                int recordNumber = 0;
                 try
                 {
-                    foreach (var record in searchResultStream.ToEnumerable())
+                    foreach (Task<SearchResult> result in searchResultStream)
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", searchResultStream.ReadCount, await result));
                     }
+                    
+                    Console.WriteLine("End of search results");
                 }
                 catch (Exception e)
                 {
@@ -69,10 +71,10 @@ namespace Splunk.Client.Examples
 
             using (searchResultStream = await job.GetSearchResultsAsync())
             {
-                searchResultStream.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
-                    onNext: (record) =>
+                searchResultStream.Subscribe(
+                    onNext: (result) =>
                     {
-                        Console.WriteLine(record.ToString());
+                        Console.WriteLine(string.Format("{0:D8}: {1}", searchResultStream.ReadCount, result));
                     },
                     onError: (e) =>
                     {
@@ -82,7 +84,6 @@ namespace Splunk.Client.Examples
                     {
                         Console.WriteLine("End of search results");
                     });
-                await searchResultStream; // Awaiting an IObservable completes when the observable completes.
             }
         }
     }

@@ -235,7 +235,9 @@ namespace Splunk.Client.UnitTests
                 Index index = await service.Indexes.CreateAsync(indexName);
                 Assert.False(index.Disabled);
 
-                // submit event using TransmitterArgs
+                await Task.Delay(2000);
+
+                // Submit event using TransmitterArgs
 
                 const string Source = "splunk-sdk-tests";
                 const string SourceType = "splunk-sdk-test-event";
@@ -249,11 +251,12 @@ namespace Splunk.Client.UnitTests
                 };
 
                 Transmitter transmitter = service.Transmitter;
+                SearchResult result;
 
-                await transmitter.SendAsync(string.Format("1, {0}, {1}, simple event", DateTime.Now, indexName), 
+                result = await transmitter.SendAsync(string.Format("1, {0}, {1}, simple event", DateTime.Now, indexName), 
                     indexName, transmitterArgs);
                 
-                await transmitter.SendAsync(string.Format("2, {0}, {1}, simple event", DateTime.Now, indexName), 
+                result = await transmitter.SendAsync(string.Format("2, {0}, {1}, simple event", DateTime.Now, indexName), 
                     indexName, transmitterArgs);
 
                 using (MemoryStream stream = new MemoryStream())
@@ -271,7 +274,7 @@ namespace Splunk.Client.UnitTests
 
                 await TestHelper.WaitIndexTotalEventCountUpdated(index, 4);
 
-                SearchResultStream result = await service.SearchOneshotAsync(
+                SearchResultStream resultStream = await service.SearchOneshotAsync(
                         string.Format(
                             "search index={0} host={1} source={2} sourcetype={3}",
                             indexName,
@@ -279,7 +282,7 @@ namespace Splunk.Client.UnitTests
                             Source,
                             SourceType));
 
-                Assert.Equal(14, result.FieldNames.Count);
+                Assert.Equal(14, resultStream.FieldNames.Count);
             }
         }
 

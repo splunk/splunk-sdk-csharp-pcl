@@ -146,7 +146,7 @@ namespace Splunk.Client
                     arguments = arguments.Concat(args);
                 }
                 
-                using (var response = await this.Context.PostAsync(this.Namespace, SimpleReceiver, content, args))
+                using (var response = await this.Context.PostAsync(this.Namespace, SimpleReceiver, content, arguments))
                 {
                     await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                     var reader = response.XmlReader;

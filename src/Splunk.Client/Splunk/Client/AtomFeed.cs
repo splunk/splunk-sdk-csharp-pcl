@@ -187,9 +187,9 @@ namespace Splunk.Client
 
                     case "generator":
 
-                        string build = reader.GetRequiredAttribute("build");
+                        string build = reader.GetRequiredAttribute("build");  // TODO: Incorporate build number? Build number sometimes adds a fifth digit.
                         string version = reader.GetRequiredAttribute("version");
-                        this.GeneratorVersion = VersionConverter.Instance.Convert(string.Join(".", version, build));
+                        this.GeneratorVersion = VersionConverter.Instance.Convert(string.Join(".", version));
                         await reader.ReadAsync();
                         break;
 

@@ -80,12 +80,17 @@ namespace Splunk.Examples.Submit
                 await index.EnableAsync();
 
                 Transmitter transmitter = service.Transmitter;
+                SearchResult result;
 
-                await transmitter.SendAsync("Hello World.", indexName);
-                await transmitter.SendAsync("Goodbye world.", indexName);
+                result = await transmitter.SendAsync("Hello World.", indexName);
+                result = await transmitter.SendAsync("Goodbye world.", indexName);
 
                 var results = await service.SearchOneshotAsync(string.Format("search index={0}", indexName));
-                Console.WriteLine(results);              
+
+                foreach (Task<SearchResult> task in results)
+                {
+                    Console.WriteLine(await task);
+                }
             }
             catch (Exception e)
             {

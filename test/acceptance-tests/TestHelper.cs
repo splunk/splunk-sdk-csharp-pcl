@@ -48,11 +48,11 @@ namespace Splunk.Client.UnitTests
 
             while (watch.Elapsed < new TimeSpan(0, 0, seconds) && index.TotalEventCount != expectedEventCount)
             {
-                await Task.Delay(1000);
+                await Task.Delay(500);
                 await index.GetAsync();
             }
 
-            Console.WriteLine("Waited {0} seconds for index {1} event count to reach {2}, but it only reached {3}.", 
+            Console.WriteLine("Waited {0} seconds for index {1} event count to reach {2} and it reached {3}.", 
                 watch.Elapsed, expectedEventCount, index.TotalEventCount, index.Name);
 
             Assert.Equal(expectedEventCount, index.TotalEventCount);

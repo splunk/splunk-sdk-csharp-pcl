@@ -14,6 +14,10 @@
  * under the License.
  */
 
+//// TODO
+//// [X] Contracts - there are none
+//// [O] Documentation
+
 namespace Splunk.Client
 {
     using System;

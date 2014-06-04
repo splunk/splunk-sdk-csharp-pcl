@@ -170,18 +170,7 @@ namespace Splunk.Client
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously creates a new configuration stanza in the current 
-        /// <see cref="Configuration"/>.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of the configuration stanza to create.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/jae44k">POST 
-        /// properties/{file_name}</a> endpoint to create the configuration
-        /// stanza identified by <paramref name="stanzaName"/>.
-        /// </remarks>
+        /// <inheritdocs/>
         public override async Task<ConfigurationStanza> CreateAsync(IEnumerable<Argument> arguments)
         {
             //// These gymnastics are required because:
@@ -209,19 +198,8 @@ namespace Splunk.Client
             };
         }
 
-        /// <summary>
-        /// Asynchronously creates a new configuration stanza in the current 
-        /// <see cref="Configuration"/>.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of the configuration stanza to create.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/jae44k">POST 
-        /// properties/{file_name}</a> endpoint to create the configuration
-        /// stanza identified by <paramref name="stanzaName"/>.
-        /// </remarks>
-        public async Task<ConfigurationStanza> CreateAsync(string stanzaName)
+        /// <inheritdocs/>
+        public virtual async Task<ConfigurationStanza> CreateAsync(string stanzaName)
         {
             var arguments = new Argument[] { new Argument("__stanza", stanzaName) };
 
@@ -233,97 +211,38 @@ namespace Splunk.Client
             return new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
         }
 
-        /// <summary>
-        /// Asynchronously retrieves a setting from a configuration stanza in
-        /// the current <see cref="Configuration"/>.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of a configuration stanza in the current instance.
-        /// </param>
-        /// <param name="keyName">
-        /// Name of a setting in the <see cref="ConfigurationStanza"/> identified
-        /// by <paramref name="stanzaName"/>.
-        /// </param>
-        /// <returns>
-        /// An object representing the configuration setting identified by <paramref 
-        /// name="stanzaName"/> and <paramref name="keyName"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/cqT50u">GET 
-        /// properties/{file_name}/{stanza_name}/{key_name}</a> endpoint to 
-        /// construct the <see cref="ConfigurationSetting"/> it returns.
-        /// </remarks>
-        public async Task<string> GetSettingAsync(string stanzaName, string keyName)
+        /// <inheritdocs/>
+        public virtual async Task<string> GetSettingAsync(string stanzaName, string keyName)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
             var value = await resourceEndpoint.GetAsync(keyName);
             return value;
         }
 
-        /// <summary>
-        /// Asynchronously removes a configuration stanza from the current <see
-        /// cref="Configuration">.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of a configuration stanza to remove.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/dpbuhQ">DELETE
-        /// configs/conf-{file}/{name}</a> endpoint to remove the configuration
-        /// stanza identified by <paramref name="stanzaName"/>.
-        /// </remarks>
-        public async Task RemoveAsync(string stanzaName)
+        /// <inheritdocs/>
+        public virtual async Task RemoveAsync(string stanzaName)
         {
             var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
             await resource.RemoveAsync();
         }
 
-        /// <summary>
-        /// Asynchronously updates a configuration stanza from the configuration
-        /// file represented by the current instance.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of a configuration stanza in the current <see cref=
-        /// "Configuration"/>.
-        /// </param>
-        /// <param name="settings">
-        /// A variable-length list of objects representing the settings to be
-        /// added or updated.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/w742jw">POST 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
-        /// stanza identified by <paramref name="stanzaName"/>.
-        /// </remarks>
-        public async Task<ConfigurationStanza> UpdateAsync(string stanzaName, params Argument[] settings)
+        /// <inheritdocs/>
+        public virtual async Task<ConfigurationStanza> UpdateAsync(string stanzaName, params Argument[] settings)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
             await resourceEndpoint.UpdateAsync(settings);
             return resourceEndpoint;
         }
 
-        /// <summary>
-        /// Asynchronously updates a configuration stanza from the configuration
-        /// file represented by the current <see cref="Configuration">.
-        /// </summary>
-        /// <param name="stanzaName">
-        /// Name of a <see cref="ConfigurationStanza"/> in the current <see 
-        /// cref="Configuration"/>.
-        /// </param>
-        /// <param name="keyName">
-        /// Name of a setting in the <see cref="ConfigurationStanza"/> identified
-        /// by <paramref name="stanzaName"/>.
-        /// </param>
-        /// <param name="value">
-        /// A string value for <paramref name="keyName"/>.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/w742jw">POST 
-        /// properties/{file_name}/{stanza_name}</a> endpoint to update the 
-        /// setting identified by <paramref name="stanzaName"/> and <paramref 
-        /// name="keyName"/>.
-        /// </remarks>
-        public async Task UpdateSettingAsync(string stanzaName, string keyName, string value)
+        /// <inheritdocs/>
+        public virtual async Task UpdateSettingAsync(string stanzaName, string keyName, object value)
+        {
+            var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
+            await resourceEndpoint.UpdateAsync(keyName, value);
+        }
+
+        /// <inheritdocs/>
+        public virtual async Task UpdateSettingAsync(string stanzaName, string keyName, string value)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
             await resourceEndpoint.UpdateAsync(keyName, value);

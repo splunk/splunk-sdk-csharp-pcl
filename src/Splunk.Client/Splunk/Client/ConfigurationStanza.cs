@@ -170,7 +170,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public ConfigurationSetting this[int index]
         {
-            get { return this.Resources[index]; }
+            get { return new ConfigurationSetting(this.Resources[index]); }
         }
 
         /// <inheritdoc/>
@@ -228,7 +228,7 @@ namespace Splunk.Client
         /// </returns>
         public IEnumerator<ConfigurationSetting> GetEnumerator()
         {
-            return this.Resources.GetEnumerator();
+            return this.Resources.Select(resource => new ConfigurationSetting(resource)).GetEnumerator();
         }
 
         /// <summary>
@@ -293,7 +293,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        protected override void CreateSnapshot(Resource resource)
+        protected override void CreateSnapshot(BaseResource resource)
         {
             this.Snapshot = resource;
             this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
@@ -307,7 +307,7 @@ namespace Splunk.Client
 
         static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new List<BaseResource>());
 
-        IReadOnlyList<ConfigurationSetting> Resources
+        IReadOnlyList<BaseResource> Resources
         { get; set; }
 
         #endregion

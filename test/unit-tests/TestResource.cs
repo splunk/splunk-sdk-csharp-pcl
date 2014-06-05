@@ -85,8 +85,6 @@ namespace Splunk.Client.UnitTests
                     Assert.IsType(typeof(ReadOnlyDictionary<string, Uri>), resource.Links);
                     Assert.Equal(new string[] { "alternate", "search.log", "events", "results", "results_preview", "timeline", "summary", "control" }, resource.Links.Keys);
 
-                    Assert.Throws<RuntimeBinderException>(() => resource.Resources);
-
                     CheckExistenceOfJobProperties(resource);
                 }
             }

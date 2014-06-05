@@ -88,25 +88,53 @@ namespace Splunk.Client
         #endregion
 
         #region Properties
-
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public Version GeneratorVersion
         {
             get { return this.GetValue("GeneratorVersion"); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Uri Id
         {
             get { return this.GetValue("Id"); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Title
         {
             get { return this.GetValue("Title"); }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public DateTime Updated
         {
             get { return this.GetValue("Updated"); }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected ExpandoAdapter Content
+        {
+            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected internal IReadOnlyList<BaseResource> Resources
+        {
+            get { return this.GetValue("Resources") ?? NoResources; }
         }
 
         #endregion
@@ -222,6 +250,39 @@ namespace Splunk.Client
         /// </remarks>
         protected internal abstract void Initialize(AtomEntry entry, Version generatorVersion);
 
+        /// <summary>
+        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// "BaseResource"/>.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The current <see cref="BaseResource"/> is already initialized.
+        /// </exception>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="BaseResource"/>
+        /// instantiated by the default constructor. Override this method to 
+        /// provide special initialization code. Call this base method before 
+        /// initialization is complete. 
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        protected internal abstract void Initialize(AtomFeed feed);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TResource"></typeparam>
+        /// <param name="resource"></param>
+        /// <param name="entry"></param>
+        /// <param name="generatorVersion"></param>
+        /// <returns></returns>
         protected internal static TResource Initialize<TResource>(TResource resource, AtomEntry entry,
             Version generatorVersion)
             where TResource : BaseResource, new()
@@ -230,7 +291,7 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
 
             resource.EnsureUninitialized();
-            
+
             dynamic expando = new ExpandoObject();
 
             if (entry.Content != null)
@@ -274,33 +335,15 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "BaseResource"/>.
+        /// 
         /// </summary>
-        /// <param name="feed">
-        /// An object representing a Splunk atom feed response.
-        /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        /// The current <see cref="BaseResource"/> is already initialized.
-        /// </exception>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="BaseResource"/>
-        /// instantiated by the default constructor. Override this method to 
-        /// provide special initialization code. Call this base method before 
-        /// initialization is complete. 
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </note>
-        /// </remarks>
-        protected internal abstract void Initialize(AtomFeed feed);
-
-        protected internal static TResourceCollection Initialize<TResourceCollection, TResource>(
-            TResourceCollection collection, AtomFeed feed) 
-            where TResourceCollection : ResourceCollection, new()
+        /// <typeparam name="TResource"></typeparam>
+        /// <param name="resource"></param>
+        /// <param name="entry"></param>
+        /// <param name="generatorVersion"></param>
+        /// <returns></returns>
+        protected internal static TCollection Initialize<TCollection, TResource>(TCollection collection, AtomFeed feed)
+            where TCollection : BaseResource, new()
             where TResource : BaseResource, new()
         {
             Contract.Requires<ArgumentNullException>(feed != null);
@@ -366,6 +409,8 @@ namespace Splunk.Client
         #endregion
 
         #region Privates/internals
+
+        static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<Resource>(new Resource[0]);
 
         bool initialized;
 

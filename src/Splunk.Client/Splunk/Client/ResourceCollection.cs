@@ -86,23 +86,12 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected internal IReadOnlyCollection<BaseResource> Resources
-        { get; private set; }
-
-        #endregion
-
         #region Methods
 
         /// <inheritdoc/>
         protected internal override void Initialize(AtomEntry entry, Version generatorVersion)
         {
             BaseResource.Initialize<ResourceCollection>(this, entry, generatorVersion);
-            this.Resources = Missing;
         }
 
         /// <summary>
@@ -131,7 +120,6 @@ namespace Splunk.Client
         protected internal override void Initialize(AtomFeed feed)
         {
             BaseResource.Initialize<ResourceCollection, Resource>(this, feed);
-            this.Resources = this.GetValue("Resources") ?? Missing;
         }
 
         /// <summary>
@@ -150,7 +138,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        IReadOnlyCollection<Resource> Missing = new ReadOnlyCollection<Resource>(new List<Resource>(0));
+        IReadOnlyList<Resource> NoResoures = new ReadOnlyCollection<Resource>(new Resource[0]);
 
         #endregion
     }

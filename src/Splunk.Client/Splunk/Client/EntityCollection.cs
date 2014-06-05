@@ -367,7 +367,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        protected override void CreateSnapshot(ResourceCollection resource)
+        protected virtual void CreateSnapshot(ResourceCollection resource)
         {
             this.Snapshot = resource;
         }
@@ -382,15 +382,17 @@ namespace Splunk.Client
         internal static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
 
-        IReadOnlyList<TResource> Resources
+        IReadOnlyList<BaseResource> Resources
         { 
-            get { return (IReadOnlyList<TResource>)(this.Snapshot.Resources); } 
+            get { return this.Snapshot.Resources; } 
         }
 
-        TEntity Create(TResource resource)
+        TEntity Create(BaseResource resource)
         {
             var entity = new TEntity();
-            throw new NotImplementedException("Reconstruct snapshot from resource");
+            
+            entity.Initialize(this.Context, resource);
+            return entity;
         }
 
         #endregion

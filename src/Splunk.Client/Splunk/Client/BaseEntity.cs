@@ -163,7 +163,7 @@ namespace Splunk.Client
         /// Gets an object representing the Splunk resource at the time it was
         /// last retrieved by the current <see cref="BaseEntity"/>.
         /// </summary>
-        protected TResource Snapshot
+        protected BaseResource Snapshot
         {
             get { return this.snapshot; }
             set { this.snapshot = value; }
@@ -206,11 +206,11 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates a <see cref="BaseEntity"/> from a
-        /// Splunk atom feed <see cref="Response"/>.
+        /// Asynchronously creates an entity from a Splunk atom feed <see cref=
+        /// "Response"/>.
         /// </summary>
         /// <typeparam name="TEntity">
-        /// The type of <see cref="BaseEntity"/> to be created.
+        /// The type of the entity to be created.
         /// </typeparam>
         /// <param name="response">
         /// An object representing a Splunk atom feed response.
@@ -277,7 +277,11 @@ namespace Splunk.Client
         /// <remarks>
         /// Derived types must implement this method.
         /// </remarks>
-        protected abstract void CreateSnapshot(TResource resource);
+        protected virtual void CreateSnapshot(BaseResource resource)
+        {
+            Contract.Requires<ArgumentNullException>(resource != null);
+            this.snapshot = resource;
+        }
 
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
@@ -389,7 +393,7 @@ namespace Splunk.Client
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal void Initialize(Context context, TResource resource)
+        protected internal void Initialize(Context context, BaseResource resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null);
             Contract.Requires<ArgumentNullException>(context != null);
@@ -422,14 +426,14 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        static readonly TResource MissingSnapshot;
+        static readonly BaseResource NoSnapshot;
 
-        volatile TResource snapshot = MissingSnapshot;
+        volatile BaseResource snapshot = NoSnapshot;
 
         static BaseEntity()
         {
-            MissingSnapshot = new TResource();
-            MissingSnapshot.Initialize(new ExpandoObject());
+            NoSnapshot = new Resource();
+            NoSnapshot.Initialize(new ExpandoObject());
         }
 
         #endregion
@@ -447,11 +451,6 @@ namespace Splunk.Client
         protected override void CreateSnapshot(AtomFeed feed)
         {
             Contract.Requires<ArgumentNullException>(feed != null);
-        }
-
-        protected override void CreateSnapshot(TResource resource)
-        {
-            Contract.Requires<ArgumentNullException>(resource != null);
         }
     }
 }

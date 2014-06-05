@@ -81,5 +81,21 @@ namespace Splunk.Client
         }
 
         #endregion
+
+        #region Privates/internals
+
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ConfigurationSetting"/> class.
+        /// </summary>
+        /// <param name="resource">
+        /// An object representing a configuration setting.
+        /// </param>
+        internal ConfigurationSetting(BaseResource resource)
+        {
+            this.Object = resource.Object;
+        }
+
+        #endregion
     }
 }

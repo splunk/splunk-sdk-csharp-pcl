@@ -85,18 +85,6 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Properties
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected ExpandoAdapter Content
-        {
-            get { return this.content; }
-        }
-
-        #endregion
-
         #region Methods
 
         /// <inheritdoc/>
@@ -136,15 +124,8 @@ namespace Splunk.Client
             }
 
             this.Initialize(feed.Entries[0], feed.GeneratorVersion);
-            this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
         }
         
-        #endregion
-
-        #region Privates/internals
-
-        ExpandoAdapter content;
-
         #endregion
     }
 }

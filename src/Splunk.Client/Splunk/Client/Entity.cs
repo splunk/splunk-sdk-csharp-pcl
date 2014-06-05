@@ -264,12 +264,6 @@ namespace Splunk.Client
             this.CreateSnapshot(feed.Entries[0], feed.GeneratorVersion);
         }
 
-        /// <inheritdoc/>
-        protected override void CreateSnapshot(TResource resource)
-        {
-            this.Snapshot = resource;
-        }
-
         #endregion
 
         #endregion

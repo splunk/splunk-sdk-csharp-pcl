@@ -107,8 +107,6 @@ namespace Splunk.Client.Helpers
                 argList.Add(line);
             }
 
-            SplunkRC splunkrc = new SplunkRC();
-
             foreach (string arg in argList)
             {
                 string[] strs = arg.Split('=');

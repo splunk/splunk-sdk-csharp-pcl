@@ -129,8 +129,6 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public async Task<Application> CreateAsync(string name, string template, ApplicationAttributes attributes = null)
         {
-            var resourceName = ClassResourceName;
-
             var arguments = new CreationArgs()
             {
                 ExplicitApplicationName = name,

@@ -129,8 +129,6 @@ namespace Splunk.Client
         public virtual async Task<Index> CreateAsync(string name, IndexAttributes attributes = null, string coldPath = null, 
             string homePath = null, string thawedPath = null)
         {
-            var resourceName = IndexCollection.ClassResourceName;
-
             var arguments = new CreationArgs()
             {
                 Name = name,

@@ -181,7 +181,6 @@ namespace Splunk.Client.UnitTests
         public async Task JobSearchModeArgument()
         {
             var type = typeof(SearchMode);
-            JobArgs jobArgs = new JobArgs();
 
             await RunJobForEachEnum(type, mode => 
                 new JobArgs()

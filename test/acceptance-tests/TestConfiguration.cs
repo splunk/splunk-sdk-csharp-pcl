@@ -153,9 +153,7 @@ namespace Splunk.Client.UnitTests
             stanza1 = await testconf.GetAsync("stanza1");
 
             // Add a couple of properties
-            Argument args = new Argument("key1", "value1");
-            Argument args1 = new Argument("key2", "42");
-            
+
             await stanza1.UpdateAsync(
                 new Argument("key1", "string"),
                 new Argument("key2", (byte)2),

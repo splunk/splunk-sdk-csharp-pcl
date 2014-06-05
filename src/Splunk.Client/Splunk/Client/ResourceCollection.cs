@@ -163,11 +163,5 @@ namespace Splunk.Client
         }
 
         #endregion
-
-        #region Privates/internals
-
-        IReadOnlyList<Resource> NoResoures = new ReadOnlyCollection<Resource>(new Resource[0]);
-
-        #endregion
     }
 }

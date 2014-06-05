@@ -59,7 +59,7 @@ namespace search_realtime
 
             var tokenSource = new CancellationTokenSource();
 
-            var task = Task.Run(async () =>
+            Task.Run(async () =>
             {
                 Console.ReadLine();
 

@@ -106,12 +106,19 @@ namespace Splunk.Client
                         {
                             if (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                             {
+                                //// IEnumerable<T> implements IEnumerable => we are good to go
+
                                 Type itemType = @interface.GenericTypeArguments[0];
+
                                 formatter = GetPropertyFormatter(propertyName, propertyType, itemType, itemType.GetTypeInfo(), propertyFormatters);
+                                isCollection = true;
+
+                                break;
                             }
                         }
                         else if (@interface == typeof(IEnumerable))
                         {
+                            //// Keep looking because we'd prefer to use a more specific formatter
                             isCollection = true;
                         }
                     }
@@ -288,7 +295,7 @@ namespace Splunk.Client
 
             if (container != null && formatters.TryGetValue(type, out formatter))
             {
-                formatter = new Formatter { Format = formatter.Format, IsCollection = true };
+                formatter.IsCollection = true;
             }
             else
             {

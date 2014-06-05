@@ -98,7 +98,11 @@
     <Compile Include="Splunk\Client\AtomFeed.cs" />
     <Compile Include="Splunk\Client\BadRequestException.cs" />
     <Compile Include="Splunk\Client\AuthenticationFailureException.cs" />
+    <Compile Include="Splunk\Client\IApplicationArchiveInfo.cs" />
+    <Compile Include="Splunk\Client\IApplicationSetupInfo.cs" />
+    <Compile Include="Splunk\Client\IApplicationUpdateInfo.cs" />
     <Compile Include="Splunk\Client\IConfiguration.cs" />
+    <Compile Include="Splunk\Client\IConfigurationSetting.cs" />
     <Compile Include="Splunk\Client\IConfigurationStanza.cs" />
     <Compile Include="Splunk\Client\ITransmitter.cs" />
     <Compile Include="Splunk\Client\ResourceCollection.cs" />

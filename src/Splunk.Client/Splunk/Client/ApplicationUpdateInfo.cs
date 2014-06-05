@@ -29,7 +29,7 @@ namespace Splunk.Client
     /// <summary>
     /// 
     /// </summary>
-    public class ApplicationUpdateInfo : Resource
+    public class ApplicationUpdateInfo : Resource, Splunk.Client.IApplicationUpdateInfo
     {
         #region Constructors
 

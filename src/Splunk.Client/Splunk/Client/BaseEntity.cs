@@ -14,22 +14,9 @@
  * under the License.
  */
 
-//// TODO:
-//// [ ] Check for HTTP Status Code 204 (No Content) and empty atoms in 
-////     Entity<TEntity>.UpdateAsync.
-////
 //// [O] Contracts
 ////
 //// [O] Documentation
-////
-//// [X] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
-////     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
-////
-//// [X] Remove Entity<TEntity>.Invalidate method
-////     FJR: This gets called when we set the record value. Add a comment saying what it's
-////     supposed to do when it's overridden.
-////     DSN: I've adopted an alternative method for getting strongly-typed values. See, for
-////     example, Job.DispatchState or ServerInfo.Guid.
 
 namespace Splunk.Client
 {
@@ -163,7 +150,7 @@ namespace Splunk.Client
         /// Gets an object representing the Splunk resource at the time it was
         /// last retrieved by the current <see cref="BaseEntity"/>.
         /// </summary>
-        protected BaseResource Snapshot
+        protected TResource Snapshot
         {
             get { return this.snapshot; }
             set { this.snapshot = value; }
@@ -277,7 +264,7 @@ namespace Splunk.Client
         /// <remarks>
         /// Derived types must implement this method.
         /// </remarks>
-        protected virtual void CreateSnapshot(BaseResource resource)
+        protected virtual void CreateSnapshot(TResource resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null);
             this.snapshot = resource;
@@ -393,7 +380,7 @@ namespace Splunk.Client
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal void Initialize(Context context, BaseResource resource)
+        protected internal void Initialize(Context context, TResource resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null);
             Contract.Requires<ArgumentNullException>(context != null);
@@ -426,13 +413,13 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        static readonly BaseResource NoSnapshot;
+        static readonly TResource NoSnapshot;
 
-        volatile BaseResource snapshot = NoSnapshot;
+        volatile TResource snapshot = NoSnapshot;
 
         static BaseEntity()
         {
-            NoSnapshot = new Resource();
+            NoSnapshot = new TResource();
             NoSnapshot.Initialize(new ExpandoObject());
         }
 

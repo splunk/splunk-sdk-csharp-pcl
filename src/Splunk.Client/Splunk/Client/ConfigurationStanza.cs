@@ -293,7 +293,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        protected override void CreateSnapshot(BaseResource resource)
+        protected override void CreateSnapshot(Resource resource)
         {
             this.Snapshot = resource;
             this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;

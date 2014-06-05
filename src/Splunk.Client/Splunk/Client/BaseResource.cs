@@ -142,30 +142,6 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates a <see cref="BaseResource"/> from a Splunk atom
-        /// feed <see cref="Response"/>.
-        /// </summary>
-        /// <typeparam name="TResource">
-        /// The type of <see cref="BaseResource"/> to be created.
-        /// </typeparam>
-        /// <param name="response">
-        /// An object representing a Splunk atom feed response.
-        /// </param>
-        /// <returns>
-        /// The <see cref="BaseResource"/> created.
-        /// </returns>
-        internal static async Task<TResource> CreateAsync<TResource>(Response response) where TResource : BaseResource, new()
-        {
-            var feed = new AtomFeed();
-
-            await feed.ReadXmlAsync(response.XmlReader);
-            var resource = new TResource();
-            resource.Initialize(feed);
-
-            return resource;
-        }
-
-        /// <summary>
         /// Determines whether the specified <see cref="BaseResource"/> refers to 
         /// the same resource as the current one.
         /// </summary>
@@ -275,6 +251,7 @@ namespace Splunk.Client
         /// </remarks>
         protected internal abstract void Initialize(AtomFeed feed);
 
+        #region Initialization helpers
         /// <summary>
         /// 
         /// </summary>
@@ -394,6 +371,8 @@ namespace Splunk.Client
             return collection;
         }
 
+        #endregion
+
         /// <summary>
         /// Gets a string identifying the current <see cref="BaseResource"/>.
         /// </summary>
@@ -420,6 +399,30 @@ namespace Splunk.Client
             {
                 throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again.");
             }
+        }
+
+        /// <summary>
+        /// Asynchronously creates a <see cref="BaseResource"/> from a Splunk atom
+        /// feed <see cref="Response"/>.
+        /// </summary>
+        /// <typeparam name="TResource">
+        /// The type of <see cref="BaseResource"/> to be created.
+        /// </typeparam>
+        /// <param name="response">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        /// <returns>
+        /// The <see cref="BaseResource"/> created.
+        /// </returns>
+        internal static async Task<TResource> CreateAsync<TResource>(Response response) where TResource : BaseResource, new()
+        {
+            var feed = new AtomFeed();
+
+            await feed.ReadXmlAsync(response.XmlReader);
+            var resource = new TResource();
+            resource.Initialize(feed);
+
+            return resource;
         }
 
         /// <summary>

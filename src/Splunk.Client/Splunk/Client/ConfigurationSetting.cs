@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk configuration setting.
     /// </summary>
-    public class ConfigurationSetting : Resource
+    public class ConfigurationSetting : Resource, Splunk.Client.IConfigurationSetting
     {
         #region Constructors
 

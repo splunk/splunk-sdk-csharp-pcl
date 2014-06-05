@@ -90,7 +90,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected internal override void Initialize(AtomEntry entry, Version generatorVersion)
         {
-            BaseResource.Initialize<Resource>(this, entry, generatorVersion);
+            Resource.Initialize(this, entry, generatorVersion);
         }
 
         /// <summary>

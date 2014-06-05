@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// <summary>
     /// Represents the setup information for an <see cref="Application"/>.
     /// </summary>
-    public class ApplicationSetupInfo : Resource
+    public class ApplicationSetupInfo : Resource, Splunk.Client.IApplicationSetupInfo
     {
         #region Constructors
 

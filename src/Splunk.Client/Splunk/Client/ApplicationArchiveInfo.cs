@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// You can produce an application archive using the <see cref=
     /// "Application.PackageAsync"/> method.
     /// </remarks>
-    public class ApplicationArchiveInfo : Resource
+    public class ApplicationArchiveInfo : Resource, Splunk.Client.IApplicationArchiveInfo
     {
         #region Constructors
 

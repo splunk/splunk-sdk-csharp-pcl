@@ -32,7 +32,7 @@ namespace Splunk.Client.UnitTests
     {
         [Trait("unit-test", "Splunk.Client.Resource")]
         [Fact]
-        async Task CanConstructResource()
+        public async Task CanConstructResource()
         {
             var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "JobCollection.GetAsync.xml"));
 

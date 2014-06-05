@@ -30,11 +30,11 @@ namespace Splunk.Client.UnitTests
 
     using Xunit;
 
-    public class TestResourceEndpoint
+    public class TestBaseEntity
     {
         [Trait("unit-test", "Splunk.Client.Entity")]
         [Fact]
-        async Task CanConstructEntity()
+        public async Task CanConstructEntity()
         {
             var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "Application.GetAsync.xml"));
 
@@ -47,7 +47,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("unit-test", "Splunk.Client.EntityCollection<Entity>")]
         [Fact]
-        async Task CanConstructEntityCollectionOfEntity()
+        public async Task CanConstructEntityCollectionOfEntity()
         {
             var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "ApplicationCollection.GetAsync.xml"));
 
@@ -74,7 +74,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("unit-test", "Splunk.Client.EntityCollection<EntityCollection<Entity>")]
         [Fact]
-        async Task CanConstructEntityCollectionOfEntityCollectionOfEntity()
+        public async Task CanConstructEntityCollectionOfEntityCollection()
         {
             var feed = await TestAtomFeed.ReadFeed(Path.Combine(TestAtomFeed.Directory, "ConfigurationCollection.GetAsync.xml"));
 

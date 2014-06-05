@@ -99,6 +99,12 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <inheritdoc/>
+        protected internal override void Initialize(AtomEntry entry, Version generatorVersion)
+        {
+            BaseResource.Initialize<Resource>(this, entry, generatorVersion);
+        }
+
         /// <summary>
         /// Infrastructure. Initializes the current uninitialized <see cref=
         /// "Resource"/>.
@@ -129,7 +135,7 @@ namespace Splunk.Client
                 throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
             }
 
-            base.Initialize(feed.Entries[0], feed.GeneratorVersion);
+            this.Initialize(feed.Entries[0], feed.GeneratorVersion);
             this.content = this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty;
         }
         

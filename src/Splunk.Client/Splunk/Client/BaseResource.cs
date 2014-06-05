@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
-    public class BaseResource : ExpandoAdapter
+    public abstract class BaseResource : ExpandoAdapter
     {
         #region Constructors
 
@@ -220,12 +220,17 @@ namespace Splunk.Client
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal void Initialize(AtomEntry entry, Version generatorVersion)
+        protected internal abstract void Initialize(AtomEntry entry, Version generatorVersion);
+
+        protected internal static TResource Initialize<TResource>(TResource resource, AtomEntry entry,
+            Version generatorVersion)
+            where TResource : BaseResource, new()
         {
             Contract.Requires<ArgumentNullException>(entry != null);
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
-            this.EnsureUninitialized();
 
+            resource.EnsureUninitialized();
+            
             dynamic expando = new ExpandoObject();
 
             if (entry.Content != null)
@@ -262,8 +267,10 @@ namespace Splunk.Client
                 expando.Published = entry.Published;
             }
 
-            this.Object = expando;
-            this.MarkInitialized();
+            resource.Object = expando;
+            resource.MarkInitialized();
+
+            return resource;
         }
 
         /// <summary>
@@ -289,10 +296,15 @@ namespace Splunk.Client
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal virtual void Initialize(AtomFeed feed)
+        protected internal abstract void Initialize(AtomFeed feed);
+
+        protected internal static TResourceCollection Initialize<TResourceCollection, TResource>(
+            TResourceCollection collection, AtomFeed feed) 
+            where TResourceCollection : ResourceCollection, new()
+            where TResource : BaseResource, new()
         {
             Contract.Requires<ArgumentNullException>(feed != null);
-            this.EnsureUninitialized();
+            collection.EnsureUninitialized();
 
             dynamic expando = new ExpandoObject();
 
@@ -318,25 +330,55 @@ namespace Splunk.Client
                 expando.Pagination = feed.Pagination;
             }
 
-            var resources = new List<BaseResource>();
-
             if (feed.Entries != null)
             {
+                var resources = new List<TResource>();
+
                 foreach (var entry in feed.Entries)
                 {
-                    var resource = new BaseResource(entry, feed.GeneratorVersion);
+                    var resource = new TResource();
+
+                    resource.Initialize(entry, feed.GeneratorVersion);
                     resources.Add(resource);
                 }
+
+                expando.Resources = new ReadOnlyCollection<TResource>(resources);
             }
 
-            expando.Resources = new ReadOnlyCollection<BaseResource>(resources);
-            this.Object = expando;
-            this.MarkInitialized();
+            collection.Object = expando;
+            collection.MarkInitialized();
+            
+            return collection;
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
+        /// Gets a string identifying the current <see cref="BaseResource"/>.
+        /// </summary>
+        /// <returns>
+        /// A string representing the identity of the current <see cref=
         /// "BaseResource"/>.
+        /// </returns>
+        public override string ToString()
+        {
+            return this.Id.ToString();
+        }
+
+        #endregion
+
+        #region Privates/internals
+
+        bool initialized;
+
+        void EnsureUninitialized()
+        {
+            if (this.initialized)
+            {
+                throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again.");
+            }
+        }
+
+        /// <summary>
+        /// Infrastructure. Initializes the current uninitialized resource.
         /// </summary>
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
@@ -360,37 +402,10 @@ namespace Splunk.Client
         internal void Initialize(ExpandoObject @object)
         {
             Contract.Requires<ArgumentNullException>(@object != null);
-            
+
             this.EnsureUninitialized();
             this.Object = @object;
             this.MarkInitialized();
-        }
-
-        /// <summary>
-        /// Gets a string identifying the current <see cref="BaseResource"/>.
-        /// </summary>
-        /// <returns>
-        /// A string representing the identity of the current <see cref=
-        /// "BaseResource"/>.
-        /// </returns>
-        public override string ToString()
-        {
-            return this.Id.ToString();
-        }
-
-        #endregion
-
-        #region Privates/internals
-
-        protected internal static readonly BaseResource Missing = new BaseResource(new ExpandoObject());
-        bool initialized;
-
-        void EnsureUninitialized()
-        {
-            if (this.initialized)
-            {
-                throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again.");
-            }
         }
 
         void MarkInitialized()

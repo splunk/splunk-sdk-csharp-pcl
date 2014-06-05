@@ -57,18 +57,18 @@ namespace Splunk.Client.UnitTests
 
                 Assert.DoesNotThrow(() =>
                 {
-                    ReadOnlyCollection<BaseResource> p = collection.Entries;
+                    ReadOnlyCollection<Resource> p = collection.Resources;
                     Assert.Equal(14, p.Count);
                 });
 
-                foreach (var resource in collection.Entries)
+                foreach (var resource in collection.Resources)
                 {
                     CheckCommonStaticPropertiesOfResource(resource);
                     CheckExistenceOfJobProperties(resource);
                     Assert.IsType(typeof(Resource), resource);
                 }
 
-                {   dynamic resource = collection.Entries[0];
+                {   dynamic resource = collection.Resources[0];
 
                     CheckCommonStaticPropertiesOfResource(resource);
 

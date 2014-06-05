@@ -58,17 +58,6 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerInfo"/> class.
-        /// </summary>
-        /// <param name="other">
-        /// Another resource.
-        /// </param>
-        protected internal ServerInfo(BaseResource other)
-        {
-            this.Initialize(other);
-        }
-
-        /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "BaseResource"/> class.
         /// </summary>

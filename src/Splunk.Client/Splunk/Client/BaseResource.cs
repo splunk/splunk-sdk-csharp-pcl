@@ -75,17 +75,6 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseResource"/> class.
-        /// </summary>
-        /// <param name="other">
-        /// Another resource.
-        /// </param>
-        protected internal BaseResource(BaseResource other)
-        {
-            this.Initialize(other);
-        }
-
-        /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "BaseResource"/> class.
         /// </summary>
@@ -368,12 +357,12 @@ namespace Splunk.Client
         /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        protected internal void Initialize(BaseResource other)
+        internal void Initialize(ExpandoObject @object)
         {
-            Contract.Requires<ArgumentNullException>(other != null);
+            Contract.Requires<ArgumentNullException>(@object != null);
             
             this.EnsureUninitialized();
-            this.Object = other.Object;
+            this.Object = @object;
             this.MarkInitialized();
         }
 

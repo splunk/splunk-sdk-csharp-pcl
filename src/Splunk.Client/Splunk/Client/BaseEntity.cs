@@ -36,6 +36,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Dynamic;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -421,7 +422,15 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        volatile TResource snapshot = new TResource();
+        static readonly TResource MissingSnapshot;
+
+        volatile TResource snapshot = MissingSnapshot;
+
+        static BaseEntity()
+        {
+            MissingSnapshot = new TResource();
+            MissingSnapshot.Initialize(new ExpandoObject());
+        }
 
         #endregion
     }

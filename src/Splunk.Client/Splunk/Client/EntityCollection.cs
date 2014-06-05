@@ -357,7 +357,6 @@ namespace Splunk.Client
         {
             this.Snapshot = new ResourceCollection();
             this.Snapshot.Initialize(entry, generatorVersion);
-            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
         }
 
         /// <inheritdoc/>
@@ -365,14 +364,12 @@ namespace Splunk.Client
         {
             this.Snapshot = new ResourceCollection();
             this.Snapshot.Initialize(feed);
-            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
         }
 
         /// <inheritdoc/>
         protected override void CreateSnapshot(ResourceCollection resource)
         {
             this.Snapshot = resource;
-            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
         }
 
         #endregion
@@ -386,7 +383,9 @@ namespace Splunk.Client
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
 
         IReadOnlyList<TResource> Resources
-        { get; set; }
+        { 
+            get { return (IReadOnlyList<TResource>)(this.Snapshot.Resources); } 
+        }
 
         TEntity Create(TResource resource)
         {

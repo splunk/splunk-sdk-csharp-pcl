@@ -91,7 +91,7 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        protected internal IReadOnlyCollection<BaseResource> Entries
+        protected internal IReadOnlyCollection<BaseResource> Resources
         {
             get { return this.resources; }
         }

@@ -267,27 +267,6 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void CreateSnapshot(TResource resource)
         {
-            IReadOnlyList<TResource> resources = resource.GetValue("Resources");
-
-            if (resources != null)
-            {
-                // Resource was constructed from an atom feed response
-
-                int count = resources.Count;
-
-                if (count == 0)
-                {
-                    return;
-                }
-
-                if (count > 1)
-                {
-                    throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
-                }
-
-                resource = resources[0];
-            }
-
             this.Snapshot = resource;
         }
 

@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
-    public abstract class BaseResource : ExpandoAdapter
+    public abstract class BaseResource : ExpandoAdapter, IBaseResource
     {
         #region Constructors
 

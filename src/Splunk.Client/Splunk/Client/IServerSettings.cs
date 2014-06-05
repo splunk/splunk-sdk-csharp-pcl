@@ -20,7 +20,10 @@
 
 namespace Splunk.Client
 {
-    public interface IServerSettings
+    /// <summary>
+    /// Provides an operational interface the Splunk server settings resource.
+    /// </summary>
+    public interface IServerSettings : IBaseResource
     {
         /// <summary>
         /// Gets the access control lists for the Splunk server instance.

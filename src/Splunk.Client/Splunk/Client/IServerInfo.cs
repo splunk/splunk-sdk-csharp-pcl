@@ -24,9 +24,9 @@ namespace Splunk.Client
     using System.Collections.Generic;
 
     /// <summary>
-    /// Provides an operational interface to the Splunk application collection.
+    /// Provides an operational interface to the Splunk server info resource.
     /// </summary>
-    public interface IServerInfo
+    public interface IServerInfo : IBaseResource
     {
         /// <summary>
         /// Gets the name of the active license group for the Splunk server

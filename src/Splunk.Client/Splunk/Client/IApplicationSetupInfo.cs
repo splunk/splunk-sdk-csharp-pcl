@@ -18,7 +18,7 @@ namespace Splunk.Client
 {
     using System;
 
-    public interface IApplicationSetupInfo
+    public interface IApplicationSetupInfo : IBaseResource
     {
         Eai Eai { get; }
         bool Refresh { get; }

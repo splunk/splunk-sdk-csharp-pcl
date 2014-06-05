@@ -6,6 +6,7 @@
       <HashCode>AgACAAAAIhAAAUAkgAAAAAAAAAAAAMAAQAAIAIAAAAA=</HashCode>
       <FileName>Splunk\Client\BaseResource.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="Splunk.Client.ConfigurationSetting" Collapsed="true">
     <Position X="1.25" Y="10.5" Width="2.75" />

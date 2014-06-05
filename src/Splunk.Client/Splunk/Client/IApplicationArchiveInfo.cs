@@ -18,7 +18,7 @@ namespace Splunk.Client
 {
     using System;
 
-    public interface IApplicationArchiveInfo
+    public interface IApplicationArchiveInfo : IBaseResource
     {
         string ApplicationName { get; }
         Eai Eai { get; }

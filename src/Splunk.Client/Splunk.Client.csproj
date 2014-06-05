@@ -101,6 +101,7 @@
     <Compile Include="Splunk\Client\IApplicationArchiveInfo.cs" />
     <Compile Include="Splunk\Client\IApplicationSetupInfo.cs" />
     <Compile Include="Splunk\Client\IApplicationUpdateInfo.cs" />
+    <Compile Include="Splunk\Client\IBaseResource.cs" />
     <Compile Include="Splunk\Client\IConfiguration.cs" />
     <Compile Include="Splunk\Client\IConfigurationSetting.cs" />
     <Compile Include="Splunk\Client\IConfigurationStanza.cs" />

@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk configuration setting.
     /// </summary>
-    public class ConfigurationSetting : Resource, Splunk.Client.IConfigurationSetting
+    public class ConfigurationSetting : Resource, IConfigurationSetting
     {
         #region Constructors
 
@@ -67,14 +67,13 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <inheritdoc/>
         public IReadOnlyDictionary<string, Uri> Links
         {
             get { return this.GetValue("Links"); }
         }
 
-        /// <summary>
-        /// Gets the cached value of the current <see cref="ConfigurationSetting"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public string Value 
         {
             get { return this.GetValue("Value", StringConverter.Instance); }

@@ -170,7 +170,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public ConfigurationSetting this[int index]
         {
-            get { return new ConfigurationSetting(this.Resources[index]); }
+            get { return this.Resources[index]; }
         }
 
         /// <inheritdoc/>
@@ -228,7 +228,7 @@ namespace Splunk.Client
         /// </returns>
         public IEnumerator<ConfigurationSetting> GetEnumerator()
         {
-            return this.Resources.Select(resource => new ConfigurationSetting(resource)).GetEnumerator();
+            return this.Resources.GetEnumerator();
         }
 
         /// <summary>
@@ -288,15 +288,10 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void CreateSnapshot(AtomFeed feed)
         {
-            base.CreateSnapshot(feed);
-            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
-        }
-
-        /// <inheritdoc/>
-        protected override void CreateSnapshot(Resource resource)
-        {
-            this.Snapshot = resource;
-            this.Resources = this.Snapshot.GetValue("Resources") ?? NoResources;
+            var snapshot = new Resource();
+            
+            BaseResource.Initialize<Resource, ConfigurationSetting>(snapshot, feed);
+            this.Snapshot = (Resource)snapshot;
         }
 
         #endregion
@@ -305,10 +300,12 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new List<BaseResource>());
+        static readonly IReadOnlyList<ConfigurationSetting> NoResources = new ReadOnlyCollection<ConfigurationSetting>(new ConfigurationSetting[0]);
 
-        IReadOnlyList<BaseResource> Resources
-        { get; set; }
+        IReadOnlyList<ConfigurationSetting> Resources
+        {
+            get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
+        }
 
         #endregion
     }

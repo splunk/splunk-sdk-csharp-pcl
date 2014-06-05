@@ -147,6 +147,7 @@ namespace Splunk.Client.UnitTests
         /// This method tests geting the events and then sets most, 
         /// and then reverts back to the original
         /// </summary>
+        [Trait("acceptance-test", "Splunk.Client.ServerSettings")]
         [Fact]
         public async Task Settings()
         {

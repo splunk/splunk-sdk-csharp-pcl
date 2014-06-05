@@ -17,10 +17,18 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Collections.Generic;
 
-    public interface IConfigurationSetting
+    public interface IConfigurationSetting : IBaseResource
     {
-        System.Collections.Generic.IReadOnlyDictionary<string, Uri> Links { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        IReadOnlyDictionary<string, Uri> Links { get; }
+
+        /// <summary>
+        /// Gets the cached value of the current <see cref="ConfigurationSetting"/>.
+        /// </summary>
         string Value { get; }
     }
 }

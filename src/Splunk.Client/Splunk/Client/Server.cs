@@ -48,7 +48,7 @@ namespace Splunk.Client
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         protected internal Server(Service service)
-            : base(service, ClassResourceName)
+            : this(service.Context, service.Namespace)
         { }
 
         /// <summary>
@@ -127,6 +127,8 @@ namespace Splunk.Client
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
 
+            this.Context.SessionKey = null; // because this session is now or shortly will be gone
+
             if (millisecondsDelay == 0)
             {
                 return;
@@ -145,7 +147,6 @@ namespace Splunk.Client
 
                         if (startupTime < info.StartupTime)
                         {
-                            this.Context.SessionKey = null;
                             return;
                         }
                     }

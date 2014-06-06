@@ -1056,7 +1056,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.Service: Search Jobs")]
         [Fact]
-        public async Task  CanSearchOneshot()
+        public async Task CanSearchOneshot()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1068,13 +1068,13 @@ namespace Splunk.Client.UnitTests
                     "search index=_internal | head 100"
                 };
 
-
                 await service.Indexes.CreateAsync(indexName);
 
                 foreach (var command in searchCommands)
                 {
                     var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
-                    var records = new List<Splunk.Client.SearchResult>(searchResults.ToEnumerable());
+                    var results = new List<Splunk.Client.SearchResult>(searchResults.ToEnumerable());
+                    Assert.NotEmpty(results);
                 }
             }
         }
@@ -1083,8 +1083,7 @@ namespace Splunk.Client.UnitTests
 
         #region System
 
-#if false
-        [Trait("acceptance-test", "Splunk.Client.Service: Server")]
+        [Trait("acceptance-test", "Splunk.Client.Server : CanCrudServerMessages")]
         [Fact]
         public async Task CanCrudServerMessages()
         {
@@ -1092,29 +1091,31 @@ namespace Splunk.Client.UnitTests
             {
                 //// Create
 
+                ServerMessageCollection messages = service.Server.Messages;
                 var name = string.Format("delete-me-{0}", Guid.NewGuid());
 
-                var messages = new ServerMessage[]
+                var messageList = new ServerMessage[] 
                 {
-                    await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Information), ServerMessageSeverity.Information, "some message text"),
-                    await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Warning), ServerMessageSeverity.Warning, "some message text"),
-                    await service.Server.CreateMessageAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Error), ServerMessageSeverity.Error, "some message text"),
+                    await messages.CreateAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Information), ServerMessageSeverity.Information, "some message text"),
+                    await messages.CreateAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Warning), ServerMessageSeverity.Warning, "some message text"),
+                    await messages.CreateAsync(string.Format("{0}-{1}", name, ServerMessageSeverity.Error), ServerMessageSeverity.Error, "some message text")
                 };
 
                 //// Read
 
-                var messageCollection = await service.Server.GetMessagesAsync();
+                await messages.GetAllAsync();
 
-                foreach (var message in messages)
+                foreach (var message in messageList)
                 {
-                    var messageCopy = await service.Server.GetMessageAsync(message.Name);
-                    Assert.Contains<ServerMessage>(message, messageCollection);
+                    Assert.NotNull(messages.SingleOrDefault(m => m.Name == message.Name));
+                    var messageCopy = await messages.GetAsync(message.Name);
+                    Assert.Equal(message, messageCopy);
                     await message.GetAsync();
                 }
 
                 //// Delete (there is no update)
 
-                foreach (var message in messageCollection)
+                foreach (var message in messages)
                 {
                     if (message.Name.StartsWith("delete-me-"))
                     {
@@ -1124,18 +1125,18 @@ namespace Splunk.Client.UnitTests
 
                 //// Verify delete
 
-                await messageCollection.GetAsync();
+                await messages.GetAllAsync();
 
-                foreach (var message in messageCollection)
+                foreach (var message in messages)
                 {
                     Assert.False(message.Name.StartsWith("delete-me-"));
                 }
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Server")]
+        [Trait("acceptance-test", "Splunk.Client.Server : CanCrudServerSettings")]
         [Fact]
-        public async Task  CanCrudServerSettings()
+        public async Task CanCrudServerSettings()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1176,8 +1177,7 @@ namespace Splunk.Client.UnitTests
 
                 //// Restart the server because it's required following a settings update
 
-                await TestHelper.RestartServer();
-
+                await TestHelper.RestartServerAsync();
                 await service.LoginAsync("admin", "changeme");
 
                 //// Restore
@@ -1215,11 +1215,11 @@ namespace Splunk.Client.UnitTests
 
 
                 //await service.Server.RestartAsync();
-                await TestHelper.RestartServer();
+                await TestHelper.RestartServerAsync();
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Server")]
+        [Trait("acceptance-test", "Splunk.Client.Server : CanGetServerInfo")]
         [Fact]
         public async Task  CanGetServerInfo()
         {
@@ -1249,9 +1249,9 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Server")]
+        [Trait("acceptance-test", "Splunk.Client.Server : CanRestartServer")]
         [Fact]
-        public async Task  CanRestartServer()
+        public async Task CanRestartServer()
         {
             Stopwatch watch = Stopwatch.StartNew();            
 
@@ -1274,9 +1274,8 @@ namespace Splunk.Client.UnitTests
                 await service.LoginAsync("admin", "changeme");
             }
         }
-#endif
 
-        [Trait("acceptance-test", "Splunk.Client.Service: System")]
+        [Trait("acceptance-test", "Splunk.Client.Transmitter")]
         [Fact]
         public async Task  CanSendEvents()
         {
@@ -1297,9 +1296,11 @@ namespace Splunk.Client.UnitTests
                 for (int i = 0; i < sendEventCount; i++)
                 {
                     var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
+                    Assert.NotNull(result);
                 }
 
                 Stopwatch watch = Stopwatch.StartNew();                
+
                 while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
                 {
                     await Task.Delay(1000);
@@ -1310,8 +1311,10 @@ namespace Splunk.Client.UnitTests
                 Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
                 Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
 
-                // test stream events
+                // Test stream events
+
                 currentEventCount = currentEventCount + sendEventCount;
+
                 using (var eventStream = new MemoryStream())
                 {
                     using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
@@ -1327,6 +1330,7 @@ namespace Splunk.Client.UnitTests
                 }
 
                 watch.Restart();
+
                 while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
                 {
                     await Task.Delay(1000);

@@ -119,13 +119,12 @@ namespace Splunk.Client
         {
             if (!this.disposed)
             {
-                this.Message.Dispose();
-
-                if (this.XmlReader != null) // because it's possible to be disposed before this.XmlReader is created
+                if (this.reader != null) // because it's possible to be disposed before this.XmlReader is created
                 {
-                    this.XmlReader.Dispose();
+                    this.reader.Dispose();
                 }
 
+                this.message.Dispose();
                 this.disposed = true;
             }
         }

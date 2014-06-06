@@ -31,10 +31,6 @@ namespace Splunk.Client.UnitTests
     /// </summary>
     public static class TestHelper
     {
-        static TestHelper()
-        {
-        }
-
         public static int VersionCompare(Service service, string versionToCompare)
         {
             Version info = service.Server.GetInfoAsync().Result.Version;

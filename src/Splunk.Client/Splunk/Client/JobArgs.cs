@@ -15,7 +15,7 @@
  */
 
 //// TODO:
-//// [ ]  Documentation
+//// [O] Documentation
 //// [ ] Class for specifying a time string.
 
 namespace Splunk.Client

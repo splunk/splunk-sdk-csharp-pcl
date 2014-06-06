@@ -1177,7 +1177,7 @@ namespace Splunk.Client.UnitTests
 
                 //// Restart the server because it's required following a settings update
 
-                await TestHelper.RestartServerAsync();
+                await service.Server.RestartAsync(60000 * 2);
                 await service.LoginAsync("admin", "changeme");
 
                 //// Restore

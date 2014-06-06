@@ -75,6 +75,10 @@ namespace Splunk.Client
         /// time between checks for server availability is one quarter of a 
         /// second.
         /// </param>
+        /// <returns>
+        /// <c>true</c> if the current <see cref="Server"/> became available
+        /// within <paramref name="millisecondsDelay">; otherwise <c>false</c>.
+        /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="millisecondsDelay"/> is less than <c>-1</c>.
         /// </exception>
@@ -88,7 +92,7 @@ namespace Splunk.Client
         /// <exception cref="UnauthorizedAccessException">
         /// Insufficient privileges to restart the current <see cref="Server"/>.
         /// </exception>
-        Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250);
+        Task<bool> RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250);
 
         /// <summary>
         /// Asynchronously updates setting values on the current <see cref="Server"/>.
@@ -122,7 +126,7 @@ namespace Splunk.Client
             return null;
         }
 
-        public Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
+        public Task<bool> RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
             Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
             return null;

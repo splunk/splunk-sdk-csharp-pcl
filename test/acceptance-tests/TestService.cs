@@ -1083,7 +1083,7 @@ namespace Splunk.Client.UnitTests
 
         #region System
 
-        [Trait("acceptance-test", "Splunk.Client.Server : CanCrudServerMessages")]
+        [Trait("acceptance-test", "Splunk.Client.Server")]
         [Fact]
         public async Task CanCrudServerMessages()
         {
@@ -1134,7 +1134,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Server : CanCrudServerSettings")]
+        [Trait("acceptance-test", "Splunk.Client.Server")]
         [Fact]
         public async Task CanCrudServerSettings()
         {
@@ -1219,7 +1219,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Server : CanGetServerInfo")]
+        [Trait("acceptance-test", "Splunk.Client.Server")]
         [Fact]
         public async Task  CanGetServerInfo()
         {
@@ -1249,7 +1249,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Server : CanRestartServer")]
+        [Trait("acceptance-test", "Splunk.Client.Server")]
         [Fact]
         public async Task CanRestartServer()
         {

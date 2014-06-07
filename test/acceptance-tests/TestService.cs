@@ -25,7 +25,6 @@ namespace Splunk.Client.UnitTests
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Reactive.Linq;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -727,7 +726,7 @@ namespace Splunk.Client.UnitTests
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
                 SearchResultStream searchResults = await job.GetSearchResultsAsync();
 
-                var records = new List<Splunk.Client.SearchResult>(searchResults.ToEnumerable());
+                var results = new List<Task<SearchResult>>(searchResults);
             }
         }
 
@@ -819,55 +818,7 @@ namespace Splunk.Client.UnitTests
 
         #region Search Jobs
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Search Jobs")]
-        [Fact]
-        public async Task  CanGetJob()
-        {
-            using (var service = await SDKHelper.CreateService())
-            {
-                Job job1 = null, job2 = null;
-
-                job1 = await service.Jobs.CreateAsync("search index=_internal | head 100");
-                await job1.GetSearchResultsAsync();
-                await job1.GetSearchResultsEventsAsync();
-                await job1.GetSearchResultsPreviewAsync();
-
-                job2 = await service.Jobs.GetAsync(job1.ResourceName.Title);
-                Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
-                Assert.Equal(job1.Name, job1.ResourceName.Title);
-                Assert.Equal(job1.Name, job2.Name);
-                Assert.Equal(job1.Sid, job1.Name);
-                Assert.Equal(job1.Sid, job2.Sid);
-                Assert.Equal(job1.Id, job2.Id);
-                //Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
-            }
-        }
-
-        [Trait("acceptance-test", "Splunk.Client.Service: Search Jobs")]
-        [Fact]
-        public async Task  CanGetJobs()
-        {
-            using (var service = await SDKHelper.CreateService())
-            {
-                var jobs = new Job[]
-                {
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                };
-
-                await service.Jobs.GetAllAsync();
-
-                foreach (var job in jobs)
-                {
-                    Assert.Contains(job, service.Jobs);
-                }
-            }
-        }
-
-        [Trait("acceptance-test", "Splunk.Client.Service: Search Jobs")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task  CanCreateJobAndGetResults()
         {
@@ -940,14 +891,68 @@ namespace Splunk.Client.UnitTests
 
                     var count = resultStream.FieldNames.Intersect(expectedFieldNames).Count();
                     Assert.Equal(resultStream.FieldNames.Count, count);
-                    List<SearchResult> results = null;
 
-                    Assert.DoesNotThrow(() => results = new List<SearchResult>(resultStream.ToEnumerable()));
+                    var list = new List<SearchResult>();
+
+                    foreach (var result in resultStream)
+                    {
+                        list.Add(await result);
+                    }
+
+                    Assert.NotEmpty(list);
                 }
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Search Jobs")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Fact]
+        public async Task  CanGetJob()
+        {
+            using (var service = await SDKHelper.CreateService())
+            {
+                Job job1 = null, job2 = null;
+
+                job1 = await service.Jobs.CreateAsync("search index=_internal | head 100");
+                await job1.GetSearchResultsAsync();
+                await job1.GetSearchResultsEventsAsync();
+                await job1.GetSearchResultsPreviewAsync();
+
+                job2 = await service.Jobs.GetAsync(job1.ResourceName.Title);
+                Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
+                Assert.Equal(job1.Name, job1.ResourceName.Title);
+                Assert.Equal(job1.Name, job2.Name);
+                Assert.Equal(job1.Sid, job1.Name);
+                Assert.Equal(job1.Sid, job2.Sid);
+                Assert.Equal(job1.Id, job2.Id);
+                //Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.JobCollection")]
+        [Fact]
+        public async Task  CanGetJobs()
+        {
+            using (var service = await SDKHelper.CreateService())
+            {
+                var jobs = new Job[]
+                {
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
+                };
+
+                await service.Jobs.GetAllAsync();
+
+                foreach (var job in jobs)
+                {
+                    Assert.Contains(job, service.Jobs);
+                }
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service : CanExportSearchPreviews")]
         [Fact]
         public async Task CanExportSearchPreviews()
         {
@@ -1009,7 +1014,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Search Jobs")]
+        [Trait("acceptance-test", "Splunk.Client.Service : CanExportSearchResults")]
         [Fact]
         public async Task CanExportSearchResults()
         {
@@ -1054,7 +1059,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Search Jobs")]
+        [Trait("acceptance-test", "Splunk.Client.Service : CanSearchOneshot")]
         [Fact]
         public async Task CanSearchOneshot()
         {
@@ -1073,8 +1078,14 @@ namespace Splunk.Client.UnitTests
                 foreach (var command in searchCommands)
                 {
                     var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
-                    var results = new List<Splunk.Client.SearchResult>(searchResults.ToEnumerable());
-                    Assert.NotEmpty(results);
+                    var list = new List<SearchResult>();
+
+                    foreach (var result in searchResults) 
+                    {
+                        list.Add(await result);
+                    }
+
+                    Assert.NotEmpty(list);
                 }
             }
         }

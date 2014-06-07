@@ -724,9 +724,16 @@ namespace Splunk.Client.UnitTests
             using (var service = await SDKHelper.CreateService())
             {
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
-                SearchResultStream searchResults = await job.GetSearchResultsAsync();
+                SearchResultStream resultStream = await job.GetSearchResultsAsync();
 
-                var results = new List<Task<SearchResult>>(searchResults);
+                var results = new List<SearchResult>();
+
+                foreach (var result in resultStream) 
+                {
+                    results.Add(await result);
+                }
+
+                Assert.NotEmpty(results);
             }
         }
 
@@ -817,92 +824,6 @@ namespace Splunk.Client.UnitTests
         #endregion
 
         #region Search Jobs
-
-        [Trait("acceptance-test", "Splunk.Client.Job")]
-        [Fact]
-        public async Task  CanCreateJobAndGetResults()
-        {
-            var expectedFieldNames = new List<string>
-            {
-                "_bkt",
-                "_cd",
-                "_confstr",
-                "_indextime",
-                "_raw",
-                "_serial",
-                "_si",
-                "_sourcetype",
-                "_subsecond",
-                "_time",
-                "host",
-                "index",
-                "linecount",
-                "source",
-                "sourcetype",
-                "splunk_server",
-            };
-
-            var searches = new[]
-            {
-                new
-                {
-                    Command = "search index=_internal",
-                    JobArgs = new JobArgs
-                    {
-                        SearchMode = SearchMode.Realtime,
-                        MaxCount = 10,
-                        EarliestTime = "rt-5m",
-                        LatestTime = "rt",
-                        MaxTime = 10000
-                    }
-                },
-                new
-                {
-                    Command = "search index=_internal | head 10",
-                    JobArgs = new JobArgs()
-                }
-            };
-
-            using (var service = await SDKHelper.CreateService())
-            {
-                foreach (var search in searches)
-                {
-                    var job = await service.Jobs.CreateAsync(search.Command, search.JobArgs);
-                    Assert.NotNull(job);
-
-                    SearchResultStream resultStream = null;
-
-                    if (job.IsRealTimeSearch)
-                    {
-                        for (int i = 0; i < 4; i++)
-                        {
-                            resultStream = await job.GetSearchResultsPreviewAsync();
-
-                            if (resultStream.FieldNames.Count > 0)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        resultStream = await job.GetSearchResultsAsync();
-                    }
-
-                    var count = resultStream.FieldNames.Intersect(expectedFieldNames).Count();
-                    Assert.Equal(resultStream.FieldNames.Count, count);
-
-                    var list = new List<SearchResult>();
-
-                    foreach (var result in resultStream)
-                    {
-                        list.Add(await result);
-                    }
-
-                    Assert.NotEmpty(list);
-                }
-            }
-        }
 
         [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]

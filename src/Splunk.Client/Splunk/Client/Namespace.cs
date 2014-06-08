@@ -320,24 +320,11 @@ namespace Splunk.Client
 
         string ToString(Func<string, string> encode)
         {
-            // TODO: Verify correctness by checking against Ruby code (Suspicion: this code is incorrect, but works with use cases we've tried)
-
             if (this == Default)
             {
                 return "services";
             }
-            if (this.User == AllUsers)
-            {
-                if (this.App == AllApps)
-                {
-                    return "services";
-                }
-                return string.Join("/", "servicesNS", encode(this.App));
-            }
-            if (this.App == AllApps)
-            {
-                string.Join("/", "servicesNS", encode(this.User));
-            }
+
             return string.Join("/", "servicesNS", encode(this.User), encode(this.App));
         }
 

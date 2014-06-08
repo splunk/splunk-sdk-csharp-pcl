@@ -38,15 +38,47 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public void CanConstructService()
         {
-            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, Namespace.Default))
+            foreach (var ns in TestNamespaces)
             {
-                Assert.Equal(service.ToString(), string.Format("{0}://{1}:{2}/services", SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port).ToLower());
+                using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, ns))
+                {
+                    Assert.Equal(service.ToString(), string.Format("{0}://{1}:{2}/{3}", 
+                        SDKHelper.UserConfigure.scheme.ToString().ToLower(), 
+                        SDKHelper.UserConfigure.host, 
+                        SDKHelper.UserConfigure.port,
+                        ns
+                    ));
+
+                    Assert.IsType(typeof(ApplicationCollection), service.Applications);
+                    Assert.NotNull(service.Applications);
+
+                    Assert.IsType(typeof(ConfigurationCollection), service.Configurations);
+                    Assert.NotNull(service.Configurations);
+
+                    Assert.IsType(typeof(IndexCollection), service.Indexes);
+                    Assert.NotNull(service.Indexes);
+
+                    Assert.IsType(typeof(JobCollection), service.Jobs);
+                    Assert.NotNull(service.Jobs);
+
+                    Assert.IsType(typeof(SavedSearchCollection), service.SavedSearches);
+                    Assert.NotNull(service.SavedSearches);
+
+                    Assert.IsType(typeof(Server), service.Server);
+                    Assert.NotNull(service.Server);
+
+                    Assert.IsType(typeof(StoragePasswordCollection), service.StoragePasswords);
+                    Assert.NotNull(service.StoragePasswords);
+
+                    Assert.IsType(typeof(Transmitter), service.Transmitter);
+                    Assert.NotNull(service.Transmitter);
+                }
             }
         }
 
         #region Access Control
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Access control")]
+        [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
         [Fact]
         public async Task  CanCrudStoragePasswords()
         {
@@ -98,7 +130,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Access Control")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task  CanLoginAndLogoff()
         {
@@ -129,9 +161,168 @@ namespace Splunk.Client.UnitTests
 
         #region Applications
 
+        [Trait("acceptance-test", "Splunk.Client.Application")]
+        [Fact]
+        public async Task CanCrudApplication()
+        {
+            using (var service = await SDKHelper.CreateService())
+            {
+                //// Install, update, and remove the Splunk App for Twitter Data, version 2.3.1
+
+                var twitterApp = await service.Applications.GetOrNullAsync("twitter2");
+
+                if (twitterApp != null)
+                {
+                    await twitterApp.RemoveAsync();
+
+                    try
+                    {
+                        await twitterApp.GetAsync();
+                        Assert.False(true, "Expected ResourceNotFoundException");
+                    }
+                    catch (ResourceNotFoundException)
+                    { }
+
+                    twitterApp = await service.Applications.GetOrNullAsync("twitter2");
+                    Assert.Null(twitterApp);
+                }
+
+                IPHostEntry splunkHostEntry = await Dns.GetHostEntryAsync(service.Context.Host);
+                IPHostEntry localHostEntry = await Dns.GetHostEntryAsync("localhost");
+
+                if (splunkHostEntry.HostName == localHostEntry.HostName)
+                {
+                    var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
+                    Assert.True(File.Exists(path));
+
+                    twitterApp = await service.Applications.InstallAsync(path, update: true);
+
+                    //// Other asserts on the contents of the update
+
+                    Assert.Equal("Splunk", twitterApp.ApplicationAuthor);
+                    Assert.Equal(true, twitterApp.CheckForUpdates);
+                    Assert.Equal(false, twitterApp.Configured);
+                    Assert.Equal("This application indexes Twitter's sample stream.", twitterApp.Description);
+                    Assert.Equal("Splunk-Twitter Connector", twitterApp.Label);
+                    Assert.Equal(false, twitterApp.Refresh);
+                    Assert.Equal(false, twitterApp.StateChangeRequiresRestart);
+                    Assert.Equal("2.3.0", twitterApp.Version);
+                    Assert.Equal(true, twitterApp.Visible);
+
+                    //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo
+                    //// We might check that there is no update info for 2.3.1:
+                    ////    Assert.Null(twitterApplicationUpdateInfo.Update);
+                    //// Then change the version number to 2.3.0:
+                    ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
+                    //// Finally:
+                    //// ApplicationUpdateInfo twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
+                    //// Assert.NotNull(twitterApplicationUpdateInfo.Update);
+                    //// Assert.True(string.Compare(twitterApplicationUpdateInfo.Update.Version, "2.3.0") == 1, "expect the newer twitter app info");
+                    //// Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Update.Checksum);
+
+                    var setupInfo = await twitterApp.GetSetupInfoAsync();
+                    var updateInfo = await twitterApp.GetUpdateInfoAsync();
+
+                    await twitterApp.RemoveAsync();
+
+                    try
+                    {
+                        await twitterApp.GetAsync();
+                        Assert.False(true, "Expected ResourceNotFoundException");
+                    }
+                    catch (ResourceNotFoundException)
+                    { }
+
+                    twitterApp = await service.Applications.GetOrNullAsync("twitter2");
+                    Assert.Null(twitterApp);
+                }
+
+                //// Create an app from one of the built-in templates
+
+                var name = string.Format("delete-me-{0}", Guid.NewGuid());
+
+                var creationAttributes = new ApplicationAttributes()
+                {
+                    ApplicationAuthor = "Splunk",
+                    Configured = true,
+                    Description = "This app confirms that an app can be created from a template",
+                    Label = name,
+                    Version = "2.0.0",
+                    Visible = true
+                };
+
+                var templatedApp = await service.Applications.CreateAsync(name, "barebones", creationAttributes);
+
+                Assert.Equal(creationAttributes.ApplicationAuthor, templatedApp.ApplicationAuthor);
+                Assert.Equal(true, templatedApp.CheckForUpdates);
+                Assert.Equal(creationAttributes.Configured, templatedApp.Configured);
+                Assert.Equal(creationAttributes.Description, templatedApp.Description);
+                Assert.Equal(creationAttributes.Label, templatedApp.Label);
+                Assert.Equal(false, templatedApp.Refresh);
+                Assert.Equal(false, templatedApp.StateChangeRequiresRestart);
+                Assert.Equal(creationAttributes.Version, templatedApp.Version);
+                Assert.Equal(creationAttributes.Visible, templatedApp.Visible);
+
+                var updateAttributes = new ApplicationAttributes()
+                {
+                    ApplicationAuthor = "Splunk, Inc.",
+                    Configured = true,
+                    Description = "This app update confirms that an app can be updated from a template",
+                    Label = name,
+                    Version = "2.0.1",
+                    Visible = true
+                };
+
+                bool updatedSnapshot = await templatedApp.UpdateAsync(updateAttributes, checkForUpdates: true);
+                Assert.True(updatedSnapshot);
+                await templatedApp.GetAsync(); // Because UpdateAsync doesn't produce an updated snapshot
+
+                Assert.Equal(updateAttributes.ApplicationAuthor, templatedApp.ApplicationAuthor);
+                Assert.Equal(true, templatedApp.CheckForUpdates);
+                Assert.Equal(updateAttributes.Configured, templatedApp.Configured);
+                Assert.Equal(updateAttributes.Description, templatedApp.Description);
+                Assert.Equal(updateAttributes.Label, templatedApp.Label);
+                Assert.Equal(false, templatedApp.Refresh);
+                Assert.Equal(false, templatedApp.StateChangeRequiresRestart);
+                Assert.Equal(updateAttributes.Version, templatedApp.Version);
+                Assert.Equal(updateAttributes.Visible, templatedApp.Visible);
+
+                Assert.False(templatedApp.Disabled);
+
+                await templatedApp.DisableAsync();
+                await templatedApp.GetAsync(); // Because POST apps/local/{name} does not return an updated snapshot
+                Assert.True(templatedApp.Disabled);
+
+                await templatedApp.EnableAsync();
+                await templatedApp.GetAsync(); // Because POST apps/local/{name} does not return an updated snapshot
+                Assert.False(templatedApp.Disabled);
+
+                var archiveInfo = await templatedApp.PackageAsync();
+
+                if (splunkHostEntry.HostName == localHostEntry.HostName)
+                {
+                    Assert.True(File.Exists(archiveInfo.Path));
+                    File.Delete(archiveInfo.Path);
+                }
+
+                await templatedApp.RemoveAsync();
+
+                try
+                {
+                    await templatedApp.GetAsync();
+                    Assert.False(true, "Expected ResourceNotFoundException");
+                }
+                catch (ResourceNotFoundException)
+                { }
+
+                templatedApp = await service.Applications.GetOrNullAsync(templatedApp.Name);
+                Assert.Null(templatedApp);
+            }
+        }
+
         [Trait("acceptance-test", "Splunk.Client.ApplicationCollection")]
         [Fact]
-        public async Task  CanCrudApplications()
+        public async Task  CanGetApplications()
         {
             foreach (var ns in TestNamespaces)
             {
@@ -170,161 +361,11 @@ namespace Splunk.Client.UnitTests
                             Assert.DoesNotThrow(() => value = string.Format("Updated = {0}", application.Updated));
                             Assert.DoesNotThrow(() => value = string.Format("Version = {0}", application.Version));
                             Assert.DoesNotThrow(() => value = string.Format("Visible = {0}", application.Visible));
-
-                            if (application.Name == "twitter2")
-                            {
-                                await application.RemoveAsync();
-
-                                try
-                                {
-                                    await application.GetAsync();
-                                    Assert.False(true, "Expected ResourceNotFoundException");
-                                }
-                                catch (ResourceNotFoundException)
-                                { }
-
-                                Application twitterApp = await service.Applications.GetOrNullAsync("twitter2");
-                                Assert.Null(twitterApp);
-                            }
                         }
 
                         args.Offset += service.Applications.Pagination.ItemsPerPage;
                     }
                     while (args.Offset < service.Applications.Pagination.TotalResults);
-
-                    //// Install, update, and remove the Splunk App for Twitter Data, version 2.3.1
-
-                    IPHostEntry splunkHostEntry = await Dns.GetHostEntryAsync(service.Context.Host);
-                    IPHostEntry localHostEntry = await Dns.GetHostEntryAsync("localhost");
-
-                    if (splunkHostEntry.HostName == localHostEntry.HostName)
-                    {
-                        var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
-                        Assert.True(File.Exists(path));
-
-                        var twitterApp = await service.Applications.InstallAsync(path, update: true);
-
-                        //// Other asserts on the contents of the update
-
-                        Assert.Equal("Splunk", twitterApp.ApplicationAuthor);
-                        Assert.Equal(true, twitterApp.CheckForUpdates);
-                        Assert.Equal(false, twitterApp.Configured);
-                        Assert.Equal("This application indexes Twitter's sample stream.", twitterApp.Description);
-                        Assert.Equal("Splunk-Twitter Connector", twitterApp.Label);
-                        Assert.Equal(false, twitterApp.Refresh);
-                        Assert.Equal(false, twitterApp.StateChangeRequiresRestart);
-                        Assert.Equal("2.3.0", twitterApp.Version);
-                        Assert.Equal(true, twitterApp.Visible);
-
-                        //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
-                        //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
-                        //// We might check that there is no update info for 2.3.1:
-                        ////    Assert.Null(twitterApplicationUpdateInfo.Update);
-                        //// Then change the version number to 2.3.0:
-                        ////    await twitterApplication.UpdateAsync(new ApplicationAttributes() { Version = "2.3.0" });
-                        //// Finally:
-                        //// ApplicationUpdateInfo twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
-                        //// Assert.NotNull(twitterApplicationUpdateInfo.Update);
-                        //// Assert.True(string.Compare(twitterApplicationUpdateInfo.Update.Version, "2.3.0") == 1, "expect the newer twitter app info");
-                        //// Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Update.Checksum);
-
-                        var setupInfo = await twitterApp.GetSetupInfoAsync();
-                        var updateInfo = await twitterApp.GetUpdateInfoAsync();
-
-                        await twitterApp.RemoveAsync();
-
-                        try
-                        {
-                            await twitterApp.GetAsync();
-                            Assert.False(true, "Expected ResourceNotFoundException");
-                        }
-                        catch (ResourceNotFoundException)
-                        { }
-
-                        twitterApp = await service.Applications.GetOrNullAsync("twitter2");
-                        Assert.Null(twitterApp);
-                    }
-
-                    //// Create an app from one of the built-in templates
-
-                    var name = string.Format("delete-me-{0}", Guid.NewGuid());
-
-                    var creationAttributes = new ApplicationAttributes()
-                    {
-                        ApplicationAuthor = "Splunk",
-                        Configured = true,
-                        Description = "This app confirms that an app can be created from a template",
-                        Label = name,
-                        Version = "2.0.0",
-                        Visible = true
-                    };
-
-                    var templatedApp = await service.Applications.CreateAsync(name, "barebones", creationAttributes);
-
-                    Assert.Equal(creationAttributes.ApplicationAuthor, templatedApp.ApplicationAuthor);
-                    Assert.Equal(true, templatedApp.CheckForUpdates);
-                    Assert.Equal(creationAttributes.Configured, templatedApp.Configured);
-                    Assert.Equal(creationAttributes.Description, templatedApp.Description);
-                    Assert.Equal(creationAttributes.Label, templatedApp.Label);
-                    Assert.Equal(false, templatedApp.Refresh);
-                    Assert.Equal(false, templatedApp.StateChangeRequiresRestart);
-                    Assert.Equal(creationAttributes.Version, templatedApp.Version);
-                    Assert.Equal(creationAttributes.Visible, templatedApp.Visible);
-
-                    var updateAttributes = new ApplicationAttributes()
-                    {
-                        ApplicationAuthor = "Splunk, Inc.",
-                        Configured = true,
-                        Description = "This app update confirms that an app can be updated from a template",
-                        Label = name,
-                        Version = "2.0.1",
-                        Visible = true
-                    };
-
-                    bool updatedSnapshot = await templatedApp.UpdateAsync(updateAttributes, checkForUpdates: true);
-                    Assert.True(updatedSnapshot);
-                    await templatedApp.GetAsync(); // Because UpdateAsync doesn't produce an updated snapshot
-
-                    Assert.Equal(updateAttributes.ApplicationAuthor, templatedApp.ApplicationAuthor);
-                    Assert.Equal(true, templatedApp.CheckForUpdates);
-                    Assert.Equal(updateAttributes.Configured, templatedApp.Configured);
-                    Assert.Equal(updateAttributes.Description, templatedApp.Description);
-                    Assert.Equal(updateAttributes.Label, templatedApp.Label);
-                    Assert.Equal(false, templatedApp.Refresh);
-                    Assert.Equal(false, templatedApp.StateChangeRequiresRestart);
-                    Assert.Equal(updateAttributes.Version, templatedApp.Version);
-                    Assert.Equal(updateAttributes.Visible, templatedApp.Visible);
-
-                    Assert.False(templatedApp.Disabled);
-
-                    await templatedApp.DisableAsync();
-                    await templatedApp.GetAsync(); // Because POST apps/local/{name} does not return an updated snapshot
-                    Assert.True(templatedApp.Disabled);
-
-                    await templatedApp.EnableAsync();
-                    await templatedApp.GetAsync(); // Because POST apps/local/{name} does not return an updated snapshot
-                    Assert.False(templatedApp.Disabled);
-
-                    var archiveInfo = await templatedApp.PackageAsync();
-
-                    if (splunkHostEntry.HostName == localHostEntry.HostName)
-                    {
-                        Assert.True(File.Exists(archiveInfo.Path));
-                        File.Delete(archiveInfo.Path);
-                    }
-
-                    await templatedApp.RemoveAsync();
-
-                    try
-                    {
-                        await templatedApp.GetAsync();
-                        Assert.False(true, "Expected ResourceNotFoundException");
-                    }
-                    catch (ResourceNotFoundException)
-                    { }
-
-                    templatedApp = await service.Applications.GetOrNullAsync(templatedApp.Name);
-                    Assert.Null(templatedApp);
                 }
             }
         }
@@ -333,11 +374,29 @@ namespace Splunk.Client.UnitTests
 
         #region Configuration
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Configuration")]
+        [Trait("acceptance-test", "Splunk.Client.Configuration : CanCrudConfiguration")]
         [Fact]
         public async Task  CanCrudConfiguration() // no delete operation is available
         {
+            const string testApplicationName = "acceptance-test_Splunk.Client.Configuration";
+
             using (var service = await SDKHelper.CreateService())
+            {
+                Application application = await service.Applications.GetOrNullAsync(testApplicationName);
+
+                if (application != null)
+                {
+                    await application.RemoveAsync();
+
+                    application = await service.Applications.GetOrNullAsync(testApplicationName);
+                    Assert.Null(application);
+                }
+
+                await service.Applications.CreateAsync(testApplicationName, "barebones");
+                application = await service.Applications.GetAsync(testApplicationName);
+            }
+
+            using (var service = await(SDKHelper.CreateService(new Namespace("nobody", testApplicationName))))
             {
                 var fileName = string.Format("delete-me-{0}", Guid.NewGuid());
 
@@ -409,39 +468,62 @@ namespace Splunk.Client.UnitTests
                 configurationStanza = await configuration.GetOrNullAsync("stanza");
                 Assert.Null(configurationStanza);
             }
-        }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Configuration")]
-        [Fact]
-        public async Task  CanGetConfigurations()
-        {
             using (var service = await SDKHelper.CreateService())
             {
-                await service.Configurations.GetAllAsync();
+                Application application = await service.Applications.GetAsync(testApplicationName);
+                await application.RemoveAsync();
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Configuration")]
+        [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection : CanGetConfigurations")]
         [Fact]
-        public async Task  CanReadConfigurations()
+        public async Task CanGetConfigurations()
         {
-            using (var service = await SDKHelper.CreateService())
+            foreach (Namespace ns in TestNamespaces)
             {
-                //// Read the entire configuration system
-
-                await service.Configurations.GetAllAsync();
-
-                foreach (var configuration in service.Configurations)
+                using (var service = await SDKHelper.CreateService())
                 {
-                    await configuration.GetAllAsync();
+                    var inputsConfiguration = await service.Configurations.GetAsync("inputs");
 
-                    foreach (ConfigurationStanza stanza in configuration)
+                    foreach (var stanza in inputsConfiguration)  /// TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                     {
-                        Assert.NotNull(stanza);
-                        Console.WriteLine("stanza.Name:"+stanza.Name);
-                        Console.WriteLine("stanza.Namespace:" + stanza.Namespace);
                         await stanza.GetAsync();
                     }
+
+                    await service.Configurations.GetAllAsync();
+
+                    foreach (Configuration configuration in service.Configurations)
+                    {
+                        await configuration.GetAllAsync();
+
+                        foreach (ConfigurationStanza stanza in configuration)
+                        {
+                            await stanza.GetAsync();
+                        }
+                    }
+
+                    var configurationList = new List<Configuration>(service.Configurations.Count);
+
+                    for (int i = 0; i < service.Configurations.Count; i++)
+                    {
+                        Configuration configuration = service.Configurations[i];
+                        configurationList.Add(configuration);
+
+                        await configuration.GetAllAsync();
+                        var stanzaList = new List<ConfigurationStanza>(configuration.Count);
+
+                        for (int j = 0; j < configuration.Count; j++)
+                        {
+                            ConfigurationStanza stanza = configuration[j];
+                            stanzaList.Add(stanza);
+                            await stanza.GetAsync();
+                        }
+
+                        Assert.Equal(configuration, stanzaList);
+                    }
+
+                    Assert.Equal(service.Configurations, configurationList);
                 }
             }
         }
@@ -599,7 +681,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.Service: Indexes")]
         [Fact]
-        public async Task  CanCrudIndex()
+        public async Task CanCrudIndex()
         {
             using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
@@ -653,9 +735,9 @@ namespace Splunk.Client.UnitTests
 
         #region Saved Searches
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Saved Searches")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
-        public async Task  CanCrudSavedSearch()
+        public async Task CanCrudSavedSearch()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -735,7 +817,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Saved Searches")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
         public async Task  CanDispatchSavedSearch()
         {
@@ -755,7 +837,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Saved Searches")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
         public async Task  CanGetSavedSearchHistory()
         {
@@ -802,7 +884,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Saved Searches")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearchCollection")]
         [Fact]
         public async Task  CanGetSavedSearches()
         {
@@ -822,7 +904,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Saved Searches")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
         public async Task CanUpdateSavedSearch()
         {
@@ -884,14 +966,19 @@ namespace Splunk.Client.UnitTests
 
                 await service.Jobs.GetAllAsync();
 
-                foreach (var job in jobs)
+                foreach (var job in service.Jobs)
                 {
-                    Assert.Contains(job, service.Jobs);
+                    Assert.Contains(job, jobs);
+                }
+
+                for (int i = 0; i < service.Jobs.Count; i++)
+                {
+                    Assert.Contains(service.Jobs[i], jobs);
                 }
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service : CanExportSearchPreviews")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanExportSearchPreviews()
         {
@@ -953,7 +1040,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service : CanExportSearchResults")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanExportSearchResults()
         {
@@ -998,7 +1085,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service : CanSearchOneshot")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanSearchOneshot()
         {
@@ -1033,9 +1120,9 @@ namespace Splunk.Client.UnitTests
 
         #region System
 
-        [Trait("acceptance-test", "Splunk.Client.Server")]
+        [Trait("acceptance-test", "Splunk.Client.ServerMessage")]
         [Fact]
-        public async Task CanCrudServerMessages()
+        public async Task CanCrudServerMessage()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1084,7 +1171,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Server")]
+        [Trait("acceptance-test", "Splunk.Client.ServerSettings")]
         [Fact]
         public async Task CanCrudServerSettings()
         {

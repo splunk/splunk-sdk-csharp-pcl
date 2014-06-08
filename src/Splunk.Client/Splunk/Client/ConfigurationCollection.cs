@@ -139,7 +139,7 @@ namespace Splunk.Client
         public virtual async Task<Configuration> CreateAsync(string name)
         {
             var arguments = new Argument[] { new Argument("__conf", name) };
-            return await this.CreateAsync(arguments);
+            return await this.CreateAsync(arguments.AsEnumerable());
         }
 
         /// <inheritdoc/>

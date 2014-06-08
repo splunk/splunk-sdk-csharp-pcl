@@ -117,7 +117,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<bool> RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
+        public virtual async Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
             var info = await this.GetInfoAsync();
             var startupTime = info.StartupTime;
@@ -131,7 +131,7 @@ namespace Splunk.Client
 
             if (millisecondsDelay == 0)
             {
-                return false;
+                return;
             }
 
             using (var cancellationTokenSource = new CancellationTokenSource())
@@ -147,25 +147,26 @@ namespace Splunk.Client
 
                         if (startupTime < info.StartupTime)
                         {
-                            return true;
+                            return;
                         }
                     }
                     catch (RequestException)
                     {
-                        // Because the server may return a failure code on the way up or down
+                        //// Because the server may return a failure code on the way up or down
                     }
                     catch (WebException e) 
                     {
-                        // Because Mono's HttpClient code is known to throw a WebException on connection failure
+                        //// Because the HttpClient that Mono 3.4 depends on is known to throw a WebException on 
+                        //// connection failure
 
                         if (e.Status != WebExceptionStatus.ConnectFailure) 
                         {
-                            throw;
+                            throw new HttpRequestException(e.Message, e);
                         }
                     }
                     catch (HttpRequestException e)
                     {
-                        // Because Microsoft's HttpClient code always throws an HttpRequestException
+                        //// Because Microsoft's HttpClient code always throws an HttpRequestException
 
                         var innerException = e.InnerException as WebException;
 
@@ -178,7 +179,7 @@ namespace Splunk.Client
                     await Task.Delay(millisecondsDelay: retryInterval);
                 }
 
-                return false;
+                throw new OperationCanceledException();
             }
         }
 

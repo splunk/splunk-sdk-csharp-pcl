@@ -226,7 +226,7 @@ namespace Splunk.Client
         /// current <see cref="Application"/> and optionally check for
         /// updates on Splunkbase.
         /// </remarks>
-        Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false);
+        Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false);
 
         #endregion
     }
@@ -254,55 +254,28 @@ namespace Splunk.Client
 
         #region Methods
 
-        public Task DisableAsync()
-        {
-            return default(Task);
-        }
+        public abstract Task DisableAsync();
 
-        public Task EnableAsync()
-        {
-            return default(Task);
-        }
+        public abstract Task EnableAsync();
 
-        public Task GetAsync()
-        {
-            return default(Task);
-        }
+        public abstract Task GetAsync();
 
-        public Task<ApplicationSetupInfo> GetSetupInfoAsync()
-        {
-            return default(Task<ApplicationSetupInfo>);
-        }
+        public abstract Task<ApplicationSetupInfo> GetSetupInfoAsync();
 
-        public Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
-        {
-            return default(Task<ApplicationUpdateInfo>);
-        }
+        public abstract Task<ApplicationUpdateInfo> GetUpdateInfoAsync();
 
-        public Task<ApplicationArchiveInfo> PackageAsync()
-        {
-            return default(Task<ApplicationArchiveInfo>);
-        }
+        public abstract Task<ApplicationArchiveInfo> PackageAsync();
 
-        public Task RemoveAsync()
-        {
-            return default(Task);
-        }
+        public abstract Task RemoveAsync();
 
-        public Task<bool> UpdateAsync(params Argument[] arguments)
-        {
-            return default(Task<bool>);
-        }
+        public abstract Task<bool> UpdateAsync(params Argument[] arguments);
 
-        public Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
-        {
-            return default(Task<bool>);
-        }
+        public abstract Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
 
-        public Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates)
+        public Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates)
         {
             Contract.Requires<ArgumentNullException>(attributes != null);
-            return default(Task);
+            return default(Task<bool>);
         }
 
         #endregion

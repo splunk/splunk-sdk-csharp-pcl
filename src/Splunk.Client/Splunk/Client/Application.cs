@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Linq;
     using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
@@ -296,14 +297,10 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
+        public virtual async Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
         {
             var arguments = new Argument[] { new Argument("check_for_updates", checkForUpdates) };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments, attributes))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
+            return await this.UpdateAsync(arguments.AsEnumerable().Concat(attributes));
         }
 
         #endregion

@@ -37,9 +37,6 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task Application()
         {
-            string dummyString;
-            bool dummyBool;
-
             Service service = await SDKHelper.CreateService();
 
             ApplicationCollection apps = service.Applications;
@@ -47,77 +44,42 @@ namespace Splunk.Client.UnitTests
 
             foreach (Application app in apps)
             {
-                ApplicationSetupInfo setupInfo = null;
+                await CheckApplication(app);
+            }
 
-                try
-                {
-                    setupInfo = await app.GetSetupInfoAsync();
-                    //// TODO: Install an app which hits this code before this test runs
-                    Assert.NotNull(setupInfo.Eai);
-                    dummyBool = setupInfo.Refresh;
-                }
-                catch (InternalServerErrorException e)
-                {
-                    Assert.Contains("Setup configuration file does not exist", e.Message);
-                }
-                
-                ApplicationArchiveInfo applicationArchive = await app.PackageAsync();
-
-                dummyString = app.Author;
-                dummyBool = app.CheckForUpdates;
-                dummyString = app.Description;
-                dummyString = app.Label;
-                dummyBool = app.Refresh;
-                dummyString = app.Version;
-                dummyBool = app.Configured;
-
-                dummyBool = app.Visible;
-                dummyBool = app.StateChangeRequiresRestart;
-
-                ApplicationUpdateInfo applicationUpdate = await app.GetUpdateInfoAsync();
-
-                if (applicationUpdate.Update != null)
-                {
-                    dummyString = applicationUpdate.Update.Checksum;
-                    dummyString = applicationUpdate.Update.ChecksumType;
-                    dummyString = applicationUpdate.Update.HomePage;
-                    long size = applicationUpdate.Update.Size;
-                    dummyString = applicationUpdate.Update.ApplicationName;
-                    Uri uri = applicationUpdate.Update.ApplicationUri;
-                    dummyString = applicationUpdate.Update.Version;
-                    dummyBool = applicationUpdate.Update.ImplicitIdRequired;
-                }
+            for (int i = 0; i < apps.Count; i++)
+            {
+                await CheckApplication(apps[i]);
             }
 
             if (apps.Any(a => a.Name == "sdk-tests"))
             {
                 await TestHelper.RemoveApp("sdk-tests");
+
                 service = await SDKHelper.CreateService();
+                apps = service.Applications;
             }
 
-            apps = service.Applications;
-            await apps.GetAllAsync();
-
-            Assert.False(apps.Any(a => a.Name == "sdk-tests"));
-
-            ApplicationAttributes attributes = new ApplicationAttributes();
-            attributes.ApplicationAuthor = "me";
-
-            attributes.Description = "this is a description";
-            attributes.Label = "SDKTEST";
-            attributes.Visible = false;
+            ApplicationAttributes attributes = new ApplicationAttributes
+            {
+                ApplicationAuthor = "me",
+                Description = "this is a description",
+                Label = "SDKTEST",
+                Visible = false
+            };
 
             var testApp = await service.Applications.CreateAsync("sdk-tests", "barebones", attributes);
             testApp = await service.Applications.GetAsync("sdk-tests");
-            dummyBool = testApp.CheckForUpdates;
-                
+
             Assert.Equal("SDKTEST", testApp.Label);
             Assert.Equal("me", testApp.ApplicationAuthor);
             Assert.Equal("nobody", testApp.Author);
             Assert.False(testApp.Configured);
             Assert.False(testApp.Visible);
 
-            attributes = new ApplicationAttributes()
+            Assert.DoesNotThrow(() => { bool p = testApp.CheckForUpdates; });
+
+            attributes = new ApplicationAttributes
             {
                 ApplicationAuthor = "not me",
                 Description = "new description",
@@ -164,35 +126,90 @@ namespace Splunk.Client.UnitTests
             Assert.True(archiveInfo.Uri.AbsolutePath.Length > 0);
 
             await TestHelper.RemoveApp("sdk-tests");
-
-            //// TODO: Incorporate or remove these bits
-
-            //if (TestHelper.VersionCompare(service, "5.0") < 0)
-            //{
-            //    //createArgs.manageable", false);
-            //}
-
-            //if (TestHelper.VersionCompare(service, "5.0") < 0)
-            //{
-            //    //Assert.False(app2.Manageable, assertRoot + "#6");
-            //}
-
-            //// update the app
-
-            //if (TestHelper.VersionCompare(service, "5.0") < 0)
-            //{
-            //    //app2.IsManageable = false;
-            //}
-
-            //if (TestHelper.VersionCompare(service, "4.2.4") >= 0)
-            //{
-            //    attributes.Configured = false;
-            //}
-
-            //if (TestHelper.VersionCompare(service, "5.0") < 0)
-            //{
-            //    //dummyBool = app.IsManageable;
-            //}
         }
+
+        #region Privates/internals
+
+        internal async Task CheckApplication(Application app)
+        {
+            ApplicationSetupInfo setupInfo = null;
+
+            try 
+            {
+                setupInfo = await app.GetSetupInfoAsync();
+
+                //// TODO: Install an app which hits this code before this test runs
+
+                Assert.NotNull(setupInfo.Eai);
+                Assert.DoesNotThrow(() => { bool p = setupInfo.Refresh; });
+            } 
+            catch (InternalServerErrorException e) 
+            {
+                Assert.Contains("Setup configuration file does not exist", e.Message);
+            }
+
+            ApplicationArchiveInfo archiveInfo = await app.PackageAsync();
+
+            Assert.DoesNotThrow(() => 
+            { 
+                string p = app.Author; 
+                Assert.NotNull(p);
+            });
+
+            Assert.DoesNotThrow(() => { string p = app.ApplicationAuthor; });
+            Assert.DoesNotThrow(() => { bool p = app.CheckForUpdates; });
+            Assert.DoesNotThrow(() => { string p = app.Description; });
+            Assert.DoesNotThrow(() => { string p = app.Label; });
+            Assert.DoesNotThrow(() => { bool p = app.Refresh; });
+            Assert.DoesNotThrow(() => { string p = app.Version; });
+            Assert.DoesNotThrow(() => { bool p = app.Configured; });
+            Assert.DoesNotThrow(() => { bool p = app.StateChangeRequiresRestart; });
+            Assert.DoesNotThrow(() => { bool p = app.Visible; });
+
+            ApplicationUpdateInfo updateInfo = await app.GetUpdateInfoAsync();
+            Assert.NotNull(updateInfo.Eai);
+
+            if (updateInfo.Update != null)
+            {
+                var update = updateInfo.Update;
+
+                Assert.DoesNotThrow(() =>
+                {
+                    string p = updateInfo.Update.ApplicationName;
+                });
+                Assert.DoesNotThrow(() =>
+                {
+                    Uri p = updateInfo.Update.ApplicationUri;
+                });
+                Assert.DoesNotThrow(() =>
+                {
+                    string p = updateInfo.Update.ApplicationName;
+                });
+                Assert.DoesNotThrow(() =>
+                {
+                    string p = updateInfo.Update.ChecksumType;
+                });
+                Assert.DoesNotThrow(() =>
+                {
+                    string p = updateInfo.Update.HomePage;
+                });
+                Assert.DoesNotThrow(() =>
+                {
+                    bool p = updateInfo.Update.ImplicitIdRequired;
+                });
+                Assert.DoesNotThrow(() =>
+                {
+                    long p = updateInfo.Update.Size;
+                });
+                Assert.DoesNotThrow(() =>
+                {
+                    string p = updateInfo.Update.Version;
+                });
+            }
+
+            Assert.DoesNotThrow(() => { DateTime p = updateInfo.Updated; });
+        }
+
+        #endregion
     }
 }

@@ -129,7 +129,7 @@ namespace Splunk.Client.UnitTests
 
         #region Applications
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Applications")]
+        [Trait("acceptance-test", "Splunk.Client.ApplicationCollection")]
         [Fact]
         public async Task  CanCrudApplications()
         {
@@ -150,7 +150,7 @@ namespace Splunk.Client.UnitTests
 
                         foreach (var application in service.Applications)
                         {
-                            string value;
+                            string value = null;
 
                             Assert.DoesNotThrow(() => value = string.Format("ApplicationAuthor = {0}", application.ApplicationAuthor));
                             Assert.DoesNotThrow(() => value = string.Format("Author = {0}", application.Author));
@@ -182,6 +182,9 @@ namespace Splunk.Client.UnitTests
                                 }
                                 catch (ResourceNotFoundException)
                                 { }
+
+                                Application twitterApp = await service.Applications.GetOrNullAsync("twitter2");
+                                Assert.Null(twitterApp);
                             }
                         }
 
@@ -199,19 +202,19 @@ namespace Splunk.Client.UnitTests
                         var path = Path.Combine(Environment.CurrentDirectory, "Data", "app-for-twitter-data_230.spl");
                         Assert.True(File.Exists(path));
 
-                        var twitterApplication = await service.Applications.InstallAsync(path, update: true);
+                        var twitterApp = await service.Applications.InstallAsync(path, update: true);
 
                         //// Other asserts on the contents of the update
 
-                        Assert.Equal("Splunk", twitterApplication.ApplicationAuthor);
-                        Assert.Equal(true, twitterApplication.CheckForUpdates);
-                        Assert.Equal(false, twitterApplication.Configured);
-                        Assert.Equal("This application indexes Twitter's sample stream.", twitterApplication.Description);
-                        Assert.Equal("Splunk-Twitter Connector", twitterApplication.Label);
-                        Assert.Equal(false, twitterApplication.Refresh);
-                        Assert.Equal(false, twitterApplication.StateChangeRequiresRestart);
-                        Assert.Equal("2.3.0", twitterApplication.Version);
-                        Assert.Equal(true, twitterApplication.Visible);
+                        Assert.Equal("Splunk", twitterApp.ApplicationAuthor);
+                        Assert.Equal(true, twitterApp.CheckForUpdates);
+                        Assert.Equal(false, twitterApp.Configured);
+                        Assert.Equal("This application indexes Twitter's sample stream.", twitterApp.Description);
+                        Assert.Equal("Splunk-Twitter Connector", twitterApp.Label);
+                        Assert.Equal(false, twitterApp.Refresh);
+                        Assert.Equal(false, twitterApp.StateChangeRequiresRestart);
+                        Assert.Equal("2.3.0", twitterApp.Version);
+                        Assert.Equal(true, twitterApp.Visible);
 
                         //// TODO: Check ApplicationSetupInfo and ApplicationUpdateInfo noting that we must bump the
                         //// Splunk App for Twitter Data down to, say, 2.3.0 to ensure we get update info to verify
@@ -225,18 +228,21 @@ namespace Splunk.Client.UnitTests
                         //// Assert.True(string.Compare(twitterApplicationUpdateInfo.Update.Version, "2.3.0") == 1, "expect the newer twitter app info");
                         //// Assert.Equal("41ceb202053794cfec54b8d28f78d83c", twitterApplicationUpdateInfo.Update.Checksum);
 
-                        var twitterApplicationSetupInfo = await twitterApplication.GetSetupInfoAsync();
-                        var twitterApplicationUpdateInfo = await twitterApplication.GetUpdateInfoAsync();
+                        var setupInfo = await twitterApp.GetSetupInfoAsync();
+                        var updateInfo = await twitterApp.GetUpdateInfoAsync();
 
-                        await twitterApplication.RemoveAsync();
+                        await twitterApp.RemoveAsync();
 
                         try
                         {
-                            await twitterApplication.GetAsync();
+                            await twitterApp.GetAsync();
                             Assert.False(true, "Expected ResourceNotFoundException");
                         }
                         catch (ResourceNotFoundException)
                         { }
+
+                        twitterApp = await service.Applications.GetOrNullAsync("twitter2");
+                        Assert.Null(twitterApp);
                     }
 
                     //// Create an app from one of the built-in templates
@@ -253,17 +259,17 @@ namespace Splunk.Client.UnitTests
                         Visible = true
                     };
 
-                    var templatedApplication = await service.Applications.CreateAsync(name, "barebones", creationAttributes);
+                    var templatedApp = await service.Applications.CreateAsync(name, "barebones", creationAttributes);
 
-                    Assert.Equal(creationAttributes.ApplicationAuthor, templatedApplication.ApplicationAuthor);
-                    Assert.Equal(true, templatedApplication.CheckForUpdates);
-                    Assert.Equal(creationAttributes.Configured, templatedApplication.Configured);
-                    Assert.Equal(creationAttributes.Description, templatedApplication.Description);
-                    Assert.Equal(creationAttributes.Label, templatedApplication.Label);
-                    Assert.Equal(false, templatedApplication.Refresh);
-                    Assert.Equal(false, templatedApplication.StateChangeRequiresRestart);
-                    Assert.Equal(creationAttributes.Version, templatedApplication.Version);
-                    Assert.Equal(creationAttributes.Visible, templatedApplication.Visible);
+                    Assert.Equal(creationAttributes.ApplicationAuthor, templatedApp.ApplicationAuthor);
+                    Assert.Equal(true, templatedApp.CheckForUpdates);
+                    Assert.Equal(creationAttributes.Configured, templatedApp.Configured);
+                    Assert.Equal(creationAttributes.Description, templatedApp.Description);
+                    Assert.Equal(creationAttributes.Label, templatedApp.Label);
+                    Assert.Equal(false, templatedApp.Refresh);
+                    Assert.Equal(false, templatedApp.StateChangeRequiresRestart);
+                    Assert.Equal(creationAttributes.Version, templatedApp.Version);
+                    Assert.Equal(creationAttributes.Visible, templatedApp.Visible);
 
                     var updateAttributes = new ApplicationAttributes()
                     {
@@ -275,38 +281,50 @@ namespace Splunk.Client.UnitTests
                         Visible = true
                     };
 
-                    await templatedApplication.UpdateAsync(updateAttributes, checkForUpdates: true);
-                    await templatedApplication.GetAsync(); // Because UpdateAsync doesn't return the updated entity
+                    bool updatedSnapshot = await templatedApp.UpdateAsync(updateAttributes, checkForUpdates: true);
+                    Assert.True(updatedSnapshot);
+                    await templatedApp.GetAsync(); // Because UpdateAsync doesn't produce an updated snapshot
 
-                    Assert.Equal(updateAttributes.ApplicationAuthor, templatedApplication.ApplicationAuthor);
-                    Assert.Equal(true, templatedApplication.CheckForUpdates);
-                    Assert.Equal(updateAttributes.Configured, templatedApplication.Configured);
-                    Assert.Equal(updateAttributes.Description, templatedApplication.Description);
-                    Assert.Equal(updateAttributes.Label, templatedApplication.Label);
-                    Assert.Equal(false, templatedApplication.Refresh);
-                    Assert.Equal(false, templatedApplication.StateChangeRequiresRestart);
-                    Assert.Equal(updateAttributes.Version, templatedApplication.Version);
-                    Assert.Equal(updateAttributes.Visible, templatedApplication.Visible);
+                    Assert.Equal(updateAttributes.ApplicationAuthor, templatedApp.ApplicationAuthor);
+                    Assert.Equal(true, templatedApp.CheckForUpdates);
+                    Assert.Equal(updateAttributes.Configured, templatedApp.Configured);
+                    Assert.Equal(updateAttributes.Description, templatedApp.Description);
+                    Assert.Equal(updateAttributes.Label, templatedApp.Label);
+                    Assert.Equal(false, templatedApp.Refresh);
+                    Assert.Equal(false, templatedApp.StateChangeRequiresRestart);
+                    Assert.Equal(updateAttributes.Version, templatedApp.Version);
+                    Assert.Equal(updateAttributes.Visible, templatedApp.Visible);
 
-                    Assert.False(templatedApplication.Disabled);
+                    Assert.False(templatedApp.Disabled);
 
-                    await templatedApplication.DisableAsync();
-                    await templatedApplication.GetAsync(); // because POST apps/local/{name} does not return new data
-                    Assert.True(templatedApplication.Disabled);
+                    await templatedApp.DisableAsync();
+                    await templatedApp.GetAsync(); // Because POST apps/local/{name} does not return an updated snapshot
+                    Assert.True(templatedApp.Disabled);
 
-                    await templatedApplication.EnableAsync();
-                    await templatedApplication.GetAsync(); // because POST apps/local/{name} does not return new data
-                    Assert.False(templatedApplication.Disabled);
+                    await templatedApp.EnableAsync();
+                    await templatedApp.GetAsync(); // Because POST apps/local/{name} does not return an updated snapshot
+                    Assert.False(templatedApp.Disabled);
 
-                    var templatedApplicationArchiveInfo = await templatedApplication.PackageAsync();
+                    var archiveInfo = await templatedApp.PackageAsync();
 
                     if (splunkHostEntry.HostName == localHostEntry.HostName)
                     {
-                        Assert.True(File.Exists(templatedApplicationArchiveInfo.Path));
-                        File.Delete(templatedApplicationArchiveInfo.Path);
+                        Assert.True(File.Exists(archiveInfo.Path));
+                        File.Delete(archiveInfo.Path);
                     }
 
-                    await templatedApplication.RemoveAsync();
+                    await templatedApp.RemoveAsync();
+
+                    try
+                    {
+                        await templatedApp.GetAsync();
+                        Assert.False(true, "Expected ResourceNotFoundException");
+                    }
+                    catch (ResourceNotFoundException)
+                    { }
+
+                    templatedApp = await service.Applications.GetOrNullAsync(templatedApp.Name);
+                    Assert.Null(templatedApp);
                 }
             }
         }

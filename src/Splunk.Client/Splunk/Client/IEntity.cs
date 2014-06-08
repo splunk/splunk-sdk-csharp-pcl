@@ -20,21 +20,17 @@
 
 namespace Splunk.Client
 {
+    using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Provides an operational interface common to all Splunk entities.
     /// </summary>
+    [ContractClass(typeof(IEntityContract))]
     public interface IEntity
     {
-        #region Properties
-
-        
-        #endregion
-
-        #region Methods
-
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the current <see cref=
         /// "Entity"/> that contains all changes to it since it was last 
@@ -81,7 +77,25 @@ namespace Splunk.Client
         /// <c>false</c>.
         /// </remarks>
         Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
+    }
 
-        #endregion
+    [ContractClassFor(typeof(IEntity))]
+    abstract class IEntityContract : IEntity
+    {
+        public abstract Task GetAsync();
+
+        public abstract Task RemoveAsync();
+
+        public Task<bool> UpdateAsync(params Argument[] arguments)
+        {
+            Contract.Requires<ArgumentNullException>(arguments != null);
+            return default(Task<bool>);
+        }
+
+        public Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
+        {
+            Contract.Requires<ArgumentNullException>(arguments != null);
+            return default(Task<bool>);
+        }
     }
 }

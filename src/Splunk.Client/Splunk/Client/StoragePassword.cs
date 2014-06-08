@@ -232,14 +232,14 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        static ResourceName CreateResourceNameFromRealmAndUsername(string realm, string username)
+        internal static string CreateNameFromRealmAndUsername(string realm, string username)
         {
             var parts = new string[] { realm, username };
             var builder = new StringBuilder();
 
-            foreach (var part in parts)
+            foreach (string part in parts)
             {
-                foreach (var c in part)
+                foreach (char c in part)
                 {
                     if (c == ':')
                     {
@@ -252,7 +252,13 @@ namespace Splunk.Client
                 builder.Append(':');
             }
 
-            return new ResourceName(StoragePasswordCollection.ClassResourceName, builder.ToString());
+            return builder.ToString();
+        }
+
+        static ResourceName CreateResourceNameFromRealmAndUsername(string realm, string username)
+        {
+            string name = CreateNameFromRealmAndUsername(realm, username);
+            return new ResourceName(StoragePasswordCollection.ClassResourceName, name);
         }
 
         #endregion

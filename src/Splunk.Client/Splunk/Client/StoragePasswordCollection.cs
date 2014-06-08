@@ -129,36 +129,38 @@ namespace Splunk.Client
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously creates a new <see cref="StoragePassword"/>.
-        /// </summary>
-        /// <param name="password">
-        /// Password to be stored.
-        /// </param>
-        /// <param name="name">
-        /// A name for the password to be stored.
-        /// </param>
-        /// <param name="realm">
-        /// Optional domain or realm name for the password to be stored.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/JgyIeN">POST 
-        /// storage/passwords</a> endpoint to create a <see cref=
-        /// "StoragePassword"/> identified by <paramref name="name"/> and
-        /// <paramref name="realm"/>.
-        /// </remarks>
-        public virtual async Task<StoragePassword> CreateAsync(string name, string password, string realm = null)
+        /// <inheritdoc/>
+        public virtual async Task<StoragePassword> CreateAsync(string password, string username, string realm = null)
         {
             var arguments = new CreationArgs
             {
                 Password = password,
-                Username = name,
+                Username = username,
                 Realm = realm
             };
 
             return await this.CreateAsync(arguments.AsEnumerable());
         }
 
+        /// <inheritdoc/>
+        public virtual async Task<StoragePassword> GetAsync(string username, string realm = null)
+        {
+            var passwordName = StoragePassword.CreateNameFromRealmAndUsername(username, realm);
+            var password = await this.GetAsync(passwordName);
+
+            return password;
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<StoragePassword> GetOrNullAsync(string username, string realm = null)
+        {
+            var passwordName = StoragePassword.CreateNameFromRealmAndUsername(username, realm);
+            var password = await this.GetOrNullAsync(passwordName);
+
+            return password;
+        }
+            
+        /// <inheritdoc/>
         public virtual async Task GetSliceAsync(Filter criteria)
         {
             await this.GetSliceAsync(criteria.AsEnumerable());

@@ -36,11 +36,11 @@ namespace Splunk.Client
         /// <param name="password">
         /// Password to be stored.
         /// </param>
-        /// <param name="name">
-        /// A name for the password to be stored.
+        /// <param name="username">
+        /// The username associated with the password to be stored.
         /// </param>
         /// <param name="realm">
-        /// Optional domain or realm name for the password to be stored.
+        /// Optional domain or realm name associated with the password to be stored.
         /// </param>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/JgyIeN">POST 
@@ -48,8 +48,55 @@ namespace Splunk.Client
         /// "StoragePassword"/> identified by <paramref name="name"/> and
         /// <paramref name="realm"/>.
         /// </remarks>
-        Task<TStoragePassword> CreateAsync(string password, string name, string realm);
+        Task<TStoragePassword> CreateAsync(string password, string username, string realm = null);
 
+        /// <summary>
+        /// Asynchronously retrieves a <see cref="StoragePassword"/>.
+        /// </summary>
+        /// <param name="username">
+        /// The username associated with the password to be retrieved.
+        /// </param>
+        /// <param name="realm">
+        /// Optional domain or realm name associated with the password to be retrieved.
+        /// </param>
+        /// <returns>
+        /// An object representing the storage password retrieved.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/HL3c0T">GET 
+        /// storage/passwords/{name}</a> endpoint to retrieve the <see cref=
+        /// "StoragePassword"/> identified by <paramref name="username"/> and
+        /// <paramref name="realm"/>.
+        /// </remarks>
+        Task<TStoragePassword> GetAsync(string username, string realm = null);
+
+        /// <summary>
+        /// Asynchronously retrieves a <see cref="StoragePassword"/>.
+        /// </summary>
+        /// <param name="username">
+        /// The username associated with the password to be retrieved.
+        /// </param>
+        /// <param name="realm">
+        /// Optional domain or realm name associated with the password to be retrieved.
+        /// </param>
+        /// <returns>
+        /// An object representing the storage password retrieved or <c>null</c>, if no such storage password exists.
+        /// </returns>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/HL3c0T">GET 
+        /// storage/passwords/{name}</a> endpoint to retrieve the <see cref=
+        /// "StoragePassword"/> identified by <paramref name="username"/> and
+        /// <paramref name="realm"/>.
+        /// </remarks>
+        Task<TStoragePassword> GetOrNullAsync(string username, string realm = null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation. 
+        /// </returns>
+        /// <param name="criteria">Criteria.</param>
         Task GetSliceAsync(StoragePasswordCollection.Filter criteria);
     }
 
@@ -62,10 +109,10 @@ namespace Splunk.Client
         public abstract IReadOnlyList<Message> Messages { get; }
         public abstract Pagination Pagination { get; }
 
-        public Task<TStoragePassword> CreateAsync(string password, string name, string realm)
+        public Task<TStoragePassword> CreateAsync(string password, string username, string realm)
         {
             Contract.Requires<ArgumentException>(password != null);
-            Contract.Requires<ArgumentException>(name != null);
+            Contract.Requires<ArgumentException>(username != null);
             return default(Task<TStoragePassword>);
         }
 
@@ -73,12 +120,24 @@ namespace Splunk.Client
 
         public abstract Task<TStoragePassword> GetAsync(string name);
 
+        public Task<TStoragePassword> GetAsync(string username, string realm)
+        {
+            Contract.Requires<ArgumentNullException>(username != null);
+            return default(Task<TStoragePassword>);
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return default(IEnumerator);
         }
 
         public abstract IEnumerator<TStoragePassword> GetEnumerator();
+
+        public Task<TStoragePassword> GetOrNullAsync(string username, string realm)
+        {
+            Contract.Requires<ArgumentNullException>(username != null);
+            return default(Task<TStoragePassword>);
+        }
 
         public abstract Task GetSliceAsync(params Argument[] arguments);
 

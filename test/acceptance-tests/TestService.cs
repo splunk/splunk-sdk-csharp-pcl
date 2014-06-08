@@ -99,30 +99,68 @@ namespace Splunk.Client.UnitTests
 
                     //// Create and change the password for 50 StoragePassword instances
 
-                    var name = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
-                    var realm = new string[] { null, "splunk.com", "splunk:com" };
-                    var passwords = new List<StoragePassword>(50);
+                    var surname = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
+                    var realms = new string[] { null, "splunk.com", "splunk:com" };
 
-                    for (int i = 0; i < 50; i++)
+                    for (int i = 0; i < realms.Length; i++)
                     {
-                        StoragePassword password = await sps.CreateAsync(name + i, "foobar", realm[i % realm.Length]);
-                        var value = Membership.GeneratePassword(15, 2);
-                        await password.UpdateAsync(value);
+                        var password = "foobar-foobar";
+                        var username = surname + i;
+                        var realm = realms[i];
 
-                        Assert.Equal(value, password.ClearPassword);
-                        passwords.Add(password);
-                    }
+                        //// Create
 
-                    //// Fetch the entire collection of StoragePassword instances
+                        StoragePassword sp = await sps.CreateAsync(password, username, realm);
 
-                    await sps.GetAllAsync();
+                        Assert.Equal(password, sp.ClearPassword);
+                        Assert.Equal(username, sp.Username);
+                        Assert.Equal(realm, sp.Realm);
 
-                    //// Verify and then remove each of the StoragePassword instances we created
+                        //// Read
 
-                    for (int i = 0; i < 50; i++)
-                    {
-                        Assert.Contains(passwords[i], sps);
-                        await passwords[i].RemoveAsync();
+                        await sp.GetAsync();
+
+                        Assert.Equal(password, sp.ClearPassword);
+                        Assert.Equal(username, sp.Username);
+                        Assert.Equal(realm, sp.Realm);
+
+                        sp = await sps.GetAsync(username, realm);
+
+                        Assert.Equal(password, sp.ClearPassword);
+                        Assert.Equal(username, sp.Username);
+                        Assert.Equal(realm, sp.Realm);
+
+                        //// Update
+
+                        password = Membership.GeneratePassword(15, 2);
+                        await sp.UpdateAsync(password);
+
+                        Assert.Equal(password, sp.ClearPassword);
+                        Assert.Equal(username, sp.Username);
+                        Assert.Equal(realm, sp.Realm);
+
+                        //// Remove
+                    
+                        await sp.RemoveAsync();
+
+                        try
+                        {
+                            await sp.GetAsync();
+                            Assert.True(false);
+                        }
+                        catch (ResourceNotFoundException)
+                        { }
+
+                        try 
+                        {
+                            await sps.GetAsync(username, realm);
+                            Assert.True(false);
+                        }
+                        catch (ResourceNotFoundException)
+                        { }
+
+                        sp = await sps.GetOrNullAsync(username, realm);
+                        Assert.Null(sp);
                     }
                 }
             }
@@ -152,7 +190,7 @@ namespace Splunk.Client.UnitTests
                             var realm = realms[i % realms.Length];
                             var password = Membership.GeneratePassword(15, 2);
 
-                            StoragePassword sp = await service.StoragePasswords.CreateAsync(username, password, realm);
+                            StoragePassword sp = await service.StoragePasswords.CreateAsync(password, username, realm);
 
                             Assert.Equal(password, sp.ClearPassword);
                             Assert.Equal(username, sp.Username);

@@ -78,9 +78,9 @@ namespace Splunk.Client.UnitTests
 
         #region Access Control
 
-        [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
+        [Trait("acceptance-test", "Splunk.Client.StoragePassword")]
         [Fact]
-        public async Task CanCrudStoragePasswords()
+        public async Task CanCrudStoragePassword()
         {
             foreach (var ns in TestNamespaces)
             {
@@ -101,18 +101,16 @@ namespace Splunk.Client.UnitTests
 
                     var name = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
                     var realm = new string[] { null, "splunk.com", "splunk:com" };
-                    var storagePasswords = new List<StoragePassword>(50);
+                    var passwords = new List<StoragePassword>(50);
 
                     for (int i = 0; i < 50; i++)
                     {
-                        StoragePassword storagePassword = await sps.CreateAsync(name + i, "foobar", realm[i % realm.Length]);
-                        Console.WriteLine("print:"+storagePassword.Name + "," + storagePassword.Realm);
-                        var password = Membership.GeneratePassword(15, 2);
-                        Console.WriteLine("password:" + password);
-                        await storagePassword.UpdateAsync(password);
+                        StoragePassword password = await sps.CreateAsync(name + i, "foobar", realm[i % realm.Length]);
+                        var value = Membership.GeneratePassword(15, 2);
+                        await password.UpdateAsync(value);
 
-                        Assert.Equal(password, storagePassword.ClearPassword);
-                        storagePasswords.Add(storagePassword);
+                        Assert.Equal(value, password.ClearPassword);
+                        passwords.Add(password);
                     }
 
                     //// Fetch the entire collection of StoragePassword instances
@@ -123,9 +121,64 @@ namespace Splunk.Client.UnitTests
 
                     for (int i = 0; i < 50; i++)
                     {
-                        Assert.Contains(storagePasswords[i], sps);
-                        await storagePasswords[i].RemoveAsync();
+                        Assert.Contains(passwords[i], sps);
+                        await passwords[i].RemoveAsync();
                     }
+                }
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
+        [Fact]
+        public async Task CanGetStoragePasswords()
+        {
+            foreach (var ns in TestNamespaces)
+            {
+                using (var service = await SDKHelper.CreateService(ns))
+                {
+                    StoragePasswordCollection sps = service.StoragePasswords;
+                    await sps.GetAllAsync();
+
+                    if (sps.Count < 50)
+                    {
+                        //// Ensure we've got 50 passwords to enumerate
+
+                        var surname = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
+                        var realms = new string[] { null, "splunk.com", "splunk:com" };
+
+                        for (int i = 0; i < 50 - sps.Count; i++)
+                        {
+                            var username = surname + i;
+                            var realm = realms[i % realms.Length];
+                            var password = Membership.GeneratePassword(15, 2);
+
+                            StoragePassword sp = await service.StoragePasswords.CreateAsync(username, password, realm);
+
+                            Assert.Equal(password, sp.ClearPassword);
+                            Assert.Equal(username, sp.Username);
+                            Assert.Equal(realm, sp.Realm);
+                        }
+
+                        await service.StoragePasswords.GetAllAsync();
+                    }
+
+                    int count = 0;
+
+                    foreach (var sp in sps)
+                    {
+                        count++;
+                    }
+
+                    Assert.Equal(sps.Count, count);
+
+                    var spl = new List<StoragePassword>(sps.Count);
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        spl.Add(sps[i]);
+                    }
+
+                    Assert.True(sps.SequenceEqual(spl));
                 }
             }
         }

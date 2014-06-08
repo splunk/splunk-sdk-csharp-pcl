@@ -80,7 +80,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
         [Fact]
-        public async Task  CanCrudStoragePasswords()
+        public async Task CanCrudStoragePasswords()
         {
             foreach (var ns in TestNamespaces)
             {
@@ -132,7 +132,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
-        public async Task  CanLoginAndLogoff()
+        public async Task CanLoginAndLogoff()
         {
             using (var service = await SDKHelper.CreateService(Namespace.Default))
             {
@@ -322,7 +322,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.ApplicationCollection")]
         [Fact]
-        public async Task  CanGetApplications()
+        public async Task CanGetApplications()
         {
             foreach (var ns in TestNamespaces)
             {
@@ -376,7 +376,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.Configuration : CanCrudConfiguration")]
         [Fact]
-        public async Task  CanCrudConfiguration() // no delete operation is available
+        public async Task CanCrudConfiguration() // no delete operation is available
         {
             const string testApplicationName = "acceptance-test_Splunk.Client.Configuration";
 
@@ -534,7 +534,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.Service: Indexes")]
         [Fact]
-        public async Task  CanGetIndexes()
+        public async Task CanGetIndexes()
         {
             using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
@@ -819,7 +819,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
-        public async Task  CanDispatchSavedSearch()
+        public async Task CanDispatchSavedSearch()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -839,7 +839,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
-        public async Task  CanGetSavedSearchHistory()
+        public async Task CanGetSavedSearchHistory()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -886,7 +886,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.SavedSearchCollection")]
         [Fact]
-        public async Task  CanGetSavedSearches()
+        public async Task CanGetSavedSearches()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -927,7 +927,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
-        public async Task  CanGetJob()
+        public async Task CanGetJob()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -951,7 +951,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.JobCollection")]
         [Fact]
-        public async Task  CanGetJobs()
+        public async Task CanGetJobs()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1258,7 +1258,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.Server")]
         [Fact]
-        public async Task  CanGetServerInfo()
+        public async Task CanGetServerInfo()
         {
             using (var service = await SDKHelper.CreateService())
             {
@@ -1314,7 +1314,7 @@ namespace Splunk.Client.UnitTests
 
         [Trait("acceptance-test", "Splunk.Client.Transmitter")]
         [Fact]
-        public async Task  CanSendEvents()
+        public async Task CanSendEvents()
         {
             using (var service = await SDKHelper.CreateService())
             {

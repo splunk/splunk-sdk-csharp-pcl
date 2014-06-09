@@ -824,7 +824,141 @@ namespace Splunk.Client.UnitTests
 
         #endregion
 
-        #region Saved Searches
+        #region Inputs
+
+        [Trait("acceptance-test", "Splunk.Client.Transmitter")]
+        [Fact]
+        public async Task CanSendEvents()
+        {
+            using (var service = await SDKHelper.CreateService())
+                {
+                    // default index
+
+                    Index index = await service.Indexes.GetAsync("main");
+                    Assert.NotNull(index);
+                    Assert.False(index.Disabled);
+
+                    var receiver = service.Transmitter;
+
+                    long currentEventCount = index.TotalEventCount;
+                    Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);
+                    int sendEventCount = 10;
+
+                    for (int i = 0; i < sendEventCount; i++)
+                        {
+                            var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
+                            Assert.NotNull(result);
+                        }
+
+                    Stopwatch watch = Stopwatch.StartNew();                
+
+                    while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
+                        {
+                            await Task.Delay(1000);
+                            await index.GetAsync();
+                        }
+
+                    Console.WriteLine("After send {0} string events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                    Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
+                    Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+
+                    // Test stream events
+
+                    currentEventCount = currentEventCount + sendEventCount;
+
+                    using (var eventStream = new MemoryStream())
+                        {
+                            using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
+                                {
+                                    for (int i = 0; i < sendEventCount; i++)
+                                        {
+                                            writer.Write(string.Format("{0:D6} {1} jly send stream event hello world!\r\n", i, DateTime.Now));
+                                        }
+                                }
+
+                            eventStream.Seek(0, SeekOrigin.Begin);
+                            await receiver.SendAsync(eventStream);
+                        }
+
+                    watch.Restart();
+
+                    while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
+                        {
+                            await Task.Delay(1000);
+                            await index.GetAsync();
+                        }
+
+                    Console.WriteLine("After send {0} strem events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                    Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
+                    Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+                }
+        }
+
+
+        #endregion
+       
+        #region Search
+
+        [Trait("acceptance-test", "Splunk.Client.Job : CanCrudJob")]
+        [Fact]
+        public async Task CanCrudJob()
+        {
+            using (var service = await SDKHelper.CreateService())
+            {
+                Job job1 = null, job2 = null;
+
+                //// Create
+
+                job1 = await service.Jobs.CreateAsync("search index=_internal | head 100");
+                await job1.GetSearchResultsAsync();
+                await job1.GetSearchResultsEventsAsync();
+                await job1.GetSearchResultsPreviewAsync();
+
+                //// Read
+
+                job2 = await service.Jobs.GetAsync(job1.ResourceName.Title);
+                Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
+                Assert.Equal(job1.Name, job1.ResourceName.Title);
+                Assert.Equal(job1.Name, job2.Name);
+                Assert.Equal(job1.Sid, job1.Name);
+                Assert.Equal(job1.Sid, job2.Sid);
+                Assert.Equal(job1.Id, job2.Id);
+                //Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
+
+                //// Update
+
+                bool updatedSnapshot = await job1.UpdateAsync(new CustomJobArgs
+                    {
+                        new Argument("foo", 1),
+                        new Argument("bar", 2)
+                    });
+
+                Assert.True(updatedSnapshot);
+
+                //// Delete
+
+                await job1.RemoveAsync();
+
+                try
+                {
+                    await job1.GetAsync();
+                    Assert.True(false);
+                }
+                catch (ResourceNotFoundException)
+                { }
+
+                try
+                {
+                    await service.Jobs.GetAsync(job1.Name);
+                    Assert.True(false);
+                }
+                catch (ResourceNotFoundException)
+                { }
+
+                job2 = await service.Jobs.GetOrNullAsync(job1.Name);
+                Assert.Null(job2);
+            }
+        }
 
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
@@ -966,6 +1100,40 @@ namespace Splunk.Client.UnitTests
             }
         }
             
+        [Trait("acceptance-test", "Splunk.Client.JobCollection : CanGetJobs")]
+        [Fact]
+        public async Task CanGetJobs()
+        {
+            using (var service = await SDKHelper.CreateService())
+            {
+                var jobs = new Job[]
+                {
+                    await service.Jobs.CreateAsync("search index=_internal | head 10"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 10"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 10"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 10"),
+                    await service.Jobs.CreateAsync("search index=_internal | head 10"),
+                };
+                
+                await service.Jobs.GetAllAsync();
+                Assert.True(service.Jobs.Count >= jobs.Length);
+                
+                foreach (var job in jobs)
+                {
+                    Assert.Contains(job, service.Jobs);
+                }
+
+                var sequence = new List<Job>(service.Jobs.Count);
+
+                for (int i = 0; i < service.Jobs.Count; i++)
+                {
+                    sequence.Add(service.Jobs[i]);
+                }
+
+                Assert.Equal(service.Jobs.ToList(), sequence);
+            }
+        }
+
         [Trait("acceptance-test", "Splunk.Client.SavedSearchCollection")]
         [Fact]
         public async Task CanGetSavedSearches()
@@ -982,63 +1150,6 @@ namespace Splunk.Client.UnitTests
                 for (int i = 0; i < savedSearches.Count; i++)
                 {
                     SavedSearch savedSearch = savedSearches[i];
-                }
-            }
-        }
-
-        #endregion
-
-        #region Search Jobs
-
-        [Trait("acceptance-test", "Splunk.Client.Job")]
-        [Fact]
-        public async Task CanGetJob()
-        {
-            using (var service = await SDKHelper.CreateService())
-            {
-                Job job1 = null, job2 = null;
-
-                job1 = await service.Jobs.CreateAsync("search index=_internal | head 100");
-                await job1.GetSearchResultsAsync();
-                await job1.GetSearchResultsEventsAsync();
-                await job1.GetSearchResultsPreviewAsync();
-
-                job2 = await service.Jobs.GetAsync(job1.ResourceName.Title);
-                Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
-                Assert.Equal(job1.Name, job1.ResourceName.Title);
-                Assert.Equal(job1.Name, job2.Name);
-                Assert.Equal(job1.Sid, job1.Name);
-                Assert.Equal(job1.Sid, job2.Sid);
-                Assert.Equal(job1.Id, job2.Id);
-                //Assert.Equal(new SortedDictionary<string, Uri>().Concat(job1.Links), new SortedDictionary<string, Uri>().Concat(job2.Links));
-            }
-        }
-
-        [Trait("acceptance-test", "Splunk.Client.JobCollection")]
-        [Fact]
-        public async Task CanGetJobs()
-        {
-            using (var service = await SDKHelper.CreateService())
-            {
-                var jobs = new Job[]
-                {
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                    await service.Jobs.CreateAsync("search index=_internal | head 1000"),
-                };
-
-                await service.Jobs.GetAllAsync();
-
-                foreach (var job in service.Jobs)
-                {
-                    Assert.Contains(job, jobs);
-                }
-
-                for (int i = 0; i < service.Jobs.Count; i++)
-                {
-                    Assert.Contains(service.Jobs[i], jobs);
                 }
             }
         }
@@ -1110,44 +1221,44 @@ namespace Splunk.Client.UnitTests
         public async Task CanExportSearchResults()
         {
             using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port))
-            {
-                await service.LoginAsync("admin", "changeme");
+                {
+                    await service.LoginAsync("admin", "changeme");
 
-                SearchResultStream resultStream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
-                var results = new List<Splunk.Client.SearchResult>();
-                var exception = (Exception)null;
+                    SearchResultStream resultStream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
+                    var results = new List<Splunk.Client.SearchResult>();
+                    var exception = (Exception)null;
 
-                var manualResetEvent = new ManualResetEvent(true);
+                    var manualResetEvent = new ManualResetEvent(true);
 
-                resultStream.Subscribe(
-                    onNext: (result) =>
-                    {
-                        var count = resultStream.FieldNames.Intersect(result.Keys).Count();
-                        Assert.Equal(count, result.Count);
-
-                        if (resultStream.IsFinal)
+                    resultStream.Subscribe(
+                        onNext: (result) =>
                         {
-                            results.Add(result);
-                        }
-                    },
-                    onError: (e) =>
-                    {
-                        exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
-                        manualResetEvent.Set();
-                    },
-                    onCompleted: () =>
-                    {
-                        manualResetEvent.Set();
-                    });
+                            var count = resultStream.FieldNames.Intersect(result.Keys).Count();
+                            Assert.Equal(count, result.Count);
 
-                manualResetEvent.Reset();
-                manualResetEvent.WaitOne();
+                            if (resultStream.IsFinal)
+                                {
+                                    results.Add(result);
+                                }
+                        },
+                        onError: (e) =>
+                        {
+                            exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
+                            manualResetEvent.Set();
+                        },
+                        onCompleted: () =>
+                        {
+                            manualResetEvent.Set();
+                        });
 
-                Assert.Null(exception);
-                Assert.Equal(100, results.Count);
+                    manualResetEvent.Reset();
+                    manualResetEvent.WaitOne();
 
-                await service.LogoffAsync();
-            }
+                    Assert.Null(exception);
+                    Assert.Equal(100, results.Count);
+
+                    await service.LogoffAsync();
+                }
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
@@ -1155,30 +1266,30 @@ namespace Splunk.Client.UnitTests
         public async Task CanSearchOneshot()
         {
             using (var service = await SDKHelper.CreateService())
-            {
-                var indexName = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
-
-                var searchCommands = new string[] 
                 {
-                    string.Format("search index={0} * | delete", indexName),
-                    "search index=_internal | head 100"
-                };
+                    var indexName = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
 
-                await service.Indexes.CreateAsync(indexName);
+                    var searchCommands = new string[] 
+                        {
+                            string.Format("search index={0} * | delete", indexName),
+                            "search index=_internal | head 100"
+                        };
 
-                foreach (var command in searchCommands)
-                {
-                    var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
-                    var list = new List<SearchResult>();
+                    await service.Indexes.CreateAsync(indexName);
 
-                    foreach (var result in searchResults) 
-                    {
-                        list.Add(await result);
-                    }
+                    foreach (var command in searchCommands)
+                        {
+                            var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
+                            var list = new List<SearchResult>();
 
-                    Assert.NotEmpty(list);
+                            foreach (var result in searchResults) 
+                                {
+                                    list.Add(await result);
+                                }
+
+                            Assert.NotEmpty(list);
+                        }
                 }
-            }
         }
 
         #endregion
@@ -1374,74 +1485,6 @@ namespace Splunk.Client.UnitTests
 
                 Assert.Null(service.SessionKey);
                 await service.LoginAsync("admin", "changeme");
-            }
-        }
-
-        [Trait("acceptance-test", "Splunk.Client.Transmitter")]
-        [Fact]
-        public async Task CanSendEvents()
-        {
-            using (var service = await SDKHelper.CreateService())
-            {
-                // default index
-
-                Index index = await service.Indexes.GetAsync("main");
-                Assert.NotNull(index);
-                Assert.False(index.Disabled);
-
-                var receiver = service.Transmitter;
-
-                long currentEventCount = index.TotalEventCount;
-                Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);
-                int sendEventCount = 10;
-                                
-                for (int i = 0; i < sendEventCount; i++)
-                {
-                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
-                    Assert.NotNull(result);
-                }
-
-                Stopwatch watch = Stopwatch.StartNew();                
-
-                while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
-                {
-                    await Task.Delay(1000);
-                    await index.GetAsync();
-                }
-
-                Console.WriteLine("After send {0} string events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
-                Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
-                Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
-
-                // Test stream events
-
-                currentEventCount = currentEventCount + sendEventCount;
-
-                using (var eventStream = new MemoryStream())
-                {
-                    using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
-                    {
-                        for (int i = 0; i < sendEventCount; i++)
-                        {
-                            writer.Write(string.Format("{0:D6} {1} jly send stream event hello world!\r\n", i, DateTime.Now));
-                        }
-                    }
-
-                    eventStream.Seek(0, SeekOrigin.Begin);
-                    await receiver.SendAsync(eventStream);
-                }
-
-                watch.Restart();
-
-                while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
-                {
-                    await Task.Delay(1000);
-                    await index.GetAsync();
-                }
-
-                Console.WriteLine("After send {0} strem events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
-                Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
-                Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
             }
         }
 

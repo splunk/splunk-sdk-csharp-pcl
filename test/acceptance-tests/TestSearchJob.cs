@@ -44,7 +44,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the result from a bad search argument.
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : BadOutputMode")]
         [Fact]
         public async Task BadOutputMode()
         {
@@ -80,11 +80,10 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : JobSearchMode")]
         [Fact]
         public async Task JobSearchMode()
         {
-            
             using (Service service = await SDKHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
@@ -104,11 +103,10 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : JobExecutionMode")]
         [Fact]
         public async Task JobExecutionMode()
         {
-            
             using (Service service = await SDKHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
@@ -138,11 +136,8 @@ namespace Splunk.Client.UnitTests
         /// <param name="jobFunction">
         /// A function for a job and an enum value
         /// </param>
-        async Task RunJobFuntionForEachEnum(
-            Type enumType,
-            Func<Job, string, Task<SearchResultStream>> jobFunction)
+        async Task RunJobFuntionForEachEnum(Type enumType, Func<Job, string, Task<SearchResultStream>> jobFunction)
         {
-            
             using (Service service = await SDKHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
@@ -159,7 +154,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all output modes for Job.Events
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : JobEventsTruncationModeArgument")]
         [Fact]
         public async Task JobEventsTruncationModeArgument()
         {
@@ -176,7 +171,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all search modes
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : JobSearchModeArgument")]
         [Fact]
         public async Task JobSearchModeArgument()
         {
@@ -192,7 +187,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : ExportSearchModeArgument")]
         [Fact]
         public async Task ExportSearchModeArgument()
         {
@@ -208,7 +203,7 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : ExportTruncationModeArgument")]
         [Fact]
         public async Task ExportTruncationModeArgument()
         {
@@ -221,7 +216,7 @@ namespace Splunk.Client.UnitTests
                 });
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : JobRefreshTest")]
         [Fact]
         public async Task JobRefreshTest()
         {
@@ -232,31 +227,16 @@ namespace Splunk.Client.UnitTests
                 var job = await service.Jobs.CreateAsync(search);
 
                 this.CheckJob(job, service);
-                Stopwatch stopwatch = Stopwatch.StartNew();
-                TimeSpan max = new TimeSpan(0, 0, 0, 10);
 
-                while (!job.IsDone)
-                {
-                    Thread.Sleep(1000);
-
-                    //has to call this to get the job.IsCompleted
-                    job.GetAsync().Wait();
-                    Console.WriteLine("jobUpdated={0}", job.Updated);
-
-                    if (stopwatch.Elapsed > max)
-                    {
-                        Assert.False(true, string.Format("The job is not finished within expected time {0} seconds", max.TotalSeconds));
-                    }
-                }
-
-                job.CancelAsync().Wait();
+                await job.TransitionAsync(DispatchState.Done, 10 * 1000);
+                await job.CancelAsync();
             }
         }
 
         /// <summary>
         /// Tests RemoteServerList property
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [Trait("acceptance-test", "Splunk.Client.Job : RemoteServerList")]
         [Fact]
         public void RemoteServerList()
         {

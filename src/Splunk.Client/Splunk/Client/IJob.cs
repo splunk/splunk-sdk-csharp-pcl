@@ -525,7 +525,7 @@ namespace Splunk.Client
         /// search/jobs/{search_id}</a> endpoint to update custom arguments to
         /// the current <see cref="Job"/>.
         /// </remarks>
-        Task UpdateAsync(CustomJobArgs arguments);
+        Task<bool> UpdateAsync(CustomJobArgs arguments);
 
         #endregion
 
@@ -697,10 +697,10 @@ namespace Splunk.Client
 
         public abstract Task TransitionAsync(DispatchState dispatchState, int delay, int retryInterval);
 
-        public Task UpdateAsync(CustomJobArgs arguments)
+        public Task<bool> UpdateAsync(CustomJobArgs arguments)
         {
             Contract.Requires(arguments != null);
-            return default(Task);
+            return default(Task<bool>);
         }
 
         public abstract Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args);

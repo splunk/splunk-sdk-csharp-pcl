@@ -800,9 +800,9 @@ namespace Splunk.Client
         /// search/jobs/{search_id}</a> endpoint to update custom arguments to
         /// the current <see cref="Job"/>.
         /// </remarks>
-        public virtual async Task UpdateAsync(CustomJobArgs arguments)
+        public virtual async Task<bool> UpdateAsync(CustomJobArgs arguments)
         {
-            await this.UpdateAsync(arguments.AsEnumerable());
+            return await this.UpdateAsync(arguments.AsEnumerable());
         }
 
         #endregion

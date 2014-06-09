@@ -276,8 +276,8 @@ namespace Splunk.Client
         /// saved/searches{name}</a> endpoint to update the saved search
         /// represented by the current instance.
         /// </remarks>
-        Task<bool> UpdateAsync(SavedSearchAttributes attributes = null, SavedSearchDispatchArgs dispatchArgs = null,
-            SavedSearchTemplateArgs templateArgs = null);
+        Task<bool> UpdateAsync(string search = null, SavedSearchAttributes attributes = null, 
+            SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null);
 
         #endregion
     }
@@ -335,11 +335,10 @@ namespace Splunk.Client
 
         public abstract Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
 
-        public Task<bool> UpdateAsync(SavedSearchAttributes attributes = null, 
-            SavedSearchDispatchArgs dispatchArgs = null, 
-            SavedSearchTemplateArgs templateArgs = null)
+        public Task<bool> UpdateAsync(string search = null, SavedSearchAttributes attributes = null, 
+            SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
         {
-            Contract.Requires<ArgumentException>(!(attributes == null && dispatchArgs == null && templateArgs == null));
+            Contract.Requires<ArgumentException>(!(search == null && attributes == null && dispatchArgs == null && templateArgs == null));
             return default(Task<bool>);
         }
 

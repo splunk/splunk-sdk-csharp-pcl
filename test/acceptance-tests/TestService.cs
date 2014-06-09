@@ -623,7 +623,59 @@ namespace Splunk.Client.UnitTests
 
         #region Indexes
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Indexes")]
+        [Trait("acceptance-test", "Splunk.Client.Index")]
+        [Fact]
+        public async Task CanCrudIndex()
+        {
+            using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
+            {
+                var indexName = string.Format("delete-me-{0}", Guid.NewGuid());
+                Index index;
+                
+                //// Create
+
+                index = await service.Indexes.CreateAsync(indexName);
+                Assert.Equal(true, index.EnableOnlineBucketRepair);
+
+                //// Read
+
+                index = await service.Indexes.GetAsync(indexName);
+
+                //// Update
+
+                var attributes = new IndexAttributes()
+                {
+                    EnableOnlineBucketRepair = false
+                };
+
+                await index.UpdateAsync(attributes);
+                Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
+                Assert.False(index.Disabled);
+
+                await index.DisableAsync();
+                Assert.True(index.Disabled);
+
+                await index.EnableAsync();
+                Assert.False(index.Disabled);
+
+                //// Delete
+
+                await index.RemoveAsync();
+
+                try
+                {
+                    await index.GetAsync();
+                    Assert.True(false);
+                }
+                catch (ResourceNotFoundException)
+                { }
+
+                index = await service.Indexes.GetOrNullAsync(indexName);
+                Assert.Null(index);
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.IndexCollection")]
         [Fact]
         public async Task CanGetIndexes()
         {
@@ -770,58 +822,6 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service: Indexes")]
-        [Fact]
-        public async Task CanCrudIndex()
-        {
-            using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
-            {
-                var indexName = string.Format("delete-me-{0}", Guid.NewGuid());
-                Index index;
-                
-                //// Create
-
-                index = await service.Indexes.CreateAsync(indexName);
-                Assert.Equal(true, index.EnableOnlineBucketRepair);
-
-                //// Read
-
-                index = await service.Indexes.GetAsync(indexName);
-
-                //// Update
-
-                var attributes = new IndexAttributes()
-                {
-                    EnableOnlineBucketRepair = false
-                };
-
-                await index.UpdateAsync(attributes);
-                Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
-                Assert.False(index.Disabled);
-
-                await index.DisableAsync();
-                Assert.True(index.Disabled);
-
-                await index.EnableAsync();
-                Assert.False(index.Disabled);
-
-                //// Delete
-
-                await index.RemoveAsync();
-
-                try
-                {
-                    await index.GetAsync();
-                    Assert.True(false);
-                }
-                catch (ResourceNotFoundException)
-                { }
-
-                index = await service.Indexes.GetOrNullAsync(indexName);
-                Assert.Null(index);
-            }
-        }
-
         #endregion
 
         #region Saved Searches
@@ -837,7 +837,7 @@ namespace Splunk.Client.UnitTests
                 var name = string.Format("delete-me-{0}", Guid.NewGuid());
                 var search = "search index=_internal | head 1000";
 
-                var originalAttributes = new SavedSearchAttributes()
+                var originalAttributes = new SavedSearchAttributes
                 {
                     CronSchedule = "00 * * * *", // on the hour
                     IsScheduled = true,
@@ -856,87 +856,7 @@ namespace Splunk.Client.UnitTests
                 savedSearch = await service.SavedSearches.GetAsync(name);
                 Assert.Equal(false, savedSearch.IsVisible);
 
-                //// Read schedule
-
-                var dateTime = DateTime.Now;
-                var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
-
-                Assert.Equal(48, schedule.Count);
-
-                var expected = dateTime.AddMinutes(60);
-                expected = expected.Date.AddHours(expected.Hour);
-
-                Assert.Equal(expected, schedule[0]);
-
-                //// Update
-
-                var updatedAttributes = new SavedSearchAttributes()
-                {
-                    ActionEmailBcc = "user1@splunk.com",
-                    ActionEmailCC = "user2@splunk.com",
-                    ActionEmailFrom = "user3@splunk.com",
-                    ActionEmailTo = "user4@splunk.com, user5@splunk.com",
-                    IsVisible = true
-                };
-
-                await savedSearch.UpdateAsync(updatedAttributes);
-
-                Assert.Equal(updatedAttributes.ActionEmailBcc, savedSearch.Actions.Email.Bcc);
-                Assert.Equal(updatedAttributes.ActionEmailCC, savedSearch.Actions.Email.CC);
-                Assert.Equal(updatedAttributes.ActionEmailFrom, savedSearch.Actions.Email.From);
-                Assert.Equal(updatedAttributes.ActionEmailTo, savedSearch.Actions.Email.To);
-                Assert.Equal(updatedAttributes.IsVisible, savedSearch.IsVisible);
-
-                //// Update schedule
-
-                dateTime = DateTime.Now;
-
-                //// TODO: 
-                //// Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
-                //// saved searches right away. Are we using the right time format?
-
-                //// TODO: 
-                //// Figure out how to parse or--more likely--complain that savedSearch.NextScheduledTime uses
-                //// timezone names like "Pacific Daylight Time".
-
-                await savedSearch.ScheduleAsync(dateTime.AddMinutes(15)); // Does not return anything but status
-                await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
-
-                //// Delete
-
-                await savedSearch.RemoveAsync();
-            }
-        }
-
-        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
-        [Fact]
-        public async Task CanDispatchSavedSearch()
-        {
-            using (var service = await SDKHelper.CreateService())
-            {
-                Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
-                SearchResultStream resultStream = await job.GetSearchResultsAsync();
-
-                var results = new List<SearchResult>();
-
-                foreach (var result in resultStream) 
-                {
-                    results.Add(await result);
-                }
-
-                Assert.NotEmpty(results);
-            }
-        }
-
-        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
-        [Fact]
-        public async Task CanGetSavedSearchHistory()
-        {
-            using (var service = await SDKHelper.CreateService())
-            {
-                var name = string.Format("delete-me-{0}", Guid.NewGuid());
-                var search = "search index=_internal * earliest=-1m";
-                var savedSearch = await service.SavedSearches.CreateAsync(name, search);
+                //// Read history
 
                 var jobHistory = await savedSearch.GetHistoryAsync();
                 Assert.Equal(0, jobHistory.Count);
@@ -971,10 +891,81 @@ namespace Splunk.Client.UnitTests
                 jobHistory = await savedSearch.GetHistoryAsync();
                 Assert.Equal(0, jobHistory.Count);
 
+                //// Read schedule
+
+                var dateTime = DateTime.Now;
+                var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
+
+                Assert.Equal(48, schedule.Count);
+
+                var expected = dateTime.AddMinutes(60);
+                expected = expected.Date.AddHours(expected.Hour);
+
+                Assert.Equal(expected, schedule[0]);
+
+                //// Update
+
+                search = "search index=_internal * earliest=-1m";
+
+                var updatedAttributes = new SavedSearchAttributes
+                {
+                    ActionEmailBcc = "user1@splunk.com",
+                    ActionEmailCC = "user2@splunk.com",
+                    ActionEmailFrom = "user3@splunk.com",
+                    ActionEmailTo = "user4@splunk.com, user5@splunk.com",
+                    IsVisible = true
+                };
+
+                await savedSearch.UpdateAsync(search, updatedAttributes);
+
+                Assert.Equal(search, savedSearch.Search);
+                Assert.Equal(updatedAttributes.ActionEmailBcc, savedSearch.Actions.Email.Bcc);
+                Assert.Equal(updatedAttributes.ActionEmailCC, savedSearch.Actions.Email.CC);
+                Assert.Equal(updatedAttributes.ActionEmailFrom, savedSearch.Actions.Email.From);
+                Assert.Equal(updatedAttributes.ActionEmailTo, savedSearch.Actions.Email.To);
+                Assert.Equal(updatedAttributes.IsVisible, savedSearch.IsVisible);
+
+                //// Update schedule
+
+                dateTime = DateTime.Now;
+
+                //// TODO: 
+                //// Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
+                //// saved searches right away. Are we using the right time format?
+
+                //// TODO: 
+                //// Figure out how to parse or--more likely--complain that savedSearch.NextScheduledTime uses
+                //// timezone names like "Pacific Daylight Time".
+
+                await savedSearch.ScheduleAsync(dateTime.AddMinutes(15)); // Does not return anything but status
+                await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
+
+                //// Delete
+
                 await savedSearch.RemoveAsync();
             }
         }
 
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [Fact]
+        public async Task CanDispatchSavedSearch()
+        {
+            using (var service = await SDKHelper.CreateService())
+            {
+                Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
+                SearchResultStream resultStream = await job.GetSearchResultsAsync();
+
+                var results = new List<SearchResult>();
+
+                foreach (var result in resultStream) 
+                {
+                    results.Add(await result);
+                }
+
+                Assert.NotEmpty(results);
+            }
+        }
+            
         [Trait("acceptance-test", "Splunk.Client.SavedSearchCollection")]
         [Fact]
         public async Task CanGetSavedSearches()
@@ -992,23 +983,6 @@ namespace Splunk.Client.UnitTests
                 {
                     SavedSearch savedSearch = savedSearches[i];
                 }
-            }
-        }
-
-        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
-        [Fact]
-        public async Task CanUpdateSavedSearch()
-        {
-            using (var service = await SDKHelper.CreateService())
-            {
-                SavedSearch savedSearch = await service.SavedSearches.GetAsync("Errors in the last 24 hours");
-                bool isVisible = savedSearch.IsVisible;
-                
-                bool updatedSnapshot = await savedSearch.UpdateAsync(new SavedSearchAttributes() { IsVisible = !isVisible });
-                Assert.True(updatedSnapshot);
-                Assert.Equal(!isVisible, savedSearch.IsVisible);
-
-                await savedSearch.UpdateAsync(new SavedSearchAttributes() { IsVisible = isVisible });
             }
         }
 

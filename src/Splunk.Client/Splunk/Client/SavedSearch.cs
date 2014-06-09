@@ -351,11 +351,17 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<bool> UpdateAsync(SavedSearchAttributes attributes = null, 
+        public virtual async Task<bool> UpdateAsync(string search,
+            SavedSearchAttributes attributes = null, 
             SavedSearchDispatchArgs dispatchArgs = null, 
             SavedSearchTemplateArgs templateArgs = null)
         {
             IEnumerable<Argument> arguments = Enumerable.Empty<Argument>();
+
+            if (search != null)
+            {
+                arguments = arguments.Concat(new Argument[] { new Argument("search", search) });
+            }
 
             if (attributes != null)
             {

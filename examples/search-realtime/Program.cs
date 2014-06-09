@@ -69,7 +69,7 @@ namespace search_realtime
 
             while (!tokenSource.IsCancellationRequested)
             {
-                SearchResultStream resultStream = await realtimeJob.GetSearchResultsPreviewAsync();
+                SearchResultStream resultStream = await realtimeJob.GetSearchPreviewAsync();
 
                 Console.WriteLine("fieldnames: " + string.Join(";", resultStream.FieldNames));
                 Console.WriteLine("fieldname count: " + resultStream.FieldNames.Count);

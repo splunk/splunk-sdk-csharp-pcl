@@ -161,7 +161,7 @@ namespace Splunk.Client.UnitTests
             var type = typeof(TruncationMode);
 
             await RunJobFuntionForEachEnum(type, async (job, mode) =>
-                await job.GetSearchResultsEventsAsync(
+                await job.GetSearchEventsAsync(
                     new SearchEventArgs
                     {
                         TruncationMode = (TruncationMode)Enum.Parse(type, mode)

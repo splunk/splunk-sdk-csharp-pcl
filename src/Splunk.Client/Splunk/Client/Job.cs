@@ -825,7 +825,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public virtual async Task<SearchResultStream> GetSearchResultsEventsAsync(SearchEventArgs args = null)
+        public virtual async Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args = null)
         {
             var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args);
             return searchResults;
@@ -836,7 +836,7 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public virtual async Task<SearchResultStream> GetSearchResultsPreviewAsync(SearchResultArgs args = null)
+        public virtual async Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args = null)
         {
             var searchResults = await this.GetSearchResultsAsync(DispatchState.Running, "results_preview", args);
             return searchResults;

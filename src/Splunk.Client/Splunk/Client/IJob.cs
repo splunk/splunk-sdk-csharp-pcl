@@ -536,21 +536,21 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args);
+        Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args = null);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task<SearchResultStream> GetSearchResultsEventsAsync(SearchEventArgs args);
+        Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args = null);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task<SearchResultStream> GetSearchResultsPreviewAsync(SearchResultArgs args);
+        Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args = null);
 
         #endregion
 
@@ -703,11 +703,11 @@ namespace Splunk.Client
             return default(Task<bool>);
         }
 
+        public abstract Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args);
+
+        public abstract Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args);
+
         public abstract Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args);
-
-        public abstract Task<SearchResultStream> GetSearchResultsEventsAsync(SearchEventArgs args);
-
-        public abstract Task<SearchResultStream> GetSearchResultsPreviewAsync(SearchResultArgs args);
 
         public abstract Task CancelAsync();
 

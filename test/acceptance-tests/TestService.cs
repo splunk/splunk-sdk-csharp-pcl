@@ -910,13 +910,23 @@ namespace Splunk.Client.UnitTests
                 //// Create
 
                 job1 = await service.Jobs.CreateAsync("search index=_internal | head 100");
-                await job1.GetSearchResultsAsync();
-                await job1.GetSearchResultsEventsAsync();
-                await job1.GetSearchResultsPreviewAsync();
+
+                using (SearchResultStream stream = await job1.GetSearchEventsAsync())
+                {
+                }
+
+                using (SearchResultStream stream = await job1.GetSearchPreviewAsync())
+                {
+                }
+
+                using (SearchResultStream stream = await job1.GetSearchResultsAsync())
+                {
+                }
 
                 //// Read
 
                 job2 = await service.Jobs.GetAsync(job1.ResourceName.Title);
+
                 Assert.Equal(job1.ResourceName.Title, job2.ResourceName.Title);
                 Assert.Equal(job1.Name, job1.ResourceName.Title);
                 Assert.Equal(job1.Name, job2.Name);

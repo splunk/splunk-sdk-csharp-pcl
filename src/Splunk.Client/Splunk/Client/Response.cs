@@ -192,7 +192,7 @@ namespace Splunk.Client
         XmlReader reader;
         bool disposed;
 
-        async Task ThrowRequestExceptionAsync()
+        internal async Task ThrowRequestExceptionAsync()
         {
             var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
             RequestException requestException;

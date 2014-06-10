@@ -98,8 +98,18 @@ namespace Splunk.Client
         /// </returns>
         internal static async Task<SearchResultStream> CreateAsync(Response response)
         {
+            XmlReader reader = response.XmlReader;
+
+            await reader.MoveToDocumentElementAsync("results", "response");
+
+            if (reader.Name == "response")
+            {
+                await response.ThrowRequestExceptionAsync();
+            }
+
             var stream = new SearchResultStream(response);
             await stream.ReadMetadataAsync();
+
             return stream;
         }
 

@@ -1288,19 +1288,27 @@ namespace Splunk.Client.UnitTests
             {
                 var indexName = string.Format("delete-me-{0}", Guid.NewGuid().ToString("N"));
 
-                var searchCommands = new string[] 
+                var searches = new[] 
                 {
-                    string.Format("search index={0} * | delete", indexName),
-                    "search index=_internal | head 100"
+                    new 
+                    { 
+                        Command = string.Format("search index={0} * | delete", indexName),
+                        ResultCount = 0
+                    },
+                    new 
+                    { 
+                        Command = "search index=_internal | head 100",
+                        ResultCount = 100
+                    }
                 };
 
                 await service.Indexes.CreateAsync(indexName);
 
-                foreach (var command in searchCommands)
+                foreach (var search in searches)
                 {
                     var args = new JobArgs { MaxCount = 100000 };
 
-                    using (SearchResultStream stream = await service.SearchOneshotAsync(command, args))
+                    using (SearchResultStream stream = await service.SearchOneshotAsync(search.Command, args))
                     {
                         var list = new List<SearchResult>();
 
@@ -1309,7 +1317,8 @@ namespace Splunk.Client.UnitTests
                             list.Add(await result);
                         }
 
-                        Assert.NotEmpty(list);
+                        Assert.Equal(search.ResultCount, stream.ReadCount);
+                        Assert.Equal(search.ResultCount, list.Count);
                     }
                 }
             }

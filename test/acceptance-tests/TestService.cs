@@ -21,6 +21,7 @@ namespace Splunk.Client.UnitTests
     
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -163,6 +164,69 @@ namespace Splunk.Client.UnitTests
                         Assert.Null(sp);
                     }
                 }
+            }
+        }
+
+        [Trait("acceptance-test:Splunk.Client.Service", "CanGetCapabilities")]
+        [Fact]
+        public async Task CanGetCapabilities()
+        {
+            var expected = new ReadOnlyCollection<string>(new List<string> 
+            {
+                "accelerate_datamodel",
+                "admin_all_objects",
+                "change_authentication",
+                "change_own_password",
+                "delete_by_keyword",
+                "edit_deployment_client",
+                "edit_deployment_server",
+                "edit_dist_peer",
+                "edit_forwarders",
+                "edit_httpauths",
+                "edit_input_defaults",
+                "edit_monitor",
+                "edit_roles",
+                "edit_scripted",
+                "edit_search_server",
+                "edit_server",
+                "edit_splunktcp",
+                "edit_splunktcp_ssl",
+                "edit_tcp",
+                "edit_udp",
+                "edit_user",
+                "edit_view_html",
+                "edit_web_settings",
+                "get_diag",
+                "get_metadata",
+                "get_typeahead",
+                "indexes_edit",
+                "input_file",
+                "license_edit",
+                "license_tab",
+                "list_deployment_client",
+                "list_deployment_server",
+                "list_forwarders",
+                "list_httpauths",
+                "list_inputs",
+                "output_file",
+                "request_remote_tok",
+                "rest_apps_management",
+                "rest_apps_view",
+                "rest_properties_get",
+                "rest_properties_set",
+                "restart_splunkd",
+                "rtsearch",
+                "run_debug_commands",
+                "schedule_rtsearch",
+                "schedule_search",
+                "search",
+                "use_file_operator"
+            });
+
+            using (var service = await SDKHelper.CreateService())
+            {
+                IReadOnlyList<string> capabilities = await service.GetCapabilitiesAsync();
+                Assert.Equal(expected, capabilities);
             }
         }
 

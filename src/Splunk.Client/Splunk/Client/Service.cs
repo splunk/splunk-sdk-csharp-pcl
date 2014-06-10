@@ -26,6 +26,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
@@ -172,7 +173,7 @@ namespace Splunk.Client
         #region Access control
 
         /// <inheritdoc/>
-        public virtual async Task<dynamic> GetCapabilitiesAsync()
+        public virtual async Task<IReadOnlyList<string>> GetCapabilitiesAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities))
             {
@@ -187,9 +188,9 @@ namespace Splunk.Client
                 }
 
                 var entry = feed.Entries[0];
-                dynamic capabilities = entry.Content.Capabilities; // TODO: Static type (?)
+                List<object> capabilities = entry.Content.Capabilities;
 
-                return capabilities;
+                return new ReadOnlyCollection<string>(capabilities.Cast<string>().ToList());
             }
         }
 

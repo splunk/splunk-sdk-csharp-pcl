@@ -116,7 +116,7 @@ namespace Splunk.Client
         /// authorization/capabilities</a> endpoint to construct a list of all 
         /// Splunk system capabilities.
         /// </remarks>
-        Task<dynamic> GetCapabilitiesAsync();
+        Task<IReadOnlyList<string>> GetCapabilitiesAsync();
 
         /// <summary>
         /// Provides user authentication asynchronously.
@@ -288,7 +288,7 @@ namespace Splunk.Client
 
         #region Access control
 
-        public abstract Task<dynamic> GetCapabilitiesAsync();
+        public abstract Task<IReadOnlyList<string>> GetCapabilitiesAsync();
 
         public Task LoginAsync(string username, string password)
         {

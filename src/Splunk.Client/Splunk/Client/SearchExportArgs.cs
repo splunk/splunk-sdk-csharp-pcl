@@ -131,6 +131,14 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        [DataMember(Name = "latest_time", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string LatestTime
+        { get; set; }
+
+        /// <summary>
         /// The maximum lines that any single event's _raw field should contain. 
         /// </summary>
         /// <remarks>
@@ -140,14 +148,6 @@ namespace Splunk.Client
         [DataMember(Name = "max_lines", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int MaxLines
-        { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [DataMember(Name = "latest_time", EmitDefaultValue = false)]
-        [DefaultValue(null)]
-        public string LatestTime
         { get; set; }
 
         /// <summary>
@@ -205,6 +205,38 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
+        [DataMember(Name = "rt_blocking", EmitDefaultValue = false)]
+        [DefaultValue(false)]
+        public bool RealTimeBlocking
+        { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember(Name = "rt_indexfilter", EmitDefaultValue = false)]
+        [DefaultValue(false)]
+        public bool RealTimeIndexFilter
+        { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember(Name = "rt_maxblocksecs", EmitDefaultValue = false)]
+        [DefaultValue(60)]
+        public int RealTimeMaxBlockSeconds
+        { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember(Name = "rt_queue_size", EmitDefaultValue = false)]
+        [DefaultValue(10000)]
+        public int RealTimeQueueSize
+        { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [DataMember(Name = "reduce_freq", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int ReduceFrequency
@@ -235,35 +267,11 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// 
+        /// Gets or sets the post processing search to apply to the results of a search.
         /// </summary>
-        [DataMember(Name = "rt_blocking", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool RealTimeBlocking
-        { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [DataMember(Name = "rt_indexfilter", EmitDefaultValue = false)]
-        [DefaultValue(false)]
-        public bool RealTimeIndexFilter
-        { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [DataMember(Name = "rt_maxblocksecs", EmitDefaultValue = false)]
-        [DefaultValue(60)]
-        public int RealTimeMaxBlockSeconds
-        { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [DataMember(Name = "rt_queue_size", EmitDefaultValue = false)]
-        [DefaultValue(10000)]
-        public int RealTimeQueueSize
+        [DataMember(Name = "search", EmitDefaultValue = false)]
+        [DefaultValue(null)]
+        public string Search
         { get; set; }
 
         /// <summary>

@@ -32,9 +32,9 @@ namespace Splunk.Client.UnitTests
     
     using Xunit;
 
-    public class TestService : IUseFixture<AcceptanceTestingSetup>
+    public class TestService
     {
-        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [Trait("acceptance-test:Splunk.Client.Service", "CanConstructService")]
         [Fact]
         public void CanConstructService()
         {
@@ -78,7 +78,7 @@ namespace Splunk.Client.UnitTests
 
         #region Access Control
 
-        [Trait("acceptance-test", "Splunk.Client.StoragePassword")]
+        [Trait("acceptance-test:Splunk.Client.StoragePassword", "CanCrudStoragePassword")]
         [Fact]
         public async Task CanCrudStoragePassword()
         {
@@ -166,7 +166,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
+        [Trait("acceptance-test:Splunk.Client.StoragePasswordCollection", "CanGetStoragePasswords")]
         [Fact]
         public async Task CanGetStoragePasswords()
         {
@@ -221,7 +221,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [Trait("acceptance-test:Splunk.Client.Service", "CanLoginAndLogoff")]
         [Fact]
         public async Task CanLoginAndLogoff()
         {
@@ -252,7 +252,7 @@ namespace Splunk.Client.UnitTests
 
         #region Applications
 
-        [Trait("acceptance-test", "Splunk.Client.Application")]
+        [Trait("acceptance-test:Splunk.Client.Application", "CanCrudApplication")]
         [Fact]
         public async Task CanCrudApplication()
         {
@@ -411,7 +411,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.ApplicationCollection")]
+        [Trait("acceptance-test:Splunk.Client.ApplicationCollection", "CanGetApplications")]
         [Fact]
         public async Task CanGetApplications()
         {
@@ -465,7 +465,7 @@ namespace Splunk.Client.UnitTests
 
         #region Configuration
 
-        [Trait("acceptance-test", "Splunk.Client.Configuration : CanCrudConfiguration")]
+        [Trait("acceptance-test:Splunk.Client.Configuration", "CanCrudConfiguration")]
         [Fact]
         public async Task CanCrudConfiguration() // no delete operation is available
         {
@@ -567,7 +567,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection : CanGetConfigurations")]
+        [Trait("acceptance-test:Splunk.Client.ConfigurationCollection", "CanGetConfigurations")]
         [Fact]
         public async Task CanGetConfigurations()
         {
@@ -623,7 +623,7 @@ namespace Splunk.Client.UnitTests
 
         #region Indexes
 
-        [Trait("acceptance-test", "Splunk.Client.Index")]
+        [Trait("acceptance-test:Splunk.Client.Index", "CanCrudIndex")]
         [Fact]
         public async Task CanCrudIndex()
         {
@@ -675,7 +675,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.IndexCollection")]
+        [Trait("acceptance-test:Splunk.Client.IndexCollection", "CanGetIndexes")]
         [Fact]
         public async Task CanGetIndexes()
         {
@@ -826,72 +826,72 @@ namespace Splunk.Client.UnitTests
 
         #region Inputs
 
-        [Trait("acceptance-test", "Splunk.Client.Transmitter")]
+        [Trait("acceptance-test:Splunk.Client.Transmitter", "CanSendEvents")]
         [Fact]
         public async Task CanSendEvents()
         {
             using (var service = await SDKHelper.CreateService())
+            {
+                // default index
+
+                Index index = await service.Indexes.GetAsync("main");
+                Assert.NotNull(index);
+                Assert.False(index.Disabled);
+
+                var receiver = service.Transmitter;
+
+                long currentEventCount = index.TotalEventCount;
+                Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);
+                int sendEventCount = 10;
+
+                for (int i = 0; i < sendEventCount; i++)
                 {
-                    // default index
-
-                    Index index = await service.Indexes.GetAsync("main");
-                    Assert.NotNull(index);
-                    Assert.False(index.Disabled);
-
-                    var receiver = service.Transmitter;
-
-                    long currentEventCount = index.TotalEventCount;
-                    Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);
-                    int sendEventCount = 10;
-
-                    for (int i = 0; i < sendEventCount; i++)
-                        {
-                            var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
-                            Assert.NotNull(result);
-                        }
-
-                    Stopwatch watch = Stopwatch.StartNew();                
-
-                    while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
-                        {
-                            await Task.Delay(1000);
-                            await index.GetAsync();
-                        }
-
-                    Console.WriteLine("After send {0} string events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
-                    Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
-                    Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
-
-                    // Test stream events
-
-                    currentEventCount = currentEventCount + sendEventCount;
-
-                    using (var eventStream = new MemoryStream())
-                        {
-                            using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
-                                {
-                                    for (int i = 0; i < sendEventCount; i++)
-                                        {
-                                            writer.Write(string.Format("{0:D6} {1} jly send stream event hello world!\r\n", i, DateTime.Now));
-                                        }
-                                }
-
-                            eventStream.Seek(0, SeekOrigin.Begin);
-                            await receiver.SendAsync(eventStream);
-                        }
-
-                    watch.Restart();
-
-                    while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
-                        {
-                            await Task.Delay(1000);
-                            await index.GetAsync();
-                        }
-
-                    Console.WriteLine("After send {0} strem events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
-                    Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
-                    Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
+                    Assert.NotNull(result);
                 }
+
+                Stopwatch watch = Stopwatch.StartNew();                
+
+                while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
+                {
+                    await Task.Delay(1000);
+                    await index.GetAsync();
+                }
+
+                Console.WriteLine("After send {0} string events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
+                Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+
+                // Test stream events
+
+                currentEventCount = currentEventCount + sendEventCount;
+
+                using (var eventStream = new MemoryStream())
+                {
+                    using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
+                    {
+                        for (int i = 0; i < sendEventCount; i++)
+                        {
+                            writer.Write(string.Format("{0:D6} {1} jly send stream event hello world!\r\n", i, DateTime.Now));
+                        }
+                    }
+
+                    eventStream.Seek(0, SeekOrigin.Begin);
+                    await receiver.SendAsync(eventStream);
+                }
+
+                watch.Restart();
+
+                while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
+                {
+                    await Task.Delay(1000);
+                    await index.GetAsync();
+                }
+
+                Console.WriteLine("After send {0} strem events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
+                Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+            }
         }
 
 
@@ -899,7 +899,7 @@ namespace Splunk.Client.UnitTests
        
         #region Search
 
-        [Trait("acceptance-test", "Splunk.Client.Job : CanCrudJob")]
+        [Trait("acceptance-test:Splunk.Client.Job", "CanCrudJob")]
         [Fact]
         public async Task CanCrudJob()
         {
@@ -970,7 +970,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
+        [Trait("acceptance-test:Splunk.Client.SavedSearch", "CanCrudSavedSearch")]
         [Fact]
         public async Task CanCrudSavedSearch()
         {
@@ -1090,27 +1090,29 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [Trait("acceptance-test:Splunk.Client.Service", "CanDispatchSavedSearch")]
         [Fact]
         public async Task CanDispatchSavedSearch()
         {
             using (var service = await SDKHelper.CreateService())
             {
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
-                SearchResultStream resultStream = await job.GetSearchResultsAsync();
-
-                var results = new List<SearchResult>();
-
-                foreach (var result in resultStream) 
+                
+                using (SearchResultStream resultStream = await job.GetSearchResultsAsync())
                 {
-                    results.Add(await result);
-                }
+                    var results = new List<SearchResult>();
 
-                Assert.NotEmpty(results);
+                    foreach (var result in resultStream)
+                    {
+                        results.Add(await result);
+                    }
+
+                    Assert.NotEmpty(results);
+                }
             }
         }
             
-        [Trait("acceptance-test", "Splunk.Client.JobCollection : CanGetJobs")]
+        [Trait("acceptance-test:Splunk.Client.JobCollection", "CanGetJobs")]
         [Fact]
         public async Task CanGetJobs()
         {
@@ -1144,7 +1146,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.SavedSearchCollection")]
+        [Trait("acceptance-test:Splunk.Client.SavedSearchCollection", "CanGetSavedSearches")]
         [Fact]
         public async Task CanGetSavedSearches()
         {
@@ -1164,92 +1166,98 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [Trait("acceptance-test:Splunk.Client.Service", "CanExportSearchPreviews")]
         [Fact]
         public async Task CanExportSearchPreviews()
         {
             using (var service = await SDKHelper.CreateService())
             {
-                SearchPreviewStream previewStream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
+                var args = new SearchExportArgs() { Count = 0 };
 
-                var results = new List<Splunk.Client.SearchResult>();
-                var exception = (Exception)null;
-
-                var manualResetEvent = new ManualResetEvent(true);
-
-                previewStream.Subscribe(
-                    onNext: (preview) =>
-                    {
-                        Assert.Equal<IEnumerable<string>>(new List<string> 
-                            {
-                                "_bkt",
-                                "_cd",
-                                "_indextime",
-                                "_raw",
-                                "_serial",
-                                "_si",
-                                "_sourcetype",
-                                "_subsecond",
-                                "_time",
-                                "host",
-                                "index",
-                                "linecount",
-                                "source",
-                                "sourcetype",
-                                "splunk_server",
-                            },
-                            preview.FieldNames);
-
-                        if (preview.IsFinal)
-                        {
-                            results.AddRange(preview.Results);
-                        }
-                    },
-                    onError: (e) =>
-                    {
-                        exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
-                        manualResetEvent.Set();
-
-                    },
-                    onCompleted: () =>
-                    {
-                        manualResetEvent.Set();
-                    });
-
-                manualResetEvent.Reset();
-                manualResetEvent.WaitOne();
-
-                Assert.Null(exception);
-                Assert.Equal(100, results.Count);
-
-                await service.LogoffAsync();
-            }
-        }
-
-        [Trait("acceptance-test", "Splunk.Client.Service")]
-        [Fact]
-        public async Task CanExportSearchResults()
-        {
-            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port))
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", args))
                 {
-                    await service.LoginAsync("admin", "changeme");
-
-                    SearchResultStream resultStream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
                     var results = new List<Splunk.Client.SearchResult>();
                     var exception = (Exception)null;
 
                     var manualResetEvent = new ManualResetEvent(true);
 
-                    resultStream.Subscribe(
+                    stream.Subscribe(
+                        onNext: (preview) =>
+                        {
+                            Assert.Equal<IEnumerable<string>>(new List<string>
+                                {
+                                    "_bkt",
+                                    "_cd",
+                                    "_indextime",
+                                    "_raw",
+                                    "_serial",
+                                    "_si",
+                                    "_sourcetype",
+                                    "_subsecond",
+                                    "_time",
+                                    "host",
+                                    "index",
+                                    "linecount",
+                                    "source",
+                                    "sourcetype",
+                                    "splunk_server",
+                                },
+                                preview.FieldNames);
+
+                            if (preview.IsFinal)
+                            {
+                                results.AddRange(preview.Results);
+                            }
+                        },
+                        onError: (e) =>
+                        {
+                            exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
+                            manualResetEvent.Set();
+
+                        },
+                        onCompleted: () =>
+                        {
+                            manualResetEvent.Set();
+                        });
+
+                    manualResetEvent.Reset();
+                    manualResetEvent.WaitOne();
+
+                    Assert.Null(exception);
+                    Assert.Equal(100, results.Count);
+
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test:Splunk.Client.Service", "CanExportSearchResults")]
+        [Fact]
+        public async Task CanExportSearchResults()
+        {
+            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port))
+            {
+                await service.LoginAsync("admin", "changeme");
+                var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", args))
+                {
+                    var results = new List<Splunk.Client.SearchResult>();
+                    var exception = (Exception)null;
+
+                    var manualResetEvent = new ManualResetEvent(true);
+
+                    stream.Subscribe(
                         onNext: (result) =>
                         {
-                            var count = resultStream.FieldNames.Intersect(result.Keys).Count();
+                            var count = stream.FieldNames.Intersect(result.Keys).Count();
                             Assert.Equal(count, result.Count);
 
-                            if (resultStream.IsFinal)
-                                {
-                                    results.Add(result);
-                                }
+                            if (stream.IsFinal)
+                            {
+                                results.Add(result);
+                            }
                         },
                         onError: (e) =>
                         {
@@ -1266,47 +1274,52 @@ namespace Splunk.Client.UnitTests
 
                     Assert.Null(exception);
                     Assert.Equal(100, results.Count);
-
-                    await service.LogoffAsync();
                 }
+
+                await service.LogoffAsync();
+            }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [Trait("acceptance-test:Splunk.Client.Service", "CanSearchOneshot")]
         [Fact]
         public async Task CanSearchOneshot()
         {
             using (var service = await SDKHelper.CreateService())
+            {
+                var indexName = string.Format("delete-me-{0}", Guid.NewGuid().ToString("N"));
+
+                var searchCommands = new string[] 
                 {
-                    var indexName = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
+                    string.Format("search index={0} * | delete", indexName),
+                    "search index=_internal | head 100"
+                };
 
-                    var searchCommands = new string[] 
+                await service.Indexes.CreateAsync(indexName);
+
+                foreach (var command in searchCommands)
+                {
+                    var args = new JobArgs { MaxCount = 100000 };
+
+                    using (SearchResultStream stream = await service.SearchOneshotAsync(command, args))
+                    {
+                        var list = new List<SearchResult>();
+
+                        foreach (Task<SearchResult> result in stream) 
                         {
-                            string.Format("search index={0} * | delete", indexName),
-                            "search index=_internal | head 100"
-                        };
-
-                    await service.Indexes.CreateAsync(indexName);
-
-                    foreach (var command in searchCommands)
-                        {
-                            var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
-                            var list = new List<SearchResult>();
-
-                            foreach (var result in searchResults) 
-                                {
-                                    list.Add(await result);
-                                }
-
-                            Assert.NotEmpty(list);
+                            list.Add(await result);
                         }
+
+                        Assert.NotEmpty(list);
+                    }
                 }
+            }
         }
 
         #endregion
 
         #region System
 
-        [Trait("acceptance-test", "Splunk.Client.ServerMessage")]
+        [Trait("acceptance-test:Splunk.Client.ServerMessage", "CanCrudServerMessage")]
         [Fact]
         public async Task CanCrudServerMessage()
         {
@@ -1357,7 +1370,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.ServerSettings")]
+        [Trait("acceptance-test:Splunk.Client.ServerSettings", "CanCrudServerSettings")]
         [Fact]
         public async Task CanCrudServerSettings()
         {
@@ -1442,7 +1455,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Server")]
+        [Trait("acceptance-test:Splunk.Client.Server", "CanGetServerInfo")]
         [Fact]
         public async Task CanGetServerInfo()
         {
@@ -1472,7 +1485,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Server")]
+        [Trait("acceptance-test:Splunk.Client.Server", "CanRestartServer")]
         [Fact]
         public async Task CanRestartServer()
         {
@@ -1499,9 +1512,6 @@ namespace Splunk.Client.UnitTests
         }
 
         #endregion
-
-        public void SetFixture(AcceptanceTestingSetup data)
-        { } // TODO: Implement or remove
 
         #region Privates/internals
 

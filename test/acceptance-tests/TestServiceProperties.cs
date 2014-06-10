@@ -131,7 +131,7 @@ namespace Splunk.Client.UnitTests
             await service.Configurations.GetAllAsync();
 
             //// Logout, the request should fail with a 401
-            service.LogoffAsync().Wait();
+            await service.LogoffAsync();
             try
             {
                 await service.Configurations.GetAllAsync();

@@ -310,8 +310,7 @@ namespace Splunk.Client
 
             if (args != null)
             {
-                args.ExecutionMode = null; // Ensures that exec_mode is oneshot
-                arguments = arguments.Concat(args);
+                arguments = arguments.Concat(args.Where(arg => arg.Name != "exec_mode"));
             }
 
             if (customArgs != null)

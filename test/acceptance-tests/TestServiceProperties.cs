@@ -70,43 +70,6 @@ namespace Splunk.Client.UnitTests
         }
 
         /// <summary>
-        /// Test login
-        /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.ServiceLogin")]
-        [Fact]
-        public async Task ServiceLogin()
-        {
-            Service service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
-
-            // Not logged in, should fail with 401
-            try
-            {
-                await service.Configurations.GetAllAsync();
-                Assert.True(false, "Expected AuthenticationFailureException");
-            }
-            catch (AuthenticationFailureException e)
-            {
-                Assert.True(e.Message.Contains("401"));
-            }
-
-            // Logged in, request should succeed
-            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
-            await service.Configurations.GetAllAsync();
-
-            //// Logout, the request should fail with a 401
-            await service.LogoffAsync();
-            try
-            {
-                await service.Configurations.GetAllAsync();
-                Assert.True(false, "Expected AuthenticationFailureException");
-            }
-            catch (AuthenticationFailureException ex)
-            {
-                Assert.True(ex.Message.Contains("401"));
-            }
-        }
-    
-        /// <summary>
         /// This method tests geting the events and then sets most, 
         /// and then reverts back to the original
         /// </summary>

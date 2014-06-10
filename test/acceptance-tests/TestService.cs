@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTests
+namespace Splunk.Client.AcceptanceTests
 {
     using Splunk.Client;
     using Splunk.Client.Helpers;
@@ -35,7 +35,7 @@ namespace Splunk.Client.UnitTests
 
     public class TestService
     {
-        [Trait("acceptance-test:Splunk.Client.Service", "CanConstructService")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public void CanConstructService()
         {
@@ -79,7 +79,7 @@ namespace Splunk.Client.UnitTests
 
         #region Access Control
 
-        [Trait("acceptance-test:Splunk.Client.StoragePassword", "CanCrudStoragePassword")]
+        [Trait("acceptance-test", "Splunk.Client.StoragePassword")]
         [Fact]
         public async Task CanCrudStoragePassword()
         {
@@ -167,7 +167,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.Service", "CanGetCapabilities")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanGetCapabilities()
         {
@@ -297,7 +297,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.StoragePasswordCollection", "CanGetStoragePasswords")]
+        [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
         [Fact]
         public async Task CanGetStoragePasswords()
         {
@@ -352,14 +352,34 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.Service", "CanLoginAndLogoff")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanLoginAndLogoff()
         {
             using (var service = await SDKHelper.CreateService(Namespace.Default))
             {
+                try
+                {
+                    await service.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {1}", e.GetType().FullName));
+                }
+
                 await service.LogoffAsync();
+
                 Assert.Null(service.SessionKey);
+
+                try
+                {
+                    await service.Applications.GetAllAsync();
+                    Assert.True(false, "Expected AuthenticationFailureException");
+                }
+                catch (AuthenticationFailureException e)
+                {
+                    Assert.Equal(HttpStatusCode.Unauthorized, e.StatusCode);
+                }
 
                 try
                 {
@@ -383,7 +403,7 @@ namespace Splunk.Client.UnitTests
 
         #region Applications
 
-        [Trait("acceptance-test:Splunk.Client.Application", "CanCrudApplication")]
+        [Trait("acceptance-test", "Splunk.Client.Application")]
         [Fact]
         public async Task CanCrudApplication()
         {
@@ -542,7 +562,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.ApplicationCollection", "CanGetApplications")]
+        [Trait("acceptance-test", "Splunk.Client.ApplicationCollection")]
         [Fact]
         public async Task CanGetApplications()
         {
@@ -596,7 +616,7 @@ namespace Splunk.Client.UnitTests
 
         #region Configuration
 
-        [Trait("acceptance-test:Splunk.Client.Configuration", "CanCrudConfiguration")]
+        [Trait("acceptance-test", "Splunk.Client.Configuration")]
         [Fact]
         public async Task CanCrudConfiguration() // no delete operation is available
         {
@@ -698,7 +718,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.ConfigurationCollection", "CanGetConfigurations")]
+        [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection")]
         [Fact]
         public async Task CanGetConfigurations()
         {
@@ -754,7 +774,7 @@ namespace Splunk.Client.UnitTests
 
         #region Indexes
 
-        [Trait("acceptance-test:Splunk.Client.Index", "CanCrudIndex")]
+        [Trait("acceptance-test", "Splunk.Client.Index")]
         [Fact]
         public async Task CanCrudIndex()
         {
@@ -806,7 +826,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.IndexCollection", "CanGetIndexes")]
+        [Trait("acceptance-test", "Splunk.Client.IndexCollection")]
         [Fact]
         public async Task CanGetIndexes()
         {
@@ -957,7 +977,7 @@ namespace Splunk.Client.UnitTests
 
         #region Inputs
 
-        [Trait("acceptance-test:Splunk.Client.Transmitter", "CanSendEvents")]
+        [Trait("acceptance-test", "Splunk.Client.Transmitter")]
         [Fact]
         public async Task CanSendEvents()
         {
@@ -1030,7 +1050,7 @@ namespace Splunk.Client.UnitTests
        
         #region Search
 
-        [Trait("acceptance-test:Splunk.Client.Job", "CanCrudJob")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task CanCrudJob()
         {
@@ -1101,7 +1121,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.SavedSearch", "CanCrudSavedSearch")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [Fact]
         public async Task CanCrudSavedSearch()
         {
@@ -1221,7 +1241,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.Service", "CanDispatchSavedSearch")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanDispatchSavedSearch()
         {
@@ -1243,7 +1263,7 @@ namespace Splunk.Client.UnitTests
             }
         }
             
-        [Trait("acceptance-test:Splunk.Client.JobCollection", "CanGetJobs")]
+        [Trait("acceptance-test", "Splunk.Client.JobCollection")]
         [Fact]
         public async Task CanGetJobs()
         {
@@ -1277,7 +1297,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.SavedSearchCollection", "CanGetSavedSearches")]
+        [Trait("acceptance-test", "Splunk.Client.SavedSearchCollection")]
         [Fact]
         public async Task CanGetSavedSearches()
         {
@@ -1297,7 +1317,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.Service", "CanExportSearchPreviews")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanExportSearchPreviews()
         {
@@ -1363,7 +1383,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.Service", "CanExportSearchResults")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanExportSearchResults()
         {
@@ -1411,7 +1431,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.Service", "CanSearchOneshot")]
+        [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
         public async Task CanSearchOneshot()
         {
@@ -1459,7 +1479,7 @@ namespace Splunk.Client.UnitTests
 
         #region System
 
-        [Trait("acceptance-test:Splunk.Client.ServerMessage", "CanCrudServerMessage")]
+        [Trait("acceptance-test", "Splunk.Client.ServerMessage")]
         [Fact]
         public async Task CanCrudServerMessage()
         {
@@ -1510,7 +1530,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.ServerSettings", "CanCrudServerSettings")]
+        [Trait("acceptance-test", "Splunk.Client.ServerSettings")]
         [Fact]
         public async Task CanCrudServerSettings()
         {
@@ -1588,14 +1608,11 @@ namespace Splunk.Client.UnitTests
                 Assert.Equal(values.TrustedIP, originalSettings.TrustedIP);
 
                 //// Restart the server because it's required following a settings update
-
-
-                //await service.Server.RestartAsync();
-                await TestHelper.RestartServerAsync();
+                await service.Server.RestartAsync();
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.Server", "CanGetServerInfo")]
+        [Trait("acceptance-test", "Splunk.Client.Server")]
         [Fact]
         public async Task CanGetServerInfo()
         {
@@ -1625,7 +1642,7 @@ namespace Splunk.Client.UnitTests
             }
         }
 
-        [Trait("acceptance-test:Splunk.Client.Server", "CanRestartServer")]
+        [Trait("acceptance-test", "Splunk.Client.Server")]
         [Fact]
         public async Task CanRestartServer()
         {

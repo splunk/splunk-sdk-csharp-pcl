@@ -171,62 +171,129 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task CanGetCapabilities()
         {
-            var expected = new ReadOnlyCollection<string>(new List<string> 
-            {
-                "accelerate_datamodel",
-                "admin_all_objects",
-                "change_authentication",
-                "change_own_password",
-                "delete_by_keyword",
-                "edit_deployment_client",
-                "edit_deployment_server",
-                "edit_dist_peer",
-                "edit_forwarders",
-                "edit_httpauths",
-                "edit_input_defaults",
-                "edit_monitor",
-                "edit_roles",
-                "edit_scripted",
-                "edit_search_server",
-                "edit_server",
-                "edit_splunktcp",
-                "edit_splunktcp_ssl",
-                "edit_tcp",
-                "edit_udp",
-                "edit_user",
-                "edit_view_html",
-                "edit_web_settings",
-                "get_diag",
-                "get_metadata",
-                "get_typeahead",
-                "indexes_edit",
-                "input_file",
-                "license_edit",
-                "license_tab",
-                "list_deployment_client",
-                "list_deployment_server",
-                "list_forwarders",
-                "list_httpauths",
-                "list_inputs",
-                "output_file",
-                "request_remote_tok",
-                "rest_apps_management",
-                "rest_apps_view",
-                "rest_properties_get",
-                "rest_properties_set",
-                "restart_splunkd",
-                "rtsearch",
-                "run_debug_commands",
-                "schedule_rtsearch",
-                "schedule_search",
-                "search",
-                "use_file_operator"
-            });
-
             using (var service = await SDKHelper.CreateService())
             {
                 IReadOnlyList<string> capabilities = await service.GetCapabilitiesAsync();
-                Assert.Equal(expected, capabilities);
+                var serverInfo = await service.Server.GetInfoAsync();
+
+                if (serverInfo.OSName == "Windows")
+                {
+                    Assert.Equal(new ReadOnlyCollection<string>(new List<string>
+                        {
+                            "accelerate_datamodel",         // 0
+                            "admin_all_objects",            // 1
+                            "change_authentication",        // 2
+                            "change_own_password",          // 3
+                            "delete_by_keyword",            // 4
+                            "edit_deployment_client",       // 5
+                            "edit_deployment_server",       // 6
+                            "edit_dist_peer",               // 7
+                            "edit_forwarders",              // 8
+                            "edit_httpauths",               // 9
+                            "edit_input_defaults",          // 10
+                            "edit_monitor",                 // 11
+                            "edit_roles",                   // 12
+                            "edit_scripted",                // 13
+                            "edit_search_server",           // 14
+                            "edit_server",                  // 15
+                            "edit_splunktcp",               // 16
+                            "edit_splunktcp_ssl",           // 17
+                            "edit_tcp",                     // 18
+                            "edit_udp",                     // 19
+                            "edit_user",                    // 20
+                            "edit_view_html",               // 21
+                            "edit_web_settings",            // 22
+                            "edit_win_admon",               // 23
+                            "edit_win_eventlogs",           // 24
+                            "edit_win_perfmon",             // 25
+                            "edit_win_regmon",              // 26
+                            "edit_win_wmiconf",             // 27
+                            "get_diag",                     // 28
+                            "get_metadata",                 // 29
+                            "get_typeahead",                // 30
+                            "indexes_edit",                 // 31
+                            "input_file",                   // 32
+                            "license_edit",                 // 33
+                            "license_tab",                  // 34
+                            "list_deployment_client",       // 35
+                            "list_deployment_server",       // 36
+                            "list_forwarders",              // 37
+                            "list_httpauths",               // 38
+                            "list_inputs",                  // 39
+                            "list_pdfserver",               // 40
+                            "list_win_localavailablelogs",  // 41
+                            "output_file",                  // 42
+                            "request_remote_tok",           // 43
+                            "rest_apps_management",         // 44
+                            "rest_apps_view",               // 45
+                            "rest_properties_get",          // 46
+                            "rest_properties_set",          // 47
+                            "restart_splunkd",              // 48
+                            "rtsearch",                     // 49
+                            "run_debug_commands",           // 50
+                            "schedule_rtsearch",            // 51
+                            "schedule_search",              // 52
+                            "search",                       // 53
+                            "use_file_operator",            // 54
+                            "write_pdfserver"               // 55
+                        }),
+                        capabilities);
+                }
+                else
+                {
+                        Assert.Equal(new ReadOnlyCollection<string>(new List<string> 
+                        {
+                            "accelerate_datamodel",
+                            "admin_all_objects",
+                            "change_authentication",
+                            "change_own_password",
+                            "delete_by_keyword",
+                            "edit_deployment_client",
+                            "edit_deployment_server",
+                            "edit_dist_peer",
+                            "edit_forwarders",
+                            "edit_httpauths",
+                            "edit_input_defaults",
+                            "edit_monitor",
+                            "edit_roles",
+                            "edit_scripted",
+                            "edit_search_server",
+                            "edit_server",
+                            "edit_splunktcp",
+                            "edit_splunktcp_ssl",
+                            "edit_tcp",
+                            "edit_udp",
+                            "edit_user",
+                            "edit_view_html",
+                            "edit_web_settings",
+                            "get_diag",
+                            "get_metadata",
+                            "get_typeahead",
+                            "indexes_edit",
+                            "input_file",
+                            "license_edit",
+                            "license_tab",
+                            "list_deployment_client",
+                            "list_deployment_server",
+                            "list_forwarders",
+                            "list_httpauths",
+                            "list_inputs",
+                            "output_file",
+                            "request_remote_tok",
+                            "rest_apps_management",
+                            "rest_apps_view",
+                            "rest_properties_get",
+                            "rest_properties_set",
+                            "restart_splunkd",
+                            "rtsearch",
+                            "run_debug_commands",
+                            "schedule_rtsearch",
+                            "schedule_search",
+                            "search",
+                            "use_file_operator"
+                        }),
+                        capabilities);
+                }
             }
         }
 

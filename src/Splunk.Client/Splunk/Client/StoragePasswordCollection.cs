@@ -145,8 +145,8 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<StoragePassword> GetAsync(string username, string realm = null)
         {
-            var passwordName = StoragePassword.CreateNameFromRealmAndUsername(username, realm);
-            var password = await this.GetAsync(passwordName);
+            var passwordName = StoragePassword.CreateNameFromRealmAndUsername(realm, username);
+            var password = await base.GetAsync(passwordName);
 
             return password;
         }
@@ -154,8 +154,8 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<StoragePassword> GetOrNullAsync(string username, string realm = null)
         {
-            var passwordName = StoragePassword.CreateNameFromRealmAndUsername(username, realm);
-            var password = await this.GetOrNullAsync(passwordName);
+            var passwordName = StoragePassword.CreateNameFromRealmAndUsername(realm, username);
+            var password = await base.GetOrNullAsync(passwordName);
 
             return password;
         }

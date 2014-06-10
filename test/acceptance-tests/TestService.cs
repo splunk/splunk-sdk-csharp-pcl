@@ -675,10 +675,10 @@ namespace Splunk.Client.UnitTests
                             await stanza.GetAsync();
                         }
 
-                        Assert.Equal(configuration, stanzaList);
+                        Assert.Equal(configuration.ToList(), stanzaList);
                     }
 
-                    Assert.Equal(service.Configurations, configurationList);
+                    Assert.Equal(service.Configurations.ToList(), configurationList);
                 }
             }
         }

@@ -774,11 +774,13 @@ namespace Splunk.Client.AcceptanceTests
 
         #region Indexes
 
-        [Trait("acceptance-test", "Splunk.Client.Index")]
+        [Trait("acceptance-test", "Splunk.Client.Index:CanCrudIndex")]
         [Fact]
         public async Task CanCrudIndex()
         {
-            using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
+            var ns = new Namespace("nobody", "search");
+
+            using (var service = await SDKHelper.CreateService(ns))
             {
                 var indexName = string.Format("delete-me-{0}", Guid.NewGuid());
                 Index index;
@@ -794,24 +796,51 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Update
 
-                var attributes = new IndexAttributes()
+                Exception updateException = null;
+
+                try
                 {
-                    EnableOnlineBucketRepair = false
-                };
+                    var attributes = new IndexAttributes()
+                    {
+                        EnableOnlineBucketRepair = false
+                    };
 
-                await index.UpdateAsync(attributes);
-                Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
-                Assert.False(index.Disabled);
+                    await index.UpdateAsync(attributes);
+                    Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
+                    Assert.False(index.Disabled);
 
-                await index.DisableAsync();
-                Assert.True(index.Disabled);
+                    await index.DisableAsync();
+                    Assert.True(index.Disabled);
 
-                await index.EnableAsync();
-                Assert.False(index.Disabled);
+                    await service.Server.RestartAsync();
+                    await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+
+                    await index.EnableAsync();
+                    Assert.False(index.Disabled);
+
+                }
+                catch (Exception e)
+                {
+                    updateException = e;
+                }
 
                 //// Delete
 
-                await index.RemoveAsync();
+                try 
+                {
+                    await index.RemoveAsync();
+                }
+                catch (Exception removeException)
+                {
+                    if (updateException != null)
+                    {
+                        var text = string.Format("Update/remove failed:\nUpdate failure: {0}\n\n{1}\nRemove failure: {2}\n{3}",
+                            updateException.Message, updateException.StackTrace, 
+                            removeException.Message, removeException.StackTrace);
+                        Assert.True(false, text);
+                    }
+                    throw;
+                }
 
                 try
                 {

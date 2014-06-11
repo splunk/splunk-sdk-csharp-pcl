@@ -40,7 +40,7 @@ namespace Splunk.Client.UnitTests
         public async Task ServiceInfo()
         {
 
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 ServerInfo info = await service.Server.GetInfoAsync();
 
@@ -79,7 +79,7 @@ namespace Splunk.Client.UnitTests
         {
             ServerSettingValues original = null, replacement = null;
 
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 ServerSettings settings = await service.Server.GetSettingsAsync();
                 string dummyString;
@@ -131,7 +131,7 @@ namespace Splunk.Client.UnitTests
                 //await TestHelper.RestartServerAsync(); // because changing ports requires a restart
             }
 
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 ServerSettings settings = await service.Server.GetSettingsAsync();
 

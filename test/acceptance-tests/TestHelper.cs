@@ -35,7 +35,7 @@ namespace Splunk.Client.UnitTests
         {
             Version info = service.Server.GetInfoAsync().Result.Version;
             string version = info.ToString();
-            return (string.Compare(version, versionToCompare, StringComparison.InvariantCulture));
+            return string.Compare(version, versionToCompare, StringComparison.InvariantCulture);
         }
 
         public static async Task WaitIndexTotalEventCountUpdated(Index index, long expectedEventCount, int seconds = 60)
@@ -44,7 +44,7 @@ namespace Splunk.Client.UnitTests
 
             while (watch.Elapsed < new TimeSpan(0, 0, seconds) && index.TotalEventCount != expectedEventCount)
             {
-                await Task.Delay(500);
+                await Task.Delay(1000);
                 await index.GetAsync();
             }
 
@@ -54,27 +54,7 @@ namespace Splunk.Client.UnitTests
             Assert.Equal(expectedEventCount, index.TotalEventCount);
         }
 
-        public static async Task RestartServerAsync()
-        {
-            Stopwatch watch = Stopwatch.StartNew();
-
-            Service service = await SDKHelper.CreateService();
-            try
-            {
-                await service.Server.RestartAsync();
-                Console.WriteLine("{1},  spend {0}s to restart server successfully", watch.Elapsed.TotalSeconds, DateTime.Now);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("----------------------------------------------------------------------------------------");
-                Console.WriteLine("{1}, spend {0}s to restart server failed:", watch.Elapsed.TotalSeconds, DateTime.Now);
-                Console.WriteLine(e);
-                Console.WriteLine("----------------------------------------------------------------------------------------");
-            }
-
-            watch.Stop();
-        }
-        /// <summary>
+       /// <summary>
         /// Create a fresh test app with the given name, delete the existing
         /// test app and reboot Splunk.
         /// </summary>
@@ -83,60 +63,50 @@ namespace Splunk.Client.UnitTests
         {
             //EntityCollection<App> apps;
 
-            Service service = await SDKHelper.CreateService();
-
-            ApplicationCollection apps = service.Applications;
-            await apps.GetAllAsync();
-
-            var app = apps.FirstOrDefault(a => a.Title == name);
-
-            if (app != null)
+            using (var service = await SDKHelper.CreateService())
             {
-                await app.RemoveAsync();
-                await RestartServerAsync();
+                var app = await service.Applications.GetOrNullAsync(name);
 
-                //// Our session is gone and so we must reestablish it
-                //// Alternative: service.LoginAsync
+                if (app != null)
+                {
+                    await app.RemoveAsync();
+                    await service.Server.RestartAsync();
+                    await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+                }
 
-                service = await SDKHelper.CreateService();
-                apps = service.Applications;
-                await apps.GetAllAsync();
+                await service.Applications.CreateAsync(name, "sample_app");
+                await service.Server.RestartAsync();
+                await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+
+                app = await service.Applications.GetOrNullAsync(name);
+                Assert.NotNull(app);
             }
-
-            Assert.False(apps.Any(a => a.Title == name));
-
-            await apps.CreateAsync(name, "sample_app");
-            await RestartServerAsync();
-
-            //// Our session is gone and so we must reestablish it
-            //// Alternative: service.LoginAsync
-
-            service = await SDKHelper.CreateService();
-            apps = service.Applications;
-            await apps.GetAllAsync();
-
-            Assert.True(apps.Any(a => a.Name == name));
         }
 
         /// <summary>
         /// Remove the given app and reboot Splunk if needed.
         /// </summary>
         /// <param name="name">The app name</param>
-        public static async Task RemoveApp(string name)
+        public static async Task<bool> RemoveApp(string name)
         {
-            Service service = await SDKHelper.CreateService();
-            Application app = await service.Applications.GetOrNullAsync(name);
-
-            if (app != null)
+            using (var service = await SDKHelper.CreateService())
             {
-                await app.RemoveAsync();
-                await RestartServerAsync();
-            }
-            
-            service = await SDKHelper.CreateService();
-            app = await service.Applications.GetOrNullAsync(name);
+                Application app = await service.Applications.GetOrNullAsync(name);
 
-            Assert.Null(app);
+                if (app == null)
+                {
+                    return false;
+                }
+
+                await app.RemoveAsync();
+                await service.Server.RestartAsync();
+                await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+
+                app = await service.Applications.GetOrNullAsync(name);
+                Assert.Null(app);
+
+                return true;
+            }
         }
     }
 }

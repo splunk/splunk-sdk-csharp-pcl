@@ -37,95 +37,118 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task Application()
         {
-            Service service = await SDKHelper.CreateService();
-
-            ApplicationCollection apps = service.Applications;
-            await apps.GetAllAsync();
-
-            foreach (Application app in apps)
+            using (var service = await SDKHelper.CreateService())
             {
-                await CheckApplication(app);
-            }
+                ApplicationCollection apps = service.Applications;
+                await apps.GetAllAsync();
 
-            for (int i = 0; i < apps.Count; i++)
-            {
-                await CheckApplication(apps[i]);
-            }
+                foreach (Application app in apps)
+                {
+                    await CheckApplication(app);
+                }
 
-            if (apps.Any(a => a.Name == "sdk-tests"))
-            {
-                await TestHelper.RemoveApp("sdk-tests");
+                for (int i = 0; i < apps.Count; i++)
+                {
+                    await CheckApplication(apps[i]);
+                }
 
-                service = await SDKHelper.CreateService();
-                apps = service.Applications;
-            }
+                if (apps.Any(a => a.Name == "sdk-tests"))
+                {
+                    bool restartedServer = await TestHelper.RemoveApp("sdk-tests");
 
-            ApplicationAttributes attributes = new ApplicationAttributes
-            {
-                ApplicationAuthor = "me",
-                Description = "this is a description",
-                Label = "SDKTEST",
-                Visible = false
-            };
+                    if (restartedServer)
+                    {
+                        await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+                    }
 
-            var testApp = await service.Applications.CreateAsync("sdk-tests", "barebones", attributes);
-            testApp = await service.Applications.GetAsync("sdk-tests");
+                    apps = service.Applications;
+                }
 
-            Assert.Equal("SDKTEST", testApp.Label);
-            Assert.Equal("me", testApp.ApplicationAuthor);
-            Assert.Equal("nobody", testApp.Author);
-            Assert.False(testApp.Configured);
-            Assert.False(testApp.Visible);
+                ApplicationAttributes attributes = new ApplicationAttributes
+                {
+                    ApplicationAuthor = "me",
+                    Description = "this is a description",
+                    Label = "SDKTEST",
+                    Visible = false
+                };
 
-            Assert.DoesNotThrow(() => { bool p = testApp.CheckForUpdates; });
+                var testApp = await service.Applications.CreateAsync("sdk-tests", "barebones", attributes);
+                testApp = await service.Applications.GetAsync("sdk-tests");
 
-            attributes = new ApplicationAttributes
-            {
-                ApplicationAuthor = "not me",
-                Description = "new description",
-                Label = "new label",
-                Visible = false,
-                Version = "1.5"
-            };
+                Assert.Equal("SDKTEST", testApp.Label);
+                Assert.Equal("me", testApp.ApplicationAuthor);
+                Assert.Equal("nobody", testApp.Author);
+                Assert.False(testApp.Configured);
+                Assert.False(testApp.Visible);
 
-            //// Update the application
+                Assert.DoesNotThrow(() =>
+                {
+                    bool p = testApp.CheckForUpdates;
+                });
 
-            await testApp.UpdateAsync(attributes, true);
-            await testApp.GetAsync();
+                attributes = new ApplicationAttributes
+                {
+                    ApplicationAuthor = "not me",
+                    Description = "new description",
+                    Label = "new label",
+                    Visible = false,
+                    Version = "1.5"
+                };
 
-            Assert.Equal("not me", testApp.ApplicationAuthor);
-            Assert.Equal("nobody", testApp.Author);
-            Assert.Equal("new description", testApp.Description);
-            Assert.Equal("new label", testApp.Label);
-            Assert.Equal("1.5", testApp.Version);
-            Assert.False(testApp.Visible);
+                //// Update the application
 
-            ApplicationUpdateInfo updateInfo = await testApp.GetUpdateInfoAsync();
-            Assert.NotNull(updateInfo.Eai.Acl);
+                await testApp.UpdateAsync(attributes, true);
+                await testApp.GetAsync();
 
-            //// Package the application
+                Assert.Equal("not me", testApp.ApplicationAuthor);
+                Assert.Equal("nobody", testApp.Author);
+                Assert.Equal("new description", testApp.Description);
+                Assert.Equal("new label", testApp.Label);
+                Assert.Equal("1.5", testApp.Version);
+                Assert.False(testApp.Visible);
 
-            ApplicationArchiveInfo archiveInfo = await testApp.PackageAsync();
+                ApplicationUpdateInfo updateInfo = await testApp.GetUpdateInfoAsync();
+                Assert.NotNull(updateInfo.Eai.Acl);
+
+                //// Package the application
+
+                ApplicationArchiveInfo archiveInfo = await testApp.PackageAsync();
             
-            Assert.Equal("Package", archiveInfo.Title);
-            Assert.NotEqual(DateTime.MinValue, archiveInfo.Updated);
+                Assert.Equal("Package", archiveInfo.Title);
+                Assert.NotEqual(DateTime.MinValue, archiveInfo.Updated);
 
-            Assert.DoesNotThrow(() => { string p = archiveInfo.ApplicationName; });
-            Assert.True(archiveInfo.ApplicationName.Length > 0);
+                Assert.DoesNotThrow(() =>
+                {
+                    string p = archiveInfo.ApplicationName;
+                });
+                Assert.True(archiveInfo.ApplicationName.Length > 0);
 
-            Assert.DoesNotThrow(() => { Eai p = archiveInfo.Eai; });
-            Assert.NotNull(archiveInfo.Eai);
-            Assert.NotNull(archiveInfo.Eai.Acl);
+                Assert.DoesNotThrow(() =>
+                {
+                    Eai p = archiveInfo.Eai;
+                });
+                Assert.NotNull(archiveInfo.Eai);
+                Assert.NotNull(archiveInfo.Eai.Acl);
 
-            Assert.DoesNotThrow(() => { string p = archiveInfo.Path; });
-            Assert.True(archiveInfo.Path.Length > 0);
+                Assert.DoesNotThrow(() =>
+                {
+                    string p = archiveInfo.Path;
+                });
+                Assert.True(archiveInfo.Path.Length > 0);
 
-            Assert.DoesNotThrow(() => { bool p = archiveInfo.Refresh; });
+                Assert.DoesNotThrow(() =>
+                {
+                    bool p = archiveInfo.Refresh;
+                });
 
-            Assert.DoesNotThrow(() => { Uri p = archiveInfo.Uri; });
-            Assert.True(archiveInfo.Uri.AbsolutePath.Length > 0);
+                Assert.DoesNotThrow(() =>
+                {
+                    Uri p = archiveInfo.Uri;
+                });
+                Assert.True(archiveInfo.Uri.AbsolutePath.Length > 0);
 
-            await TestHelper.RemoveApp("sdk-tests");
+                await TestHelper.RemoveApp("sdk-tests");
+            }
         }
 
         #region Privates/internals

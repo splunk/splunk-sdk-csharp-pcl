@@ -62,6 +62,12 @@ namespace Splunk.ModularInputs
         {
             get
             {
+                //// TODO: Getters should always return the same reference value
+                //// 1. Either pre-allocate (e.g., in constructor) or create and then cache the service object here.
+                //// 2. Convert this property to the GetService method => no question that the user owns it and is
+                ////    responsible for calling Dispose
+                //// Number two may be the better option
+
                 if (ServerUri == null)
                     throw new NullReferenceException("Cannot get a Service object without ServerUri");
                 Uri parsedServerUri;

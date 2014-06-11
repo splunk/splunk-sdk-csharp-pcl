@@ -58,7 +58,7 @@ namespace Splunk.Examples.Submit
         /// <param name="argv">The command line arguments</param>
         static async Task Run(Service service)
         {
-            Console.WriteLine("Login as admin");
+            Console.WriteLine("Login as " + SDKHelper.UserConfigure.username);
 
             await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
 
@@ -85,11 +85,12 @@ namespace Splunk.Examples.Submit
                 result = await transmitter.SendAsync("Hello World.", indexName);
                 result = await transmitter.SendAsync("Goodbye world.", indexName);
 
-                var results = await service.SearchOneshotAsync(string.Format("search index={0}", indexName));
-
-                foreach (Task<SearchResult> task in results)
+                using (var results = await service.SearchOneshotAsync(string.Format("search index={0}", indexName)))
                 {
-                    Console.WriteLine(await task);
+                    foreach (Task<SearchResult> task in results)
+                    {
+                        Console.WriteLine(await task);
+                    }
                 }
             }
             catch (Exception e)

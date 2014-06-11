@@ -63,16 +63,8 @@ namespace Splunk.Client.UnitTests
 
                     foreach (ConfigurationStanza stanza in conf)
                     {
-                        try
-                        {
-                            dummyString = stanza.Name;
-                            dummyString = stanza.Title;
-                        }
-                        catch (ResourceNotFoundException e)
-                        {
-                            //// The application is disabled (?)
-                            Assert.Contains("Not Found", e.Message);
-                        }
+                        dummyString = stanza.Name;
+                        dummyString = stanza.Title;
                     }
                 }
 
@@ -86,16 +78,8 @@ namespace Splunk.Client.UnitTests
 
                     foreach (ConfigurationStanza stanza in conf)
                     {
-                        try
-                        {
-                            dummyString = stanza.Name;
-                            dummyString = stanza.Title;
-                        }
-                        catch (ResourceNotFoundException e)
-                        {
-                            //// The application is disabled (?)
-                            Assert.Contains("Not Found", e.Message);
-                        }
+                        dummyString = stanza.Name;
+                        dummyString = stanza.Title;
                     }
                 }
             }
@@ -108,22 +92,12 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task Configuration()
         {            
-            //// Create a fresh app to use as the container for confs that we will
-            //// create in this test. There is no way to delete a conf once it's
-            //// created so we make sure to create in the context of this test app
-            //// and then we delete the app when we are done to make everything go
-            //// away.
-
-            string app = "sdk-tests";
-            
-            await TestHelper.CreateApp(app);
+            const string app = "sdk-tests"; // Provides a removable jail for the configuration changes we'll make
 
             using (var service = await SDKHelper.CreateService())
             {
-                ApplicationCollection apps = service.Applications;
-                await apps.GetAllAsync();
-            
-                Assert.True(apps.Any(a => a.Title == app));
+                await service.Applications.RecreateAsync(app);
+                await service.Server.RestartAsync();
             }
 
             using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: app)))
@@ -267,9 +241,12 @@ namespace Splunk.Client.UnitTests
                 Assert.Null(testconf.SingleOrDefault(stanza => stanza.Name == "stanza1"));
                 Assert.Null(testconf.SingleOrDefault(stanza => stanza.Name == "stanza2"));
                 Assert.Null(testconf.SingleOrDefault(stanza => stanza.Name == "stanza3"));
+            }
 
-                // Cleanup after ourselves
-                await TestHelper.RemoveApp(app);
+            using (var service = await SDKHelper.CreateService())
+            {
+                Assert.True(await service.Applications.RemoveAsync(app));
+                await service.Server.RestartAsync();
             }
         }
     }

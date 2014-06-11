@@ -41,7 +41,7 @@ namespace Splunk.Client.UnitTests
 
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                var application = new Application(context, feed);
+                Assert.DoesNotThrow(() => new Application(context, feed));
             }
         }
 

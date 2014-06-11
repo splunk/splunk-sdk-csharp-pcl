@@ -635,6 +635,7 @@ namespace Splunk.Client.UnitTests
                 await savedSearches.GetSliceAsync(new SavedSearchCollection.Filter { Count = 0, SortDirection = SortDirection.Descending });
                 savedSearch = savedSearches.SingleOrDefault(ss => ss.Name == name);
                 Assert.NotNull(savedSearch);
+
                 await savedSearch.RemoveAsync();
                 savedSearch = await savedSearches.GetOrNullAsync(savedSearch.Name);
                 Assert.Null(savedSearch);

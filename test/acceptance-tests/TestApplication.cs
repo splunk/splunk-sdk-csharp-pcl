@@ -52,16 +52,10 @@ namespace Splunk.Client.UnitTests
                     await CheckApplication(apps[i]);
                 }
 
-                if (apps.Any(a => a.Name == "sdk-tests"))
+                if (await service.Applications.RemoveAsync("sdk-tests"))
                 {
-                    bool restartedServer = await TestHelper.RemoveApp("sdk-tests");
-
-                    if (restartedServer)
-                    {
-                        await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
-                    }
-
-                    apps = service.Applications;
+                    await service.Server.RestartAsync();
+                    await service.LoginAsync();
                 }
 
                 ApplicationAttributes attributes = new ApplicationAttributes
@@ -147,7 +141,8 @@ namespace Splunk.Client.UnitTests
                 });
                 Assert.True(archiveInfo.Uri.AbsolutePath.Length > 0);
 
-                await TestHelper.RemoveApp("sdk-tests");
+                Assert.True(await service.Applications.RemoveAsync("sdk-tests"));
+                await service.Server.RestartAsync();
             }
         }
 

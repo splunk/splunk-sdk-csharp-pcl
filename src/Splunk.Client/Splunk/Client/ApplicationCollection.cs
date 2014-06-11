@@ -129,7 +129,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public async Task<Application> CreateAsync(string name, string template, ApplicationAttributes attributes = null)
         {
-            var arguments = new CreationArgs()
+            var arguments = new CreationArgs
             {
                 ExplicitApplicationName = name,
                 Filename = false,

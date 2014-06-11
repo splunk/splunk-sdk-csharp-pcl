@@ -37,7 +37,7 @@ namespace Splunk.Client.UnitTests
         /// Search query which will give 'sg' tags
         /// in output when "segmentation == raw".
         /// </summary>
-        const string Query = "search index=_internal GET | head 3";
+        const string Search = "search index=_internal GET | head 3";
 
         /// <summary>
         /// Tests the result from a bad search argument.
@@ -48,14 +48,11 @@ namespace Splunk.Client.UnitTests
         {
             using (var service = await SDKHelper.CreateService())
             {
-                var search = "invalidpart" + Query;
-
-                Exception exception = null;
-                Job job = null;
+                var search = "invalidpart" + Search;
 
                 try
                 {
-                    job = await service.Jobs.CreateAsync(search);
+                    await service.Jobs.CreateAsync(search);
                 }
                 catch (BadRequestException)
                 {
@@ -63,15 +60,10 @@ namespace Splunk.Client.UnitTests
                 }
                 catch (Exception e)
                 {
-                    exception = e;
+                    Assert.True(false, string.Format("Unexpected exception: {0}\n{1}", e.Message, e.StackTrace));
                 }
 
-                await job.CancelAsync();
-                
-                Assert.DoesNotThrow(() =>
-                {
-                    throw exception;
-                });
+                Assert.True(false, string.Format("Expected BadRequestException but no exception was thrown."));
             }
         }
 
@@ -87,7 +79,7 @@ namespace Splunk.Client.UnitTests
                 JobArgs jobArgs = new JobArgs();
 
                 jobArgs.SearchMode = SearchMode.Normal;
-                Job job = await service.Jobs.CreateAsync(Query, jobArgs);
+                Job job = await service.Jobs.CreateAsync(Search, jobArgs);
                 Assert.NotNull(job);
 
                 jobArgs.SearchMode = SearchMode.Realtime;
@@ -111,7 +103,7 @@ namespace Splunk.Client.UnitTests
 
                 jobArgs.ExecutionMode = ExecutionMode.Blocking;
 
-                Job job = await service.Jobs.CreateAsync(Query, jobArgs);
+                Job job = await service.Jobs.CreateAsync(Search, jobArgs);
                 Assert.NotNull(job);
 
                 jobArgs.ExecutionMode = ExecutionMode.Normal;
@@ -139,7 +131,7 @@ namespace Splunk.Client.UnitTests
 
                 await ForEachEnum(typeof(TruncationMode), async enumValue =>
                     {
-                        var job = await service.Jobs.CreateAsync(Query, jobArgs);
+                        var job = await service.Jobs.CreateAsync(Search, jobArgs);
 
                         var args = new SearchEventArgs 
                         {
@@ -179,7 +171,7 @@ namespace Splunk.Client.UnitTests
         {
             var type = typeof(SearchMode);
 
-            await RunExportForEachEnum(Query, type, (mode) => 
+            await RunExportForEachEnum(Search, type, (mode) => 
                 new SearchExportArgs()
                 {
                     SearchMode = (SearchMode)Enum.Parse(type, mode)
@@ -195,7 +187,7 @@ namespace Splunk.Client.UnitTests
         {
             var type = typeof(TruncationMode);
 
-            await RunExportForEachEnum(Query, type, (mode) => 
+            await RunExportForEachEnum(Search, type, (mode) => 
                 new SearchExportArgs()
                 {
                     TruncationMode = (TruncationMode)Enum.Parse(type, mode)
@@ -212,12 +204,12 @@ namespace Splunk.Client.UnitTests
             {
                 var job = await service.Jobs.CreateAsync(search);
 
-                this.CheckJob(job, service);
+                await this.CheckJobAsync(job, service);
                 Assert.True(job.DispatchState < DispatchState.Done);
 
                 await job.TransitionAsync(DispatchState.Done, 10 * 1000);
 
-                this.CheckJob(job, service);
+                await this.CheckJobAsync(job, service);
                 Assert.True(job.DispatchState == DispatchState.Done);
 
                 await job.CancelAsync();
@@ -228,7 +220,7 @@ namespace Splunk.Client.UnitTests
         /// Touches the job after it is queryable.
         /// </summary>
         /// <param name="job">The job</param>
-        void CheckJob(Job job, Service service)
+        async Task CheckJobAsync(Job job, Service service)
         {
             string dummyString;
             //string[] dummyList;
@@ -256,7 +248,9 @@ namespace Splunk.Client.UnitTests
             dummyString = job.Keywords;
             //dummyString = job.Label;
 
-            if (TestHelper.VersionCompare(service, "6.0") < 0)
+            ServerInfo serverInfo = await service.Server.GetInfoAsync();
+
+            if (serverInfo.Version.CompareTo(new Version(6, 0)) < 0)
             {
                 dummyDateTime = job.LatestTime;
             }
@@ -322,7 +316,7 @@ namespace Splunk.Client.UnitTests
             {
                 await ForEachEnum(enumType, async @enum =>
                 {
-                    var job = await service.Jobs.CreateAsync(Query, getJobArgs(@enum));
+                    var job = await service.Jobs.CreateAsync(Search, getJobArgs(@enum));
                     await job.CancelAsync();
                 });
             }

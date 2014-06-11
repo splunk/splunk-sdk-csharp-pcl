@@ -18,6 +18,7 @@ namespace Splunk.Client.AcceptanceTests
 {
     using Splunk.Client;
     using Splunk.Client.Helpers;
+    using Splunk.Client.UnitTests;
     
     using System;
     using System.Collections.Generic;
@@ -80,7 +81,7 @@ namespace Splunk.Client.AcceptanceTests
         #region Access Control
 
         [Trait("acceptance-test", "Splunk.Client.StoragePassword")]
-        [Fact(Skip = "Fails due to Uri issue.")]
+        [Fact(Skip = "Failure due to Uri issue.")]
         public async Task CanCrudStoragePassword()
         {
             foreach (var ns in TestNamespaces)
@@ -299,7 +300,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
-        [Fact(Skip = "Fails due to Uri issue")]
+        [Fact(Skip = "Failure due to Uri issue")]
         public async Task CanGetStoragePasswords()
         {
             foreach (var ns in TestNamespaces)
@@ -638,6 +639,7 @@ namespace Splunk.Client.AcceptanceTests
                 await service.Applications.CreateAsync(testApplicationName, "barebones");
                 application = await service.Applications.GetOrNullAsync(testApplicationName);
                 Assert.NotNull(application);
+
                 await service.Server.RestartAsync();
             }
 
@@ -718,11 +720,12 @@ namespace Splunk.Client.AcceptanceTests
             {
                 Application application = await service.Applications.GetAsync(testApplicationName);
                 await application.RemoveAsync();
+                await service.Server.RestartAsync();
             }
         }
 
         [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection")]
-        [Fact(Skip = "Fails due to Uri issue")]
+        [Fact(Skip = "Failure due to Uri issue")]
         public async Task CanGetConfigurations()
         {
             foreach (Namespace ns in TestNamespaces)
@@ -816,7 +819,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.True(index.Disabled);
 
                     await service.Server.RestartAsync();
-                    await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+                    await service.LoginAsync();
 
                     await index.EnableAsync();
                     Assert.False(index.Disabled);
@@ -1076,7 +1079,6 @@ namespace Splunk.Client.AcceptanceTests
                 Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
             }
         }
-
 
         #endregion
        
@@ -1571,45 +1573,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 var originalSettings = await service.Server.GetSettingsAsync();
 
-                //// Update
-
-                var values = new ServerSettingValues()
-                {
-                    EnableSplunkWebSsl = !originalSettings.EnableSplunkWebSsl,
-                    Host = originalSettings.Host,
-                    HttpPort = originalSettings.HttpPort + 1,
-                    ManagementHostPort = originalSettings.ManagementHostPort,
-                    MinFreeSpace = originalSettings.MinFreeSpace - 1,
-                    Pass4SymmetricKey = originalSettings.Pass4SymmetricKey + "-update",
-                    ServerName = originalSettings.ServerName,
-                    SessionTimeout = "2h",
-                    SplunkDB = originalSettings.SplunkDB,
-                    StartWebServer = !originalSettings.StartWebServer,
-                    TrustedIP = originalSettings.TrustedIP
-                };
-
-                var updatedSettings = await service.Server.UpdateSettingsAsync(values);
-
-                Assert.Equal(values.EnableSplunkWebSsl, updatedSettings.EnableSplunkWebSsl);
-                Assert.Equal(values.Host, updatedSettings.Host);
-                Assert.Equal(values.HttpPort, updatedSettings.HttpPort);
-                Assert.Equal(values.ManagementHostPort, updatedSettings.ManagementHostPort);
-                Assert.Equal(values.MinFreeSpace, updatedSettings.MinFreeSpace);
-                Assert.Equal(values.Pass4SymmetricKey, updatedSettings.Pass4SymmetricKey);
-                Assert.Equal(values.ServerName, updatedSettings.ServerName);
-                Assert.Equal(values.SessionTimeout, updatedSettings.SessionTimeout);
-                Assert.Equal(values.SplunkDB, updatedSettings.SplunkDB);
-                Assert.Equal(values.StartWebServer, updatedSettings.StartWebServer);
-                Assert.Equal(values.TrustedIP, updatedSettings.TrustedIP);
-
-                //// Restart the server because it's required following a settings update
-
-                await service.Server.RestartAsync(60000 * 2);
-                await service.LoginAsync("admin", "changeme");
-
-                //// Restore
-
-                values = new ServerSettingValues()
+                ServerSettingValues originalValues = new ServerSettingValues
                 {
                     EnableSplunkWebSsl = originalSettings.EnableSplunkWebSsl,
                     Host = originalSettings.Host,
@@ -1624,19 +1588,74 @@ namespace Splunk.Client.AcceptanceTests
                     TrustedIP = originalSettings.TrustedIP
                 };
 
-                updatedSettings = await service.Server.UpdateSettingsAsync(values);
+                //// Update
 
-                Assert.Equal(values.EnableSplunkWebSsl, originalSettings.EnableSplunkWebSsl);
-                Assert.Equal(values.Host, originalSettings.Host);
-                Assert.Equal(values.HttpPort, originalSettings.HttpPort);
-                Assert.Equal(values.ManagementHostPort, originalSettings.ManagementHostPort);
-                Assert.Equal(values.MinFreeSpace, originalSettings.MinFreeSpace);
-                Assert.Equal(values.Pass4SymmetricKey, originalSettings.Pass4SymmetricKey);
-                Assert.Equal(values.ServerName, originalSettings.ServerName);
-                Assert.Equal(values.SessionTimeout, originalSettings.SessionTimeout);
-                Assert.Equal(values.SplunkDB, originalSettings.SplunkDB);
-                Assert.Equal(values.StartWebServer, originalSettings.StartWebServer);
-                Assert.Equal(values.TrustedIP, originalSettings.TrustedIP);
+                try
+                {
+                    var updatedValues = new ServerSettingValues
+                    {
+                        EnableSplunkWebSsl = !originalSettings.EnableSplunkWebSsl,
+                        Host = originalSettings.Host,
+                        HttpPort = originalSettings.HttpPort + 1,
+                        ManagementHostPort = originalSettings.ManagementHostPort,
+                        MinFreeSpace = originalSettings.MinFreeSpace - 1,
+                        Pass4SymmetricKey = originalSettings.Pass4SymmetricKey + "-update",
+                        ServerName = originalSettings.ServerName,
+                        SessionTimeout = "2h",
+                        SplunkDB = originalSettings.SplunkDB,
+                        StartWebServer = !originalSettings.StartWebServer,
+                        TrustedIP = originalSettings.TrustedIP
+                    };
+
+                    ServerSettings updatedSettings = await service.Server.UpdateSettingsAsync(updatedValues);
+
+                    Assert.Equal(updatedValues.EnableSplunkWebSsl, updatedSettings.EnableSplunkWebSsl);
+                    Assert.Equal(updatedValues.Host, updatedSettings.Host);
+                    Assert.Equal(updatedValues.HttpPort, updatedSettings.HttpPort);
+                    Assert.Equal(updatedValues.ManagementHostPort, updatedSettings.ManagementHostPort);
+                    Assert.Equal(updatedValues.MinFreeSpace, updatedSettings.MinFreeSpace);
+                    Assert.Equal(updatedValues.Pass4SymmetricKey, updatedSettings.Pass4SymmetricKey);
+                    Assert.Equal(updatedValues.ServerName, updatedSettings.ServerName);
+                    Assert.Equal(updatedValues.SessionTimeout, updatedSettings.SessionTimeout);
+                    Assert.Equal(updatedValues.SplunkDB, updatedSettings.SplunkDB);
+                    Assert.Equal(updatedValues.StartWebServer, updatedSettings.StartWebServer);
+                    Assert.Equal(updatedValues.TrustedIP, updatedSettings.TrustedIP);
+
+                    //// Restart the server because it's required following a server settings update
+
+                    await service.Server.RestartAsync(60000 * 2);
+                    await service.LoginAsync();
+
+                }
+                catch (Exception e1)
+                {
+                    try
+                    {
+                        service.Server.UpdateSettingsAsync(originalValues).Wait(); // because you can't await in catch block
+                    }
+                    catch (Exception e2)
+                    {
+                        throw new AggregateException(e1, e2);
+                    }
+
+                    throw;
+                }
+
+                //// Restore
+
+                originalSettings = await service.Server.UpdateSettingsAsync(originalValues);
+
+                Assert.Equal(originalValues.EnableSplunkWebSsl, originalSettings.EnableSplunkWebSsl);
+                Assert.Equal(originalValues.Host, originalSettings.Host);
+                Assert.Equal(originalValues.HttpPort, originalSettings.HttpPort);
+                Assert.Equal(originalValues.ManagementHostPort, originalSettings.ManagementHostPort);
+                Assert.Equal(originalValues.MinFreeSpace, originalSettings.MinFreeSpace);
+                Assert.Equal(originalValues.Pass4SymmetricKey, originalSettings.Pass4SymmetricKey);
+                Assert.Equal(originalValues.ServerName, originalSettings.ServerName);
+                Assert.Equal(originalValues.SessionTimeout, originalSettings.SessionTimeout);
+                Assert.Equal(originalValues.SplunkDB, originalSettings.SplunkDB);
+                Assert.Equal(originalValues.StartWebServer, originalSettings.StartWebServer);
+                Assert.Equal(originalValues.TrustedIP, originalSettings.TrustedIP);
 
                 //// Restart the server because it's required following a settings update
                 await service.Server.RestartAsync();
@@ -1684,9 +1703,8 @@ namespace Splunk.Client.AcceptanceTests
                 try
                 {
                     await service.Server.RestartAsync();
-                    Console.WriteLine("{1},  spend {0}s to restart server successfully", watch.Elapsed.TotalSeconds, DateTime.Now);
                 }
-                catch (Exception e)
+                catch (OperationCanceledException e)
                 {
                     Console.WriteLine("----------------------------------------------------------------------------------------");
                     Console.WriteLine("{1}, spend {0}s to restart server failed:", watch.Elapsed.TotalSeconds, DateTime.Now);
@@ -1695,7 +1713,7 @@ namespace Splunk.Client.AcceptanceTests
                 }
 
                 Assert.Null(service.SessionKey);
-                await service.LoginAsync("admin", "changeme");
+                await service.LoginAsync();
             }
         }
 

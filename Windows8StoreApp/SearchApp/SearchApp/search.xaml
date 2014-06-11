@@ -51,6 +51,7 @@
             <TextBox x:Name="SearchInput" HorizontalAlignment="Left" Height="40"  TextWrapping="Wrap" Text="search index=_internal |head 2" VerticalAlignment="Top" Width="686" RenderTransformOrigin="0.013,0" Margin="80,0,0,0" />
             <Button x:Name="SearchSubmit" Content="Search" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top" RenderTransformOrigin="0.013,0" Click="Button_Click" Margin="10,0,0,0"/>
             <ProgressRing x:Name="searchInProgress" IsActive="False" Margin="10,0,0,0"/>
+            <Button x:Name="SearchCancel" Visibility="Collapsed"  Content="Cancel" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top" RenderTransformOrigin="0.013,0" Click="SearchCancelButton_Click" Margin="10,0,0,0"/>
         </StackPanel>
 
 

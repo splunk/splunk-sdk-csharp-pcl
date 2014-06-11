@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Splunk.Client;
+using System.Threading;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace SplunkSearch
@@ -28,6 +29,8 @@ namespace SplunkSearch
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
+        private CancellationTokenSource cancelToken;
+        private int eventCount = 0;
         /// <summary>
         /// This can be changed to a strongly typed view model.
         /// </summary>
@@ -115,6 +118,8 @@ namespace SplunkSearch
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
+            eventCount = 0;
+            cancelToken = new CancellationTokenSource();
             string searchStr = SearchInput.Text.Trim();
                         
             ResultRoot.Children.Clear();
@@ -124,28 +129,37 @@ namespace SplunkSearch
                 searchStr = "search " + searchStr;
             }
 
+            this.PageContentSearchInProgress();
+
             try
             {
-                searchInProgress.IsActive = true;
-                using (SearchResultStream resultStream = await MainPage.SplunkService.SearchOneshotAsync(searchStr))
+                Job searchJob = await MainPage.SplunkService.SearchAsync(searchStr);
+                this.DisplayResultInGrid("Event Time", "Event Details", true);
+
+                while (!cancelToken.IsCancellationRequested)
                 {
-                    this.DisplayResultInGrid("Event Time", "Event Details", true);
-                    searchInProgress.IsActive = false;
-
-                    foreach (Task<SearchResult> resultTask in resultStream)
+                    using (SearchResultStream resultStream = await searchJob.GetSearchResultsAsync())
                     {
-                        SearchResult result = await resultTask;
-                        List<string> results = this.ParseResult(result);
-                        this.DisplayResultInGrid(results[0], results[1], false);
-                    }                    
+                                                
+                        foreach (Task<SearchResult> resultTask in resultStream)
+                        {
+                            SearchResult result = await resultTask;
+                            List<string> results = this.ParseResult(result);
+                            this.DisplayResultInGrid(results[0], results[1], false);
+                        }
 
+                        if (searchJob.IsDone)
+                        {
+                            break;
+                        }
+                    }
                 }
 
-                searchInProgress.IsActive = false;
+                this.PageContentReset();          
             }
             catch (Exception ex)
             {
-                searchInProgress.IsActive = false;
+                this.PageContentReset();
                 TextBlock textBlock = new TextBlock();
                 textBlock.Text = ex.ToString();
                 textBlock.FontSize = 16;
@@ -183,7 +197,6 @@ namespace SplunkSearch
                 Grid.SetColumnSpan(border, 2);
                 resultGrid.Children.Add(border);
             }
-
             else
             {
                 color = new Windows.UI.Color() { R = 162, G = 159, B = 159, A = 100 };
@@ -226,7 +239,7 @@ namespace SplunkSearch
 
             DateTime time = DateTime.Parse(searchResult["_time"]);
             string format = "yyyy/M/d hh:mm:ss.fff";
-            results.Add(time.ToString(format));
+            results.Add(string.Format("{0}-{1}",++eventCount, time.ToString(format)));
        
             rawData=rawData.Trim();
             //remove <v xml:space="preserve" trunc="0">
@@ -245,5 +258,28 @@ namespace SplunkSearch
             
             return results;            
         }
+
+        private  void SearchCancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            cancelToken.Cancel();
+            SearchCancel.Content = "Cancelling...";
+        }
+
+        private void PageContentReset()
+        {
+            SearchSubmit.Content = "Search";
+            SearchCancel.Content = "Cancel";
+            SearchCancel.Visibility = Visibility.Collapsed;
+            searchInProgress.IsActive = false;
+        }
+
+        private void PageContentSearchInProgress()
+        {
+            SearchSubmit.Content = "Searching";
+            SearchCancel.Content = "Cancel";
+            SearchCancel.Visibility = Visibility.Visible;
+            searchInProgress.IsActive = true;
+        }
+
     }
 }

@@ -170,7 +170,6 @@ namespace SplunkSearch
                 await SplunkService.LoginAsync(user, password);
                 InProgress.IsActive = false;
                 search.loginUser = user;
-                search.loginPassword = password;
 
                 return true;
             }

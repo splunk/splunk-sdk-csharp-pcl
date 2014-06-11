@@ -55,7 +55,8 @@ namespace SplunkSearch
 
             if (MainPage.SplunkService != null)
             {
-                User.Text = string.Format("{0},{1}", loginUser, MainPage.SplunkService.Server.Context.Host);
+                UserName.Text =string.Format("User:{0}", loginUser);
+                HostName.Text = string.Format("Server:{0}",MainPage.SplunkService.Server.Context.Host);
             }
         }
 
@@ -86,7 +87,7 @@ namespace SplunkSearch
         private void navigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
         }
-        
+
         #region NavigationHelper registration
 
         /// The methods provided in this section are simply used to allow
@@ -111,34 +112,32 @@ namespace SplunkSearch
         #endregion
 
         public static string loginUser { get; set; }
-        public static string loginPassword { get; set; }
-
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             string searchStr = SearchInput.Text.Trim();
+                        
+            ResultRoot.Children.Clear();
 
             if (!searchStr.StartsWith("search ", StringComparison.OrdinalIgnoreCase))
             {
                 searchStr = "search " + searchStr;
             }
 
-            SearchResult.Text = "";
-
             try
             {
                 searchInProgress.IsActive = true;
                 using (SearchResultStream resultStream = await MainPage.SplunkService.SearchOneshotAsync(searchStr))
                 {
+                    this.DisplayResultInGrid("Event Time", "Event Details", true);
                     searchInProgress.IsActive = false;
-                    SearchResult.Text = "issue request:" + resultStream.FieldNames.Count;
-                    
+
                     foreach (Task<SearchResult> resultTask in resultStream)
                     {
                         SearchResult result = await resultTask;
-                        SearchResult.Text += result.ToString();
-                        SearchResult.Text += "\n";
-                    }
+                        List<string> results = this.ParseResult(result);
+                        this.DisplayResultInGrid(results[0], results[1], false);
+                    }                    
 
                 }
 
@@ -146,13 +145,105 @@ namespace SplunkSearch
             }
             catch (Exception ex)
             {
-                SearchResult.Text = ex.Message;
+                searchInProgress.IsActive = false;
+                TextBlock textBlock = new TextBlock();
+                textBlock.Text = ex.ToString();
+                textBlock.FontSize = 16;
+                ResultRoot.Children.Add(textBlock);
             }
         }
 
         private void backButton_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void DisplayResultInGrid(string column1, string column2, bool isGridTitle)
+        {
+            // display the result title  grid
+            Grid resultGrid = new Grid();
+            ColumnDefinition colDef = new ColumnDefinition();
+            colDef.Width = new GridLength(200);
+            resultGrid.ColumnDefinitions.Add(colDef);
+
+            colDef = new ColumnDefinition();
+            colDef.Width = new GridLength(500, GridUnitType.Star);
+            resultGrid.ColumnDefinitions.Add(colDef);
+
+            SolidColorBrush brush = new SolidColorBrush();
+            Windows.UI.Color color;
+            if (isGridTitle)
+            {
+                color = new Windows.UI.Color() { R = 0, G = 0, B = 0, A = 100 };
+                Border border = new Border();
+                border.BorderBrush = new SolidColorBrush(color);
+                border.BorderThickness = new Thickness(1, 2, 1, 2);
+                color = new Windows.UI.Color() { R = 155, G = 155, B = 155, A = 100 };
+                border.Background = new SolidColorBrush(color);
+                Grid.SetColumnSpan(border, 2);
+                resultGrid.Children.Add(border);
+            }
+
+            else
+            {
+                color = new Windows.UI.Color() { R = 162, G = 159, B = 159, A = 100 };
+
+                //define time column border
+                Border border = new Border();
+                border.BorderBrush = new SolidColorBrush(color);
+                border.BorderThickness = new Thickness(1, 0, 0, 1);
+                Grid.SetColumn(border, 0);
+                resultGrid.Children.Add(border);
+
+                //define event column border
+                Border border2 = new Border();
+                border2.BorderBrush = new SolidColorBrush(color);
+                border2.BorderThickness = new Thickness(0, 0, 1, 1);
+                Grid.SetColumn(border2, 1);
+                resultGrid.Children.Add(border2);
+            }
+
+            int fontSize = isGridTitle ? 20 : 16;
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = column1;
+            textBlock.FontSize = fontSize;
+            resultGrid.Children.Add(textBlock);
+            Grid.SetColumn(textBlock, 0);
+
+            textBlock = new TextBlock();
+            textBlock.Text = column2;
+            textBlock.FontSize = fontSize;
+            resultGrid.Children.Add(textBlock);
+            Grid.SetColumn(textBlock, 1);
+
+            ResultRoot.Children.Add(resultGrid);
+        }
+
+        private List<string> ParseResult(SearchResult searchResult)
+        {
+            List<string> results = new List<string>();
+            string rawData = searchResult.SegmentedRaw;
+
+            DateTime time = DateTime.Parse(searchResult["_time"]);
+            string format = "yyyy/M/d hh:mm:ss.fff";
+            results.Add(time.ToString(format));
+       
+            rawData=rawData.Trim();
+            //remove <v xml:space="preserve" trunc="0">
+            if (rawData.StartsWith("<v xml:space="))
+            {
+                rawData = rawData.Remove(0, 34);
+            }
+
+            //remove </v>
+            if (rawData.EndsWith("</v>"))
+            {
+                rawData = rawData.Substring(0, rawData.Length - 4);
+            }
+            
+            results.Add(rawData);
+            
+            return results;            
         }
     }
 }

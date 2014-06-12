@@ -54,7 +54,7 @@ namespace Splunk.Client.UnitTests
 
                 if (await service.Applications.RemoveAsync("sdk-tests"))
                 {
-                    await service.Server.RestartAsync();
+                    await service.Server.RestartAsync(2 * 60 * 1000);
                     await service.LoginAsync();
                 }
 
@@ -142,7 +142,7 @@ namespace Splunk.Client.UnitTests
                 Assert.True(archiveInfo.Uri.AbsolutePath.Length > 0);
 
                 Assert.True(await service.Applications.RemoveAsync("sdk-tests"));
-                await service.Server.RestartAsync();
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
         }
 

@@ -97,7 +97,7 @@ namespace Splunk.Client.UnitTests
             using (var service = await SDKHelper.CreateService())
             {
                 await service.Applications.RecreateAsync(app);
-                await service.Server.RestartAsync();
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
 
             using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: app)))
@@ -246,7 +246,7 @@ namespace Splunk.Client.UnitTests
             using (var service = await SDKHelper.CreateService())
             {
                 Assert.True(await service.Applications.RemoveAsync(app));
-                await service.Server.RestartAsync();
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
         }
     }

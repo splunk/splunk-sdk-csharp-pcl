@@ -81,7 +81,7 @@ namespace Splunk.Client.AcceptanceTests
         #region Access Control
 
         [Trait("acceptance-test", "Splunk.Client.StoragePassword")]
-        [Fact(Skip = "Failure due to Uri issue.")]
+        [Fact]
         public async Task CanCrudStoragePassword()
         {
             foreach (var ns in TestNamespaces)
@@ -300,7 +300,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
-        [Fact(Skip = "Failure due to Uri issue")]
+        [Fact]
         public async Task CanGetStoragePasswords()
         {
             foreach (var ns in TestNamespaces)
@@ -640,7 +640,7 @@ namespace Splunk.Client.AcceptanceTests
                 application = await service.Applications.GetOrNullAsync(testApplicationName);
                 Assert.NotNull(application);
 
-                await service.Server.RestartAsync();
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
 
             using (var service = await(SDKHelper.CreateService(new Namespace("nobody", testApplicationName))))
@@ -720,12 +720,12 @@ namespace Splunk.Client.AcceptanceTests
             {
                 Application application = await service.Applications.GetAsync(testApplicationName);
                 await application.RemoveAsync();
-                await service.Server.RestartAsync();
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
         }
 
         [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection")]
-        [Fact(Skip = "Failure due to Uri issue")]
+        [Fact]
         public async Task CanGetConfigurations()
         {
             foreach (Namespace ns in TestNamespaces)
@@ -818,7 +818,7 @@ namespace Splunk.Client.AcceptanceTests
                     await index.DisableAsync();
                     Assert.True(index.Disabled);
 
-                    await service.Server.RestartAsync();
+                    await service.Server.RestartAsync(2 * 60 * 1000);
                     await service.LoginAsync();
 
                     await index.EnableAsync();
@@ -1623,7 +1623,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     //// Restart the server because it's required following a server settings update
 
-                    await service.Server.RestartAsync(60000 * 2);
+                    await service.Server.RestartAsync(2 * 60 * 1000);
                     await service.LoginAsync();
 
                 }
@@ -1658,7 +1658,7 @@ namespace Splunk.Client.AcceptanceTests
                 Assert.Equal(originalValues.TrustedIP, originalSettings.TrustedIP);
 
                 //// Restart the server because it's required following a settings update
-                await service.Server.RestartAsync();
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
         }
 
@@ -1702,7 +1702,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 try
                 {
-                    await service.Server.RestartAsync();
+                    await service.Server.RestartAsync(2 * 60 * 1000);
                 }
                 catch (OperationCanceledException e)
                 {

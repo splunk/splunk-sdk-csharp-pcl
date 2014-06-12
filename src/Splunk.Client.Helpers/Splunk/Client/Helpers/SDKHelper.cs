@@ -27,7 +27,7 @@ namespace Splunk.Client.Helpers
     /// <summary>
     /// 
     /// </summary>
-    public class SDKHelper
+    public static class SDKHelper
     {
         /// <summary>
         /// Initializes the <see cref="SDKHelper" /> class.
@@ -65,9 +65,9 @@ namespace Splunk.Client.Helpers
         {
             Service service = null;
 
-            if (bool.Parse(ConfigurationManager.AppSettings["UseMockContext"]))
+            if (MockContext.IsEnabled)
             {
-                MockContext context = new MockContext(UserConfigure.scheme, UserConfigure.host, UserConfigure.port);
+                var context = new MockContext(UserConfigure.scheme, UserConfigure.host, UserConfigure.port);
                 service = new Service(context);
             }
             else
@@ -125,7 +125,7 @@ namespace Splunk.Client.Helpers
         /// <summary>
         /// represent .splunkrc file
         /// </summary>
-        public class SplunkRC
+        public sealed class SplunkRC
         {
             /// <summary>
             /// The username

@@ -352,7 +352,8 @@ namespace Splunk.Client
                 }
             }
 
-            return new Uri(builder.ToString());
+            var uri = UriConverter.Instance.Convert(builder.ToString());
+            return uri;
         }
 
         StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)

@@ -203,7 +203,7 @@ namespace Splunk.Client.UnitTests
                 await testIndex.DisableAsync();
                 Assert.True(testIndex.Disabled); // Because the disable endpoint returns an updated snapshot
 
-                await service.Server.RestartAsync(); // Because you can't re-enable an index without a restart
+                await service.Server.RestartAsync(2 * 60 * 1000); // Because you can't re-enable an index without a restart
                 await service.LoginAsync();
 
                 testIndex = await service.Indexes.GetAsync(indexName);

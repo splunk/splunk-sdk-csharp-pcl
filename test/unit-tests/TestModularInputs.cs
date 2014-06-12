@@ -78,11 +78,13 @@ namespace Splunk.ModularInputs.UnitTests
                 SessionKey = "abcdefg"
             };
 
-            Splunk.Client.Service service = inputDefinition.Service;
-            Assert.Equal(Splunk.Client.Scheme.Https, service.Context.Scheme);
-            Assert.Equal("localhost", service.Context.Host);
-            Assert.Equal(8089, service.Context.Port);
-            Assert.Equal("abcdefg", service.Context.SessionKey);
+            using (var service = inputDefinition.Service)
+            {
+                Assert.Equal(Splunk.Client.Scheme.Https, service.Context.Scheme);
+                Assert.Equal("localhost", service.Context.Host);
+                Assert.Equal(8089, service.Context.Port);
+                Assert.Equal("abcdefg", service.Context.SessionKey);
+            }
         }
 
         [Trait("unit-test", "Splunk.ModularInputs.InputDefinition")]

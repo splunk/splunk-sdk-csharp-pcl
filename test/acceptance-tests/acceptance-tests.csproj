@@ -54,15 +54,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="TestApplication.cs" />
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="FakeContext.cs" />
-    <Compile Include="TestServiceProperties.cs" />
     <Compile Include="TestSearchJob.cs" />
     <Compile Include="TestSavedSearch.cs" />
     <Compile Include="TestContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestHelper.cs" />
     <Compile Include="TestIndex.cs" />
     <Compile Include="TestService.cs" />
     <Compile Include="AcceptanceTestingSetup.cs" />

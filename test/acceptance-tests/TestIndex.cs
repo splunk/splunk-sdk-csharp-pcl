@@ -39,21 +39,21 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task IndexCollection()
         {
-            string indexName = "sdk-tests2_indexaccessors";
-            await this.RemoveIndexAsync(indexName);
+            const string indexName = "sdk-tests2_indexaccessors";
 
             using (var service = await SDKHelper.CreateService())
             {
                 IndexCollection indexes = service.Indexes;
+                await indexes.RemoveAsync(indexName);
 
                 Index testIndex = await indexes.CreateAsync(indexName);
-                /// TODO: Verify testIndex
+                //// TODO: Verify testIndex
 
                 await testIndex.GetAsync();
-                /// TODO: Reverify testIndex
+                //// TODO: Reverify testIndex
 
                 await indexes.GetAllAsync();
-                Assert.NotNull(indexes.SingleOrDefault(index => index.Title == indexName));
+                Assert.NotNull(indexes.SingleOrDefault(x => x.Title == testIndex.Title));
 
                 foreach (Index index in indexes)
                 {
@@ -174,14 +174,10 @@ namespace Splunk.Client.UnitTests
                 }
 
                 var attributes = GetIndexAttributes(testIndex);
+
                 attributes.BlockSignSize = testIndex.BlockSignSize + 1;
-
-                if (TestHelper.VersionCompare(service, "4.3") > 0)
-                {
-                    attributes.EnableOnlineBucketRepair = !testIndex.EnableOnlineBucketRepair;
-                    attributes.MaxBloomBackfillBucketAge = "20d";
-                }
-
+                attributes.EnableOnlineBucketRepair = !testIndex.EnableOnlineBucketRepair;
+                attributes.MaxBloomBackfillBucketAge = "20d";
                 attributes.FrozenTimePeriodInSecs = testIndex.FrozenTimePeriodInSecs + 1;
                 attributes.MaxConcurrentOptimizes = testIndex.MaxConcurrentOptimizes + 1;
                 attributes.MaxDataSize = "auto";
@@ -203,18 +199,29 @@ namespace Splunk.Client.UnitTests
 
                 bool updatedSnapshot = await testIndex.UpdateAsync(attributes);
                 Assert.True(updatedSnapshot);
+
                 await testIndex.DisableAsync();
-                Assert.True(testIndex.Disabled); // because DisableAsync returns an updated snapshot
+                Assert.True(testIndex.Disabled); // Because the disable endpoint returns an updated snapshot
 
-                await TestHelper.RestartServerAsync();
-            }
+                await service.Server.RestartAsync(2 * 60 * 1000); // Because you can't re-enable an index without a restart
+                await service.LoginAsync();
 
-            using (Service service = await SDKHelper.CreateService())
-            {
-                Index index = await service.Indexes.GetAsync(indexName);
-                await index.EnableAsync();
-                Assert.False(index.Disabled);
-                await RemoveIndexAsync(indexName);
+                testIndex = await service.Indexes.GetAsync(indexName);
+                await testIndex.EnableAsync(); // Because the enable endpoint returns an updated snapshot
+                Assert.False(testIndex.Disabled);
+
+                await testIndex.RemoveAsync();
+
+                try
+                {
+                    await testIndex.GetAsync();
+                    Assert.True(false);
+                }
+                catch (ResourceNotFoundException)
+                { }
+
+                testIndex = await indexes.GetOrNullAsync(indexName);
+                Assert.Null(testIndex);
             }
         }
 
@@ -226,13 +233,11 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task Transmitter1()
         {
-            string indexName = "sdk-tests2_indexargs";
+            const string indexName = "sdk-tests2_indexargs";
 
-            await this.RemoveIndexAsync(indexName);
-
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
-                Index index = await service.Indexes.CreateAsync(indexName);
+                Index index = await service.Indexes.RecreateAsync(indexName);
                 Assert.False(index.Disabled);
 
                 await Task.Delay(2000);
@@ -253,11 +258,16 @@ namespace Splunk.Client.UnitTests
                 Transmitter transmitter = service.Transmitter;
                 SearchResult result;
 
+                //// TODO: Check contentss
                 result = await transmitter.SendAsync(string.Format("1, {0}, {1}, simple event", DateTime.Now, indexName), 
                     indexName, transmitterArgs);
-                
+
+                Assert.NotNull(result);
+
                 result = await transmitter.SendAsync(string.Format("2, {0}, {1}, simple event", DateTime.Now, indexName), 
                     indexName, transmitterArgs);
+
+                Assert.NotNull(result);
 
                 using (MemoryStream stream = new MemoryStream())
                 {
@@ -272,17 +282,19 @@ namespace Splunk.Client.UnitTests
                     await transmitter.SendAsync(stream, indexName, transmitterArgs);
                 }
 
-                await TestHelper.WaitIndexTotalEventCountUpdated(index, 4);
+                await index.PollForUpdatedEventCount(4);
 
-                SearchResultStream resultStream = await service.SearchOneshotAsync(
-                        string.Format(
-                            "search index={0} host={1} source={2} sourcetype={3}",
-                            indexName,
-                            Host,
-                            Source,
-                            SourceType));
+                var search = string.Format(
+                    "search index={0} host={1} source={2} sourcetype={3}",
+                    indexName,
+                    Host,
+                    Source,
+                    SourceType);
 
-                Assert.Equal(14, resultStream.FieldNames.Count);
+                using (SearchResultStream stream = await service.SearchOneshotAsync(search))
+                {
+                    Assert.Equal(14, stream.FieldNames.Count);
+                }
             }
         }
 
@@ -296,7 +308,7 @@ namespace Splunk.Client.UnitTests
         {
             string indexName = "main";
 
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 Index index = await service.Indexes.GetAsync(indexName);
                 long currentEventCount = index.TotalEventCount;
@@ -304,13 +316,14 @@ namespace Splunk.Client.UnitTests
 
                 Transmitter transmitter = service.Transmitter;
                 IndexAttributes indexAttributes = GetIndexAttributes(index);
+                Assert.NotNull(indexAttributes);
 
                 // Submit event to default index using variable arguments
 
                 await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World", DateTime.Now), indexName);
                 await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now), indexName);
 
-                await TestHelper.WaitIndexTotalEventCountUpdated(index, currentEventCount + 2);
+                await index.PollForUpdatedEventCount(currentEventCount + 2);
                 currentEventCount += 2;
 
                 using (MemoryStream stream = new MemoryStream())
@@ -326,7 +339,7 @@ namespace Splunk.Client.UnitTests
                     await transmitter.SendAsync(stream, indexName);
                 }
 
-                await TestHelper.WaitIndexTotalEventCountUpdated(index, currentEventCount + 2);
+                await index.PollForUpdatedEventCount(currentEventCount + 2);
                 currentEventCount += 2;
             }
         }
@@ -362,32 +375,6 @@ namespace Splunk.Client.UnitTests
             indexAttributes.ThrottleCheckPeriod = index.ThrottleCheckPeriod;
 
             return indexAttributes;
-        }
-
-        /// <summary>
-        /// Clear the index
-        /// </summary>
-        /// <param name="service">A service</param>
-        /// <param name="indexName">The index name</param>
-        /// <param name="index">The index object</param>
-        async Task RemoveIndexAsync(string indexName)
-        {
-            using (Service service = await SDKHelper.CreateService())
-            {
-                Index index = await service.Indexes.GetOrNullAsync(indexName);
-                
-                if (index == null)
-                {
-                    return;
-                }
-
-                if (index.Disabled)
-                {
-                    await index.EnableAsync();
-                }
-
-                await index.RemoveAsync();
-            }
         }
     }
 }

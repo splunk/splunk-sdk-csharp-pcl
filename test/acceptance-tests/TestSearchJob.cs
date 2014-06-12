@@ -37,27 +37,22 @@ namespace Splunk.Client.UnitTests
         /// Search query which will give 'sg' tags
         /// in output when "segmentation == raw".
         /// </summary>
-        private const string Query =
-            "search index=_internal GET | head 3";
-
+        const string Search = "search index=_internal GET | head 3";
 
         /// <summary>
         /// Tests the result from a bad search argument.
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job : BadOutputMode")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task BadOutputMode()
         {
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
-                var search = "invalidpart" + Query;
-
-                Exception exception = null;
-                Job job = null;
+                var search = "invalidpart" + Search;
 
                 try
                 {
-                    job = await service.Jobs.CreateAsync(search);
+                    await service.Jobs.CreateAsync(search);
                 }
                 catch (BadRequestException)
                 {
@@ -65,31 +60,26 @@ namespace Splunk.Client.UnitTests
                 }
                 catch (Exception e)
                 {
-                    exception = e;
+                    Assert.True(false, string.Format("Unexpected exception: {0}\n{1}", e.Message, e.StackTrace));
                 }
 
-                await job.CancelAsync();
-                
-                Assert.DoesNotThrow(() =>
-                {
-                    throw exception;
-                });
+                Assert.True(false, string.Format("Expected BadRequestException but no exception was thrown."));
             }
         }
 
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job : JobSearchMode")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task JobSearchMode()
         {
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
                 jobArgs.SearchMode = SearchMode.Normal;
-                Job job = await service.Jobs.CreateAsync(Query, jobArgs);
+                Job job = await service.Jobs.CreateAsync(Search, jobArgs);
                 Assert.NotNull(job);
 
                 jobArgs.SearchMode = SearchMode.Realtime;
@@ -103,17 +93,17 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests the result from a search argument.
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job : JobExecutionMode")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task JobExecutionMode()
         {
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
                 jobArgs.ExecutionMode = ExecutionMode.Blocking;
 
-                Job job = await service.Jobs.CreateAsync(Query, jobArgs);
+                Job job = await service.Jobs.CreateAsync(Search, jobArgs);
                 Assert.NotNull(job);
 
                 jobArgs.ExecutionMode = ExecutionMode.Normal;
@@ -129,49 +119,37 @@ namespace Splunk.Client.UnitTests
         }
 
         /// <summary>
-        /// Run a job and a function on the job 
-        /// for each enum value in an enum type.
-        /// </summary>
-        /// <param name="enumType">The enum type</param>
-        /// <param name="jobFunction">
-        /// A function for a job and an enum value
-        /// </param>
-        async Task RunJobFuntionForEachEnum(Type enumType, Func<Job, string, Task<SearchResultStream>> jobFunction)
-        {
-            using (Service service = await SDKHelper.CreateService())
-            {
-                JobArgs jobArgs = new JobArgs();
-
-                await ForEachEnum(enumType, async enumValue =>
-                {
-                    var job = await service.Jobs.CreateAsync(Query, jobArgs);
-                    await jobFunction(job, enumValue);
-                    await job.CancelAsync();
-                });
-            }
-        }
-
-        /// <summary>
         /// Tests all output modes for Job.Events
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job : JobEventsTruncationModeArgument")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task JobEventsTruncationModeArgument()
         {
-            var type = typeof(TruncationMode);
+            using (var service = await SDKHelper.CreateService())
+            {
+                JobArgs jobArgs = new JobArgs();
 
-            await RunJobFuntionForEachEnum(type, async (job, mode) =>
-                await job.GetSearchEventsAsync(
-                    new SearchEventArgs
+                await ForEachEnum(typeof(TruncationMode), async enumValue =>
                     {
-                        TruncationMode = (TruncationMode)Enum.Parse(type, mode)
-                    }));
+                        var job = await service.Jobs.CreateAsync(Search, jobArgs);
+
+                        var args = new SearchEventArgs 
+                        {
+                            TruncationMode = (TruncationMode)Enum.Parse(typeof(TruncationMode), enumValue) 
+                        };
+
+                        using (SearchResultStream stream = await job.GetSearchEventsAsync(args))
+                        { }
+
+                        await job.CancelAsync();
+                    });
+            }
         }
 
         /// <summary>
         /// Tests all search modes
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job : JobSearchModeArgument")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task JobSearchModeArgument()
         {
@@ -187,13 +165,13 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job : ExportSearchModeArgument")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task ExportSearchModeArgument()
         {
             var type = typeof(SearchMode);
 
-            await RunExportForEachEnum(Query, type, (mode) => 
+            await RunExportForEachEnum(Search, type, (mode) => 
                 new SearchExportArgs()
                 {
                     SearchMode = (SearchMode)Enum.Parse(type, mode)
@@ -203,65 +181,46 @@ namespace Splunk.Client.UnitTests
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job : ExportTruncationModeArgument")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task ExportTruncationModeArgument()
         {
             var type = typeof(TruncationMode);
 
-            await RunExportForEachEnum(Query, type, (mode) => 
+            await RunExportForEachEnum(Search, type, (mode) => 
                 new SearchExportArgs()
                 {
                     TruncationMode = (TruncationMode)Enum.Parse(type, mode)
                 });
         }
 
-        [Trait("acceptance-test", "Splunk.Client.Job : JobRefreshTest")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
-        public async Task JobRefreshTest()
+        public async Task CanRefreshJob()
         {
-            string search = "search index=_internal * | head 10 ";
+            const string search = "search index=_internal * | head 100000";
             
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 var job = await service.Jobs.CreateAsync(search);
 
-                this.CheckJob(job, service);
+                await this.CheckJobAsync(job, service);
+                Assert.True(job.DispatchState < DispatchState.Done);
 
                 await job.TransitionAsync(DispatchState.Done, 10 * 1000);
+
+                await this.CheckJobAsync(job, service);
+                Assert.True(job.DispatchState == DispatchState.Done);
+
                 await job.CancelAsync();
             }
-        }
-
-        /// <summary>
-        /// Tests RemoteServerList property
-        /// </summary>
-        [Trait("acceptance-test", "Splunk.Client.Job : RemoteServerList")]
-        [Fact]
-        public void RemoteServerList()
-        {
-            var array = "first,second";
-
-            var args1 = new SearchExportArgs()
-            {
-                RemoteServerList = array,
-            };
-
-            Assert.Equal("first,second", args1.RemoteServerList);
-
-            var args2 = new JobArgs()
-            {
-                RemoteServerList = array,
-            };
-
-            Assert.Equal("first,second", args2.RemoteServerList);
         }
 
         /// <summary>
         /// Touches the job after it is queryable.
         /// </summary>
         /// <param name="job">The job</param>
-        private void CheckJob(Job job, Service service)
+        async Task CheckJobAsync(Job job, Service service)
         {
             string dummyString;
             //string[] dummyList;
@@ -289,7 +248,9 @@ namespace Splunk.Client.UnitTests
             dummyString = job.Keywords;
             //dummyString = job.Label;
 
-            if (TestHelper.VersionCompare(service, "6.0") < 0)
+            ServerInfo serverInfo = await service.Server.GetInfoAsync();
+
+            if (serverInfo.Version.CompareTo(new Version(6, 0)) < 0)
             {
                 dummyDateTime = job.LatestTime;
             }
@@ -330,16 +291,15 @@ namespace Splunk.Client.UnitTests
         /// <param name="getJobExportArgs">
         /// The funtion to get arguments to run a job.
         /// </param>
-        async Task RunExportForEachEnum(
-            string search,
-            Type enumType,
-            Func<string, SearchExportArgs> getJobExportArgs)
+        async Task RunExportForEachEnum(string search, Type enumType, Func<string, SearchExportArgs> getJobExportArgs)
         {
-            
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 await ForEachEnum(enumType, async @enum =>
-                    await service.ExportSearchPreviewsAsync(search, getJobExportArgs(@enum)));
+                    {
+                        using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, getJobExportArgs(@enum)))
+                        { }
+                    });
             }
         }
 
@@ -350,16 +310,13 @@ namespace Splunk.Client.UnitTests
         /// <param name="getJobArgs">
         /// The funtion to get arguments to run a job.
         /// </param>
-        async Task RunJobForEachEnum(
-            Type enumType,
-            Func<string, JobArgs> getJobArgs)
+        async Task RunJobForEachEnum(Type enumType, Func<string, JobArgs> getJobArgs)
         {
-            
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 await ForEachEnum(enumType, async @enum =>
                 {
-                    var job = await service.Jobs.CreateAsync(Query, getJobArgs(@enum));
+                    var job = await service.Jobs.CreateAsync(Search, getJobArgs(@enum));
                     await job.CancelAsync();
                 });
             }

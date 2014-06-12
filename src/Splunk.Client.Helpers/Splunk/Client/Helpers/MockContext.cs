@@ -31,39 +31,52 @@ namespace Splunk.Client.Helpers
     using System.Xml;
     using System.Xml.Serialization;
 
-
     /// <summary>
     /// Provides a class for faking HTTP requests and responses from a Splunk server.
     /// </summary>
     public class MockContext : Context
     {
-        string filePath;
-        bool record;
-        public static Dictionary<string, string> requestResponse = new Dictionary<string, string>();
-        string savedRequestString;
-        string savedRequestContent;
+        #region Constructors
 
         public MockContext(Scheme protocol, string host, int port)
-            : base(protocol, host, port,
-            new MockHttpMessageHandler(ConfigurationManager.AppSettings["MockContextFilePath"], bool.Parse(ConfigurationManager.AppSettings["IsRecording"])))
+            : base(protocol, host, port, new MockHttpMessageHandler(FilePath, IsRecording))
         {
-            filePath = ConfigurationManager.AppSettings["MockContextFilePath"];
-            record = bool.Parse(ConfigurationManager.AppSettings["IsRecording"]);
             this.LoadRequestResponseXml();
+        }
+
+        #endregion
+
+        #region Properties
+
+        public static string FilePath
+        {
+            get { return filePath; }
+        }
+
+        public static bool IsEnabled
+        { 
+            get { return isEnabled; }
+        }
+
+        public static bool IsRecording
+        { 
+            get { return isRecording; }
         }
 
         public string Name
         {
-            get { return "mockcontext"; }
+            get { return "mock-context"; }
         }
+
+        #endregion
+
+        #region Methods
 
         public override async Task<Response> GetAsync(Namespace ns, ResourceName resource, params IEnumerable<Argument>[] argumentSets)
         {
-            var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, CancellationToken.None, argumentSets);
             return response;
         }
-
 
         public override async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token, params IEnumerable<Argument>[] argumentSets)
         {
@@ -79,22 +92,40 @@ namespace Splunk.Client.Helpers
 
         public override async Task<Response> PostAsync(Namespace ns, ResourceName resource, HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
-            var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, CancellationToken.None, argumentSets);
             return response;
         }
 
         public override async Task<Response> DeleteAsync(Namespace ns, ResourceName resource, params IEnumerable<Argument>[] argumentSets)
         {
-            var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, CancellationToken.None, argumentSets);
             return response;
         }
 
-        private async Task<Response> SendAsync(HttpMethod method, Namespace ns, ResourceName resource, HttpContent content, CancellationToken cancellationToken, IEnumerable<Argument>[] argumentSets)
+        #endregion
+
+        #region Privates/internals
+
+        static readonly Dictionary<string, string> requestResponse = new Dictionary<string, string>();
+        static readonly string filePath;
+        static readonly bool isEnabled;
+        static readonly bool isRecording;
+
+        string savedRequestContent;
+        string savedRequestString;
+
+        static MockContext()
+        {
+            filePath = ConfigurationManager.AppSettings["MockContext.FilePath"];
+            isEnabled = bool.Parse(ConfigurationManager.AppSettings["MockContext.IsEnabled"]);
+            isRecording = bool.Parse(ConfigurationManager.AppSettings["MockContext.IsRecording"]);
+        }
+
+        async Task<Response> SendAsync(HttpMethod method, Namespace ns, ResourceName resource, HttpContent content, CancellationToken cancellationToken, IEnumerable<Argument>[] argumentSets)
         {
             this.savedRequestString = "";
             var serviceUri = this.CreateServiceUri(ns, resource, argumentSets);
+
             using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
             {
                 if (this.SessionKey != null)
@@ -104,7 +135,7 @@ namespace Splunk.Client.Helpers
 
                 HttpResponseMessage response;
 
-                if (!this.record)
+                if (!IsRecording)
                 {
                     response = this.CreateMockResponse();
                 }
@@ -148,7 +179,7 @@ namespace Splunk.Client.Helpers
             }
         }
 
-        private Uri CreateServiceUri(Namespace ns, ResourceName name, params IEnumerable<Argument>[] argumentSets)
+        Uri CreateServiceUri(Namespace ns, ResourceName name, params IEnumerable<Argument>[] argumentSets)
         {
             var builder = new StringBuilder(this.ToString());
 
@@ -174,12 +205,15 @@ namespace Splunk.Client.Helpers
 
             this.savedRequestString = builder.ToString();
             this.savedRequestString = this.RemoveGuidPattern(this.savedRequestString);
-            return new Uri(this.savedRequestString);
+
+            var uri = UriConverter.Instance.Convert(this.savedRequestString);
+            return uri;
         }
 
-        private StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)
+        StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)
         {
             this.savedRequestContent = "";
+
             if (argumentSets == null)
             {
                 return new StringContent(string.Empty);
@@ -200,7 +234,7 @@ namespace Splunk.Client.Helpers
             return stringContent;
         }
 
-        private string RemoveGuidPattern(string body)
+        string RemoveGuidPattern(string body)
         {
             // remove Guid pattern sent by the test so that we don't hit the request not found issue
             string regexp = @"[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}";
@@ -212,14 +246,14 @@ namespace Splunk.Client.Helpers
             return body;
         }
 
-        private string RemoveSpecialChar(string body)
+        string RemoveSpecialChar(string body)
         {
             // remove '&' so that we can save the string into xml file
             body = body.Replace("&", ",");
             return body;
         }
 
-        private void LoadRequestResponseXml()
+        void LoadRequestResponseXml()
         {
             XmlDocument doc = new XmlDocument();
             doc.Load(filePath);
@@ -238,7 +272,7 @@ namespace Splunk.Client.Helpers
             }
         }
 
-        private HttpResponseMessage CreateMockResponse()
+        HttpResponseMessage CreateMockResponse()
         {
             var response = new HttpResponseMessage();
             //this.savedRequestString = this.RemoveGuidPattern(this.savedRequestString);
@@ -265,5 +299,7 @@ namespace Splunk.Client.Helpers
 
             return response;
         }
+
+        #endregion
     }
 }

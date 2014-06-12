@@ -234,7 +234,9 @@ namespace Splunk.Client
 
         internal static string CreateNameFromRealmAndUsername(string realm, string username)
         {
-            var parts = new string[] { realm, username };
+            Contract.Requires<ArgumentNullException>(username != null);
+
+            var parts = new string[] { realm ?? "", username };
             var builder = new StringBuilder();
 
             foreach (string part in parts)

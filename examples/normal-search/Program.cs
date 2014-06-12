@@ -41,7 +41,7 @@ namespace Splunk.Client.Examples
 
         static async Task Run(Service service)
         {
-            await service.LoginAsync("admin", "changeme");
+            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
 
             //// Search : Pull model (foreach loop => IEnumerable)
 

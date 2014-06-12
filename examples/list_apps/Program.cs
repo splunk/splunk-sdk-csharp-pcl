@@ -58,7 +58,7 @@ namespace Splunk.Examples.Submit
         /// </summary>
         public async static Task Run(Service service)
         {
-            await service.LoginAsync("admin", "changeme");
+            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
 
             // Load connection info for Splunk server in .splunkrc file.
             Console.WriteLine("List of Apps:");

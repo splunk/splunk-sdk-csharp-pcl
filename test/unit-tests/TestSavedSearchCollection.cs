@@ -58,7 +58,7 @@ namespace Splunk.Client.UnitTests
             Assert.Equal(expectedArguments[0], args);
         }
 
-        [Trait("class", "Args")]
+        [Trait("class", "Splunk.Client.Args")]
         [Fact]
         void CanSetEveryValue()
         {

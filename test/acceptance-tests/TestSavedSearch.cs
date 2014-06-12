@@ -37,7 +37,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task SavedSearchDispatchProperties()
         {
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 // Ensure correct start state
 
@@ -147,7 +147,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task SavedSearchesProperties()
         {
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 SavedSearchCollection savedSearches = service.SavedSearches;
                 await savedSearches.GetAllAsync();
@@ -383,7 +383,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task SavedSearchesUpdateProperties()
         {
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 SavedSearchCollection savedSearches = service.SavedSearches;
                 const string name = "sdk-test_UpdateProperties";
@@ -579,7 +579,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task SavedSearchHistory()
         {
-            using (Service service = await SDKHelper.CreateService())
+            using (var service = await SDKHelper.CreateService())
             {
                 const string name = "sdk-test_SavedSearchHistory";
                 const string search = "search index=sdk-tests * earliest=-1m";
@@ -635,6 +635,7 @@ namespace Splunk.Client.UnitTests
                 await savedSearches.GetSliceAsync(new SavedSearchCollection.Filter { Count = 0, SortDirection = SortDirection.Descending });
                 savedSearch = savedSearches.SingleOrDefault(ss => ss.Name == name);
                 Assert.NotNull(savedSearch);
+
                 await savedSearch.RemoveAsync();
                 savedSearch = await savedSearches.GetOrNullAsync(savedSearch.Name);
                 Assert.Null(savedSearch);

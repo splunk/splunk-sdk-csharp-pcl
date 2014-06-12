@@ -14,13 +14,15 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTests
+namespace Splunk.Client.AcceptanceTests
 {
     using Splunk.Client;
     using Splunk.Client.Helpers;
+    using Splunk.Client.UnitTests;
     
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -32,15 +34,15 @@ namespace Splunk.Client.UnitTests
     
     using Xunit;
 
-    public class TestService : IUseFixture<AcceptanceTestingSetup>
+    public class TestService
     {
         [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
-        public void CanConstructService()
+        public async Task CanConstructService()
         {
             foreach (var ns in TestNamespaces)
             {
-                using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, ns))
+                using (var service = await SDKHelper.CreateService(ns))
                 {
                     Assert.Equal(service.ToString(), string.Format("{0}://{1}:{2}/{3}", 
                         SDKHelper.UserConfigure.scheme.ToString().ToLower(), 
@@ -93,7 +95,7 @@ namespace Splunk.Client.UnitTests
                     {
                         if (sp.Username.Contains("delete-me-"))
                         {
-                            await sp.RemoveAsync();
+                            await sp.RemoveAsync(); // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                         }
                     }
 
@@ -166,6 +168,137 @@ namespace Splunk.Client.UnitTests
             }
         }
 
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [Fact]
+        public async Task CanGetCapabilities()
+        {
+            using (var service = await SDKHelper.CreateService())
+            {
+                IReadOnlyList<string> capabilities = await service.GetCapabilitiesAsync();
+                var serverInfo = await service.Server.GetInfoAsync();
+
+                if (serverInfo.OSName == "Windows")
+                {
+                    Assert.Equal(new ReadOnlyCollection<string>(new List<string>
+                        {
+                            "accelerate_datamodel",         // 0
+                            "admin_all_objects",            // 1
+                            "change_authentication",        // 2
+                            "change_own_password",          // 3
+                            "delete_by_keyword",            // 4
+                            "edit_deployment_client",       // 5
+                            "edit_deployment_server",       // 6
+                            "edit_dist_peer",               // 7
+                            "edit_forwarders",              // 8
+                            "edit_httpauths",               // 9
+                            "edit_input_defaults",          // 10
+                            "edit_monitor",                 // 11
+                            "edit_roles",                   // 12
+                            "edit_scripted",                // 13
+                            "edit_search_server",           // 14
+                            "edit_server",                  // 15
+                            "edit_splunktcp",               // 16
+                            "edit_splunktcp_ssl",           // 17
+                            "edit_tcp",                     // 18
+                            "edit_udp",                     // 19
+                            "edit_user",                    // 20
+                            "edit_view_html",               // 21
+                            "edit_web_settings",            // 22
+                            "edit_win_admon",               // 23
+                            "edit_win_eventlogs",           // 24
+                            "edit_win_perfmon",             // 25
+                            "edit_win_regmon",              // 26
+                            "edit_win_wmiconf",             // 27
+                            "get_diag",                     // 28
+                            "get_metadata",                 // 29
+                            "get_typeahead",                // 30
+                            "indexes_edit",                 // 31
+                            "input_file",                   // 32
+                            "license_edit",                 // 33
+                            "license_tab",                  // 34
+                            "list_deployment_client",       // 35
+                            "list_deployment_server",       // 36
+                            "list_forwarders",              // 37
+                            "list_httpauths",               // 38
+                            "list_inputs",                  // 39
+                            "list_pdfserver",               // 40
+                            "list_win_localavailablelogs",  // 41
+                            "output_file",                  // 42
+                            "request_remote_tok",           // 43
+                            "rest_apps_management",         // 44
+                            "rest_apps_view",               // 45
+                            "rest_properties_get",          // 46
+                            "rest_properties_set",          // 47
+                            "restart_splunkd",              // 48
+                            "rtsearch",                     // 49
+                            "run_debug_commands",           // 50
+                            "schedule_rtsearch",            // 51
+                            "schedule_search",              // 52
+                            "search",                       // 53
+                            "use_file_operator",            // 54
+                            "write_pdfserver"               // 55
+                        }),
+                        capabilities);
+                }
+                else
+                {
+                    Assert.Equal(new ReadOnlyCollection<string>(new List<string> 
+                        {
+                            "accelerate_datamodel",
+                            "admin_all_objects",
+                            "change_authentication",
+                            "change_own_password",
+                            "delete_by_keyword",
+                            "edit_deployment_client",
+                            "edit_deployment_server",
+                            "edit_dist_peer",
+                            "edit_forwarders",
+                            "edit_httpauths",
+                            "edit_input_defaults",
+                            "edit_monitor",
+                            "edit_roles",
+                            "edit_scripted",
+                            "edit_search_server",
+                            "edit_server",
+                            "edit_splunktcp",
+                            "edit_splunktcp_ssl",
+                            "edit_tcp",
+                            "edit_udp",
+                            "edit_user",
+                            "edit_view_html",
+                            "edit_web_settings",
+                            "get_diag",
+                            "get_metadata",
+                            "get_typeahead",
+                            "indexes_edit",
+                            "input_file",
+                            "license_edit",
+                            "license_tab",
+                            "list_deployment_client",
+                            "list_deployment_server",
+                            "list_forwarders",
+                            "list_httpauths",
+                            "list_inputs",
+                            "output_file",
+                            "request_remote_tok",
+                            "rest_apps_management",
+                            "rest_apps_view",
+                            "rest_properties_get",
+                            "rest_properties_set",
+                            "restart_splunkd",
+                            "rtsearch",
+                            "run_debug_commands",
+                            "schedule_rtsearch",
+                            "schedule_search",
+                            "search",
+                            "use_file_operator"
+                        }),
+                        capabilities);
+                }
+
+            }
+        }
+
         [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
         [Fact]
         public async Task CanGetStoragePasswords()
@@ -227,8 +360,28 @@ namespace Splunk.Client.UnitTests
         {
             using (var service = await SDKHelper.CreateService(Namespace.Default))
             {
+                try
+                {
+                    await service.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {1}", e.GetType().FullName));
+                }
+
                 await service.LogoffAsync();
+
                 Assert.Null(service.SessionKey);
+
+                try
+                {
+                    await service.Applications.GetAllAsync();
+                    Assert.True(false, "Expected AuthenticationFailureException");
+                }
+                catch (AuthenticationFailureException e)
+                {
+                    Assert.Equal(HttpStatusCode.Unauthorized, e.StatusCode);
+                }
 
                 try
                 {
@@ -465,7 +618,7 @@ namespace Splunk.Client.UnitTests
 
         #region Configuration
 
-        [Trait("acceptance-test", "Splunk.Client.Configuration : CanCrudConfiguration")]
+        [Trait("acceptance-test", "Splunk.Client.Configuration")]
         [Fact]
         public async Task CanCrudConfiguration() // no delete operation is available
         {
@@ -484,7 +637,10 @@ namespace Splunk.Client.UnitTests
                 }
 
                 await service.Applications.CreateAsync(testApplicationName, "barebones");
-                application = await service.Applications.GetAsync(testApplicationName);
+                application = await service.Applications.GetOrNullAsync(testApplicationName);
+                Assert.NotNull(application);
+
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
 
             using (var service = await(SDKHelper.CreateService(new Namespace("nobody", testApplicationName))))
@@ -564,10 +720,11 @@ namespace Splunk.Client.UnitTests
             {
                 Application application = await service.Applications.GetAsync(testApplicationName);
                 await application.RemoveAsync();
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection : CanGetConfigurations")]
+        [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection")]
         [Fact]
         public async Task CanGetConfigurations()
         {
@@ -577,7 +734,7 @@ namespace Splunk.Client.UnitTests
                 {
                     var inputsConfiguration = await service.Configurations.GetAsync("inputs");
 
-                    foreach (var stanza in inputsConfiguration)  /// TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
+                    foreach (var stanza in inputsConfiguration)  // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                     {
                         await stanza.GetAsync();
                     }
@@ -611,10 +768,10 @@ namespace Splunk.Client.UnitTests
                             await stanza.GetAsync();
                         }
 
-                        Assert.Equal(configuration, stanzaList);
+                        Assert.Equal(configuration.ToList(), stanzaList);
                     }
 
-                    Assert.Equal(service.Configurations, configurationList);
+                    Assert.Equal(service.Configurations.ToList(), configurationList);
                 }
             }
         }
@@ -627,7 +784,9 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task CanCrudIndex()
         {
-            using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
+            var ns = new Namespace("nobody", "search");
+
+            using (var service = await SDKHelper.CreateService(ns))
             {
                 var indexName = string.Format("delete-me-{0}", Guid.NewGuid());
                 Index index;
@@ -643,24 +802,51 @@ namespace Splunk.Client.UnitTests
 
                 //// Update
 
-                var attributes = new IndexAttributes()
+                Exception updateException = null;
+
+                try
                 {
-                    EnableOnlineBucketRepair = false
-                };
+                    var attributes = new IndexAttributes()
+                    {
+                        EnableOnlineBucketRepair = false
+                    };
 
-                await index.UpdateAsync(attributes);
-                Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
-                Assert.False(index.Disabled);
+                    await index.UpdateAsync(attributes);
+                    Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
+                    Assert.False(index.Disabled);
 
-                await index.DisableAsync();
-                Assert.True(index.Disabled);
+                    await index.DisableAsync();
+                    Assert.True(index.Disabled);
 
-                await index.EnableAsync();
-                Assert.False(index.Disabled);
+                    await service.Server.RestartAsync(2 * 60 * 1000);
+                    await service.LoginAsync();
+
+                    await index.EnableAsync();
+                    Assert.False(index.Disabled);
+
+                }
+                catch (Exception e)
+                {
+                    updateException = e;
+                }
 
                 //// Delete
 
-                await index.RemoveAsync();
+                try 
+                {
+                    await index.RemoveAsync();
+                }
+                catch (Exception removeException)
+                {
+                    if (updateException != null)
+                    {
+                        var text = string.Format("Update/remove failed:\nUpdate failure: {0}\n\n{1}\nRemove failure: {2}\n{3}",
+                            updateException.Message, updateException.StackTrace, 
+                            removeException.Message, removeException.StackTrace);
+                        Assert.True(false, text);
+                    }
+                    throw;
+                }
 
                 try
                 {
@@ -831,75 +1017,74 @@ namespace Splunk.Client.UnitTests
         public async Task CanSendEvents()
         {
             using (var service = await SDKHelper.CreateService())
+            {
+                // default index
+
+                Index index = await service.Indexes.GetAsync("main");
+                Assert.NotNull(index);
+                Assert.False(index.Disabled);
+
+                var receiver = service.Transmitter;
+
+                long currentEventCount = index.TotalEventCount;
+                Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);
+                int sendEventCount = 10;
+
+                for (int i = 0; i < sendEventCount; i++)
                 {
-                    // default index
-
-                    Index index = await service.Indexes.GetAsync("main");
-                    Assert.NotNull(index);
-                    Assert.False(index.Disabled);
-
-                    var receiver = service.Transmitter;
-
-                    long currentEventCount = index.TotalEventCount;
-                    Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);
-                    int sendEventCount = 10;
-
-                    for (int i = 0; i < sendEventCount; i++)
-                        {
-                            var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
-                            Assert.NotNull(result);
-                        }
-
-                    Stopwatch watch = Stopwatch.StartNew();                
-
-                    while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
-                        {
-                            await Task.Delay(1000);
-                            await index.GetAsync();
-                        }
-
-                    Console.WriteLine("After send {0} string events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
-                    Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
-                    Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
-
-                    // Test stream events
-
-                    currentEventCount = currentEventCount + sendEventCount;
-
-                    using (var eventStream = new MemoryStream())
-                        {
-                            using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
-                                {
-                                    for (int i = 0; i < sendEventCount; i++)
-                                        {
-                                            writer.Write(string.Format("{0:D6} {1} jly send stream event hello world!\r\n", i, DateTime.Now));
-                                        }
-                                }
-
-                            eventStream.Seek(0, SeekOrigin.Begin);
-                            await receiver.SendAsync(eventStream);
-                        }
-
-                    watch.Restart();
-
-                    while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
-                        {
-                            await Task.Delay(1000);
-                            await index.GetAsync();
-                        }
-
-                    Console.WriteLine("After send {0} strem events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
-                    Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
-                    Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
+                    Assert.NotNull(result);
                 }
-        }
 
+                Stopwatch watch = Stopwatch.StartNew();                
+
+                while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
+                {
+                    await Task.Delay(1000);
+                    await index.GetAsync();
+                }
+
+                Console.WriteLine("After send {0} string events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
+                Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+
+                // Test stream events
+
+                currentEventCount = currentEventCount + sendEventCount;
+
+                using (var eventStream = new MemoryStream())
+                {
+                    using (var writer = new StreamWriter(eventStream, Encoding.UTF8, 4096, leaveOpen: true))
+                    {
+                        for (int i = 0; i < sendEventCount; i++)
+                        {
+                            writer.Write(string.Format("{0:D6} {1} jly send stream event hello world!\r\n", i, DateTime.Now));
+                        }
+                    }
+
+                    eventStream.Seek(0, SeekOrigin.Begin);
+                    await receiver.SendAsync(eventStream);
+                }
+
+                watch.Restart();
+
+                while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
+                {
+                    await Task.Delay(1000);
+                    await index.GetAsync();
+                }
+
+                Console.WriteLine("After send {0} strem events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
+                Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
+            }
+        }
 
         #endregion
        
         #region Search
 
-        [Trait("acceptance-test", "Splunk.Client.Job : CanCrudJob")]
+        [Trait("acceptance-test", "Splunk.Client.Job")]
         [Fact]
         public async Task CanCrudJob()
         {
@@ -1097,20 +1282,22 @@ namespace Splunk.Client.UnitTests
             using (var service = await SDKHelper.CreateService())
             {
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
-                SearchResultStream resultStream = await job.GetSearchResultsAsync();
-
-                var results = new List<SearchResult>();
-
-                foreach (var result in resultStream) 
+                
+                using (SearchResultStream resultStream = await job.GetSearchResultsAsync())
                 {
-                    results.Add(await result);
-                }
+                    var results = new List<SearchResult>();
 
-                Assert.NotEmpty(results);
+                    foreach (var result in resultStream)
+                    {
+                        results.Add(await result);
+                    }
+
+                    Assert.NotEmpty(results);
+                }
             }
         }
             
-        [Trait("acceptance-test", "Splunk.Client.JobCollection : CanGetJobs")]
+        [Trait("acceptance-test", "Splunk.Client.JobCollection")]
         [Fact]
         public async Task CanGetJobs()
         {
@@ -1170,57 +1357,61 @@ namespace Splunk.Client.UnitTests
         {
             using (var service = await SDKHelper.CreateService())
             {
-                SearchPreviewStream previewStream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
+                var args = new SearchExportArgs() { Count = 0 };
 
-                var results = new List<Splunk.Client.SearchResult>();
-                var exception = (Exception)null;
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", args))
+                {
+                    var results = new List<Splunk.Client.SearchResult>();
+                    var exception = (Exception)null;
 
-                var manualResetEvent = new ManualResetEvent(true);
+                    var manualResetEvent = new ManualResetEvent(true);
 
-                previewStream.Subscribe(
-                    onNext: (preview) =>
-                    {
-                        Assert.Equal<IEnumerable<string>>(new List<string> 
-                            {
-                                "_bkt",
-                                "_cd",
-                                "_indextime",
-                                "_raw",
-                                "_serial",
-                                "_si",
-                                "_sourcetype",
-                                "_subsecond",
-                                "_time",
-                                "host",
-                                "index",
-                                "linecount",
-                                "source",
-                                "sourcetype",
-                                "splunk_server",
-                            },
-                            preview.FieldNames);
-
-                        if (preview.IsFinal)
+                    stream.Subscribe(
+                        onNext: (preview) =>
                         {
-                            results.AddRange(preview.Results);
-                        }
-                    },
-                    onError: (e) =>
-                    {
-                        exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
-                        manualResetEvent.Set();
+                            Assert.Equal<IEnumerable<string>>(new List<string>
+                                {
+                                    "_bkt",
+                                    "_cd",
+                                    "_indextime",
+                                    "_raw",
+                                    "_serial",
+                                    "_si",
+                                    "_sourcetype",
+                                    "_subsecond",
+                                    "_time",
+                                    "host",
+                                    "index",
+                                    "linecount",
+                                    "source",
+                                    "sourcetype",
+                                    "splunk_server",
+                                },
+                                preview.FieldNames);
 
-                    },
-                    onCompleted: () =>
-                    {
-                        manualResetEvent.Set();
-                    });
+                            if (preview.IsFinal)
+                            {
+                                results.AddRange(preview.Results);
+                            }
+                        },
+                        onError: (e) =>
+                        {
+                            exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
+                            manualResetEvent.Set();
 
-                manualResetEvent.Reset();
-                manualResetEvent.WaitOne();
+                        },
+                        onCompleted: () =>
+                        {
+                            manualResetEvent.Set();
+                        });
 
-                Assert.Null(exception);
-                Assert.Equal(100, results.Count);
+                    manualResetEvent.Reset();
+                    manualResetEvent.WaitOne();
+
+                    Assert.Null(exception);
+                    Assert.Equal(100, results.Count);
+
+                }
 
                 await service.LogoffAsync();
             }
@@ -1230,26 +1421,27 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task CanExportSearchResults()
         {
-            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port))
-                {
-                    await service.LoginAsync("admin", "changeme");
+            using (var service = await SDKHelper.CreateService())
+            {
+                var args = new SearchExportArgs { Count = 0 };
 
-                    SearchResultStream resultStream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", new SearchExportArgs() { Count = 0 });
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", args))
+                {
                     var results = new List<Splunk.Client.SearchResult>();
                     var exception = (Exception)null;
 
                     var manualResetEvent = new ManualResetEvent(true);
 
-                    resultStream.Subscribe(
+                    stream.Subscribe(
                         onNext: (result) =>
                         {
-                            var count = resultStream.FieldNames.Intersect(result.Keys).Count();
+                            var count = stream.FieldNames.Intersect(result.Keys).Count();
                             Assert.Equal(count, result.Count);
 
-                            if (resultStream.IsFinal)
-                                {
-                                    results.Add(result);
-                                }
+                            if (stream.IsFinal)
+                            {
+                                results.Add(result);
+                            }
                         },
                         onError: (e) =>
                         {
@@ -1266,9 +1458,10 @@ namespace Splunk.Client.UnitTests
 
                     Assert.Null(exception);
                     Assert.Equal(100, results.Count);
-
-                    await service.LogoffAsync();
                 }
+
+                await service.LogoffAsync();
+            }
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
@@ -1276,30 +1469,43 @@ namespace Splunk.Client.UnitTests
         public async Task CanSearchOneshot()
         {
             using (var service = await SDKHelper.CreateService())
+            {
+                var indexName = string.Format("delete-me-{0}", Guid.NewGuid().ToString("N"));
+
+                var searches = new[] 
                 {
-                    var indexName = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
+                    new 
+                    { 
+                        Command = string.Format("search index={0} * | delete", indexName),
+                        ResultCount = 0
+                    },
+                    new 
+                    { 
+                        Command = "search index=_internal | head 100",
+                        ResultCount = 100
+                    }
+                };
 
-                    var searchCommands = new string[] 
+                await service.Indexes.CreateAsync(indexName);
+
+                foreach (var search in searches)
+                {
+                    var args = new JobArgs { MaxCount = 100000 };
+
+                    using (SearchResultStream stream = await service.SearchOneshotAsync(search.Command, args))
+                    {
+                        var list = new List<SearchResult>();
+
+                        foreach (Task<SearchResult> result in stream) 
                         {
-                            string.Format("search index={0} * | delete", indexName),
-                            "search index=_internal | head 100"
-                        };
-
-                    await service.Indexes.CreateAsync(indexName);
-
-                    foreach (var command in searchCommands)
-                        {
-                            var searchResults = await service.SearchOneshotAsync(command, new JobArgs() { MaxCount = 100000 });
-                            var list = new List<SearchResult>();
-
-                            foreach (var result in searchResults) 
-                                {
-                                    list.Add(await result);
-                                }
-
-                            Assert.NotEmpty(list);
+                            list.Add(await result);
                         }
+
+                        Assert.Equal(search.ResultCount, stream.ReadCount);
+                        Assert.Equal(search.ResultCount, list.Count);
+                    }
                 }
+            }
         }
 
         #endregion
@@ -1367,45 +1573,7 @@ namespace Splunk.Client.UnitTests
 
                 var originalSettings = await service.Server.GetSettingsAsync();
 
-                //// Update
-
-                var values = new ServerSettingValues()
-                {
-                    EnableSplunkWebSsl = !originalSettings.EnableSplunkWebSsl,
-                    Host = originalSettings.Host,
-                    HttpPort = originalSettings.HttpPort + 1,
-                    ManagementHostPort = originalSettings.ManagementHostPort,
-                    MinFreeSpace = originalSettings.MinFreeSpace - 1,
-                    Pass4SymmetricKey = originalSettings.Pass4SymmetricKey + "-update",
-                    ServerName = originalSettings.ServerName,
-                    SessionTimeout = "2h",
-                    SplunkDB = originalSettings.SplunkDB,
-                    StartWebServer = !originalSettings.StartWebServer,
-                    TrustedIP = originalSettings.TrustedIP
-                };
-
-                var updatedSettings = await service.Server.UpdateSettingsAsync(values);
-
-                Assert.Equal(values.EnableSplunkWebSsl, updatedSettings.EnableSplunkWebSsl);
-                Assert.Equal(values.Host, updatedSettings.Host);
-                Assert.Equal(values.HttpPort, updatedSettings.HttpPort);
-                Assert.Equal(values.ManagementHostPort, updatedSettings.ManagementHostPort);
-                Assert.Equal(values.MinFreeSpace, updatedSettings.MinFreeSpace);
-                Assert.Equal(values.Pass4SymmetricKey, updatedSettings.Pass4SymmetricKey);
-                Assert.Equal(values.ServerName, updatedSettings.ServerName);
-                Assert.Equal(values.SessionTimeout, updatedSettings.SessionTimeout);
-                Assert.Equal(values.SplunkDB, updatedSettings.SplunkDB);
-                Assert.Equal(values.StartWebServer, updatedSettings.StartWebServer);
-                Assert.Equal(values.TrustedIP, updatedSettings.TrustedIP);
-
-                //// Restart the server because it's required following a settings update
-
-                await service.Server.RestartAsync(60000 * 2);
-                await service.LoginAsync("admin", "changeme");
-
-                //// Restore
-
-                values = new ServerSettingValues()
+                ServerSettingValues originalValues = new ServerSettingValues
                 {
                     EnableSplunkWebSsl = originalSettings.EnableSplunkWebSsl,
                     Host = originalSettings.Host,
@@ -1420,25 +1588,77 @@ namespace Splunk.Client.UnitTests
                     TrustedIP = originalSettings.TrustedIP
                 };
 
-                updatedSettings = await service.Server.UpdateSettingsAsync(values);
+                //// Update
 
-                Assert.Equal(values.EnableSplunkWebSsl, originalSettings.EnableSplunkWebSsl);
-                Assert.Equal(values.Host, originalSettings.Host);
-                Assert.Equal(values.HttpPort, originalSettings.HttpPort);
-                Assert.Equal(values.ManagementHostPort, originalSettings.ManagementHostPort);
-                Assert.Equal(values.MinFreeSpace, originalSettings.MinFreeSpace);
-                Assert.Equal(values.Pass4SymmetricKey, originalSettings.Pass4SymmetricKey);
-                Assert.Equal(values.ServerName, originalSettings.ServerName);
-                Assert.Equal(values.SessionTimeout, originalSettings.SessionTimeout);
-                Assert.Equal(values.SplunkDB, originalSettings.SplunkDB);
-                Assert.Equal(values.StartWebServer, originalSettings.StartWebServer);
-                Assert.Equal(values.TrustedIP, originalSettings.TrustedIP);
+                try
+                {
+                    var updatedValues = new ServerSettingValues
+                    {
+                        EnableSplunkWebSsl = !originalSettings.EnableSplunkWebSsl,
+                        Host = originalSettings.Host,
+                        HttpPort = originalSettings.HttpPort + 1,
+                        ManagementHostPort = originalSettings.ManagementHostPort,
+                        MinFreeSpace = originalSettings.MinFreeSpace - 1,
+                        Pass4SymmetricKey = originalSettings.Pass4SymmetricKey + "-update",
+                        ServerName = originalSettings.ServerName,
+                        SessionTimeout = "2h",
+                        SplunkDB = originalSettings.SplunkDB,
+                        StartWebServer = !originalSettings.StartWebServer,
+                        TrustedIP = originalSettings.TrustedIP
+                    };
+
+                    ServerSettings updatedSettings = await service.Server.UpdateSettingsAsync(updatedValues);
+
+                    Assert.Equal(updatedValues.EnableSplunkWebSsl, updatedSettings.EnableSplunkWebSsl);
+                    Assert.Equal(updatedValues.Host, updatedSettings.Host);
+                    Assert.Equal(updatedValues.HttpPort, updatedSettings.HttpPort);
+                    Assert.Equal(updatedValues.ManagementHostPort, updatedSettings.ManagementHostPort);
+                    Assert.Equal(updatedValues.MinFreeSpace, updatedSettings.MinFreeSpace);
+                    Assert.Equal(updatedValues.Pass4SymmetricKey, updatedSettings.Pass4SymmetricKey);
+                    Assert.Equal(updatedValues.ServerName, updatedSettings.ServerName);
+                    Assert.Equal(updatedValues.SessionTimeout, updatedSettings.SessionTimeout);
+                    Assert.Equal(updatedValues.SplunkDB, updatedSettings.SplunkDB);
+                    Assert.Equal(updatedValues.StartWebServer, updatedSettings.StartWebServer);
+                    Assert.Equal(updatedValues.TrustedIP, updatedSettings.TrustedIP);
+
+                    //// Restart the server because it's required following a server settings update
+
+                    await service.Server.RestartAsync(2 * 60 * 1000);
+                    await service.LoginAsync();
+
+                }
+                catch (Exception e1)
+                {
+                    try
+                    {
+                        service.Server.UpdateSettingsAsync(originalValues).Wait(); // because you can't await in catch block
+                    }
+                    catch (Exception e2)
+                    {
+                        throw new AggregateException(e1, e2);
+                    }
+
+                    throw;
+                }
+
+                //// Restore
+
+                originalSettings = await service.Server.UpdateSettingsAsync(originalValues);
+
+                Assert.Equal(originalValues.EnableSplunkWebSsl, originalSettings.EnableSplunkWebSsl);
+                Assert.Equal(originalValues.Host, originalSettings.Host);
+                Assert.Equal(originalValues.HttpPort, originalSettings.HttpPort);
+                Assert.Equal(originalValues.ManagementHostPort, originalSettings.ManagementHostPort);
+                Assert.Equal(originalValues.MinFreeSpace, originalSettings.MinFreeSpace);
+                Assert.Equal(originalValues.Pass4SymmetricKey, originalSettings.Pass4SymmetricKey);
+                Assert.Equal(originalValues.ServerName, originalSettings.ServerName);
+                Assert.Equal(originalValues.SessionTimeout, originalSettings.SessionTimeout);
+                Assert.Equal(originalValues.SplunkDB, originalSettings.SplunkDB);
+                Assert.Equal(originalValues.StartWebServer, originalSettings.StartWebServer);
+                Assert.Equal(originalValues.TrustedIP, originalSettings.TrustedIP);
 
                 //// Restart the server because it's required following a settings update
-
-
-                //await service.Server.RestartAsync();
-                await TestHelper.RestartServerAsync();
+                await service.Server.RestartAsync(2 * 60 * 1000);
             }
         }
 
@@ -1482,10 +1702,9 @@ namespace Splunk.Client.UnitTests
             {
                 try
                 {
-                    await service.Server.RestartAsync();
-                    Console.WriteLine("{1},  spend {0}s to restart server successfully", watch.Elapsed.TotalSeconds, DateTime.Now);
+                    await service.Server.RestartAsync(2 * 60 * 1000);
                 }
-                catch (Exception e)
+                catch (OperationCanceledException e)
                 {
                     Console.WriteLine("----------------------------------------------------------------------------------------");
                     Console.WriteLine("{1}, spend {0}s to restart server failed:", watch.Elapsed.TotalSeconds, DateTime.Now);
@@ -1494,14 +1713,11 @@ namespace Splunk.Client.UnitTests
                 }
 
                 Assert.Null(service.SessionKey);
-                await service.LoginAsync("admin", "changeme");
+                await service.LoginAsync();
             }
         }
 
         #endregion
-
-        public void SetFixture(AcceptanceTestingSetup data)
-        { } // TODO: Implement or remove
 
         #region Privates/internals
 

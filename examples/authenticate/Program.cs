@@ -72,10 +72,7 @@ namespace Splunk.Examples.Authenticate
                 Console.WriteLine("Can't get service configuration without logging in.");
             }
 
-            Console.WriteLine("Login as admin");
-            string username = "admin";
-            string password = "changeme";
-            await service.LoginAsync(username, password);
+            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
 
             Console.WriteLine("List all configurations of the Splunk service:");
             await service.Configurations.GetAllAsync();

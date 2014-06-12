@@ -20,6 +20,7 @@ namespace Splunk.Client.UnitTests
     using System;
     using System.Net;
     using System.Net.Http;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -34,29 +35,29 @@ namespace Splunk.Client.UnitTests
         /// protocol, host, port number.
         /// </summary>
         /// <param name="protocol">
-        ///     The <see cref="Protocol"/> used to communiate with <see cref="Host"/>.
+        /// The <see cref="Protocol"/> used to communiate with <see cref="Host"/>.
         /// </param>
         /// <param name="host">
-        ///     The DNS name of a Splunk server instance.
+        /// The DNS name of a Splunk server instance.
         /// </param>
         /// <param name="port">
-        ///     The port number used to communicate with <see cref="Host"/>.
+        /// The port number used to communicate with <see cref="Host"/>.
         /// </param>
         /// <remarks>
-        ///     <para><b>References</b></para>
-        ///     <list type="number">
-        ///         <item>
-        ///             <description>   
-        ///                 <a href="http://goo.gl/ppbIlm">How to Avoid Creating Real
-        ///                 Tasks When Unit Testing Async</a>.
-        ///             </description>
-        ///         </item>
-        ///         <item>
-        ///             <description>
-        ///                 <a href="http://goo.gl/YUFhAO">ObjectContent Class</a>.
-        ///             </description>
-        ///         </item>
-        ///     </list>
+        ///   <para><b>References</b></para>
+        ///   <list type="number">
+        ///     <item>
+        ///       <description>   
+        ///         <a href="http://goo.gl/ppbIlm">How to Avoid Creating Real
+        ///         Tasks When Unit Testing Async</a>.
+        ///       </description>
+        ///     </item>
+        ///     <item>
+        ///       <description>
+        ///         <a href="http://goo.gl/YUFhAO">ObjectContent Class</a>.
+        ///       </description>
+        ///     </item>
+        ///   </list>
         /// </remarks>
         /// 
         public FakeContext(Scheme protocol, string host, int port)
@@ -89,7 +90,7 @@ namespace Splunk.Client.UnitTests
 
         class MessageHandler : HttpMessageHandler
         {
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, System.Threading.CancellationToken cancellationToken)
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
                 var response = new HttpResponseMessage()
                 {

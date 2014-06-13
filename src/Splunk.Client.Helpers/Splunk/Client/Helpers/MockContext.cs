@@ -168,7 +168,6 @@ namespace Splunk.Client.Helpers
                         ele.InnerXml = innertext.ToString();
                         doc.DocumentElement.AppendChild(ele);
                         doc.Save(filePath);
-
                     }
                 }
 

@@ -46,7 +46,7 @@ namespace Splunk.Examples.Authenticate
         /// <param name="args">The arguments.</param>
         static void Main(string[] args)
         {
-            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port))
+            using (var service = new Service(SDKHelper.Splunk.Scheme, SDKHelper.Splunk.Host, SDKHelper.Splunk.Port))
             {
                 Console.WriteLine("Connected to {0}:{1} ", service.Server.Context.Host, service.Server.Context.Port);
                 Run(service).Wait();
@@ -72,7 +72,7 @@ namespace Splunk.Examples.Authenticate
                 Console.WriteLine("Can't get service configuration without logging in.");
             }
 
-            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+            await service.LoginAsync(SDKHelper.Splunk.Username, SDKHelper.Splunk.Password);
 
             Console.WriteLine("List all configurations of the Splunk service:");
             await service.Configurations.GetAllAsync();

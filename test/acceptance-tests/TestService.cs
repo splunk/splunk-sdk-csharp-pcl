@@ -45,9 +45,9 @@ namespace Splunk.Client.AcceptanceTests
                 using (var service = await SDKHelper.CreateService(ns))
                 {
                     Assert.Equal(service.ToString(), string.Format("{0}://{1}:{2}/{3}", 
-                        SDKHelper.UserConfigure.scheme.ToString().ToLower(), 
-                        SDKHelper.UserConfigure.host, 
-                        SDKHelper.UserConfigure.port,
+                        SDKHelper.Splunk.Scheme.ToString().ToLower(), 
+                        SDKHelper.Splunk.Host, 
+                        SDKHelper.Splunk.Port,
                         ns
                     ));
 

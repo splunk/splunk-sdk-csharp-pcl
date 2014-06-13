@@ -137,7 +137,7 @@ namespace Splunk.Client.UnitTests
 
         public static async Task LoginAsync(this Service service)
         {
-            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+            await service.LoginAsync(SDKHelper.Splunk.Username, SDKHelper.Splunk.Password);
         }
     }
 }

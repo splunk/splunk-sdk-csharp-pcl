@@ -30,7 +30,7 @@ namespace Splunk.Client.Examples
     {
         static void Main(string[] args)
         {
-            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SDKHelper.Splunk.Scheme, SDKHelper.Splunk.Host, SDKHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
@@ -41,7 +41,7 @@ namespace Splunk.Client.Examples
 
         static async Task Run(Service service)
         {
-            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+            await service.LoginAsync(SDKHelper.Splunk.Username, SDKHelper.Splunk.Password);
 
             //// Search : Pull model (foreach loop => IEnumerable)
 

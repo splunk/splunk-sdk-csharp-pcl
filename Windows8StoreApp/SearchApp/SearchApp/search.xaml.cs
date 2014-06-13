@@ -58,8 +58,8 @@ namespace SplunkSearch
 
             if (MainPage.SplunkService != null)
             {
-                UserName.Text =string.Format("User:{0}", loginUser);
-                HostName.Text = string.Format("Server:{0}",MainPage.SplunkService.Server.Context.Host);
+                UserName.Text = string.Format("User:{0}", loginUser);
+                HostName.Text = string.Format("Server:{0}", MainPage.SplunkService.Server.Context.Host);
             }
         }
 
@@ -116,13 +116,13 @@ namespace SplunkSearch
 
         public static string loginUser { get; set; }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             eventCount = 0;
             cancelToken = new CancellationTokenSource();
             string searchStr = SearchInput.Text.Trim();
-                        
-            ResultRoot.Children.Clear();
+
+            titleGrid.Visibility = Visibility.Collapsed;
 
             if (!searchStr.StartsWith("search ", StringComparison.OrdinalIgnoreCase))
             {
@@ -133,115 +133,66 @@ namespace SplunkSearch
 
             try
             {
-                Job searchJob = await MainPage.SplunkService.SearchAsync(searchStr);
-                this.DisplayResultInGrid("Event Time", "Event Details", true);
+                List<ResultData> resultDatas = new List<ResultData>();
 
+                titleGrid.Visibility = Visibility.Visible;
                 while (!cancelToken.IsCancellationRequested)
                 {
-                    using (SearchResultStream resultStream = await searchJob.GetSearchResultsAsync())
+                    using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr))
                     {
-                                                
+                        int resultCount = 0;
+
                         foreach (Task<SearchResult> resultTask in resultStream)
                         {
                             SearchResult result = await resultTask;
                             List<string> results = this.ParseResult(result);
-                            this.DisplayResultInGrid(results[0], results[1], false);
+                            resultDatas.Add(new ResultData(results[0], results[1]));
+
+                            resultCount++;
                         }
 
-                        if (searchJob.IsDone)
+                        if (resultStream.IsFinal)
                         {
                             break;
                         }
                     }
                 }
 
-                this.PageContentReset();          
+                resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
+                this.PageContentReset();
             }
             catch (Exception ex)
             {
+                Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(ex.ToString(), "Error in Search");                
+                messageDialog.Content = ex.ToString();
+                messageDialog.ShowAsync();
+                titleGrid.Visibility = Visibility.Collapsed;
                 this.PageContentReset();
-                TextBlock textBlock = new TextBlock();
-                textBlock.Text = ex.ToString();
-                textBlock.FontSize = 16;
-                ResultRoot.Children.Add(textBlock);
             }
+        }
+        
+        private void SearchCancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            cancelToken.Cancel();
+            SearchCancel.Content = "Cancelling...";
         }
 
         private void backButton_Click(object sender, RoutedEventArgs e)
         {
 
         }
-
-        private void DisplayResultInGrid(string column1, string column2, bool isGridTitle)
-        {
-            // display the result title  grid
-            Grid resultGrid = new Grid();
-            ColumnDefinition colDef = new ColumnDefinition();
-            colDef.Width = new GridLength(200);
-            resultGrid.ColumnDefinitions.Add(colDef);
-
-            colDef = new ColumnDefinition();
-            colDef.Width = new GridLength(500, GridUnitType.Star);
-            resultGrid.ColumnDefinitions.Add(colDef);
-
-            SolidColorBrush brush = new SolidColorBrush();
-            Windows.UI.Color color;
-            if (isGridTitle)
-            {
-                color = new Windows.UI.Color() { R = 0, G = 0, B = 0, A = 100 };
-                Border border = new Border();
-                border.BorderBrush = new SolidColorBrush(color);
-                border.BorderThickness = new Thickness(1, 2, 1, 2);
-                color = new Windows.UI.Color() { R = 155, G = 155, B = 155, A = 100 };
-                border.Background = new SolidColorBrush(color);
-                Grid.SetColumnSpan(border, 2);
-                resultGrid.Children.Add(border);
-            }
-            else
-            {
-                color = new Windows.UI.Color() { R = 162, G = 159, B = 159, A = 100 };
-
-                //define time column border
-                Border border = new Border();
-                border.BorderBrush = new SolidColorBrush(color);
-                border.BorderThickness = new Thickness(1, 0, 0, 1);
-                Grid.SetColumn(border, 0);
-                resultGrid.Children.Add(border);
-
-                //define event column border
-                Border border2 = new Border();
-                border2.BorderBrush = new SolidColorBrush(color);
-                border2.BorderThickness = new Thickness(0, 0, 1, 1);
-                Grid.SetColumn(border2, 1);
-                resultGrid.Children.Add(border2);
-            }
-
-            int fontSize = isGridTitle ? 20 : 16;
-            TextBlock textBlock = new TextBlock();
-            textBlock.Text = column1;
-            textBlock.FontSize = fontSize;
-            resultGrid.Children.Add(textBlock);
-            Grid.SetColumn(textBlock, 0);
-
-            textBlock = new TextBlock();
-            textBlock.Text = column2;
-            textBlock.FontSize = fontSize;
-            resultGrid.Children.Add(textBlock);
-            Grid.SetColumn(textBlock, 1);
-
-            ResultRoot.Children.Add(resultGrid);
-        }
-
+      
         private List<string> ParseResult(SearchResult searchResult)
         {
             List<string> results = new List<string>();
             string rawData = searchResult.SegmentedRaw;
 
-            DateTime time = DateTime.Parse(searchResult["_time"]);
-            string format = "yyyy/M/d hh:mm:ss.fff";
-            results.Add(string.Format("{0}-{1}",++eventCount, time.ToString(format)));
-       
-            rawData=rawData.Trim();
+            //DateTime time = DateTime.Parse(searchResult["_time"]);
+            //string format = "yyyy/M/d hh:mm:ss.fff";
+            //results.Add(string.Format("{0}-{1}", ++eventCount, time.ToString(format)));
+            results.Add(string.Format("{0}-{1}", ++eventCount, searchResult["_time"]));
+
+            rawData = rawData.Trim();
             //remove <v xml:space="preserve" trunc="0">
             if (rawData.StartsWith("<v xml:space="))
             {
@@ -253,24 +204,19 @@ namespace SplunkSearch
             {
                 rawData = rawData.Substring(0, rawData.Length - 4);
             }
-            
+
             results.Add(rawData);
-            
-            return results;            
-        }
 
-        private  void SearchCancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            cancelToken.Cancel();
-            SearchCancel.Content = "Cancelling...";
+            return results;
         }
-
+              
         private void PageContentReset()
         {
             SearchSubmit.Content = "Search";
             SearchCancel.Content = "Cancel";
             SearchCancel.Visibility = Visibility.Collapsed;
             searchInProgress.IsActive = false;
+
         }
 
         private void PageContentSearchInProgress()
@@ -281,5 +227,16 @@ namespace SplunkSearch
             searchInProgress.IsActive = true;
         }
 
-    }
+        private class ResultData
+        {
+            public string Time { get; set; }
+            public string Event { get; set; }
+
+            public ResultData(string time, string theEvent)
+            {
+                this.Time = time;
+                this.Event = theEvent;
+            }
+        }
+    }    
 }

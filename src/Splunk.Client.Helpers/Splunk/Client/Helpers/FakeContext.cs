@@ -25,6 +25,7 @@ namespace Splunk.Client.Helpers
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
@@ -284,24 +285,11 @@ namespace Splunk.Client.Helpers
                 var checksum = tuple.Item1;
                 var forward = tuple.Item2;
 
-                var response = await this.Client.SendAsync(forward, cancellationToken);
-                var headers = new Dictionary<string, List<string>>();
-
-                foreach (var header in response.Headers)
+                using (var response = await this.Client.SendAsync(forward, cancellationToken))
                 {
-                    headers[header.Key] = header.Value.ToList();
+                    var recording = await Recording.CreateRecording(checksum, response);
+                    return recording.Response;
                 }
-
-                var content = await response.Content.ReadAsStringAsync();
-
-                var contentHeaders = new Dictionary<string, List<string>>();
-
-                foreach (var header in response.Content.Headers)
-                {
-                    contentHeaders[header.Key] = header.Value.ToList();
-                }
-
-                return response;
             }
 
             #region Privates/internals
@@ -311,18 +299,111 @@ namespace Splunk.Client.Helpers
             #endregion
         }
 
-        struct Recording
+        class Recording
         {
-            public Recording(string checksum, string response)
+            public string Checksum
             {
-                this.Checksum = checksum;
-                this.Response = response;
+                get { return this.checksum; }
             }
 
-            public readonly string Checksum;
-            public readonly string Response;
+            public HttpResponseMessage Response
+            {
+                get
+                {
+                    if (this.response == null)
+                    {
+                        lock (this.gate)
+                        {
+                            if (this.response == null)
+                            {
+                                var response = new HttpResponseMessage(this.statusCode)
+                                {
+                                    Content = new StreamContent(new MemoryStream(this.content)),
+                                    ReasonPhrase = this.reasonPhrase,
+                                    Version = this.version
+                                };
+
+                                foreach (var header in this.headers)
+                                {
+                                    response.Headers.Add(header.Key, header.Value);
+                                }
+
+                                foreach (var header in this.contentHeaders)
+                                {
+                                    response.Content.Headers.Add(header.Key, header.Value);
+                                }
+
+                                this.response = response;
+                            }
+                        }
+                    }
+
+                    return this.response;
+                }
+            }
+
+            public static async Task<Recording> CreateRecording(string checksum, HttpResponseMessage response)
+            {
+                var content = await response.Content.ReadAsByteArrayAsync();
+                var recording = new Recording(response, content, checksum);
+                
+                return recording;
+            }
+
+            #region Privates/internals
+
+            object gate = new object();
+
+            readonly string checksum;
+            readonly byte[] content;
+            readonly List<KeyValuePair<string, IEnumerable<string>>> contentHeaders;
+            readonly List<KeyValuePair<string, IEnumerable<string>>> headers;
+            readonly string reasonPhrase;
+            readonly HttpStatusCode statusCode;
+            readonly Version version;
+
+            HttpResponseMessage response;
+
+            Recording()
+            { }
+
+            Recording(HttpResponseMessage response, byte[] content, string checksum)
+            {
+                Contract.Requires<ArgumentNullException>(response != null);
+                Contract.Requires<ArgumentNullException>(content != null);
+                Contract.Requires<ArgumentNullException>(checksum != null);
+
+                this.checksum = checksum;
+                this.content = content;
+                this.contentHeaders = response.Headers.ToList();
+                this.headers = response.Headers.ToList();
+                this.reasonPhrase = response.ReasonPhrase;
+                this.statusCode = response.StatusCode;
+                this.version = response.Version;
+            }
+
+            #endregion
         }
 
+#if false
+
+        
+                var serializer = new DataContractSerializer(typeof(HttpResponseMessage));
+
+                using (stream = new MemoryStream())
+                {
+                    serializer.WriteObject(stream, duplicateResponse);
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    using (var reader = new StreamReader(stream))
+                    {
+                        var serializedResponse = reader.ReadToEnd();
+                        return new Recording(serializedResponse, checksum);
+                    }
+                }
+
+
+#endif
         #endregion
     }
 }

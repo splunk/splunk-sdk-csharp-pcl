@@ -34,6 +34,7 @@ namespace Splunk.Client.UnitTests
         /// The app tests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Application")]
+        [MockContext]
         [Fact]
         public async Task Application()
         {

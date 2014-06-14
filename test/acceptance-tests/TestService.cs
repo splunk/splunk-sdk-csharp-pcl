@@ -36,20 +36,21 @@ namespace Splunk.Client.AcceptanceTests
 
     public class TestService
     {
+        // TODO: Move to unit-tests project
         [Trait("acceptance-test", "Splunk.Client.Service")]
         [Fact]
-        public async Task CanConstructService()
+        public void CanConstructService()
         {
             foreach (var ns in TestNamespaces)
             {
-                using (var service = await SDKHelper.CreateService(ns))
+                using (var service = new Service(SDKHelper.Splunk.Scheme, SDKHelper.Splunk.Host, SDKHelper.Splunk.Port, ns))
                 {
-                    Assert.Equal(service.ToString(), string.Format("{0}://{1}:{2}/{3}", 
+                    Assert.Equal(string.Format("{0}://{1}:{2}/{3}", 
                         SDKHelper.Splunk.Scheme.ToString().ToLower(), 
                         SDKHelper.Splunk.Host, 
                         SDKHelper.Splunk.Port,
-                        ns
-                    ));
+                        ns),
+                        service.ToString());
 
                     Assert.IsType(typeof(ApplicationCollection), service.Applications);
                     Assert.NotNull(service.Applications);
@@ -81,6 +82,7 @@ namespace Splunk.Client.AcceptanceTests
         #region Access Control
 
         [Trait("acceptance-test", "Splunk.Client.StoragePassword")]
+        [MockContext]
         [Fact]
         public async Task CanCrudStoragePassword()
         {
@@ -301,6 +303,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.StoragePasswordCollection")]
+        [MockContext]
         [Fact]
         public async Task CanGetStoragePasswords()
         {
@@ -356,6 +359,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
         [Fact]
         public async Task CanLoginAndLogoff()
         {
@@ -407,6 +411,7 @@ namespace Splunk.Client.AcceptanceTests
         #region Applications
 
         [Trait("acceptance-test", "Splunk.Client.Application")]
+        [MockContext]
         [Fact]
         public async Task CanCrudApplication()
         {
@@ -566,6 +571,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.ApplicationCollection")]
+        [MockContext]
         [Fact]
         public async Task CanGetApplications()
         {
@@ -620,6 +626,7 @@ namespace Splunk.Client.AcceptanceTests
         #region Configuration
 
         [Trait("acceptance-test", "Splunk.Client.Configuration")]
+        [MockContext]
         [Fact]
         public async Task CanCrudConfiguration() // no delete operation is available
         {
@@ -726,6 +733,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.ConfigurationCollection")]
+        [MockContext]
         [Fact]
         public async Task CanGetConfigurations()
         {
@@ -782,6 +790,7 @@ namespace Splunk.Client.AcceptanceTests
         #region Indexes
 
         [Trait("acceptance-test", "Splunk.Client.Index")]
+        [MockContext]
         [Fact]
         public async Task CanCrudIndex()
         {
@@ -863,6 +872,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.IndexCollection")]
+        [MockContext]
         [Fact]
         public async Task CanGetIndexes()
         {
@@ -1014,6 +1024,7 @@ namespace Splunk.Client.AcceptanceTests
         #region Inputs
 
         [Trait("acceptance-test", "Splunk.Client.Transmitter")]
+        [MockContext]
         [Fact]
         public async Task CanSendEvents()
         {
@@ -1086,6 +1097,7 @@ namespace Splunk.Client.AcceptanceTests
         #region Search
 
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task CanCrudJob()
         {
@@ -1157,6 +1169,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
+        [MockContext]
         [Fact]
         public async Task CanCrudSavedSearch()
         {
@@ -1277,6 +1290,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
         [Fact]
         public async Task CanDispatchSavedSearch()
         {
@@ -1299,6 +1313,7 @@ namespace Splunk.Client.AcceptanceTests
         }
             
         [Trait("acceptance-test", "Splunk.Client.JobCollection")]
+        [MockContext]
         [Fact]
         public async Task CanGetJobs()
         {
@@ -1333,6 +1348,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.SavedSearchCollection")]
+        [MockContext]
         [Fact]
         public async Task CanGetSavedSearches()
         {
@@ -1353,6 +1369,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
         [Fact]
         public async Task CanExportSearchPreviews()
         {
@@ -1420,6 +1437,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
         [Fact]
         public async Task CanExportSearchResults()
         {
@@ -1468,6 +1486,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
         [Fact]
         public async Task CanSearchOneshot()
         {
@@ -1516,6 +1535,7 @@ namespace Splunk.Client.AcceptanceTests
         #region System
 
         [Trait("acceptance-test", "Splunk.Client.ServerMessage")]
+        [MockContext]
         [Fact]
         public async Task CanCrudServerMessage()
         {
@@ -1567,6 +1587,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.ServerSettings")]
+        [MockContext]
         [Fact]
         public async Task CanCrudServerSettings()
         {
@@ -1666,6 +1687,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Server")]
+        [MockContext]
         [Fact]
         public async Task CanGetServerInfo()
         {
@@ -1696,6 +1718,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Server")]
+        [MockContext]
         [Fact]
         public async Task CanRestartServer()
         {

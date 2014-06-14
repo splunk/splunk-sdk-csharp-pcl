@@ -34,6 +34,7 @@ namespace Splunk.Client.UnitTests
         /// Basic conf touch test
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Configuration")]
+        [MockContext]
         [Fact]
         public async Task ConfigurationCollection()
         {
@@ -89,6 +90,7 @@ namespace Splunk.Client.UnitTests
         /// Tests config Create Read Update and Delete.
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Configuration")]
+        [MockContext]
         [Fact]
         public async Task Configuration()
         {            

@@ -22,6 +22,7 @@ namespace Splunk.Client.UnitTests
     public class TestContext
     {
         [Trait("acceptance-test", "Splunk.Client.Context")]
+        [MockContext]
         [Fact]
         public void CanConstructContext()
         {

@@ -23,10 +23,12 @@ namespace Splunk.Client.Helpers
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.IO;
+    using System.IO.Compression;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Json;
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
@@ -109,7 +111,7 @@ namespace Splunk.Client.Helpers
 
             if (IsEnabled)
             {
-                RecordingFilename = Path.Combine(recordingDirectoryName, string.Join(".", CallerId, "xml"));
+                RecordingFilename = Path.Combine(recordingDirectoryName, string.Join(".", CallerId, "json", "gz"));
 
                 if (IsRecording)
                 {
@@ -117,11 +119,14 @@ namespace Splunk.Client.Helpers
                 }
                 else
                 {
-                    var serializer = new DataContractSerializer(typeof(Queue<Recording>));
+                    var serializer = new DataContractJsonSerializer(typeof(Queue<Recording>));
 
                     using (var stream = new FileStream(RecordingFilename, FileMode.Open))
                     {
-                        Recordings = (Queue<Recording>)serializer.ReadObject(stream);
+                        using (var compressedStream = new GZipStream(stream, CompressionMode.Decompress))
+                        {
+                            Recordings = (Queue<Recording>)serializer.ReadObject(compressedStream);
+                        }
                     }
                 }
             }
@@ -133,12 +138,15 @@ namespace Splunk.Client.Helpers
             {
                 if (IsRecording)
                 {
-                    var serializer = new DataContractSerializer(typeof(Queue<Recording>));
+                    var serializer = new DataContractJsonSerializer(typeof(Queue<Recording>));
                     Directory.CreateDirectory(RecordingDirectoryName);
 
                     using (var stream = new FileStream(RecordingFilename, FileMode.Create))
                     {
-                        serializer.WriteObject(stream, Recordings/*.ToList()*/);
+                        using (var compressedStream = new GZipStream(stream, CompressionLevel.Optimal))
+                        {
+                            serializer.WriteObject(compressedStream, Recordings);
+                        }
                     }
                 }
                 else
@@ -155,15 +163,23 @@ namespace Splunk.Client.Helpers
         #region Privates/internals
 
         static readonly string recordingDirectoryName;
-        static readonly bool isEnabled = bool.Parse(ConfigurationManager.AppSettings["MockContext.IsEnabled"]);
-        static readonly bool isRecording = bool.Parse(ConfigurationManager.AppSettings["MockContext.IsRecording"]);
+        static readonly bool isEnabled;
+        static readonly bool isRecording;
 
         static Queue<Recording> Recordings;
 
         static MockContext()
         {
-            recordingDirectoryName = ConfigurationManager.AppSettings["MockContext.RecordingDirectoryName"] ?? 
-                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Recordings");
+            string setting;
+
+            setting = ConfigurationManager.AppSettings["MockContext.RecordingDirectoryName"];
+            recordingDirectoryName =  setting ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Recordings");
+
+            setting = ConfigurationManager.AppSettings["MockContext.IsEnabled"];
+            isEnabled = setting == null ? false : bool.Parse(setting);
+
+            setting = ConfigurationManager.AppSettings["MockContext.IsRecording"];
+            isRecording = setting == null ? false : bool.Parse(setting);
         }
 
         static HttpMessageHandler CreateMessageHandler()
@@ -241,13 +257,7 @@ namespace Splunk.Client.Helpers
                 stream.Seek(0, SeekOrigin.Begin);
 
                 byte[] hash = hashAlgorithm.ComputeHash(stream);
-
-                var builder = hash.Aggregate(new StringBuilder(2 * hash.Length), (b, x) =>
-                    {
-                        return b.Append(x.ToString("x2"));
-                    });
-
-                var checksum = builder.ToString();
+                var checksum = Convert.ToBase64String(hash);
 
                 return new Tuple<string, long>(checksum, offset);
             }
@@ -378,9 +388,11 @@ namespace Splunk.Client.Helpers
                         {
                             if (this.response == null)
                             {
+                                var buffer = Convert.FromBase64String(this.content);
+
                                 var response = new HttpResponseMessage(this.statusCode)
                                 {
-                                    Content = new StreamContent(new MemoryStream(this.content)),
+                                    Content = new StreamContent(new MemoryStream(buffer)),
                                     ReasonPhrase = this.reasonPhrase,
                                     Version = this.version
                                 };
@@ -418,7 +430,7 @@ namespace Splunk.Client.Helpers
             readonly string checksum;
 
             [DataMember(Name = "Response.Content", IsRequired = true)]
-            readonly byte[] content;
+            readonly string content;
 
             [DataMember(Name = "Response.Content.Headers", IsRequired = true)]
             readonly List<KeyValuePair<string, IEnumerable<string>>> contentHeaders;
@@ -450,7 +462,7 @@ namespace Splunk.Client.Helpers
                 Contract.Requires<ArgumentNullException>(checksum != null);
 
                 this.checksum = checksum;
-                this.content = content;
+                this.content = Convert.ToBase64String(content);
                 this.contentHeaders = response.Content.Headers.ToList();
                 this.headers = response.Headers.ToList();
                 this.reasonPhrase = response.ReasonPhrase;

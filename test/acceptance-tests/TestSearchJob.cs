@@ -43,6 +43,7 @@ namespace Splunk.Client.UnitTests
         /// Tests the result from a bad search argument.
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task BadOutputMode()
         {
@@ -71,6 +72,7 @@ namespace Splunk.Client.UnitTests
         /// Tests the result from a search argument.
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task JobSearchMode()
         {
@@ -94,6 +96,7 @@ namespace Splunk.Client.UnitTests
         /// Tests the result from a search argument.
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task JobExecutionMode()
         {
@@ -122,6 +125,7 @@ namespace Splunk.Client.UnitTests
         /// Tests all output modes for Job.Events
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task JobEventsTruncationModeArgument()
         {
@@ -150,6 +154,7 @@ namespace Splunk.Client.UnitTests
         /// Tests all search modes
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task JobSearchModeArgument()
         {
@@ -166,6 +171,7 @@ namespace Splunk.Client.UnitTests
         /// Tests all search modes for export
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task ExportSearchModeArgument()
         {
@@ -182,6 +188,7 @@ namespace Splunk.Client.UnitTests
         /// Tests all search modes for export
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task ExportTruncationModeArgument()
         {
@@ -195,6 +202,7 @@ namespace Splunk.Client.UnitTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task CanRefreshJob()
         {

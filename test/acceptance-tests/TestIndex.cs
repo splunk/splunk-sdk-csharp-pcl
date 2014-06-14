@@ -36,6 +36,7 @@ namespace Splunk.Client.UnitTests
         /// Tests the basic getters and setters of index
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Index")]
+        [MockContext]
         [Fact]
         public async Task IndexCollection()
         {
@@ -230,6 +231,7 @@ namespace Splunk.Client.UnitTests
         /// and also removing all events from the index
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Transmitter")]
+        [MockContext]
         [Fact]
         public async Task Transmitter1()
         {
@@ -303,6 +305,7 @@ namespace Splunk.Client.UnitTests
         /// and also removing all events from the index
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Transmitter")]
+        [MockContext]
         [Fact]
         public async Task Transmitter2()
         {

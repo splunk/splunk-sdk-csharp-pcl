@@ -117,7 +117,7 @@ namespace Splunk.Client.Helpers
                 }
                 else
                 {
-                    var serializer = new DataContractSerializer(typeof(HttpResponseMessage));
+                    var serializer = new DataContractSerializer(typeof(Queue<Recording>));
 
                     using (var stream = new FileStream(RecordingFilename, FileMode.Open))
                     {
@@ -414,8 +414,6 @@ namespace Splunk.Client.Helpers
 
             #region Privates/internals
 
-            object gate = new object();
-
             [DataMember(Name = "Checksum", IsRequired = true)]
             readonly string checksum;
 
@@ -437,8 +435,11 @@ namespace Splunk.Client.Helpers
             [DataMember(Name = "Response.Version", IsRequired = true)]
             readonly Version version;
 
-            HttpResponseMessage response;
+            [DataMember]
+            object gate = new object();
 
+            HttpResponseMessage response;
+            
             Recording()
             { }
 

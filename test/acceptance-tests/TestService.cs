@@ -169,6 +169,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
         [Fact]
         public async Task CanGetCapabilities()
         {
@@ -1364,6 +1365,7 @@ namespace Splunk.Client.AcceptanceTests
                     var results = new List<Splunk.Client.SearchResult>();
                     var exception = (Exception)null;
 
+#if false // TODO: rewrite
                     var manualResetEvent = new ManualResetEvent(true);
 
                     stream.Subscribe(
@@ -1407,7 +1409,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     manualResetEvent.Reset();
                     manualResetEvent.WaitOne();
-
+#endif
                     Assert.Null(exception);
                     Assert.Equal(100, results.Count);
 
@@ -1430,6 +1432,7 @@ namespace Splunk.Client.AcceptanceTests
                     var results = new List<Splunk.Client.SearchResult>();
                     var exception = (Exception)null;
 
+#if false // TODO: rewrite
                     var manualResetEvent = new ManualResetEvent(true);
 
                     stream.Subscribe(
@@ -1455,7 +1458,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     manualResetEvent.Reset();
                     manualResetEvent.WaitOne();
-
+#endif
                     Assert.Null(exception);
                     Assert.Equal(100, results.Count);
                 }

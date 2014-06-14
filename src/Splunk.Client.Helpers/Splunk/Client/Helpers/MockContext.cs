@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -20,16 +20,17 @@ namespace Splunk.Client.Helpers
     using System;
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
+    using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
+    using System.Security.Cryptography;
     using System.Text;
-    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Xml;
-    using System.Xml.Serialization;
 
     /// <summary>
     /// Provides a class for faking HTTP requests and responses from a Splunk server.
@@ -38,265 +39,425 @@ namespace Splunk.Client.Helpers
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MockContext"/> class with a 
+        /// protocol, host, port number.
+        /// </summary>
+        /// <param name="protocol">
+        /// The <see cref="Protocol"/> used to communiate with <see cref="Host"/>.
+        /// </param>
+        /// <param name="host">
+        /// The DNS name of a Splunk server instance.
+        /// </param>
+        /// <param name="port">
+        /// The port number used to communicate with <see cref="Host"/>.
+        /// </param>
+        /// <remarks>
+        ///   <para><b>References</b></para>
+        ///   <list type="number">
+        ///     <item>
+        ///       <description>   
+        ///         <a href="http://goo.gl/ppbIlm">How to Avoid Creating Real
+        ///         Tasks When Unit Testing Async</a>.
+        ///       </description>
+        ///     </item>
+        ///     <item>
+        ///       <description>
+        ///         <a href="http://goo.gl/YUFhAO">ObjectContent Class</a>.
+        ///       </description>
+        ///     </item>
+        ///   </list>
+        /// </remarks>
+        /// 
         public MockContext(Scheme protocol, string host, int port)
-            : base(protocol, host, port, new MockHttpMessageHandler(FilePath, IsRecording))
-        {
-            this.LoadRequestResponseXml();
-        }
+            : base(protocol, host, port, CreateMessageHandler())
+        { }
 
         #endregion
 
         #region Properties
 
-        public static string FilePath
-        {
-            get { return filePath; }
-        }
+        public static string CallerId
+        { get; private set; }
 
         public static bool IsEnabled
-        { 
+        {
             get { return isEnabled; }
         }
 
         public static bool IsRecording
-        { 
+        {
             get { return isRecording; }
         }
 
-        public string Name
+        public static string RecordingDirectoryName
         {
-            get { return "mock-context"; }
+            get { return recordingDirectoryName; }
         }
+
+        public static string RecordingFilename
+        { get; private set; }
 
         #endregion
 
         #region Methods
 
-        public override async Task<Response> GetAsync(Namespace ns, ResourceName resource, params IEnumerable<Argument>[] argumentSets)
+        public static void Begin(string callerId)
         {
-            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, CancellationToken.None, argumentSets);
-            return response;
+            Contract.Requires<ArgumentNullException>(callerId != null);
+            CallerId = callerId;
+
+            if (IsEnabled)
+            {
+                RecordingFilename = Path.Combine(recordingDirectoryName, string.Join(".", CallerId, "xml"));
+
+                if (IsRecording)
+                {
+                    Recordings = new Queue<Recording>();
+                }
+                else
+                {
+                    var serializer = new DataContractSerializer(typeof(HttpResponseMessage));
+
+                    using (var stream = new FileStream(RecordingFilename, FileMode.Open))
+                    {
+                        Recordings = (Queue<Recording>)serializer.ReadObject(stream);
+                    }
+                }
+            }
         }
 
-        public override async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token, params IEnumerable<Argument>[] argumentSets)
+        public static void End()
         {
-            var response = await this.SendAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets);
-            return response;
-        }
+            if (IsEnabled)
+            {
+                if (IsRecording)
+                {
+                    var serializer = new DataContractSerializer(typeof(Queue<Recording>));
+                    Directory.CreateDirectory(RecordingDirectoryName);
 
-        public override async Task<Response> PostAsync(Namespace ns, ResourceName resource, params IEnumerable<Argument>[] argumentSets)
-        {
-            var content = this.CreateStringContent(argumentSets);
-            return await PostAsync(ns, resource, content, null);
-        }
+                    using (var stream = new FileStream(RecordingFilename, FileMode.Create))
+                    {
+                        serializer.WriteObject(stream, Recordings/*.ToList()*/);
+                    }
+                }
+                else
+                {
+                    Debug.Assert(Recordings.Count == 0);
+                }
 
-        public override async Task<Response> PostAsync(Namespace ns, ResourceName resource, HttpContent content, params IEnumerable<Argument>[] argumentSets)
-        {
-            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, CancellationToken.None, argumentSets);
-            return response;
-        }
-
-        public override async Task<Response> DeleteAsync(Namespace ns, ResourceName resource, params IEnumerable<Argument>[] argumentSets)
-        {
-            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, CancellationToken.None, argumentSets);
-            return response;
+                Recordings = null;
+            }
         }
 
         #endregion
 
         #region Privates/internals
 
-        static readonly Dictionary<string, string> requestResponse = new Dictionary<string, string>();
-        static readonly string filePath;
-        static readonly bool isEnabled;
-        static readonly bool isRecording;
+        static readonly string recordingDirectoryName;
+        static readonly bool isEnabled = bool.Parse(ConfigurationManager.AppSettings["MockContext.IsEnabled"]);
+        static readonly bool isRecording = bool.Parse(ConfigurationManager.AppSettings["MockContext.IsRecording"]);
 
-        string savedRequestContent;
-        string savedRequestString;
+        static Queue<Recording> Recordings;
 
         static MockContext()
         {
-            filePath = ConfigurationManager.AppSettings["MockContext.FilePath"];
-            isEnabled = bool.Parse(ConfigurationManager.AppSettings["MockContext.IsEnabled"]);
-            isRecording = bool.Parse(ConfigurationManager.AppSettings["MockContext.IsRecording"]);
+            recordingDirectoryName = ConfigurationManager.AppSettings["MockContext.RecordingDirectoryName"] ?? 
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Recordings");
         }
 
-        async Task<Response> SendAsync(HttpMethod method, Namespace ns, ResourceName resource, HttpContent content, CancellationToken cancellationToken, IEnumerable<Argument>[] argumentSets)
+        static HttpMessageHandler CreateMessageHandler()
         {
-            this.savedRequestString = "";
-            var serviceUri = this.CreateServiceUri(ns, resource, argumentSets);
-
-            using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
+            if (IsEnabled)
             {
-                if (this.SessionKey != null)
+                var handler = IsRecording ? (HttpMessageHandler)new Recorder() : (HttpMessageHandler)new Player();
+                return handler;
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region Types
+
+        abstract class MessageHandler : HttpMessageHandler
+        {
+            public HttpClient Client
+            {
+                get { return this.client; }
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
                 {
-                    request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
+                    this.client.Dispose();
+                    base.Dispose(true);
+                }
+            }
+
+            protected static async Task<Tuple<string, long>> ComputeChecksum(HttpRequestMessage request, MemoryStream stream)
+            {
+                Contract.Requires<ArgumentNullException>(request != null);
+                Contract.Requires<ArgumentNullException>(stream != null);
+
+                string text;
+                byte[] bytes;
+
+                text = string.Format("{0} {1} HTTP/{2}", request.Method, request.RequestUri, request.Version);
+                bytes = Encoding.UTF8.GetBytes(text);
+                stream.Write(bytes, 0, bytes.Length);
+                stream.Write(crlf, 0, crlf.Length);
+
+                foreach (var header in request.Headers)
+                {
+                    text = string.Format("{0}: {1}", header.Key, string.Join(", ", header.Value));
+                    bytes = Encoding.UTF8.GetBytes(text);
+                    stream.Write(bytes, 0, bytes.Length);
+                    stream.Write(crlf, 0, crlf.Length);
                 }
 
-                HttpResponseMessage response;
-
-                if (!IsRecording)
+                if (request.Content != null)
                 {
-                    response = this.CreateMockResponse();
-                }
-                else
-                {
-                    HttpClient httpclient = new HttpClient();
-                    response = await httpclient.SendAsync(request);
-
-                    if (!requestResponse.ContainsKey(this.savedRequestString))
+                    foreach (var header in request.Content.Headers)
                     {
-                        XmlDocument doc = new XmlDocument();
-
-                        doc.Load(filePath);
-
-                        XmlNode root = doc.LastChild;
-                        StringBuilder innertext = new StringBuilder();
-                        innertext.AppendLine(string.Format("<UserRequest>{0}+{1}</UserRequest>", this.savedRequestString, this.savedRequestContent));
-
-                        using (MemoryStream stream = new MemoryStream())
-                        {
-                            await response.Content.CopyToAsync(stream);
-                            stream.Seek(0, SeekOrigin.Begin);
-                            StreamReader reader = new StreamReader(stream);
-                            string str = reader.ReadToEnd();
-                            str = str.Replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", "");
-                            innertext.AppendLine(string.Format("<UserResponse><StatusCode>{0}</StatusCode><ReasonPhrase>{1}</ReasonPhrase><Content>{2}</Content></UserResponse>", response.StatusCode, response.ReasonPhrase, str));
-                        }
-
-                        XmlElement ele = doc.CreateElement("RequestResponse");
-                        ele.InnerXml = innertext.ToString();
-                        doc.DocumentElement.AppendChild(ele);
-                        doc.Save(filePath);
+                        text = string.Format("{0}: {1}", header.Key, string.Join(", ", header.Value));
+                        bytes = Encoding.UTF8.GetBytes(text);
+                        stream.Write(bytes, 0, bytes.Length);
+                        stream.Write(crlf, 0, crlf.Length);
                     }
                 }
 
-                this.savedRequestContent = string.Empty;
-                this.savedRequestString = string.Empty;
+                stream.Write(crlf, 0, crlf.Length);
+                long offset = stream.Position;
 
-                return await Response.CreateAsync(response);
-            }
-        }
-
-        Uri CreateServiceUri(Namespace ns, ResourceName name, params IEnumerable<Argument>[] argumentSets)
-        {
-            var builder = new StringBuilder(this.ToString());
-
-            builder.Append("/");
-            builder.Append(ns.ToUriString());
-            builder.Append("/");
-            builder.Append(name.ToUriString());
-
-            if (argumentSets != null)
-            {
-                var query = string.Join("&",
-                    from args in argumentSets
-                    where args != null
-                    from arg in args
-                    select string.Join("=", Uri.EscapeDataString(arg.Name), Uri.EscapeDataString(arg.Value.ToString())));
-
-                if (query.Length > 0)
+                if (request.Content != null)
                 {
-                    builder.Append('?');
-                    builder.Append(query);
+                    await request.Content.CopyToAsync(stream);
+                }
+
+                var hashAlgorithm = SHA512.Create();
+                stream.Seek(0, SeekOrigin.Begin);
+
+                byte[] hash = hashAlgorithm.ComputeHash(stream);
+
+                var builder = hash.Aggregate(new StringBuilder(2 * hash.Length), (b, x) =>
+                    {
+                        return b.Append(x.ToString("x2"));
+                    });
+
+                var checksum = builder.ToString();
+
+                return new Tuple<string, long>(checksum, offset);
+            }
+
+            protected static async Task<Tuple<string, HttpRequestMessage>> DuplicateAndComputeChecksum(
+                HttpRequestMessage request)
+            {
+                Contract.Requires<ArgumentNullException>(request != null);
+                var stream = new MemoryStream();
+
+                try
+                {
+                    var result = await ComputeChecksum(request, stream);
+                    string checksum = result.Item1;
+                    long offset = result.Item2;
+
+                    StreamContent content = null;
+
+                    if (request.Content == null)
+                    {
+                        stream.Close();
+                    }
+                    else
+                    {
+                        content = new StreamContent(stream);
+
+                        foreach (var header in request.Content.Headers)
+                        {
+                            content.Headers.Add(header.Key, header.Value);
+                        }
+
+                        content.Headers.ContentLength = request.Content.Headers.ContentLength;
+                        stream.Seek(offset, SeekOrigin.Begin);
+                    }
+
+                    var duplicateRequest = new HttpRequestMessage(request.Method, request.RequestUri)
+                        {
+                            Content = content,
+                            Version = request.Version
+                        };
+
+                    foreach (var header in request.Headers)
+                    {
+                        duplicateRequest.Headers.Add(header.Key, header.Value);
+                    }
+
+                    return new Tuple<string, HttpRequestMessage>(checksum, duplicateRequest);
+                }
+                catch
+                {
+                    stream.Dispose();
+                    throw;
                 }
             }
 
-            this.savedRequestString = builder.ToString();
-            this.savedRequestString = this.RemoveGuidPattern(this.savedRequestString);
+            #region Privates/internals
 
-            var uri = UriConverter.Instance.Convert(this.savedRequestString);
-            return uri;
+            static readonly byte[] crlf = new byte[] { 0x0D, 0x0A };
+            readonly HttpClient client = new HttpClient();
+
+            #endregion
         }
 
-        StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)
+        class Player : MessageHandler
         {
-            this.savedRequestContent = "";
-
-            if (argumentSets == null)
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
-                return new StringContent(string.Empty);
-            }
+                var recording = Recordings.Dequeue();
 
-            var body = string.Join("&",
-                from args in argumentSets
-                where args != null
-                from arg in args
-                select string.Join("=", Uri.EscapeDataString(arg.Name), Uri.EscapeDataString(arg.Value.ToString())));
-
-            body = this.RemoveGuidPattern(body);
-            var stringContent = new StringContent(body);
-
-            //the below process is only for to save the request string to requestResponse.xml        
-            this.savedRequestContent = this.RemoveSpecialChar(body);
-
-            return stringContent;
-        }
-
-        string RemoveGuidPattern(string body)
-        {
-            // remove Guid pattern sent by the test so that we don't hit the request not found issue
-            string regexp = @"[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}";
-            if (Regex.IsMatch(body, regexp))
-            {
-                body = body.Replace(Regex.Match(body, regexp).Value, new Guid().ToString());
-            }
-
-            return body;
-        }
-
-        string RemoveSpecialChar(string body)
-        {
-            // remove '&' so that we can save the string into xml file
-            body = body.Replace("&", ",");
-            return body;
-        }
-
-        void LoadRequestResponseXml()
-        {
-            XmlDocument doc = new XmlDocument();
-            doc.Load(filePath);
-
-            XmlElement root = doc.DocumentElement;
-            XmlNodeList nodes = root.SelectNodes("RequestResponse");
-            foreach (XmlNode node in nodes)
-            {
-                string request = node.ChildNodes[0].InnerXml;
-                string response = node.ChildNodes[1].InnerXml;
-
-                if (!requestResponse.ContainsKey(request))
+                using (var stream = new MemoryStream())
                 {
-                    requestResponse.Add(request, response);
+                    var result = await ComputeChecksum(request, stream);
+                    string checksum = result.Item1;
+
+                    if (checksum != recording.Checksum)
+                    {
+                        string text = string.Format("The recording in {0} is out of sync with {1}.", 
+                            MockContext.recordingDirectoryName,
+                            MockContext.CallerId);
+                        throw new InvalidOperationException(text);
+                    }
+                }
+
+                var response = recording.Response;
+                response.RequestMessage = request;
+
+                return response;
+            }
+        }
+
+        class Recorder : MessageHandler
+        {
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                var tuple = await DuplicateAndComputeChecksum(request);
+                var checksum = tuple.Item1;
+
+                using (var forward = tuple.Item2)
+                {
+                    using (var response = await this.Client.SendAsync(forward, cancellationToken))
+                    {
+                        var recording = await Recording.CreateRecording(checksum, response);
+
+                        recording.Response.RequestMessage = request;
+                        MockContext.Recordings.Enqueue(recording);
+
+                        return recording.Response;
+                    }
                 }
             }
         }
 
-        HttpResponseMessage CreateMockResponse()
+        [DataContract]
+        class Recording
         {
-            var response = new HttpResponseMessage();
-            //this.savedRequestString = this.RemoveGuidPattern(this.savedRequestString);
-            //this.savedRequestContent = this.RemoveSpecialChar(this.savedRequestContent);
-
-            string requestKey = string.Format("{0}+{1}", this.savedRequestString, this.savedRequestContent);
-            if (requestResponse.ContainsKey(requestKey))
+            public string Checksum
             {
-                string str = string.Format("<xml>{0}</xml>", requestResponse[requestKey]);
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(str);
-
-                XmlNode node = doc.DocumentElement;
-                response.StatusCode = (System.Net.HttpStatusCode)Enum.Parse(typeof(System.Net.HttpStatusCode), node.FirstChild.InnerText);
-                response.ReasonPhrase = node.FirstChild.NextSibling.InnerText;
-                response.Content = new StringContent(node.FirstChild.NextSibling.NextSibling.InnerXml);
-            }
-            else
-            {
-                response.StatusCode = System.Net.HttpStatusCode.NotFound;
-                response.ReasonPhrase = "not created the user response yet in the file, looking for " + requestKey;
-                response.Content = new StringContent("");
+                get { return this.checksum; }
             }
 
-            return response;
+            public HttpResponseMessage Response
+            {
+                get
+                {
+                    if (this.response == null)
+                    {
+                        lock (this.gate)
+                        {
+                            if (this.response == null)
+                            {
+                                var response = new HttpResponseMessage(this.statusCode)
+                                {
+                                    Content = new StreamContent(new MemoryStream(this.content)),
+                                    ReasonPhrase = this.reasonPhrase,
+                                    Version = this.version
+                                };
+
+                                foreach (var header in this.headers)
+                                {
+                                    response.Headers.Add(header.Key, header.Value);
+                                }
+
+                                foreach (var header in this.contentHeaders)
+                                {
+                                    response.Content.Headers.Add(header.Key, header.Value);
+                                }
+
+                                this.response = response;
+                            }
+                        }
+                    }
+
+                    return this.response;
+                }
+            }
+
+            public static async Task<Recording> CreateRecording(string checksum, HttpResponseMessage response)
+            {
+                var content = await response.Content.ReadAsByteArrayAsync();
+                var recording = new Recording(response, content, checksum);
+
+                return recording;
+            }
+
+            #region Privates/internals
+
+            object gate = new object();
+
+            [DataMember(Name = "Checksum", IsRequired = true)]
+            readonly string checksum;
+
+            [DataMember(Name = "Response.Content", IsRequired = true)]
+            readonly byte[] content;
+
+            [DataMember(Name = "Response.Content.Headers", IsRequired = true)]
+            readonly List<KeyValuePair<string, IEnumerable<string>>> contentHeaders;
+
+            [DataMember(Name = "Response.Headers", IsRequired = true)]
+            readonly List<KeyValuePair<string, IEnumerable<string>>> headers;
+
+            [DataMember(Name = "Response.ReasonPhrase", IsRequired = true)]
+            readonly string reasonPhrase;
+
+            [DataMember(Name = "Response.StatusCode", IsRequired = true)]
+            readonly HttpStatusCode statusCode;
+
+            [DataMember(Name = "Response.Version", IsRequired = true)]
+            readonly Version version;
+
+            HttpResponseMessage response;
+
+            Recording()
+            { }
+
+            Recording(HttpResponseMessage response, byte[] content, string checksum)
+            {
+                Contract.Requires<ArgumentNullException>(response != null);
+                Contract.Requires<ArgumentNullException>(content != null);
+                Contract.Requires<ArgumentNullException>(checksum != null);
+
+                this.checksum = checksum;
+                this.content = content;
+                this.contentHeaders = response.Content.Headers.ToList();
+                this.headers = response.Headers.ToList();
+                this.reasonPhrase = response.ReasonPhrase;
+                this.statusCode = response.StatusCode;
+                this.version = response.Version;
+            }
+
+            #endregion
         }
 
         #endregion

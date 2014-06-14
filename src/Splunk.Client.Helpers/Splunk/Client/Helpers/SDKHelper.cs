@@ -65,25 +65,13 @@ namespace Splunk.Client.Helpers
         /// <returns>
         /// The service created.
         /// </returns>
-        public static async Task<Service> CreateService(Namespace ns = null, 
-            [CallerFilePath]string callerFilePath = null, 
-            [CallerLineNumber]int? callerLineNumber = null,
-            [CallerMemberName]string callerMemberName = null)
+        public static async Task<Service> CreateService(Namespace ns = null)
         {
-            string callerId = string.Join(".", Path.GetFileNameWithoutExtension(callerFilePath), callerMemberName);
-            Service service;
-
-            if (MockContext.IsEnabled)
-            {
-                var context = new FakeContext(Splunk.Scheme, Splunk.Host, Splunk.Port, callerId);
-                service = new Service(context);
-            }
-            else
-            {
-                service = new Service(Splunk.Scheme, Splunk.Host, Splunk.Port, ns);
-            }
-
+            var context = new MockContext(Splunk.Scheme, Splunk.Host, Splunk.Port);
+            var service = new Service(context);
+            
             await service.LoginAsync(Splunk.Username, Splunk.Password);
+
             return service;
         }
 

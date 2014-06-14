@@ -46,15 +46,15 @@ namespace Splunk.Client.Examples
             //// Search : Pull model (foreach loop => IEnumerable)
 
             Job job = await service.Jobs.CreateAsync("search index=_internal | head 10");
-            SearchResultStream searchResultStream;
+            SearchResultStream stream;
 
-            using (searchResultStream = await job.GetSearchResultsAsync())
+            using (stream = await job.GetSearchResultsAsync())
             {
                 try
                 {
-                    foreach (Task<SearchResult> result in searchResultStream)
+                    foreach (Task<SearchResult> result in stream)
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", searchResultStream.ReadCount, await result));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, await result));
                     }
                     
                     Console.WriteLine("End of search results");
@@ -69,12 +69,13 @@ namespace Splunk.Client.Examples
 
             job = await service.Jobs.CreateAsync("search index=_internal | head 10");
 
-            using (searchResultStream = await job.GetSearchResultsAsync())
+            using (stream = await job.GetSearchResultsAsync())
             {
-                searchResultStream.Subscribe(
+#if false // TODO: rewrite
+                stream.Subscribe(
                     onNext: (result) =>
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", searchResultStream.ReadCount, result));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, result));
                     },
                     onError: (e) =>
                     {
@@ -84,6 +85,7 @@ namespace Splunk.Client.Examples
                     {
                         Console.WriteLine("End of search results");
                     });
+#endif
             }
         }
     }

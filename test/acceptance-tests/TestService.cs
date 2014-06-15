@@ -1379,13 +1379,10 @@ namespace Splunk.Client.AcceptanceTests
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", args))
                 {
-                    var results = new List<Splunk.Client.SearchResult>();
+                    var results = new List<SearchResult>();
                     var exception = (Exception)null;
 
-#if false // TODO: rewrite
-                    var manualResetEvent = new ManualResetEvent(true);
-
-                    stream.Subscribe(
+                    stream.Subscribe(new Observer<SearchPreview>(
                         onNext: (preview) =>
                         {
                             Assert.Equal<IEnumerable<string>>(new List<string>
@@ -1416,20 +1413,10 @@ namespace Splunk.Client.AcceptanceTests
                         onError: (e) =>
                         {
                             exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
-                            manualResetEvent.Set();
+                        }));
 
-                        },
-                        onCompleted: () =>
-                        {
-                            manualResetEvent.Set();
-                        });
-
-                    manualResetEvent.Reset();
-                    manualResetEvent.WaitOne();
-#endif
                     Assert.Null(exception);
                     Assert.Equal(100, results.Count);
-
                 }
 
                 await service.LogoffAsync();
@@ -1450,10 +1437,7 @@ namespace Splunk.Client.AcceptanceTests
                     var results = new List<Splunk.Client.SearchResult>();
                     var exception = (Exception)null;
 
-#if false // TODO: rewrite
-                    var manualResetEvent = new ManualResetEvent(true);
-
-                    stream.Subscribe(
+                    stream.Subscribe(new Observer<SearchResult>(
                         onNext: (result) =>
                         {
                             var count = stream.FieldNames.Intersect(result.Keys).Count();
@@ -1467,16 +1451,8 @@ namespace Splunk.Client.AcceptanceTests
                         onError: (e) =>
                         {
                             exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
-                            manualResetEvent.Set();
-                        },
-                        onCompleted: () =>
-                        {
-                            manualResetEvent.Set();
-                        });
+                        }));
 
-                    manualResetEvent.Reset();
-                    manualResetEvent.WaitOne();
-#endif
                     Assert.Null(exception);
                     Assert.Equal(100, results.Count);
                 }

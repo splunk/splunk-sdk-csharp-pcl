@@ -135,6 +135,11 @@ namespace Splunk.Client.UnitTests
             return true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="service"></param>
+        /// <returns></returns>
         public static async Task LoginAsync(this Service service)
         {
             await service.LoginAsync(SDKHelper.Splunk.Username, SDKHelper.Splunk.Password);

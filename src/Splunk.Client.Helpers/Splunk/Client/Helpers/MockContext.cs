@@ -140,6 +140,7 @@ namespace Splunk.Client.Helpers
                 {
                     var serializer = new DataContractJsonSerializer(typeof(Queue<Recording>));
                     Directory.CreateDirectory(RecordingDirectoryName);
+                    Recordings.TrimExcess();
 
                     using (var stream = new FileStream(RecordingFilename, FileMode.Create))
                     {

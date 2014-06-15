@@ -71,8 +71,7 @@ namespace Splunk.Client.Examples
 
             using (stream = await job.GetSearchResultsAsync())
             {
-#if false // TODO: rewrite
-                stream.Subscribe(
+                stream.Subscribe(new Observer<SearchResult>(
                     onNext: (result) =>
                     {
                         Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, result));
@@ -84,8 +83,7 @@ namespace Splunk.Client.Examples
                     onCompleted: () =>
                     {
                         Console.WriteLine("End of search results");
-                    });
-#endif
+                    }));
             }
         }
     }

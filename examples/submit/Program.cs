@@ -43,7 +43,7 @@ namespace Splunk.Examples.Submit
 
         static void Main(string[] args)
         {
-            using (var service = new Service(SDKHelper.Splunk.Scheme, SDKHelper.Splunk.Host, SDKHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
@@ -58,9 +58,9 @@ namespace Splunk.Examples.Submit
         /// <param name="argv">The command line arguments</param>
         static async Task Run(Service service)
         {
-            Console.WriteLine("Login as " + SDKHelper.Splunk.Username);
+            Console.WriteLine("Login as " + SdkHelper.Splunk.Username);
 
-            await service.LoginAsync(SDKHelper.Splunk.Username, SDKHelper.Splunk.Password);
+            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             Console.WriteLine("Create an index");
 

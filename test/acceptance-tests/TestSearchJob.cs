@@ -47,7 +47,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task BadOutputMode()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var search = "invalidpart" + Search;
 
@@ -76,7 +76,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task JobSearchMode()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
@@ -100,7 +100,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task JobExecutionMode()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
@@ -129,7 +129,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task JobEventsTruncationModeArgument()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
@@ -208,7 +208,7 @@ namespace Splunk.Client.UnitTests
         {
             const string search = "search index=_internal * | head 100000";
             
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var job = await service.Jobs.CreateAsync(search);
 
@@ -301,7 +301,7 @@ namespace Splunk.Client.UnitTests
         /// </param>
         async Task RunExportForEachEnum(string search, Type enumType, Func<string, SearchExportArgs> getJobExportArgs)
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 await ForEachEnum(enumType, async @enum =>
                     {
@@ -320,7 +320,7 @@ namespace Splunk.Client.UnitTests
         /// </param>
         async Task RunJobForEachEnum(Type enumType, Func<string, JobArgs> getJobArgs)
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 await ForEachEnum(enumType, async @enum =>
                 {

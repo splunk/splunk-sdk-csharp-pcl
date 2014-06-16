@@ -42,7 +42,7 @@ namespace Splunk.Client.UnitTests
         {
             const string indexName = "sdk-tests2_indexaccessors";
 
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 IndexCollection indexes = service.Indexes;
                 await indexes.RemoveAsync(indexName);
@@ -237,7 +237,7 @@ namespace Splunk.Client.UnitTests
         {
             const string indexName = "sdk-tests2_indexargs";
 
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 Index index = await service.Indexes.RecreateAsync(indexName);
                 Assert.False(index.Disabled);
@@ -261,12 +261,14 @@ namespace Splunk.Client.UnitTests
                 SearchResult result;
 
                 //// TODO: Check contentss
-                result = await transmitter.SendAsync(string.Format("1, {0}, {1}, simple event", DateTime.Now, indexName), 
+                result = await transmitter.SendAsync(
+                    SdkHelper.GetOrElse(string.Format("1, {0}, {1}, simple event", DateTime.Now, indexName)),
                     indexName, transmitterArgs);
 
                 Assert.NotNull(result);
 
-                result = await transmitter.SendAsync(string.Format("2, {0}, {1}, simple event", DateTime.Now, indexName), 
+                result = await transmitter.SendAsync(
+                    SdkHelper.GetOrElse(string.Format("2, {0}, {1}, simple event", DateTime.Now, indexName)), 
                     indexName, transmitterArgs);
 
                 Assert.NotNull(result);
@@ -275,8 +277,10 @@ namespace Splunk.Client.UnitTests
                 {
                     using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
-                        writer.WriteLine(string.Format("1, {0}, {1}, stream event ", DateTime.Now, indexName));
-                        writer.WriteLine(string.Format("2, {0}, {1}, stream event", DateTime.Now, indexName));
+                        writer.WriteLine(
+                            SdkHelper.GetOrElse(string.Format("1, {0}, {1}, stream event", DateTime.Now, indexName)));
+                        writer.WriteLine(
+                            SdkHelper.GetOrElse(string.Format("2, {0}, {1}, stream event", DateTime.Now, indexName)));
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);
@@ -311,7 +315,7 @@ namespace Splunk.Client.UnitTests
         {
             string indexName = "main";
 
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 Index index = await service.Indexes.GetAsync(indexName);
                 long currentEventCount = index.TotalEventCount;
@@ -323,8 +327,12 @@ namespace Splunk.Client.UnitTests
 
                 // Submit event to default index using variable arguments
 
-                await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World", DateTime.Now), indexName);
-                await transmitter.SendAsync(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now), indexName);
+                await transmitter.SendAsync(
+                    SdkHelper.GetOrElse(string.Format("{0}, DefaultIndexArgs string event Hello World 1", DateTime.Now)), 
+                    indexName);
+                await transmitter.SendAsync(
+                    SdkHelper.GetOrElse(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now)),
+                    indexName);
 
                 await index.PollForUpdatedEventCount(currentEventCount + 2);
                 currentEventCount += 2;
@@ -333,12 +341,13 @@ namespace Splunk.Client.UnitTests
                 {
                     using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
-                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events ", DateTime.Now));
-                        writer.WriteLine(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now));
+                        writer.WriteLine(
+                            SdkHelper.GetOrElse(string.Format("{0}, DefaultIndexArgs stream events 1", DateTime.Now)));
+                        writer.WriteLine(
+                            SdkHelper.GetOrElse(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now)));
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);
-
                     await transmitter.SendAsync(stream, indexName);
                 }
 

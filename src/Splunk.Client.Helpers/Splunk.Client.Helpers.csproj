@@ -83,10 +83,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Splunk\Client\Helpers\MockContextMode.cs" />
     <Compile Include="Splunk\Client\Helpers\Observer.cs" />
     <Compile Include="Splunk\Client\Helpers\MockContext.cs" />
     <Compile Include="Splunk\Client\Helpers\MockContextAttribute.cs" />
-    <Compile Include="Splunk\Client\Helpers\SDKHelper.cs" />
+    <Compile Include="Splunk\Client\Helpers\SdkHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

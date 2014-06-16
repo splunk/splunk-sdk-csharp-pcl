@@ -80,16 +80,13 @@ namespace Splunk.Client.Helpers
         #region Properties
 
         public static string CallerId
-        { get; private set; }
-
-        public static bool IsEnabled
         {
-            get { return isEnabled; }
+            get { return session == null ? null : session.Name; }
         }
 
-        public static bool IsRecording
+        public static MockContextMode Mode
         {
-            get { return isRecording; }
+            get { return mode; }
         }
 
         public static string RecordingDirectoryName
@@ -107,19 +104,23 @@ namespace Splunk.Client.Helpers
         public static void Begin(string callerId)
         {
             Contract.Requires<ArgumentNullException>(callerId != null);
-            CallerId = callerId;
+            
+            RecordingFilename = Path.Combine(recordingDirectoryName, string.Join(".", callerId, "json", "gz"));
 
-            if (IsEnabled)
+            switch (Mode)
             {
-                RecordingFilename = Path.Combine(recordingDirectoryName, string.Join(".", CallerId, "json", "gz"));
+                case MockContextMode.Run:
+                    session = new Session(callerId);
+                    getOrElse = Noop;
+                    break;
 
-                if (IsRecording)
-                {
+                case MockContextMode.Record:
                     session = new Session(callerId);
                     getOrElse = Enqueue;
-                }
-                else
-                {
+                    break;
+
+                case MockContextMode.Playback:
+
                     var serializer = new DataContractJsonSerializer(typeof(Session));
 
                     using (var stream = new FileStream(RecordingFilename, FileMode.Open))
@@ -131,17 +132,23 @@ namespace Splunk.Client.Helpers
                     }
 
                     getOrElse = Dequeue;
-                }
+                    break;
+
+                default: throw new InvalidOperationException();
             }
         }
 
         public static void End()
         {
-            if (IsEnabled)
+            switch (Mode)
             {
-                if (IsRecording)
-                {
+                case MockContextMode.Run:
+                    break;
+
+                case MockContextMode.Record:
+
                     var serializer = new DataContractJsonSerializer(typeof(Session));
+
                     Directory.CreateDirectory(RecordingDirectoryName);
                     session.Data.TrimExcess();
                     session.Recordings.TrimExcess();
@@ -153,20 +160,25 @@ namespace Splunk.Client.Helpers
                             serializer.WriteObject(compressedStream, session);
                         }
                     }
-                }
-                else
-                {
+
+                    break;
+                
+                case MockContextMode.Playback:
+
                     Debug.Assert(session.Data.Count == 0);
                     Debug.Assert(session.Recordings.Count == 0);
-                }
+                    break;
 
-                session = null;
+                default: throw new InvalidOperationException();
             }
+            
+            session = null;
         }
 
         public static T GetOrElse<T>(T value)
         {
-            return (T)getOrElse(value);
+            object o = getOrElse(value);
+            return (T)o;
         }
 
         #endregion
@@ -174,11 +186,9 @@ namespace Splunk.Client.Helpers
         #region Privates/internals
 
         static readonly string recordingDirectoryName;
-        static readonly bool isEnabled;
-        static readonly bool isRecording;
-
-        static Session session;
+        static readonly MockContextMode mode;
         static Func<object, object> getOrElse;
+        static Session session;
 
         static MockContext()
         {
@@ -187,22 +197,22 @@ namespace Splunk.Client.Helpers
             setting = ConfigurationManager.AppSettings["MockContext.RecordingDirectoryName"];
             recordingDirectoryName =  setting ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Recordings");
 
-            setting = ConfigurationManager.AppSettings["MockContext.IsEnabled"];
-            isEnabled = setting == null ? false : bool.Parse(setting);
-
-            setting = ConfigurationManager.AppSettings["MockContext.IsRecording"];
-            isRecording = setting == null ? false : bool.Parse(setting);
+            setting = ConfigurationManager.AppSettings["MockContext.Mode"];
+            mode = setting == null ? MockContextMode.Run : (MockContextMode)Enum.Parse(typeof(MockContextMode), setting);
         }
 
         static HttpMessageHandler CreateMessageHandler()
         {
-            if (IsEnabled)
+            switch (Mode)
             {
-                var handler = IsRecording ? (HttpMessageHandler)new Recorder() : (HttpMessageHandler)new Player();
-                return handler;
+                case MockContextMode.Run:
+                    return null;
+                case MockContextMode.Record:
+                    return new Recorder();
+                case MockContextMode.Playback:
+                    return new Player();
+                default: throw new InvalidOperationException();
             }
-
-            return null;
         }
 
         static object Dequeue(object o)
@@ -213,6 +223,11 @@ namespace Splunk.Client.Helpers
         static object Enqueue(object o)
         {
             session.Data.Enqueue(o);
+            return o;
+        }
+
+        static object Noop(object o)
+        {
             return o;
         }
 
@@ -496,6 +511,7 @@ namespace Splunk.Client.Helpers
             #endregion
         }
 
+        [KnownType(typeof(DateTime))]
         [DataContract]
         class Session
         {

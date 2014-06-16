@@ -29,12 +29,12 @@ namespace Splunk.Client.Helpers
     /// <summary>
     /// 
     /// </summary>
-    public static class SDKHelper
+    public static class SdkHelper
     {
         /// <summary>
-        /// Initializes the <see cref="SDKHelper" /> class.
+        /// Initializes the <see cref="SdkHelper" /> class.
         /// </summary>
-        static SDKHelper()
+        static SdkHelper()
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {

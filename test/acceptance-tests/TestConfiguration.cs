@@ -38,7 +38,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task ConfigurationCollection()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 ConfigurationCollection confs = service.Configurations;
                 await confs.GetAllAsync();
@@ -96,13 +96,13 @@ namespace Splunk.Client.UnitTests
         {            
             const string app = "sdk-tests"; // Provides a removable jail for the configuration changes we'll make
 
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 await service.Applications.RecreateAsync(app);
                 await service.Server.RestartAsync(2 * 60 * 1000);
             }
 
-            using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: app)))
+            using (var service = await SdkHelper.CreateService(new Namespace(user: "nobody", app: app)))
             {
                 ConfigurationCollection confs = service.Configurations;
                 await confs.GetAllAsync();
@@ -245,7 +245,7 @@ namespace Splunk.Client.UnitTests
                 Assert.Null(testconf.SingleOrDefault(stanza => stanza.Name == "stanza3"));
             }
 
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 Assert.True(await service.Applications.RemoveAsync(app));
                 await service.Server.RestartAsync(2 * 60 * 1000);

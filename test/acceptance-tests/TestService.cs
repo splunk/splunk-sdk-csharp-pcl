@@ -43,12 +43,12 @@ namespace Splunk.Client.AcceptanceTests
         {
             foreach (var ns in TestNamespaces)
             {
-                using (var service = new Service(SDKHelper.Splunk.Scheme, SDKHelper.Splunk.Host, SDKHelper.Splunk.Port, ns))
+                using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, ns))
                 {
                     Assert.Equal(string.Format("{0}://{1}:{2}/{3}", 
-                        SDKHelper.Splunk.Scheme.ToString().ToLower(), 
-                        SDKHelper.Splunk.Host, 
-                        SDKHelper.Splunk.Port,
+                        SdkHelper.Splunk.Scheme.ToString().ToLower(), 
+                        SdkHelper.Splunk.Host, 
+                        SdkHelper.Splunk.Port,
                         ns),
                         service.ToString());
 
@@ -88,7 +88,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             foreach (var ns in TestNamespaces)
             {
-                using (var service = await SDKHelper.CreateService(ns))
+                using (var service = await SdkHelper.CreateService(ns))
                 {
                     StoragePasswordCollection sps = service.StoragePasswords;
                     await sps.GetAllAsync();
@@ -103,7 +103,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     //// Create and change the password for 50 StoragePassword instances
 
-                    var surname = SDKHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
+                    var surname = SdkHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
                     var realms = new string[] { null, "splunk.com", "splunk:com" };
 
                     for (int i = 0; i < realms.Length; i++)
@@ -136,7 +136,7 @@ namespace Splunk.Client.AcceptanceTests
 
                         //// Update
 
-                        password = SDKHelper.GetOrElse(Membership.GeneratePassword(15, 2));
+                        password = SdkHelper.GetOrElse(Membership.GeneratePassword(15, 2));
                         await sp.UpdateAsync(password);
 
                         Assert.Equal(password, sp.ClearPassword);
@@ -175,7 +175,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetCapabilities()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 IReadOnlyList<string> capabilities = await service.GetCapabilitiesAsync();
                 var serverInfo = await service.Server.GetInfoAsync();
@@ -309,7 +309,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             foreach (var ns in TestNamespaces)
             {
-                using (var service = await SDKHelper.CreateService(ns))
+                using (var service = await SdkHelper.CreateService(ns))
                 {
                     StoragePasswordCollection sps = service.StoragePasswords;
                     await sps.GetAllAsync();
@@ -318,14 +318,14 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         //// Ensure we've got 50 passwords to enumerate
 
-                        var surname = SDKHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
+                        var surname = SdkHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
                         var realms = new string[] { null, "splunk.com", "splunk:com" };
 
                         for (int i = 0; i < 50 - sps.Count; i++)
                         {
                             var username = surname + i;
                             var realm = realms[i % realms.Length];
-                            var password = Membership.GeneratePassword(15, 2);
+                            var password = SdkHelper.GetOrElse(Membership.GeneratePassword(15, 2));
 
                             StoragePassword sp = await service.StoragePasswords.CreateAsync(password, username, realm);
 
@@ -363,7 +363,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanLoginAndLogoff()
         {
-            using (var service = await SDKHelper.CreateService(Namespace.Default))
+            using (var service = await SdkHelper.CreateService(Namespace.Default))
             {
                 try
                 {
@@ -415,7 +415,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanCrudApplication()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 //// Install, update, and remove the Splunk App for Twitter Data, version 2.3.1
 
@@ -489,7 +489,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Create an app from one of the built-in templates
 
-                var name = string.Format("delete-me-{0}", Guid.NewGuid());
+                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
 
                 var creationAttributes = new ApplicationAttributes()
                 {
@@ -551,7 +551,6 @@ namespace Splunk.Client.AcceptanceTests
 
                 if (splunkHostEntry.HostName == localHostEntry.HostName)
                 {
-                    Assert.True(File.Exists(archiveInfo.Path));
                     File.Delete(archiveInfo.Path);
                 }
 
@@ -577,7 +576,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             foreach (var ns in TestNamespaces)
             {
-                using (var service = await SDKHelper.CreateService(ns))
+                using (var service = await SdkHelper.CreateService(ns))
                 {
                     var args = new ApplicationCollection.Filter()
                     {
@@ -632,7 +631,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             const string testApplicationName = "acceptance-test_Splunk.Client.Configuration";
 
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 Application application = await service.Applications.GetOrNullAsync(testApplicationName);
 
@@ -651,9 +650,9 @@ namespace Splunk.Client.AcceptanceTests
                 await service.Server.RestartAsync(2 * 60 * 1000);
             }
 
-            using (var service = await(SDKHelper.CreateService(new Namespace("nobody", testApplicationName))))
+            using (var service = await(SdkHelper.CreateService(new Namespace("nobody", testApplicationName))))
             {
-                var fileName = string.Format("delete-me-{0}", Guid.NewGuid());
+                var fileName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
 
                 //// Create
 
@@ -724,7 +723,7 @@ namespace Splunk.Client.AcceptanceTests
                 Assert.Null(configurationStanza);
             }
 
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 Application application = await service.Applications.GetAsync(testApplicationName);
                 await application.RemoveAsync();
@@ -739,7 +738,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             foreach (Namespace ns in TestNamespaces)
             {
-                using (var service = await SDKHelper.CreateService())
+                using (var service = await SdkHelper.CreateService())
                 {
                     var inputsConfiguration = await service.Configurations.GetAsync("inputs");
 
@@ -796,9 +795,9 @@ namespace Splunk.Client.AcceptanceTests
         {
             var ns = new Namespace("nobody", "search");
 
-            using (var service = await SDKHelper.CreateService(ns))
+            using (var service = await SdkHelper.CreateService(ns))
             {
-                var indexName = string.Format("delete-me-{0}", Guid.NewGuid());
+                var indexName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 Index index;
                 
                 //// Create
@@ -876,7 +875,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetIndexes()
         {
-            using (var service = await SDKHelper.CreateService(new Namespace(user: "nobody", app: "search")))
+            using (var service = await SdkHelper.CreateService(new Namespace(user: "nobody", app: "search")))
             {
                 await service.Indexes.GetAllAsync();
 
@@ -1028,7 +1027,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanSendEvents()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 // default index
 
@@ -1039,12 +1038,12 @@ namespace Splunk.Client.AcceptanceTests
                 var receiver = service.Transmitter;
 
                 long currentEventCount = index.TotalEventCount;
-                Console.WriteLine("Current Index TotalEventCount = {0} ", currentEventCount);
                 int sendEventCount = 10;
 
                 for (int i = 0; i < sendEventCount; i++)
                 {
-                    var result = await receiver.SendAsync(string.Format("{0:D6} {1} CanSendEvents test send string event Hello !", i, DateTime.Now));
+                    var result = await receiver.SendAsync(
+                        SdkHelper.GetOrElse(string.Format("{0:D6} {1} Simple event", i, DateTime.Now)));
                     Assert.NotNull(result);
                 }
 
@@ -1070,7 +1069,8 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         for (int i = 0; i < sendEventCount; i++)
                         {
-                            writer.Write(string.Format("{0:D6} {1} jly send stream event hello world!\r\n", i, DateTime.Now));
+                            writer.Write(
+                                SdkHelper.GetOrElse(string.Format("{0:D6}, {1}, Stream event\r\n", i, DateTime.Now)));
                         }
                     }
 
@@ -1101,7 +1101,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanCrudJob()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 Job job1 = null, job2 = null;
 
@@ -1173,11 +1173,11 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanCrudSavedSearch()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 //// Create
 
-                var name = string.Format("delete-me-{0}", Guid.NewGuid());
+                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 var search = "search index=_internal | head 1000";
 
                 var originalAttributes = new SavedSearchAttributes
@@ -1236,7 +1236,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Read schedule
 
-                var dateTime = DateTime.Now;
+                var dateTime = SdkHelper.GetOrElse(DateTime.Now);
                 var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
 
                 Assert.Equal(48, schedule.Count);
@@ -1270,7 +1270,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Update schedule
 
-                dateTime = DateTime.Now;
+                dateTime = SdkHelper.GetOrElse(DateTime.Now);
 
                 //// TODO: 
                 //// Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
@@ -1294,7 +1294,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanDispatchSavedSearch()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
                 
@@ -1317,7 +1317,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetJobs()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var jobs = new Job[]
                 {
@@ -1352,7 +1352,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetSavedSearches()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var savedSearches = service.SavedSearches;
                 await savedSearches.GetAllAsync();
@@ -1373,7 +1373,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanExportSearchPreviews()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var args = new SearchExportArgs() { Count = 0 };
 
@@ -1381,6 +1381,7 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     var results = new List<SearchResult>();
                     var exception = (Exception)null;
+                    var manualResetEvent = new ManualResetEvent(true);
 
                     stream.Subscribe(new Observer<SearchPreview>(
                         onNext: (preview) =>
@@ -1410,10 +1411,18 @@ namespace Splunk.Client.AcceptanceTests
                                 results.AddRange(preview.Results);
                             }
                         },
+                        onCompleted: () =>
+                        {
+                            manualResetEvent.Set();
+                        },
                         onError: (e) =>
                         {
                             exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
+                            manualResetEvent.Set();
                         }));
+
+                    manualResetEvent.Reset();
+                    manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
                     Assert.Equal(100, results.Count);
@@ -1428,7 +1437,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanExportSearchResults()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var args = new SearchExportArgs { Count = 0 };
 
@@ -1436,6 +1445,7 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     var results = new List<Splunk.Client.SearchResult>();
                     var exception = (Exception)null;
+                    var manualResetEvent = new ManualResetEvent(true);
 
                     stream.Subscribe(new Observer<SearchResult>(
                         onNext: (result) =>
@@ -1448,10 +1458,18 @@ namespace Splunk.Client.AcceptanceTests
                                 results.Add(result);
                             }
                         },
+                        onCompleted: () =>
+                        {
+                            manualResetEvent.Set();
+                        },
                         onError: (e) =>
                         {
                             exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
+                            manualResetEvent.Set();
                         }));
+
+                    manualResetEvent.Reset();
+                    manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
                     Assert.Equal(100, results.Count);
@@ -1466,9 +1484,9 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanSearchOneshot()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
-                var indexName = string.Format("delete-me-{0}", Guid.NewGuid().ToString("N"));
+                var indexName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid().ToString("N")));
 
                 var searches = new[] 
                 {
@@ -1515,12 +1533,12 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanCrudServerMessage()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 //// Create
 
+                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 ServerMessageCollection messages = service.Server.Messages;
-                var name = string.Format("delete-me-{0}", Guid.NewGuid());
 
                 var messageList = new ServerMessage[] 
                 {
@@ -1567,7 +1585,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanCrudServerSettings()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 //// Get
 
@@ -1667,7 +1685,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetServerInfo()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var info = await service.Server.GetInfoAsync();
 
@@ -1700,7 +1718,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             Stopwatch watch = Stopwatch.StartNew();            
 
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 try
                 {

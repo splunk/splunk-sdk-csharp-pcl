@@ -26,14 +26,14 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public void CanConstructContext()
         {
-            client = new Context(SDKHelper.Splunk.Scheme, SDKHelper.Splunk.Host, SDKHelper.Splunk.Port);
+            client = new Context(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port);
 
             Assert.Equal(client.Scheme, Scheme.Https);
-            Assert.Equal(client.Host.ToLower(), SDKHelper.Splunk.Host);
-            Assert.Equal(client.Port, SDKHelper.Splunk.Port);
+            Assert.Equal(client.Host.ToLower(), SdkHelper.Splunk.Host);
+            Assert.Equal(client.Port, SdkHelper.Splunk.Port);
             Assert.Null(client.SessionKey);
 
-            Assert.Equal(client.ToString().ToLower(), string.Format("https://{0}:{1}", SDKHelper.Splunk.Host.ToLower(), SDKHelper.Splunk.Port));
+            Assert.Equal(client.ToString().ToLower(), string.Format("https://{0}:{1}", SdkHelper.Splunk.Host.ToLower(), SdkHelper.Splunk.Port));
         }
 
         static Context client;

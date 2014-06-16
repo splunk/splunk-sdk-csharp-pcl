@@ -15,7 +15,7 @@
  */
 
 //// TODO:
-//// [ ] Documentation
+//// [O] Documentation
 
 namespace Splunk.Client
 {

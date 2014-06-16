@@ -15,8 +15,8 @@
  */
 
 //// TODO:
-//// [ ] Contracts
-//// [ ] Documentation
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -30,7 +30,7 @@ namespace Splunk.Client
     /// <summary>
     /// Represents the setup information for an <see cref="Application"/>.
     /// </summary>
-    public class ApplicationSetupInfo : Resource, Splunk.Client.IApplicationSetupInfo
+    public class ApplicationSetupInfo : Resource, IApplicationSetupInfo
     {
         #region Constructors
 

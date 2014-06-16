@@ -115,19 +115,22 @@ namespace Splunk.Client.Helpers
 
                 if (IsRecording)
                 {
-                    Recordings = new Queue<Recording>();
+                    session = new Session(callerId);
+                    getOrElse = Enqueue;
                 }
                 else
                 {
-                    var serializer = new DataContractJsonSerializer(typeof(Queue<Recording>));
+                    var serializer = new DataContractJsonSerializer(typeof(Session));
 
                     using (var stream = new FileStream(RecordingFilename, FileMode.Open))
                     {
                         using (var compressedStream = new GZipStream(stream, CompressionMode.Decompress))
                         {
-                            Recordings = (Queue<Recording>)serializer.ReadObject(compressedStream);
+                            session = (Session)serializer.ReadObject(compressedStream);
                         }
                     }
+
+                    getOrElse = Dequeue;
                 }
             }
         }
@@ -138,25 +141,32 @@ namespace Splunk.Client.Helpers
             {
                 if (IsRecording)
                 {
-                    var serializer = new DataContractJsonSerializer(typeof(Queue<Recording>));
+                    var serializer = new DataContractJsonSerializer(typeof(Session));
                     Directory.CreateDirectory(RecordingDirectoryName);
-                    Recordings.TrimExcess();
+                    session.Data.TrimExcess();
+                    session.Recordings.TrimExcess();
 
                     using (var stream = new FileStream(RecordingFilename, FileMode.Create))
                     {
                         using (var compressedStream = new GZipStream(stream, CompressionLevel.Optimal))
                         {
-                            serializer.WriteObject(compressedStream, Recordings);
+                            serializer.WriteObject(compressedStream, session);
                         }
                     }
                 }
                 else
                 {
-                    Debug.Assert(Recordings.Count == 0);
+                    Debug.Assert(session.Data.Count == 0);
+                    Debug.Assert(session.Recordings.Count == 0);
                 }
 
-                Recordings = null;
+                session = null;
             }
+        }
+
+        public static T GetOrElse<T>(T value)
+        {
+            return (T)getOrElse(value);
         }
 
         #endregion
@@ -167,7 +177,8 @@ namespace Splunk.Client.Helpers
         static readonly bool isEnabled;
         static readonly bool isRecording;
 
-        static Queue<Recording> Recordings;
+        static Session session;
+        static Func<object, object> getOrElse;
 
         static MockContext()
         {
@@ -192,6 +203,17 @@ namespace Splunk.Client.Helpers
             }
 
             return null;
+        }
+
+        static object Dequeue(object o)
+        {
+            return session.Data.Dequeue();
+        }
+
+        static object Enqueue(object o)
+        {
+            session.Data.Enqueue(o);
+            return o;
         }
 
         #endregion
@@ -326,7 +348,7 @@ namespace Splunk.Client.Helpers
         {
             protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
             {
-                var recording = Recordings.Dequeue();
+                var recording = session.Recordings.Dequeue();
 
                 using (var stream = new MemoryStream())
                 {
@@ -363,7 +385,7 @@ namespace Splunk.Client.Helpers
                         var recording = await Recording.CreateRecording(checksum, response);
 
                         recording.Response.RequestMessage = request;
-                        MockContext.Recordings.Enqueue(recording);
+                        session.Recordings.Enqueue(recording);
 
                         return recording.Response;
                     }
@@ -472,6 +494,27 @@ namespace Splunk.Client.Helpers
             }
 
             #endregion
+        }
+
+        [DataContract]
+        class Session
+        {
+            public Session(string name)
+            {
+                this.Name = name;
+                this.Data = new Queue<object>();
+                this.Recordings = new Queue<Recording>();
+            }
+
+            [DataMember(Order = 1)]
+            public string Name
+            { get; private set; }
+
+            [DataMember(Order = 2)]
+            public Queue<object> Data;
+
+            [DataMember(Order = 3)]
+            public Queue<Recording> Recordings;
         }
 
         #endregion

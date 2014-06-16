@@ -103,7 +103,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     //// Create and change the password for 50 StoragePassword instances
 
-                    var surname = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
+                    var surname = SDKHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
                     var realms = new string[] { null, "splunk.com", "splunk:com" };
 
                     for (int i = 0; i < realms.Length; i++)
@@ -136,7 +136,7 @@ namespace Splunk.Client.AcceptanceTests
 
                         //// Update
 
-                        password = Membership.GeneratePassword(15, 2);
+                        password = SDKHelper.GetOrElse(Membership.GeneratePassword(15, 2));
                         await sp.UpdateAsync(password);
 
                         Assert.Equal(password, sp.ClearPassword);
@@ -318,7 +318,7 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         //// Ensure we've got 50 passwords to enumerate
 
-                        var surname = string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N"));
+                        var surname = SDKHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
                         var realms = new string[] { null, "splunk.com", "splunk:com" };
 
                         for (int i = 0; i < 50 - sps.Count; i++)

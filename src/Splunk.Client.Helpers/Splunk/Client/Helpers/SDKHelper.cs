@@ -57,11 +57,11 @@ namespace Splunk.Client.Helpers
         }
 
         /// <summary>
-        /// Create a Splunk 
-        /// <see cref="Service" /> and login using the command
-        /// line options (or .splunkrc)
+        /// Create a Splunk <see cref="Service" /> and login using the settings
+        /// provided in .splunkrc.
         /// </summary>
-        /// <param name="ns">The ns.</param>
+        /// <param name="ns">
+        /// </param>
         /// <returns>
         /// The service created.
         /// </returns>
@@ -73,6 +73,11 @@ namespace Splunk.Client.Helpers
             await service.LoginAsync(Splunk.Username, Splunk.Password);
 
             return service;
+        }
+
+        public static T GetOrElse<T>(T value)
+        {
+            return MockContext.GetOrElse(value);
         }
 
         #region Privates/internals

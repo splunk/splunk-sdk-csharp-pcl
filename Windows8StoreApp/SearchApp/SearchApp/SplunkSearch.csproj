@@ -139,6 +139,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="packages.config" />
     <None Include="SearchApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +163,11 @@
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>Splunk.Client</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="WinRTDatePicker">
+      <HintPath>..\..\..\packages\WinRT-DatePicker.1.1\lib\netcore45\WinRTDatePicker.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

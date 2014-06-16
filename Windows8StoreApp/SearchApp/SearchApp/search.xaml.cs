@@ -31,6 +31,11 @@ namespace SplunkSearch
 
         private CancellationTokenSource cancelToken;
         private int eventCount = 0;
+
+        private string searchTimeConstraint = "All Time";
+        private string searchEarliestTime = null;
+        private string searchLatestTime = null;
+
         /// <summary>
         /// This can be changed to a strongly typed view model.
         /// </summary>
@@ -135,10 +140,21 @@ namespace SplunkSearch
             {
                 List<ResultData> resultDatas = new List<ResultData>();
 
+                SearchExportArgs jobArgs = new SearchExportArgs();
+                if (this.searchEarliestTime != null)
+                {
+                    jobArgs.EarliestTime = this.searchEarliestTime;
+                }
+
+                if (this.searchLatestTime != null)
+                {
+                    jobArgs.LatestTime = this.searchLatestTime;
+                }
+
                 titleGrid.Visibility = Visibility.Visible;
                 while (!cancelToken.IsCancellationRequested)
                 {
-                    using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr))
+                    using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr, jobArgs))
                     {
                         int resultCount = 0;
 
@@ -163,25 +179,28 @@ namespace SplunkSearch
             }
             catch (Exception ex)
             {
-                Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(ex.ToString(), "Error in Search");                
+                Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(ex.ToString(), "Error in Search");
                 messageDialog.Content = ex.ToString();
                 messageDialog.ShowAsync();
                 titleGrid.Visibility = Visibility.Collapsed;
                 this.PageContentReset();
             }
         }
-        
+
         private void SearchCancelButton_Click(object sender, RoutedEventArgs e)
         {
             cancelToken.Cancel();
             SearchCancel.Content = "Cancelling...";
         }
 
+        private void SearchTimeButton_Click(object sender, RoutedEventArgs e)
+        {
+        }
         private void backButton_Click(object sender, RoutedEventArgs e)
         {
 
         }
-      
+
         private List<string> ParseResult(SearchResult searchResult)
         {
             List<string> results = new List<string>();
@@ -209,7 +228,7 @@ namespace SplunkSearch
 
             return results;
         }
-              
+
         private void PageContentReset()
         {
             SearchSubmit.Content = "Search";
@@ -238,5 +257,25 @@ namespace SplunkSearch
                 this.Event = theEvent;
             }
         }
-    }    
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboBox1 != null)
+            {
+                if (ComboBox1.SelectedIndex == 0)
+                {
+                    this.searchTimeConstraint = "All Time";
+                    this.searchLatestTime = null;
+                    this.searchLatestTime = null;
+                }
+                else if (ComboBox1.SelectedIndex == 1)
+                {
+                    //jobArgs.EarliestTime = "2014-06-15T12:00:00";// "2014-06-15T12:00:00.000-07:00";//"5/11/2012 12:00:00 PM";//"-7d@w1";
+                    //jobArgs.LatestTime = "2014-06-16T12:04:03";//2014-06-16T12:00:00.000-07:00";//"12/11/2012 12:00:00 PM"; //"@w6";
+                    this.searchEarliestTime = EarlistDate.Date.UtcDateTime.AddSeconds(EarlistTime.Time.Seconds).ToString("yyyy-MM-ddThh:mm:ss");
+                    this.searchLatestTime = LatestDate.Date.UtcDateTime.AddSeconds(LatestTime.Time.Seconds).ToString("yyyy-MM-ddThh:mm:ss");
+                }
+            }
+        }
+    }
 }

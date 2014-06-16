@@ -41,7 +41,6 @@ namespace Splunk.Examples.Submit
             };
         }
 
-
         static void Main(string[] args)
         {
             using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))

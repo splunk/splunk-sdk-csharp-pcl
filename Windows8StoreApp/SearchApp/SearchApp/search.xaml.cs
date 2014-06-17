@@ -36,6 +36,7 @@ namespace SplunkSearch
         private string searchEarliestTime = null;
         private string searchLatestTime = null;
 
+        private List<object> comboBoxItems = new List<object>();
         /// <summary>
         /// This can be changed to a strongly typed view model.
         /// </summary>
@@ -57,6 +58,7 @@ namespace SplunkSearch
         public search()
         {
             this.InitializeComponent();
+
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += navigationHelper_LoadState;
             this.navigationHelper.SaveState += navigationHelper_SaveState;
@@ -141,14 +143,18 @@ namespace SplunkSearch
                 List<ResultData> resultDatas = new List<ResultData>();
 
                 SearchExportArgs jobArgs = new SearchExportArgs();
-                if (this.searchEarliestTime != null)
-                {
-                    jobArgs.EarliestTime = this.searchEarliestTime;
-                }
 
-                if (this.searchLatestTime != null)
+                if (TimeSelectComboBox.SelectedIndex == 1)
                 {
-                    jobArgs.LatestTime = this.searchLatestTime;
+                    if (this.searchEarliestTime != null)
+                    {
+                        jobArgs.EarliestTime = this.searchEarliestTime;
+                    }
+
+                    if (this.searchLatestTime != null)
+                    {
+                        jobArgs.LatestTime = this.searchLatestTime;
+                    }
                 }
 
                 titleGrid.Visibility = Visibility.Visible;
@@ -260,22 +266,40 @@ namespace SplunkSearch
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ComboBox1 != null)
+            if (TimeSelectComboBox != null)
             {
-                if (ComboBox1.SelectedIndex == 0)
+                if (TimeSelectComboBox.SelectedIndex == 0)
                 {
                     this.searchTimeConstraint = "All Time";
                     this.searchLatestTime = null;
                     this.searchLatestTime = null;
                 }
-                else if (ComboBox1.SelectedIndex == 1)
+                else if (TimeSelectComboBox.SelectedIndex == 1)
                 {
-                    //jobArgs.EarliestTime = "2014-06-15T12:00:00";// "2014-06-15T12:00:00.000-07:00";//"5/11/2012 12:00:00 PM";//"-7d@w1";
-                    //jobArgs.LatestTime = "2014-06-16T12:04:03";//2014-06-16T12:00:00.000-07:00";//"12/11/2012 12:00:00 PM"; //"@w6";
-                    this.searchEarliestTime = EarlistDate.Date.UtcDateTime.AddSeconds(EarlistTime.Time.Seconds).ToString("yyyy-MM-ddThh:mm:ss");
-                    this.searchLatestTime = LatestDate.Date.UtcDateTime.AddSeconds(LatestTime.Time.Seconds).ToString("yyyy-MM-ddThh:mm:ss");
+                    this.searchEarliestTime = new DateTime(EarlistDate.Date.Year, EarlistDate.Date.Month, EarlistDate.Date.Day).AddSeconds(EarlistTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
+                    this.searchLatestTime = new DateTime(LatestDate.Date.Year, LatestDate.Date.Month, LatestDate.Date.Day).AddSeconds(LatestTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
                 }
             }
+        }
+
+        private void EarlistDate_DateChanged(object sender, DatePickerValueChangedEventArgs e)
+        {
+            this.searchEarliestTime = new DateTime(EarlistDate.Date.Year, EarlistDate.Date.Month, EarlistDate.Date.Day).AddSeconds(EarlistTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
+        }
+
+        private void EarlistTime_DateChanged(object sender, TimePickerValueChangedEventArgs e)
+        {
+            this.searchEarliestTime = new DateTime(EarlistDate.Date.Year,EarlistDate.Date.Month,EarlistDate.Date.Day).AddSeconds(EarlistTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");             
+        }
+
+        private void LatestDate_DateChanged(object sender, DatePickerValueChangedEventArgs e)
+        {
+            this.searchLatestTime = new DateTime(LatestDate.Date.Year, LatestDate.Date.Month, LatestDate.Date.Day).AddSeconds(LatestTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
+        }
+
+        private void LatestTime_DateChanged(object sender, TimePickerValueChangedEventArgs e)
+        {
+            this.searchLatestTime = new DateTime(LatestDate.Date.Year,LatestDate.Date.Month,LatestDate.Date.Day).AddSeconds(LatestTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
         }
     }
 }

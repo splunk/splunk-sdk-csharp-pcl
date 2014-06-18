@@ -1375,13 +1375,14 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
+                const string search = "search index=_internal | tail 100";
                 var args = new SearchExportArgs() { Count = 0 };
 
-                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", args))
+                using (SearchPreviewStream previewStream = await service.ExportSearchPreviewsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
 
-                    foreach (var preview in stream)
+                    foreach (var preview in previewStream)
                     {
                         Assert.Equal<IEnumerable<string>>(new List<string>
                             {
@@ -1423,13 +1424,14 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
+                const string search = "search index=_internal | tail 100";
                 var args = new SearchExportArgs() { Count = 0 };
 
-                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", args))
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
+                    var manualResetEvent = new ManualResetEvent(true);
                     var results = new List<SearchResult>();
                     var exception = (Exception)null;
-                    var manualResetEvent = new ManualResetEvent(true);
 
                     stream.Subscribe(new Observer<SearchPreview>(
                         onNext: (preview) =>

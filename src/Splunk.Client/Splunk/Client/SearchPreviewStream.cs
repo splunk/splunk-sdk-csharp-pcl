@@ -15,31 +15,12 @@
  */
 
 //// TODO:
-////
-//// [O] Work out semantics for skipping preview SearchResults
-////     Use Reactive Extensions Operators
-////
 //// [O] Contracts
-////
 //// [O] Documentation
-////
-//// [X] Refactor SearchExportStream/SearchResultStream
-////
-////     1. SearchResultStream should read one and only one result set
-////     2. SearchExportStream should accept a stream and instantiate a new 
-////        SearchResults instance for each result set.
-////     3. Care should be taken to ensure that SearchResults instances do
-////        not dispose their stream prematurely; perhaps by creating each
-////        SearchResults instance with an XmlReader instance. When 
-////        constructed in this fashion, we would simply short-circuit 
-////        Dispose and leave it to our creator to close the stream.
-////
-//// [X] Thread safety
-////     Addresed by modifications to Observable<T> class. See 
-////     Observable<T>.NotifySubscribers and Observable<T>.Complete.
-////
+
 //// References:
 //// 1. [Async, await, and yield return](http://goo.gl/RLVDK5)
+//// 2. [CLR via C# (4th Edition)](http://goo.gl/SmpI3W)
 
 namespace Splunk.Client
 {
@@ -79,6 +60,19 @@ namespace Splunk.Client
 
         #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// Gets the <see cref="SearchPreview"/> read count for the current
+        /// <see cref="SearchResultStream"/>.
+        /// </summary>
+        public long ReadCount
+        {
+            get { return this.previewAwaiter.ReadCount; }
+        }
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -92,7 +86,7 @@ namespace Splunk.Client
                 return;
             }
 
-            if (this.previewAwaiter.ReadStatus < TaskStatus.RanToCompletion)
+            if (this.previewAwaiter.IsEnumerating)
             {
                 this.cancellationTokenSource.Cancel();
                 this.previewAwaiter.Wait();
@@ -119,11 +113,11 @@ namespace Splunk.Client
         /// You can use the <see cref="GetEnumerator"/> method to
         /// <list type="bullet">
         /// <item><description>
-        ///     Perform LINQ to Objects queries to obtain a filtered set of 
-        ///     search previews.</description></item>
+        ///   Perform LINQ to Objects queries to obtain a filtered set of 
+        ///   search previews.</description></item>
         /// <item><description>
-        ///     Append search previews to an existing collection of search
-        ///     previews.</description></item>
+        ///   Append search previews to an existing collection of search
+        ///   previews.</description></item>
         /// </list>
         /// </remarks>
         public IEnumerator<SearchPreview> GetEnumerator()
@@ -208,6 +202,7 @@ namespace Splunk.Client
                 this.task = new Task(this.ReadPreviewsAsync, token);
                 this.cancellationToken = token;
                 this.stream = stream;
+                this.readCount = 0;
                 this.task.Start();
             }
 
@@ -215,9 +210,14 @@ namespace Splunk.Client
 
             #region Properties
 
-            public TaskStatus ReadStatus
+            public bool IsEnumerating
             {
-                get { return this.task.Status; }
+                get { return this.enumerated < 2; }
+            }
+
+            public long ReadCount
+            {
+                get { return Interlocked.Read(ref this.readCount); }
             }
 
             #endregion
@@ -266,7 +266,11 @@ namespace Splunk.Client
             /// </summary>
             public bool IsCompleted
             {
-                get { return previews.Count > 0; }
+                get 
+                { 
+                    bool result = this.enumerated == 2 || this.previews.Count > 0;
+                    return result;
+                }
             }
 
             /// <summary>
@@ -277,7 +281,9 @@ namespace Splunk.Client
             /// A reference to the current <see cref="SearchPreviewAwaiter"/>.
             /// </returns>
             public SearchPreviewAwaiter GetAwaiter()
-            { return this; }
+            { 
+                return this;
+            }
 
             /// <summary>
             /// Returns the current <see cref="SearchResult"/> from the current
@@ -315,11 +321,13 @@ namespace Splunk.Client
             SearchPreviewStream stream;
             Action continuation;
             int enumerated;
+            long readCount;
             Task task;
 
             async Task<SearchPreview> AwaitResultAsync()
             {
-                return await this;
+                var result = await this;
+                return result;
             }
 
             void Continue()
@@ -346,6 +354,7 @@ namespace Splunk.Client
                 while (stream.ReadState <= ReadState.Interactive)
                 {
                     var preview = await stream.ReadPreviewAsync();
+                    Interlocked.Increment(ref this.readCount);
                     this.previews.Enqueue(preview);
                     this.Continue();
                 }

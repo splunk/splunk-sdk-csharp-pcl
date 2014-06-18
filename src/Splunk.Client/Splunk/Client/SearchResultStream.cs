@@ -84,7 +84,9 @@ namespace Splunk.Client
         /// <see cref="SearchResultStream"/>.
         /// </summary>
         public long ReadCount
-        { get; private set; }
+        {
+            get { return this.resultAwaiter.ReadCount; }
+        }
 
         #endregion
 
@@ -125,7 +127,7 @@ namespace Splunk.Client
                 return;
             }
 
-            if (this.resultAwaiter.ReadStatus < TaskStatus.RanToCompletion)
+            if (this.resultAwaiter.IsEnumerating)
             {
                 this.cancellationTokenSource.Cancel();
                 this.resultAwaiter.Wait();
@@ -249,7 +251,6 @@ namespace Splunk.Client
                 reader.EnsureMarkup(XmlNodeType.Element, "result");
             }
 
-            this.ReadCount = this.ReadCount + 1;
             return result;
         }
 
@@ -360,6 +361,7 @@ namespace Splunk.Client
                 this.task = new Task(this.ReadResultsAsync, token);
                 this.cancellationToken = token;
                 this.stream = stream;
+                this.readCount = 0;
                 this.task.Start();
             }
 
@@ -367,9 +369,14 @@ namespace Splunk.Client
 
             #region Properties
 
-            public TaskStatus ReadStatus
+            public bool IsEnumerating
             {
-                get { return this.task.Status; }
+                get { return this.enumerated < 2; }
+            }
+
+            public long ReadCount
+            {
+                get { return Interlocked.Read(ref this.readCount); }
             }
             
             #endregion
@@ -418,7 +425,11 @@ namespace Splunk.Client
             /// </summary>
             public bool IsCompleted
             {
-                get { return results.Count > 0; }
+                get
+                {
+                    bool result = this.enumerated == 2 || this.results.Count > 0;
+                    return result;
+                }
             }
 
             /// <summary>
@@ -467,6 +478,7 @@ namespace Splunk.Client
             SearchResultStream stream;
             Action continuation;
             int enumerated;
+            long readCount;
             Task task;
 
             async Task<SearchResult> AwaitResultAsync()
@@ -509,6 +521,7 @@ namespace Splunk.Client
                             break;
                         }
 
+                        Interlocked.Increment(ref this.readCount);
                         this.results.Enqueue(result);
                         this.Continue();
                     }

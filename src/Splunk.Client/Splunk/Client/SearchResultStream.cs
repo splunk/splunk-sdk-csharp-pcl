@@ -51,7 +51,7 @@ namespace Splunk.Client
             this.metadata = Metadata.Missing;
             this.response = response;
 
-            this.resultAwaiter = new SearchResultAwaiter(this, cancellationTokenSource.Token);
+            this.awaiter = new SearchResultAwaiter(this, cancellationTokenSource.Token);
         }
 
         #endregion
@@ -79,13 +79,18 @@ namespace Splunk.Client
             get { return this.metadata.FieldNames; }
         }
 
+        public Exception LastError
+        {
+            get { return this.awaiter.LastError; }
+        }
+
         /// <summary>
         /// Gets the <see cref="SearchResult"/> read count for the current
         /// <see cref="SearchResultStream"/>.
         /// </summary>
         public long ReadCount
         {
-            get { return this.resultAwaiter.ReadCount; }
+            get { return this.awaiter.ReadCount; }
         }
 
         #endregion
@@ -127,10 +132,10 @@ namespace Splunk.Client
                 return;
             }
 
-            if (this.resultAwaiter.IsEnumerating)
+            if (this.awaiter.IsReading)
             {
                 this.cancellationTokenSource.Cancel();
-                this.resultAwaiter.Wait();
+                this.cancellationTokenSource.Token.WaitHandle.WaitOne();
             }
 
             this.cancellationTokenSource.Dispose();
@@ -161,10 +166,12 @@ namespace Splunk.Client
         {
             this.EnsureNotDisposed();
 
-            for (SearchResult result; this.resultAwaiter.TryTake(out result); )
+            for (SearchResult result; this.awaiter.TryTake(out result); )
             {
                 yield return result;
             }
+
+            this.EnsureAwaiterSucceeded();
         }
 
         /// <inheritdoc cref="GetEnumerator">
@@ -184,11 +191,12 @@ namespace Splunk.Client
         {
             this.EnsureNotDisposed();
 
-            for (var result = await this.resultAwaiter; result != null; result = await this.resultAwaiter)
+            for (var result = await this.awaiter; result != null; result = await this.awaiter)
             {
                 this.OnNext(result);
             }
 
+            this.EnsureAwaiterSucceeded();
             this.OnCompleted();
         }
 
@@ -197,7 +205,7 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly CancellationTokenSource cancellationTokenSource;
-        readonly SearchResultAwaiter resultAwaiter;
+        readonly SearchResultAwaiter awaiter;
         readonly Response response;
 
         volatile Metadata metadata;
@@ -206,6 +214,15 @@ namespace Splunk.Client
         ReadState ReadState
         {
             get { return this.response.XmlReader.ReadState; }
+        }
+
+        void EnsureAwaiterSucceeded()
+        {
+            if (this.awaiter.LastError != null)
+            {
+                var text = string.Format("Enumeration ended prematurely : {0}.", this.awaiter.LastError);
+                throw new TaskCanceledException(text, this.awaiter.LastError);
+            }
         }
 
         void EnsureNotDisposed()
@@ -360,6 +377,7 @@ namespace Splunk.Client
             {
                 this.task = new Task(this.ReadResultsAsync, token);
                 this.cancellationToken = token;
+                this.lastError = null;
                 this.stream = stream;
                 this.readCount = 0;
                 this.task.Start();
@@ -369,9 +387,17 @@ namespace Splunk.Client
 
             #region Properties
 
-            public bool IsEnumerating
+            public bool IsReading
             {
                 get { return this.enumerated < 2; }
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public Exception LastError
+            {
+                get { return this.lastError; }
             }
 
             public long ReadCount
@@ -392,14 +418,6 @@ namespace Splunk.Client
             {
                 result = this.AwaitResultAsync().Result;
                 return result != null;
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            public void Wait()
-            {
-                this.task.Wait();
             }
 
             #endregion
@@ -477,6 +495,7 @@ namespace Splunk.Client
             CancellationToken cancellationToken;
             SearchResultStream stream;
             Action continuation;
+            Exception lastError;
             int enumerated;
             long readCount;
             Task task;
@@ -505,28 +524,35 @@ namespace Splunk.Client
                     throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
-                await this.stream.ReadMetadataAsync();
-
-                while (this.stream.ReadState <= ReadState.Interactive)
+                try
                 {
-                    this.cancellationToken.ThrowIfCancellationRequested();
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await this.stream.ReadMetadataAsync();
 
                     while (this.stream.ReadState <= ReadState.Interactive)
                     {
-                        SearchResult result = await this.stream.ReadResultAsync();
+                        this.cancellationToken.ThrowIfCancellationRequested();
 
-                        if (result == null)
+                        while (this.stream.ReadState <= ReadState.Interactive)
                         {
-                            break;
+                            SearchResult result = await this.stream.ReadResultAsync();
+
+                            if (result == null)
+                            {
+                                break;
+                            }
+
+                            Interlocked.Increment(ref this.readCount);
+                            this.results.Enqueue(result);
+                            this.Continue();
                         }
 
-                        Interlocked.Increment(ref this.readCount);
-                        this.results.Enqueue(result);
-                        this.Continue();
+                        await stream.ReadMetadataAsync();
                     }
-
-                    await stream.ReadMetadataAsync();
+                }
+                catch (Exception error)
+                {
+                    this.lastError = error;
                 }
 
                 this.Continue();

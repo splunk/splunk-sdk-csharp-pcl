@@ -55,12 +55,17 @@ namespace Splunk.Client
             this.cancellationTokenSource = new CancellationTokenSource();
             this.response = response;
 
-            this.previewAwaiter = new SearchPreviewAwaiter(this, cancellationTokenSource.Token);
+            this.awaiter = new SearchPreviewAwaiter(this, cancellationTokenSource.Token);
         }
 
         #endregion
 
         #region Properties
+
+        public Exception LastError
+        {
+            get { return this.awaiter.LastError; }
+        }
 
         /// <summary>
         /// Gets the <see cref="SearchPreview"/> read count for the current
@@ -68,7 +73,7 @@ namespace Splunk.Client
         /// </summary>
         public long ReadCount
         {
-            get { return this.previewAwaiter.ReadCount; }
+            get { return this.awaiter.ReadCount; }
         }
 
         #endregion
@@ -86,10 +91,10 @@ namespace Splunk.Client
                 return;
             }
 
-            if (this.previewAwaiter.IsEnumerating)
+            if (this.awaiter.IsReading)
             {
                 this.cancellationTokenSource.Cancel();
-                this.previewAwaiter.Wait();
+                this.cancellationTokenSource.Token.WaitHandle.WaitOne();
             }
 
             this.cancellationTokenSource.Dispose();
@@ -124,10 +129,12 @@ namespace Splunk.Client
         {
             this.EnsureNotDisposed();
 
-            for (SearchPreview preview; this.previewAwaiter.TryTake(out preview); )
+            for (SearchPreview preview; this.awaiter.TryTake(out preview); )
             {
                 yield return preview;
             }
+
+            this.EnsureAwaiterSucceeded();
         }
 
         /// <inheritdoc cref="GetEnumerator"/>
@@ -147,11 +154,12 @@ namespace Splunk.Client
         {
             this.EnsureNotDisposed();
 
-            for (var preview = await this.previewAwaiter; preview != null; preview = await this.previewAwaiter)
+            for (var preview = await this.awaiter; preview != null; preview = await this.awaiter)
             {
                 this.OnNext(preview);
             }
 
+            this.EnsureAwaiterSucceeded();
             this.OnCompleted();
         }
 
@@ -160,13 +168,22 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly CancellationTokenSource cancellationTokenSource;
-        readonly SearchPreviewAwaiter previewAwaiter;
+        readonly SearchPreviewAwaiter awaiter;
         readonly Response response;
         bool disposed;
 
         ReadState ReadState
         {
             get { return this.response.XmlReader.ReadState; }
+        }
+
+        void EnsureAwaiterSucceeded()
+        {
+            if (this.awaiter.LastError != null)
+            {
+                var text = string.Format("Enumeration ended prematurely : {0}.", this.awaiter.LastError);
+                throw new TaskCanceledException(text, this.awaiter.LastError);
+            }
         }
 
         void EnsureNotDisposed()
@@ -201,6 +218,7 @@ namespace Splunk.Client
             {
                 this.task = new Task(this.ReadPreviewsAsync, token);
                 this.cancellationToken = token;
+                this.lastError = null;
                 this.stream = stream;
                 this.readCount = 0;
                 this.task.Start();
@@ -210,11 +228,25 @@ namespace Splunk.Client
 
             #region Properties
 
-            public bool IsEnumerating
+            /// <summary>
+            /// 
+            /// </summary>
+            public bool IsReading
             {
                 get { return this.enumerated < 2; }
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
+            public Exception LastError
+            {
+                get { return this.lastError; }
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
             public long ReadCount
             {
                 get { return Interlocked.Read(ref this.readCount); }
@@ -233,14 +265,6 @@ namespace Splunk.Client
             {
                 preview = this.AwaitResultAsync().Result;
                 return preview != null;
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            public void Wait()
-            {
-                this.task.Wait();
             }
 
             #endregion
@@ -320,6 +344,7 @@ namespace Splunk.Client
             CancellationToken cancellationToken;
             SearchPreviewStream stream;
             Action continuation;
+            Exception lastError;
             int enumerated;
             long readCount;
             Task task;
@@ -349,14 +374,21 @@ namespace Splunk.Client
                     throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
-
-                while (stream.ReadState <= ReadState.Interactive)
+                try
                 {
-                    var preview = await stream.ReadPreviewAsync();
-                    Interlocked.Increment(ref this.readCount);
-                    this.previews.Enqueue(preview);
-                    this.Continue();
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    while (stream.ReadState <= ReadState.Interactive)
+                    {
+                        var preview = await stream.ReadPreviewAsync();
+                        Interlocked.Increment(ref this.readCount);
+                        this.previews.Enqueue(preview);
+                        this.Continue();
+                    }
+                }
+                catch (Exception error)
+                {
+                    this.lastError = error;
                 }
 
                 this.Continue();

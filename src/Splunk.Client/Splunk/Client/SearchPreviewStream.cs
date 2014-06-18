@@ -45,9 +45,11 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
@@ -56,7 +58,7 @@ namespace Splunk.Client
     /// The <see cref="SearchPreviewStream"/> class represents a streaming XML 
     /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
-    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<Task<SearchPreview>>
+    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<SearchPreview>
     {
         #region Constructors
 
@@ -69,7 +71,10 @@ namespace Splunk.Client
         /// </param>
         internal SearchPreviewStream(Response response)
         {
+            this.cancellationTokenSource = new CancellationTokenSource();
             this.response = response;
+
+            this.previewAwaiter = new SearchPreviewAwaiter(this, cancellationTokenSource.Token);
         }
 
         #endregion
@@ -83,8 +88,17 @@ namespace Splunk.Client
         public void Dispose()
         {
             if (this.disposed)
+            {
                 return;
+            }
 
+            if (this.previewAwaiter.ReadStatus < TaskStatus.RanToCompletion)
+            {
+                this.cancellationTokenSource.Cancel();
+                this.previewAwaiter.Wait();
+            }
+
+            this.cancellationTokenSource.Dispose();
             this.response.Dispose();
             this.disposed = true;
         }
@@ -112,24 +126,12 @@ namespace Splunk.Client
         ///     previews.</description></item>
         /// </list>
         /// </remarks>
-        public IEnumerator<Task<SearchPreview>> GetEnumerator()
+        public IEnumerator<SearchPreview> GetEnumerator()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
+            for (SearchPreview preview; this.previewAwaiter.TryTake(out preview); )
             {
-                throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
+                yield return preview;
             }
-
-            /// TODO: Correct bad check for end of sequence; ReadSearchPreviewAsync never returns null
-            /// Thought: check xml reader state for end of file
-
-            XmlReader reader = this.response.XmlReader;
-            
-            while (reader.ReadState <= ReadState.Interactive)
-            {
-                yield return ReadSearchPreviewAsync(reader);
-            }
-
-            this.enumerated = 2;
         }
 
         /// <inheritdoc cref="GetEnumerator"/>
@@ -147,39 +149,178 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
+            for (var preview = await this.previewAwaiter; preview != null; preview = await this.previewAwaiter)
             {
-                throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
-            }
-
-            XmlReader reader = this.response.XmlReader;
-
-            while (reader.ReadState <= ReadState.Interactive)
-            {
-                this.OnNext(await ReadSearchPreviewAsync(reader));
+                this.OnNext(preview);
             }
 
             this.OnCompleted();
-            this.enumerated = 2;
         }
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
+        readonly CancellationTokenSource cancellationTokenSource;
+        readonly SearchPreviewAwaiter previewAwaiter;
         readonly Response response;
         bool disposed;
-        int enumerated;
 
-        static async Task<SearchPreview> ReadSearchPreviewAsync(XmlReader reader)
+        ReadState ReadState
         {
-            reader.Requires(await reader.MoveToDocumentElementAsync("results"));
+            get { return this.response.XmlReader.ReadState; }
+        }
 
+        async Task<SearchPreview> ReadPreviewAsync()
+        {
+            XmlReader reader = this.response.XmlReader;
+
+            reader.Requires(await reader.MoveToDocumentElementAsync("results"));
             var preview = new SearchPreview();
             await preview.ReadXmlAsync(reader);
             await reader.ReadAsync();
 
             return preview;
+        }
+
+        #endregion
+
+        #region Types
+
+        sealed class SearchPreviewAwaiter : INotifyCompletion
+        {
+            #region Constructors
+
+            public SearchPreviewAwaiter(SearchPreviewStream stream, CancellationToken token)
+            {
+                this.task = new Task(this.ReadPreviewsAsync, token);
+                this.cancellationToken = token;
+                this.stream = stream;
+                this.task.Start();
+            }
+
+            #endregion
+
+            #region Properties
+
+            public TaskStatus ReadStatus
+            {
+                get { return this.task.Status; }
+            }
+
+            #endregion
+
+            #region Methods
+
+            public bool TryTake(out SearchPreview preview)
+            {
+                preview = this.AwaitResultAsync().Result;
+                return preview != null;
+            }
+
+            public void Wait()
+            {
+                this.task.Wait();
+            }
+
+            #endregion
+
+            #region INotifyCompletion implementation
+
+            /// <summary>
+            /// Tells the state machine if any results are available.
+            /// </summary>
+            public bool IsCompleted
+            {
+                get { return previews.Count > 0; }
+            }
+
+            /// <summary>
+            /// Returns the current <see cref="SearchPreviewAwaiter"/> to the
+            /// state machine.
+            /// </summary>
+            /// <returns>
+            /// A reference to the current <see cref="SearchPreviewAwaiter"/>.
+            /// </returns>
+            public SearchPreviewAwaiter GetAwaiter()
+            { return this; }
+
+            /// <summary>
+            /// Returns the current <see cref="SearchResult"/> from the current
+            /// <see cref="SearchResultStream"/>.
+            /// </summary>
+            /// <returns>
+            /// The current <see cref="SearchResult"/> or <c>null</c>.
+            /// </returns>
+            public SearchPreview GetResult()
+            {
+                SearchPreview preview = null;
+
+                previews.TryDequeue(out preview);
+                return preview;
+            }
+
+            /// <summary>
+            /// Tells the current <see cref="SearchPreviewAwaiter"/> what method
+            /// to invoke on completion.
+            /// </summary>
+            /// <param name="continuation">
+            /// The method to call on completion.
+            /// </param>
+            public void OnCompleted(Action continuation)
+            {
+                Volatile.Write(ref this.continuation, continuation);
+            }
+
+            #endregion
+
+            #region Privates/internals
+
+            ConcurrentQueue<SearchPreview> previews = new ConcurrentQueue<SearchPreview>();
+            CancellationToken cancellationToken;
+            SearchPreviewStream stream;
+            Action continuation;
+            int enumerated;
+            Task task;
+
+            async Task<SearchPreview> AwaitResultAsync()
+            {
+                return await this;
+            }
+
+            void Continue()
+            {
+                Action continuation = Interlocked.Exchange(ref this.continuation, null);
+
+                if (continuation != null)
+                {
+                    continuation();
+                }
+
+                this.cancellationToken.ThrowIfCancellationRequested();
+            }
+
+            async void ReadPreviewsAsync()
+            {
+                if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
+                {
+                    throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                while (stream.ReadState <= ReadState.Interactive)
+                {
+                    var preview = await stream.ReadPreviewAsync();
+                    this.previews.Enqueue(preview);
+                    this.Continue();
+                }
+
+                this.Continue();
+                enumerated = 2;
+            }
+
+            #endregion
         }
 
         #endregion

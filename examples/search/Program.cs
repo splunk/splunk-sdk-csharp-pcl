@@ -48,11 +48,11 @@ namespace Splunk.Client.Examples.Search
 
             //// Simple oneshot search
 
-            using (SearchResultStream resultStream = await service.SearchOneshotAsync("search index=_internal | head 5"))
+            using (SearchResultStream stream = await service.SearchOneshotAsync("search index=_internal | head 5"))
             {
-                foreach (Task<SearchResult> result in resultStream)
+                foreach (SearchResult result in stream)
                 {
-                    Console.WriteLine(await result);
+                    Console.WriteLine(result);
                 }
             }
         }

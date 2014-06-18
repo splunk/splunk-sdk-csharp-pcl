@@ -52,9 +52,9 @@ namespace Splunk.Client.Examples
             {
                 try
                 {
-                    foreach (Task<SearchResult> result in stream)
+                    foreach (SearchResult result in stream)
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, await result));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, result));
                     }
                     
                     Console.WriteLine("End of search results");

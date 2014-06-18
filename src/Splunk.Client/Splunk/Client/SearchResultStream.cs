@@ -26,7 +26,6 @@ namespace Splunk.Client
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
-    using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
@@ -158,6 +157,8 @@ namespace Splunk.Client
         /// </remarks>
         public IEnumerator<SearchResult> GetEnumerator()
         {
+            this.EnsureNotDisposed();
+
             for (SearchResult result; this.resultAwaiter.TryTake(out result); )
             {
                 yield return result;
@@ -179,6 +180,8 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
+            this.EnsureNotDisposed();
+
             for (var result = await this.resultAwaiter; result != null; result = await this.resultAwaiter)
             {
                 this.OnNext(result);
@@ -198,20 +201,19 @@ namespace Splunk.Client
         volatile Metadata metadata;
         bool disposed;
 
-        /// <summary>
-        /// Gets the <see cref="ReadState"/> for the current <see cref="SearchResultStream"/>.
-        /// </summary>
         ReadState ReadState
         {
             get { return this.response.XmlReader.ReadState; }
         }
 
-        /// <summary>
-        /// Asynchronously reads the metadata for the current chunk of search results.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing this asychronous operation.
-        /// </returns>
+        void EnsureNotDisposed()
+        {
+            if (this.disposed)
+            {
+                throw new ObjectDisposedException("Search result stream");
+            }
+        }
+
         async Task ReadMetadataAsync()
         {
             var metadata = new Metadata();
@@ -220,14 +222,6 @@ namespace Splunk.Client
             this.metadata = metadata;
         }
 
-        /// <summary>
-        /// Reads the next <see cref="SearchResult"/> in the current <see cref=
-        /// "SearchResultStream"/> stream.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task<SearchResult>"/> if the next result was read 
-        /// successfully; <c>null</c> if there are no more records to read.
-        /// </returns>
         async Task<SearchResult> ReadResultAsync()
         {
             var reader = this.response.XmlReader;

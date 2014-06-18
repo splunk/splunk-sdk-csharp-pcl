@@ -128,6 +128,8 @@ namespace Splunk.Client
         /// </remarks>
         public IEnumerator<SearchPreview> GetEnumerator()
         {
+            this.EnsureNotDisposed();
+
             for (SearchPreview preview; this.previewAwaiter.TryTake(out preview); )
             {
                 yield return preview;
@@ -149,6 +151,8 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
+            this.EnsureNotDisposed();
+
             for (var preview = await this.previewAwaiter; preview != null; preview = await this.previewAwaiter)
             {
                 this.OnNext(preview);
@@ -169,6 +173,14 @@ namespace Splunk.Client
         ReadState ReadState
         {
             get { return this.response.XmlReader.ReadState; }
+        }
+
+        void EnsureNotDisposed()
+        {
+            if (this.disposed)
+            {
+                throw new ObjectDisposedException("Search result stream");
+            }
         }
 
         async Task<SearchPreview> ReadPreviewAsync()

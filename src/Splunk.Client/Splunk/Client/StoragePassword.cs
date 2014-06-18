@@ -17,10 +17,7 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
-//// [X] Properties & Methods
 //// [ ] What HttpStatusCode does Splunk return when a session key expires?
-//// [ ] What exception should Args throw when a required property is omitted: 
-////     ArgumentException or SerializationException as it does right now?
 
 namespace Splunk.Client
 {

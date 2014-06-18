@@ -28,7 +28,7 @@ namespace Splunk.Client.Examples.Search
     {
         static void Main(string[] args)
         {
-            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
@@ -44,7 +44,7 @@ namespace Splunk.Client.Examples.Search
         /// <returns></returns>
         static async Task Run(Service service)
         {
-            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             //// Simple oneshot search
 

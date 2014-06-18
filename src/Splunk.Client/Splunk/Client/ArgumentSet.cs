@@ -15,8 +15,8 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
-//// [ ] Diagnostics
 
 namespace Splunk.Client
 {

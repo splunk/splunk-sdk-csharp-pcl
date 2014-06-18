@@ -18,8 +18,6 @@
 //// [X] Contracts
 //// [O] Documentation
 //// [ ] Seal all Args types
-//// [ ] Eliminate EntityCollection<TEntityCollection, TEntity>.Args and settle on a pagination strategy, the whole 
-////     point to this property.
 
 namespace Splunk.Client
 {

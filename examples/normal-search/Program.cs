@@ -30,7 +30,7 @@ namespace Splunk.Client.Examples
     {
         static void Main(string[] args)
         {
-            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
@@ -41,20 +41,20 @@ namespace Splunk.Client.Examples
 
         static async Task Run(Service service)
         {
-            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             //// Search : Pull model (foreach loop => IEnumerable)
 
             Job job = await service.Jobs.CreateAsync("search index=_internal | head 10");
-            SearchResultStream searchResultStream;
+            SearchResultStream stream;
 
-            using (searchResultStream = await job.GetSearchResultsAsync())
+            using (stream = await job.GetSearchResultsAsync())
             {
                 try
                 {
-                    foreach (Task<SearchResult> result in searchResultStream)
+                    foreach (Task<SearchResult> result in stream)
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", searchResultStream.ReadCount, await result));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, await result));
                     }
                     
                     Console.WriteLine("End of search results");
@@ -69,21 +69,28 @@ namespace Splunk.Client.Examples
 
             job = await service.Jobs.CreateAsync("search index=_internal | head 10");
 
-            using (searchResultStream = await job.GetSearchResultsAsync())
+            using (stream = await job.GetSearchResultsAsync())
             {
-                searchResultStream.Subscribe(
+                var manualResetEvent = new ManualResetEvent(true);
+
+                stream.Subscribe(new Observer<SearchResult>(
                     onNext: (result) =>
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", searchResultStream.ReadCount, result));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, result));
                     },
                     onError: (e) =>
                     {
                         Console.WriteLine(string.Format("SearchResults error: {0}", e.Message));
+                        manualResetEvent.Set();
                     },
                     onCompleted: () =>
                     {
                         Console.WriteLine("End of search results");
-                    });
+                        manualResetEvent.Set();
+                    }));
+
+                manualResetEvent.Reset();
+                manualResetEvent.WaitOne();
             }
         }
     }

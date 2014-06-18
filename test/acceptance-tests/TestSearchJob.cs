@@ -43,10 +43,11 @@ namespace Splunk.Client.UnitTests
         /// Tests the result from a bad search argument.
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task BadOutputMode()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var search = "invalidpart" + Search;
 
@@ -71,10 +72,11 @@ namespace Splunk.Client.UnitTests
         /// Tests the result from a search argument.
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task JobSearchMode()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
@@ -94,10 +96,11 @@ namespace Splunk.Client.UnitTests
         /// Tests the result from a search argument.
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task JobExecutionMode()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
@@ -122,10 +125,11 @@ namespace Splunk.Client.UnitTests
         /// Tests all output modes for Job.Events
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task JobEventsTruncationModeArgument()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 JobArgs jobArgs = new JobArgs();
 
@@ -150,6 +154,7 @@ namespace Splunk.Client.UnitTests
         /// Tests all search modes
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task JobSearchModeArgument()
         {
@@ -166,6 +171,7 @@ namespace Splunk.Client.UnitTests
         /// Tests all search modes for export
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task ExportSearchModeArgument()
         {
@@ -182,6 +188,7 @@ namespace Splunk.Client.UnitTests
         /// Tests all search modes for export
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task ExportTruncationModeArgument()
         {
@@ -195,12 +202,13 @@ namespace Splunk.Client.UnitTests
         }
 
         [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
         [Fact]
         public async Task CanRefreshJob()
         {
             const string search = "search index=_internal * | head 100000";
             
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 var job = await service.Jobs.CreateAsync(search);
 
@@ -293,7 +301,7 @@ namespace Splunk.Client.UnitTests
         /// </param>
         async Task RunExportForEachEnum(string search, Type enumType, Func<string, SearchExportArgs> getJobExportArgs)
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 await ForEachEnum(enumType, async @enum =>
                     {
@@ -312,7 +320,7 @@ namespace Splunk.Client.UnitTests
         /// </param>
         async Task RunJobForEachEnum(Type enumType, Func<string, JobArgs> getJobArgs)
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 await ForEachEnum(enumType, async @enum =>
                 {

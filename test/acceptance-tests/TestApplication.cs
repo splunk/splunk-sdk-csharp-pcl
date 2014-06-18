@@ -34,10 +34,11 @@ namespace Splunk.Client.UnitTests
         /// The app tests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Application")]
+        [MockContext]
         [Fact]
         public async Task Application()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 ApplicationCollection apps = service.Applications;
                 await apps.GetAllAsync();

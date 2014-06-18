@@ -19,6 +19,7 @@
 
 namespace Splunk.Client
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -28,7 +29,7 @@ namespace Splunk.Client
     /// <summary>
     /// The expception that is thrown when a Splunk service request fails.
     /// </summary>
-    public class RequestException : HttpRequestException
+    public class RequestException : Exception
     {
         #region Constructors
 

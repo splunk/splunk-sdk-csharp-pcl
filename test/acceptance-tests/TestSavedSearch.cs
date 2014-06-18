@@ -34,10 +34,11 @@ namespace Splunk.Client.UnitTests
         /// Test saved search dispatch
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
+        [MockContext]
         [Fact]
         public async Task SavedSearchDispatchProperties()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 // Ensure correct start state
 
@@ -144,10 +145,11 @@ namespace Splunk.Client.UnitTests
         /// Touch test properties
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
+        [MockContext]
         [Fact]
         public async Task SavedSearchesProperties()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 SavedSearchCollection savedSearches = service.SavedSearches;
                 await savedSearches.GetAllAsync();
@@ -380,10 +382,11 @@ namespace Splunk.Client.UnitTests
         /// Test Saved Search Create Read Update and Delete.
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
+        [MockContext]
         [Fact]
         public async Task SavedSearchesUpdateProperties()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 SavedSearchCollection savedSearches = service.SavedSearches;
                 const string name = "sdk-test_UpdateProperties";
@@ -576,10 +579,11 @@ namespace Splunk.Client.UnitTests
         /// Test saved search history
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
+        [MockContext]
         [Fact]
         public async Task SavedSearchHistory()
         {
-            using (var service = await SDKHelper.CreateService())
+            using (var service = await SdkHelper.CreateService())
             {
                 const string name = "sdk-test_SavedSearchHistory";
                 const string search = "search index=sdk-tests * earliest=-1m";

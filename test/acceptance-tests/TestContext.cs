@@ -22,17 +22,18 @@ namespace Splunk.Client.UnitTests
     public class TestContext
     {
         [Trait("acceptance-test", "Splunk.Client.Context")]
+        [MockContext]
         [Fact]
         public void CanConstructContext()
         {
-            client = new Context(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port);
+            client = new Context(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port);
 
             Assert.Equal(client.Scheme, Scheme.Https);
-            Assert.Equal(client.Host.ToLower(), SDKHelper.UserConfigure.host);
-            Assert.Equal(client.Port, SDKHelper.UserConfigure.port);
+            Assert.Equal(client.Host.ToLower(), SdkHelper.Splunk.Host);
+            Assert.Equal(client.Port, SdkHelper.Splunk.Port);
             Assert.Null(client.SessionKey);
 
-            Assert.Equal(client.ToString().ToLower(), string.Format("https://{0}:{1}", SDKHelper.UserConfigure.host.ToLower(), SDKHelper.UserConfigure.port));
+            Assert.Equal(client.ToString().ToLower(), string.Format("https://{0}:{1}", SdkHelper.Splunk.Host.ToLower(), SdkHelper.Splunk.Port));
         }
 
         static Context client;

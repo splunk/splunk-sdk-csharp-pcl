@@ -1,4 +1,4 @@
-﻿   /*
+﻿ /*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -20,19 +20,21 @@ namespace Splunk.Client.Helpers
     using System;
     using System.Collections.Generic;
     using System.Configuration;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net;
+    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
 
     /// <summary>
     /// 
     /// </summary>
-    public static class SDKHelper
+    public static class SdkHelper
     {
         /// <summary>
-        /// Initializes the <see cref="SDKHelper" /> class.
+        /// Initializes the <see cref="SdkHelper" /> class.
         /// </summary>
-        static SDKHelper()
+        static SdkHelper()
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
@@ -40,8 +42,7 @@ namespace Splunk.Client.Helpers
             };
 
             var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            UserConfigure = new SplunkRC();
-            LoadSplunkRC(Path.Combine(home, ".splunkrc"));
+            splunk = new SplunkRC(Path.Combine(home, ".splunkrc"));
         }
 
         /// <summary>
@@ -50,103 +51,129 @@ namespace Splunk.Client.Helpers
         /// <value>
         /// The user configure.
         /// </value>
-        public static SplunkRC UserConfigure { get; private set; }
+        public static SplunkRC Splunk
+        {
+            get { return splunk; }
+        }
 
         /// <summary>
-        /// Create a Splunk 
-        /// <see cref="Service" /> and login using the command
-        /// line options (or .splunkrc)
+        /// Create a Splunk <see cref="Service" /> and login using the settings
+        /// provided in .splunkrc.
         /// </summary>
-        /// <param name="ns">The ns.</param>
+        /// <param name="ns">
+        /// </param>
         /// <returns>
         /// The service created.
         /// </returns>
         public static async Task<Service> CreateService(Namespace ns = null)
         {
-            Service service = null;
+            var context = new MockContext(Splunk.Scheme, Splunk.Host, Splunk.Port);
+            var service = new Service(context, ns);
+            
+            await service.LoginAsync(Splunk.Username, Splunk.Password);
 
-            if (MockContext.IsEnabled)
-            {
-                var context = new MockContext(UserConfigure.scheme, UserConfigure.host, UserConfigure.port);
-                service = new Service(context);
-            }
-            else
-            {
-                service = new Service(UserConfigure.scheme, UserConfigure.host, UserConfigure.port, ns);
-            }
-
-            await service.LoginAsync(UserConfigure.username, UserConfigure.password);
             return service;
         }
 
-        /// <summary>
-        /// Load a file of options and arguments
-        /// </summary>
-        /// <param name="path">The path to the .splunkrc file.</param>
-        static void LoadSplunkRC(string path)
+        public static T GetOrElse<T>(T value)
         {
-            var reader = new StreamReader(path);
-
-            List<string> argList = new List<string>(4);
-            string line;
-
-            while ((line = reader.ReadLine()) != null)
-            {
-                line = line.Trim();
-
-                if (line.StartsWith("#", StringComparison.InvariantCulture))
-                {
-                    continue;
-                }
-
-                if (line.Length == 0)
-                {
-                    continue;
-                }
-
-                argList.Add(line);
-            }
-
-            foreach (string arg in argList)
-            {
-                string[] strs = arg.Split('=');
-
-                switch (strs[0].ToLower().TrimStart().TrimEnd())
-                {
-                    case "username": UserConfigure.username = strs[1].TrimEnd().TrimStart(); break;
-                    case "password": UserConfigure.password = strs[1].TrimEnd().TrimStart(); break;
-                    case "scheme": UserConfigure.scheme = strs[1].TrimEnd().TrimStart() == "https" ? Scheme.Https : Scheme.Http; break;
-                    case "port": UserConfigure.port = int.Parse(strs[1].TrimEnd().TrimStart()); break;
-                    case "host": UserConfigure.host = strs[1].TrimEnd().TrimStart(); break;
-                }
-            }
+            return MockContext.GetOrElse(value);
         }
 
+        #region Privates/internals
+
+        static readonly SplunkRC splunk;
+
+        #endregion
+
+        #region Types
+
         /// <summary>
-        /// represent .splunkrc file
+        /// 
         /// </summary>
         public sealed class SplunkRC
         {
             /// <summary>
-            /// The username
+            /// Initializes a new instance of the <see cref="SplunkRC"/> class.
             /// </summary>
-            public string username = "admin";
-            /// <summary>
-            /// The password
-            /// </summary>
-            public string password = "changeme";
+            /// <param name="path">
+            /// The location of a .splunkrc file.
+            /// </param>
+            internal SplunkRC(string path)
+            {
+                var reader = new StreamReader(path);
+
+                List<string> argList = new List<string>(4);
+                string line;
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    line = line.Trim();
+
+                    if (line.StartsWith("#", StringComparison.InvariantCulture))
+                    {
+                        continue;
+                    }
+
+                    if (line.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    argList.Add(line);
+                }
+
+                foreach (string arg in argList)
+                {
+                    string[] pair = arg.Split('=');
+
+                    switch (pair[0].ToLower().Trim())
+                    {
+                        case "scheme": 
+                            this.Scheme = pair[1].Trim() == "https" ? Scheme.Https : Scheme.Http; 
+                            break;
+                        case "host": 
+                            this.Host = pair[1].Trim(); 
+                            break;
+                        case "port": 
+                            this.Port = int.Parse(pair[1].Trim()); 
+                            break;
+                        case "username": 
+                            this.Username = pair[1].Trim(); 
+                            break;
+                        case "password": 
+                            this.Password = pair[1].Trim(); 
+                            break;
+                    }
+                }
+            }
+
             /// <summary>
             /// The scheme
             /// </summary>
-            public Scheme scheme = Scheme.Https;
-            /// <summary>
-            /// The port
-            /// </summary>
-            public int port = 8089;
+            public Scheme Scheme = Scheme.Https;
+
             /// <summary>
             /// The host
             /// </summary>
-            public string host = "localhost";
+            public string Host = "localhost";
+
+            /// <summary>
+            /// The port
+            /// </summary>
+            public int Port = 8089;
+
+            /// <summary>
+            /// The username
+            /// </summary>
+            public string Username = "admin";
+            
+            /// <summary>
+            /// The password
+            /// </summary>
+            public string Password = "changeme";
         }
+
+        #endregion
     }
 }

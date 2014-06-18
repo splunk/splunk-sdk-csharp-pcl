@@ -210,14 +210,22 @@ namespace Splunk.Client
 
             #endregion
 
-            #region Methods
+            #region Methods supporting IDisposable and IEnumerable<SearchPreview>
 
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="preview"></param>
+            /// <returns></returns>
             public bool TryTake(out SearchPreview preview)
             {
                 preview = this.AwaitResultAsync().Result;
                 return preview != null;
             }
 
+            /// <summary>
+            /// 
+            /// </summary>
             public void Wait()
             {
                 this.task.Wait();
@@ -225,7 +233,21 @@ namespace Splunk.Client
 
             #endregion
 
-            #region INotifyCompletion implementation
+            #region Members called by the async await state machine
+
+            //// The async await state machine requires that you implement 
+            //// INotifyCompletion and provide three additional members: 
+            //// 
+            ////     IsCompleted property
+            ////     GetAwaiter method
+            ////     GetResult method
+            ////
+            //// INotifyCompletion itself defines just one member:
+            ////
+            ////     OnCompletion method
+            ////
+            //// See Jeffrey Richter's excellent discussion of the topic of 
+            //// awaiters in CLR via C# (4th Edition).
 
             /// <summary>
             /// Tells the state machine if any results are available.

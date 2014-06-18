@@ -121,7 +121,7 @@ namespace Splunk.ModularInputs
         /// Gest or sets the streaming mode for this modular input (Simple or Xml).
         /// </summary>
         /// <remarks>
-        /// This property's default value is "Simple".
+        /// This property's default value is "Xml".
         /// </remarks>
         [XmlElement("streaming_mode")]
         public StreamingMode StreamingMode { get; set; }

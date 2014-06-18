@@ -25,6 +25,7 @@ namespace Splunk.ModularInputs.UnitTests
     using Xunit;
     using System.Xml.Serialization;
     using System.Xml.Linq;
+    using System.Xml;
 
     public class AwaitableProgress<T> : IProgress<T>
     {
@@ -182,7 +183,12 @@ namespace Splunk.ModularInputs.UnitTests
 
         class TestInput : ModularInput
         {
-            public override Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) { return Task.FromResult(false); }
+            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) {
+                await eventWriter.QueueEventForWriting(new Event
+                {
+                    Data = "Boris!"
+                });
+            }
 
             public override Scheme Scheme
             {
@@ -265,6 +271,7 @@ namespace Splunk.ModularInputs.UnitTests
                     doc.Element("scheme").Element("description").Value);
                 Assert.NotNull(doc.Element("scheme").Element("endpoint").Element("args"));
                 Assert.Equal(String.Empty, stderr.ToString());
+                Assert.Equal("xml", doc.Element("scheme").Element("streaming_mode").Value);
             }
         }
 
@@ -392,9 +399,10 @@ namespace Splunk.ModularInputs.UnitTests
                 Unbroken = true
             };
             string serialized;
-            using (StringWriter writer = new StringWriter()) {
-                XmlSerializer serializer = new XmlSerializer(typeof(Event));
-                serializer.Serialize(writer, e);
+            using (StringWriter writer = new StringWriter()) 
+            {
+                using (var xmlWriter = XmlWriter.Create(writer, new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment }))
+                    e.ToXml(xmlWriter);
                 serialized = writer.ToString();
             }
 
@@ -429,10 +437,10 @@ namespace Splunk.ModularInputs.UnitTests
                 Unbroken = false
             };
             string serialized;
-            using (StringWriter writer = new StringWriter())
+            using (var writer = new StringWriter())
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(Event));
-                serializer.Serialize(writer, e);
+                using (var xmlWriter = XmlWriter.Create(writer, new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment }))
+                    e.ToXml(xmlWriter);
                 serialized = writer.ToString();
             }
 
@@ -441,7 +449,7 @@ namespace Splunk.ModularInputs.UnitTests
             XDocument doc = XDocument.Parse(serialized);
             Assert.NotNull(doc.Element("event").Element("done"));
             Assert.Equal("", doc.Element("event").Element("done").Value);
-            Assert.Equal("0", doc.Element("event").Attribute("unbroken").Value);
+            Assert.False(doc.Element("event").HasAttributes);
         }
 
        
@@ -461,8 +469,9 @@ namespace Splunk.ModularInputs.UnitTests
 
             Task<EventWrittenProgressReport> t =
                 progress.AwaitProgressAsync();
-            eventWriter.Dispose();
+            eventWriter.CompleteAsync();
             EventWrittenProgressReport r = await t;
+
 
             Assert.Equal(new Event(), r.WrittenEvent);
             Assert.Equal("", stderr.ToString());
@@ -495,32 +504,53 @@ namespace Splunk.ModularInputs.UnitTests
                 var report = await writtenTask;
                 
                 Assert.Equal("Boris the mad baboon", report.WrittenEvent.Data);
-                
-                //the expect string head may vary from env to env, so we will only verify the <data> section
-                string expectedXml = "<?xml version=\"1.0\" encoding=\"utf-16\"?><stream>" +
-                    "<event xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=" +
-                    "\"http://www.w3.org/2001/XMLSchema\" unbroken=\"0\"><data>Boris the mad " +
-                    "baboon</data><time>-11644502400</time></event>";
-                               
-                Console.WriteLine("actual   :"+stdout.ToString().Trim());
-                Console.WriteLine("expected :"+expectedXml);
-                Assert.True(stdout.ToString().Trim().Contains("<data>Boris the mad baboon</data><time>-11644502400</time></event>"));
-                Assert.True(stdout.ToString().Trim().StartsWith("<?xml version=\"1.0\" encoding=\"utf-16\"?><stream><event"));
+                Assert.True(stdout.ToString().Trim().Contains("<data>Boris the mad baboon</data>"));
+                Assert.True(stdout.ToString().Trim().Contains("<time>-11644502400</time>"));
                 Assert.Equal("", stderr.ToString());
                 
                 var completedTask = progress.AwaitProgressAsync();
-                eventWriter.Dispose();
+                await eventWriter.CompleteAsync();
                 report = await completedTask;
 
                 Assert.Equal("", stderr.ToString());
-                Assert.True(stdout.ToString().EndsWith("</stream>"));
+                Assert.True(stdout.ToString().Trim().EndsWith("</stream>"));
             }
             finally
             {
-                // EventWriter.Dispose() is idempotent, so there is no problem if this is invoked twice.
-                eventWriter.Dispose(); 
+                // EventWriter.CompleteAsync() is idempotent, so there is no problem if this is invoked twice.
+                eventWriter.CompleteAsync().Wait(); 
             }
         }
-         
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ModularInputWritesEvents()
+        {
+            using (StringReader stdin = new StringReader(@"<?xml version=""1.0"" encoding=""utf-16""?>
+                <input xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+                    <server_host>tiny</server_host>
+                    <server_uri>https://127.0.0.1:8089</server_uri>
+                    <checkpoint_dir>/some/dir</checkpoint_dir>
+                    <session_key>123102983109283019283</session_key>
+                    <configuration>
+                        <stanza name=""random_numbers://aaa"">
+                            <param name=""min"">0</param>
+                            <param name=""max"">5</param>
+                        </stanza>
+                    </configuration>
+                </input>"))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = {};
+                TestInput testInput = new TestInput();
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                Assert.Equal(0, exitCode);
+                Assert.Equal("", stderr.ToString());
+                Assert.False(stdout.ToString().Contains("xmlns:xsi"));
+                Assert.True(stdout.ToString().Contains("<data>Boris!</data>"));
+            }
+        }         
     }
 }

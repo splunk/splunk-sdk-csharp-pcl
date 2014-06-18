@@ -42,15 +42,14 @@ namespace Splunk.ModularInputs
     /// <summary>
     /// 
     /// </summary>
-    public class EventWriter : IDisposable
+    public class EventWriter
     {
         #region Private fields
-        private static XmlSerializer serializer = new XmlSerializer(typeof(Event));
+        private static readonly XmlSerializer serializer = new XmlSerializer(typeof(Event), new XmlRootAttribute("event"));
         private BlockingCollection<Event> eventQueue = new BlockingCollection<Event>();
-        private XmlWriter writer;
         private Task eventQueueMonitor = null;
         private object synchronizationObject = new object();
-        private bool disposed;
+        private bool completed;
         #endregion
 
         #region Properties
@@ -81,12 +80,6 @@ namespace Splunk.ModularInputs
             this.Stdout = stdout;
             this.Stderr = stderr;
             this.Progress = progress;
-
-            writer = XmlWriter.Create(stdout, new XmlWriterSettings
-            {
-                Async = true,
-                ConformanceLevel = ConformanceLevel.Document
-            });
         }
 
         #endregion
@@ -99,7 +92,7 @@ namespace Splunk.ModularInputs
         /// <param name="e">The Event to write.</param>
         public async Task QueueEventForWriting(Event e)
         {
-            if (disposed)
+            if (completed)
                 throw new ObjectDisposedException("EventWriter already disposed.");
             if (eventQueueMonitor == null)
                 // Don't start the eventQueueMonitor up until we actually want to write
@@ -108,29 +101,24 @@ namespace Splunk.ModularInputs
                 eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
             await Task.Run(() => eventQueue.Add(e));
         }
-    
-        public async void Dispose()
-        {
-            await Dispose(true);
-        }
 
-        protected virtual async Task Dispose(bool disposing)
+        public async Task CompleteAsync()
         {
-            if (disposed) return;
+            if (completed) return;
 
             if (eventQueue.IsAddingCompleted)
                 return;
             eventQueue.CompleteAdding();
             if (eventQueueMonitor != null)
                 await eventQueueMonitor;
-            writer.Close();
+            await Stdout.FlushAsync();
             this.Progress.Report(new EventWrittenProgressReport
             {
                 Timestamp = DateTime.Now,
                 WrittenEvent = new Event { }
             });
 
-            disposed = true;
+            completed = true;
         }
 
         /// <summary>
@@ -142,29 +130,53 @@ namespace Splunk.ModularInputs
         /// <param name="message">The message to log.</param>
         public async Task LogAsync(string severity, string message)
         {
-            if (disposed) throw new ObjectDisposedException("EventWriter is already disposed.");
+            if (completed) throw new ObjectDisposedException("EventWriter is already disposed.");
             await this.Stderr.WriteAsync(severity + " " + message + this.Stderr.NewLine);
         }
 
         protected void WriteEventsFromQueue()
         {
-            writer.WriteStartDocument();
-            writer.WriteStartElement(prefix: null, localName: "stream", ns: null);
+            // The original version of this code used the XmlWriter going directly to Stdout, and an XmlSerializer on Event
+            // to generate the XML. There are a number of subtle bugs around Splunk's interaction with subprocesses on Windows
+            // that required a three chicken exorcism to arrive at this version.
+            //
+            // The observable problem was that the modular input would run, but no events would show up in Splunk.
+            // I wrote the simplest possible modular input, that had static strings defining the scheme and events to stream,
+            // and showed that it worked, provided you flushed Console.Out after writing. Then I put the XmlWriter in to produce
+            // XML instead of the static strings, and found that no events showed up if the XmlWriter was writing directly
+            // to Console.Out. The events would show up if you ran the script from command.exe, though, so it's something about
+            // how Splunk is opening subprocesses. If I put a StringWriter in between, with the XmlWriter writing to the StringWriter,
+            // and then writing the string from the StringWriter to Console.Out, that works. So I use that workaround here for each event.
+            //
+            // Next, calling Serialize on an XmlSerializer for the Event objects hung. I demonstrated that by putting in LogAsync calls
+            // between each event, and showing that the log entry to splunkd.log right before the Serialize call shows up,
+            // but the one after never does. So I ripped that out, and had Event write itself to an XmlWriter directly with a ToXml
+            // method.
+            Stdout.WriteLine("<stream>");
 
             foreach (Event eventToWrite in eventQueue.GetConsumingEnumerable())
             {
-                serializer.Serialize(writer, eventToWrite);
-                writer.Flush();
-                this.Progress.Report(new EventWrittenProgressReport {
-                        Timestamp = DateTime.Now,
-                        WrittenEvent = eventToWrite
+                var buffer = new StringWriter();
+                using (var writer = XmlWriter.Create(buffer, new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment }))
+                {
+                    eventToWrite.ToXml(writer);
+                }
+                Stdout.WriteLine(buffer.ToString());
+                Stdout.Flush();
+                this.Progress.Report(new EventWrittenProgressReport
+                {
+                    Timestamp = DateTime.Now,
+                    WrittenEvent = eventToWrite
                 });
-
             }
 
-            writer.WriteEndElement();
-            writer.WriteEndDocument();
-            writer.Flush();
+            Stdout.WriteLine("</stream>");
+            Stdout.Flush();
+            this.Progress.Report(new EventWrittenProgressReport
+            {
+                Timestamp = DateTime.Now
+            });
+
         }
     }
 }

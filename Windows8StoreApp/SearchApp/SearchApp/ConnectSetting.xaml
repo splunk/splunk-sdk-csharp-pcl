@@ -1,0 +1,50 @@
+﻿<SettingsFlyout
+    x:Class="SplunkSearch.ConnectSetting"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SplunkSearch"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    IconSource="Assets/SmallLogo.png"
+    Title="ConnectSetting"
+    d:DesignWidth="346">
+
+    <!-- This StackPanel acts as a root panel for vertical layout of the content sections -->
+    <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Orientation="Vertical" >
+
+        <!-- The StackPanel(s) below define individual content sections -->
+
+        <!-- Content Section 1-->
+        <StackPanel Style="{StaticResource SettingsFlyoutSectionStyle}">
+
+            <!-- Section 1 header -->
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Host" />
+            <TextBox x:Name="splunkHost" Width="180" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+         
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Port" />
+            <TextBox x:Name="inputPort" Width="180" HorizontalAlignment="Left" Margin="0,10,0,0" Text="8089"/>
+
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Login" />
+            <TextBox x:Name="inputUser" Width="180" HorizontalAlignment="Left" Margin="0,10,0,0"/>
+          
+            <TextBlock Text="Password" Style="{StaticResource TitleTextBlockStyle}"  Margin="0,10,0,0"/>
+            <PasswordBox x:Name="inputPassword" Width="180" HorizontalAlignment="Left" Margin="0,10,0,0" />
+
+            <TextBlock Text="Scheme" Style="{StaticResource TitleTextBlockStyle}"  Margin="0,10,0,0"/>
+            <RadioButton Name="Https" IsChecked="True">Https</RadioButton>
+            <RadioButton Name="Http">Http</RadioButton>
+
+            <Button Content="Test connection" Click="TestConnection_Click" Height="40" Width="180" Margin="0,20,0,0" />
+            
+            <Button Content="Save" Click="SaveButton_Click" Height="40" Width="180" Margin="0,20,0,0" />
+
+            <TextBlock x:Name="OutputInfo" Margin="0,20,0,0" />
+            <!-- Section 1 body -->
+
+        </StackPanel>
+
+        <!-- Define more Content Sections below as necessary -->
+
+    </StackPanel>
+</SettingsFlyout>

@@ -50,22 +50,26 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1" >
             <TextBox x:Name="SearchInput" HorizontalAlignment="Left" Height="40"  TextWrapping="Wrap" Text="search index=_internal |head 2" VerticalAlignment="Top" Width="670" RenderTransformOrigin="0.013,0" Margin="50,0,0,0" />
             <Button x:Name="SearchSubmit" Content="Search" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top" RenderTransformOrigin="0.013,0" Click="SearchButton_Click" Margin="10,0,0,0"/>
-            <ProgressRing x:Name="searchInProgress" IsActive="False" Margin="10,0,0,0"/>
+            <ProgressRing x:Name="searchInProgress" IsActive="False" Margin="10,0,10,0"/>
             <Button x:Name="SearchCancel" Visibility="Collapsed"  Content="Cancel" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top"  Click="SearchCancelButton_Click" Margin="50,0,0,0"/>
             <ComboBox x:Name="TimeSelectComboBox" Width="478" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
                 <ComboBoxItem x:Name="item1">All time</ComboBoxItem>
                 <ComboBoxItem x:Name="item2">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Vertical">
                         <TextBlock>
             				<Run Text="Earlist:"/>
                         </TextBlock>
-                        <DatePicker x:Name="EarlistDate" Margin="5,0,0,0" DateChanged="EarlistDate_DateChanged"/>
-                        <TimePicker x:Name="EarlistTime" Margin="5,0,0,0" TimeChanged="EarlistTime_DateChanged"/>
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker x:Name="EarlistDate" Margin="0,0,0,0" DateChanged="EarlistDate_DateChanged"/>
+                            <TimePicker x:Name="EarlistTime" Margin="30,0,0,0" TimeChanged="EarlistTime_DateChanged"/>
+                        </StackPanel>
                         <TextBlock>
             				<Run Text="Latest:"/>
                         </TextBlock>
-                        <DatePicker  x:Name="LatestDate" Margin="5,0,0,0" DateChanged="LatestDate_DateChanged"/>
-                        <TimePicker  x:Name="LatestTime" Margin="5,0,0,0" TimeChanged="LatestTime_DateChanged"/>
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker  x:Name="LatestDate" Margin="0,0,0,0" DateChanged="LatestDate_DateChanged"/>
+                            <TimePicker  x:Name="LatestTime" Margin="30,0,0,0" TimeChanged="LatestTime_DateChanged"/>
+                        </StackPanel>
                     </StackPanel>
                 </ComboBoxItem>
             </ComboBox>
@@ -88,13 +92,16 @@
 
             <Grid x:Name="titleGrid" Grid.Column="1" Grid.Row="0" Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Border  Grid.Column="1" Margin="0"  Background="LightGray" BorderBrush="Black" BorderThickness="1,2,1,1" />
                 <Border  Grid.Column="0" Margin="0"  Background="LightGray" BorderBrush="Black" BorderThickness="1,2,1,1" />
-                <TextBlock Text="Event Time" Margin="10,0,0,0" Grid.Column="0" FontSize="20"  />
-                <TextBlock Text="Event Detail" Margin="10,0,0,0" Grid.Column="1" FontSize="20"/>
+                <Border  Grid.Column="1" Margin="0"  Background="LightGray" BorderBrush="Black" BorderThickness="1,2,1,1" />
+                <Border  Grid.Column="2" Margin="0"  Background="LightGray" BorderBrush="Black" BorderThickness="1,2,1,1" />
+                <TextBlock Text="No." Margin="10,0,0,0" Grid.Column="0" FontSize="20"  />
+                <TextBlock Text="Event Time" Margin="10,0,0,0" Grid.Column="1" FontSize="20"  />
+                <TextBlock Text="Event Detail" Margin="10,0,0,0" Grid.Column="2" FontSize="20"/>
             </Grid>
 
             <ScrollViewer x:Name="scrollerView" Grid.Column="1" Grid.Row="1" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -106,11 +113,13 @@
                             <Border BorderBrush="LightGray" BorderThickness="0,0,0,1">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50"/>
                                         <ColumnDefinition Width="200"/>
                                         <ColumnDefinition Width="auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Time}" TextWrapping="Wrap" Grid.Column="0"  TextLineBounds="Full"/>
-                                    <TextBlock Text="{Binding Event}" Margin="10,0,0,0" TextWrapping="Wrap" Grid.Column="1"  TextLineBounds="Full"/>
+                                    <TextBlock Text="{Binding Index}" TextWrapping="Wrap" Grid.Column="0"  TextLineBounds="Full"/>
+                                    <TextBlock Text="{Binding Time}" TextWrapping="Wrap" Grid.Column="1"  TextLineBounds="Full"/>
+                                    <TextBlock Text="{Binding Event}" Margin="10,0,0,0" TextWrapping="Wrap" Grid.Column="2"  TextLineBounds="Full"/>
 
                                 </Grid>
                             </Border>

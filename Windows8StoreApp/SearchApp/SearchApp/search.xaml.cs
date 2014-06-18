@@ -53,8 +53,7 @@ namespace SplunkSearch
         {
             get { return this.navigationHelper; }
         }
-
-
+        
         public search()
         {
             this.InitializeComponent();
@@ -69,8 +68,7 @@ namespace SplunkSearch
                 HostName.Text = string.Format("Server:{0}", MainPage.SplunkService.Server.Context.Host);
             }
         }
-
-
+        
         /// <summary>
         /// Populates the page with content passed during navigation. Any saved state is also
         /// provided when recreating a page from a prior session.
@@ -138,6 +136,8 @@ namespace SplunkSearch
 
             this.PageContentSearchInProgress();
 
+            CancellationToken token = cancelToken.Token;
+
             try
             {
                 List<ResultData> resultDatas = new List<ResultData>();
@@ -158,26 +158,32 @@ namespace SplunkSearch
                 }
 
                 titleGrid.Visibility = Visibility.Visible;
-                while (!cancelToken.IsCancellationRequested)
-                {
-                    using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr, jobArgs))
-                    {
-                        int resultCount = 0;
 
+
+                using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr, jobArgs))
+                {
+                    int resultCount = 0;
+
+                    try
+                    {
                         foreach (Task<SearchResult> resultTask in resultStream)
                         {
-                            SearchResult result = await resultTask;
-                            List<string> results = this.ParseResult(result);
-                            resultDatas.Add(new ResultData(results[0], results[1]));
-
-                            resultCount++;
+                            if (!cancelToken.IsCancellationRequested)
+                            {
+                                SearchResult result = await resultTask;
+                                List<string> results = this.ParseResult(result);
+                                resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
+                            }
                         }
 
                         if (resultStream.IsFinal)
                         {
-                            break;
                         }
                     }
+                    catch (Exception exx)
+                    {
+                    }
+
                 }
 
                 resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
@@ -192,7 +198,7 @@ namespace SplunkSearch
                 this.PageContentReset();
             }
         }
-
+    
         private void SearchCancelButton_Click(object sender, RoutedEventArgs e)
         {
             cancelToken.Cancel();
@@ -215,7 +221,10 @@ namespace SplunkSearch
             //DateTime time = DateTime.Parse(searchResult["_time"]);
             //string format = "yyyy/M/d hh:mm:ss.fff";
             //results.Add(string.Format("{0}-{1}", ++eventCount, time.ToString(format)));
-            results.Add(string.Format("{0}-{1}", ++eventCount, searchResult["_time"]));
+
+            string time = searchResult["_time"];
+            time = time.Replace("Pacific Summer Time", "PST");
+            results.Add(string.Format("{0}", time));
 
             rawData = rawData.Trim();
             //remove <v xml:space="preserve" trunc="0">
@@ -247,8 +256,8 @@ namespace SplunkSearch
         private void PageContentSearchInProgress()
         {
             SearchSubmit.Content = "Searching";
-            SearchCancel.Content = "Cancel";
-            SearchCancel.Visibility = Visibility.Visible;
+            //SearchCancel.Content = "Cancel";
+            //SearchCancel.Visibility = Visibility.Visible;
             searchInProgress.IsActive = true;
         }
 
@@ -256,9 +265,11 @@ namespace SplunkSearch
         {
             public string Time { get; set; }
             public string Event { get; set; }
+            public int Index { get; set; }
 
-            public ResultData(string time, string theEvent)
+            public ResultData(int index, string time, string theEvent)
             {
+                this.Index = index;
                 this.Time = time;
                 this.Event = theEvent;
             }

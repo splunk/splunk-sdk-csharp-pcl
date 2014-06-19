@@ -24,15 +24,15 @@ namespace Splunk.ModularInputs
     public enum StreamingMode
     {
         /// <summary>
-        /// A plain-text modular input.
-        /// </summary>
-        [XmlEnum(Name = "simple")]
-        Simple,
-
-        /// <summary>
         /// An XML object that is part of a stream of data to Splunk.
         /// </summary>
         [XmlEnum(Name = "xml")]
-        Xml
+        Xml,
+
+        /// <summary>
+        /// A plain-text modular input.
+        /// </summary>
+        [XmlEnum(Name = "simple")]
+        Simple
     }
 }

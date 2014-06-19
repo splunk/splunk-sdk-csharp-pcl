@@ -17,7 +17,6 @@
 namespace Splunk.Examples.saved_searches
 {
     using Splunk.Client.Helpers;
-
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;

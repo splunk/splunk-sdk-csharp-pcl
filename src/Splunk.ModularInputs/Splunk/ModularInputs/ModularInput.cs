@@ -110,94 +110,96 @@ namespace Splunk.ModularInputs
                 Console.OutputEncoding = Encoding.UTF8;
             }
 
-            using (EventWriter writer = new EventWriter(stdout, stderr, progress))
+            EventWriter writer = new EventWriter(stdout, stderr, progress);
+            try
             {
-                try
+                if (args.Length == 0)
                 {
-                    if (args.Length == 0)
+                    List<Task> instances = new List<Task>();
+
+                    InputDefinitionCollection inputDefinitions =
+                        (InputDefinitionCollection)new XmlSerializer(typeof(InputDefinitionCollection)).
+                        Deserialize(stdin);
+                    foreach (InputDefinition inputDefinition in inputDefinitions)
                     {
-                        List<Task> instances = new List<Task>();
+                        instances.Add(this.StreamEventsAsync(inputDefinition, writer));
+                    }
 
-                        InputDefinitionCollection inputDefinitions =
-                            (InputDefinitionCollection)new XmlSerializer(typeof(InputDefinitionCollection)).
-                            Deserialize(stdin);
-                        foreach (InputDefinition inputDefinition in inputDefinitions)
-                        {
-                            instances.Add(this.StreamEventsAsync(inputDefinition, writer));
-                        }
-
-                        await Task.WhenAll(instances.ToArray());
+                    await Task.WhenAll(instances.ToArray());
+                    return 0;
+                }
+                else if (args[0].ToLower().Equals("--scheme"))
+                {
+                    Scheme scheme = this.Scheme;
+                    if (scheme != null)
+                    {
+                        StringWriter stringWriter = new StringWriter();
+                        new XmlSerializer(typeof(Scheme)).Serialize(stringWriter, scheme);
+                        stdout.WriteLine(stringWriter.ToString());
                         return 0;
-                    }
-                    else if (args[0].ToLower().Equals("--scheme"))
-                    {
-                        Scheme scheme = this.Scheme;
-                        if (scheme != null)
-                        {
-                            StringWriter stringWriter = new StringWriter();
-                            new XmlSerializer(typeof(Scheme)).Serialize(stringWriter, scheme);
-                            stdout.WriteLine(stringWriter.ToString());
-                            return 0;
-                        }
-                        else
-                        {
-                            throw new NullReferenceException("Scheme was null; could not serialize.");
-                        }
-                    }
-                    else if (args[0].ToLower().Equals("--validate-arguments"))
-                    {
-                        string errorMessage = null;
-
-                        Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
-                            Deserialize(stdin);
-
-                        try
-                        {
-                            bool validationSuccessful = true;
-                            Scheme scheme = this.Scheme;
-                            foreach (Argument arg in scheme.Arguments)
-                            {
-                                if (arg.ValidationDelegate != null)
-                                {
-                                    if (!arg.ValidationDelegate(validation.Parameters[arg.Name], out errorMessage))
-                                    {
-                                        validationSuccessful = false;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (validationSuccessful && this.Validate(validation, out errorMessage))
-                            {
-                                return 0; // Validation succeeded
-                            }
-                        }
-                        catch (Exception) { }
-
-                        using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings
-                        {
-                            Async = true,
-                            ConformanceLevel = ConformanceLevel.Fragment
-                        }))
-                        {
-                            await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
-                            await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: errorMessage);
-                            await xmlWriter.WriteEndElementAsync();
-                        }
-                        return -1;
                     }
                     else
                     {
-                        await writer.LogAsync("ERROR", "Invalid arguments to modular input.");
-                        return -1;
+                        throw new NullReferenceException("Scheme was null; could not serialize.");
                     }
                 }
-                catch (Exception e)
+                else if (args[0].ToLower().Equals("--validate-arguments"))
                 {
-                    var full = e.ToString().Replace(Environment.NewLine, " | ");
-                    writer.LogAsync(string.Format("Unhandled exception: {0}", full), "FATAL").Wait();
+                    string errorMessage = null;
+
+                    Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
+                        Deserialize(stdin);
+
+                    try
+                    {
+                        bool validationSuccessful = true;
+                        Scheme scheme = this.Scheme;
+                        foreach (Argument arg in scheme.Arguments)
+                        {
+                            if (arg.ValidationDelegate != null)
+                            {
+                                if (!arg.ValidationDelegate(validation.Parameters[arg.Name], out errorMessage))
+                                {
+                                    validationSuccessful = false;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (validationSuccessful && this.Validate(validation, out errorMessage))
+                        {
+                            return 0; // Validation succeeded
+                        }
+                    }
+                    catch (Exception) { }
+
+                    using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings
+                    {
+                        Async = true,
+                        ConformanceLevel = ConformanceLevel.Fragment
+                    }))
+                    {
+                        await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
+                        await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: errorMessage);
+                        await xmlWriter.WriteEndElementAsync();
+                    }
                     return -1;
                 }
+                else
+                {
+                    await writer.LogAsync("ERROR", "Invalid arguments to modular input.");
+                    return -1;
+                }
+            }
+            catch (Exception e)
+            {
+                var full = e.ToString().Replace(Environment.NewLine, " | ");
+                writer.LogAsync(string.Format("Unhandled exception: {0}", full), "FATAL").Wait();
+                return -1;
+            }
+            finally
+            {
+                writer.CompleteAsync().Wait();
             }
         }
 

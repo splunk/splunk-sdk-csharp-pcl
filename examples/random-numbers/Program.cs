@@ -66,7 +66,7 @@ namespace random_numbers
 
             while (true)
             {
-                await Task.Delay(1000);
+                await Task.Delay(100);
                 await eventWriter.QueueEventForWriting(new Event
                 {
                     Stanza = inputDefinition.Name,

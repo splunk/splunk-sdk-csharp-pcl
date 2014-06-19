@@ -63,8 +63,10 @@ namespace SplunkSearch
 
             if (MainPage.SplunkService != null)
             {
-                UserName.Text = string.Format("User:{0}", loginUser);
-                HostName.Text = string.Format("Server:{0}", MainPage.SplunkService.Server.Context.Host);
+                UserName1.Text = string.Format("User: ");
+                UserName2.Text = string.Format(" {0}",loginUser);
+                HostName1.Text = string.Format("Server:");
+                HostName2.Text = string.Format(" {0}", MainPage.SplunkService.Server.Context.Host);
             }
         }
         

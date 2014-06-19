@@ -27,36 +27,36 @@
             </TransitionCollection>
         </Grid.ChildrenTransitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="140"/>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="70"/>
+            <RowDefinition Height="240"/>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Back button and page title -->
         <Grid>
-            <Grid.ColumnDefinitions>
+         
+            <!--<Grid.ColumnDefinitions>
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Button x:Name="backButton" Margin="39,59,39,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
+            </Grid.ColumnDefinitions>-->
+            <!--<Button x:Name="backButton" Margin="39,59,39,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
                         Style="{StaticResource NavigationBackButtonNormalStyle}"
                         VerticalAlignment="Top"
                         AutomationProperties.Name="Back"
                         AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button" FontFamily="Global User Interface"/>
-            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-            
-     
+                        AutomationProperties.ItemType="Navigation Button" FontFamily="Global User Interface"/>-->
+            <!--<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>-->
+            <Image  Source="/Images/splunkSearchDemo.png"  Margin="0,30,0,10" HorizontalAlignment="Center"/>
         </Grid>
         
         <StackPanel  Orientation="Horizontal"  HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="2">
-            <Button Content="Sign In" Click="SigninButton_Click" Height="42" Width="120" />
+            <Button Content="Sign In" Click="SigninButton_Click" Height="97" Width="256" FontSize="36" FontWeight="Bold" />
             <ProgressRing x:Name="InProgress" IsActive="False" Margin="20,0,0,0" />
         </StackPanel>
 
-        <StackPanel Orientation="Vertical" Grid.Row="3">                        
+        <StackPanel Orientation="Vertical" Grid.Row="3" Margin="0,30,0,0">                        
             <TextBlock x:Name="OutputInfo" FontSize="18" Foreground="Red" HorizontalAlignment="Center"/>
         </StackPanel>
     </Grid>

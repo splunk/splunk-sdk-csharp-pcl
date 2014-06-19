@@ -23,7 +23,7 @@
     <Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="120"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="55"/>
             <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -41,16 +41,24 @@
                         AutomationProperties.Name="Back"
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button" Click="backButton_Click"/>
-            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="10,45,647,0" FontFamily="Global User Interface"/>
+            <!--<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="10,45,647,0" FontFamily="Global User Interface"/>-->
+            <Image  Source="/Images/splunkSearchDemo.png" Grid.Column="1"  Margin="62,30,0,10" HorizontalAlignment="Left"/>
+
             <StackPanel Grid.Column="2" Orientation="Vertical">
-                <TextBlock x:Name="UserName"  Grid.Column="2" HorizontalAlignment="Left" Margin="0,29,0,0" Text="" VerticalAlignment="Top" FontSize="20"  />
-                <TextBlock x:Name="HostName"  Grid.Column="2" HorizontalAlignment="Left" Margin="0,5,0,0" Text="" VerticalAlignment="Top" FontSize="20"  />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="UserName1"  Grid.Column="2" HorizontalAlignment="Left" Margin="0,29,0,0" Text="" VerticalAlignment="Top" FontSize="20" FontWeight="Bold"  />
+                    <TextBlock x:Name="UserName2"  Grid.Column="2" HorizontalAlignment="Left" Margin="0,29,0,0" Text="" VerticalAlignment="Top" FontSize="20" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="HostName1"  Grid.Column="2" HorizontalAlignment="Left" Margin="0,5,0,0" Text="" VerticalAlignment="Top" FontSize="20" FontWeight="Bold"  />
+                    <TextBlock x:Name="HostName2"  Grid.Column="2" HorizontalAlignment="Left" Margin="0,5,0,0" Text="" VerticalAlignment="Top" FontSize="20"  />
+                </StackPanel>
             </StackPanel>
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" >
-            <TextBox x:Name="SearchInput" HorizontalAlignment="Left" Height="40"  TextWrapping="Wrap" Text="search index=_internal | head 100" VerticalAlignment="Top" Width="670" RenderTransformOrigin="0.013,0" Margin="50,0,0,0" />
-            <Button x:Name="SearchSubmit" Content="Search" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top" RenderTransformOrigin="0.013,0" Click="SearchButton_Click" Margin="10,0,0,0"/>
+            <TextBox x:Name="SearchInput" HorizontalAlignment="Left" Height="42"  TextWrapping="Wrap" Text="search index=_internal | head 100" VerticalAlignment="Center" Width="670" RenderTransformOrigin="0.013,0" Margin="50,0,0,0" FontSize="18"  />
+            <Button x:Name="SearchSubmit" Content="Search" HorizontalAlignment="Left" Height="42"  VerticalAlignment="Center"  Click="SearchButton_Click" Margin="20,0,0,0" Width="163" FontWeight="Bold" FontSize="16"/>
             <ProgressRing x:Name="searchInProgress" IsActive="False" Margin="10,0,10,0"/>
             <Button x:Name="SearchCancel" Visibility="Collapsed"  Content="Cancel" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top"  Click="SearchCancelButton_Click" Margin="50,0,0,0"/>
             <!--<TimePicker Margin="0,9"/>-->
@@ -58,7 +66,7 @@
             <DatePicker x:Name="endTime" Margin="10,9,0,10" Height="31" Width="293"/>-->
 
         </StackPanel>
-        <ComboBox Margin="50,0,0,0" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" x:Name="TimeSelectComboBox" Width="600" Height="40" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+        <ComboBox Margin="50,0,0,0" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" x:Name="TimeSelectComboBox" Width="300" Height="40" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
             <ComboBoxItem x:Name="item1">All time</ComboBoxItem>
             <ComboBoxItem x:Name="item2">
                 <StackPanel Orientation="Vertical">

@@ -125,7 +125,7 @@ namespace SplunkSearch
             {
                 if (await ConnectToSplunkServer())
                 {
-                    this.Frame.Navigate(typeof(search));
+                    this.Frame.Navigate(typeof(SearchPage));
                 };
             }
         }
@@ -154,7 +154,7 @@ namespace SplunkSearch
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 OutputInfo.Text = "Please set connection information from the Settings menu";
                 return false;
@@ -170,7 +170,7 @@ namespace SplunkSearch
                 InProgress.IsActive = true;
                 await SplunkService.LoginAsync(user, password);
                 InProgress.IsActive = false;
-                search.loginUser = user;
+                SearchPage.loginUser = user;
 
                 return true;
             }

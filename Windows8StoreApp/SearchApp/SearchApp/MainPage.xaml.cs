@@ -136,7 +136,9 @@ namespace SplunkSearch
 
             try
             {
+
                 var credentialList = vault.FindAllByResource(ConnectSetting.ResourceName);
+                credentialList = null;
 
                 user = credentialList[0].UserName;
                 credentialList[0].RetrievePassword();
@@ -156,7 +158,7 @@ namespace SplunkSearch
             }
             catch (Exception ex)
             {
-                OutputInfo.Text = ex.Message;
+                OutputInfo.Text = "Please set connection information from the Settings menu";
                 return false;
             }
         }

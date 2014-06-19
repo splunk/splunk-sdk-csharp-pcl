@@ -42,7 +42,7 @@
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button" Click="backButton_Click"/>
             <!--<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="10,45,647,0" FontFamily="Global User Interface"/>-->
-            <Image  Source="/Images/splunkSearchDemo.png" Grid.Column="1"  Margin="62,30,0,10" HorizontalAlignment="Left"/>
+            <Image  Source="/Images/splunkSearchDemo.png" Grid.Column="1"  Margin="0,20,0,10" HorizontalAlignment="Left" Height="70" IsHitTestVisible="False"/>
 
             <StackPanel Grid.Column="2" Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
@@ -57,8 +57,8 @@
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" >
-            <TextBox x:Name="SearchInput" HorizontalAlignment="Left" Height="42"  TextWrapping="Wrap" Text="search index=_internal | head 100" VerticalAlignment="Center" Width="670" RenderTransformOrigin="0.013,0" Margin="50,0,0,0" FontSize="18"  />
-            <Button x:Name="SearchSubmit" Content="Search" HorizontalAlignment="Left" Height="42"  VerticalAlignment="Center"  Click="SearchButton_Click" Margin="20,0,0,0" Width="163" FontWeight="Bold" FontSize="16"/>
+            <TextBox x:Name="SearchInput" HorizontalAlignment="Left" Height="42" Padding="10,5" TextWrapping="Wrap" Text="search index=_internal | head 100" VerticalAlignment="Center" Width="670" RenderTransformOrigin="0.013,0" Margin="50,0,0,0" FontSize="18" BorderThickness="2"  />
+            <Button x:Name="SearchSubmit" Content="Search" HorizontalAlignment="Left" Height="48"  VerticalAlignment="Top"  Click="SearchButton_Click" Margin="20,4,0,0" Width="163"  FontSize="18"/>
             <ProgressRing x:Name="searchInProgress" IsActive="False" Margin="10,0,10,0"/>
             <Button x:Name="SearchCancel" Visibility="Collapsed"  Content="Cancel" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top"  Click="SearchCancelButton_Click" Margin="50,0,0,0"/>
             <!--<TimePicker Margin="0,9"/>-->
@@ -66,7 +66,7 @@
             <DatePicker x:Name="endTime" Margin="10,9,0,10" Height="31" Width="293"/>-->
 
         </StackPanel>
-        <ComboBox Margin="50,0,0,0" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" x:Name="TimeSelectComboBox" Width="300" Height="40" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+        <ComboBox Margin="50,0,0,0" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" x:Name="TimeSelectComboBox" Width="300" Height="40" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged" Padding="10,0">
             <ComboBoxItem x:Name="item1">All time</ComboBoxItem>
             <ComboBoxItem x:Name="item2">
                 <StackPanel Orientation="Vertical">

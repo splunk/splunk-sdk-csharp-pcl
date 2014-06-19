@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Splunk.Client;
 using System.Threading;
+using System.Collections.ObjectModel;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace SplunkSearch
@@ -140,7 +141,9 @@ namespace SplunkSearch
 
             try
             {
-                List<ResultData> resultDatas = new List<ResultData>();
+  
+                ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
+                resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
 
                 SearchExportArgs jobArgs = new SearchExportArgs();
 
@@ -178,6 +181,7 @@ namespace SplunkSearch
 
                         if (resultStream.IsFinal)
                         {
+                            this.PageContentReset();
                         }
                     }
                     catch (Exception exx)
@@ -186,8 +190,7 @@ namespace SplunkSearch
 
                 }
 
-                resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
-                this.PageContentReset();
+                //this.PageContentReset();
             }
             catch (Exception ex)
             {

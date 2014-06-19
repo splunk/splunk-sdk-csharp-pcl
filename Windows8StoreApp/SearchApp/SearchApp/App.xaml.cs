@@ -116,7 +116,7 @@ namespace SplunkSearch
         {
 
             args.Request.ApplicationCommands.Add(new SettingsCommand(
-                "Custom Setting", "Custom Setting", (handler) => ShowCustomSettingFlyout()));
+                "Connection Settings", "Connection Settings", (handler) => ShowCustomSettingFlyout()));
         }
 
         public void ShowCustomSettingFlyout()

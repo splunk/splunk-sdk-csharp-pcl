@@ -78,7 +78,7 @@ namespace SplunkSearch
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
             localSettings.Values["host"] = host;
             localSettings.Values["scheme"] = scheme.ToString();
-                   
+            localSettings.Values["port"] = port.ToString();       
             MainPage.SplunkService = null;
             return true;
         }

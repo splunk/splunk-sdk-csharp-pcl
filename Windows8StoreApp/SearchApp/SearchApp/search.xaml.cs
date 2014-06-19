@@ -181,6 +181,7 @@ namespace SplunkSearch
 
                         if (resultStream.IsFinal)
                         {
+                            searchInProgress.IsActive = false;
                         }
                     }
                     catch (Exception exx)

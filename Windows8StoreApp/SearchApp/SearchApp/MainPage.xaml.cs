@@ -138,8 +138,6 @@ namespace SplunkSearch
             {
 
                 var credentialList = vault.FindAllByResource(ConnectSetting.ResourceName);
-                credentialList = null;
-
                 user = credentialList[0].UserName;
                 credentialList[0].RetrievePassword();
                 password = credentialList[0].Password;

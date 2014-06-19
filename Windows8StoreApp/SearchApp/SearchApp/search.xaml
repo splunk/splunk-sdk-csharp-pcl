@@ -24,6 +24,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="120"/>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="60"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -52,33 +53,32 @@
             <Button x:Name="SearchSubmit" Content="Search" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top" RenderTransformOrigin="0.013,0" Click="SearchButton_Click" Margin="10,0,0,0"/>
             <ProgressRing x:Name="searchInProgress" IsActive="False" Margin="10,0,10,0"/>
             <Button x:Name="SearchCancel" Visibility="Collapsed"  Content="Cancel" HorizontalAlignment="Left" Height="40"  VerticalAlignment="Top"  Click="SearchCancelButton_Click" Margin="50,0,0,0"/>
-            <ComboBox x:Name="TimeSelectComboBox" Width="478" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
-                <ComboBoxItem x:Name="item1">All time</ComboBoxItem>
-                <ComboBoxItem x:Name="item2">
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock>
-            				<Run Text="Earlist:"/>
-                        </TextBlock>
-                        <StackPanel Orientation="Horizontal">
-                            <DatePicker x:Name="EarlistDate" Margin="0,0,0,0" DateChanged="EarlistDate_DateChanged"/>
-                            <TimePicker x:Name="EarlistTime" Margin="30,0,0,0" TimeChanged="EarlistTime_DateChanged"/>
-                        </StackPanel>
-                        <TextBlock>
-            				<Run Text="Latest:"/>
-                        </TextBlock>
-                        <StackPanel Orientation="Horizontal">
-                            <DatePicker  x:Name="LatestDate" Margin="0,0,0,0" DateChanged="LatestDate_DateChanged"/>
-                            <TimePicker  x:Name="LatestTime" Margin="30,0,0,0" TimeChanged="LatestTime_DateChanged"/>
-                        </StackPanel>
-                    </StackPanel>
-                </ComboBoxItem>
-            </ComboBox>
             <!--<TimePicker Margin="0,9"/>-->
             <!--<DatePicker x:Name="startTime" Margin="10,9,0,10" Height="31" Width="293"/>
             <DatePicker x:Name="endTime" Margin="10,9,0,10" Height="31" Width="293"/>-->
 
         </StackPanel>
-
+        <ComboBox Margin="50,0,0,0" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" x:Name="TimeSelectComboBox" Width="600" Height="40" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged">
+            <ComboBoxItem x:Name="item1">All time</ComboBoxItem>
+            <ComboBoxItem x:Name="item2">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock>
+            				<Run Text="Earlist:"/>
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <DatePicker x:Name="EarlistDate" Margin="0,0,0,0" DateChanged="EarlistDate_DateChanged"/>
+                        <TimePicker x:Name="EarlistTime" Margin="30,0,0,0" TimeChanged="EarlistTime_DateChanged"/>
+                    </StackPanel>
+                    <TextBlock>
+            				<Run Text="Latest:"/>
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <DatePicker  x:Name="LatestDate" Margin="0,0,0,0" DateChanged="LatestDate_DateChanged"/>
+                        <TimePicker  x:Name="LatestTime" Margin="30,0,0,0" TimeChanged="LatestTime_DateChanged"/>
+                    </StackPanel>
+                </StackPanel>
+            </ComboBoxItem>
+        </ComboBox>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50"/>

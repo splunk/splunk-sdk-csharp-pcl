@@ -27,7 +27,7 @@ namespace Splunk.Examples.saved_searches
     {
         static void Main(string[] args)
         {
-            using (var service = new Service(SDKHelper.UserConfigure.scheme, SDKHelper.UserConfigure.host, SDKHelper.UserConfigure.port, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
@@ -38,7 +38,7 @@ namespace Splunk.Examples.saved_searches
 
         private static async Task Run(Service service)
         {
-            await service.LoginAsync(SDKHelper.UserConfigure.username, SDKHelper.UserConfigure.password);
+            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             string savedSearchName = "example_search";
             string savedSearchQuery = "search index=_internal | head 10";
@@ -54,11 +54,11 @@ namespace Splunk.Examples.saved_searches
             savedSearch = await service.SavedSearches.CreateAsync(savedSearchName, savedSearchQuery);
             Job savedSearchJob = await savedSearch.DispatchAsync();
 
-            using (SearchResultStream searchResults = await savedSearchJob.GetSearchResultsAsync())
+            using (SearchResultStream stream = await savedSearchJob.GetSearchResultsAsync())
             {
-                foreach (Task<SearchResult> result in searchResults)
+                foreach (SearchResult result in stream)
                 {
-                    Console.WriteLine(await result);
+                    Console.WriteLine(result);
                 }
             }
 

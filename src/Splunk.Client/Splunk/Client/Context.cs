@@ -63,8 +63,8 @@ namespace Splunk.Client
         /// or greater than <c>65535</c>.
         /// </exception>
 
-        public Context(Scheme scheme, string host, int port)
-            : this(scheme, host, port, null)
+        public Context(Scheme scheme, string host, int port, TimeSpan timeout = default(TimeSpan))
+            : this(scheme, host, port, timeout, null)
         {
             // NOTE: This constructor obviates the need for callers to include a 
             // using for System.Net.Http.
@@ -96,7 +96,7 @@ namespace Splunk.Client
         /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
         /// or greater than <c>65535</c>.
         /// </exception>
-        public Context(Scheme scheme, string host, int port, HttpMessageHandler handler, bool disposeHandler = true)
+        public Context(Scheme scheme, string host, int port, TimeSpan timeout, HttpMessageHandler handler, bool disposeHandler = true)
         {
             Contract.Requires<ArgumentException>(scheme == Scheme.Http || scheme == Scheme.Https);
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(host));
@@ -106,6 +106,7 @@ namespace Splunk.Client
             this.Host = host;
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
+            this.httpClient.Timeout = timeout == default(TimeSpan) ? DefaultTimeout : timeout;
         }
 
         #endregion
@@ -309,6 +310,7 @@ namespace Splunk.Client
 
         #region Privates
 
+        static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(100);
         static readonly string[] SchemeStrings = { "http", "https" };
         HttpClient httpClient;
 
@@ -385,8 +387,7 @@ namespace Splunk.Client
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
 
-                var completionOption = HttpCompletionOption.ResponseHeadersRead;
-                var message = await this.HttpClient.SendAsync(request, completionOption, cancellationToken);
+                var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
                 var response =  await Response.CreateAsync(message);
 
                 return response;

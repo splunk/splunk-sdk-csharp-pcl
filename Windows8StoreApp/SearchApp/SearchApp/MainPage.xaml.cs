@@ -145,7 +145,8 @@ namespace SplunkSearch
                 ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
                 host = localSettings.Values["host"].ToString();
-                port = int.Parse(localSettings.Values["port"].ToString());
+                var portString = localSettings.Values["port"].ToString();
+                port = int.Parse(portString);
                 if (string.Equals(localSettings.Values["scheme"].ToString(), "Http", StringComparison.OrdinalIgnoreCase))
                 {
                     schem = Scheme.Http;

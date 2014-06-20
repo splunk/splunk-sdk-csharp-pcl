@@ -34,33 +34,24 @@ namespace Splunk.Client
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="TStream"></typeparam>
-    /// <typeparam name="TEvent"></typeparam>
+    /// <typeparam name="TStream">
+    /// 
+    /// </typeparam>
+    /// <typeparam name="TEvent">
+    /// 
+    /// </typeparam>
     abstract class Awaiter<TStream, TEvent> : INotifyCompletion
     {
         #region Constructors
 
-        protected Awaiter(TStream stream, CancellationToken token)
+        protected Awaiter(TStream stream)
         {
-            this.task = new Task(this.ReadEventsAsync, token);
+            this.task = new Task(this.ReadEventsAsync);
 
-            this.resetEvent = new ManualResetEvent(true);
-            this.cancellationToken = token;
             this.lastError = null;
             this.stream = stream;
             this.readCount = 0;
             this.readState = 0;
-
-            this.cancellationTokenRegistration = this.cancellationToken.Register(() =>
-                {
-                    Debug.Assert(this.continuation == null);
-
-                    if (task.Status == TaskStatus.Running)
-                    {
-                        this.resetEvent.Reset();
-                        WaitHandle.WaitAll(new WaitHandle[] { this.cancellationToken.WaitHandle, this.resetEvent });
-                    }
-                });
 
             this.task.Start();
         }
@@ -104,14 +95,6 @@ namespace Splunk.Client
             this.Continue();
         }
 
-        protected void EnsureNotCancelled()
-        {
-            if (this.cancellationToken.IsCancellationRequested)
-            {
-                throw new TaskCanceledException();
-            }
-        }
-
         protected abstract Task ReadToEndAsync();
 
         #endregion
@@ -129,7 +112,15 @@ namespace Splunk.Client
         /// </returns>
         public bool TryTake(out TEvent result)
         {
-            result = this.AwaitEventAsync().Result;
+            if (this.IsReading)
+            {
+                result = this.AwaitEventAsync().Result;
+            }
+            else
+            {
+                result = default(TEvent);
+            }
+
             return result != null;
         }
 
@@ -201,14 +192,11 @@ namespace Splunk.Client
         #region Privates/internals
 
         ConcurrentQueue<TEvent> results = new ConcurrentQueue<TEvent>();
-        CancellationTokenRegistration cancellationTokenRegistration;
-        CancellationToken cancellationToken;
-        ManualResetEvent resetEvent;
         Action continuation;
         Exception lastError;
         TStream stream;
-        int readState;
         long readCount;
+        int readState;
         Task task;
 
         bool IsReading
@@ -221,14 +209,17 @@ namespace Splunk.Client
             return await this;
         }
 
-        void Continue()
+        bool Continue()
         {
             Action continuation = Interlocked.Exchange(ref this.continuation, null);
 
             if (continuation != null)
             {
                 continuation();
+                return true;
             }
+
+            return false;
         }
 
         async void ReadEventsAsync()
@@ -241,18 +232,15 @@ namespace Splunk.Client
             try
             {
                 await this.ReadToEndAsync();
-                EnsureNotCancelled();
             }
             catch (Exception error)
             {
                 this.lastError = error;
             }
-            finally
-            {
-                this.resetEvent.Set();
-                this.readState = 2;
-                this.Continue();
-            }
+
+            Interlocked.Increment(ref this.readState);
+            await Task.Delay(1);
+            this.Continue();
         }
 
         #endregion

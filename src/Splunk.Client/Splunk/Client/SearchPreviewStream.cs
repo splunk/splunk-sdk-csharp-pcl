@@ -52,10 +52,9 @@ namespace Splunk.Client
         /// </param>
         internal SearchPreviewStream(Response response)
         {
-            this.cancellationTokenSource = new CancellationTokenSource();
             this.response = response;
 
-            this.awaiter = new Awaiter(this, cancellationTokenSource.Token);
+            this.awaiter = new Awaiter(this);
         }
 
         #endregion
@@ -95,9 +94,7 @@ namespace Splunk.Client
             //// when we call this.response.Dispose the underlying XmlReader may throw an InvalidOperationException
             //// because "An asynchronous operation is already in progress."
 
-            this.cancellationTokenSource.Cancel();
             this.response.Dispose();
-            this.cancellationTokenSource.Dispose();
         }
 
         /// <summary>
@@ -165,9 +162,8 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        readonly CancellationTokenSource cancellationTokenSource;
-        readonly Awaiter awaiter;
         readonly Response response;
+        readonly Awaiter awaiter;
         int disposed;
 
         ReadState ReadState
@@ -210,16 +206,14 @@ namespace Splunk.Client
 
         sealed class Awaiter : Awaiter<SearchPreviewStream, SearchPreview>
         {
-            public Awaiter(SearchPreviewStream stream, CancellationToken token)
-                : base(stream, token)
+            public Awaiter(SearchPreviewStream stream)
+                : base(stream)
             { }
 
             protected override async Task ReadToEndAsync()
             {
                 while (this.Stream.ReadState <= ReadState.Interactive)
                 {
-                    this.EnsureNotCancelled();
-
                     var preview = await this.Stream.ReadPreviewAsync();
                     this.Enqueue(preview);
                 }

@@ -131,7 +131,7 @@ namespace Splunk.Client
                         this.reader.Dispose();
                         break;
                     }
-                    catch (InvalidOperationException e)
+                    catch (InvalidOperationException)
                     { }
                 }
             }

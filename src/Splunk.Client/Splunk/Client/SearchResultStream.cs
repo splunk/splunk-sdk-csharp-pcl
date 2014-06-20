@@ -47,11 +47,10 @@ namespace Splunk.Client
         /// </param>
         SearchResultStream(Response response)
         {
-            this.cancellationTokenSource = new CancellationTokenSource();
             this.metadata = Metadata.Missing;
             this.response = response;
 
-            this.awaiter = new Awaiter(this, cancellationTokenSource.Token);
+            this.awaiter = new Awaiter(this);
         }
 
         #endregion
@@ -135,9 +134,7 @@ namespace Splunk.Client
             //// TODO: BUG FIX: Cancellation completes immediately after Cancel is called, in spite of the fact that 
             //// this.awaiter.task has not completed.
 
-            this.cancellationTokenSource.Cancel();
             this.response.Dispose();
-            this.cancellationTokenSource.Dispose();
         }
 
         /// <summary>
@@ -201,12 +198,11 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        readonly CancellationTokenSource cancellationTokenSource;
-        readonly Awaiter awaiter;
         readonly Response response;
+        readonly Awaiter awaiter;
+        int disposed;
 
         volatile Metadata metadata;
-        int disposed;
 
         ReadState ReadState
         {
@@ -368,8 +364,8 @@ namespace Splunk.Client
 
         sealed class Awaiter : Awaiter<SearchResultStream, SearchResult>
         {
-            public Awaiter(SearchResultStream stream, CancellationToken token)
-                : base(stream, token)
+            public Awaiter(SearchResultStream stream)
+                : base(stream)
             { }
 
             protected override async Task ReadToEndAsync()
@@ -380,7 +376,7 @@ namespace Splunk.Client
                 {
                     while (this.Stream.ReadState <= ReadState.Interactive)
                     {
-                        this.EnsureNotCancelled();
+                        //this.EnsureNotCancelled();
 
                         SearchResult result = await this.Stream.ReadResultAsync();
 
@@ -392,7 +388,7 @@ namespace Splunk.Client
                         this.Enqueue(result);
                     }
 
-                    this.EnsureNotCancelled();
+                    //this.EnsureNotCancelled();
                     await this.Stream.ReadMetadataAsync();
                 }
             }

@@ -57,22 +57,18 @@ namespace Splunk.Client.Helpers
         /// <remarks>
         ///   <para><b>References</b></para>
         ///   <list type="number">
-        ///     <item>
-        ///       <description>   
-        ///         <a href="http://goo.gl/ppbIlm">How to Avoid Creating Real
-        ///         Tasks When Unit Testing Async</a>.
-        ///       </description>
-        ///     </item>
-        ///     <item>
-        ///       <description>
-        ///         <a href="http://goo.gl/YUFhAO">ObjectContent Class</a>.
-        ///       </description>
-        ///     </item>
+        ///     <item><description>   
+        ///       <a href="http://goo.gl/ppbIlm">How to Avoid Creating Real
+        ///       Tasks When Unit Testing Async</a>.
+        ///     </description></item>
+        ///     <item><description>
+        ///       <a href="http://goo.gl/YUFhAO">ObjectContent Class</a>.
+        ///     </description></item>
         ///   </list>
         /// </remarks>
         /// 
-        public MockContext(Scheme protocol, string host, int port)
-            : base(protocol, host, port, CreateMessageHandler())
+        public MockContext(Scheme protocol, string host, int port, TimeSpan timeout = default(TimeSpan))
+            : base(protocol, host, port, timeout, CreateMessageHandler())
         { }
 
         #endregion

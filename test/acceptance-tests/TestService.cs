@@ -1298,13 +1298,13 @@ namespace Splunk.Client.AcceptanceTests
             {
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
                 
-                using (SearchResultStream resultStream = await job.GetSearchResultsAsync())
+                using (SearchResultStream stream = await job.GetSearchResultsAsync())
                 {
                     var results = new List<SearchResult>();
 
-                    foreach (var result in resultStream)
+                    foreach (SearchResult result in stream)
                     {
-                        results.Add(await result);
+                        results.Add(result);
                     }
 
                     Assert.NotEmpty(results);
@@ -1371,38 +1371,113 @@ namespace Splunk.Client.AcceptanceTests
         [Trait("acceptance-test", "Splunk.Client.Service")]
         [MockContext]
         [Fact]
-        public async Task CanExportSearchPreviews()
+        public async Task CanCancelExportSearchPreviews()
         {
             using (var service = await SdkHelper.CreateService())
             {
+                const string search = "search index=_internal | tail 1000 | stats count by method";
+                var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
+                { }
+
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
+                {
+                    for (int i = 0; stream.ReadCount <= 0; i++)
+                    {
+                        await Task.Delay(10);
+                    }
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanCancelExportSearchResults()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 100";
+                var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                { }
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                {
+                    for (int i = 0; stream.ReadCount <= 0; i++)
+                    {
+                        await Task.Delay(10);
+                    }
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanExportSearchPreviewsToEnumerable()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 1000 | stats count by method";
                 var args = new SearchExportArgs() { Count = 0 };
 
-                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", args))
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
-                    var exception = (Exception)null;
+
+                    foreach (var preview in stream)
+                    {
+                        Assert.Equal<IEnumerable<string>>(new List<string>
+                            {
+                                "method",
+                                "count",
+                            },
+                            preview.FieldNames);
+
+                        if (preview.IsFinal)
+                        {
+                            results.AddRange(preview.Results);
+                        }
+                    }
+
+                    Assert.True(stream.ReadCount > 1);
+                    Assert.NotEmpty(results);
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanExportSearchPreviewsToObservable()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 1000 | stats count by method";
+                var args = new SearchExportArgs() { Count = 0 };
+
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
+                {
                     var manualResetEvent = new ManualResetEvent(true);
+                    var results = new List<SearchResult>();
+                    var exception = (Exception)null;
 
                     stream.Subscribe(new Observer<SearchPreview>(
                         onNext: (preview) =>
                         {
                             Assert.Equal<IEnumerable<string>>(new List<string>
                                 {
-                                    "_bkt",
-                                    "_cd",
-                                    "_indextime",
-                                    "_raw",
-                                    "_serial",
-                                    "_si",
-                                    "_sourcetype",
-                                    "_subsecond",
-                                    "_time",
-                                    "host",
-                                    "index",
-                                    "linecount",
-                                    "source",
-                                    "sourcetype",
-                                    "splunk_server",
+                                    "method",
+                                    "count",
                                 },
                                 preview.FieldNames);
 
@@ -1425,7 +1500,8 @@ namespace Splunk.Client.AcceptanceTests
                     manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
-                    Assert.Equal(100, results.Count);
+                    Assert.NotEmpty(results);
+                    Assert.True(stream.ReadCount > 1);
                 }
 
                 await service.LogoffAsync();
@@ -1435,7 +1511,7 @@ namespace Splunk.Client.AcceptanceTests
         [Trait("acceptance-test", "Splunk.Client.Service")]
         [MockContext]
         [Fact]
-        public async Task CanExportSearchResults()
+        public async Task CanExportSearchResultsToEnumerable()
         {
             using (var service = await SdkHelper.CreateService())
             {
@@ -1443,9 +1519,32 @@ namespace Splunk.Client.AcceptanceTests
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", args))
                 {
-                    var results = new List<Splunk.Client.SearchResult>();
-                    var exception = (Exception)null;
+                    var results = new List<SearchResult>();
+
+                    foreach (SearchResult result in stream)
+                    {
+                        results.Add(result);
+                    }
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanExportSearchResultsToObservable()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", args))
+                {
                     var manualResetEvent = new ManualResetEvent(true);
+                    var results = new List<SearchResult>();
+                    var exception = (Exception)null;
 
                     stream.Subscribe(new Observer<SearchResult>(
                         onNext: (result) =>
@@ -1512,9 +1611,9 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         var list = new List<SearchResult>();
 
-                        foreach (Task<SearchResult> result in stream) 
+                        foreach (SearchResult result in stream) 
                         {
-                            list.Add(await result);
+                            list.Add(result);
                         }
 
                         Assert.Equal(search.ResultCount, stream.ReadCount);

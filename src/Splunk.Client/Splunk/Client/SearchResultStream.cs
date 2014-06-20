@@ -22,10 +22,11 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
-    using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
@@ -34,7 +35,7 @@ namespace Splunk.Client
     /// Represents an enumerable, observable stream of <see cref="SearchResult"/> 
     /// records.
     /// </summary>
-    public sealed class SearchResultStream : Observable<SearchResult>, IDisposable, IEnumerable<Task<SearchResult>>
+    public sealed class SearchResultStream : Observable<SearchResult>, IDisposable, IEnumerable<SearchResult>
     {
         #region Constructors
 
@@ -46,8 +47,10 @@ namespace Splunk.Client
         /// </param>
         SearchResultStream(Response response)
         {
-            this.response = response;
             this.metadata = Metadata.Missing;
+            this.response = response;
+
+            this.awaiter = new Awaiter(this);
         }
 
         #endregion
@@ -75,12 +78,19 @@ namespace Splunk.Client
             get { return this.metadata.FieldNames; }
         }
 
+        public Exception LastError
+        {
+            get { return this.awaiter.LastError; }
+        }
+
         /// <summary>
         /// Gets the <see cref="SearchResult"/> read count for the current
         /// <see cref="SearchResultStream"/>.
         /// </summary>
         public long ReadCount
-        { get; private set; }
+        {
+            get { return this.awaiter.ReadCount; }
+        }
 
         #endregion
 
@@ -108,8 +118,6 @@ namespace Splunk.Client
             }
 
             var stream = new SearchResultStream(response);
-            await stream.ReadMetadataAsync();
-
             return stream;
         }
 
@@ -118,6 +126,14 @@ namespace Splunk.Client
         /// </summary>
         public void Dispose()
         {
+            if (Interlocked.CompareExchange(ref this.disposed, 1, 0) != 0)
+            {
+                return;
+            }
+
+            //// TODO: BUG FIX: Cancellation completes immediately after Cancel is called, in spite of the fact that 
+            //// this.awaiter.task has not completed.
+
             this.response.Dispose();
         }
 
@@ -126,46 +142,30 @@ namespace Splunk.Client
         /// cref="Result"/> objects asynchronously.
         /// </summary>
         /// <returns>
-        /// A <see cref="Result"/> enumerator structure for the <see 
-        /// cref="SearchResults"/>.
+        /// A <see cref="SearchResult"/> enumerator structure for the <see 
+        /// cref="SearchResultStream"/>.
         /// </returns>
         /// <remarks>
         /// You can use the <see cref="GetEnumerator"/> method to
         /// <list type="bullet">
         /// <item><description>
-        ///     Perform LINQ to Objects queries to obtain a filtered set of 
-        ///     search result records.</description></item>
+        ///   Perform LINQ to Objects queries to obtain a filtered set of 
+        ///   search result records.</description></item>
         /// <item><description>
-        ///     Append search results to an existing <see cref="Result"/>
-        ///     collection.</description></item>
+        ///   Append search results to an existing <see cref="Result"/>
+        ///   collection.</description></item>
         /// </list>
         /// </remarks>
-        public IEnumerator<Task<SearchResult>> GetEnumerator()
+        public IEnumerator<SearchResult> GetEnumerator()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
+            this.EnsureNotDisposed();
+
+            for (SearchResult result; this.awaiter.TryTake(out result); )
             {
-                throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
+                yield return result;
             }
 
-            XmlReader reader = this.response.XmlReader;
-
-            while (reader.ReadState <= ReadState.Interactive)
-            {
-                while (reader.ReadState <= ReadState.Interactive)
-                {
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "results")
-                    {
-                        break;
-                    }
-
-                    var result = this.ReadResultAsync();
-                    yield return result;
-                }
-
-                this.ReadMetadataAsync().Wait();
-            }
-
-            this.enumerated = 2;
+            this.EnsureAwaiterSucceeded();
         }
 
         /// <inheritdoc cref="GetEnumerator">
@@ -173,7 +173,7 @@ namespace Splunk.Client
         {
             return this.GetEnumerator();
         }
- 
+
         /// <summary>
         /// Asynchronously pushes <see cref="SearchResult"/> objects to observers 
         /// and then completes.
@@ -183,31 +183,15 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
+            this.EnsureNotDisposed();
+
+            for (var result = await this.awaiter; result != null; result = await this.awaiter)
             {
-                throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
+                this.OnNext(result);
             }
 
-            XmlReader reader = this.response.XmlReader;
-
-            while (reader.ReadState <= ReadState.Interactive)
-            {
-                while (reader.ReadState <= ReadState.Interactive)
-                {
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "results")
-                    {
-                        break;
-                    }
-
-                    var result = await this.ReadResultAsync();
-                    this.OnNext(result);
-                }
-                
-                await this.ReadMetadataAsync();
-            }
-
+            this.EnsureAwaiterSucceeded();
             this.OnCompleted();
-            this.enumerated = 2;
         }
 
         #endregion
@@ -215,15 +199,33 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly Response response;
-        int enumerated;
+        readonly Awaiter awaiter;
+        int disposed;
+
         volatile Metadata metadata;
 
-        /// <summary>
-        /// Asynchronously reads the metadata for the current chunk of search results.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing this asychronous operation.
-        /// </returns>
+        ReadState ReadState
+        {
+            get { return this.response.XmlReader.ReadState; }
+        }
+
+        void EnsureAwaiterSucceeded()
+        {
+            if (this.awaiter.LastError != null)
+            {
+                var text = string.Format("Enumeration ended prematurely : {0}.", this.awaiter.LastError);
+                throw new TaskCanceledException(text, this.awaiter.LastError);
+            }
+        }
+
+        void EnsureNotDisposed()
+        {
+            if (this.disposed != 0)
+            {
+                throw new ObjectDisposedException("Search result stream");
+            }
+        }
+
         async Task ReadMetadataAsync()
         {
             var metadata = new Metadata();
@@ -232,17 +234,14 @@ namespace Splunk.Client
             this.metadata = metadata;
         }
 
-        /// <summary>
-        /// Reads the next <see cref="SearchResult"/> in the current <see cref=
-        /// "SearchResultStream"/> stream.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task<SearchResult>"/> if the next result was read 
-        /// successfully; <c>null</c> if there are no more records to read.
-        /// </returns>
         async Task<SearchResult> ReadResultAsync()
         {
             var reader = this.response.XmlReader;
+
+            if (reader.NodeType == XmlNodeType.Element && reader.Name == "results")
+            {
+                return null;
+            }
 
             Debug.Assert(reader.ReadState <= ReadState.Interactive);
             reader.MoveToElement();
@@ -262,7 +261,6 @@ namespace Splunk.Client
                 reader.EnsureMarkup(XmlNodeType.Element, "result");
             }
 
-            this.ReadCount = this.ReadCount + 1;
             return result;
         }
 
@@ -270,7 +268,7 @@ namespace Splunk.Client
 
         #region Types
 
-        class Metadata
+        sealed class Metadata
         {
             #region Fields
 
@@ -362,6 +360,38 @@ namespace Splunk.Client
             }
 
             #endregion
+        }
+
+        sealed class Awaiter : Awaiter<SearchResultStream, SearchResult>
+        {
+            public Awaiter(SearchResultStream stream)
+                : base(stream)
+            { }
+
+            protected override async Task ReadToEndAsync()
+            {
+                await this.Stream.ReadMetadataAsync();
+
+                while (this.Stream.ReadState <= ReadState.Interactive)
+                {
+                    while (this.Stream.ReadState <= ReadState.Interactive)
+                    {
+                        //this.EnsureNotCancelled();
+
+                        SearchResult result = await this.Stream.ReadResultAsync();
+
+                        if (result == null)
+                        {
+                            break;
+                        }
+
+                        this.Enqueue(result);
+                    }
+
+                    //this.EnsureNotCancelled();
+                    await this.Stream.ReadMetadataAsync();
+                }
+            }
         }
 
         #endregion

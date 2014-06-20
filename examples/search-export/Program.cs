@@ -41,13 +41,12 @@ namespace search_export
 
             //// Search : Export Previews
 
-            using (SearchPreviewStream previewStream = await service.ExportSearchPreviewsAsync("search index=_internal | head 100"))
+            using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | head 100"))
             {
                 int previewNumber = 0;
 
-                foreach (Task<SearchPreview> task in previewStream)
+                foreach (SearchPreview preview in stream)
                 {
-                    SearchPreview preview = await task;
                     int resultNumber = 0;
 
                     Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, preview.IsFinal ? "final" : "partial");

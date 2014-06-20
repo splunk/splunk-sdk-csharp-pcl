@@ -117,16 +117,27 @@ namespace Splunk.Client
         /// </summary>
         public void Dispose()
         {
-            if (!this.disposed)
+            if (this.disposed)
             {
-                if (this.reader != null) // because it's possible to be disposed before this.XmlReader is created
-                {
-                    this.reader.Dispose();
-                }
-
-                this.message.Dispose();
-                this.disposed = true;
+                return;
             }
+
+            if (this.reader != null) // Because it's possible to be disposed before this.XmlReader is created
+            {
+                for (int i = 0; ; i++)
+                {
+                    try
+                    {
+                        this.reader.Dispose();
+                        break;
+                    }
+                    catch (InvalidOperationException)
+                    { }
+                }
+            }
+
+            this.message.Dispose();
+            this.disposed = true;
         }
 
         /// <summary>

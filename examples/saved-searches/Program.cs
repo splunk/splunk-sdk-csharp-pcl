@@ -53,11 +53,11 @@ namespace Splunk.Examples.saved_searches
             savedSearch = await service.SavedSearches.CreateAsync(savedSearchName, savedSearchQuery);
             Job savedSearchJob = await savedSearch.DispatchAsync();
 
-            using (SearchResultStream searchResults = await savedSearchJob.GetSearchResultsAsync())
+            using (SearchResultStream stream = await savedSearchJob.GetSearchResultsAsync())
             {
-                foreach (Task<SearchResult> result in searchResults)
+                foreach (SearchResult result in stream)
                 {
-                    Console.WriteLine(await result);
+                    Console.WriteLine(result);
                 }
             }
 

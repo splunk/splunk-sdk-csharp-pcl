@@ -87,9 +87,9 @@ namespace Splunk.Examples.Submit
 
                 using (var results = await service.SearchOneshotAsync(string.Format("search index={0}", indexName)))
                 {
-                    foreach (Task<SearchResult> task in results)
+                    foreach (SearchResult task in results)
                     {
-                        Console.WriteLine(await task);
+                        Console.WriteLine(task);
                     }
                 }
             }

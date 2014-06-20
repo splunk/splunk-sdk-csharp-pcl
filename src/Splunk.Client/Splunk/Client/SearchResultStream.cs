@@ -137,8 +137,6 @@ namespace Splunk.Client
 
             this.cancellationTokenSource.Cancel();
             this.response.Dispose();
-
-            this.cancellationTokenSource.Token.WaitHandle.WaitOne();
             this.cancellationTokenSource.Dispose();
         }
 

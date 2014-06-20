@@ -1379,6 +1379,9 @@ namespace Splunk.Client.AcceptanceTests
                 var args = new SearchExportArgs { Count = 0 };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
+                { }
+
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
                     for (int i = 0; stream.ReadCount <= 0; i++)
                     {
@@ -1399,6 +1402,9 @@ namespace Splunk.Client.AcceptanceTests
             {
                 const string search = "search index=_internal | tail 100";
                 var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                { }
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
                 {

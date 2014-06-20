@@ -91,13 +91,12 @@ namespace Splunk.Client
                 return;
             }
 
-            //// TODO: BUG FIX: Cancellation completes immediately after Cancel is called, in spite of the fact that 
-            //// this.awaiter.task has not completed.
+            //// TODO: BUG FIX: The Cancel method returns immediately, before this.awaiter cancels. Consequently,
+            //// when we call this.response.Dispose the underlying XmlReader may throw an InvalidOperationException
+            //// because "An asynchronous operation is already in progress."
 
             this.cancellationTokenSource.Cancel();
             this.response.Dispose();
-
-            this.cancellationTokenSource.Token.WaitHandle.WaitOne();
             this.cancellationTokenSource.Dispose();
         }
 

@@ -51,11 +51,15 @@ namespace Splunk.Client
             this.readCount = 0;
             this.readState = 0;
 
-            this.cancellationToken.Register(() =>
+            this.cancellationTokenRegistration = this.cancellationToken.Register(() =>
                 {
-                    this.resetEvent.Reset();
-                    WaitHandle.WaitAll(new WaitHandle[] { this.cancellationToken.WaitHandle, this.resetEvent });
-                    return;
+                    Debug.Assert(this.continuation == null);
+
+                    if (task.Status == TaskStatus.Running)
+                    {
+                        this.resetEvent.Reset();
+                        WaitHandle.WaitAll(new WaitHandle[] { this.cancellationToken.WaitHandle, this.resetEvent });
+                    }
                 });
 
             this.task.Start();
@@ -197,6 +201,7 @@ namespace Splunk.Client
         #region Privates/internals
 
         ConcurrentQueue<TEvent> results = new ConcurrentQueue<TEvent>();
+        CancellationTokenRegistration cancellationTokenRegistration;
         CancellationToken cancellationToken;
         ManualResetEvent resetEvent;
         Action continuation;
@@ -236,18 +241,18 @@ namespace Splunk.Client
             try
             {
                 await this.ReadToEndAsync();
-            }
-            catch (TaskCanceledException)
-            {
-                this.resetEvent.Set();
+                EnsureNotCancelled();
             }
             catch (Exception error)
             {
                 this.lastError = error;
             }
-
-            this.Continue();
-            readState = 2;
+            finally
+            {
+                this.resetEvent.Set();
+                this.readState = 2;
+                this.Continue();
+            }
         }
 
         #endregion

@@ -1371,36 +1371,67 @@ namespace Splunk.Client.AcceptanceTests
         [Trait("acceptance-test", "Splunk.Client.Service")]
         [MockContext]
         [Fact]
-        public async Task CanExportSearchPreviewsToEnumerable()
+        public async Task CanCancelExportSearchPreviews()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 1000 | stats count by method";
+                var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
+                {
+                    for (int i = 0; stream.ReadCount <= 0; i++)
+                    {
+                        await Task.Delay(10);
+                    }
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanCancelExportSearchResults()
         {
             using (var service = await SdkHelper.CreateService())
             {
                 const string search = "search index=_internal | tail 100";
+                var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                {
+                    for (int i = 0; stream.ReadCount <= 0; i++)
+                    {
+                        await Task.Delay(10);
+                    }
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanExportSearchPreviewsToEnumerable()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 1000 | stats count by method";
                 var args = new SearchExportArgs() { Count = 0 };
 
-                using (SearchPreviewStream previewStream = await service.ExportSearchPreviewsAsync(search, args))
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
 
-                    foreach (var preview in previewStream)
+                    foreach (var preview in stream)
                     {
                         Assert.Equal<IEnumerable<string>>(new List<string>
                             {
-                                "_bkt",
-                                "_cd",
-                                "_indextime",
-                                "_raw",
-                                "_serial",
-                                "_si",
-                                "_sourcetype",
-                                "_subsecond",
-                                "_time",
-                                "host",
-                                "index",
-                                "linecount",
-                                "source",
-                                "sourcetype",
-                                "splunk_server",
+                                "method",
+                                "count",
                             },
                             preview.FieldNames);
 
@@ -1410,7 +1441,8 @@ namespace Splunk.Client.AcceptanceTests
                         }
                     }
 
-                    Assert.Equal(100, results.Count);
+                    Assert.True(stream.ReadCount > 1);
+                    Assert.NotEmpty(results);
                 }
 
                 await service.LogoffAsync();
@@ -1424,7 +1456,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                const string search = "search index=_internal | tail 100";
+                const string search = "search index=_internal | tail 1000 | stats count by method";
                 var args = new SearchExportArgs() { Count = 0 };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
@@ -1438,21 +1470,8 @@ namespace Splunk.Client.AcceptanceTests
                         {
                             Assert.Equal<IEnumerable<string>>(new List<string>
                                 {
-                                    "_bkt",
-                                    "_cd",
-                                    "_indextime",
-                                    "_raw",
-                                    "_serial",
-                                    "_si",
-                                    "_sourcetype",
-                                    "_subsecond",
-                                    "_time",
-                                    "host",
-                                    "index",
-                                    "linecount",
-                                    "source",
-                                    "sourcetype",
-                                    "splunk_server",
+                                    "method",
+                                    "count",
                                 },
                                 preview.FieldNames);
 
@@ -1475,7 +1494,8 @@ namespace Splunk.Client.AcceptanceTests
                     manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
-                    Assert.Equal(100, results.Count);
+                    Assert.NotEmpty(results);
+                    Assert.True(stream.ReadCount > 1);
                 }
 
                 await service.LogoffAsync();

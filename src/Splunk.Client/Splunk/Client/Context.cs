@@ -106,7 +106,11 @@ namespace Splunk.Client
             this.Host = host;
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
-            this.httpClient.Timeout = timeout == default(TimeSpan) ? DefaultTimeout : timeout;
+
+            if (timeout != default(TimeSpan))
+            {
+                this.httpClient.Timeout = timeout;
+            }
         }
 
         #endregion
@@ -310,7 +314,6 @@ namespace Splunk.Client
 
         #region Privates
 
-        static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(100);
         static readonly string[] SchemeStrings = { "http", "https" };
         HttpClient httpClient;
 

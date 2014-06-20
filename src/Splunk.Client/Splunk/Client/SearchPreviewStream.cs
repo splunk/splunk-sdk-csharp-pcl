@@ -55,7 +55,7 @@ namespace Splunk.Client
             this.cancellationTokenSource = new CancellationTokenSource();
             this.response = response;
 
-            this.awaiter = new SearchPreviewAwaiter(this, cancellationTokenSource.Token);
+            this.awaiter = new Awaiter(this, cancellationTokenSource.Token);
         }
 
         #endregion
@@ -86,20 +86,19 @@ namespace Splunk.Client
         /// </summary>
         public void Dispose()
         {
-            if (this.disposed)
+            if (Interlocked.CompareExchange(ref this.disposed, 1, 0) != 0)
             {
                 return;
             }
 
-            if (this.awaiter.IsReading)
-            {
-                this.cancellationTokenSource.Cancel();
-                this.cancellationTokenSource.Token.WaitHandle.WaitOne();
-            }
+            //// TODO: BUG FIX: Cancellation completes immediately after Cancel is called, in spite of the fact that 
+            //// this.awaiter.task has not completed.
 
-            this.cancellationTokenSource.Dispose();
+            this.cancellationTokenSource.Cancel();
             this.response.Dispose();
-            this.disposed = true;
+
+            this.cancellationTokenSource.Token.WaitHandle.WaitOne();
+            this.cancellationTokenSource.Dispose();
         }
 
         /// <summary>
@@ -168,9 +167,9 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly CancellationTokenSource cancellationTokenSource;
-        readonly SearchPreviewAwaiter awaiter;
+        readonly Awaiter awaiter;
         readonly Response response;
-        bool disposed;
+        int disposed;
 
         ReadState ReadState
         {
@@ -188,7 +187,7 @@ namespace Splunk.Client
 
         void EnsureNotDisposed()
         {
-            if (this.disposed)
+            if (this.disposed != 0)
             {
                 throw new ObjectDisposedException("Search result stream");
             }
@@ -210,192 +209,22 @@ namespace Splunk.Client
 
         #region Types
 
-        sealed class SearchPreviewAwaiter : INotifyCompletion
+        sealed class Awaiter : Awaiter<SearchPreviewStream, SearchPreview>
         {
-            #region Constructors
+            public Awaiter(SearchPreviewStream stream, CancellationToken token)
+                : base(stream, token)
+            { }
 
-            public SearchPreviewAwaiter(SearchPreviewStream stream, CancellationToken token)
+            protected override async Task ReadToEndAsync()
             {
-                this.task = new Task(this.ReadPreviewsAsync, token);
-                this.cancellationToken = token;
-                this.lastError = null;
-                this.stream = stream;
-                this.readCount = 0;
-                this.task.Start();
-            }
-
-            #endregion
-
-            #region Properties
-
-            /// <summary>
-            /// 
-            /// </summary>
-            public bool IsReading
-            {
-                get { return this.enumerated < 2; }
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            public Exception LastError
-            {
-                get { return this.lastError; }
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            public long ReadCount
-            {
-                get { return Interlocked.Read(ref this.readCount); }
-            }
-
-            #endregion
-
-            #region Methods supporting IDisposable and IEnumerable<SearchPreview>
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="preview"></param>
-            /// <returns></returns>
-            public bool TryTake(out SearchPreview preview)
-            {
-                preview = this.AwaitResultAsync().Result;
-                return preview != null;
-            }
-
-            #endregion
-
-            #region Members called by the async await state machine
-
-            //// The async await state machine requires that you implement 
-            //// INotifyCompletion and provide three additional members: 
-            //// 
-            ////     IsCompleted property
-            ////     GetAwaiter method
-            ////     GetResult method
-            ////
-            //// INotifyCompletion itself defines just one member:
-            ////
-            ////     OnCompletion method
-            ////
-            //// See Jeffrey Richter's excellent discussion of the topic of 
-            //// awaiters in CLR via C# (4th Edition).
-
-            /// <summary>
-            /// Tells the state machine if any results are available.
-            /// </summary>
-            public bool IsCompleted
-            {
-                get 
-                { 
-                    bool result = this.enumerated == 2 || this.previews.Count > 0;
-                    return result;
-                }
-            }
-
-            /// <summary>
-            /// Returns the current <see cref="SearchPreviewAwaiter"/> to the
-            /// state machine.
-            /// </summary>
-            /// <returns>
-            /// A reference to the current <see cref="SearchPreviewAwaiter"/>.
-            /// </returns>
-            public SearchPreviewAwaiter GetAwaiter()
-            { 
-                return this;
-            }
-
-            /// <summary>
-            /// Returns the current <see cref="SearchResult"/> from the current
-            /// <see cref="SearchResultStream"/>.
-            /// </summary>
-            /// <returns>
-            /// The current <see cref="SearchResult"/> or <c>null</c>.
-            /// </returns>
-            public SearchPreview GetResult()
-            {
-                SearchPreview preview = null;
-
-                previews.TryDequeue(out preview);
-                return preview;
-            }
-
-            /// <summary>
-            /// Tells the current <see cref="SearchPreviewAwaiter"/> what method
-            /// to invoke on completion.
-            /// </summary>
-            /// <param name="continuation">
-            /// The method to call on completion.
-            /// </param>
-            public void OnCompleted(Action continuation)
-            {
-                Volatile.Write(ref this.continuation, continuation);
-            }
-
-            #endregion
-
-            #region Privates/internals
-
-            ConcurrentQueue<SearchPreview> previews = new ConcurrentQueue<SearchPreview>();
-            CancellationToken cancellationToken;
-            SearchPreviewStream stream;
-            Action continuation;
-            Exception lastError;
-            int enumerated;
-            long readCount;
-            Task task;
-
-            async Task<SearchPreview> AwaitResultAsync()
-            {
-                var result = await this;
-                return result;
-            }
-
-            void Continue()
-            {
-                Action continuation = Interlocked.Exchange(ref this.continuation, null);
-
-                if (continuation != null)
+                while (this.Stream.ReadState <= ReadState.Interactive)
                 {
-                    continuation();
-                }
+                    this.EnsureNotCancelled();
 
-                this.cancellationToken.ThrowIfCancellationRequested();
+                    var preview = await this.Stream.ReadPreviewAsync();
+                    this.Enqueue(preview);
+                }
             }
-
-            async void ReadPreviewsAsync()
-            {
-                if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
-                {
-                    throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
-                }
-
-                try
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    while (stream.ReadState <= ReadState.Interactive)
-                    {
-                        var preview = await stream.ReadPreviewAsync();
-                        Interlocked.Increment(ref this.readCount);
-                        this.previews.Enqueue(preview);
-                        this.Continue();
-                    }
-                }
-                catch (Exception error)
-                {
-                    this.lastError = error;
-                }
-
-                this.Continue();
-                enumerated = 2;
-            }
-
-            #endregion
         }
 
         #endregion

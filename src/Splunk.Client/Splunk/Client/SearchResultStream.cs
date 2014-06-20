@@ -51,7 +51,7 @@ namespace Splunk.Client
             this.metadata = Metadata.Missing;
             this.response = response;
 
-            this.awaiter = new SearchResultAwaiter(this, cancellationTokenSource.Token);
+            this.awaiter = new Awaiter(this, cancellationTokenSource.Token);
         }
 
         #endregion
@@ -127,20 +127,19 @@ namespace Splunk.Client
         /// </summary>
         public void Dispose()
         {
-            if (this.disposed)
+            if (Interlocked.CompareExchange(ref this.disposed, 1, 0) != 0)
             {
                 return;
             }
 
-            if (this.awaiter.IsReading)
-            {
-                this.cancellationTokenSource.Cancel();
-                this.cancellationTokenSource.Token.WaitHandle.WaitOne();
-            }
+            //// TODO: BUG FIX: Cancellation completes immediately after Cancel is called, in spite of the fact that 
+            //// this.awaiter.task has not completed.
 
-            this.cancellationTokenSource.Dispose();
+            this.cancellationTokenSource.Cancel();
             this.response.Dispose();
-            this.disposed = true;
+
+            this.cancellationTokenSource.Token.WaitHandle.WaitOne();
+            this.cancellationTokenSource.Dispose();
         }
 
         /// <summary>
@@ -205,11 +204,11 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly CancellationTokenSource cancellationTokenSource;
-        readonly SearchResultAwaiter awaiter;
+        readonly Awaiter awaiter;
         readonly Response response;
 
         volatile Metadata metadata;
-        bool disposed;
+        int disposed;
 
         ReadState ReadState
         {
@@ -227,7 +226,7 @@ namespace Splunk.Client
 
         void EnsureNotDisposed()
         {
-            if (this.disposed)
+            if (this.disposed != 0)
             {
                 throw new ObjectDisposedException("Search result stream");
             }
@@ -369,197 +368,36 @@ namespace Splunk.Client
             #endregion
         }
 
-        sealed class SearchResultAwaiter : INotifyCompletion
+        sealed class Awaiter : Awaiter<SearchResultStream, SearchResult>
         {
-            #region Constructors
+            public Awaiter(SearchResultStream stream, CancellationToken token)
+                : base(stream, token)
+            { }
 
-            public SearchResultAwaiter(SearchResultStream stream, CancellationToken token)
+            protected override async Task ReadToEndAsync()
             {
-                this.task = new Task(this.ReadResultsAsync, token);
-                this.cancellationToken = token;
-                this.lastError = null;
-                this.stream = stream;
-                this.readCount = 0;
-                this.task.Start();
-            }
+                await this.Stream.ReadMetadataAsync();
 
-            #endregion
-
-            #region Properties
-
-            public bool IsReading
-            {
-                get { return this.enumerated < 2; }
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            public Exception LastError
-            {
-                get { return this.lastError; }
-            }
-
-            public long ReadCount
-            {
-                get { return Interlocked.Read(ref this.readCount); }
-            }
-            
-            #endregion
-
-            #region Methods supporting IDisposable and IEnumerable<SearchResult>
-
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="result"></param>
-            /// <returns></returns>
-            public bool TryTake(out SearchResult result)
-            {
-                result = this.AwaitResultAsync().Result;
-                return result != null;
-            }
-
-            #endregion
-
-            #region Members called by the async await state machine
-
-            //// The async await state machine requires that you implement 
-            //// INotifyCompletion and provide three additional members: 
-            //// 
-            ////     IsCompleted property
-            ////     GetAwaiter method
-            ////     GetResult method
-            ////
-            //// INotifyCompletion itself defines just one member:
-            ////
-            ////     OnCompletion method
-            ////
-            //// See Jeffrey Richter's excellent discussion of the topic of 
-            //// awaiters in CLR via C# (4th Edition).
-
-            /// <summary>
-            /// Tells the state machine if any results are available.
-            /// </summary>
-            public bool IsCompleted
-            {
-                get
+                while (this.Stream.ReadState <= ReadState.Interactive)
                 {
-                    bool result = this.enumerated == 2 || this.results.Count > 0;
-                    return result;
-                }
-            }
-
-            /// <summary>
-            /// Returns the current <see cref="SearchResultAwaiter"/> to the
-            /// state machine.
-            /// </summary>
-            /// <returns>
-            /// A reference to the current <see cref="SearchResultAwaiter"/>.
-            /// </returns>
-            public SearchResultAwaiter GetAwaiter()
-            { return this; }
-
-            /// <summary>
-            /// Returns the current <see cref="SearchResult"/> from the current
-            /// <see cref="SearchResultStream"/>.
-            /// </summary>
-            /// <returns>
-            /// The current <see cref="SearchResult"/> or <c>null</c>.
-            /// </returns>
-            public SearchResult GetResult()
-            {
-                SearchResult result = null;
-
-                results.TryDequeue(out result);
-                return result;
-            }
-
-            /// <summary>
-            /// Tells the current <see cref="SearchResultAwaiter"/> what method
-            /// to invoke on completion.
-            /// </summary>
-            /// <param name="continuation">
-            /// The method to call on completion.
-            /// </param>
-            public void OnCompleted(Action continuation)
-            {
-                Volatile.Write(ref this.continuation, continuation);
-            }
-
-            #endregion
-
-            #region Privates/internals
-
-            ConcurrentQueue<SearchResult> results = new ConcurrentQueue<SearchResult>();
-            CancellationToken cancellationToken;
-            SearchResultStream stream;
-            Action continuation;
-            Exception lastError;
-            int enumerated;
-            long readCount;
-            Task task;
-
-            async Task<SearchResult> AwaitResultAsync()
-            {
-                return await this;
-            }
-
-            void Continue()
-            {
-                Action continuation = Interlocked.Exchange(ref this.continuation, null);
-
-                if (continuation != null)
-                {
-                    continuation();
-                }
-
-                this.cancellationToken.ThrowIfCancellationRequested();
-            }
-
-            async void ReadResultsAsync()
-            {
-                if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
-                {
-                    throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
-                }
-
-                try
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await this.stream.ReadMetadataAsync();
-
-                    while (this.stream.ReadState <= ReadState.Interactive)
+                    while (this.Stream.ReadState <= ReadState.Interactive)
                     {
-                        this.cancellationToken.ThrowIfCancellationRequested();
+                        this.EnsureNotCancelled();
 
-                        while (this.stream.ReadState <= ReadState.Interactive)
+                        SearchResult result = await this.Stream.ReadResultAsync();
+
+                        if (result == null)
                         {
-                            SearchResult result = await this.stream.ReadResultAsync();
-
-                            if (result == null)
-                            {
-                                break;
-                            }
-
-                            Interlocked.Increment(ref this.readCount);
-                            this.results.Enqueue(result);
-                            this.Continue();
+                            break;
                         }
 
-                        await stream.ReadMetadataAsync();
+                        this.Enqueue(result);
                     }
-                }
-                catch (Exception error)
-                {
-                    this.lastError = error;
-                }
 
-                this.Continue();
-                enumerated = 2;
+                    this.EnsureNotCancelled();
+                    await this.Stream.ReadMetadataAsync();
+                }
             }
-
-            #endregion
         }
 
         #endregion

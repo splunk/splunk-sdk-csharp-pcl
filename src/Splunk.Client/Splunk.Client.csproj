@@ -226,6 +226,7 @@
     <Compile Include="Splunk\Client\SearchPreviewStream.cs" />
     <Compile Include="Splunk\Client\SearchResult.cs" />
     <Compile Include="Splunk\Client\SearchResultsArgs.cs" />
+    <Compile Include="Splunk\Client\Awaiter.cs" />
     <Compile Include="Splunk\Client\SearchResultStream.cs" />
     <Compile Include="Splunk\Client\SearchSummary.cs" />
     <Compile Include="Splunk\Client\SearchSummaryArgs.cs" />

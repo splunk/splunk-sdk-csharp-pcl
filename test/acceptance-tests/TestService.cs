@@ -1463,7 +1463,7 @@ namespace Splunk.Client.AcceptanceTests
             using (var service = await SdkHelper.CreateService())
             {
                 const string search = "search index=_internal | tail 1000 | stats count by method";
-                var args = new SearchExportArgs() { Count = 0 };
+                var args = new SearchExportArgs() { Count = 0,  };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {

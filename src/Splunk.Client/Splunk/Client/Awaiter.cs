@@ -112,13 +112,16 @@ namespace Splunk.Client
         /// </returns>
         public bool TryTake(out TEvent result)
         {
+            if (this.results.TryDequeue(out result))
+            {
+                return true;
+            }
+
+            result = default(TEvent);
+
             if (this.IsReading)
             {
                 result = this.AwaitEventAsync().Result;
-            }
-            else
-            {
-                result = default(TEvent);
             }
 
             return result != null;

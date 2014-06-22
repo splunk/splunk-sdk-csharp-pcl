@@ -47,9 +47,8 @@ namespace Splunk.Client
         /// </param>
         SearchResultStream(Response response)
         {
-            this.metadata = Metadata.Missing;
+            this.metadata = SearchResultMetadata.Missing;
             this.response = response;
-
             this.awaiter = new Awaiter(this);
         }
 
@@ -76,11 +75,6 @@ namespace Splunk.Client
         public IReadOnlyList<string> FieldNames
         {
             get { return this.metadata.FieldNames; }
-        }
-
-        public Exception LastError
-        {
-            get { return this.awaiter.LastError; }
         }
 
         /// <summary>
@@ -202,7 +196,7 @@ namespace Splunk.Client
         readonly Awaiter awaiter;
         int disposed;
 
-        volatile Metadata metadata;
+        volatile SearchResultMetadata metadata;
 
         ReadState ReadState
         {
@@ -226,15 +220,17 @@ namespace Splunk.Client
             }
         }
 
-        async Task ReadMetadataAsync()
+        async Task<SearchResultMetadata> ReadMetadataAsync()
         {
-            var metadata = new Metadata();
+            var metadata = new SearchResultMetadata();
 
             await metadata.ReadXmlAsync(this.response.XmlReader);
             this.metadata = metadata;
+
+            return metadata;
         }
 
-        async Task<SearchResult> ReadResultAsync()
+        async Task<SearchResult> ReadResultAsync(SearchResultMetadata metadata)
         {
             var reader = this.response.XmlReader;
 
@@ -248,7 +244,7 @@ namespace Splunk.Client
 
             reader.EnsureMarkup(XmlNodeType.Element, "result");
 
-            var result = new SearchResult();
+            var result = new SearchResult(metadata);
             await result.ReadXmlAsync(reader);
             await reader.ReadAsync();
 
@@ -268,100 +264,6 @@ namespace Splunk.Client
 
         #region Types
 
-        sealed class Metadata
-        {
-            #region Fields
-
-            public static readonly Metadata Missing = new Metadata()
-            {
-                FieldNames = new ReadOnlyCollection<string>(new List<string>()),
-            };
-
-            #endregion
-
-            #region Properties
-
-            /// <summary>
-            /// Gets a value indicating whether this <see cref="SearchPreview"/> 
-            /// contains the final results from a search job.
-            /// </summary>
-            public bool IsFinal
-            { get; private set; }
-
-            /// <summary>
-            /// Gets the read-only list of field names that may appear in a 
-            /// <see cref="SearchResult"/>.
-            /// </summary>
-            /// <remarks>
-            /// Be aware that any given result will contain a subset of these 
-            /// fields.
-            /// </remarks>
-            public IReadOnlyList<string> FieldNames
-            { get; private set; }
-
-            #endregion
-
-            #region Methods
-
-            /// <summary>
-            /// Asynchronously reads data into the current <see cref="SearchResultStream"/>.
-            /// </summary>
-            /// <param name="reader">
-            /// The <see cref="XmlReader"/> from which to read.
-            /// </param>
-            /// <returns>
-            /// A <see cref="Task"/> representing the operation.
-            /// </returns>
-            public async Task ReadXmlAsync(XmlReader reader)
-            {
-                var fieldNames = new List<string>();
-
-                this.FieldNames = fieldNames;
-                this.IsFinal = true;
-
-                if (!await reader.MoveToDocumentElementAsync("results"))
-                {
-                    return;
-                }
-
-                string preview = reader.GetRequiredAttribute("preview");
-                this.IsFinal = !BooleanConverter.Instance.Convert(preview);
-
-                if (!await reader.ReadAsync())
-                {
-                    return;
-                }
-
-                reader.EnsureMarkup(XmlNodeType.Element, "meta");
-                await reader.ReadAsync();
-                reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");
-
-                await reader.ReadEachDescendantAsync("field", async (r) =>
-                {
-                    await r.ReadAsync();
-                    var fieldName = await r.ReadContentAsStringAsync();
-                    fieldNames.Add(fieldName);
-                });
-
-                await reader.ReadEndElementSequenceAsync("fieldOrder", "meta");
-
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "messages")
-                {
-                    //// Skip messages
-
-                    await reader.ReadEachDescendantAsync("msg", (r) =>
-                    {
-                        return Task.FromResult(true);
-                    });
-
-                    reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
-                    await reader.ReadAsync();
-                }
-            }
-
-            #endregion
-        }
-
         sealed class Awaiter : Awaiter<SearchResultStream, SearchResult>
         {
             public Awaiter(SearchResultStream stream)
@@ -370,15 +272,15 @@ namespace Splunk.Client
 
             protected override async Task ReadToEndAsync()
             {
-                await this.Stream.ReadMetadataAsync();
+                //// TODO: Metadata must track to results
+
+                var metadata = await this.Stream.ReadMetadataAsync();
 
                 while (this.Stream.ReadState <= ReadState.Interactive)
                 {
                     while (this.Stream.ReadState <= ReadState.Interactive)
                     {
-                        //this.EnsureNotCancelled();
-
-                        SearchResult result = await this.Stream.ReadResultAsync();
+                        SearchResult result = await this.Stream.ReadResultAsync(metadata);
 
                         if (result == null)
                         {
@@ -388,8 +290,7 @@ namespace Splunk.Client
                         this.Enqueue(result);
                     }
 
-                    //this.EnsureNotCancelled();
-                    await this.Stream.ReadMetadataAsync();
+                    metadata = await this.Stream.ReadMetadataAsync();
                 }
             }
         }

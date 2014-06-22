@@ -137,6 +137,7 @@
     <Compile Include="Splunk\Client\BaseEntity.cs" />
     <Compile Include="Splunk\Client\BaseResource.cs" />
     <Compile Include="Splunk\Client\BooleanConverter.cs" />
+    <Compile Include="Splunk\Client\SearchResultMetadata.cs" />
     <Compile Include="Splunk\Client\CollectionConverter.cs" />
     <Compile Include="Splunk\Client\Configuration.cs" />
     <Compile Include="Splunk\Client\ConfigurationCollection.cs" />

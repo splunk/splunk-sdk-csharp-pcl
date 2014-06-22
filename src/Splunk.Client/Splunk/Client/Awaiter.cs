@@ -112,13 +112,16 @@ namespace Splunk.Client
         /// </returns>
         public bool TryTake(out TEvent result)
         {
+            if (this.results.TryDequeue(out result))
+            {
+                return true;
+            }
+
+            result = default(TEvent);
+
             if (this.IsReading)
             {
                 result = this.AwaitEventAsync().Result;
-            }
-            else
-            {
-                result = default(TEvent);
             }
 
             return result != null;
@@ -132,8 +135,13 @@ namespace Splunk.Client
         //// INotifyCompletion and provide three additional members: 
         //// 
         ////     IsCompleted property
+        ////     Tells the async state machine whether results are avaiable.
+        ////
         ////     GetAwaiter method
+        ////     Returns the current awaiter to the async state machine.
+        ////
         ////     GetResult method
+        ////     Returns the next event to the async state machine.
         ////
         //// INotifyCompletion itself defines just one member:
         ////
@@ -143,7 +151,7 @@ namespace Splunk.Client
         //// awaiters in CLR via C# (4th Edition).
 
         /// <summary>
-        /// Tells the state machine if any results are available.
+        /// Tells the state machine whether results are available.
         /// </summary>
         public bool IsCompleted
         {
@@ -154,17 +162,19 @@ namespace Splunk.Client
             }
         }
 
+        ReaderWriterLockSlim gate = new ReaderWriterLockSlim();
+
         /// <summary>
         /// Returns the current awaiter to the async state machine.
         /// </summary>
         /// <returns>
-        /// A reference to the current awaiter.
+        /// An object reprsenting the current awaiter.
         /// </returns>
         public Awaiter<TStream, TEvent> GetAwaiter()
         { return this; }
 
         /// <summary>
-        /// Returns the next event from the current event stream.
+        /// Returns the next event to the async state machine.
         /// </summary>
         /// <returns>
         /// The current event or <c>null</c>.

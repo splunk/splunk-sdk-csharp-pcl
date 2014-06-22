@@ -52,19 +52,14 @@ namespace Splunk.Client
         /// </param>
         internal SearchPreviewStream(Response response)
         {
+            this.metadata = SearchResultMetadata.Missing;
             this.response = response;
-
             this.awaiter = new Awaiter(this);
         }
 
         #endregion
 
         #region Properties
-
-        public Exception LastError
-        {
-            get { return this.awaiter.LastError; }
-        }
 
         /// <summary>
         /// Gets the <see cref="SearchPreview"/> read count for the current
@@ -98,9 +93,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through <see cref=
-        /// "SearchPreview"/> objects on the current <see cref=
-        /// "SearchPreviewStream"/> asynchronously.
+        /// Gets an enumerator that iterates through <see cref="SearchPreview"/> 
+        /// objects on the current <see cref="SearchPreviewStream"/> asynchronously.
         /// </summary>
         /// <returns>
         /// An enumerator structure for the <see cref="SearchPreviewStream"/>.
@@ -162,6 +156,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        SearchResultMetadata metadata;
         readonly Response response;
         readonly Awaiter awaiter;
         int disposed;

@@ -299,7 +299,20 @@ namespace Splunk.Client.UnitTests
 
                 using (SearchResultStream stream = await service.SearchOneshotAsync(search))
                 {
+                    Assert.Equal(0, stream.FieldNames.Count);
+                    Assert.False(stream.IsFinal);
+                    Assert.Equal(0, stream.ReadCount);
+
+                    foreach (SearchResult record in stream)
+                    {
+                        Assert.Equal(14, stream.FieldNames.Count);
+                        Assert.Equal(14, record.FieldNames.Count);
+                        Assert.Equal(stream.FieldNames.AsEnumerable(), record.FieldNames.AsEnumerable());
+                        Assert.Equal(record.Keys.Intersect(stream.FieldNames).ToList(), record.Keys.ToList());
+                    }
+
                     Assert.Equal(14, stream.FieldNames.Count);
+                    Assert.Equal(4, stream.ReadCount);
                 }
             }
         }

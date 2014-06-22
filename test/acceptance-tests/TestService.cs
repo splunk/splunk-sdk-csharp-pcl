@@ -1376,7 +1376,7 @@ namespace Splunk.Client.AcceptanceTests
             using (var service = await SdkHelper.CreateService())
             {
                 const string search = "search index=_internal | tail 1000 | stats count by method";
-                var args = new SearchExportArgs { Count = 0 };
+                var args = new SearchExportArgs { Count = 0, EarliestTime = "-24h" };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 { }
@@ -1426,7 +1426,7 @@ namespace Splunk.Client.AcceptanceTests
             using (var service = await SdkHelper.CreateService())
             {
                 const string search = "search index=_internal | tail 1000 | stats count by method";
-                var args = new SearchExportArgs() { Count = 0 };
+                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h" };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
@@ -1463,7 +1463,7 @@ namespace Splunk.Client.AcceptanceTests
             using (var service = await SdkHelper.CreateService())
             {
                 const string search = "search index=_internal | tail 1000 | stats count by method";
-                var args = new SearchExportArgs() { Count = 0,  };
+                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h" };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
@@ -1545,6 +1545,7 @@ namespace Splunk.Client.AcceptanceTests
                     var manualResetEvent = new ManualResetEvent(true);
                     var results = new List<SearchResult>();
                     var exception = (Exception)null;
+                    int readCount = 0;
 
                     stream.Subscribe(new Observer<SearchResult>(
                         onNext: (result) =>
@@ -1556,6 +1557,8 @@ namespace Splunk.Client.AcceptanceTests
                             {
                                 results.Add(result);
                             }
+
+                            readCount++;
                         },
                         onCompleted: () =>
                         {
@@ -1571,7 +1574,9 @@ namespace Splunk.Client.AcceptanceTests
                     manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
+                    Assert.True(stream.IsFinal);
                     Assert.Equal(100, results.Count);
+                    Assert.Equal(stream.ReadCount, readCount);
                 }
 
                 await service.LogoffAsync();

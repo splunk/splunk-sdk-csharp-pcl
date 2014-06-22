@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.IO;
@@ -34,6 +35,29 @@ namespace Splunk.Client
     /// </summary>
     public class SearchResult : Dictionary<string, Field>
     {
+        #region Properties
+
+        /// <summary>
+        /// Gets a value indicating whether the current <see cref="SearchResultStream"/> 
+        /// is yielding the final results from a search job.
+        /// </summary>
+        public bool IsFinal
+        {
+            get { return this.metadata.IsFinal; }
+        }
+
+        /// <summary>
+        /// Gets the read-only list of field names that may appear in a 
+        /// <see cref="SearchResult"/>.
+        /// </summary>
+        /// <remarks>
+        /// Be aware that any given result may contain a subset of these fields.
+        /// </remarks>
+        public IReadOnlyList<string> FieldNames
+        {
+            get { return this.metadata.FieldNames; }
+        }
+
         /// <summary>
         /// Gets the XML markup for the <c>_raw</c> field value.
         /// </summary>
@@ -44,6 +68,8 @@ namespace Splunk.Client
         /// example, <c>record["_raw"]</c> field value returns this:
         /// </remarks>
         public string SegmentedRaw { get; internal set; }
+
+        #endregion
 
         #region Methods
 
@@ -121,6 +147,22 @@ namespace Splunk.Client
             builder.Append(")");
 
             return builder.ToString();
+        }
+
+        #endregion
+
+        #region Privates/internals
+
+        SearchResultMetadata metadata;
+
+        internal SearchResult(SearchResultMetadata metadata)
+        {
+            this.metadata = metadata;
+        }
+
+        internal SearchResultMetadata Metadata
+        {
+            get { return this.metadata; }
         }
 
         #endregion

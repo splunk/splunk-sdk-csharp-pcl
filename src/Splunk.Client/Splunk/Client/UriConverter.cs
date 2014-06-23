@@ -176,7 +176,7 @@ namespace Splunk.Client
                 this.query = fragmentStart > -1 
                     ? source.Substring(queryStart, fragmentStart - queryStart)
                     : queryStart > -1
-                    ? source.Substring(queryStart, (source.Length - queryStart)) 
+                    ? source.Substring(queryStart, source.Length - queryStart) 
                     : "";
 
                 //// NOTE: We must fixup the source because Uri.ToString incorrectly represents some Uri instances,

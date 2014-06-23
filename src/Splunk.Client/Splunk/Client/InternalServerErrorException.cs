@@ -19,8 +19,9 @@
 
 namespace Splunk.Client
 {
+    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
+    using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
 
@@ -47,7 +48,7 @@ namespace Splunk.Client
         internal InternalServerErrorException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(message, details)
         {
-            Debug.Assert(message.StatusCode == HttpStatusCode.InternalServerError);
+            Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.InternalServerError);
         }
 
         #endregion

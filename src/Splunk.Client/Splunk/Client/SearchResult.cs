@@ -62,10 +62,8 @@ namespace Splunk.Client
         /// Gets the XML markup for the <c>_raw</c> field value.
         /// </summary>
         /// <remarks>
-        /// The return value is different than that of the <c>_raw</c> field 
-        /// value in that this segmented raw value is an XML fragment that 
-        /// includes all markup such as XML tags and escaped characters. For 
-        /// example, <c>record["_raw"]</c> field value returns this:
+        /// This value is different than that of the <c>_raw</c> field value in
+        /// that it is an XML fragment that includes all markup.
         /// </remarks>
         public string SegmentedRaw { get; internal set; }
 

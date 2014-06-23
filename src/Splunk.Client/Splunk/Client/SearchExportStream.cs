@@ -142,7 +142,7 @@ namespace Splunk.Client
         /// Pushes <see cref="SearchResultStream"/> to subscribers and then completes.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task"/>
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         override protected async Task PushObservations()
         {

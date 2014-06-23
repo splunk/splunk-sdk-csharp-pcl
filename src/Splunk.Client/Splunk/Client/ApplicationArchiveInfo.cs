@@ -84,21 +84,26 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the access control lists for the current <see cref=
-        /// "ApplicationArchiveInfo"/>.
+        /// Gets the access control list for the current <see cref="ApplicationArchiveInfo"/>.
         /// </summary>
+        /// <value>
+        /// The access control list for the current <see cref="AplicationArchiveInfo"/>.
+        /// </value>
         public Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
-        /// Gets the name of the application contained by the archive represented 
-        /// by the current <see cref="ApplicationArchiveInfo"/> instance.
+        /// Gets the name of the application contained by the archive described 
+        /// by the current <see cref="ApplicationArchiveInfo"/>.
         /// </summary>
+        /// <value>
+        /// The name of the application contained by the archive described by
+        /// the current <see cref="ApplicationArchiveInfo"/>.
+        /// </value>
         /// <remarks>
-        /// This value is the default the name of the folder on disk that 
-        /// contains the application.
+        /// This value is the default name of the application folder on disk.
         /// </remarks>
         public string ApplicationName
         {

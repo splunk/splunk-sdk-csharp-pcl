@@ -62,7 +62,7 @@ namespace Splunk.Client
         /// condition.
         /// </summary>
         /// <param name="e">
-        /// An <see cref="Exception"/> representing the error condition
+        /// An <see cref="Exception"/> representing the error condition.
         /// </param>
         protected void OnError(Exception e)
         {

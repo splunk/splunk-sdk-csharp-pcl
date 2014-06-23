@@ -187,7 +187,8 @@ namespace Splunk.Client
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/vJvIXv">GET 
-        /// search/jobs/export</a> endpoint to start the 
+        /// search/jobs/export</a> endpoint to export an obervable sequence of
+        /// search result previews.
         /// </remarks>
         Task<SearchPreviewStream> ExportSearchPreviewsAsync(string search, SearchExportArgs args = null);
 
@@ -195,7 +196,7 @@ namespace Splunk.Client
         /// Asynchronously exports an observable sequence of search results.
         /// </summary>
         /// <param name="search">
-        /// Splunk search command.
+        /// A Splunk search command.
         /// </param>
         /// <param name="args">
         /// Optional export arguments.
@@ -206,7 +207,8 @@ namespace Splunk.Client
         /// </returns>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/vJvIXv">GET 
-        /// search/jobs/export</a> endpoint to start the 
+        /// search/jobs/export</a> endpoint to export an observable sequence
+        /// of search results.
         /// </remarks>
         Task<SearchResultStream> ExportSearchResultsAsync(string search, SearchExportArgs args = null);
         

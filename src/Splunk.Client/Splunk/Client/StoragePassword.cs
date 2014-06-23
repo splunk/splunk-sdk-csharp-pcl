@@ -32,16 +32,16 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides an object representation of a Splunk storage password
+    /// Provides an object representation of a Splunk storage password.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/wAcSfp">Splunk>Blogs: Storing Encrypted Credentials</a>
+    ///   <a href="http://goo.gl/wAcSfp">Splunk>Blogs: Storing Encrypted Credentials</a>.
     /// </description></item>
     /// <item><description>
-    ///   <a href="http://goo.gl/HTRSVu">REST API Reference: storage/passwords</a>
+    ///   <a href="http://goo.gl/HTRSVu">REST API Reference: storage/passwords</a>.
     /// </description></item>
     /// </list>
     /// </remarks>

@@ -22,12 +22,10 @@ namespace Splunk.Client.Refactored
 {
     using Splunk.Client;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// Provides a class for sending events to Splunk.
@@ -88,7 +86,7 @@ namespace Splunk.Client.Refactored
         /// receivers/stream</a> endpoint to send raw events to Splunk as
         /// they become available on <paramref name="eventStream"/>.
         /// </remarks>
-        public async Task SendAsync(Stream eventStream, ReceiverArgs args = null)
+        public async Task SendAsync(Stream eventStream, TransmitterArgs args = null)
         {
             using (var content = new StreamContent(eventStream))
             {
@@ -119,7 +117,7 @@ namespace Splunk.Client.Refactored
         /// receivers/simple</a> endpoint to obtain the <see cref=
         /// "SearchResult"/> that it returns.
         /// </remarks>
-        public async Task<SearchResult> SendAsync(string eventText, ReceiverArgs args = null)
+        public async Task<SearchResult> SendAsync(string eventText, TransmitterArgs args = null)
         {
             using (var content = new StringContent(eventText))
             {
@@ -131,7 +129,7 @@ namespace Splunk.Client.Refactored
                     reader.Requires(await reader.MoveToDocumentElementAsync("response"));
                     await reader.ReadElementSequenceAsync("results", "result");
 
-                    var result = new SearchResult();
+                    var result = new SearchResult(SearchResultMetadata.Missing);
                     await result.ReadXmlAsync(reader);
                     
                     await reader.ReadEndElementSequenceAsync("result", "results", "response");

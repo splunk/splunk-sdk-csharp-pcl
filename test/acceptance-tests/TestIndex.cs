@@ -305,10 +305,16 @@ namespace Splunk.Client.UnitTests
 
                     foreach (SearchResult record in stream)
                     {
-                        Assert.Equal(14, stream.FieldNames.Count);
+                        var fieldNames = stream.FieldNames;
+
+                        Assert.Equal(14, fieldNames.Count);
                         Assert.Equal(14, record.FieldNames.Count);
-                        Assert.Equal(stream.FieldNames.AsEnumerable(), record.FieldNames.AsEnumerable());
-                        Assert.Equal(record.Keys.Intersect(stream.FieldNames).ToList(), record.Keys.ToList());
+                        Assert.Equal(fieldNames.AsEnumerable(), record.FieldNames.AsEnumerable());
+
+                        var memberNames = record.GetDynamicMemberNames();
+                        var intersection = fieldNames.Intersect(memberNames);
+
+                        Assert.Equal(memberNames, intersection);
                     }
 
                     Assert.Equal(14, stream.FieldNames.Count);

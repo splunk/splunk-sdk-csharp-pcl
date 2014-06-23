@@ -1515,9 +1515,10 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
+                const string search = "search index=_internal | tail 100";
                 var args = new SearchExportArgs { Count = 0 };
 
-                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", args))
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
 
@@ -1550,8 +1551,9 @@ namespace Splunk.Client.AcceptanceTests
                     stream.Subscribe(new Observer<SearchResult>(
                         onNext: (result) =>
                         {
-                            var count = stream.FieldNames.Intersect(result.Keys).Count();
-                            Assert.Equal(count, result.Count);
+                            var memberNames = result.GetDynamicMemberNames();
+                            var count = stream.FieldNames.Intersect(memberNames).Count();
+                            Assert.Equal(count, memberNames.Count());
 
                             if (stream.IsFinal)
                             {

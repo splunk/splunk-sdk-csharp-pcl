@@ -14,8 +14,10 @@
  * under the License.
  */
 
-namespace Splunk.Client
+namespace Splunk.Client.UnitTests
 {
+    using Splunk.Client;
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -27,7 +29,7 @@ namespace Splunk.Client
     {
         [Trait("unit-test", "Splunk.Client.SavedSearchAttributes")]
         [Fact]
-        void CanConstruct()
+        void CanConstructSavedSearchAttributes()
         {
             var attributes = new SavedSearchAttributes();
 
@@ -94,6 +96,8 @@ namespace Splunk.Client
                 "auto_summarize=null; " +
                 "auto_summarize.command=null; " +
                 "auto_summarize.cron_schedule=null; " +
+                "auto_summarize.dispatch.earliest_time=null; " +
+                "auto_summarize.dispatch.latest_time=null; " +
                 "auto_summarize.dispatch.time_format=null; " +
                 "auto_summarize.dispatch.ttl=null; " +
                 "auto_summarize.max_disabled_buckets=null; " +
@@ -127,7 +131,7 @@ namespace Splunk.Client
 
         [Trait("unit-test", "Splunk.Client.SavedSearchAttributes")]
         [Fact]
-        void CanSetEveryValue()
+        void CanSetEverySavedSearchAttribute()
         {
             var attributes = new SavedSearchAttributes()
             {
@@ -289,12 +293,14 @@ namespace Splunk.Client
                 "auto_summarize=1; " +
                 "auto_summarize.command=some-unchecked-string; " +
                 "auto_summarize.cron_schedule=some-unchecked-string; " +
+                "auto_summarize.dispatch.earliest_time=some-unchecked-string; " +
+                "auto_summarize.dispatch.latest_time=some-unchecked-string; " +
                 "auto_summarize.dispatch.time_format=some-unchecked-string; " +
                 "auto_summarize.dispatch.ttl=some-unchecked-string; " +
-                "auto_summarize.max_disabled_buckets=some-unchecked-string; " +
-                "auto_summarize.max_summary_ratio=some-unchecked-string; " +
-                "auto_summarize.max_summary_size=some-unchecked-string; " +
-                "auto_summarize.max_time=some-unchecked-string; " +
+                "auto_summarize.max_disabled_buckets=2; " +
+                "auto_summarize.max_summary_ratio=0.1; " +
+                "auto_summarize.max_summary_size=52428800; " +
+                "auto_summarize.max_time=3600; " +
                 "auto_summarize.suspend_period=some-unchecked-string; " +
                 "cron_schedule=some-unchecked-string; " +
                 "description=some-unchecked-string; " +
@@ -382,12 +388,14 @@ namespace Splunk.Client
                     new Argument("auto_summarize", 1),
                     new Argument("auto_summarize.command", "some-unchecked-string"),
                     new Argument("auto_summarize.cron_schedule", "some-unchecked-string"),
+                    new Argument("auto_summarize.dispatch.earliest_time", "some-unchecked-string"),
+                    new Argument("auto_summarize.dispatch.latest_time", "some-unchecked-string"),
                     new Argument("auto_summarize.dispatch.time_format", "some-unchecked-string"),
                     new Argument("auto_summarize.dispatch.ttl", "some-unchecked-string"),
-                    new Argument("auto_summarize.max_disabled_buckets", "some-unchecked-string"),
-                    new Argument("auto_summarize.max_summary_ratio", "some-unchecked-string"),
-                    new Argument("auto_summarize.max_summary_size", "some-unchecked-string"),
-                    new Argument("auto_summarize.max_time", "some-unchecked-string"),
+                    new Argument("auto_summarize.max_disabled_buckets", "2"),
+                    new Argument("auto_summarize.max_summary_ratio", "0.1"),
+                    new Argument("auto_summarize.max_summary_size", "52428800"),
+                    new Argument("auto_summarize.max_time", "3600"),
                     new Argument("auto_summarize.suspend_period", "some-unchecked-string"),
                     new Argument("cron_schedule", "some-unchecked-string"),
                     new Argument("description", "some-unchecked-string"),

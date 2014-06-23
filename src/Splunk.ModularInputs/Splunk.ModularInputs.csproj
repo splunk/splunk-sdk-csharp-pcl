@@ -71,20 +71,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Splunk\ModularInputs\Argument.cs" />
-    <Compile Include="Splunk\ModularInputs\Util.cs" />
-    <Compile Include="Splunk\ModularInputs\DataType.cs" />
-    <Compile Include="Splunk\ModularInputs\Event.cs" />
-    <Compile Include="Splunk\ModularInputs\EventWriter.cs" />
-    <Compile Include="Splunk\ModularInputs\InputDefinition.cs" />
-    <Compile Include="Splunk\ModularInputs\InputDefinitionCollection.cs" />
-    <Compile Include="Splunk\ModularInputs\ModularInput.cs" />
-    <Compile Include="Splunk\ModularInputs\MultiValueParameter.cs" />
-    <Compile Include="Splunk\ModularInputs\Parameter.cs" />
-    <Compile Include="Splunk\ModularInputs\Scheme.cs" />
-    <Compile Include="Splunk\ModularInputs\SingleValueParameter.cs" />
-    <Compile Include="Splunk\ModularInputs\StreamingMode.cs" />
-    <Compile Include="Splunk\ModularInputs\Validation.cs" />
+    <Compile Include="Splunk\ModularInputs\**\*" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

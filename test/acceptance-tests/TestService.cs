@@ -736,41 +736,76 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetConfigurations()
         {
+            int count1 = 0;
             foreach (Namespace ns in TestNamespaces)
             {
+                if(count1++>10)
+                {
+                    break;
+                }
+
                 using (var service = await SdkHelper.CreateService())
                 {
                     var inputsConfiguration = await service.Configurations.GetAsync("inputs");
 
+                    int count2 = 0;
                     foreach (var stanza in inputsConfiguration)  // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                     {
+                        if(count2++>10)
+                        {
+                            break;
+                        }
+
                         await stanza.GetAsync();
                     }
 
                     await service.Configurations.GetAllAsync();
 
+                    count2 = 0;
                     foreach (Configuration configuration in service.Configurations)
                     {
+                        if (count2++ > 10)
+                        {
+                            break;
+                        }
+
                         await configuration.GetAllAsync();
 
+                        int count3 = 0;
                         foreach (ConfigurationStanza stanza in configuration)
                         {
+                            if (count3++ > 10)
+                            {
+                                break;
+                            }
                             await stanza.GetAsync();
                         }
                     }
 
                     var configurationList = new List<Configuration>(service.Configurations.Count);
 
+                    count2 = 0;
                     for (int i = 0; i < service.Configurations.Count; i++)
                     {
+                        if (count2++ > 10)
+                        {
+                            break;
+                        }
+
                         Configuration configuration = service.Configurations[i];
                         configurationList.Add(configuration);
 
                         await configuration.GetAllAsync();
                         var stanzaList = new List<ConfigurationStanza>(configuration.Count);
 
+                        int count3 = 0;
                         for (int j = 0; j < configuration.Count; j++)
                         {
+                            if (count3++ > 10)
+                            {
+                                break;
+                            }
+
                             ConfigurationStanza stanza = configuration[j];
                             stanzaList.Add(stanza);
                             await stanza.GetAsync();

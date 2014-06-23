@@ -191,7 +191,7 @@ namespace Splunk.Client
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
                 var reader = response.XmlReader;
 
-                await reader.MoveToDocumentElementAsync("feed", "response");
+                await reader.MoveToDocumentElementAsync("feed", "entry", "response");
 
                 if (reader.Name == "response")
                 {

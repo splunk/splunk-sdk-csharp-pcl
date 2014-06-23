@@ -59,6 +59,11 @@ namespace search_realtime
 
             var tokenSource = new CancellationTokenSource();
 
+            #pragma warning disable 4014
+            //// Because this call is not awaited, execution of the current 
+            //// method continues before the call is completed. Consider 
+            //// applying the 'await' operator to the result of the call.
+
             Task.Run(async () =>
             {
                 Console.ReadLine();
@@ -67,22 +72,24 @@ namespace search_realtime
                 tokenSource.Cancel();
             });
 
+            #pragma warning restore 4014
+
             while (!tokenSource.IsCancellationRequested)
             {
-                SearchResultStream resultStream = await realtimeJob.GetSearchPreviewAsync();
-
-                Console.WriteLine("fieldnames: " + string.Join(";", resultStream.FieldNames));
-                Console.WriteLine("fieldname count: " + resultStream.FieldNames.Count);
-                Console.WriteLine("final result: " + resultStream.IsFinal);
-
-                foreach (Task<SearchResult> item in resultStream)
+                using (SearchResultStream stream = await realtimeJob.GetSearchPreviewAsync())
                 {
-                    SearchResult result = await item;
-                    Console.WriteLine(result);
-                }
+                    Console.WriteLine("fieldnames: " + string.Join(";", stream.FieldNames));
+                    Console.WriteLine("fieldname count: " + stream.FieldNames.Count);
+                    Console.WriteLine("final result: " + stream.IsFinal);
 
-                Console.WriteLine("");
-                await Task.Delay(2000, tokenSource.Token);
+                    foreach (SearchResult result in stream)
+                    {
+                        Console.WriteLine(result);
+                    }
+
+                    Console.WriteLine("");
+                    await Task.Delay(2000, tokenSource.Token);
+                }
             }
         }
     }

@@ -103,7 +103,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     //// Create and change the password for 50 StoragePassword instances
 
-                    var surname = SdkHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
+                    var surname = MockContext.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
                     var realms = new string[] { null, "splunk.com", "splunk:com" };
 
                     for (int i = 0; i < realms.Length; i++)
@@ -136,7 +136,7 @@ namespace Splunk.Client.AcceptanceTests
 
                         //// Update
 
-                        password = SdkHelper.GetOrElse(Membership.GeneratePassword(15, 2));
+                        password = MockContext.GetOrElse(Membership.GeneratePassword(15, 2));
                         await sp.UpdateAsync(password);
 
                         Assert.Equal(password, sp.ClearPassword);
@@ -318,14 +318,14 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         //// Ensure we've got 50 passwords to enumerate
 
-                        var surname = SdkHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
+                        var surname = MockContext.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
                         var realms = new string[] { null, "splunk.com", "splunk:com" };
 
                         for (int i = 0; i < 50 - sps.Count; i++)
                         {
                             var username = surname + i;
                             var realm = realms[i % realms.Length];
-                            var password = SdkHelper.GetOrElse(Membership.GeneratePassword(15, 2));
+                            var password = MockContext.GetOrElse(Membership.GeneratePassword(15, 2));
 
                             StoragePassword sp = await service.StoragePasswords.CreateAsync(password, username, realm);
 
@@ -489,7 +489,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Create an app from one of the built-in templates
 
-                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var name = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
 
                 var creationAttributes = new ApplicationAttributes()
                 {
@@ -652,7 +652,7 @@ namespace Splunk.Client.AcceptanceTests
 
             using (var service = await(SdkHelper.CreateService(new Namespace("nobody", testApplicationName))))
             {
-                var fileName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var fileName = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
 
                 //// Create
 
@@ -832,7 +832,7 @@ namespace Splunk.Client.AcceptanceTests
 
             using (var service = await SdkHelper.CreateService(ns))
             {
-                var indexName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var indexName = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 Index index;
                 
                 //// Create
@@ -1078,7 +1078,7 @@ namespace Splunk.Client.AcceptanceTests
                 for (int i = 0; i < sendEventCount; i++)
                 {
                     var result = await receiver.SendAsync(
-                        SdkHelper.GetOrElse(string.Format("{0:D6} {1} Simple event", i, DateTime.Now)));
+                        MockContext.GetOrElse(string.Format("{0:D6} {1} Simple event", i, DateTime.Now)));
                     Assert.NotNull(result);
                 }
 
@@ -1105,7 +1105,7 @@ namespace Splunk.Client.AcceptanceTests
                         for (int i = 0; i < sendEventCount; i++)
                         {
                             writer.Write(
-                                SdkHelper.GetOrElse(string.Format("{0:D6}, {1}, Stream event\r\n", i, DateTime.Now)));
+                                MockContext.GetOrElse(string.Format("{0:D6}, {1}, Stream event\r\n", i, DateTime.Now)));
                         }
                     }
 
@@ -1212,7 +1212,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 //// Create
 
-                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var name = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 var search = "search index=_internal | head 1000";
 
                 var originalAttributes = new SavedSearchAttributes
@@ -1271,7 +1271,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Read schedule
 
-                var dateTime = SdkHelper.GetOrElse(DateTime.Now);
+                var dateTime = MockContext.GetOrElse(DateTime.Now);
                 var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
 
                 Assert.Equal(48, schedule.Count);
@@ -1305,7 +1305,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Update schedule
 
-                dateTime = SdkHelper.GetOrElse(DateTime.Now);
+                dateTime = MockContext.GetOrElse(DateTime.Now);
 
                 //// TODO: 
                 //// Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
@@ -1333,13 +1333,13 @@ namespace Splunk.Client.AcceptanceTests
             {
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
                 
-                using (SearchResultStream resultStream = await job.GetSearchResultsAsync())
+                using (SearchResultStream stream = await job.GetSearchResultsAsync())
                 {
                     var results = new List<SearchResult>();
 
-                    foreach (var result in resultStream)
+                    foreach (SearchResult result in stream)
                     {
-                        results.Add(await result);
+                        results.Add(result);
                     }
 
                     Assert.NotEmpty(results);
@@ -1406,38 +1406,113 @@ namespace Splunk.Client.AcceptanceTests
         [Trait("acceptance-test", "Splunk.Client.Service")]
         [MockContext]
         [Fact]
-        public async Task CanExportSearchPreviews()
+        public async Task CanCancelExportSearchPreviews()
         {
             using (var service = await SdkHelper.CreateService())
             {
-                var args = new SearchExportArgs() { Count = 0 };
+                const string search = "search index=_internal | tail 1000 | stats count by method";
+                var args = new SearchExportArgs { Count = 0, EarliestTime = "-24h" };
 
-                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | tail 100", args))
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
+                { }
+
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
+                {
+                    for (int i = 0; stream.ReadCount <= 0; i++)
+                    {
+                        await Task.Delay(10);
+                    }
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanCancelExportSearchResults()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 100";
+                var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                { }
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                {
+                    for (int i = 0; stream.ReadCount <= 0; i++)
+                    {
+                        await Task.Delay(10);
+                    }
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanExportSearchPreviewsToEnumerable()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 1000 | stats count by method";
+                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h" };
+
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
-                    var exception = (Exception)null;
+
+                    foreach (var preview in stream)
+                    {
+                        Assert.Equal<IEnumerable<string>>(new List<string>
+                            {
+                                "method",
+                                "count",
+                            },
+                            preview.FieldNames);
+
+                        if (preview.IsFinal)
+                        {
+                            results.AddRange(preview.Results);
+                        }
+                    }
+
+                    Assert.True(stream.ReadCount > 1);
+                    Assert.NotEmpty(results);
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanExportSearchPreviewsToObservable()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 1000 | stats count by method";
+                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h" };
+
+                using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
+                {
                     var manualResetEvent = new ManualResetEvent(true);
+                    var results = new List<SearchResult>();
+                    var exception = (Exception)null;
 
                     stream.Subscribe(new Observer<SearchPreview>(
                         onNext: (preview) =>
                         {
                             Assert.Equal<IEnumerable<string>>(new List<string>
                                 {
-                                    "_bkt",
-                                    "_cd",
-                                    "_indextime",
-                                    "_raw",
-                                    "_serial",
-                                    "_si",
-                                    "_sourcetype",
-                                    "_subsecond",
-                                    "_time",
-                                    "host",
-                                    "index",
-                                    "linecount",
-                                    "source",
-                                    "sourcetype",
-                                    "splunk_server",
+                                    "method",
+                                    "count",
                                 },
                                 preview.FieldNames);
 
@@ -1460,7 +1535,8 @@ namespace Splunk.Client.AcceptanceTests
                     manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
-                    Assert.Equal(100, results.Count);
+                    Assert.NotEmpty(results);
+                    Assert.True(stream.ReadCount > 1);
                 }
 
                 await service.LogoffAsync();
@@ -1470,7 +1546,31 @@ namespace Splunk.Client.AcceptanceTests
         [Trait("acceptance-test", "Splunk.Client.Service")]
         [MockContext]
         [Fact]
-        public async Task CanExportSearchResults()
+        public async Task CanExportSearchResultsToEnumerable()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                const string search = "search index=_internal | tail 100";
+                var args = new SearchExportArgs { Count = 0 };
+
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                {
+                    var results = new List<SearchResult>();
+
+                    foreach (SearchResult result in stream)
+                    {
+                        results.Add(result);
+                    }
+                }
+
+                await service.LogoffAsync();
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanExportSearchResultsToObservable()
         {
             using (var service = await SdkHelper.CreateService())
             {
@@ -1478,20 +1578,24 @@ namespace Splunk.Client.AcceptanceTests
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", args))
                 {
-                    var results = new List<Splunk.Client.SearchResult>();
-                    var exception = (Exception)null;
                     var manualResetEvent = new ManualResetEvent(true);
+                    var results = new List<SearchResult>();
+                    var exception = (Exception)null;
+                    int readCount = 0;
 
                     stream.Subscribe(new Observer<SearchResult>(
                         onNext: (result) =>
                         {
-                            var count = stream.FieldNames.Intersect(result.Keys).Count();
-                            Assert.Equal(count, result.Count);
+                            var memberNames = result.GetDynamicMemberNames();
+                            var count = stream.FieldNames.Intersect(memberNames).Count();
+                            Assert.Equal(count, memberNames.Count());
 
                             if (stream.IsFinal)
                             {
                                 results.Add(result);
                             }
+
+                            readCount++;
                         },
                         onCompleted: () =>
                         {
@@ -1507,7 +1611,9 @@ namespace Splunk.Client.AcceptanceTests
                     manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
+                    Assert.True(stream.IsFinal);
                     Assert.Equal(100, results.Count);
+                    Assert.Equal(stream.ReadCount, readCount);
                 }
 
                 await service.LogoffAsync();
@@ -1521,7 +1627,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                var indexName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid().ToString("N")));
+                var indexName = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid().ToString("N")));
 
                 var searches = new[] 
                 {
@@ -1547,9 +1653,9 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         var list = new List<SearchResult>();
 
-                        foreach (Task<SearchResult> result in stream) 
+                        foreach (SearchResult result in stream) 
                         {
-                            list.Add(await result);
+                            list.Add(result);
                         }
 
                         Assert.Equal(search.ResultCount, stream.ReadCount);
@@ -1572,7 +1678,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 //// Create
 
-                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var name = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 ServerMessageCollection messages = service.Server.Messages;
 
                 var messageList = new ServerMessage[] 

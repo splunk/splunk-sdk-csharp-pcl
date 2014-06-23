@@ -79,7 +79,7 @@ namespace Splunk.Client
         /// </summary>
         [DataMember(Name = "earliest_time", EmitDefaultValue = false)]
         [DefaultValue(null)]
-        public string EarliestTime // TODO: Convenience class for specifying a time string. See 
+        public string EarliestTime
         { get; set; }
 
         /// <summary>
@@ -264,14 +264,6 @@ namespace Splunk.Client
         [DataMember(Name = "rf", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public IReadOnlyList<string> RequiredFieldList
-        { get; set; }
-
-        /// <summary>
-        /// Gets or sets the post processing search to apply to the results of a search.
-        /// </summary>
-        [DataMember(Name = "search", EmitDefaultValue = false)]
-        [DefaultValue(null)]
-        public string Search
         { get; set; }
 
         /// <summary>

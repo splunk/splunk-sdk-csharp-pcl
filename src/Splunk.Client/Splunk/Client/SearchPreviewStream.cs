@@ -15,39 +15,22 @@
  */
 
 //// TODO:
-////
-//// [O] Work out semantics for skipping preview SearchResults
-////     Use Reactive Extensions Operators
-////
 //// [O] Contracts
-////
 //// [O] Documentation
-////
-//// [X] Refactor SearchExportStream/SearchResultStream
-////
-////     1. SearchResultStream should read one and only one result set
-////     2. SearchExportStream should accept a stream and instantiate a new 
-////        SearchResults instance for each result set.
-////     3. Care should be taken to ensure that SearchResults instances do
-////        not dispose their stream prematurely; perhaps by creating each
-////        SearchResults instance with an XmlReader instance. When 
-////        constructed in this fashion, we would simply short-circuit 
-////        Dispose and leave it to our creator to close the stream.
-////
-//// [X] Thread safety
-////     Addresed by modifications to Observable<T> class. See 
-////     Observable<T>.NotifySubscribers and Observable<T>.Complete.
-////
+
 //// References:
 //// 1. [Async, await, and yield return](http://goo.gl/RLVDK5)
+//// 2. [CLR via C# (4th Edition)](http://goo.gl/SmpI3W)
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
@@ -56,7 +39,7 @@ namespace Splunk.Client
     /// The <see cref="SearchPreviewStream"/> class represents a streaming XML 
     /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
-    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<Task<SearchPreview>>
+    public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<SearchPreview>
     {
         #region Constructors
 
@@ -69,7 +52,22 @@ namespace Splunk.Client
         /// </param>
         internal SearchPreviewStream(Response response)
         {
+            this.metadata = SearchResultMetadata.Missing;
             this.response = response;
+            this.awaiter = new Awaiter(this);
+        }
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the <see cref="SearchPreview"/> read count for the current
+        /// <see cref="SearchResultStream"/>.
+        /// </summary>
+        public long ReadCount
+        {
+            get { return this.awaiter.ReadCount; }
         }
 
         #endregion
@@ -82,17 +80,21 @@ namespace Splunk.Client
         /// </summary>
         public void Dispose()
         {
-            if (this.disposed)
+            if (Interlocked.CompareExchange(ref this.disposed, 1, 0) != 0)
+            {
                 return;
+            }
+
+            //// TODO: BUG FIX: The Cancel method returns immediately, before this.awaiter cancels. Consequently,
+            //// when we call this.response.Dispose the underlying XmlReader may throw an InvalidOperationException
+            //// because "An asynchronous operation is already in progress."
 
             this.response.Dispose();
-            this.disposed = true;
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through <see cref=
-        /// "SearchPreview"/> objects on the current <see cref=
-        /// "SearchPreviewStream"/> asynchronously.
+        /// Gets an enumerator that iterates through <see cref="SearchPreview"/> 
+        /// objects on the current <see cref="SearchPreviewStream"/> asynchronously.
         /// </summary>
         /// <returns>
         /// An enumerator structure for the <see cref="SearchPreviewStream"/>.
@@ -105,31 +107,23 @@ namespace Splunk.Client
         /// You can use the <see cref="GetEnumerator"/> method to
         /// <list type="bullet">
         /// <item><description>
-        ///     Perform LINQ to Objects queries to obtain a filtered set of 
-        ///     search previews.</description></item>
+        ///   Perform LINQ to Objects queries to obtain a filtered set of 
+        ///   search previews.</description></item>
         /// <item><description>
-        ///     Append search previews to an existing collection of search
-        ///     previews.</description></item>
+        ///   Append search previews to an existing collection of search
+        ///   previews.</description></item>
         /// </list>
         /// </remarks>
-        public IEnumerator<Task<SearchPreview>> GetEnumerator()
+        public IEnumerator<SearchPreview> GetEnumerator()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
+            this.EnsureNotDisposed();
+
+            for (SearchPreview preview; this.awaiter.TryTake(out preview); )
             {
-                throw new InvalidOperationException("Stream has been enumerated; The enumeration operation may not execute again.");
+                yield return preview;
             }
 
-            /// TODO: Correct bad check for end of sequence; ReadSearchPreviewAsync never returns null
-            /// Thought: check xml reader state for end of file
-
-            XmlReader reader = this.response.XmlReader;
-            
-            while (reader.ReadState <= ReadState.Interactive)
-            {
-                yield return ReadSearchPreviewAsync(reader);
-            }
-
-            this.enumerated = 2;
+            this.EnsureAwaiterSucceeded();
         }
 
         /// <inheritdoc cref="GetEnumerator"/>
@@ -147,39 +141,78 @@ namespace Splunk.Client
         /// </returns>
         protected override async Task PushObservations()
         {
-            if (Interlocked.CompareExchange(ref this.enumerated, 1, 0) != 0)
+            this.EnsureNotDisposed();
+
+            for (var preview = await this.awaiter; preview != null; preview = await this.awaiter)
             {
-                throw new InvalidOperationException("Stream has been enumerated; The push operation may not execute again.");
+                this.OnNext(preview);
             }
 
-            XmlReader reader = this.response.XmlReader;
-
-            while (reader.ReadState <= ReadState.Interactive)
-            {
-                this.OnNext(await ReadSearchPreviewAsync(reader));
-            }
-
+            this.EnsureAwaiterSucceeded();
             this.OnCompleted();
-            this.enumerated = 2;
         }
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
+        SearchResultMetadata metadata;
         readonly Response response;
-        bool disposed;
-        int enumerated;
+        readonly Awaiter awaiter;
+        int disposed;
 
-        static async Task<SearchPreview> ReadSearchPreviewAsync(XmlReader reader)
+        ReadState ReadState
         {
-            reader.Requires(await reader.MoveToDocumentElementAsync("results"));
+            get { return this.response.XmlReader.ReadState; }
+        }
 
+        void EnsureAwaiterSucceeded()
+        {
+            if (this.awaiter.LastError != null)
+            {
+                var text = string.Format("Enumeration ended prematurely : {0}.", this.awaiter.LastError);
+                throw new TaskCanceledException(text, this.awaiter.LastError);
+            }
+        }
+
+        void EnsureNotDisposed()
+        {
+            if (this.disposed != 0)
+            {
+                throw new ObjectDisposedException("Search result stream");
+            }
+        }
+
+        async Task<SearchPreview> ReadPreviewAsync()
+        {
+            XmlReader reader = this.response.XmlReader;
+
+            reader.Requires(await reader.MoveToDocumentElementAsync("results"));
             var preview = new SearchPreview();
             await preview.ReadXmlAsync(reader);
             await reader.ReadAsync();
 
             return preview;
+        }
+
+        #endregion
+
+        #region Types
+
+        sealed class Awaiter : Awaiter<SearchPreviewStream, SearchPreview>
+        {
+            public Awaiter(SearchPreviewStream stream)
+                : base(stream)
+            { }
+
+            protected override async Task ReadToEndAsync()
+            {
+                while (this.Stream.ReadState <= ReadState.Interactive)
+                {
+                    var preview = await this.Stream.ReadPreviewAsync();
+                    this.Enqueue(preview);
+                }
+            }
         }
 
         #endregion

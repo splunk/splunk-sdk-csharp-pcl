@@ -31,7 +31,7 @@ namespace SplunkSearch
 
         private CancellationTokenSource tokenSource;
 
-        private string searchTimeConstraint = "All Time";
+        //private string searchTimeConstraint = "All Time";
         private string searchEarliestTime = null;
         private string searchLatestTime = null;
 
@@ -140,7 +140,6 @@ namespace SplunkSearch
 
             try
             {
-  
                 ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
                 resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
 
@@ -161,18 +160,16 @@ namespace SplunkSearch
 
                 titleGrid.Visibility = Visibility.Visible;
 
-
                 using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr, jobArgs))
                 {
                     int resultCount = 0;
 
                     try
                     {
-                        foreach (Task<SearchResult> resultTask in resultStream)
+                        foreach (SearchResult result in resultStream)
                         {
                             if (!tokenSource.IsCancellationRequested)
                             {
-                                SearchResult result = await resultTask;
                                 List<string> results = this.ParseResult(result);
                                 resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
                             }
@@ -184,18 +181,14 @@ namespace SplunkSearch
                         }
                     }
                     catch
-                    {
-                    }
-
+                    { }
                 }
-
-                //this.PageContentReset();
             }
             catch (Exception ex)
             {
                 Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(ex.ToString(), "Error in Search");
                 messageDialog.Content = ex.ToString();
-                messageDialog.ShowAsync();
+                messageDialog.ShowAsync().GetResults();
                 titleGrid.Visibility = Visibility.Collapsed;
                 this.PageContentReset();
             }
@@ -224,7 +217,7 @@ namespace SplunkSearch
             //string format = "yyyy/M/d hh:mm:ss.fff";
             //results.Add(string.Format("{0}-{1}", ++eventCount, time.ToString(format)));
 
-            string time = searchResult["_time"];
+            string time = searchResult.GetValue("_time");
             time = time.Replace("Pacific Summer Time", "PST");
             results.Add(string.Format("{0}", time));
 
@@ -283,7 +276,7 @@ namespace SplunkSearch
             {
                 if (TimeSelectComboBox.SelectedIndex == 0)
                 {
-                    this.searchTimeConstraint = "All Time";
+                    //this.searchTimeConstraint = "All Time";
                     this.searchLatestTime = null;
                     this.searchLatestTime = null;
                 }

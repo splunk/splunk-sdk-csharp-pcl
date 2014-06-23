@@ -127,7 +127,7 @@ namespace Splunk.Client
                     reader.Requires(await reader.MoveToDocumentElementAsync("response"));
                     await reader.ReadElementSequenceAsync("results", "result");
 
-                    var result = new SearchResult();
+                    var result = new SearchResult(SearchResultMetadata.Missing);
                     
                     await result.ReadXmlAsync(reader);
                     await reader.ReadEndElementSequenceAsync("result", "results", "response");

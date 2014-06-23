@@ -17,9 +17,6 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
-//// [X] ExpandoAdapter.Empty must be immutable
-//// [ ] ExpandoAdapter must expose a converter from which ExpandoAdapter<TExpandoAdapter> can inherit (?)
-////     I should not need to say this: ExpandoAdapter<ExpandoAdapter>.Converter.Instance
 
 namespace Splunk.Client
 {
@@ -215,8 +212,8 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        object gate = new object();
         ExpandoObject expandoObject;
+        object gate = new object();
 
         internal ExpandoObject Object
         { 

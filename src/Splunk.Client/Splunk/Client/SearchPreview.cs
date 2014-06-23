@@ -18,11 +18,11 @@
 //// [O] Documentation
 //// [ ] Read messages and represent them in this class (search for "//// Skip messages")
 
-
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.IO;
@@ -42,7 +42,9 @@ namespace Splunk.Client
         /// contains the final results from a search job.
         /// </summary>
         public bool IsFinal
-        { get; private set; }
+        {
+            get { return this.metadata.IsFinal; }
+        }
 
         /// <summary>
         /// Gets the read-only list of field names that may appear in a 
@@ -53,7 +55,9 @@ namespace Splunk.Client
         /// fields.
         /// </remarks>
         public IReadOnlyList<string> FieldNames
-        { get; private set; }
+        {
+            get { return this.metadata.FieldNames; }
+        }
 
         /// <summary>
         /// Gets the read-only list of field names that may appear in a search 
@@ -84,54 +88,21 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(reader != null);
 
             //// Intitialize data members
-
-            var fieldNames = new List<string>();
-            this.FieldNames = fieldNames;
             
-            var results = new List<SearchResult>();
-            this.Results = results;
+            this.metadata = new SearchResultMetadata();
+            await metadata.ReadXmlAsync(reader);
 
-            this.IsFinal = true;
+            var results = new List<SearchResult>();
+            this.Results = new ReadOnlyCollection<SearchResult>(results);
 
             //// Read the search preview
 
-            if (!await reader.MoveToDocumentElementAsync("results"))
-            {
-                return; // an empty final result
-            }
-
-            string preview = reader.GetRequiredAttribute("preview");
-            this.IsFinal = !BooleanConverter.Instance.Convert(preview);
-            await reader.ReadElementSequenceAsync("meta", "fieldOrder");
-
-            await reader.ReadEachDescendantAsync("field", async (r) =>
-            {
-                await r.ReadAsync();
-                var fieldName = await r.ReadContentAsStringAsync();
-                fieldNames.Add(fieldName);
-            });
-
-            await reader.ReadEndElementSequenceAsync("fieldOrder", "meta");
-
-            if (reader.NodeType == XmlNodeType.Element && reader.Name == "messages")
-            {
-                //// Skip messages
-
-                await reader.ReadEachDescendantAsync("msg", (r) =>
-                { 
-                    return Task.FromResult(true);
-                });
-
-                reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
-                await reader.ReadAsync();
-            }
-
             while (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "results"))
             {
-                var searchResult = new SearchResult();
+                var result = new SearchResult(this.metadata);
                 
-                await searchResult.ReadXmlAsync(reader);
-                results.Add(searchResult);
+                await result.ReadXmlAsync(reader);
+                results.Add(result);
                 await reader.ReadAsync();
             }
         }
@@ -146,6 +117,12 @@ namespace Splunk.Client
         {
             return base.ToString();
         }
+
+        #endregion
+
+        #region Privates/internals
+
+        SearchResultMetadata metadata;
 
         #endregion
     }

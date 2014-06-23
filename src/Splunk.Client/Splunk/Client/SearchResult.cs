@@ -15,16 +15,17 @@
  */
 
 //// TODO:
-//// [O]  Documentation
-
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
-    using System.IO;
+    using System.Dynamic;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
@@ -32,8 +33,31 @@ namespace Splunk.Client
     /// <summary>
     /// Represents a single record on a <see cref="SearchResultStream"/>.
     /// </summary>
-    public class SearchResult : Dictionary<string, Field>
+    public class SearchResult : ExpandoAdapter
     {
+        #region Properties
+
+        /// <summary>
+        /// Gets a value indicating whether the current <see cref="SearchResultStream"/> 
+        /// is yielding the final results from a search job.
+        /// </summary>
+        public bool IsFinal
+        {
+            get { return this.metadata.IsFinal; }
+        }
+
+        /// <summary>
+        /// Gets the read-only list of field names that may appear in a 
+        /// <see cref="SearchResult"/>.
+        /// </summary>
+        /// <remarks>
+        /// Be aware that any given result may contain a subset of these fields.
+        /// </remarks>
+        public IReadOnlyList<string> FieldNames
+        {
+            get { return this.metadata.FieldNames; }
+        }
+
         /// <summary>
         /// Gets the XML markup for the <c>_raw</c> field value.
         /// </summary>
@@ -44,6 +68,8 @@ namespace Splunk.Client
         /// example, <c>record["_raw"]</c> field value returns this:
         /// </remarks>
         public string SegmentedRaw { get; internal set; }
+
+        #endregion
 
         #region Methods
 
@@ -63,6 +89,9 @@ namespace Splunk.Client
             reader.MoveToElement();
             reader.EnsureMarkup(XmlNodeType.Element, "result");
 
+            this.Object = new ExpandoObject();
+            var dictionary = (IDictionary<string, object>)this.Object;
+
             await reader.ReadEachDescendantAsync("field", async (r) =>
             {
                 var key = r.GetRequiredAttribute("k");
@@ -77,17 +106,16 @@ namespace Splunk.Client
                     }
 
                     Debug.Assert(r.Depth > fieldDepth, "This loop should have exited earlier.");
+                    r.EnsureMarkup(XmlNodeType.Element, "value", "v");
 
-                    // TODO: Replace calls to IsStartElement because it is blocking
-
-                    if (r.IsStartElement("value"))
+                    if (r.Name == "value")
                     {
                         if (await r.ReadToDescendantAsync("text"))
                         {
                             values.Add(await r.ReadElementContentAsStringAsync());
                         }
                     }
-                    else if (r.IsStartElement("v"))
+                    else if (r.Name == "v")
                     {
                         string value = await r.ReadOuterXmlAsync();
                         this.SegmentedRaw = value;
@@ -95,7 +123,18 @@ namespace Splunk.Client
                     }
                 }
 
-                this.Add(key, new Field(values.ToArray()));
+                switch (values.Count)
+                {
+                    case 0: 
+                        dictionary.Add(key, null);
+                        break;
+                    case 1:
+                        dictionary.Add(key, values[0]);
+                        break;
+                    default:
+                        dictionary.Add(key, new ReadOnlyCollection<string>(values));
+                        break;
+                }
             });
         }
 
@@ -109,10 +148,10 @@ namespace Splunk.Client
         {
             var builder = new StringBuilder("Result(");
 
-            foreach (KeyValuePair<string, Field> pair in this)
+            foreach (KeyValuePair<string, object> pair in (IDictionary<string, object>)this.Object)
             {
                 builder.Append(pair.Key);
-                builder.Append(" -> ");
+                builder.Append(": ");
                 builder.Append(pair.Value);
                 builder.Append(", ");
             }
@@ -121,6 +160,22 @@ namespace Splunk.Client
             builder.Append(")");
 
             return builder.ToString();
+        }
+
+        #endregion
+
+        #region Privates/internals
+
+        readonly SearchResultMetadata metadata;
+
+        internal SearchResult(SearchResultMetadata metadata)
+        {
+            this.metadata = metadata;
+        }
+
+        internal SearchResultMetadata Metadata
+        {
+            get { return this.metadata; }
         }
 
         #endregion

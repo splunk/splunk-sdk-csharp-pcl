@@ -252,7 +252,8 @@ namespace Splunk.Client
             try
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                return new SearchPreviewStream(response); // Transfers response ownership
+                var stream = new SearchPreviewStream(response);
+                return stream;
             }
             catch
             {

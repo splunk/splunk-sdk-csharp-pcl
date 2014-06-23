@@ -75,13 +75,13 @@ namespace Splunk.Client
         /// a protocol, host, port number, and optional message handler.
         /// </summary>
         /// <param name="scheme">
-        /// The <see cref="Scheme"/> used to communicate with <see cref="Host"/>
+        /// The <see cref="Scheme"/> used to communicate with <see cref="Host"/>.
         /// </param>
         /// <param name="host">
-        /// The DNS name of a Splunk server instance
+        /// The DNS name of a Splunk server instance.
         /// </param>
         /// <param name="port">
-        /// The port number used to communicate with <see cref="Host"/>
+        /// The port number used to communicate with <see cref="Host"/>.
         /// </param>
         /// <param name="handler">
         /// The <see cref="HttpMessageHandler"/> responsible for processing the HTTP 

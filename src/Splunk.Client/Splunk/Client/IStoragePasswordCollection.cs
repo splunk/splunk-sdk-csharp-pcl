@@ -91,12 +91,14 @@ namespace Splunk.Client
         Task<TStoragePassword> GetOrNullAsync(string username, string realm = null);
 
         /// <summary>
-        /// 
+        /// Asynchronously retrieves select storage passwords from Splunk.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation. 
         /// </returns>
-        /// <param name="criteria">Criteria.</param>
+        /// <param name="criteria">
+        /// Specifies the criteria used in selecting storage passwords.
+        /// </param>
         Task GetSliceAsync(StoragePasswordCollection.Filter criteria);
     }
 

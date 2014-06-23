@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
     using System.IO;
@@ -276,7 +277,7 @@ namespace Splunk.Client
         /// class.
         /// </summary>
         /// <param name="context">
-        /// /// An object representing a Splunk server session.
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="entry">
         /// An object representing a Splunk atom entry response.
@@ -318,7 +319,7 @@ namespace Splunk.Client
         /// class.
         /// </summary>
         /// <param name="context">
-        /// /// An object representing a Splunk server session.
+        /// An object representing a Splunk server session.
         /// </param>
         /// <param name="entry">
         /// An object representing a Splunk atom entry response.
@@ -426,6 +427,8 @@ namespace Splunk.Client
         #endregion
     }
 
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = 
+        "Contract classes should be contained in the same C# document as the class they reprsent.")]
     [ContractClassFor(typeof(BaseEntity<>))]
     public abstract class BaseEntityContract<TResource> : BaseEntity<TResource> where TResource : BaseResource, new()
     {

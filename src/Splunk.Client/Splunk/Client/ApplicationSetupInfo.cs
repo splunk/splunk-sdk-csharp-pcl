@@ -17,6 +17,7 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
+//// [ ] Represent ApplicationSetupInfo.Setup as a static type
 
 namespace Splunk.Client
 {
@@ -84,19 +85,11 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the 
+        /// Gets the EAI attributes for the current <see cref="ApplicationSetupInfo"/>.
         /// </summary>
         public Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
-        }
-
-        /// <summary>
-        /// Gets the 
-        /// </summary>
-        public dynamic Setup
-        {
-            get { return this.Eai.GetValue("Setup"); }
         }
 
         /// <summary>
@@ -106,6 +99,14 @@ namespace Splunk.Client
         public bool Refresh
         {
             get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a listing of the setup script for the application.
+        /// </summary>
+        public dynamic Setup
+        {
+            get { return this.Eai.GetValue("Setup"); }
         }
 
         #endregion

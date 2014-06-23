@@ -37,10 +37,15 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Namespace"/> class with a user and app name.
+        /// Initializes a new instance of the <see cref="Namespace"/> class 
+        /// with a user and app name.
         /// </summary>
-        /// <param name="user">The name of a user or Namespace.AllUsers</param>
-        /// <param name="app">The name of an application or Namespace.AllApps</param>
+        /// <param name="user">
+        /// The name of a user or <see cref="Namespace"/><c>.AllUsers</c>.
+        /// </param>
+        /// <param name="app">
+        /// The name of an application or <see cref="Namespace"/><c>.AllApps</c>.
+        /// </param>
         public Namespace(string user, string app)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(user), "user");

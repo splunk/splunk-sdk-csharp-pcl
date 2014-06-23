@@ -240,7 +240,7 @@ namespace Splunk.Client
                 return null;
             }
 
-            Debug.Assert(reader.ReadState <= ReadState.Interactive);
+            Debug.Assert(reader.ReadState <= ReadState.Interactive, string.Concat("ReadState: ", reader.ReadState));
             reader.MoveToElement();
 
             reader.EnsureMarkup(XmlNodeType.Element, "result");

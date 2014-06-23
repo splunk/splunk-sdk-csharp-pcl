@@ -19,11 +19,8 @@ namespace Splunk.Client.Helpers
     using Splunk.Client;
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net;
-    using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -73,11 +70,6 @@ namespace Splunk.Client.Helpers
             await service.LoginAsync(Splunk.Username, Splunk.Password);
 
             return service;
-        }
-
-        public static T GetOrElse<T>(T value)
-        {
-            return MockContext.GetOrElse(value);
         }
 
         #region Privates/internals

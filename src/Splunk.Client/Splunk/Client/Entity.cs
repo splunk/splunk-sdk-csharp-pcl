@@ -15,9 +15,6 @@
  */
 
 //// TODO:
-//// [ ] DVPL-4891: Entity.Update method should return true or false based on what is found in the response body
-////     We should, for example, check for HTTP Status Code 204 (No Content) and empty atoms in 
-////     Entity<TResource>.UpdateAsync.
 //// [O] Contracts
 //// [O] Documentation
 
@@ -191,9 +188,12 @@ namespace Splunk.Client
         {
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK, HttpStatusCode.NoContent);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                var reader = response.XmlReader;
 
-                if (response.Message.StatusCode == HttpStatusCode.NoContent)
+                await reader.MoveToDocumentElementAsync("feed", "response");
+
+                if (reader.Name == "response")
                 {
                     return false;
                 }

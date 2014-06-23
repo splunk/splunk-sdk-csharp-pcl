@@ -103,7 +103,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     //// Create and change the password for 50 StoragePassword instances
 
-                    var surname = SdkHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
+                    var surname = MockContext.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
                     var realms = new string[] { null, "splunk.com", "splunk:com" };
 
                     for (int i = 0; i < realms.Length; i++)
@@ -136,7 +136,7 @@ namespace Splunk.Client.AcceptanceTests
 
                         //// Update
 
-                        password = SdkHelper.GetOrElse(Membership.GeneratePassword(15, 2));
+                        password = MockContext.GetOrElse(Membership.GeneratePassword(15, 2));
                         await sp.UpdateAsync(password);
 
                         Assert.Equal(password, sp.ClearPassword);
@@ -318,14 +318,14 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         //// Ensure we've got 50 passwords to enumerate
 
-                        var surname = SdkHelper.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
+                        var surname = MockContext.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
                         var realms = new string[] { null, "splunk.com", "splunk:com" };
 
                         for (int i = 0; i < 50 - sps.Count; i++)
                         {
                             var username = surname + i;
                             var realm = realms[i % realms.Length];
-                            var password = SdkHelper.GetOrElse(Membership.GeneratePassword(15, 2));
+                            var password = MockContext.GetOrElse(Membership.GeneratePassword(15, 2));
 
                             StoragePassword sp = await service.StoragePasswords.CreateAsync(password, username, realm);
 
@@ -489,7 +489,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Create an app from one of the built-in templates
 
-                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var name = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
 
                 var creationAttributes = new ApplicationAttributes()
                 {
@@ -652,7 +652,7 @@ namespace Splunk.Client.AcceptanceTests
 
             using (var service = await(SdkHelper.CreateService(new Namespace("nobody", testApplicationName))))
             {
-                var fileName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var fileName = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
 
                 //// Create
 
@@ -797,7 +797,7 @@ namespace Splunk.Client.AcceptanceTests
 
             using (var service = await SdkHelper.CreateService(ns))
             {
-                var indexName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var indexName = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 Index index;
                 
                 //// Create
@@ -1043,7 +1043,7 @@ namespace Splunk.Client.AcceptanceTests
                 for (int i = 0; i < sendEventCount; i++)
                 {
                     var result = await receiver.SendAsync(
-                        SdkHelper.GetOrElse(string.Format("{0:D6} {1} Simple event", i, DateTime.Now)));
+                        MockContext.GetOrElse(string.Format("{0:D6} {1} Simple event", i, DateTime.Now)));
                     Assert.NotNull(result);
                 }
 
@@ -1070,7 +1070,7 @@ namespace Splunk.Client.AcceptanceTests
                         for (int i = 0; i < sendEventCount; i++)
                         {
                             writer.Write(
-                                SdkHelper.GetOrElse(string.Format("{0:D6}, {1}, Stream event\r\n", i, DateTime.Now)));
+                                MockContext.GetOrElse(string.Format("{0:D6}, {1}, Stream event\r\n", i, DateTime.Now)));
                         }
                     }
 
@@ -1177,7 +1177,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 //// Create
 
-                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var name = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 var search = "search index=_internal | head 1000";
 
                 var originalAttributes = new SavedSearchAttributes
@@ -1236,7 +1236,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Read schedule
 
-                var dateTime = SdkHelper.GetOrElse(DateTime.Now);
+                var dateTime = MockContext.GetOrElse(DateTime.Now);
                 var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
 
                 Assert.Equal(48, schedule.Count);
@@ -1270,7 +1270,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Update schedule
 
-                dateTime = SdkHelper.GetOrElse(DateTime.Now);
+                dateTime = MockContext.GetOrElse(DateTime.Now);
 
                 //// TODO: 
                 //// Figure out why POST saved/searches/{name}/reschedule ignores schedule_time and runs the
@@ -1592,7 +1592,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                var indexName = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid().ToString("N")));
+                var indexName = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid().ToString("N")));
 
                 var searches = new[] 
                 {
@@ -1643,7 +1643,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 //// Create
 
-                var name = SdkHelper.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
+                var name = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 ServerMessageCollection messages = service.Server.Messages;
 
                 var messageList = new ServerMessage[] 

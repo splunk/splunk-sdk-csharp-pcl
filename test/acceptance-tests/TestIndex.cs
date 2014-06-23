@@ -262,13 +262,13 @@ namespace Splunk.Client.UnitTests
 
                 //// TODO: Check contentss
                 result = await transmitter.SendAsync(
-                    SdkHelper.GetOrElse(string.Format("1, {0}, {1}, simple event", DateTime.Now, indexName)),
+                    MockContext.GetOrElse(string.Format("1, {0}, {1}, simple event", DateTime.Now, indexName)),
                     indexName, transmitterArgs);
 
                 Assert.NotNull(result);
 
                 result = await transmitter.SendAsync(
-                    SdkHelper.GetOrElse(string.Format("2, {0}, {1}, simple event", DateTime.Now, indexName)), 
+                    MockContext.GetOrElse(string.Format("2, {0}, {1}, simple event", DateTime.Now, indexName)), 
                     indexName, transmitterArgs);
 
                 Assert.NotNull(result);
@@ -278,9 +278,9 @@ namespace Splunk.Client.UnitTests
                     using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
                         writer.WriteLine(
-                            SdkHelper.GetOrElse(string.Format("1, {0}, {1}, stream event", DateTime.Now, indexName)));
+                            MockContext.GetOrElse(string.Format("1, {0}, {1}, stream event", DateTime.Now, indexName)));
                         writer.WriteLine(
-                            SdkHelper.GetOrElse(string.Format("2, {0}, {1}, stream event", DateTime.Now, indexName)));
+                            MockContext.GetOrElse(string.Format("2, {0}, {1}, stream event", DateTime.Now, indexName)));
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);
@@ -347,10 +347,10 @@ namespace Splunk.Client.UnitTests
                 // Submit event to default index using variable arguments
 
                 await transmitter.SendAsync(
-                    SdkHelper.GetOrElse(string.Format("{0}, DefaultIndexArgs string event Hello World 1", DateTime.Now)), 
+                    MockContext.GetOrElse(string.Format("{0}, DefaultIndexArgs string event Hello World 1", DateTime.Now)), 
                     indexName);
                 await transmitter.SendAsync(
-                    SdkHelper.GetOrElse(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now)),
+                    MockContext.GetOrElse(string.Format("{0}, DefaultIndexArgs string event Hello World 2", DateTime.Now)),
                     indexName);
 
                 await index.PollForUpdatedEventCount(currentEventCount + 2);
@@ -361,9 +361,9 @@ namespace Splunk.Client.UnitTests
                     using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, 4096, leaveOpen: true))
                     {
                         writer.WriteLine(
-                            SdkHelper.GetOrElse(string.Format("{0}, DefaultIndexArgs stream events 1", DateTime.Now)));
+                            MockContext.GetOrElse(string.Format("{0}, DefaultIndexArgs stream events 1", DateTime.Now)));
                         writer.WriteLine(
-                            SdkHelper.GetOrElse(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now)));
+                            MockContext.GetOrElse(string.Format("{0}, DefaultIndexArgs stream events 2", DateTime.Now)));
                     }
 
                     stream.Seek(0, SeekOrigin.Begin);

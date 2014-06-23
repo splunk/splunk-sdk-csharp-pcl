@@ -15,33 +15,17 @@
  */
 
 //// TODO:
-//// [ ] Check for HTTP Status Code 204 (No Content) and empty atoms in 
-////     Entity<TEntity>.UpdateAsync.
-////
 //// [O] Contracts
-////
 //// [O] Documentation
-////
-//// [X] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
-////     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
-////
-//// [X] Remove Entity<TEntity>.Invalidate method
-////     FJR: This gets called when we set the record value. Add a comment saying what it's
-////     supposed to do when it's overridden.
-////     DSN: I've adopted an alternative method for getting strongly-typed values. See, for
-////     example, Job.DispatchState or ServerInfo.Guid.
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Dynamic;
     using System.IO;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// Provides an object representation of a Splunk entity.
@@ -205,6 +189,15 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                var reader = response.XmlReader;
+
+                await reader.MoveToDocumentElementAsync("feed", "response");
+
+                if (reader.Name == "response")
+                {
+                    return false;
+                }
+
                 return await this.ReconstructSnapshotAsync(response);
             }
         }

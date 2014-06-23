@@ -68,6 +68,8 @@ namespace Splunk.Client
             {
                 case "t": return true;
                 case "f": return false;
+                case "true": return true;
+                case "false": return false;
             }
 
             Int32 result;

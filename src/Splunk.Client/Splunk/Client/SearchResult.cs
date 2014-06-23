@@ -15,8 +15,8 @@
  */
 
 //// TODO:
-//// [O]  Documentation
-
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -25,7 +25,7 @@ namespace Splunk.Client
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
-    using System.IO;
+    using System.Dynamic;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
@@ -33,7 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Represents a single record on a <see cref="SearchResultStream"/>.
     /// </summary>
-    public class SearchResult : Dictionary<string, Field>
+    public class SearchResult : ExpandoAdapter
     {
         #region Properties
 
@@ -89,6 +89,9 @@ namespace Splunk.Client
             reader.MoveToElement();
             reader.EnsureMarkup(XmlNodeType.Element, "result");
 
+            this.Object = new ExpandoObject();
+            var dictionary = (IDictionary<string, object>)this.Object;
+
             await reader.ReadEachDescendantAsync("field", async (r) =>
             {
                 var key = r.GetRequiredAttribute("k");
@@ -103,17 +106,16 @@ namespace Splunk.Client
                     }
 
                     Debug.Assert(r.Depth > fieldDepth, "This loop should have exited earlier.");
+                    r.EnsureMarkup(XmlNodeType.Element, "value", "v");
 
-                    // TODO: Replace calls to IsStartElement because it is blocking
-
-                    if (r.IsStartElement("value"))
+                    if (r.Name == "value")
                     {
                         if (await r.ReadToDescendantAsync("text"))
                         {
                             values.Add(await r.ReadElementContentAsStringAsync());
                         }
                     }
-                    else if (r.IsStartElement("v"))
+                    else if (r.Name == "v")
                     {
                         string value = await r.ReadOuterXmlAsync();
                         this.SegmentedRaw = value;
@@ -121,7 +123,18 @@ namespace Splunk.Client
                     }
                 }
 
-                this.Add(key, new Field(values.ToArray()));
+                switch (values.Count)
+                {
+                    case 0: 
+                        dictionary.Add(key, null);
+                        break;
+                    case 1:
+                        dictionary.Add(key, values[0]);
+                        break;
+                    default:
+                        dictionary.Add(key, new ReadOnlyCollection<string>(values));
+                        break;
+                }
             });
         }
 
@@ -135,10 +148,10 @@ namespace Splunk.Client
         {
             var builder = new StringBuilder("Result(");
 
-            foreach (KeyValuePair<string, Field> pair in this)
+            foreach (KeyValuePair<string, object> pair in (IDictionary<string, object>)this.Object)
             {
                 builder.Append(pair.Key);
-                builder.Append(" -> ");
+                builder.Append(": ");
                 builder.Append(pair.Value);
                 builder.Append(", ");
             }
@@ -153,7 +166,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        SearchResultMetadata metadata;
+        readonly SearchResultMetadata metadata;
 
         internal SearchResult(SearchResultMetadata metadata)
         {

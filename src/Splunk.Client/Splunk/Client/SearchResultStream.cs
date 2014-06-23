@@ -156,6 +156,7 @@ namespace Splunk.Client
 
             for (SearchResult result; this.awaiter.TryTake(out result); )
             {
+                this.metadata = result.Metadata;
                 yield return result;
             }
 
@@ -181,6 +182,7 @@ namespace Splunk.Client
 
             for (var result = await this.awaiter; result != null; result = await this.awaiter)
             {
+                this.metadata = result.Metadata;
                 this.OnNext(result);
             }
 
@@ -225,7 +227,6 @@ namespace Splunk.Client
             var metadata = new SearchResultMetadata();
 
             await metadata.ReadXmlAsync(this.response.XmlReader);
-            this.metadata = metadata;
 
             return metadata;
         }

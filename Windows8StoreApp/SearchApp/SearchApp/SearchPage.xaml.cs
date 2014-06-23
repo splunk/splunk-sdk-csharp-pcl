@@ -215,7 +215,7 @@ namespace SplunkSearch
             //string format = "yyyy/M/d hh:mm:ss.fff";
             //results.Add(string.Format("{0}-{1}", ++eventCount, time.ToString(format)));
 
-            string time = searchResult["_time"];
+            string time = searchResult.GetValue("_time");
             time = time.Replace("Pacific Summer Time", "PST");
             results.Add(string.Format("{0}", time));
 

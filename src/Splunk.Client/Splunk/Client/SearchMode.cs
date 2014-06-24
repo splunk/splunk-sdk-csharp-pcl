@@ -36,6 +36,6 @@ namespace Splunk.Client
         /// Indicates taht a search job should run over realtime data.
         /// </summary>
         [EnumMember(Value = "realtime")]
-        Realtime
+        RealTime
     }
 }

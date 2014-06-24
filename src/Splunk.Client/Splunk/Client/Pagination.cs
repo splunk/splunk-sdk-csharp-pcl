@@ -64,11 +64,14 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the number of entries returned by an operation.
         /// </summary>
+        /// <value>
+        /// The number of entries returned.
+        /// </value>
         /// <remarks>
         /// The maximum number of entries returned by a GET operation on an
-        /// entity collection is specified by the <c>count</c> parameter. The 
-        /// default value of the <c>count</c> parameter is 30. This property
-        /// gets the actual number of entries received.
+        /// entity collection is specified by the <c>Count</c> property. The 
+        /// default value of the <c>Count</c> parameter is <c>30</c>. This 
+        /// property gets the actual number of entries received.
         /// </remarks>
         public int ItemsPerPage
         {
@@ -78,6 +81,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the offset of the first entry returned.
         /// </summary>
+        /// <value>
+        /// Offset of the first entry returned.
+        /// </value>
         /// <remarks>
         /// Use the offset parameter in a GET operation on an entity collection
         /// to override the default value of <c>0</c> which specifies that the
@@ -93,6 +99,9 @@ namespace Splunk.Client
         /// Gets the total number of entries that can be returned for an 
         /// operation.
         /// </summary>
+        /// <value>
+        /// The total number of entries that can be returned.
+        /// </value>
         public int TotalResults
         {
             get { return this.totalResults; }

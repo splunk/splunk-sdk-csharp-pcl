@@ -84,7 +84,7 @@ namespace Splunk.Client.UnitTests
                 Job job = await service.Jobs.CreateAsync(Search, jobArgs);
                 Assert.NotNull(job);
 
-                jobArgs.SearchMode = SearchMode.Realtime;
+                jobArgs.SearchMode = SearchMode.RealTime;
                 bool updatedSnapshot = await job.UpdateAsync(jobArgs);
                 Assert.True(updatedSnapshot);
 

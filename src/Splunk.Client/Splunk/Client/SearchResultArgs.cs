@@ -36,14 +36,15 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class SearchResultArgs : Args<SearchResultArgs>
     {
-        #region Properties
-
         /// <summary>
-        /// The maximum number of results to return.
+        /// Gets or sets the maximum number of results to return.
         /// </summary>
+        /// <value>
+        /// The maximum number of results to return.
+        /// </value>
         /// <remarks>
-        /// If the value of <c>Count</c> is set to zero, then all available
-        /// results are returned. The default value is 100.
+        /// If the value of <c>Count</c> is <c>0</c>, then all available
+        /// results are returned. The default value is <c>100</c>.
         /// </remarks>
         [DataMember(Name = "count", EmitDefaultValue = false)]
         [DefaultValue(100)]
@@ -51,24 +52,27 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// The list of fields to return in the results.
+        /// Gets or sets the list of fields to return in the results.
         /// </summary>
+        /// <value>
+        /// The list of fields to return in the results.
+        /// </value>
         [DataMember(Name = "f", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public IReadOnlyList<string> FieldList
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the first result (inclusive) from 
-        /// which to begin returning entries.
+        /// Gets or sets an offset value specifying the first result inclusive
+        /// from which to begin returning entries.
         /// </summary>
+        /// <value>
+        /// An offset value specifying the first result inclusive from which to
+        /// begin returning entries.
+        /// </value>
         /// <remarks>
         /// The <c>Offset</c> property is zero-based and cannot be negative. 
         /// The default value is zero.
-        /// </remarks>
-        /// <remarks>
-        /// This value is zero-based and cannot be negative. The default value
-        /// is zero.
         /// </remarks>
         [DataMember(Name = "offset", EmitDefaultValue = false)]
         [DefaultValue(0)]
@@ -76,8 +80,11 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// The post processing search to apply to the results.
+        /// Gets or sets the post processing search to apply to the results.
         /// </summary>
+        /// <value>
+        /// The post processing search to apply to the results.
+        /// </value>
         /// <remarks>
         /// The post processing search string can be any Splunk command.
         /// </remarks>
@@ -85,7 +92,5 @@ namespace Splunk.Client
         [DefaultValue(null)]
         public string Search
         { get; set; }
-
-        #endregion
     }
 }

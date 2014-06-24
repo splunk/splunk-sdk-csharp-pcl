@@ -39,12 +39,14 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class SavedSearchDispatchArgs : Args<SavedSearchDispatchArgs>
     {
-        #region Properties
-
         /// <summary>
         /// Gets or sets a value indicating whether a search should be 
         /// dispatched immediately.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the <see cref="SaveSearch"/> job should be
+        /// dispatched immediately; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -56,6 +58,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the maximum number of timeline buckets for a search.
         /// </summary>
+        /// <value>
+        /// The maximum number of timeline buckets for a search.
+        /// </value>
         /// <remarks>
         /// This default value is <c>0</c>.
         /// </remarks>        
@@ -65,10 +70,15 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the earliest time to begin a search.
+        /// Gets or sets a time string specifying the earliest time to begin a
+        /// <see cref="SavedSearch"/> job.
         /// </summary>
+        /// <value>
+        /// A time string specifying the earliest time to begin the <see cref=
+        /// "SavedSearch"/> job.
+        /// </value>
         /// <remarks>
-        /// The value can be a relative or absolute time. If it is an absolute 
+        /// This value can be a relative or absolute time. If it is an absolute 
         /// time, use the <see cref="DispatchTimeFormat"/> to format it.
         /// </remarks>
         [DataMember(Name = "dispatch.earliest_time", EmitDefaultValue = false)]
@@ -77,10 +87,15 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the latest time to begin a search.
+        /// Gets or sets a time string specifying the latest time to begin a 
+        /// <see cref="SavedSearch"/> job.
         /// </summary>
+        /// <value>
+        /// A time string specifying the latest time to begin the <see cref=
+        /// "SavedSearch"/> job.
+        /// </value>
         /// <remarks>
-        /// The value can be a relative or absolute time. If it is an absolute
+        /// This value can be a relative or absolute time. If it is an absolute
         /// time, use the <see cref="DispatchTimeFormat"/> to format it.
         /// </remarks>
         [DataMember(Name = "dispatch.latest_time", EmitDefaultValue = false)]
@@ -91,6 +106,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets a value indicating whether lookups are enabled.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if lookups are enabled; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>true</c>.
         /// </remarks>
@@ -101,17 +119,25 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the maximum number of results to produce before 
-        /// finalizing a search.
+        /// finalizing a <see cref="SavedSearch"/> job.
         /// </summary>
+        /// <value>
+        /// The maximum number of results to produce before finalizing the
+        /// <see cref="SavedSearch"/> job.
+        /// </value>
         [DataMember(Name = "dispatch.max_count", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int DispatchMaxCount
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum length of time to run before finalizing a
-        /// search.
+        /// Gets or sets a value that specifies the maximum length of time to
+        /// run before finalizing a <see cref="SavedSearch"/> job.
         /// </summary>
+        /// <value>
+        /// The maximum length of time to run before finalizing  the <see cref=
+        /// "SavedSearch"/> job.
+        /// </value>
         [DataMember(Name = "dispatch.max_time", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int DispatchMaxTime
@@ -121,6 +147,10 @@ namespace Splunk.Client
         /// Gets or sets a value specifying how frequently Splunk runs the 
         /// map/reduce phase on accumulated map values.
         /// </summary>
+        /// <value>
+        /// A value specifying how frequently Splunk runs the map/reduce phase
+        /// on accumulated map values.
+        /// </value>
         /// <remarks>
         /// The default value is <c>10</c>.
         /// </remarks>
@@ -131,8 +161,13 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value indicating whether to back fill the real-time
-        /// window for a search.
+        /// window for a <see cref="SavedSearch"/> job.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the real-time window for the <see cref=
+        /// "SavedSearch"/> job should be back filled; <c>false</c> otherwise.
+        /// search.
+        /// </value>
         /// <remarks>
         /// This value only applies to real-time searches.
         /// </remarks>
@@ -142,9 +177,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the search should run in its
-        /// own process.
+        /// Gets or sets a value indicating whether a <see cref="SavedSearch"/>
+        /// job should run in its own process.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the <see cref="SavedSearch"/> job should run in its
+        /// own process; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>. A searches against an index must 
         /// run in its own process.
@@ -155,9 +194,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the time format Splunk should use to
-        /// for the earliest and latest times of a search.
+        /// Gets or sets a value specifying the time format Splunk should use 
+        /// to parse <see cref="EarliestTime"/> and <see cref="LatestTime"/>.
         /// </summary>
+        /// <value>
+        /// A value specifying the time format Splunk should use to parse <see
+        /// cref="EarliestTime"/> and <see cref="LatestTime"/>.
+        /// </value>
         /// <remarks>
         /// The default value is <c>"%FT%T.%Q%:z"</c>.
         /// </remarks>
@@ -167,9 +210,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the time to live (in seconds) for the artifacts of a
-        /// search, if no actions are triggered.
+        /// Gets or sets the time to live in seconds for the artifacts of a
+        /// <see cref="SavedSearch"/> job, if no actions are triggered.
         /// </summary>
+        /// <value>
+        /// The time to live in seconds for the artifacts of the <see cref=
+        /// "SavedSearch"/> job, if no actions are triggered.
+        /// </value>
         /// <remarks>
         /// <para>
         /// The default value is <c>"2p"</c> (two scheduled search periods).
@@ -190,6 +237,11 @@ namespace Splunk.Client
         /// if another instance of the <see cref="SavedSearch"/> is already 
         /// running.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if a new search should be started even if another
+        /// instance of the <see cref="SavedSearch"/> is already running;
+        /// <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>
         /// </remarks>
@@ -201,6 +253,10 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets a value indicating whether to trigger alert actions.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if alert actions should be triggered; <c>false</c>
+        /// otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -208,7 +264,5 @@ namespace Splunk.Client
         [DefaultValue(false)]
         public bool TriggerActions
         { get; set; }
-
-        #endregion
     }
 }

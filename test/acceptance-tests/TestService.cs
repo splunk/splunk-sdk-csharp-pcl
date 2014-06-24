@@ -742,8 +742,6 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     var inputsConfiguration = await service.Configurations.GetAsync("inputs");
 
-                    int count2 = 0;
-
                     foreach (var stanza in inputsConfiguration)  // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                     {
                         await stanza.GetAsync();

@@ -225,12 +225,17 @@ namespace Splunk.Client
         public sealed class Filter : Args<Filter>
         {
             /// <summary>
-            /// Gets or sets a value specifying the maximum number of <see cref=
-            /// "StoragePassword"/> entries to return.
+            /// Gets or sets a value specifying the maximum number of <see 
+            /// cref="StoragePassword"/> entries to return.
             /// </summary>
+            /// <value>
+            /// A value specifying the maximum number of <see cref=
+            /// "StoragePassword"/> entries to return.
+            /// </value>
             /// <remarks>
-            /// If the value of <c>Count</c> is set to zero, then all <see cref=
-            /// "StoragePassword"/> entries are returned. The default value is 30.
+            /// If the value of <c>Count</c> is set to zero, then all <see
+            /// cref="StoragePassword"/> entries are returned. The default 
+            /// value is <c>30</c>.
             /// </remarks>
             [DataMember(Name = "count", EmitDefaultValue = false)]
             [DefaultValue(30)]
@@ -238,12 +243,16 @@ namespace Splunk.Client
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value specifying the first result (inclusive) from 
-            /// which to begin returning <see cref="StoragePassword"/> entries.
+            /// Gets or sets a value specifying the first result (inclusive) 
+            /// from which to begin returning entries.
             /// </summary>
+            /// <value>
+            /// A value specifying the first result (inclusive) from which to 
+            /// begin returning entries.
+            /// </value>
             /// <remarks>
-            /// This value is zero-based and cannot be negative. The default value
-            /// is zero.
+            /// The <c>Offset</c> property is zero-based and cannot be negative. 
+            /// The default value is zero.
             /// </remarks>
             [DataMember(Name = "offset", EmitDefaultValue = false)]
             [DefaultValue(0)]
@@ -251,12 +260,16 @@ namespace Splunk.Client
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a search expression to filter <see cref="StoragePassword"/> 
-            /// entries. 
+            /// Gets or sets a search expression to filter <see cref=
+            /// "StoragePassword"/> entries.
             /// </summary>
+            /// <value>
+            /// A search expression to filter <see cref="StoragePassword"/>
+            /// entries. 
+            /// </value>
             /// <remarks>
-            /// Use this expression to filter the entries returned based on <see
-            /// cref="StoragePassword"/> properties.
+            /// Use this expression to filter the entries returned based on
+            /// <see cref="StoragePassword"/> properties.
             /// </remarks>
             [DataMember(Name = "search", EmitDefaultValue = false)]
             [DefaultValue(null)]
@@ -264,9 +277,12 @@ namespace Splunk.Client
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value indicating whether to sort returned <see cref=
-            /// "StoragePassword"/> entries in ascending or descending order.
+            /// Gets or sets a value specifying the sort direction for <see
+            /// cref="StoragePassword"/> entries.
             /// </summary>
+            /// <value>
+            /// The sort direction for <see cref="StoragePassword"/> entries.
+            /// </value>
             /// <remarks>
             /// The default value is <see cref="SortDirection"/>.Ascending.
             /// </remarks>
@@ -276,11 +292,16 @@ namespace Splunk.Client
             { get; set; }
 
             /// <summary>
-            /// <see cref="Index"/> property to use for sorting.
+            /// Gets or sets the <see cref="StoragePassword"/> property to use 
+            /// for sorting entries.
             /// </summary>
+            /// <value>
+            /// The <see cref="StoragePassword"/> property to use for sorting 
+            /// entries.
+            /// </value>
             /// <remarks>
-            /// The default <see cref="Index"/> property to use for sorting is 
-            /// <c>"name"</c>.
+            /// The default <see cref="StoragePassword"/> property to use for 
+            /// sorting is <c>"name"</c>.
             /// </remarks>
             [DataMember(Name = "sort_key", EmitDefaultValue = false)]
             [DefaultValue("name")]
@@ -288,9 +309,12 @@ namespace Splunk.Client
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-            /// cref="StoragePassword"/> entries.
+            /// Gets or sets a value specifying the sort mode for <see cref=
+            /// "StoragePassword"/> entries.
             /// </summary>
+            /// <value>
+            /// The sort mode for <see cref="StoragePassword"/> entries.
+            /// </value>
             /// <remarks>
             /// The default value is <see cref="SortMode"/>.Automatic.
             /// </remarks>

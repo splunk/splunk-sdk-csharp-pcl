@@ -52,7 +52,7 @@ namespace search_realtime
 
             Job realtimeJob = await service.Jobs.CreateAsync(searchQuery, new JobArgs
             {
-                SearchMode = SearchMode.Realtime,
+                SearchMode = SearchMode.RealTime,
                 EarliestTime = "rt-1h",
                 LatestTime = "rt",
             });

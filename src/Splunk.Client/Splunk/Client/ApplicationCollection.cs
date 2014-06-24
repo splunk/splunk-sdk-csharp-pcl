@@ -244,7 +244,7 @@ namespace Splunk.Client
             /// </value>
             /// <remarks>
             /// If the value of <c>Count</c> is set to zero, then all <see cref=
-            /// "Application"/> entries are returned. The default value is 30.
+            /// "Application"/> entries are returned. The default value is <c>30</c>.
             /// </remarks>
             [DataMember(Name = "count", EmitDefaultValue = false)]
             [DefaultValue(30)]
@@ -262,10 +262,6 @@ namespace Splunk.Client
             /// <remarks>
             /// The <c>Offset</c> property is zero-based and cannot be negative. 
             /// The default value is zero.
-            /// </remarks>
-            /// <remarks>
-            /// This value is zero-based and cannot be negative. The default value
-            /// is zero.
             /// </remarks>
             [DataMember(Name = "offset", EmitDefaultValue = false)]
             [DefaultValue(0)]

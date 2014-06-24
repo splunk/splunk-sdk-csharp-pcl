@@ -267,10 +267,6 @@ namespace Splunk.Client
             /// returning <see cref="Index"/> entries.
             /// </value>
             /// <remarks>
-            /// The <c>Offset</c> property is zero-based and cannot be negative. 
-            /// The default value is zero.
-            /// </remarks>
-            /// <remarks>
             /// This value is zero-based and cannot be negative. The default value
             /// is zero.
             /// </remarks>
@@ -346,8 +342,10 @@ namespace Splunk.Client
             /// <see cref="Index"/> details in order to provide a faster 
             /// response.
             /// </summary>
+            /// <value>
             /// <c>true</c>, if certain <see cref="Index"/> details should be
             /// left out in order to provide a faster response.
+            /// </value>
             /// <remarks>
             /// The default value is <c>false</c>.
             /// </remarks>

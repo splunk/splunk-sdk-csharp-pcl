@@ -383,11 +383,11 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that specifies in seconds when events are 
+        /// Gets or sets a value that specifies in seconds when new events are 
         /// dropped into a quarantine bucket.
         /// </summary>
         /// <remarks>
-        /// Events with a timestamp newer than "now" plus this value are 
+        /// Events with a timestamp newer than <c>now</c> plus this value are 
         /// dropped into a quarantine bucket. This is a mechanism to prevent 
         /// main hot buckets from being polluted with fringe events. The 
         /// default value is <c>2592000</c>, equivalent to thirty days.
@@ -397,99 +397,133 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies in seconds when old events are
+        /// dropped into a quarantine bucket. Defaults to 77760000 (900 days). 
         /// </summary>
         /// <remarks>
-        /// The default value is <c>77760000</c>.
+        /// Events with a timestamp older than <c>now</c> plus this value are
+        /// dropped into a quarantine bucket. This is a mechanism to prevent 
+        /// main hot buckets from being polluted with fringe events. The 
+        /// default value is <c>77760000</c>, equivalent to 900 days.
         /// </remarks>
         [DataMember(Name = "quarantinePastSecs", EmitDefaultValue = false)]
         public int? QuarantinePastSecs
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies a target uncompressed size in 
+        /// bytes for individual raw slice in the raw data journal of an index.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>131072</c>.
+        /// The default value is <c>131072</c>, equivalent to 128 KB. Zero is
+        /// not a valid value. If zero is specified, rawChunkSizeBytes is set
+        /// to the default value.
+        /// <note type="note">
+        /// This value only specifies a target chunk size. The actual chunk 
+        /// size may be slightly larger by an amount proportional to an 
+        /// individual event size.</note>
+        /// <note type="caution">
+        /// This is an advanced property. Only change it if you are instructed
+        /// to do so by Splunk Support.</note>
         /// </remarks>
         [DataMember(Name = "rawChunkSizeBytes", EmitDefaultValue = false)]
         public int? RawChunkSizeBytes
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that controls index replication.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>"0"</c>.
+        /// This property only applies to Splunk Enterprise clustering slaves.
+        /// Specify a value of <c>"auto</c> to use the master index replication
+        /// configuration value. Specify a value of <c>"0"</c> to turn 
+        /// replication off. The default is <c>"0"</c>.
         /// </remarks>
         [DataMember(Name = "repFactor", EmitDefaultValue = false)]
         public string RepFactor
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies in seconds how frequently to 
+        /// check if a new hot bucket needs to be created as well as if there
+        /// are any warm/cold buckets that should be rolled/frozen. 
         /// </summary>
         /// <remarks>
-        /// The default value is <c>60</c>.
+        /// The default value is <c>60</c>, equivalent to one minute.
         /// </remarks>
         [DataMember(Name = "rotatePeriodInSecs", EmitDefaultValue = false)]
         public int? RotatePeriodInSecs
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies in seconds how frequently 
+        /// metadata is synced to disk.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>25</c>.
+        /// The default value is <c>25</c>. You may want to set this to a 
+        /// higher value if the sum of your metadata file sizes is larger than
+        /// many tens of megabytes to avoid the hit on I/O in the indexing fast
+        /// path.
         /// </remarks>
         [DataMember(Name = "serviceMetaPeriod", EmitDefaultValue = false)]
         public int? ServiceMetaPeriod
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets that indicates whether a sync operation is called 
+        /// before a file descriptor is closed on metadata file updates.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>true</c>.
+        /// The default value is <c>true</c>. This improves integrity of 
+        /// metadata files, especially in regards to operating system crashes
+        /// and machine failures.
+        /// <notes type="caution">
+        /// Do not change this parameter without the input of a Splunk Support.
+        /// </notes>
         /// </remarks>
         [DataMember(Name = "syncMeta", EmitDefaultValue = false)]
         public bool? SyncMeta
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies in seconds how frequently to
+        /// check for an index throttling condition.
         /// </summary>
         /// <remarks>
         /// The default value is <c>15</c>.
+        /// <notes type="caution">
+        /// Do not change this parameter without the input of a Splunk Support.
+        /// </notes>
         /// </remarks>
         [DataMember(Name = "throttleCheckPeriod", EmitDefaultValue = false)]
         public int? ThrottleCheckPeriod
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets the location to store datamodel acceleration .tsidx
+        /// data for an index.
         /// </summary>
         /// <remarks>
-        ///
+        /// Restart splunkd after changing this value. It must be defined in 
+        /// terms of a volume definition and the location must be writable. The
+        /// default is volume:_splunk_summaries/$_index_name/tstats.
         /// </remarks>
         [DataMember(Name = "tstatsHomePath", EmitDefaultValue = false)]
         public string TStatsHomePath
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets the location of a script to run when moving data from
+        /// warm to cold. 
         /// </summary>
         /// <remarks>
-        ///
+        /// This property is supported for backwards compatibility with Splunk
+        /// versions older than 4.0. Contact Splunk support if you need help.
+        /// <note type="caution">
+        /// Migrating data across file systems is now handled natively by 
+        /// splunkd. If you specify a script here, the script becomes 
+        /// responsible for moving the event data, and Splunk-native data 
+        /// migration will not be used.</note>
         /// </remarks>
         [DataMember(Name = "warmToColdScript", EmitDefaultValue = false)]
         public string WarmToColdScript

@@ -149,9 +149,11 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the number of entities in the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
+        /// Gets the number of entries in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
+        /// <value>
+        /// The number of entries in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// </value>
         public int Count
         {
             get { return this.Resources.Count; }

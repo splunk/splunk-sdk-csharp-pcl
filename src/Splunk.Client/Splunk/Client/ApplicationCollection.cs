@@ -234,12 +234,14 @@ namespace Splunk.Client
         /// </remarks>
         public sealed class Filter : Args<Filter>
         {
-            #region Properties
-
             /// <summary>
             /// Gets or sets a value specifying the maximum number of <see cref=
             /// "Application"/> entries to return.
             /// </summary>
+            /// <value>
+            /// A value specifying the maximum number of <see cref="Application"/> 
+            /// entries to return.
+            /// </value>
             /// <remarks>
             /// If the value of <c>Count</c> is set to zero, then all <see cref=
             /// "Application"/> entries are returned. The default value is 30.
@@ -250,9 +252,13 @@ namespace Splunk.Client
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value specifying the first result (inclusive) from 
-            /// which to begin returning entries.
+            /// Gets or sets a value specifying the first result (inclusive) 
+            /// from which to begin returning entries.
             /// </summary>
+            /// <value>
+            /// A value specifying the first result (inclusive) from which to 
+            /// begin returning entries.
+            /// </value>
             /// <remarks>
             /// The <c>Offset</c> property is zero-based and cannot be negative. 
             /// The default value is zero.
@@ -267,35 +273,45 @@ namespace Splunk.Client
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value indicating whether to scan for new <see cref=
-            /// "Application"/> instances and reload any objects those new <see 
-            /// cref="Application"/> instances contain.
+            /// Gets or sets a value indicating whether to scan for new <see
+            /// cref="Application"/> instances and reload any objects those 
+            /// new instances contain.
             /// </summary>
+            /// <value>
+            /// <c>true</c>, if a scan and reload should be done; <c>false</c>
+            /// otherwise.
+            /// </value>
             /// <remarks>
             /// The default is <c>false</c>.
             /// </remarks>
             [DataMember(Name = "refresh", EmitDefaultValue = false)]
             [DefaultValue(false)]
-            public bool Refresh // TODO: Verify default value (it's not in the docs)
+            public bool Refresh
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a search expression to filter <see cref="Application"/> 
-            /// entries. 
+            /// Gets or sets a search expression to filter <see cref=
+            /// "Application"/> entries.
             /// </summary>
+            /// <value>
+            /// A search expression to filter <see cref="Application"/> entries. 
+            /// </value>
             /// <remarks>
             /// Use this expression to filter the entries returned based on <see
             /// cref="Application"/> properties.
             /// </remarks>
             [DataMember(Name = "search", EmitDefaultValue = false)]
             [DefaultValue(null)]
-            public string Search // TODO: Good search example for App
+            public string Search
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value indicating whether to sort returned <see cref=
-            /// "Application"/>entries in ascending or descending order.
+            /// Gets or sets a value specifying the sort direction for <see
+            /// cref="Application"/> entries.
             /// </summary>
+            /// <value>
+            /// The sort direction for <see cref="Application"/> entries.
+            /// </value>
             /// <remarks>
             /// The default value is <see cref="SortDirection"/>.Ascending.
             /// </remarks>
@@ -305,9 +321,12 @@ namespace Splunk.Client
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-            /// cref="Application"/> entries.
+            /// Gets or sets a value specifying the sort mode for <see cref=
+            /// "Application"/> entries.
             /// </summary>
+            /// <value>
+            /// The sort mode for <see cref="Application"/> entries.
+            /// </value>
             /// <remarks>
             /// The default value is <see cref="SortMode"/>.Automatic.
             /// </remarks>
@@ -315,8 +334,6 @@ namespace Splunk.Client
             [DefaultValue(SortMode.Automatic)]
             public SortMode SortMode
             { get; set; }
-
-            #endregion
         }
 
         #endregion

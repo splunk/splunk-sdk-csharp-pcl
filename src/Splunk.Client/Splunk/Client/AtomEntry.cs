@@ -80,6 +80,10 @@ namespace Splunk.Client
         /// Gets the owner of the resource represented by the current <see 
         /// cref="AtomEntry"/>, as defined in the access control list.
         /// </summary>
+        /// <value>
+        /// Owner of the resource represented by the current <see cref=
+        /// "AtomEntry"/>.
+        /// </value>
         /// <remarks>
         /// This value can be <c>"system"</c>, <c>"nobody"</c> or some specific
         /// user name. Refer to <a href="http://goo.gl/iTpzO0">Access control 
@@ -90,9 +94,13 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// Gets a dynamic object representing the content returned by the 
-        /// operation for an entry.
+        /// Gets a dynamic object representing the content of the resource
+        /// represented by the current <see cref="AtomEntry"/>.
         /// </summary>
+        /// <value>
+        /// A dynamic object representing the content of the resource represented
+        /// by the current <see cref="AtomEnry"/>.
+        /// </value>
         /// <remarks>
         /// Splunk typically returns content as dictionaries with key/value 
         /// pairs that list properties of the entry. However, content can be
@@ -102,9 +110,13 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// Gets the Splunk management URI for accessing the endpoint for 
-        /// accessing the current <see cref="AtomEntry"/>.
+        /// Gets the Splunk management URI for accessing the resource represented 
+        /// by the current <see cref="AtomEntry"/>.
         /// </summary>
+        /// <value>
+        /// The Splunk management URI for accessing the resource represented by
+        /// the current <see cref="AtomEntry"/>.
+        /// </value>
         public Uri Id
         { get; private set; }
 
@@ -123,15 +135,24 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the human readable name for the current <see cref="AtomEntry"/>.
         /// </summary>
+        /// <value>
+        /// The human readable name for the current <see cref="AtomEntry"/>.
+        /// </value>
         /// <remarks>
-        /// This value varies depending on the endpoint.
+        /// This value varies depending on the endpoint used to access the
+        /// current <see cref="AtomEntry"/>.
         /// </remarks>
         public string Title
         { get; private set; }
 
         /// <summary>
-        /// Gets the date/time this entry was last updated in Splunk.
+        /// Gets the date and time the current <see cref="AtomEntry"/> was last
+        /// updated in Splunk.
         /// </summary>
+        /// <value>
+        /// The date and time the current <see cref="AtomEntry"/> was last
+        /// updated in Splunk.
+        /// </value>
         public DateTime Updated
         { get; private set; }
 

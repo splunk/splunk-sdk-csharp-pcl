@@ -43,28 +43,38 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class ApplicationAttributes : Args<ApplicationAttributes>
     {
-        #region Properties
-
         /// <summary>
         /// Gets or sets the username of the splunk.com account for publishing
         /// an application to Splunkbase.
         /// </summary>
+        /// <value>
+        /// Username of the splunk.com account for publishing an application to
+        /// Splunkbase.
+        /// </value>
         [DataMember(Name = "author", EmitDefaultValue = false)]
         public string ApplicationAuthor
         { get; set; }
 
         /// <summary>
         /// Gets or sets a value that indicates whether custom setup has been 
-        /// performed on an <see cref="Application"/>.
+        /// performed on an application.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if custom setup has been performed on the application;
+        /// otherwise <c>false</c>.
+        /// </value>
         [DataMember(Name = "configured", EmitDefaultValue = false)]
         public bool? Configured
         { get; set; }
 
         /// <summary>
         /// Gets or sets the short explanatory string displayed underneath the 
-        /// title of an <see cref="Application"/> in Launcher.
+        /// title of an application in Launcher.
         /// </summary>
+        /// <value>
+        /// A short explanatory string that is displayed underneath the title 
+        /// of the application in Launcher.
+        /// </value>
         /// <remarks>
         /// Short descriptions of about 200 characters are most effective.
         /// </remarks>
@@ -73,9 +83,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of an <see cref="Application"/> for display 
-        /// in the Splunk GUI and Launcher.
+        /// Gets or sets the name of an application for display in the Splunk
+        /// GUI and Launcher.
         /// </summary>
+        /// <value>
+        /// The name of the application for display in the Splunk GUI and 
+        /// Launcher.
+        /// </value>
         /// <remarks>
         /// Splunk recommends lengths between five and eighty characters. Values
         /// must not include "Splunk For" as a prefix.
@@ -91,8 +105,11 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the version string for an <see cref="Application"/>.
+        /// Gets or sets the version string for an application.
         /// </summary>
+        /// <value>
+        /// An application version string.
+        /// </value>
         /// <remarks>
         /// Version strings are a number followed by a sequence of numbers or 
         /// dots. Pre-release versions can append a space and a single-word 
@@ -114,9 +131,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets  a value that indicates if an <see cref="Application"/> 
+        /// Gets or sets a value that indicates if an <see cref="Application"/> 
         /// is visible and navigable from Splunk Web.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the application is visible and navigable from 
+        /// Splunk Web; otherwise <c>false</c>.
+        /// </value>
         /// <remarks>
         /// Visible apps require at least one view that is available from 
         /// Splunk Web.
@@ -124,7 +145,5 @@ namespace Splunk.Client
         [DataMember(Name = "visible", EmitDefaultValue = false)]
         public bool? Visible
         { get; set; }
-
-        #endregion
     }
 }

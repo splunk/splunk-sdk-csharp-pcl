@@ -40,12 +40,14 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class SavedSearchAttributes : Args<SavedSearchAttributes>
     {
-        #region Properties
-
         /// <summary>
         /// Gets or sets a comma-separated list of actions to enable for a
         /// <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A comma-separated list of actions to enable for a <see cref=
+        /// "SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// No actions are enabled by default.
         /// </remarks>
@@ -54,17 +56,25 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the password for authenticating with the SMTP server
-        /// for the e-mail action of a <see cref="SavedSearch"/>.
+        /// Gets or sets a password for authenticating with the SMTP server for
+        /// the e-mail action of a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A password for authenticating with the SMTP server for the e-mail
+        /// action of a <see cref="SavedSearch"/>.
+        /// </value>
         [DataMember(Name = "action.email.auth_password", EmitDefaultValue = false)]
         public string ActionEmailAuthPassword
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the username for authenticating with the SMTP server
-        /// for the e-mail action of a <see cref="SavedSearch"/>.
+        /// Gets or sets a username for authenticating with the SMTP server for
+        /// the e-mail action of a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A username for authenticating with the SMTP server for the e-mail
+        /// action of a <see cref="SavedSearch"/>.
+        /// </value>
         [DataMember(Name = "action.email.auth_username", EmitDefaultValue = false)]
         public string ActionEmailAuthUsername
         { get; set; }
@@ -73,6 +83,10 @@ namespace Splunk.Client
         /// Gets or sets the e-mail addresses of the blind carbon copy (BCC) 
         /// recipients for the e-mail action of a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The e-mail addresses of the blind carbon copy (BCC) recipients for
+        /// the e-mail action of a <see cref="SavedSearch"/>.
+        /// </value>
         [DataMember(Name = "action.email.bcc", EmitDefaultValue = false)]
         public string ActionEmailBcc
         { get; set; }
@@ -81,6 +95,10 @@ namespace Splunk.Client
         /// Gets or sets the e-mail addresses of the carbon copy (CC) 
         /// recipients for the e-mail action of a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The e-mail addresses of the carbon copy (CC) recipients for the
+        /// e-mail action of a <see cref="SavedSearch"/>.
+        /// </value>
         [DataMember(Name = "action.email.cc", EmitDefaultValue = false)]
         public string ActionEmailCC
         { get; set; }
@@ -89,6 +107,10 @@ namespace Splunk.Client
         /// Gets or sets the search command which is responsible for executing 
         /// the e-mail action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The search command which is responsible for executing the e-mail
+        /// action for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
@@ -104,6 +126,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the format of the e-mail action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The format of the e-mail action for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// This value also applies to any attachments.
         /// </remarks>
@@ -115,6 +140,10 @@ namespace Splunk.Client
         /// Gets or sets the e-mail address from which the e-mail action for a 
         /// <see cref="SavedSearch"/> originates.
         /// </summary>
+        /// <value>
+        /// The e-mail address from which the e-mail action for a <see cref=
+        /// "SavedSearch"/> originates.
+        /// </value>
         /// <remarks>
         /// This vaulue defaults to <c>splunk@$LOCALHOST</c> or whatever value 
         /// is set in <a href="http://goo.gl/odNige">alert_actions.conf</a>.
@@ -128,6 +157,10 @@ namespace Splunk.Client
         /// contained in the body of the action e-mail for a <see cref=
         /// "SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A value indicating whether search results should be contained in
+        /// the body of the action e-mail for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Search results can be either inline or attached. See <see cref=
         /// "ActionEmailSendResults"/>.
@@ -140,6 +173,10 @@ namespace Splunk.Client
         /// Gets or sets the address of the MTA server to be used to send the 
         /// action e-mail for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The address of the MTA server to be used to send the action e-mail
+        /// for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// This value defaults to localhost or whatever value is set in <a 
         /// href="http://goo.gl/odNige">alert_actions.conf</a>.
@@ -152,6 +189,10 @@ namespace Splunk.Client
         /// Gets or sets the global maximum number of search results to send 
         /// when the e-mail for a <see cref="SavedSearch"/> is enabled.
         /// </summary>
+        /// <value>
+        /// The global maximum number of search results to send when the e-mail
+        /// for a <see cref="SavedSearch"/> is enabled.
+        /// </value>
         /// <remarks>
         /// The default value is <c>100</c>.
         /// </remarks>
@@ -163,6 +204,10 @@ namespace Splunk.Client
         /// Gets or sets the maximum period of time the e-mail action for a
         /// <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
+        /// <value>
+        /// The maximum period of time the e-mail action for a <see cref=
+        /// "SavedSearch"/> may execute before it is aborted.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"5m"</c>.
@@ -176,6 +221,11 @@ namespace Splunk.Client
         /// Simplified Chinese (gb), Traditional Chinese (cns), Japanese (jp), 
         /// and Korean (kor) in Integrated PDF Rendering.
         /// </summary>
+        /// <value>
+        /// The set and load order of CID fonts for handling Simplified Chinese
+        /// (gb), Traditional Chinese (cns), Japanese (jp), and Korean (kor) in
+        /// Integrated PDF Rendering.
+        /// </value>
         /// <remarks>
         /// The default value is <c>"gb cns jp kor"</c>.
         /// </remarks>
@@ -187,6 +237,11 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether to include the Splunk logo 
         /// with the report on an e-mail action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the report on an e-mail action for a <see cref=
+        /// "SaveSearch"/> should include the Splunk logo; otherwise
+        /// <c>false</c>.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -195,22 +250,30 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="PaperOrientation"/> for the report on 
-        /// an e-mail action for a <see cref="SavedSearch"/>.
+        /// Gets or sets the paper orientation for the report on an e-mail
+        /// action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The paper orientation for the report on an e-mail action for a <see
+        /// cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
-        /// The default is <see cref="PaperOrientation.Portrait"/>.
+        /// The default is <see cref="PaperOrientation"/><c>.Portrait</c>.
         /// </remarks>
         [DataMember(Name = "action.email.reportPaperOrientation", EmitDefaultValue = false)]
         public PaperOrientation? ActionEmailReportPaperOrientation
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="PaperSize"/> for the report on an 
-        /// e-mail action for a <see cref="SavedSearch"/>.
+        /// Gets or sets the paper size for the report on an e-mail action for
+        /// a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The paper size for the report on an e-mail action for a <see cref=
+        /// "SavedSearch"/>.
+        /// </value>
         /// <remarks>
-        /// The default is <see cref="PaperSize.Letter"/>.
+        /// The default is <see cref="PaperSize"/><c>.Letter</c>.
         /// </remarks>
         [DataMember(Name = "action.email.reportPaperSize", EmitDefaultValue = false)]
         public PaperSize? ActionEmailReportPaperSize
@@ -220,6 +283,10 @@ namespace Splunk.Client
         /// Gets or sets a value that indicates whether the PDF server is 
         /// enabled on the e-mail action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the PDF server is enabled on the e-mail action for
+        /// a <see cref="SavedSearch"/>; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -232,6 +299,11 @@ namespace Splunk.Client
         /// results of the e-mail action for a <see cref="SavedSearch"/> as a 
         /// PDF report.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the results of the e-mail action for a <see cref=
+        /// "SavedSearch"/> should be created and sent as a PDF report; 
+        /// <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>
         /// </remarks>
@@ -243,6 +315,10 @@ namespace Splunk.Client
         /// Gets or sets a value that indicates whether search results should
         /// be included in the action e-mail for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if search results should be included in the action
+        /// e-mail for a <see cref="SavedSearch"/>; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// Results can be either attached or inline. See <see cref=
         /// "ActionEmailInline"/>. The default value is <c>false</c>
@@ -255,6 +331,10 @@ namespace Splunk.Client
         /// Gets or sets an alternate subject for the action e-mail on a 
         /// <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// An alternate subject for the action e-mail on a <see cref=
+        /// "SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// The default value is <c>"SplunkAlert-"&lt;saved-search-name&gt;</c>.
         /// </remarks>
@@ -266,6 +346,10 @@ namespace Splunk.Client
         /// Gets or sets the e-mail addresses of the recipients for the e-mail 
         /// action of a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// Ehe e-mail addresses of the recipients for the e-mail action of a 
+        /// <see cref="SavedSearch"/>.
+        /// </value>
         [DataMember(Name = "action.email.to", EmitDefaultValue = false)]
         public string ActionEmailTo
         { get; set; }
@@ -274,6 +358,10 @@ namespace Splunk.Client
         /// Gets or sets a value that indicates whether the e-mail action of a
         /// <see cref="SavedSearch"/> signifies a trackable alert.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the e-mail action of a <see cref="SavedSearch"/>
+        /// signifies a trackable alert; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -285,6 +373,10 @@ namespace Splunk.Client
         /// Gets or sets the minimum time-to-live for artifacts of the e-mail
         /// action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The minimum time-to-live for artifacts of the e-mail action for a
+        /// <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>["p"] ]]></c>. If <c>p</c> follows <![CDATA[<integer>]]>, 
@@ -300,6 +392,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether to use SSL when communicating 
         /// with the SMTP server.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if SSL should be used when communicatin with the SMTP
+        /// server; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -311,6 +407,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether to use TLS when communicating
         /// with the SMTP server.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if TLS should be used when communication with the SMTP
+        /// server.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -322,6 +422,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether columns should be sorted 
         /// from least wide to most wide, left to right.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if columns should be sorted from least wide to most 
+        /// wide, left to right; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -333,6 +437,10 @@ namespace Splunk.Client
         /// Gets or sets the search command which is responsible for executing 
         /// the populate lookup action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The search command which is responsible for executing the populate
+        /// lookup action for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
@@ -349,6 +457,10 @@ namespace Splunk.Client
         /// Gets or sets the name of the lookup table or lookup path to fill in
         /// the lookup action of a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The name of the lookup table or lookup path to fill in the lookup
+        /// action of a <see cref="SavedSearch"/>.
+        /// </value>
         [DataMember(Name = "action.populate_lookup.dest", EmitDefaultValue = false)]
         public string ActionPopulateLookupDestination
         { get; set; }
@@ -356,8 +468,11 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the hostname used in the web link (URI) that is sent 
         /// in the populate lookup action of a <see cref="SavedSearch"/>.
-        /// for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The hostname used in the web link (URI) that is sent in the 
+        /// populate lookup action of a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
         /// </remarks>
@@ -370,6 +485,10 @@ namespace Splunk.Client
         /// when the populate lookup action for a <see cref="SavedSearch"/> is 
         /// enabled.
         /// </summary>
+        /// <value>
+        /// The global maximum number of search results to send when the
+        /// populate lookup action for a <see cref="SavedSearch"/> is enabled.
+        /// </value>
         /// <remarks>
         /// The default value is <c>100</c>.
         /// </remarks>
@@ -381,6 +500,10 @@ namespace Splunk.Client
         /// Gets or sets the maximum period of time the populate lookup action
         /// for a <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
+        /// <value>
+        /// The maximum period of time the populate lookup action for a <see
+        /// cref="SavedSearch"/> may execute before it is aborted.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"5m"</c>.
@@ -393,6 +516,11 @@ namespace Splunk.Client
         /// Gets or sets a value that indicates whether the populate lookup
         /// action for a <see cref="SavedSearch"/> signifies a trackable alert.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the populate lookup action for a <see cref=
+        /// "SavedSearch"/> signifies a trackable alert; <c>false</c>
+        /// otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -404,6 +532,10 @@ namespace Splunk.Client
         /// Gets or sets the minimum time-to-live for artifacts of the populate
         /// lookup action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The minimum time-to-live for artifacts of the populate lookup
+        /// action for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>["p"] ]]></c>. If <c>p</c> follows <![CDATA[<integer>]]>, 
@@ -419,6 +551,10 @@ namespace Splunk.Client
         /// Gets or sets the search command which is responsible for executing 
         /// the RSS action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The search command which is responsible for executing the RSS
+        /// action for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
@@ -435,6 +571,10 @@ namespace Splunk.Client
         /// Gets or sets the global maximum number of search results to send 
         /// when the RSS action for a <see cref="SavedSearch"/> is enabled.
         /// </summary>
+        /// <value>
+        /// The global maximum number of search results to send when the RSS
+        /// action for a <see cref="SavedSearch"/> is enabled.
+        /// </value>
         /// <remarks>
         /// The default value is <c>100</c>.
         /// </remarks>
@@ -446,6 +586,10 @@ namespace Splunk.Client
         /// Gets or sets the maximum period of time the RSS action for a 
         /// <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
+        /// <value>
+        /// The maximum period of time the RSS action for a <see cref=
+        /// "SavedSearch"/> may execute before it is aborted.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"1m"</c>.
@@ -458,6 +602,10 @@ namespace Splunk.Client
         /// Gets or sets a value that indicates whether the RSS action of a
         /// <see cref="SavedSearch"/> signifies a trackable alert.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the RSS action of a <see cref="SavedSearch"/>
+        /// signifies a trackable alert; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -469,6 +617,10 @@ namespace Splunk.Client
         /// Gets or sets the minimum time-to-live for artifacts of the RSS
         /// action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The minimum time-to-live for artifacts of the RSS action for a <see
+        /// cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>["p"] ]]></c>. If <c>p</c> follows <![CDATA[<integer>]]>, 
@@ -484,6 +636,10 @@ namespace Splunk.Client
         /// Gets or sets the search command which is responsible for executing 
         /// the script action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The search command which is responsible for executing the script
+        /// action for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
@@ -500,6 +656,10 @@ namespace Splunk.Client
         /// Gets or sets the file name of the script to invoke when the
         /// script action of a <see cref="SavedSearch"/> is enabled.
         /// </summary>
+        /// <value>
+        /// The file name of the script to invoke when the script action of a
+        /// <see cref="SavedSearch"/> is enabled.
+        /// </value>
         /// <remarks>
         /// A value is required when the script action of a <see cref=
         /// "SavedSearch"/> is enabled.
@@ -510,8 +670,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the hostname used in the web link (URI) that is sent 
-        /// in the script script action for a <see cref="SavedSearch"/>.
+        /// in the script action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The hostname used in the web link (URI) that is sent in the script
+        /// action for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
         /// </remarks>
@@ -523,6 +687,10 @@ namespace Splunk.Client
         /// Gets or sets the global maximum number of search results to send 
         /// when the script action for a <see cref="SavedSearch"/> is enabled.
         /// </summary>
+        /// <value>
+        /// The global maximum number of search results to send when the script
+        /// action for a <see cref="SavedSearch"/> is enabled.
+        /// </value>
         /// <remarks>
         /// The default value is <c>100</c>.
         /// </remarks>
@@ -534,6 +702,10 @@ namespace Splunk.Client
         /// Gets or sets the maximum period of time the script action for a 
         /// <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
+        /// <value>
+        /// The maximum period of time the script action for a <see cref=
+        /// "SavedSearch"/> may execute before it is aborted.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"5m"</c>.
@@ -546,6 +718,10 @@ namespace Splunk.Client
         /// Gets or sets a value that indicates whether the script action of a
         /// <see cref="SavedSearch"/> signifies a trackable alert.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the script action of a <see cref="SavedSearch"/>
+        /// signifies a trackable alert; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -557,6 +733,10 @@ namespace Splunk.Client
         /// Gets or sets the minimum time-to-live for artifacts of the script
         /// action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The minimum time-to-live for artifacts of the script action for a
+        /// <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>["p"] ]]></c>. If <c>p</c> follows <![CDATA[<integer>]]>, 
@@ -572,6 +752,10 @@ namespace Splunk.Client
         /// Gets or sets the search command which is responsible for executing 
         /// the summary index action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The search command which is responsible for executing the summary
+        /// index action for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Generally the command is a template search pipeline which is 
         /// realized with values from the <see cref="SavedSearch"/>. Reference
@@ -589,6 +773,11 @@ namespace Splunk.Client
         /// index action of a <see cref="SavedSearch"/> as part of the 
         /// <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the index action of a <see cref="SavedSearch"/>
+        /// should execute the summary index action as part of the <see cref=
+        /// "SavedSearch"/>; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// This option is considered only if the summary index action is 
         /// enabled and is always executed. The default value is <c>true</c>.
@@ -601,6 +790,10 @@ namespace Splunk.Client
         /// Gets or sets the maximum number of search results sent via alerts
         /// for the index action of a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The maximum number of search results sent via alerts for the index
+        /// action of a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// The default value is <c>100</c>.
         /// </remarks>
@@ -612,6 +805,10 @@ namespace Splunk.Client
         /// Gets or sets the maximum period of time the summary index action 
         /// for a <see cref="SavedSearch"/> may execute before it is aborted.
         /// </summary>
+        /// <value>
+        /// The maximum period of time the summary index action for a <see
+        /// cref="SavedSearch"/> may execute before it is aborted.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"5m"</c>.
@@ -624,6 +821,10 @@ namespace Splunk.Client
         /// Gets or sets the name of the summary index where the results of 
         /// the <see cref="SavedSearch"/> are stored.
         /// </summary>
+        /// <value>
+        /// The name of the summary index where the results of the <see cref=
+        /// "SavedSearch"/> are stored.
+        /// </value>
         /// <remarks>
         /// The default summary index name is <c>"summary"</c>.
         /// </remarks>
@@ -635,6 +836,11 @@ namespace Splunk.Client
         /// Gets or sets a value that indicates whether the summary index 
         /// action of a <see cref="SavedSearch"/> signifies a trackable alert.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the summary index action of a <see cref=
+        /// "SavedSearch"/> signifies a trackable alert; <c>false</c> 
+        /// otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -646,6 +852,10 @@ namespace Splunk.Client
         /// Gets or sets the minimum time-to-live for artifacts of the summary
         /// index action for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The minimum time-to-live for artifacts of the summary index action
+        /// for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>["p"] ]]></c>. If <c>p</c> follows <![CDATA[<integer>]]>, 
@@ -660,6 +870,10 @@ namespace Splunk.Client
         /// Gets or sets the comparator used with <see cref="AlertThreshold"/>
         /// to trigger alert actions.
         /// </summary>
+        /// <value>
+        /// The comparator used with <see cref="AlertThreshold"/> to trigger
+        /// alert actions.
+        /// </value>
         [DataMember(Name = "alert_comparator", EmitDefaultValue = false)]
         public AlertComparator? AlertComparator
         { get; set; }
@@ -668,6 +882,10 @@ namespace Splunk.Client
         /// Gets or sets a conditional search that is evaluated against the 
         /// results of a saved search.
         /// </summary>
+        /// <value>
+        /// A conditional search that is evaluated against the results of a
+        /// <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Alerts are triggered if the search yields a non-empty result. If 
         /// you specify a value, do not set <c>counttype</c>, <c>relation</c>, 
@@ -681,6 +899,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether Splunk applies the alert 
         /// actions to the entire result set or on each individual result. 
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if Splunk should apply the alert actions to the entire
+        /// result set or on each individual result; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>true</c>.
         /// </remarks>
@@ -691,6 +913,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the period of time to show the alert in the dashboard. 
         /// </summary>
+        /// <value>
+        /// The period of time to show the alert in the dashboard. 
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <c><![CDATA[
         /// <integer>("s"|"m"|"h"|"d")]]></c>. The default is <c>"24h"</c>.
@@ -702,6 +927,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the alert severity level for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The alert severity level for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// The default value is <see cref="AlertSeverity"/>.Warning.
         /// </remarks>
@@ -714,6 +942,11 @@ namespace Splunk.Client
         /// value to compare using <see cref="AlertComparator"/> before 
         /// triggering the alert actions for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A string that specifies an absolute or percentage value to compare
+        /// using <see cref="AlertComparator"/> before triggering the alert
+        /// actions for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// This value is specified as a string of the form <![CDATA[<integer> *1"%"]]>.
         /// </remarks>
@@ -725,6 +958,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether to track the actions 
         /// triggered by a scheduled <see cref="SavedSearch"/>. 
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the actions triggered by a scheduled <see cref=
+        /// "SavedSearch"/> should be tracked; <c>false</c> otherwise. 
+        /// </value>
         /// <remarks>
         /// The default value is <see cref="AlertTrack"/>.Automatic.
         /// </remarks>
@@ -735,6 +972,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets a value that specifies the basis of an alert.
         /// </summary>
+        /// <value>
+        /// A value that specifies the basis of an alert.
+        /// </value>
         /// <remarks>
         /// This value is overriden by <see cref="AlertCondition"/> if it is 
         /// also specified.
@@ -745,8 +985,14 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value that indicates whether the scheduler should 
-        /// ensure that the data for this search is automatically summarized.
+        /// ensure that the data for a <see cref="SavedSearch"/> is 
+        /// automatically summarized.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the scheduler should ensure that the data for a
+        /// <see cref="SavedSearch"/> is automatically summarized; 
+        /// <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -758,6 +1004,10 @@ namespace Splunk.Client
         /// Gets or sets a search command template that constructs the auto 
         /// summarization for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A search command template that constructs the auto summarization
+        /// for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// This is an advanced feature. Do not set this value unless you 
         /// understand the architecture of auto summarization of saved 
@@ -777,9 +1027,12 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a CRON schedule for auto-summarization of a <see cref=
+        /// Gets or sets a Cron schedule for auto-summarization of a <see cref=
         /// "SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A Cron schedule for auto-summarization of a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// The default value is <c>"*/10 * * * *"</c> which schedules 
         /// auto-summarization on a ten hour schedule.
@@ -793,6 +1046,10 @@ namespace Splunk.Client
         /// Gets or sets a time string that specifies the earliest time for 
         /// summarizing a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A time string that specifies the earliest time for summarizing a
+        /// <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// This value can be specified as a relative or absolute time string.
         /// You must use the <see cref="AutoSummarizeDispatchTimeFormat"/> to 
@@ -806,6 +1063,10 @@ namespace Splunk.Client
         /// Gets or sets a time string that specifies the latest time for 
         /// summarizing a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A time string that specifies the latest time for summarizing a <see
+        /// cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// This value can be specified as a relative or absolute time string.
         /// You must use the <see cref="AutoSummarizeDispatchTimeFormat"/> to 
@@ -821,6 +1082,12 @@ namespace Splunk.Client
         /// <see cref="AutoSummarizeDispatchLatestTime"/> when they are
         /// specified as absolute times.
         /// </summary>
+        /// <value>
+        /// The time format that Splunk uses to parse the values of <see cref=
+        /// "AutoSummarizeDispatchEarliestTime"/> and <see cref=
+        /// "AutoSummarizeDispatchLatestTime"/> when they are specified as
+        /// absolute times.
+        /// </value>
         /// <remarks>
         /// The default value is <c>"%FT%T.%Q%:z"</c>.
         /// </remarks>
@@ -830,8 +1097,14 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a string that specifies the time to live in seconds or
-        /// periods for the artifacts of the summarization of a scheduled search. 
+        /// periods for the artifacts of the summarization of a scheduled
+        /// <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A string that specifies the time to live in seconds or periods for
+        /// the artifacts of the summarization of a scheduled <see cref=
+        /// "SavedSearch"/>. 
+        /// </value>
         /// <remarks>
         /// The default value is <c>"60"</c>, equivalent to one minute.
         /// </remarks>
@@ -843,6 +1116,10 @@ namespace Splunk.Client
         /// Gets or sets the maximum number of buckets with suspended 
         /// summarization before a summarization search is completely stopped.
         /// </summary>
+        /// <value>
+        /// The maximum number of buckets with suspended summarization before a
+        /// summarization search is completely stopped.
+        /// </value>
         /// <remarks>
         /// The summarization of the search is suspended for <see cref=
         /// "AutoSummarizeSuspendPeriod"/> when this value is reached. The 
@@ -856,6 +1133,10 @@ namespace Splunk.Client
         /// Gets or sets the ratio of summary_size/bucket_size which specifies
         /// when to stop summarization and deem it unhelpful for a bucket. 
         /// </summary>
+        /// <value>
+        /// The ratio of summary_size/bucket_size which specifies when to stop
+        /// summarization and deem it unhelpful for a bucket. 
+        /// </value>
         /// <remarks>
         /// This value is only checked when the summary_size is larger than
         /// <see cref="AutoSummarizeMaxSummarySize"/>. The default value is 
@@ -869,6 +1150,10 @@ namespace Splunk.Client
         /// Gets or sets the minimum summary size, in bytes, before testing 
         /// whether the summarization is helpful.
         /// </summary>
+        /// <value>
+        /// The minimum summary size, in bytes, before testing whether the
+        /// summarization is helpful.
+        /// </value>
         /// <remarks>
         /// The default value is <c>52428800</c>, equivalent to 5MB.
         /// </remarks>
@@ -880,6 +1165,10 @@ namespace Splunk.Client
         /// Gets or sets the maximum time in seconds that a summary search is 
         /// allowed to run.
         /// </summary>
+        /// <value>
+        /// The maximum time in seconds that a summary search is allowed to 
+        /// run.
+        /// </value>
         /// <remarks>
         /// The default value is <c>3600</c>, equivalent to 60 minutes. This is
         /// an approximate time as the summary search stops at clean bucket
@@ -894,6 +1183,11 @@ namespace Splunk.Client
         /// summarization of a <see cref="SavedSearch"/>, if the summarization 
         /// is deemed unhelpful.
         /// </summary>
+        /// <value>
+        /// A time specfier that tells Splunk when to suspend summarization of
+        /// a <see cref="SavedSearch"/>, if the summarization is deemed
+        /// unhelpful.
+        /// </value>
         /// <remarks>
         /// The default time is <c>"24h"</c>.
         /// </remarks>
@@ -902,8 +1196,11 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the cron schedule to execute a <see cref="SavedSearch"/>.
+        /// Gets or sets the Cron schedule to execute a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The Cron schedule to execute a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// Use standard Cron notation to define the scheduled search interval. 
         /// Splunk recommends that you schedule your searches so that they are 
@@ -920,6 +1217,9 @@ namespace Splunk.Client
         /// Gets or sets the human-readable description of a <see cref=
         /// "SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The human-readable description of a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// The default value is an empty string.
         /// </remarks>
@@ -928,9 +1228,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that indicates if a saved search should be
-        /// disabled.
+        /// Gets or sets a value that indicates if a <see cref="SavedSearch"/>
+        /// should be disabled.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the <see cref="SavedSearch"/> should be disabled;
+        /// <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// Disabled saved searches are not visible in Splunk Web.
         /// </remarks>
@@ -939,8 +1243,12 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum number of timeline buckets for a search.
+        /// Gets or sets the maximum number of timeline buckets for a <see 
+        /// cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The maximum number of timeline buckets for a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// This default value is <c>0</c>.
         /// </remarks>        
@@ -949,8 +1257,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the earliest time to begin a search.
+        /// Gets or sets a value specifying the earliest time to begin a
+        /// <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A value specifying the earliest time to begin a <see cref=
+        /// "SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// The value can be a relative or absolute time. If it is an absolute 
         /// time, use the <see cref="DispatchTimeFormat"/> to format it.
@@ -960,8 +1273,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the latest time to begin a search.
+        /// Gets or sets a value specifying the latest time to begin a <see
+        /// cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// A value specifying the latest time to begin a <see cref=
+        /// "SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// The value can be a relative or absolute time. If it is an absolute
         /// time, use the <see cref="DispatchTimeFormat"/> to format it.
@@ -973,6 +1291,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets a value indicating whether lookups are enabled.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if lookups are enabled; <c>false</c> othwerwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>true</c>.
         /// </remarks>
@@ -982,16 +1303,24 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the maximum number of results to produce before 
-        /// finalizing a search.
+        /// finalizing a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The maximum number of results to produce before finalizing a <see
+        /// cref="SavedSearch"/>.
+        /// </value>
         [DataMember(Name = "dispatch.max_count", EmitDefaultValue = false)]
         public int? DispatchMaxCount
         { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum length of time to run before finalizing a
-        /// search.
+        /// <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// The maximum length of time to run before finalizing a <see cref=
+        /// "SavedSearch"/>.
+        /// </value>
         [DataMember(Name = "dispatch.max_time", EmitDefaultValue = false)]
         public int? DispatchMaxTime
         { get; set; }
@@ -1000,6 +1329,10 @@ namespace Splunk.Client
         /// Gets or sets a value specifying how frequently Splunk runs the 
         /// map/reduce phase on accumulated map values.
         /// </summary>
+        /// <value>
+        /// A value specifying how frequently Splunk runs the map/reduce phase
+        /// on accumulated map values.
+        /// </value>
         /// <remarks>
         /// The default value is <c>10</c>.
         /// </remarks>
@@ -1009,8 +1342,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value indicating whether to back fill the real-time
-        /// window for a search.
+        /// window for a <see cref="SavedSearch"/>.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the real-time window for a <see cref="SavedSearch"/>
+        /// should be back filled; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// This value only applies to real-time searches.
         /// </remarks>
@@ -1019,9 +1356,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the search should run in its
-        /// own process.
+        /// Gets or sets a value indicating whether a <see cref="SavedSearch"/>
+        /// should run in its own process.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if a <see cref="SavedSearch"/> should run in its own
+        /// process; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>. A searches against an index must 
         /// run in its own process.
@@ -1034,6 +1375,10 @@ namespace Splunk.Client
         /// Gets or sets a value specifying the time format Splunk should use
         /// for the earliest and latest times of a search.
         /// </summary>
+        /// <value>
+        /// A value specifying the time format Splunk should use for the 
+        /// earliest and latest times of a <see cref="SavedSearch"/>.
+        /// </value>
         /// <remarks>
         /// The default value is <c>"%FT%T.%Q%:z"</c>.
         /// </remarks>
@@ -1043,8 +1388,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the time to live (in seconds) for the artifacts of a
-        /// search, if no actions are triggered.
+        /// <see cref="SavedSearch"/>, if no actions are triggered.
         /// </summary>
+        /// <value>
+        /// The time to live (in seconds) for the artifacts of a <see cref=
+        /// "SavedSearch"/>, if no actions are triggered.
+        /// </value>
         /// <remarks>
         /// <para>
         /// The default value is <c>"2p"</c> (two scheduled search periods).
@@ -1063,6 +1412,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether a <see cref="SavedSearch"/>
         /// is to be run on a schedule.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if a <see cref="SavedSearch"/> is to be run on a
+        /// schedule; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
         /// </remarks>
@@ -1074,6 +1427,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether a <see cref="SavedSearch"/> 
         /// should appear in the list of saved searches on Splunk Web.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if a <see cref="SavedSearch"/> should appear in the
+        /// list of saved searches on Splunk Web; <c>false</c> othwerwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>true</c>.
         /// </remarks>
@@ -1085,8 +1442,12 @@ namespace Splunk.Client
         /// Gets or sets the maximum number of concurrent instances of a 
         /// <see cref="SavedSearch"/> the scheduler is allowed to run.
         /// </summary>
+        /// <value>
+        /// The maximum number of concurrent instances of a <see cref=
+        /// "SavedSearch"/> the scheduler is allowed to run.
+        /// </value>
         /// <remarks>
-        /// The default value is one.
+        /// The default value is <c>1</c>.
         /// </remarks>
         [DataMember(Name = "max_concurrent", EmitDefaultValue = false)]
         public int? MaxConcurrent
@@ -1096,6 +1457,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether a <see cref="SavedSearch"/> 
         /// is to be run on a realtime schedule.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if a <see cref="SavedSearch"/> is to be run on a 
+        /// realtime schedule; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>true</c>. The scheduler bases its 
         /// determination of the next scheduled <see cref="SavedSearch"/> run
@@ -1124,8 +1489,13 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets a value indicating whether to restart a realtime 
         /// <see cref="SavedSearch"/> managed by the scheduler when a new 
-        /// search peer becomes available for the <see cref="SavedSearch"/>.
+        /// search peer becomes available.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if a realtime <see cref="SavedSearch"/> managed by the 
+        /// scheduler should be restarted when a new search peer becomes
+        /// available; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>true</c>.
         /// </remarks>
@@ -1137,6 +1507,10 @@ namespace Splunk.Client
         /// Gets or sets a value indicating whether a <see cref="SavedSearch"/>
         /// runs when Splunk starts.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if a <see cref="SavedSearch"/> runs when Splunk
+        /// starts; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>false</c> indicating that after Splunk 
         /// starts, the <see cref="SavedSearch"/> runs at its next scheduled 
@@ -1145,7 +1519,5 @@ namespace Splunk.Client
         [DataMember(Name = "run_on_startup", EmitDefaultValue = false)]
         public bool? RunOnStartup
         { get; set; }
-
-        #endregion
     }
 }

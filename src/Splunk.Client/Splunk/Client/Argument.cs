@@ -196,12 +196,18 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the name of the current <see cref="Argument"/>.
         /// </summary>
+        /// <value>
+        /// Name of the current <see cref="Argument"/>.
+        /// </value>
         public string Name
         { get; private set; }
 
         /// <summary>
         /// Gets the value of the current <see cref="Argument"/>.
         /// </summary>
+        /// <value>
+        /// Value of the current <see cref="Argument"/>.
+        /// </value>
         public string Value
         { get; private set; }
 

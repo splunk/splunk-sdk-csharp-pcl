@@ -15,7 +15,6 @@
  */
 
 //// TODO:
-//// [X] AtomFeed: Add properties, not just entries.
 //// [O] Documentation
 
 namespace Splunk.Client
@@ -61,27 +60,41 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the author of the current <see cref="AtomFeed"/> response.
         /// </summary>
-        /// <remarks>
-        /// <c>"Splunk"</c> is the author of all <see cref="AtomFeed"/> responses.
-        /// </remarks>
+        /// <value>
+        /// Author of the current <see cref="AtomFeed"/> response.
+        /// </value>
         public string Author
         { get; private set; }
 
         /// <summary>
-        /// Gets the list of results returned from the endpoint.
+        /// Gets the list of <see cref="AtomEntry"/> instances returned in
+        /// the current <see cref="AtomFeed"/> response.
         /// </summary>
+        /// <value>
+        /// The list of <see cref="AtomEntry"/> instances returned in the
+        /// current <see cref="AtomFeed"/> response.
+        /// </value>
         public IReadOnlyList<AtomEntry> Entries
         { get; private set; }
 
         /// <summary>
-        /// Gets the version of the Atom Feed generator.
+        /// Gets the version number of the generator that produced the current
+        /// <see cref="AtomFeed"/> response.
         /// </summary>
+        /// <value>
+        /// The <see cref="AtomFeed"/> generator version number.
+        /// </value>
         public Version GeneratorVersion
         { get; private set; }
 
         /// <summary>
-        /// Gets the Splunk management URI for accessing the endpoint.
+        /// Gets the Splunk management URI for accessing the current <see cref=
+        /// "AtomFeed"/> response.
         /// </summary>
+        /// <value>
+        /// The Splunk management URI for accessing the current <see cref=
+        /// "AtomFeed"/> response.
+        /// </value>
         public Uri Id
         { get; private set; }
 
@@ -92,9 +105,13 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// Gets the list of info, warning, or error messages associated with 
-        /// the operation. 
+        /// Gets the list of info, warning, and error messages returned in the
+        /// current <see cref="AtomFeed"/> response.
         /// </summary>
+        /// <value>
+        /// The list of info, warning, and error messages returned in the 
+        /// current <see cref="AtomFeed"/> response.
+        /// </value>
         /// <remarks>
         /// Not all responses from an endpoint produce messages.
         /// </remarks>
@@ -105,12 +122,19 @@ namespace Splunk.Client
         /// Gets the list of pagination attributes for the response to a GET 
         /// operation.
         /// </summary>
+        /// <value>
+        /// Pagination attributes for the response to a GET operation.
+        /// </value>
         public Pagination Pagination
         { get; private set; }
 
         /// <summary>
-        /// Gets the human readable name of the endpoint <see cref="Id"/>.
+        /// Gets the human readable name of the current <see cref="AtomFeed"/>
+        /// response.
         /// </summary>
+        /// <value>
+        /// Human readable name of the current <see cref="AtomFeed"/> response.
+        /// </value>
         /// <remarks>
         /// This value is typically derived from the last segment of <see cref=
         /// "Id"/>.
@@ -119,8 +143,13 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// Gets the date this endpoint was implemented in Splunk.
+        /// Gets the date that the endpoint used to access the current <see 
+        /// cref="AtomFeed"/> response was implemented in Splunk.
         /// </summary>
+        /// <value>
+        /// The date that the endpoint used to access the current <see cref=
+        /// "AtomFeed"/> response was implemented in Splunk.
+        /// </value>
         public DateTime Updated
         { get; private set; }
 

@@ -149,8 +149,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets an object representing the Splunk resource at the time it was
-        /// last retrieved by the current <see cref="BaseEntity"/>.
+        /// last retrieved by the current entity.
         /// </summary>
+        /// <value>
+        /// An object representing the Splunk resource at the time it was last
+        /// retrieved by the current entity.
+        /// </value>
         protected TResource Snapshot
         {
             get { return this.snapshot; }

@@ -118,29 +118,46 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the Splunk host associated with this instance.
+        /// Gets the Splunk host name associated with the current <see cref=
+        /// "Context"/>.
         /// </summary>
+        /// <value>
+        /// A Splunk host name.
+        /// </value>
         public string Host
         { get; private set; }
 
         /// <summary>
-        /// Gets the management port number used to communicate with 
-        /// <see cref="Host"/>
+        /// Gets the management port number used to communicate with <see cref=
+        /// "Host"/>
         /// </summary>
+        /// <value>
+        /// A Splunk management port number.
+        /// </value>
         public int Port
         { get; private set; }
 
         /// <summary>
-        /// Gets the scheme used to communicate with <see cref="Host"/> 
+        /// Gets the scheme used to communicate with <see cref="Host"/> on
+        /// <see cref="Port"/>.
         /// </summary>
+        /// <value>
+        /// The scheme used to communicate with <see cref="Host"/> on <see 
+        /// cref="Port"/>.
+        /// </value>
         public Scheme Scheme
         { get; private set; }
 
         /// <summary>
-        /// Gets or sets the session key used by the <see cref="Context"/>.
+        /// Gets or sets the session key used by the current <see cref=
+        /// "Context"/>.
         /// </summary>
+        /// <value>
+        /// The session key used by the current <see cref="Context"/> or <c>
+        /// null</c>.
+        /// </value>
         /// <remarks>
-        /// The value returned is null until it is set.
+        /// This value is <c>null</c> until it is set.
         /// </remarks>
         public string SessionKey
         { get; set; }

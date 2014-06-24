@@ -84,10 +84,10 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the access control list for the current <see cref="ApplicationArchiveInfo"/>.
+        /// Gets the access control list for the application archive.
         /// </summary>
         /// <value>
-        /// The access control list for the current <see cref="AplicationArchiveInfo"/>.
+        /// Access control list for the application archive.
         /// </value>
         public Eai Eai
         {
@@ -95,12 +95,11 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the name of the application contained by the archive described 
-        /// by the current <see cref="ApplicationArchiveInfo"/>.
+        /// Gets the name of the application contained by the application 
+        /// archive.
         /// </summary>
         /// <value>
-        /// The name of the application contained by the archive described by
-        /// the current <see cref="ApplicationArchiveInfo"/>.
+        /// Name of the application contained by the archive.
         /// </value>
         /// <remarks>
         /// This value is the default name of the application folder on disk.
@@ -111,27 +110,37 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the local path to the archive represented by the current <see 
-        /// cref="ApplicationArchiveInfo"/> instance.
+        /// Gets the local path to the application archive.
         /// </summary>
+        /// <value>
+        /// A local path to the application archive.
+        /// </value>
         public string Path
         {
             get { return this.Content.GetValue("Path", StringConverter.Instance); }
         }
 
         /// <summary>
-        /// Gets a value indicating whether to to reload the objects contained 
-        /// in the locally installed application.
+        /// Gets a value indicating whether to reload the objects contained in
+        /// the locally installed application.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if the objects contained in the locally installed
+        /// application should be reloaded; <c>false</c>, if they need not
+        /// be reloaded.
+        /// </value>
         public bool Refresh
         {
             get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         /// <summary>
-        /// Gets the download URI for the archive represented by the current
-        /// <see cref="ApplicationArchiveInfo"/> instance.
+        /// Gets the download URI for the application archive.
         /// </summary>
+        /// <value>
+        /// A download URI for the application archive or <c>null</c>, if
+        /// there is no download URI.
+        /// </value>
         public Uri Uri
         {
             get { return this.Content.GetValue("Url", UriConverter.Instance); }

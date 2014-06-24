@@ -41,8 +41,12 @@ namespace Splunk.Client
     {
         /// <summary>
         /// Gets or sets the number of events that make up a block for block
-        /// signatures on an index.
+        /// signatures on an <see cref="Index"/>.
         /// </summary>
+        /// <value>
+        /// The number of events that make up a block for block signatures on
+        /// an <see cref="Index"/>.
+        /// </value>
         /// <remarks>
         /// The default value is zero (0) indicating that block signatures are
         /// disabled. If your index requires block signatures, a value is 100
@@ -56,6 +60,10 @@ namespace Splunk.Client
         /// Gets or sets a suggested size for the time-series (tsidx) file 
         /// created by the Splunk bucket rebuild process.
         /// </summary>
+        /// <value>
+        /// A suggested size for the time-series (tsidx) file created by the
+        /// Splunk bucket rebuild process.
+        /// </value>
         /// <remarks>
         /// The default value is <c>"auto"</c> suggests that the size for the
         /// tsidx file created by the Splunk bucker rebuild process should vary
@@ -73,8 +81,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the path to a directory for the frozen archive of an 
-        /// index.
+        /// <see cref="Index"/>.
         /// </summary>
+        /// <value>
+        /// The path to a directory for the frozen archive of an <see cref=
+        /// "Index"/>
+        /// </value>
         /// <remarks>
         /// This property is an alternative to <see cref= "ColdToFrozenScript"/>. 
         /// If <see cref="ColdToFrozenDir"/> and <see cref="ColdToFrozenScript"/> 
@@ -87,8 +99,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the path to an archiving script for the frozen archive
-        /// of an index.
+        /// of an <see cref="Index"/>.
         /// </summary>
+        /// <value>
+        /// The path to an archiving script for the frozen archive of an <see 
+        /// cref="Index"/>.
+        /// </value>
         /// <remarks>
         /// If your script requires a program to run it (for example, python), 
         /// specify the program followed by the path. The script must be in 
@@ -100,8 +116,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the path to an archiving script for the frozen archive
-        /// of an index.
+        /// of an <see cref="Index"/>.
         /// </summary>
+        /// <value>
+        /// The path to an archiving script for the frozen archive of an <see
+        /// cref="Index"/>.
+        /// </value>
         /// <remarks>
         /// If your script requires a program to run it (for example, python), 
         /// specify the program followed by the path. The script must be in 
@@ -113,8 +133,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value indicating whether asynchronous bucket repair 
-        /// should be enabled on an index.
+        /// should be enabled on an <see cref="Index"/>.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if asynchronous bucket repair should be enabled on an
+        /// <see cref="Index"/>; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>true</c> indicating that asynchronous 
         /// bucker repair should be enabled. You do not have to wait until 
@@ -129,8 +153,12 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the number of seconds after 
         /// which indexed data rolls to frozen.
         /// </summary>
+        /// <value>
+        /// A value that specifies the number of seconds after which indexed
+        /// data rolls to frozen.
+        /// </value>
         /// <remarks>
-        /// The default value is <c>188697600</c>, equivalent to 6 years.
+        /// The default value is <c>188697600</c>, equivalent to six years.
         /// </remarks>
         [DataMember(Name = "frozenTimePeriodInSecs", EmitDefaultValue = false)]
         public int? FrozenTimePeriodInSecs
@@ -140,6 +168,10 @@ namespace Splunk.Client
         /// Gets or sets a string that specifies when to stop rebuilding bloom
         /// filters for the warm or cold buckets of an <see cref="Index"/>.
         /// </summary>
+        /// <value>
+        /// A string that specifies when to stop rebuilding bloom filters for
+        /// the warm or cold buckets of an <see cref="Index"/>.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <![CDATA[<integer> ("d"|"h"|"m"|"s"]]>.
         /// The default is <c>"30d"</c> which tells Splunk to stop rebuilding
@@ -153,6 +185,10 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the number of concurrent optimize 
         /// processes that can run against a hot bucket.
         /// </summary>
+        /// <value>
+        /// A value that specifies the number of concurrent optimize processes
+        /// that can run against a hot bucket.
+        /// </value>
         /// <remarks>
         /// The default value is <c>6</c>.
         /// </remarks>
@@ -164,6 +200,10 @@ namespace Splunk.Client
         /// Gets or sets a string that specifies the maximum size in megabytes 
         /// for a hot database to reach before a roll to warm is triggered.
         /// </summary>
+        /// <value>
+        /// A string that specifies the maximum size in megabytes for a hot
+        /// database to reach before a roll to warm is triggered.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <![CDATA[<integer>|"auto"|"auto_high_volume"]]>
         /// Specifying <c>"auto"</c> or <c>"auto_high_volume"</c> causes Splunk
@@ -190,6 +230,10 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the maximum number of hot 
         /// buckets that an <see cref="Index"/> can have.
         /// </summary>
+        /// <value>
+        /// A value that specifies the maximum number of hot buckets that an
+        /// <see cref="Index"/> can have.
+        /// </value>
         /// <remarks>
         /// When this value is is exceeded, Splunk rolls the least recently 
         /// used hot bucket to warm. Both normal hot buckets and quarantined 
@@ -207,6 +251,10 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the life time of an idle hot 
         /// bucket in seconds.
         /// </summary>
+        /// <value>
+        /// A value that specifies the life time of an idle hot bucket in
+        /// seconds.
+        /// </value>
         /// <remarks>
         /// If the lifetime of an idle hot bucket exceeds this value, Splunk 
         /// rolls it to warm. The default is <c>0</c> which specifies that
@@ -220,6 +268,10 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the upper bound of target 
         /// maximum timespan of hot/warm buckets in seconds.
         /// </summary>
+        /// <value>
+        /// A value that specifies the upper bound of target maximum timespan
+        /// of hot/warm buckets in seconds.
+        /// </value>
         /// <remarks>
         /// The default value is <c>7776000</c>, equivalent to 90 days. Splunk 
         /// enforces a lower bound of <c>3600</c>, equivalent to one hour.
@@ -238,6 +290,11 @@ namespace Splunk.Client
         /// memroy to allocate for buffering a single index file before
         /// flushing it to disk.
         /// </summary>
+        /// <value>
+        /// A value that specifies the number of megabytes of memroy to 
+        /// allocate for buffering a single index file before flushing it to
+        /// disk.
+        /// </value>
         /// <remarks>
         /// The default value is <c>5</c>. This is the recommended value for 
         /// all environments.
@@ -255,6 +312,10 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the maximum number of unique 
         /// lines in the .data files in a bucket.
         /// </summary>
+        /// <value>
+        /// A value that specifies the maximum number of unique lines in the
+        /// data files in a bucket.
+        /// </value>
         /// <remarks>
         /// Setting this value may help reduce memory consumption. The default
         /// value is <c>1000000</c>. If this limit is exceeded, a hot bucket is
@@ -276,6 +337,9 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the upper limit in seconds on 
         /// how long an event can sit in raw slice.
         /// </summary>
+        /// <value>
+        /// An upper limit in seconds on how long an event can sit in raw slice.
+        /// </value>
         /// <remarks>
         /// This value only applies if replication is enabled. It is otherwise
         /// ignored. The default value is <c>60</c>, equivalent to one minute.
@@ -288,6 +352,10 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the upper limit in seconds on
         /// how long events can sit unacknowledged in a raw slice. 
         /// </summary>
+        /// <value>
+        /// An upper limit in seconds on how long events can sit unacknowledged
+        /// in a raw slice.
+        /// </value>
         /// <remarks>
         /// This value only applies if you have enabled acks on forwarders and
         /// have replication enabled with clustering. It is otherwise ignored.
@@ -298,12 +366,16 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value that specifies The maximum size of an index in
-        /// megabytes.
+        /// Gets or sets a value that specifies the maximum size of an <see 
+        /// cref="Index"/> in megabytes.
         /// </summary>
+        /// <value>
+        /// The maximum size of an <see cref="Index"/> in megabytes.
+        /// </value>
         /// <remarks>
-        /// The default value is <c>500000</c>. If an index grows larger than 
-        /// the specified number of megabytes, the oldest data is frozen.
+        /// The default value is <c>500000</c>. If an <see cref="Index"/> grows
+        /// larger than the specified number of megabytes, the oldest data is 
+        /// frozen.
         /// </remarks>
         [DataMember(Name = "maxTotalDataSizeMB", EmitDefaultValue = false)]
         public int? MaxTotalDataSizeMB
@@ -313,6 +385,9 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies the maximum number of warm
         /// buckets.
         /// </summary>
+        /// <value>
+        /// The maximum number of warm buckets.
+        /// </value>
         /// <remarks>
         /// The default value is <c>300</c>. If the number of buckets grows
         /// larger than this, the warm buckets with the lowest value for their 
@@ -326,6 +401,10 @@ namespace Splunk.Client
         /// Gets or sets a string that specifies how frequently splunkd forces
         /// a file system sync while compressing journal slices.
         /// </summary>
+        /// <value>
+        /// A string that specifies how frequently splunkd forces a file system
+        /// sync while compressing journal slices.
+        /// </value>
         /// <remarks>
         /// Express this value as a string of the form <![CDATA[(<integer>|"disable")]]>.
         /// If you specify a value of <c>"0"</c>, splunkd forces a file system
@@ -343,6 +422,10 @@ namespace Splunk.Client
         /// that stores events in memory before committing them to a .tsidx 
         /// file.
         /// </summary>
+        /// <value>
+        /// The minimum size of the queue that stores events in memory before
+        /// committing them to a .tsidx file.
+        /// </value>
         /// <remarks>
         /// The default value is <c>2000</c>.
         /// <note type="caution">
@@ -358,6 +441,11 @@ namespace Splunk.Client
         /// sync occurs for records where the sync can be done efficiently 
         /// in-place, without requiring a full re-write of the metadata file.
         /// </summary>
+        /// <value>
+        /// A value that specifies in seconds how often metadata sync occurs 
+        /// for records where the sync can be done efficiently in-place,
+        /// without requiring a full re-write of the metadata file.
+        /// </value>
         /// <remarks>
         /// The default value is <c>0</c>. Zero means that this feature is 
         /// disabled and <see cref="ServiceMetaPeriod"/> is the only time when 
@@ -373,6 +461,11 @@ namespace Splunk.Client
         /// it has launched to see if it can launch new processes for queued 
         /// requests.
         /// </summary>
+        /// <value>
+        /// A value that specifies in seconds how often the indexer checks the
+        /// status of the child operating system processes it has launched to
+        /// see if it can launch new processes for queued requests.
+        /// </value>
         /// <remarks>
         /// The default value is <c>15</c>. Zero means the indexer will check 
         /// child process status every second. This value is capped at 
@@ -386,6 +479,10 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies in seconds when new events are 
         /// dropped into a quarantine bucket.
         /// </summary>
+        /// <value>
+        /// A value that specifies in seconds when new events are dropped into
+        /// a quarantine bucket.
+        /// </value>
         /// <remarks>
         /// Events with a timestamp newer than <c>now</c> plus this value are 
         /// dropped into a quarantine bucket. This is a mechanism to prevent 
@@ -398,8 +495,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value that specifies in seconds when old events are
-        /// dropped into a quarantine bucket. Defaults to 77760000 (900 days). 
+        /// dropped into a quarantine bucket.
         /// </summary>
+        /// <value>
+        /// A value that specifies in seconds when old events are dropped into
+        /// a quarantine bucket.
+        /// </value>
         /// <remarks>
         /// Events with a timestamp older than <c>now</c> plus this value are
         /// dropped into a quarantine bucket. This is a mechanism to prevent 
@@ -412,8 +513,14 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value that specifies a target uncompressed size in 
-        /// bytes for individual raw slice in the raw data journal of an index.
+        /// bytes for individual raw slice in the raw data journal of an
+        /// <see cref="Index"/>.
         /// </summary>
+        /// <value>
+        /// A value that specifies a target uncompressed size in bytes for
+        /// individual raw slice in the raw data journal of an <see cref=
+        /// "Index"/>.
+        /// </value>
         /// <remarks>
         /// The default value is <c>131072</c>, equivalent to 128 KB. Zero is
         /// not a valid value. If zero is specified, rawChunkSizeBytes is set
@@ -433,6 +540,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets a value that controls index replication.
         /// </summary>
+        /// <value>
+        /// A value that controls index replication.
+        /// </value>
         /// <remarks>
         /// This property only applies to Splunk Enterprise clustering slaves.
         /// Specify a value of <c>"auto</c> to use the master index replication
@@ -448,6 +558,11 @@ namespace Splunk.Client
         /// check if a new hot bucket needs to be created as well as if there
         /// are any warm/cold buckets that should be rolled/frozen. 
         /// </summary>
+        /// <value>
+        /// A value that specifies in seconds how frequently to check if a new
+        /// hot bucket needs to be created as well as if there are any warm/
+        /// cold buckets that should be rolled/frozen.
+        /// </value>
         /// <remarks>
         /// The default value is <c>60</c>, equivalent to one minute.
         /// </remarks>
@@ -459,6 +574,10 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies in seconds how frequently 
         /// metadata is synced to disk.
         /// </summary>
+        /// <value>
+        /// A value that specifies in seconds how frequently metadata is synced
+        /// to disk.
+        /// </value>
         /// <remarks>
         /// The default value is <c>25</c>. You may want to set this to a 
         /// higher value if the sum of your metadata file sizes is larger than
@@ -470,9 +589,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets that indicates whether a sync operation is called 
-        /// before a file descriptor is closed on metadata file updates.
+        /// Gets or sets a value that indicates whether a sync operation is 
+        /// called before a file descriptor is closed on metadata file updates.
         /// </summary>
+        /// <value>
+        /// <c>true</c>, if a sync operation is called before a file descriptor
+        /// is closed on metadata file updates; <c>false</c> otherwise.
+        /// </value>
         /// <remarks>
         /// The default value is <c>true</c>. This improves integrity of 
         /// metadata files, especially in regards to operating system crashes
@@ -487,8 +610,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value that specifies in seconds how frequently to
-        /// check for an index throttling condition.
+        /// check for an <see cref="Index"/> throttling condition.
         /// </summary>
+        /// <value>
+        /// A value that specifies in seconds how frequently to check for an
+        /// <see cref="Index"/> throttling condition.
+        /// </value>
         /// <remarks>
         /// The default value is <c>15</c>.
         /// <notes type="caution">
@@ -501,8 +628,12 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the location to store datamodel acceleration .tsidx
-        /// data for an index.
+        /// data for an <see cref="Index"/>.
         /// </summary>
+        /// <value>
+        /// The location to store datamodel acceleration .tsidx data for an 
+        /// <see cref="Index"/>.
+        /// </value>
         /// <remarks>
         /// Restart splunkd after changing this value. It must be defined in 
         /// terms of a volume definition and the location must be writable. The
@@ -516,6 +647,9 @@ namespace Splunk.Client
         /// Gets or sets the location of a script to run when moving data from
         /// warm to cold. 
         /// </summary>
+        /// <value>
+        /// The location of a script to run when moving data from warm to cold. 
+        /// </value>
         /// <remarks>
         /// This property is supported for backwards compatibility with Splunk
         /// versions older than 4.0. Contact Splunk support if you need help.

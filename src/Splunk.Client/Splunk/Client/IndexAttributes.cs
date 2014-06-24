@@ -273,99 +273,124 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies the upper limit in seconds on 
+        /// how long an event can sit in raw slice.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>300</c>.
+        /// This value only applies if replication is enabled. It is otherwise
+        /// ignored. The default value is <c>60</c>, equivalent to one minute.
         /// </remarks>
         [DataMember(Name = "maxTimeUnreplicatedNoAcks", EmitDefaultValue = false)]
         public int? MaxTimeUnreplicatedNoAcks
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies the upper limit in seconds on
+        /// how long events can sit unacknowledged in a raw slice. 
         /// </summary>
         /// <remarks>
-        /// The default value is <c>60</c>.
+        /// This value only applies if you have enabled acks on forwarders and
+        /// have replication enabled with clustering. It is otherwise ignored.
+        /// The default value is <c>300</c>, equivalent to five minutes.
         /// </remarks>
         [DataMember(Name = "maxTimeUnreplicatedWithAcks", EmitDefaultValue = false)]
         public int? MaxTimeUnreplicatedWithAcks
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies The maximum size of an index in
+        /// megabytes.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>500000</c>.
+        /// The default value is <c>500000</c>. If an index grows larger than 
+        /// the specified number of megabytes, the oldest data is frozen.
         /// </remarks>
         [DataMember(Name = "maxTotalDataSizeMB", EmitDefaultValue = false)]
         public int? MaxTotalDataSizeMB
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies the maximum number of warm
+        /// buckets.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>300</c>.
+        /// The default value is <c>300</c>. If the number of buckets grows
+        /// larger than this, the warm buckets with the lowest value for their 
+        /// latest times will be moved to cold.
         /// </remarks>
         [DataMember(Name = "maxWarmDBCount", EmitDefaultValue = false)]
         public int? MaxWarmDBCount
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a string that specifies how frequently splunkd forces
+        /// a file system sync while compressing journal slices.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>"disable"</c>.
+        /// Express this value as a string of the form <![CDATA[(<integer>|"disable")]]>.
+        /// If you specify a value of <c>"0"</c>, splunkd forces a file system
+        /// sync after every slice completes compressing. If you specify a
+        /// value of <c>"disable"</c>, splunkd disables syncing entirely: 
+        /// Uncompressed slices are removed as soon as compression is complete. 
+        /// The default is <c>"disable"</c>. 
         /// </remarks>
         [DataMember(Name = "minRawFileSyncSecs", EmitDefaultValue = false)]
         public string MinRawFileSyncSecs
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies the minimum size of the queue 
+        /// that stores events in memory before committing them to a .tsidx 
+        /// file.
         /// </summary>
         /// <remarks>
         /// The default value is <c>2000</c>.
+        /// <note type="caution">
+        /// Do not set this value, except under advice from Splunk support.
+        /// </note>
         /// </remarks>
         [DataMember(Name = "minStreamGroupQueueSize", EmitDefaultValue = false)]
         public int? MinStreamGroupQueueSize
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies in seconds how often metadata
+        /// sync occurs for records where the sync can be done efficiently 
+        /// in-place, without requiring a full re-write of the metadata file.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>0</c>.
+        /// The default value is <c>0</c>. Zero means that this feature is 
+        /// disabled and <see cref="ServiceMetaPeriod"/> is the only time when 
+        /// metadata sync occurs.
         /// </remarks>
         [DataMember(Name = "partialServiceMetaPeriod", EmitDefaultValue = false)]
         public int? PartialServiceMetaPeriod
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies in seconds how often the 
+        /// indexer checks the status of the child operating system processes 
+        /// it has launched to see if it can launch new processes for queued 
+        /// requests.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>1</c>.
+        /// The default value is <c>15</c>. Zero means the indexer will check 
+        /// child process status every second. This value is capped at 
+        /// <c>4294967295</c>, equivalent to <see cref="UInt32.Max"/>. 
         /// </remarks>
         [DataMember(Name = "processTrackerServiceInterval", EmitDefaultValue = false)]
-        public int? ProcessTrackerServiceInterval
+        public uint? ProcessTrackerServiceInterval
         { get; set; }
 
         /// <summary>
-        /// Gets or sets
-        ///
+        /// Gets or sets a value that specifies in seconds when events are 
+        /// dropped into a quarantine bucket.
         /// </summary>
         /// <remarks>
-        /// The default value is <c>2592000</c>.
+        /// Events with a timestamp newer than "now" plus this value are 
+        /// dropped into a quarantine bucket. This is a mechanism to prevent 
+        /// main hot buckets from being polluted with fringe events. The 
+        /// default value is <c>2592000</c>, equivalent to thirty days.
         /// </remarks>
         [DataMember(Name = "quarantineFutureSecs", EmitDefaultValue = false)]
         public int? QuarantineFutureSecs

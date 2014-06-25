@@ -42,7 +42,7 @@
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button" Click="backButton_Click"/>
             <!--<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Top" Margin="10,45,647,0" FontFamily="Global User Interface"/>-->
-            <Image  Source="/Images/splunkSearchDemo.png" Grid.Column="1"  Margin="0,20,0,10" HorizontalAlignment="Left" Height="70" IsHitTestVisible="False"/>
+            <Image  Source="/Assets/splunkSearchDemo.png" Grid.Column="1"  Margin="0,20,0,10" HorizontalAlignment="Left" Height="70" IsHitTestVisible="False"/>
 
             <StackPanel Grid.Column="2" Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">

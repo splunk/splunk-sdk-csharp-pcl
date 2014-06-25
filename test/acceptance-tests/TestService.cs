@@ -736,33 +736,42 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetConfigurations()
         {
+            Stopwatch stopwatch = new Stopwatch();
             foreach (Namespace ns in TestNamespaces)
             {
+                Console.WriteLine("namespace=" + ns);
                 using (var service = await SdkHelper.CreateService())
                 {
                     var inputsConfiguration = await service.Configurations.GetAsync("inputs");
 
-                    int count2 = 0;
-
+                    Console.WriteLine("    # of inputs={0}.", inputsConfiguration.Count);
+                    stopwatch.Start();
                     foreach (var stanza in inputsConfiguration)  // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                     {
                         await stanza.GetAsync();
                     }
-
+                    stopwatch.Stop();
+                    Console.WriteLine("    take {0}s to enumberate inputsConfiguration.", stopwatch.Elapsed.Seconds);
                     await service.Configurations.GetAllAsync();
 
+                    Console.WriteLine("    # of service.Configurations={0}.", service.Configurations.Count);
+                    stopwatch.Start();
                     foreach (Configuration configuration in service.Configurations)
                     {
                         await configuration.GetAllAsync();
 
+                        Console.WriteLine("        # of configuration={0}.", configuration.Count);
                         foreach (ConfigurationStanza stanza in configuration)
                         {
                             await stanza.GetAsync();
                         }
                     }
+                    stopwatch.Stop();
+                    Console.WriteLine("    take {0}s to enumberate service.Configurations.", stopwatch.Elapsed.Seconds);
 
                     var configurationList = new List<Configuration>(service.Configurations.Count);
 
+                    stopwatch.Start();
                     for (int i = 0; i < service.Configurations.Count; i++)
                     {
                         Configuration configuration = service.Configurations[i];
@@ -780,6 +789,8 @@ namespace Splunk.Client.AcceptanceTests
 
                         Assert.Equal(configuration.ToList(), stanzaList);
                     }
+                    stopwatch.Stop();
+                    Console.WriteLine("take {0}s to add/compare all configurations.", stopwatch.Elapsed.Seconds);
 
                     Assert.Equal(service.Configurations.ToList(), configurationList);
                 }

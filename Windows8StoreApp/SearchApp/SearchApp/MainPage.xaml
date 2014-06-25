@@ -48,7 +48,7 @@
                         AutomationProperties.ItemType="Navigation Button" FontFamily="Global User Interface"/>-->
             <!--<TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>-->
-            <Image  Source="/Images/splunkSearchDemo.png"  Margin="297,80,295,10" HorizontalAlignment="Center"/>
+            <Image  Source="/Assets/splunkSearchDemo.png"  Margin="297,80,295,10" HorizontalAlignment="Center"/>
         </Grid>
 
         <StackPanel  Orientation="Horizontal"  HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="2" Height="69" Margin="535,0,589,0" Width="242">

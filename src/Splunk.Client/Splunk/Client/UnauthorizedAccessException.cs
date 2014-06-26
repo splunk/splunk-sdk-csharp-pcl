@@ -14,7 +14,8 @@
  * under the License.
  */
 
-//// TODO: 
+//// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
@@ -25,7 +26,6 @@ namespace Splunk.Client
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
-    using System.Runtime.Serialization;
 
     /// <summary>
     /// The exception that is thrown when a request to access a <see cref=

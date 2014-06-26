@@ -15,8 +15,7 @@
  */
 
 //// TODO:
-//// [X] Eliminate unused extensions and justify the remainder
-//// [O] Contract checks on all public methods
+//// [O] Contract
 //// [O] Documentation
 
 namespace Splunk.Client

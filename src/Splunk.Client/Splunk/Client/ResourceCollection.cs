@@ -17,18 +17,11 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
-//// [X] ResourceEndpoint is an Endpoint that aggregates Resource
 
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.Contracts;
     using System.Dynamic;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.

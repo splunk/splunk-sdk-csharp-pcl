@@ -21,13 +21,6 @@
 
 namespace Splunk.Client
 {
-    using Splunk;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Net;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Represents the setup information for an <see cref="Application"/>.
     /// </summary>

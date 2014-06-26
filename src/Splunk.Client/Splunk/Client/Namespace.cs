@@ -15,21 +15,14 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
-//// [ ] Close with Fred on this:
-////     FJR: As I mentioned in the kitchen, I finally remembered why the Ruby SDK
-////     has all those namespace types. When you are creating an entity instance
-////     from an Atom entry, you have to produce a namespace path to access the entity
-////     with. That namespace is created from the ACL in the Atom data, and there are
-////     a bunch of weird cases that require special handling.
 
 namespace Splunk.Client
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
-    using System.Globalization;
-    using System.Linq;
 
     /// <summary>
     /// Specifies the user/app context for a resource.

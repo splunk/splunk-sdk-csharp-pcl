@@ -15,15 +15,8 @@
  */
 
 //// TODO:
-//// [X] Contracts
+//// [O] Contracts
 //// [O] Documentation
-//// [O] All unsealed classes that implement IDisposable must also implement 
-////     this method: protected virtual void Dispose(bool);
-////     See [Implementing a Dispose Method](http://goo.gl/VPIovn)
-////     All sealed classes that implement IDisposable must also implemnt this
-////     method: void Dispose(bool);
-////     See [GC.SuppressFinalize Method](http://goo.gl/XiI3HZ) and note the
-////     private void Dispose(bool disposing) implementation.
 
 namespace Splunk.Client
 {

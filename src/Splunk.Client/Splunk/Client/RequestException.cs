@@ -14,20 +14,19 @@
  * under the License.
  */
 
-//// TODO: 
+//// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
-    using System.Runtime.Serialization;
     using System.Text;
 
     /// <summary>

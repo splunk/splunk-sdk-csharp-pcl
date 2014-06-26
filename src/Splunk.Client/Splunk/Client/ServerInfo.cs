@@ -21,9 +21,7 @@
 namespace Splunk.Client
 {
     using System;
-    using System.IO;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// Provides information about a Splunk server instance.

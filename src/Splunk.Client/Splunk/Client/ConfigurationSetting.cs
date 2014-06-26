@@ -20,15 +20,8 @@
 
 namespace Splunk.Client
 {
-    using Splunk;
     using System;
     using System.Collections.Generic;
-    using System.Dynamic;
-    using System.IO;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// Provides an object representation of a Splunk configuration setting.

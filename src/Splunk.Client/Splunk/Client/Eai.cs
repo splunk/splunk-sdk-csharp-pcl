@@ -15,12 +15,11 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
 {
-    using System.Dynamic;
-
     /// <summary>
     /// Provides a class that represents a Splunk server's Extensible 
     /// Administration Interface.

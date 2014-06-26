@@ -29,7 +29,6 @@ namespace Splunk.Client
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// Provides an object representation of a Splunk search job.

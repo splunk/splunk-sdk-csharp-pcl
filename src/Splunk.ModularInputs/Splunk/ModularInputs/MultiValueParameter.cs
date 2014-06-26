@@ -23,7 +23,7 @@ namespace Splunk.ModularInputs
     using System.Linq;
 
     /// <summary>
-    /// The <see cref="MultiValueParameter"/> class represents a parameter that
+    /// The <see cref="MultiValueParameter"/> class represents a this that
     /// contains multiple values.
     /// </summary>
     /// <remarks>
@@ -41,7 +41,7 @@ namespace Splunk.ModularInputs
         #region Properties
 
         /// <summary>
-        /// The values in this parameter.
+        /// The values in this this.
         /// </summary>
         [XmlElement("value")]
         public List<string> Values;
@@ -50,34 +50,34 @@ namespace Splunk.ModularInputs
 
         #region Methods
 
-        public static explicit operator List<string>(MultiValueParameter parameter)
+        public List<string> ToListOfString()
         {
-            return new List<string>(parameter.Values);
+            return new List<string>(this.Values);
         }
 
-        public static explicit operator List<bool>(MultiValueParameter parameter)
+        public List<bool> ToListOfBool()
         {
-            return (from x in parameter.Values select Util.ParseSplunkBoolean(x)).ToList();
+            return (from x in this.Values select Util.ParseSplunkBoolean(x)).ToList();
         }
 
-        public static explicit operator List<double>(MultiValueParameter parameter)
+        public List<double> ToListOfDouble()
         {
-            return (from x in parameter.Values select double.Parse(x)).ToList();
+            return (from x in this.Values select double.Parse(x)).ToList();
         }
 
-        public static explicit operator List<float>(MultiValueParameter parameter)
+        public List<float> ToListOfFloat()
         {
-            return (from x in parameter.Values select float.Parse(x)).ToList();
+            return (from x in this.Values select float.Parse(x)).ToList();
         }
 
-        public static explicit operator List<int>(MultiValueParameter parameter)
+        public List<int> ToListOfInt()
         {
-            return (from x in parameter.Values select int.Parse(x)).ToList();
+            return (from x in this.Values select int.Parse(x)).ToList();
         }
 
-        public static explicit operator List<long>(MultiValueParameter parameter)
+        public List<long> ToListOfLong()
         {
-            return (from x in parameter.Values select long.Parse(x)).ToList();
+            return (from x in this.Values select long.Parse(x)).ToList();
         }
         
         #endregion

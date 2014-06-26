@@ -32,98 +32,98 @@ namespace Splunk.ModularInputs
         [XmlAttribute("name")]
         public string Name { get; set; }
 
-        public static explicit operator string(Parameter parameter)
+        public string ToString()
         {
-            if (parameter is SingleValueParameter)
-                return (string)(SingleValueParameter)parameter;
+            if (this is SingleValueParameter)
+                return (string)(SingleValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to string");
         }
 
-        public static explicit operator int(Parameter parameter)
+        public int ToInt()
         {
-            if (parameter is SingleValueParameter)
-                return (int)(SingleValueParameter)parameter;
+            if (this is SingleValueParameter)
+                return (int)(SingleValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to int");
         }
 
-        public static explicit operator double(Parameter parameter)
+        public double ToDouble()
         {
-            if (parameter is SingleValueParameter)
-                return (double)(SingleValueParameter)parameter;
+            if (this is SingleValueParameter)
+                return (double)(SingleValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to double");
         }
 
-        public static explicit operator float(Parameter parameter)
+        public float ToFloat()
         {
-            if (parameter is SingleValueParameter)
-                return (float)(SingleValueParameter)parameter;
+            if (this is SingleValueParameter)
+                return (float)(SingleValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to float");
         }
 
-        public static explicit operator long(Parameter parameter)
+        public long ToLong()
         {
-            if (parameter is SingleValueParameter)
-                return (long)(SingleValueParameter)parameter;
+            if (this is SingleValueParameter)
+                return (long)(SingleValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to long");
         }
 
-        public static explicit operator bool(Parameter parameter)
+        public bool ToBool()
         {
-            if (parameter is SingleValueParameter)
-                return (bool)(SingleValueParameter)parameter;
+            if (this is SingleValueParameter)
+                return (bool)(SingleValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to bool");
         }
 
-        public static explicit operator List<string>(Parameter parameter)
+        public List<string> ToListOfString()
         {
-            if (parameter is MultiValueParameter)
-                return (List<string>)(MultiValueParameter)parameter;
+            if (this is MultiValueParameter)
+                return (List<string>)(MultiValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<string>");
         }
 
-        public static explicit operator List<bool>(Parameter parameter)
+        public List<bool> ToListOfBool()
         {
-            if (parameter is MultiValueParameter)
-                return (List<bool>)(MultiValueParameter)parameter;
+            if (this is MultiValueParameter)
+                return (List<bool>)(MultiValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<bool>");
         }
 
-        public static explicit operator List<double>(Parameter parameter)
+        public List<double> ToListOfDouble()
         {
-            if (parameter is MultiValueParameter)
-                return (List<double>)(MultiValueParameter)parameter;
+            if (this is MultiValueParameter)
+                return (List<double>)(MultiValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<double>");
         }
 
-        public static explicit operator List<float>(Parameter parameter)
+        public List<float> ToListOfFloat()
         {
-            if (parameter is MultiValueParameter)
-                return (List<float>)(MultiValueParameter)parameter;
+            if (this is MultiValueParameter)
+                return (List<float>)(MultiValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<float>");
         }
 
-        public static explicit operator List<int>(Parameter parameter)
+        public List<int> ToListOfInt()
         {
-            if (parameter is MultiValueParameter)
-                return (List<int>)(MultiValueParameter)parameter;
+            if (this is MultiValueParameter)
+                return (List<int>)(MultiValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<int>");
         }
 
-        public static explicit operator List<long>(Parameter parameter)
+        public List<long> ToListOfLong()
         {
-            if (parameter is MultiValueParameter)
-                return (List<long>)(MultiValueParameter)parameter;
+            if (this is MultiValueParameter)
+                return (List<long>)(MultiValueParameter)this;
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<long>");
         }

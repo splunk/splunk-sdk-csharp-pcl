@@ -45,8 +45,8 @@ namespace random_numbers
             
         public override bool Validate(Validation validation, out string errorMessage)
         {
-            double min = (double)validation.Parameters["min"];
-            double max = (double)validation.Parameters["max"];
+            double min = validation.Parameters["min"].ToDouble();
+            double max = validation.Parameters["max"].ToDouble();
 
             if (min >= max) {
                 errorMessage = "min must be less than max.";
@@ -61,8 +61,8 @@ namespace random_numbers
 
         public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
         {
-            double min = (double)inputDefinition.Parameters["min"];
-            double max = (double)inputDefinition.Parameters["max"];
+            double min = inputDefinition.Parameters["min"].ToDouble();
+            double max = inputDefinition.Parameters["max"].ToDouble();
 
             while (true)
             {

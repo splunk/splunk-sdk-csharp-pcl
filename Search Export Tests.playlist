@@ -1,0 +1,8 @@
+<Playlist Version="1.0">
+  <Add Test="Splunk.Client.AcceptanceTests.TestService.CanCancelExportSearchPreviews" />
+  <Add Test="Splunk.Client.AcceptanceTests.TestService.CanCancelExportSearchResults" />
+  <Add Test="Splunk.Client.AcceptanceTests.TestService.CanExportSearchPreviewsToEnumerable" />
+  <Add Test="Splunk.Client.AcceptanceTests.TestService.CanExportSearchPreviewsToObservable" />
+  <Add Test="Splunk.Client.AcceptanceTests.TestService.CanExportSearchResultsToObservable" />
+  <Add Test="Splunk.Client.AcceptanceTests.TestService.CanExportSearchResultsToEnumerable" />
+</Playlist>

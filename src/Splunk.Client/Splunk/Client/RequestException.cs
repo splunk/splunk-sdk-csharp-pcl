@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Linq;
@@ -54,7 +55,7 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(message != null);
 
-            this.Details = new List<Message>(details ?? Enumerable.Empty<Message>());
+            this.Details = new ReadOnlyCollection<Message>(new List<Message>(details ?? Enumerable.Empty<Message>()));
             this.StatusCode = message.StatusCode;
         }
 

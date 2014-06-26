@@ -21,7 +21,6 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Globalization;
     using System.IO;
 
     /// <summary>

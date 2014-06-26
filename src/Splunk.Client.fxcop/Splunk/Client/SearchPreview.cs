@@ -15,6 +15,7 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
 //// [ ] Read messages and represent them in this class (search for "//// Skip messages")
 
@@ -23,10 +24,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Diagnostics.Contracts;
-    using System.IO;
-    using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
     

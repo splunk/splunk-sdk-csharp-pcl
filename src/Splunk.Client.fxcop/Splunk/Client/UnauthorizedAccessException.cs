@@ -14,7 +14,8 @@
  * under the License.
  */
 
-//// TODO: 
+//// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
@@ -25,14 +26,14 @@ namespace Splunk.Client
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
-    using System.Runtime.Serialization;
+	using System.Runtime.Serialization;
 
     /// <summary>
     /// The exception that is thrown when a request to access a <see cref=
     /// "Resource&lt;TResource&gt;"/> results in <see cref="HttpStatusCode.Forbidden"/>.
     /// </summary>
     [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
-    [Serializable]
+	[Serializable]
     public sealed class UnauthorizedAccessException : RequestException
     {
         /// <summary>

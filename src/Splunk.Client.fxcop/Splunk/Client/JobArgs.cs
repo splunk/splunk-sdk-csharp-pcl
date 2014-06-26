@@ -15,15 +15,13 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
 //// [ ] Class for specifying a time string.
 
 namespace Splunk.Client
 {
-    using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics.Contracts;
     using System.Runtime.Serialization;
 
     /// <summary>

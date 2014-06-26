@@ -26,7 +26,6 @@ namespace Splunk.Client
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
-    using System.IO;
 
     /// <summary>
     /// Provides a base class for implementing strong types backed by <see 

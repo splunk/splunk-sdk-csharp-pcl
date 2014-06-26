@@ -20,12 +20,7 @@
 
 namespace Splunk.Client
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Globalization;
-    using System.IO;
-    using System.Linq;
 
     /// <summary>
     /// Provides a converter to convert an <see cref="IEnumerable&lt;T&gt;"/> 

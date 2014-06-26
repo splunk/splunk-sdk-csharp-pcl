@@ -15,7 +15,7 @@
  */
 
 //// TODO:
-//// [0] Contracts
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client

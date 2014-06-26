@@ -15,12 +15,11 @@
  */
 
 //// TODO:
-//// [O]  Documentation
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
-    using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Runtime.Serialization;
 
     /// <summary>

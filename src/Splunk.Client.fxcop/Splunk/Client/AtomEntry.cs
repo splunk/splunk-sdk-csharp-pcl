@@ -15,18 +15,10 @@
  */
 
 //// TODO:
-////
-//// [O] Either drop or improve AtomEntry.NormalizePropertyName
-////     Improved AtomEntry.NormalizePropertyName since we do not have
-////     known serialization requirements; just deserialization.
-////
 //// [O] Contracts
-////
 //// [O] Documentation
-////
 //// [ ] Performance: NameTable could make in AtomEntry.ReadXmlAsync and 
 ////     AtomFeed.ReadXmlAsync significantly faster.
-////
 //// [ ] Synchronization: AtomFeed.ReadXmlAsync and AtomEntry.ReadXmlAsync can
 ////     be called more than once. (In practice these methods are never called
 ////     move than once.)

@@ -16,17 +16,13 @@
 
 //// TODO:
 //// [O] Contracts
-//// [ ] Documentation
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Globalization;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// 

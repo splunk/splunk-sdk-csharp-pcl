@@ -15,15 +15,16 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
-    using System.IO;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.Globalization;
+    using System.IO;
 
     /// <summary>
     /// Provides a way to convert objects to values of some type.

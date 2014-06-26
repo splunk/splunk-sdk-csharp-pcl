@@ -25,9 +25,6 @@ namespace Splunk.Client
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Runtime.Serialization;
     using System.Threading.Tasks;
     
     /// <summary>

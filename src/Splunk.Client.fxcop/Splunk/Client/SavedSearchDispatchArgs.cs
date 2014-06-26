@@ -15,8 +15,7 @@
  */
 
 //// TODO:
-//// [ ] Port DispatchTimeFormat and use it wherever appropriate. Can we create
-////     a relative as well as an absolute time formatter?
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client

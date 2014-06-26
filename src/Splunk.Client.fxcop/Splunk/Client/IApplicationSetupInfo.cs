@@ -14,10 +14,12 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+
 namespace Splunk.Client
 {
-    using System;
-
     public interface IApplicationSetupInfo : IBaseResource
     {
         Eai Eai { get; }

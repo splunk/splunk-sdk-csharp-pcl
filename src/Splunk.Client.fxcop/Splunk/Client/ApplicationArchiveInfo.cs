@@ -21,7 +21,6 @@
 namespace Splunk.Client
 {
     using System;
-    using System.IO;
 
     /// <summary>
     /// Provides information about an application archive produced by Splunk.

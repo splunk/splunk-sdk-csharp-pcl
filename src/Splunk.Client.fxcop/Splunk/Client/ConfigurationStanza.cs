@@ -26,7 +26,6 @@ namespace Splunk.Client
     using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
 

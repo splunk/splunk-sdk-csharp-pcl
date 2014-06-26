@@ -109,7 +109,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if lookups should be applied to events processed by
-        /// the search <see cref="Job"/>; <c>false</c> otherwise.
+        /// the search <see cref="Job"/>; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>true</c>. Depending on the nature of the

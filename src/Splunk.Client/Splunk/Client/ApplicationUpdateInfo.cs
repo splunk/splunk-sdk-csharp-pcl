@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
@@ -96,9 +97,9 @@ namespace Splunk.Client
         /// <remarks>
         /// A value of <c>null</c> indicates that no update is available.
         /// </remarks>
-        public Update_t Update
+        public UpdateAdapter Update
         {
-            get { return this.Content.GetValue("Update", Update_t.Converter.Instance); }
+            get { return this.Content.GetValue("Update", UpdateAdapter.Converter.Instance); }
         }
 
         /// <summary>
@@ -114,7 +115,8 @@ namespace Splunk.Client
 
         #region Types
 
-        public class Update_t : ExpandoAdapter<Update_t>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public class UpdateAdapter : ExpandoAdapter<UpdateAdapter>
         {
             /// <summary>
             /// Get the name of the application.
@@ -152,7 +154,7 @@ namespace Splunk.Client
             /// <summary>
             /// Get the URI to the Splunkbase page for the application.
             /// </summary>
-            public string HomePage
+            public string Homepage
             {
                 get { return this.GetValue("Homepage", StringConverter.Instance); }
             }

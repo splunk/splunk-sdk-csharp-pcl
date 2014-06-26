@@ -21,6 +21,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
@@ -46,7 +47,9 @@ namespace Splunk.Client
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         protected internal Server(Service service)
             : this(service.Context, service.Namespace)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Server"/> class.

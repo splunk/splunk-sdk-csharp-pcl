@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
 
     /// <summary>
     /// Represents the value of a parameter to a Splunk REST API endpoint.
@@ -40,7 +41,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, byte value)
-            : this(name, value.ToString())
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
         { }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, SByte value)
-            : this(name, value.ToString())
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
         { }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, decimal value)
-            : this(name, value.ToString())
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
         { }
 
         /// <summary>
@@ -92,7 +93,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, int value)
-            : this(name, value.ToString())
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
         { }
 
         /// <summary>
@@ -105,7 +106,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, uint value)
-            : this(name, value.ToString())
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
         { }
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, double value)
-            : this(name, value.ToString())
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
         { }
 
         /// <summary>
@@ -131,7 +132,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, float value)
-            : this(name, value.ToString())
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
         { }
 
         /// <summary>
@@ -144,8 +145,8 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, long value)
-            : this(name, value.ToString())
-        {  }
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Argument"/> class.
@@ -157,7 +158,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, ulong value)
-            : this(name, value.ToString())
+            : this(name, value.ToString(CultureInfo.InvariantCulture.NumberFormat))
         { }
 
         /// <summary>
@@ -170,7 +171,7 @@ namespace Splunk.Client
         /// Argument value.
         /// </param>
         public Argument(string name, object value)
-            : this(name, value.ToString())
+            : this(name, value == null ? null : value.ToString())
         { }
 
         /// <summary>
@@ -333,8 +334,8 @@ namespace Splunk.Client
                 return 0;
             }
 
-            int result = this.Name.CompareTo(other.Name);
-            return result != 0 ? result : this.Value.CompareTo(other.Value);
+            int result = string.Compare(this.Name, other.Name, StringComparison.Ordinal);
+            return result != 0 ? result : string.Compare(this.Value, other.Value, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -389,6 +390,113 @@ namespace Splunk.Client
             hash = (hash * 23) + this.Value.GetHashCode();
 
             return hash;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator >(Argument a, Argument b)
+        {
+            if (a == null)
+            {
+                return false;
+            }
+
+            return a.CompareTo(b) > 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator >=(Argument a, Argument b)
+        {
+            if (a == null)
+            {
+                return b == null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Argument"/> instances have the
+        /// same value. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Argument"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Argument"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is the same as the 
+        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator ==(Argument a, Argument b)
+        {
+            if (a == null)
+            {
+                return b == null;
+            }
+
+            return a.Equals(b);
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Argument"/> instances have 
+        /// different values. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Argument"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Argument"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is different than 
+        /// the value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator !=(Argument a, Argument b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator <(Argument a, Argument b)
+        {
+            if (a == null)
+            {
+                return b != null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator <=(Argument a, Argument b)
+        {
+            if (a == null)
+            {
+                return true;
+            }
+
+            return a.CompareTo(b) < 0;
         }
 
         /// <summary>

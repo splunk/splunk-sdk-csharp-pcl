@@ -67,7 +67,7 @@ namespace Splunk.Client.Helpers
             var context = new MockContext(Splunk.Scheme, Splunk.Host, Splunk.Port);
             var service = new Service(context, ns);
             
-            await service.LoginAsync(Splunk.Username, Splunk.Password);
+            await service.LogOnAsync(Splunk.Username, Splunk.Password);
 
             return service;
         }

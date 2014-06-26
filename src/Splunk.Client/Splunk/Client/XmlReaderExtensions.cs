@@ -23,6 +23,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -78,13 +79,15 @@ namespace Splunk.Client
             {
                 case ReadState.EndOfFile:
                     
-                    message = string.Format("Reached end of file where {0} was expected.", expected);
+                    message = string.Format(CultureInfo.CurrentCulture, "Reached end of file where {0} was expected.", 
+                        expected);
                     break;
                 
                 case ReadState.Interactive:
                 
                     var actual = FormatNode(reader.NodeType, reader.Name);
-                    message = string.Format("Read {1} where {0} was expected.", expected, actual);
+                    message = string.Format(CultureInfo.CurrentCulture, "Read {1} where {0} was expected.", 
+                        expected, actual);
                     break;
                 
                 default: throw new InvalidOperationException(); // TODO: Diagnostics
@@ -132,7 +135,8 @@ namespace Splunk.Client
 
             if (string.IsNullOrEmpty(value))
             {
-                var message = string.Format("Value of <{0}> attribute {1} is missing.", reader.Name, name);
+                var message = string.Format(CultureInfo.CurrentCulture, "Value of <{0}> attribute {1} is missing.", 
+                    reader.Name, name);
                 throw new InvalidDataException(message);
             }
 
@@ -514,7 +518,8 @@ namespace Splunk.Client
                     message = "Premature end of file";
                     break;
                 case ReadState.Interactive:
-                    message = string.Format("Unexpected {0}", FormatNode(reader.NodeType, reader.Name));
+                    message = string.Format(CultureInfo.CurrentCulture, "Unexpected {0}", 
+                        FormatNode(reader.NodeType, reader.Name));
                     break;
                 default: throw new InvalidOperationException(); // TODO: Diagnostics
             }
@@ -565,7 +570,10 @@ namespace Splunk.Client
                     
                     return string.IsNullOrEmpty(name) ? "end-tag" : string.Concat("</", name, ">");
                 
-                default: throw new ArgumentException(string.Format("Unsupported XmlNodeType: {0}", nodeType));
+                default:
+
+                    var text = string.Format(CultureInfo.CurrentCulture, "Unsupported XmlNodeType: {0}", nodeType);
+                    throw new ArgumentException(text);
             }
         }
 

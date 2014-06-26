@@ -50,9 +50,11 @@ namespace Splunk.Client
         /// </param>
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
-        protected internal BaseEntity(Service service, ResourceName name)
+        protected BaseEntity(Service service, ResourceName name)
             : base(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseEntity"/> 
@@ -75,7 +77,7 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        public BaseEntity(Context context, Namespace ns, ResourceName resourceName)
+        protected BaseEntity(Context context, Namespace ns, ResourceName resourceName)
             : base(context, ns, resourceName)
         { }
 
@@ -104,7 +106,7 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        public BaseEntity(Context context, Namespace ns, ResourceName collection, string name)
+        protected BaseEntity(Context context, Namespace ns, ResourceName collection, string name)
             : base(context, ns, new ResourceName(collection, name))
         { }
 
@@ -127,7 +129,7 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        public BaseEntity(Context context, AtomFeed feed)
+        protected BaseEntity(Context context, AtomFeed feed)
         {
             this.Initialize(context, feed);
         }
@@ -140,7 +142,7 @@ namespace Splunk.Client
         /// This API supports the Splunk client infrastructure and is not 
         /// intended to be used directly from your code.
         /// </remarks>
-        public BaseEntity()
+        protected BaseEntity()
         { }
 
         #endregion
@@ -418,14 +420,14 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        static readonly TResource NoSnapshot;
+        static readonly TResource MissingResource = CreateMissingResource();
+        volatile TResource snapshot = MissingResource;
 
-        volatile TResource snapshot = NoSnapshot;
-
-        static BaseEntity()
+        static TResource CreateMissingResource()
         {
-            NoSnapshot = new TResource();
-            NoSnapshot.Initialize(new ExpandoObject());
+            var resource = new TResource();
+            resource.Initialize(new ExpandoObject());
+            return resource;
         }
 
         #endregion

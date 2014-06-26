@@ -37,7 +37,7 @@ namespace search_export
 
         public static async Task Run(Service service)
         {
-            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             //// Search : Export Previews
 

@@ -21,14 +21,19 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
     using System.Text;
 
     /// <summary>
     /// The expception that is thrown when a Splunk service request fails.
     /// </summary>
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
     public class RequestException : Exception
     {
         #region Constructors
@@ -45,9 +50,11 @@ namespace Splunk.Client
         /// A sequence of <see cref="Message"/> instances detailing the cause
         /// of the <see cref="RequestException"/>.
         /// </param>
-        internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
+        protected internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(FormatMessageText(message, details))
         {
+            Contract.Requires<ArgumentNullException>(message != null);
+
             this.Details = new List<Message>(details ?? Enumerable.Empty<Message>());
             this.StatusCode = message.StatusCode;
         }

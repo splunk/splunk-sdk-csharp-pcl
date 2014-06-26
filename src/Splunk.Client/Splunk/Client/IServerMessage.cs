@@ -33,8 +33,6 @@ namespace Splunk.Client
     /// </summary>
     public interface IServerMessage : IEntity
     {
-        #region Properties
-
         /// <summary>
         /// 
         /// </summary>
@@ -58,7 +56,5 @@ namespace Splunk.Client
         /// </summary>
         DateTime TimeCreated
         { get; }
-
-        #endregion
     }
 }

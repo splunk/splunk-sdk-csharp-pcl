@@ -45,6 +45,6 @@ namespace Splunk.Client
         /// <see cref="Job"/> is complete.
         /// </summary>
         [EnumMember(Value = "oneshot")]
-        Oneshot
+        OneShot
     }
 }

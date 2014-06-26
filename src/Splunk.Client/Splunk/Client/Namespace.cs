@@ -26,7 +26,9 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
 
     /// <summary>
@@ -233,8 +235,8 @@ namespace Splunk.Client
                 return 0;
             }
 
-            int difference = this.User.CompareTo(other.User);
-            return difference != 0 ? difference : this.App.CompareTo(other.App);
+            int difference = string.Compare(this.User, other.User, StringComparison.Ordinal);
+            return difference != 0 ? difference : string.Compare(this.App, other.App, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -293,6 +295,118 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator >(Namespace a, Namespace b)
+        {
+            if (a == null)
+            {
+                return false;
+            }
+
+            return a.CompareTo(b) > 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator >=(Namespace a, Namespace b)
+        {
+            if (a == null)
+            {
+                return b == null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Namespace"/> instances have 
+        /// the same value. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Namespace"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Namespace"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is the same as the 
+        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator ==(Namespace a, Namespace b)
+        {
+            if (object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            if ((object)a == null || (object)b == null)
+            {
+                return false;
+            }
+
+            return a.Equals(b);
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Namespace"/> instances have 
+        /// different values. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Namespace"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Namespace"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is different than 
+        /// the value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator !=(Namespace a, Namespace b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator <(Namespace a, Namespace b)
+        {
+            if (a == null)
+            {
+                return b != null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator <=(Namespace a, Namespace b)
+        {
+            if (a == null)
+            {
+                return true;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
         /// Converts the value of the current <see cref="Namespace"/> to its
         /// equivalent string representation.
         /// </summary>
@@ -314,6 +428,7 @@ namespace Splunk.Client
         /// <remarks>
         /// The value is converted using <see cref="Uri.EscapeUriString"/>.
         /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
         public string ToUriString()
         {
             return this.ToString(Uri.EscapeDataString);

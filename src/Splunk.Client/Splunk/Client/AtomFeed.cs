@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using System.Threading.Tasks;
     using System.Xml;
@@ -336,7 +337,9 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            return string.Format("AtomFeed(Title={0}, Author={1}, Id={2}, Updated={3})", this.Title, this.Author, this.Id, this.Updated);
+            var text = string.Format(CultureInfo.CurrentCulture, "AtomFeed(Title={0}, Author={1}, Id={2}, Updated={3})",
+                this.Title, this.Author, this.Id, this.Updated);
+            return text;
         }
 
         #endregion

@@ -285,7 +285,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if the PDF server is enabled on the e-mail action for
-        /// a <see cref="SavedSearch"/>; <c>false</c> otherwise.
+        /// a <see cref="SavedSearch"/>; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
@@ -302,7 +302,7 @@ namespace Splunk.Client
         /// <value>
         /// <c>true</c>, if the results of the e-mail action for a <see cref=
         /// "SavedSearch"/> should be created and sent as a PDF report; 
-        /// <c>false</c> otherwise.
+        /// otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>
@@ -317,7 +317,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if search results should be included in the action
-        /// e-mail for a <see cref="SavedSearch"/>; <c>false</c> otherwise.
+        /// e-mail for a <see cref="SavedSearch"/>; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// Results can be either attached or inline. See <see cref=
@@ -360,7 +360,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if the e-mail action of a <see cref="SavedSearch"/>
-        /// signifies a trackable alert; <c>false</c> otherwise.
+        /// signifies a trackable alert; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
@@ -394,7 +394,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if SSL should be used when communicatin with the SMTP
-        /// server; <c>false</c> otherwise.
+        /// server; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
@@ -424,7 +424,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if columns should be sorted from least wide to most 
-        /// wide, left to right; <c>false</c> otherwise.
+        /// wide, left to right; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
@@ -477,7 +477,7 @@ namespace Splunk.Client
         /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
         /// </remarks>
         [DataMember(Name = "action.populate_lookup.hostname", EmitDefaultValue = false)]
-        public string ActionPopulateLookupHostname
+        public string ActionPopulateLookupHostName
         { get; set; }
 
         /// <summary>
@@ -604,7 +604,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if the RSS action of a <see cref="SavedSearch"/>
-        /// signifies a trackable alert; <c>false</c> otherwise.
+        /// signifies a trackable alert; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
@@ -680,7 +680,7 @@ namespace Splunk.Client
         /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
         /// </remarks>
         [DataMember(Name = "action.script.hostname", EmitDefaultValue = false)]
-        public string ActionScriptHostname
+        public string ActionScriptHostName
         { get; set; }
 
         /// <summary>
@@ -720,7 +720,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if the script action of a <see cref="SavedSearch"/>
-        /// signifies a trackable alert; <c>false</c> otherwise.
+        /// signifies a trackable alert; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
@@ -776,7 +776,7 @@ namespace Splunk.Client
         /// <value>
         /// <c>true</c>, if the index action of a <see cref="SavedSearch"/>
         /// should execute the summary index action as part of the <see cref=
-        /// "SavedSearch"/>; <c>false</c> otherwise.
+        /// "SavedSearch"/>; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// This option is considered only if the summary index action is 
@@ -901,7 +901,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if Splunk should apply the alert actions to the entire
-        /// result set or on each individual result; <c>false</c> otherwise.
+        /// result set or on each individual result; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>true</c>.
@@ -960,7 +960,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if the actions triggered by a scheduled <see cref=
-        /// "SavedSearch"/> should be tracked; <c>false</c> otherwise. 
+        /// "SavedSearch"/> should be tracked; otherwise, <c>false</c>. 
         /// </value>
         /// <remarks>
         /// The default value is <see cref="AlertTrack"/>.Automatic.
@@ -991,7 +991,7 @@ namespace Splunk.Client
         /// <value>
         /// <c>true</c>, if the scheduler should ensure that the data for a
         /// <see cref="SavedSearch"/> is automatically summarized; 
-        /// <c>false</c> otherwise.
+        /// otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
@@ -1233,7 +1233,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if the <see cref="SavedSearch"/> should be disabled;
-        /// <c>false</c> otherwise.
+        /// otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// Disabled saved searches are not visible in Splunk Web.
@@ -1346,7 +1346,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if the real-time window for a <see cref="SavedSearch"/>
-        /// should be back filled; <c>false</c> otherwise.
+        /// should be back filled; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// This value only applies to real-time searches.
@@ -1361,7 +1361,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if a <see cref="SavedSearch"/> should run in its own
-        /// process; <c>false</c> otherwise.
+        /// process; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>. A searches against an index must 
@@ -1414,7 +1414,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if a <see cref="SavedSearch"/> is to be run on a
-        /// schedule; <c>false</c> otherwise.
+        /// schedule; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c>.
@@ -1459,7 +1459,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if a <see cref="SavedSearch"/> is to be run on a 
-        /// realtime schedule; <c>false</c> otherwise.
+        /// realtime schedule; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>true</c>. The scheduler bases its 
@@ -1483,7 +1483,7 @@ namespace Splunk.Client
         /// searches that have continuous scheduling.</para>
         /// </remarks>
         [DataMember(Name = "realtime_schedule", EmitDefaultValue = false)]
-        public string RealtimeSchedule
+        public string RealTimeSchedule
         { get; set; }
 
         /// <summary>
@@ -1494,7 +1494,7 @@ namespace Splunk.Client
         /// <value>
         /// <c>true</c>, if a realtime <see cref="SavedSearch"/> managed by the 
         /// scheduler should be restarted when a new search peer becomes
-        /// available; <c>false</c> otherwise.
+        /// available; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>true</c>.
@@ -1509,7 +1509,7 @@ namespace Splunk.Client
         /// </summary>
         /// <value>
         /// <c>true</c>, if a <see cref="SavedSearch"/> runs when Splunk
-        /// starts; <c>false</c> otherwise.
+        /// starts; otherwise, <c>false</c>.
         /// </value>
         /// <remarks>
         /// The default value is <c>false</c> indicating that after Splunk 

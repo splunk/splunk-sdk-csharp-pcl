@@ -29,6 +29,7 @@ namespace Splunk.Client
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading;
@@ -170,7 +171,8 @@ namespace Splunk.Client
         {
             if (this.awaiter.LastError != null)
             {
-                var text = string.Format("Enumeration ended prematurely : {0}.", this.awaiter.LastError);
+                var text = string.Format(CultureInfo.CurrentCulture, "Enumeration ended prematurely : {0}.", 
+                    this.awaiter.LastError);
                 throw new TaskCanceledException(text, this.awaiter.LastError);
             }
         }

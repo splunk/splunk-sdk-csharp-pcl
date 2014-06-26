@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Net;
     using System.Runtime.Serialization;
@@ -63,7 +64,9 @@ namespace Splunk.Client
         /// </exception>
         protected internal Application(Service service, string name)
             : this(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Application"/> class.
@@ -299,8 +302,24 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
         {
-            var arguments = new Argument[] { new Argument("check_for_updates", checkForUpdates) };
-            return await this.UpdateAsync(arguments.AsEnumerable().Concat(attributes));
+            var updateArgs = new UpdateArgs { CheckForUpdates = checkForUpdates };
+            return await this.UpdateAsync(updateArgs.AsEnumerable().Concat(attributes));
+        }
+
+        #endregion
+
+        #region Types
+
+        class UpdateArgs : Args<UpdateArgs>
+        {
+            /// <summary>
+            /// Gets a value that indicates whether Splunk should check Splunkbase
+            /// for updates to an <see cref="Application"/>.
+            /// </summary>
+            [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
+            [DefaultValue(false)]
+            public bool CheckForUpdates
+            { get; set; }
         }
 
         #endregion

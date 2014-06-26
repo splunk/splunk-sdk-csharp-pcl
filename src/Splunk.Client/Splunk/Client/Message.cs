@@ -23,7 +23,9 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -38,7 +40,7 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentOutOfRangeException>(MessageType.Debug <= type && type <= MessageType.Fatal, "type");
             Contract.Requires<ArgumentNullException>(text != null, "text");
-            this.Type = type;
+            this.MessageType = type;
             this.Text = text;
         }
 
@@ -55,7 +57,7 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the type of the current <see cref="Message"/>.
         /// </summary>
-        public MessageType Type
+        public MessageType MessageType
         { get; private set; }
 
         #endregion
@@ -180,8 +182,9 @@ namespace Splunk.Client
                 return 0;
             }
             
-            int difference = this.Type - other.Type;
-            return difference != 0 ? difference : this.Text.CompareTo(other.Text);
+            int difference = this.MessageType - other.MessageType;
+
+            return difference != 0 ? difference : string.Compare(this.Text, other.Text, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -218,7 +221,7 @@ namespace Splunk.Client
             {
                 return false;
             }
-            return object.ReferenceEquals(this, other) || (this.Type == other.Type && this.Text == other.Text);
+            return object.ReferenceEquals(this, other) || (this.MessageType == other.MessageType && this.Text == other.Text);
         }
 
         /// <summary>
@@ -232,10 +235,90 @@ namespace Splunk.Client
             // TODO: Check this against the algorithm presented in Effective Java
             int hash = 17;
 
-            hash = (hash * 23) + this.Type.GetHashCode();
+            hash = (hash * 23) + this.MessageType.GetHashCode();
             hash = (hash * 23) + this.Text.GetHashCode();
             
             return hash;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator >(Message a, Message b)
+        {
+            if (a == null)
+            {
+                return false;
+            }
+
+            return a.CompareTo(b) > 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator >=(Message a, Message b)
+        {
+            if (a == null)
+            {
+                return b == null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Message"/> instances have the
+        /// same value. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is the same as the 
+        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator ==(Message a, Message b)
+        {
+            if (object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            if ((object)a == null || (object)b == null)
+            {
+                return false;
+            }
+
+            return a.Equals(b);
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Message"/> instances have 
+        /// different values. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is different than 
+        /// the value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator !=(Message a, Message b)
+        {
+            return !(a == b);
         }
 
         /// <summary>
@@ -246,7 +329,39 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            return string.Concat(this.Type.ToString(), ": ", this.Text);
+            return string.Concat(this.MessageType.ToString(), ": ", this.Text);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator <(Message a, Message b)
+        {
+            if (a == null)
+            {
+                return b != null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator <=(Message a, Message b)
+        {
+            if (a == null)
+            {
+                return true;
+            }
+
+            return a.CompareTo(b) < 0;
         }
 
         #endregion

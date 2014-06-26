@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace Splunk.Client
     /// <summary>
     /// 
     /// </summary>
-    public struct Pagination
+    public struct Pagination : IEquatable<Pagination>
     {
         /// <summary>
         /// 
@@ -112,6 +113,81 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
+        /// Determines whether the current <see cref="Pagination"/> and another
+        /// one are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Pagination"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <paramref name="other"/> is non <c>null</c> and is 
+        /// the same as the current <see cref="Pagination"/>; otherwise, 
+        /// <c>false</c>.
+        /// </returns>
+        public bool Equals(Pagination other)
+        {
+            return this.itemsPerPage == other.itemsPerPage && this.startIndex == other.startIndex && this.totalResults == other.totalResults;
+        }
+
+        /// <summary>
+        /// Determines whether the current <see cref="Pagination"/> and another
+        /// object are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Pagination"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <paramref name="other"/> is a non <c>null</c> <see 
+        /// cref="Pagination"/> and is the same as the current <see cref=
+        /// "Pagination"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object other)
+        {
+            var otherPagination = other as Pagination?;
+            return otherPagination.HasValue ? this.Equals(otherPagination.Value) : false;
+        }
+
+        /// <summary>
+        /// Computes the hash code for the current <see cref="Pagination"/>.
+        /// </summary>
+        /// <returns>
+        /// The hash code for the current <see cref="Pagination"/>.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            // TODO: Check this against the algorithm presented in Effective Java
+            int hash = 17;
+
+            hash = (hash * 23) + this.ItemsPerPage;
+            hash = (hash * 23) + this.StartIndex;
+            hash = (hash * 23) + this.TotalResults;
+
+            return hash;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator ==(Pagination a, Pagination b)
+        {
+            return a.Equals(b);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator !=(Pagination a, Pagination b)
+        {
+            return !a.Equals(b);
+        }
+
+        /// <summary>
         /// Gets a string representation for the current <see cref="Pagination"/>.
         /// </summary>
         /// <returns>
@@ -119,7 +195,7 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            var text = string.Format("ItemsPerPage = {0}, StartIndex = {1}, TotalResults = {2}", 
+            var text = string.Format(CultureInfo.CurrentCulture, "ItemsPerPage = {0}, StartIndex = {1}, TotalResults = {2}", 
                 this.ItemsPerPage, this.StartIndex, this.TotalResults);
             return text;
         }

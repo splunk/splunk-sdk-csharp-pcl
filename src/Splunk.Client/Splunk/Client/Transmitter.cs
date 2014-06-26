@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -49,7 +50,9 @@ namespace Splunk.Client
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         protected internal Transmitter(Service service)
             : this(service.Context)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Transmitter"/> class.

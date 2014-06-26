@@ -194,7 +194,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task LoginAsync(string username, string password)
+        public virtual async Task LogOnAsync(string username, string password)
         {
             using (var response = await this.Context.PostAsync(Namespace.Default, AuthLogin, new Argument[]
             {
@@ -208,7 +208,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task LogoffAsync()
+        public virtual async Task LogOffAsync()
         {
             var resourceName = new ResourceName(AuthenticationHttpAuthTokens, this.SessionKey);
 
@@ -298,7 +298,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        public virtual async Task<SearchResultStream> SearchOneShotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
         {
             var resourceName = JobCollection.ClassResourceName;
 
@@ -348,6 +348,7 @@ namespace Splunk.Client
         public void Dispose()
         {
             this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>

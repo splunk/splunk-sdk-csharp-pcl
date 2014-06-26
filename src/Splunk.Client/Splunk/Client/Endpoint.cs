@@ -358,6 +358,113 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static bool operator >(Endpoint x, Endpoint y)
+        {
+            if (x == null)
+            {
+                return false;
+            }
+
+            return x.CompareTo(y) > 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static bool operator >=(Endpoint x, Endpoint y)
+        {
+            if (x == null)
+            {
+                return y == null;
+            }
+
+            return x.CompareTo(y) < 0;
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Endpoint"/> instances refer to
+        /// the same resource. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is the same as the 
+        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator ==(Endpoint x, Endpoint y)
+        {
+            if (x == null)
+            {
+                return y == null;
+            }
+
+            return x.Equals(y);
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Endpoint"/> instances refer to 
+        /// different resources. 
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is different than 
+        /// the value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator !=(Endpoint x, Endpoint y)
+        {
+            return !(x == y);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static bool operator <=(Endpoint x, Endpoint y)
+        {
+            if (x == null)
+            {
+                return true;
+            }
+
+            return x.CompareTo(y) < 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        public static bool operator <(Endpoint x, Endpoint y)
+        {
+            if (x == null)
+            {
+                return y != null;
+            }
+
+            return x.CompareTo(y) < 0;
+        }
+
+        /// <summary>
         /// Gets a string identifying the current <see cref="Endpoint"/>.
         /// </summary>
         /// <returns>
@@ -379,7 +486,7 @@ namespace Splunk.Client
         {
             if (initialized)
             {
-                throw new InvalidOperationException("Endpoint was intialized; Initialize operation may not execute again.");
+                throw new InvalidOperationException("Endpoint was initialized; Initialize operation may not execute again.");
             }
         }
 

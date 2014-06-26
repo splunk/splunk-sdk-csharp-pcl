@@ -21,15 +21,17 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// The exception that is thrown when a request to retrieve a <see cref=
     /// "Resource&lt;TResource&gt;"/> results in <see cref="HttpStatusCode.NotFound"/>.
     /// </summary>
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
     public sealed class ResourceNotFoundException : RequestException
     {
         /// <summary>

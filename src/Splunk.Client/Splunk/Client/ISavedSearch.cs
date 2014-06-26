@@ -18,6 +18,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
@@ -32,19 +33,19 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        SavedSearch.Action_t Actions
+        SavedSearch.ActionAdapter Actions
         { get; }
 
         /// <summary>
         /// 
         /// </summary>
-        SavedSearch.Alert_t Alert
+        SavedSearch.AlertAdapter Alert
         { get; }
 
         /// <summary>
         /// 
         /// </summary>
-        SavedSearch.AutoSummarize_t AutoSummarize
+        SavedSearch.AutoSummarizeAdapter AutoSummarize
         { get; }
 
         /// <summary>
@@ -64,13 +65,13 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        SavedSearch.Dispatch_t Dispatch
+        SavedSearch.DispatchAdapter Dispatch
         { get; }
 
         /// <summary>
         /// 
         /// </summary>
-        SavedSearch.Display_t Display
+        SavedSearch.DisplayAdapter Display
         { get; }
 
         /// <summary>
@@ -126,13 +127,13 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        bool RealtimeSchedule
+        bool RealTimeSchedule
         { get; }
 
         /// <summary>
         /// 
         /// </summary>
-        SavedSearch.Request_t Request
+        SavedSearch.RequestAdapter Request
         { get; }
 
         /// <summary>
@@ -214,6 +215,7 @@ namespace Splunk.Client
         /// saved/searches/{name}/history</a> endpoint to construct the <see 
         /// cref="JobCollection"/> object it returns.
         /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         Task<JobCollection> GetHistoryAsync();
 
         /// <summary>
@@ -233,6 +235,7 @@ namespace Splunk.Client
         /// saved/searches/{name}/scheduled_times</a> endpoint to retrieve
         /// the scheduled times it returns.
         /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(DateTime earliestTime, DateTime latestTime);
 
         /// <summary>
@@ -287,13 +290,13 @@ namespace Splunk.Client
     {
         #region Properties
 
-        public abstract SavedSearch.Action_t Actions { get; }
-        public abstract SavedSearch.Alert_t Alert { get; }
-        public abstract SavedSearch.AutoSummarize_t AutoSummarize { get; }
+        public abstract SavedSearch.ActionAdapter Actions { get; }
+        public abstract SavedSearch.AlertAdapter Alert { get; }
+        public abstract SavedSearch.AutoSummarizeAdapter AutoSummarize { get; }
         public abstract string CronSchedule { get; }
         public abstract string Description { get; }
-        public abstract SavedSearch.Dispatch_t Dispatch { get; }
-        public abstract SavedSearch.Display_t Display { get; }
+        public abstract SavedSearch.DispatchAdapter Dispatch { get; }
+        public abstract SavedSearch.DisplayAdapter Display { get; }
         public abstract Eai Eai { get; }
         public abstract bool IsDisabled { get; }
         public abstract bool IsScheduled { get; }
@@ -301,8 +304,8 @@ namespace Splunk.Client
         public abstract int MaxConcurrent { get; }
         public abstract DateTime NextScheduledTime { get; }
         public abstract string QualifiedSearch { get; }
-        public abstract bool RealtimeSchedule { get; }
-        public abstract SavedSearch.Request_t Request { get; }
+        public abstract bool RealTimeSchedule { get; }
+        public abstract SavedSearch.RequestAdapter Request { get; }
         public abstract bool RestartOnSearchPeerAdd { get; }
         public abstract bool RunOnStartup { get; }
         public abstract IReadOnlyList<DateTime> ScheduledTimes { get; }

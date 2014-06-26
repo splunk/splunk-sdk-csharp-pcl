@@ -72,7 +72,7 @@ namespace Splunk.Examples.Authenticate
                 Console.WriteLine("Can't get service configuration without logging in.");
             }
 
-            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             Console.WriteLine("List all configurations of the Splunk service:");
             await service.Configurations.GetAllAsync();
@@ -83,7 +83,7 @@ namespace Splunk.Examples.Authenticate
             }
 
             Console.WriteLine("Log off");
-            await service.LogoffAsync();
+            await service.LogOffAsync();
         }
     }
 }

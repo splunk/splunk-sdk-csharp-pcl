@@ -29,7 +29,8 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;    
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using System.Net.Http;
     using System.Text;
@@ -177,6 +178,7 @@ namespace Splunk.Client
         public void Dispose()
         {
             this.Dispose(true);
+            GC.SuppressFinalize(this); // Enables derivatives that introduce finalizers from needing to reimplement
         }
 
         /// <summary>
@@ -286,7 +288,7 @@ namespace Splunk.Client
         public virtual async Task<Response> PostAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
-            var content = this.CreateStringContent(argumentSets);
+            var content = CreateStringContent(argumentSets);
             return await PostAsync(ns, resource, content, null);
         }
 
@@ -324,7 +326,9 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            return string.Concat(SchemeStrings[(int)this.Scheme], "://", this.Host, ":", this.Port.ToString());
+            var text = string.Concat(CultureInfo.InvariantCulture, SchemeStrings[(int)this.Scheme], "://", this.Host, 
+                ":", this.Port.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            return text;
         }
 
         #endregion
@@ -375,7 +379,7 @@ namespace Splunk.Client
             return uri;
         }
 
-        StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)
+        static StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)
         {
             if (argumentSets == null)
             {

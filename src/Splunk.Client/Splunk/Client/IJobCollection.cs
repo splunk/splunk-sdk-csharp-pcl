@@ -51,7 +51,7 @@ namespace Splunk.Client
 
         public Task<TJob> CreateAsync(string search, JobArgs args, CustomJobArgs customArgs, DispatchState requiredState)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(args == null || args.ExecutionMode != ExecutionMode.Oneshot);
+            Contract.Requires<ArgumentOutOfRangeException>(args == null || args.ExecutionMode != ExecutionMode.OneShot);
             Contract.Requires<ArgumentNullException>(search != null);
             return default(Task<TJob>);
         }

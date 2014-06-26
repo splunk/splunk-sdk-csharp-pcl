@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
     using System.Runtime.Serialization;
@@ -126,8 +127,8 @@ namespace Splunk.Client
         #region Methods
 
         /// <inheritdoc/>
-        public virtual async Task<Index> CreateAsync(string name, IndexAttributes attributes = null, string coldPath = null, 
-            string homePath = null, string thawedPath = null)
+        public virtual async Task<Index> CreateAsync(string name, IndexAttributes attributes = null, 
+            string coldPath = null, string homePath = null, string thawedPath = null)
         {
             var arguments = new CreationArgs()
             {

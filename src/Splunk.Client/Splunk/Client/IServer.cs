@@ -18,6 +18,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Text;
@@ -45,6 +46,7 @@ namespace Splunk.Client
         /// <returns>
         /// An object representing information about the Splunk server.
         /// </returns>
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         Task<ServerInfo> GetInfoAsync();
 
         /// <summary>
@@ -55,6 +57,7 @@ namespace Splunk.Client
         /// An object representing the server settings from the Splunk server
         /// represented by the current instance.
         /// </returns>
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         Task<ServerSettings> GetSettingsAsync();
 
         /// <summary>

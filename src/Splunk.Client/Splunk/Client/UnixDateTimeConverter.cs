@@ -66,7 +66,7 @@ namespace Splunk.Client
                 return dateTime;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input));  // TODO: improved diagnostices
+            throw NewInvalidDataException(input);
         }
 
         static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

@@ -21,18 +21,19 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// The exception that is thrown when a request to retrieve a <see cref=
     /// "BaseResource"/> results in <see cref="HttpStatusCode"/>.InternalServerError.
     /// </summary>
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
     public sealed class InternalServerErrorException : RequestException
     {
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InternalServerErrorException"/>
         /// class.
@@ -50,7 +51,5 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.InternalServerError);
         }
-
-        #endregion
     }
 }

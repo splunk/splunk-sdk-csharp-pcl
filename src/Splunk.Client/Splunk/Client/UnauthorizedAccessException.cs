@@ -21,18 +21,19 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// The exception that is thrown when a request to access a <see cref=
     /// "Resource&lt;TResource&gt;"/> results in <see cref="HttpStatusCode.Forbidden"/>.
     /// </summary>
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
     public sealed class UnauthorizedAccessException : RequestException
     {
-        #region Constructors
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UnauthorizedAccessException"/>
         /// class.
@@ -50,7 +51,5 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.Forbidden);
         }
-
-        #endregion
     }
 }

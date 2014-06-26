@@ -35,6 +35,7 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
     public sealed class SearchEventArgs : Args<SearchEventArgs>
     {
         /// <summary>

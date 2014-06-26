@@ -73,7 +73,7 @@ namespace Splunk.Client
         /// current <see cref="ServerMessageCollection"/> will contain all 
         /// changes since the select entites were last retrieved.
         /// </remarks>
-        Task GetSliceAsync(ServerMessageCollection.Filter selectionCriteria);
+        Task GetSliceAsync(ServerMessageCollection.Filter criteria);
     }
 
     [ContractClassFor(typeof(IServerMessageCollection<>))]

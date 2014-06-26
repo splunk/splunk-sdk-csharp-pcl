@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Net;
     using System.Runtime.Serialization;
@@ -58,7 +59,9 @@ namespace Splunk.Client
         /// </exception>
         protected internal Index(Service service, string name)
             : this(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Application"/> class.
@@ -233,7 +236,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public bool EnableRealtimeSearch
+        public bool EnableRealTimeSearch
         {
             get { return this.Content.GetValue("EnableRealtimeSearch", BooleanConverter.Instance); }
         }
@@ -592,75 +595,5 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Types
-
-        class CreationArgs : Args<CreationArgs>
-        {
-            /// <summary>
-            /// Gets or sets a name for an index.
-            /// </summary>
-            /// <remarks>
-            /// This value is required.
-            /// </remarks>
-            [DataMember(Name = "name", IsRequired = true)]
-            public string Name
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets the absolute path for the cold databases of an 
-            /// index.
-            /// </summary>
-            /// <remarks>
-            /// <para>
-            /// The path must be readable and writable. The path may be defined
-            /// in terms of a volume definition. The default value is <c>""</c>
-            /// indicating that the cold databases should be stored at the 
-            /// default location.</para>
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="ColdPath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "coldPath")]
-            [DefaultValue("")]
-            public string ColdPath
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets an absolute path that contains the hot and warm 
-            /// buckets for an index.
-            /// </summary>
-            /// <remarks>
-            /// The specified path must be readable and writable. The default 
-            /// value is <c>""</c> indicating that the hot and warm buckets
-            /// should be stored at the default location.
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="HomePath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "homePath")]
-            [DefaultValue("")]
-            public string HomePath
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets an absolute path that contains the thawed 
-            /// (resurrected) databases for an index.
-            /// </summary>
-            /// <remarks>
-            /// The path must be readable and writable. The path cannot be 
-            /// defined in terms of a volume definition. The default value is 
-            /// <c>""</c> indicating that resurrected databases should be 
-            /// stored at the default location.
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="ThawedPath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "thawedPath")]
-            [DefaultValue("")]
-            public string ThawedPath
-            { get; set; }
-        }
-
-        #endregion
     }
 }

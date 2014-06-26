@@ -36,12 +36,11 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.Globalization;
     using System.IO;
     using System.Text;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -260,7 +259,7 @@ namespace Splunk.Client
         /// </returns>
         public override string ToString()
         {
-            var text= string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", 
+            var text= string.Format(CultureInfo.CurrentCulture, "AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", 
                 this.Title, this.Author, this.Id, this.Published, this.Updated);
             return text;
         }

@@ -176,7 +176,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This is a global setting, not a per-index setting.
         /// </remarks>
-        bool EnableRealtimeSearch
+        bool EnableRealTimeSearch
         { get; }
 
         /// <summary>

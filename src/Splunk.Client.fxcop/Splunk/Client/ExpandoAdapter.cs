@@ -334,7 +334,9 @@ namespace Splunk.Client
     /// <typeparam name="TExpandoAdapter">
     /// The type inheriting from this class.
     /// </typeparam>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Generic and non-generic versions of a class should be contained in the same C# document.")]
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = 
+		"Generic and non-generic versions of a class should be contained in the same C# document.")
+	]
     public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter, new()
     {
         #region Constructors

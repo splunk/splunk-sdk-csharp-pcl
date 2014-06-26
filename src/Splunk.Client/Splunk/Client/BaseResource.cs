@@ -33,6 +33,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
+    [ContractClass(typeof(BaseResourceContract))]
     public abstract class BaseResource : ExpandoAdapter, IBaseResource
     {
         #region Constructors
@@ -47,7 +48,7 @@ namespace Splunk.Client
         /// The version of the generator producing the <see cref="AtomFeed"/>
         /// feed containing <paramref name="entry"/>.
         /// </param>
-        protected internal BaseResource(AtomEntry entry, Version generatorVersion)
+        protected BaseResource(AtomEntry entry, Version generatorVersion)
         {
             this.Initialize(entry, generatorVersion);
         }
@@ -58,7 +59,7 @@ namespace Splunk.Client
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
         /// </param>
-        protected internal BaseResource(AtomFeed feed)
+        protected BaseResource(AtomFeed feed)
         {
             this.Initialize(feed);
         }
@@ -82,7 +83,7 @@ namespace Splunk.Client
         /// This API supports the Splunk client infrastructure and is not 
         /// intended to be used directly from your code. 
         /// </remarks>
-        public BaseResource()
+        protected BaseResource()
         { }
 
         #endregion
@@ -397,7 +398,7 @@ namespace Splunk.Client
         {
             if (this.initialized)
             {
-                throw new InvalidOperationException("Resource was intialized; Initialize operation may not execute again.");
+                throw new InvalidOperationException("Resource was initialized; Initialize operation may not execute again.");
             }
         }
 
@@ -462,5 +463,20 @@ namespace Splunk.Client
         }
 
         #endregion
+    }
+
+    [ContractClassFor(typeof(BaseResource))]
+    abstract class BaseResourceContract : BaseResource
+    {
+        protected internal override void Initialize(AtomEntry entry, Version generatorVersion)
+        {
+            Contract.Requires<ArgumentNullException>(entry != null);
+            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+        }
+
+        protected internal override void Initialize(AtomFeed feed)
+        {
+            Contract.Requires<ArgumentNullException>(feed != null);
+        }
     }
 }

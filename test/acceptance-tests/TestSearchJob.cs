@@ -113,7 +113,7 @@ namespace Splunk.Client.UnitTests
                 await job.UpdateAsync(jobArgs);
                 Assert.NotNull(job);
 
-                jobArgs.ExecutionMode = ExecutionMode.Oneshot;
+                jobArgs.ExecutionMode = ExecutionMode.OneShot;
                 bool updatedSnapshot = await job.UpdateAsync(jobArgs);
                 Assert.True(updatedSnapshot);
 

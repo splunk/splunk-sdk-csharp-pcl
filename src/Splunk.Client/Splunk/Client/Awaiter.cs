@@ -21,15 +21,11 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// 
@@ -44,16 +40,21 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification =
+            @"Unless performance or scalability testing reveals that you must dispose of tasks based on your usage
+            patterns in order to meet your goals don't bother disposing them. See <a href='http://goo.gl/SFkBYs'>
+            Parallel Programming with .NET, Do I need to dispose of Tasks</a>.")
+        ]
         protected Awaiter(TStream stream)
         {
-            this.task = new Task(this.ReadEventsAsync);
+            var task = new Task(this.ReadEventsAsync);
 
             this.lastError = null;
             this.stream = stream;
             this.readCount = 0;
             this.readState = 0;
 
-            this.task.Start();
+            task.Start();
         }
 
         #endregion
@@ -162,8 +163,6 @@ namespace Splunk.Client
             }
         }
 
-        ReaderWriterLockSlim gate = new ReaderWriterLockSlim();
-
         /// <summary>
         /// Returns the current awaiter to the async state machine.
         /// </summary>
@@ -207,7 +206,6 @@ namespace Splunk.Client
         TStream stream;
         long readCount;
         int readState;
-        Task task;
 
         bool IsReading
         {

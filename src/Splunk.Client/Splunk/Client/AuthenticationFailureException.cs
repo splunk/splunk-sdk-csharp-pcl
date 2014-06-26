@@ -21,15 +21,18 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// The exception that is thrown when invalid credentials are passed to
-    /// <see cref="Service.LoginAsync"/> or a request fails because the session 
+    /// <see cref="Service.LogOnAsync"/> or a request fails because the session 
     /// timed out.
     /// </summary>
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
     public sealed class AuthenticationFailureException : RequestException
     {
         /// <summary>

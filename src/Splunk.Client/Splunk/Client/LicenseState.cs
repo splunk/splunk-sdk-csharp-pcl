@@ -33,6 +33,6 @@ namespace Splunk.Client
         /// <summary>
         /// The license is in force.
         /// </summary>
-        OK
+        Ok
     }
 }

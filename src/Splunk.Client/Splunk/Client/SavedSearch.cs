@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
     using System.IO;
@@ -52,7 +53,9 @@ namespace Splunk.Client
         /// </exception>
         protected internal SavedSearch(Service service, string name)
             : this(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SavedSearch"/> class.
@@ -140,21 +143,21 @@ namespace Splunk.Client
         #region Properties
 
         /// <inheritdoc/>
-        public virtual Action_t Actions
+        public virtual ActionAdapter Actions
         {
-            get { return this.Content.GetValue("Action", Action_t.Converter.Instance); }
+            get { return this.Content.GetValue("Action", ActionAdapter.Converter.Instance); }
         }
 
         /// <inheritdoc/>
-        public virtual Alert_t Alert
+        public virtual AlertAdapter Alert
         {
-            get { return this.Content.GetValue("Alert", Alert_t.Converter.Instance); }
+            get { return this.Content.GetValue("Alert", AlertAdapter.Converter.Instance); }
         }
 
         /// <inheritdoc/>
-        public virtual AutoSummarize_t AutoSummarize
+        public virtual AutoSummarizeAdapter AutoSummarize
         {
-            get { return this.Content.GetValue("AutoSummarize", AutoSummarize_t.Converter.Instance); }
+            get { return this.Content.GetValue("AutoSummarize", AutoSummarizeAdapter.Converter.Instance); }
         }
 
         /// <inheritdoc/>
@@ -170,15 +173,15 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual Dispatch_t Dispatch
+        public virtual DispatchAdapter Dispatch
         {
-            get { return this.Content.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
+            get { return this.Content.GetValue("Dispatch", DispatchAdapter.Converter.Instance); }
         }
 
         /// <inheritdoc/>
-        public virtual Display_t Display
+        public virtual DisplayAdapter Display
         {
-            get { return this.Content.GetValue("Display", Display_t.Converter.Instance); }
+            get { return this.Content.GetValue("Display", DisplayAdapter.Converter.Instance); }
         }
 
         /// <inheritdoc/>
@@ -218,15 +221,15 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual bool RealtimeSchedule
+        public virtual bool RealTimeSchedule
         {
             get { return this.Content.GetValue("RealtimeSchedule", BooleanConverter.Instance); }
         }
 
         /// <inheritdoc/>
-        public virtual Request_t Request
+        public virtual RequestAdapter Request
         {
-            get { return this.Content.GetValue("Request", Request_t.Converter.Instance); }
+            get { return this.Content.GetValue("Request", RequestAdapter.Converter.Instance); }
         }
 
         /// <inheritdoc/>
@@ -440,43 +443,43 @@ namespace Splunk.Client
 
         #region Static types that map to the dynamic content of a saved search
 
-        public class Action_t : ExpandoAdapter<Action_t>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public sealed class ActionAdapter : ExpandoAdapter<ActionAdapter>
         {
             #region Properties
 
-            public Email_t Email
+            public EmailAdapter Email
             {
-                get { return this.GetValue("Email", Email_t.Converter.Instance); }
+                get { return this.GetValue("Email", EmailAdapter.Converter.Instance); }
             }
 
-            public PopulateLookup_t PopulateLookup
+            public PopulateLookupAdapter PopulateLookup
             {
-                get { return this.GetValue("PopulateLookup", PopulateLookup_t.Converter.Instance); }
+                get { return this.GetValue("PopulateLookup", PopulateLookupAdapter.Converter.Instance); }
             }
 
-            public Rss_t Rss
+            public RssAdapter Rss
             {
-                get { return this.GetValue("Rss", Rss_t.Converter.Instance); }
+                get { return this.GetValue("Rss", RssAdapter.Converter.Instance); }
             }
 
-            public Script_t Script
+            public ScriptAdapter Script
             {
-                get { return this.GetValue("Script", Script_t.Converter.Instance); }
+                get { return this.GetValue("Script", ScriptAdapter.Converter.Instance); }
             }
 
-            public SummaryIndex_t SummaryIndex
+            public SummaryIndexAdapter SummaryIndex
             {
-                get { return this.GetValue("SummaryIndex", SummaryIndex_t.Converter.Instance); }
+                get { return this.GetValue("SummaryIndex", SummaryIndexAdapter.Converter.Instance); }
             }
 
             #endregion
 
             #region Types
 
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
             public class Action<TAction> : ExpandoAdapter<TAction> where TAction : Action<TAction>, new()
             {
-                #region Properties
-
                 public string Command
                 {
                     get { return this.GetValue("Command", StringConverter.Instance); }
@@ -506,14 +509,11 @@ namespace Splunk.Client
                 {
                     get { return this.GetValue("Ttl", StringConverter.Instance); }
                 }
-
-                #endregion
             }
 
-            public class Email_t : Action<Email_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class EmailAdapter : Action<EmailAdapter>
             {
-                #region Properties
-
                 public string AuthPassword
                 {
                     get { return this.GetValue("AuthPassword", StringConverter.Instance); }
@@ -549,12 +549,12 @@ namespace Splunk.Client
                     get { return this.GetValue("Inline", BooleanConverter.Instance); }
                 }
 
-                public string Mailserver
+                public string MailServer
                 {
                     get { return this.GetValue("Mailserver", StringConverter.Instance); }
                 }
 
-                public string ReportCIDFontList
+                public string ReportCidFontList
                 {
                     get { return this.GetValue("ReportCIDFontList", StringConverter.Instance); }
                 }
@@ -623,14 +623,11 @@ namespace Splunk.Client
                 {
                     get { return this.GetValue("WidthSortColumns", BooleanConverter.Instance); }
                 }
-
-                #endregion
             }
 
-            public class PopulateLookup_t : Action<PopulateLookup_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class PopulateLookupAdapter : Action<PopulateLookupAdapter>
             {
-                #region Properties
-
                 public string Destination
                 {
                     get { return this.GetValue("Dest", StringConverter.Instance); }
@@ -640,17 +637,15 @@ namespace Splunk.Client
                 {
                     get { return this.GetValue("Hostname", StringConverter.Instance); }
                 }
-
-                #endregion
             }
 
-            public class Rss_t : Action<Rss_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class RssAdapter : Action<RssAdapter>
             { }
 
-            public class Script_t : Action<Script_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class ScriptAdapter : Action<ScriptAdapter>
             {
-                #region Properties
-
                 public string FileName
                 {
                     get { return this.GetValue("Filename", StringConverter.Instance); }
@@ -660,14 +655,11 @@ namespace Splunk.Client
                 {
                     get { return this.GetValue("Hostname", StringConverter.Instance); }
                 }
-
-                #endregion
             }
 
-            public class SummaryIndex_t : Action<SummaryIndex_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class SummaryIndexAdapter : Action<SummaryIndexAdapter>
             {
-                #region Properties
-
                 public bool Inline
                 {
                     get { return this.GetValue("Inline", BooleanConverter.Instance); }
@@ -677,16 +669,20 @@ namespace Splunk.Client
                 {
                     get { return this.GetValue("Name", StringConverter.Instance); }
                 }
-
-                #endregion
             }
             
             #endregion
         }
 
-        public class Alert_t : ExpandoAdapter<Alert_t>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public sealed class AlertAdapter : ExpandoAdapter<AlertAdapter>
         {
             #region Properties
+
+            public AlertType AlertType
+            {
+                get { return this.GetValue("Type", EnumConverter<AlertType>.Instance); }
+            }
 
             public AlertComparator Comparator
             {
@@ -713,9 +709,9 @@ namespace Splunk.Client
                 get { return this.GetValue("Severity", EnumConverter<AlertSeverity>.Instance); }
             }
 
-            public Suppress_t Suppress
+            public SuppressAdapter Suppress
             {
-                get { return this.GetValue("Suppress", Suppress_t.Converter.Instance); }
+                get { return this.GetValue("Suppress", SuppressAdapter.Converter.Instance); }
             }
 
             public string Threshold
@@ -728,19 +724,13 @@ namespace Splunk.Client
                 get { return this.GetValue("Track", EnumConverter<AlertTrack>.Instance); }
             }
 
-            public AlertType Type
-            {
-                get { return this.GetValue("Type", EnumConverter<AlertType>.Instance); }
-            }
-
             #endregion
 
             #region Types
 
-            public class Suppress_t : ExpandoAdapter<Suppress_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class SuppressAdapter : ExpandoAdapter<SuppressAdapter>
             {
-                #region Properties
-
                 public bool IsEnabled
                 {
                     get { return this.GetValue("IsEnabled", BooleanConverter.Instance); }
@@ -755,14 +745,13 @@ namespace Splunk.Client
                 {
                     get { return this.GetValue("Period", StringConverter.Instance); }
                 }
-
-                #endregion
             }
             
             #endregion
         }
 
-        public class AutoSummarize_t : ExpandoAdapter<AutoSummarize_t>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public sealed class AutoSummarizeAdapter : ExpandoAdapter<AutoSummarizeAdapter>
         {
             #region Properties
 
@@ -781,9 +770,9 @@ namespace Splunk.Client
                 get { return this.GetValue("CronSchedule", StringConverter.Instance); }
             }
 
-            public Dispatch_t Dispatch
+            public DispatchAdapter Dispatch
             {
-                get { return this.GetValue("Dispatch", Dispatch_t.Converter.Instance); }
+                get { return this.GetValue("Dispatch", DispatchAdapter.Converter.Instance); }
             }
 
             public int MaxDisabledBuckets
@@ -815,7 +804,8 @@ namespace Splunk.Client
 
             #region Types
 
-            public class Dispatch_t : ExpandoAdapter<Dispatch_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class DispatchAdapter : ExpandoAdapter<DispatchAdapter>
             {
                 public string EarliestTime
                 {
@@ -841,10 +831,9 @@ namespace Splunk.Client
             #endregion
         }
 
-        public class Dispatch_t : ExpandoAdapter<Dispatch_t>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public sealed class DispatchAdapter : ExpandoAdapter<DispatchAdapter>
         {
-            #region Properties
-
             public int Buckets
             {
                 get { return this.GetValue("Buckets", Int32Converter.Instance); }
@@ -875,7 +864,7 @@ namespace Splunk.Client
                 get { return this.GetValue("ReduceFreq", Int32Converter.Instance); }
             }
 
-            public bool RealtimeBackfill
+            public bool RealTimeBackfill
             {
                 get { return this.GetValue("RealtimeBackfill", BooleanConverter.Instance); }
             }
@@ -894,44 +883,44 @@ namespace Splunk.Client
             {
                 get { return this.GetValue("Ttl", StringConverter.Instance); }
             }
-
-            #endregion
         }
 
-        public class Display_t : ExpandoAdapter<Display_t>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public sealed class DisplayAdapter : ExpandoAdapter<DisplayAdapter>
         {
             #region Properties
 
-            public Events_t Events
+            public EventsAdapter Events
             {
-                get { return this.GetValue("Events", Events_t.Converter.Instance); }
+                get { return this.GetValue("Events", EventsAdapter.Converter.Instance); }
             }
 
-            public General_t General
+            public GeneralAdapter General
             {
-                get { return this.GetValue("General", General_t.Converter.Instance); }
+                get { return this.GetValue("General", GeneralAdapter.Converter.Instance); }
             }
 
-            public Page_t Page
+            public PageAdapter Page
             {
-                get { return this.GetValue("Page", Page_t.Converter.Instance); }
+                get { return this.GetValue("Page", PageAdapter.Converter.Instance); }
             }
 
-            public Statistics_t Statistics
+            public StatisticsAdapter Statistics
             {
-                get { return this.GetValue("Statistics", Statistics_t.Converter.Instance); }
+                get { return this.GetValue("Statistics", StatisticsAdapter.Converter.Instance); }
             }
 
-            public Visualizations_t Visualizations
+            public VisualizationsAdapter Visualizations
             {
-                get { return this.GetValue("Visualizations", Visualizations_t.Converter.Instance); }
+                get { return this.GetValue("Visualizations", VisualizationsAdapter.Converter.Instance); }
             }
 
             #endregion
 
             #region Types
 
-            public class Events_t : ExpandoAdapter<Events_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class EventsAdapter : ExpandoAdapter<EventsAdapter>
             {
                 #region Properties
 
@@ -940,9 +929,9 @@ namespace Splunk.Client
                     get { return this.GetValue("Fields", StringConverter.Instance); }
                 }
 
-                public List_t List
+                public ListAdapter List
                 {
-                    get { return this.GetValue("List", List_t.Converter.Instance); }
+                    get { return this.GetValue("List", ListAdapter.Converter.Instance); }
                 }
 
                 public int MaxLines // TODO: Verify this property is a bool
@@ -950,9 +939,9 @@ namespace Splunk.Client
                     get { return this.GetValue("MaxLines", Int32Converter.Instance); }
                 }
 
-                public Raw_t Raw
+                public RawAdapter Raw
                 {
-                    get { return this.GetValue("Raw", Raw_t.Converter.Instance); }
+                    get { return this.GetValue("Raw", RawAdapter.Converter.Instance); }
                 }
 
                 public bool RowNumbers // TODO: Verify this property is a bool
@@ -960,12 +949,12 @@ namespace Splunk.Client
                     get { return this.GetValue("RowNumbers", BooleanConverter.Instance); }
                 }
 
-                public Table_t Table
+                public TableAdapter Table
                 {
-                    get { return this.GetValue("Table", Table_t.Converter.Instance); }
+                    get { return this.GetValue("Table", TableAdapter.Converter.Instance); }
                 }
 
-                public string Type // TODO: Encode this property as an enumeration
+                public string EventsType
                 {
                     get { return this.GetValue("Type", StringConverter.Instance); }
                 }
@@ -974,7 +963,8 @@ namespace Splunk.Client
 
                 #region Types
 
-                public class List_t : ExpandoAdapter<List_t>
+                [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+                public sealed class ListAdapter : ExpandoAdapter<ListAdapter>
                 {
                     public string Drilldown // TODO: Encode this property as an enumeration
                     {
@@ -987,15 +977,17 @@ namespace Splunk.Client
                     }
                 }
 
-                public class Raw_t : ExpandoAdapter<Raw_t>
+                [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+                public sealed class RawAdapter : ExpandoAdapter<RawAdapter>
                 {
-                    public string Drilldown // TODO: Encode this property as an enumeration
+                    public string Drilldown
                     {
                         get { return this.GetValue("Drilldown", StringConverter.Instance); }
                     }
                 }
 
-                public class Table_t : ExpandoAdapter<Table_t>
+                [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+                public sealed class TableAdapter : ExpandoAdapter<TableAdapter>
                 {
                     public bool Drilldown // TODO: Verify this property is a bool
                     {
@@ -1011,8 +1003,11 @@ namespace Splunk.Client
                 #endregion
             }
 
-            public class General_t : ExpandoAdapter<General_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class GeneralAdapter : ExpandoAdapter<GeneralAdapter>
             {
+                #region Properties
+                
                 public bool EnablePreview
                 {
                     get { return this.GetValue("EnablePreview", BooleanConverter.Instance); }
@@ -1028,14 +1023,17 @@ namespace Splunk.Client
                     get { return this.GetValue("TimeRangePicker", TimeRangePickerAdapter.Converter.Instance); }
                 }
 
-                public string Type // TODO: Encode as enumeration
+                public string GeneralType
                 {
                     get { return this.GetValue("Type", StringConverter.Instance); }
                 }
 
+                #endregion
+
                 #region Types
 
-                public class TimeRangePickerAdapter : ExpandoAdapter<TimeRangePickerAdapter>
+                [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+                public sealed class TimeRangePickerAdapter : ExpandoAdapter<TimeRangePickerAdapter>
                 {
                     public bool Show
                     {
@@ -1046,7 +1044,8 @@ namespace Splunk.Client
                 #endregion
             }
 
-            public class Page_t : ExpandoAdapter<Page_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class PageAdapter : ExpandoAdapter<PageAdapter>
             {
                 #region Properties
 
@@ -1064,10 +1063,12 @@ namespace Splunk.Client
 
                 #region Types
 
-                public class PivotAdapter : ExpandoAdapter<PivotAdapter> // TODO: Implement properties (when do they show?)
+                [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+                public sealed class PivotAdapter : ExpandoAdapter<PivotAdapter>
                 { }
 
-                public class SearchAdapter : ExpandoAdapter<SearchAdapter>
+                [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+                public sealed class SearchAdapter : ExpandoAdapter<SearchAdapter>
                 {
                     #region Properties
 
@@ -1090,7 +1091,8 @@ namespace Splunk.Client
 
                     #region Types
 
-                    public class TimelineAdapter : ExpandoAdapter<TimelineAdapter>
+                    [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+                    public sealed class TimelineAdapter : ExpandoAdapter<TimelineAdapter>
                     {
                         public string Format // TODO: Encode as enumeration
                         {
@@ -1109,10 +1111,9 @@ namespace Splunk.Client
                 #endregion
             }
 
-            public class Statistics_t : ExpandoAdapter<Statistics_t>
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class StatisticsAdapter : ExpandoAdapter<StatisticsAdapter>
             {
-                #region Properties
-
                 public string Drilldown // TODO: Encode as enumeration
                 {
                     get { return this.GetValue("Drilldown", StringConverter.Instance); }
@@ -1132,11 +1133,10 @@ namespace Splunk.Client
                 {
                     get { return this.GetValue("Wrap", BooleanConverter.Instance); }
                 }
-
-                #endregion
             }
 
-            public class Visualizations_t : ExpandoAdapter<Visualizations_t> // TODO: Fill in the remainder
+            [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+            public sealed class VisualizationsAdapter : ExpandoAdapter<VisualizationsAdapter> // TODO: Fill in the remainder
             {
                 #region Properties
 
@@ -1155,7 +1155,7 @@ namespace Splunk.Client
                     get { return this.GetValue("Show", BooleanConverter.Instance); }
                 }
 
-                public string Type // TODO: Encode as enumeration
+                public string VisualizationsType
                 {
                     get { return this.GetValue("Type", StringConverter.Instance); }
                 }
@@ -1164,9 +1164,10 @@ namespace Splunk.Client
 
                 #region Types
 
-                public class ChartingAdapter : ExpandoAdapter<ChartingAdapter>
+                [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+                public sealed class ChartingAdapter : ExpandoAdapter<ChartingAdapter>
                 {
-                    public string Drilldown // TODO: Encode as enumeration
+                    public string Drilldown
                     {
                         get { return this.GetValue("Drilldown", StringConverter.Instance); }
                     }
@@ -1178,7 +1179,8 @@ namespace Splunk.Client
             #endregion
         }
 
-        public class Request_t : ExpandoAdapter<Request_t>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public sealed class RequestAdapter : ExpandoAdapter<RequestAdapter>
         {
             public string UIDispatchApp
             {

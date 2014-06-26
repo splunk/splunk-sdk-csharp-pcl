@@ -23,7 +23,9 @@ namespace Splunk.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
 
     /// <summary>
@@ -73,10 +75,12 @@ namespace Splunk.Client
             {
                 if (string.IsNullOrEmpty(part))
                 {
-                    throw new ArgumentException(string.Format("parts[{0}]", i));  // TODO: Diagnostics
+                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "parts[{0}]", i));
                 }
+
                 return part;
-            }).ToArray();
+            })
+            .ToArray();
         }
 
         #endregion
@@ -255,7 +259,7 @@ namespace Splunk.Client
                 return 0;
             }
 
-            return pair.ThisPart.CompareTo(pair.OtherPart);
+            return string.Compare(pair.ThisPart, pair.OtherPart, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -346,16 +350,35 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the parent of this ResourceName.
+        /// 
         /// </summary>
-        /// <returns>
-        /// A <see cref="ResourceName"/> representing the parent of the current
-        /// instance.
-        /// </returns>
-        [Obsolete] // TODO: Remove this.
-        public ResourceName GetParent()
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator >(ResourceName a, ResourceName b)
         {
-            return new ResourceName(parts.Take(parts.Count - 1));
+            if (a == null)
+            {
+                return false;
+            }
+
+            return a.CompareTo(b) > 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator >=(ResourceName a, ResourceName b)
+        {
+            if (a == null)
+            {
+                return b == null;
+            }
+
+            return a.CompareTo(b) < 0;
         }
 
         /// <summary>
@@ -407,6 +430,38 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator <(ResourceName a, ResourceName b)
+        {
+            if (a == null)
+            {
+                return b != null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static bool operator <=(ResourceName a, ResourceName b)
+        {
+            if (a == null)
+            {
+                return true;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
         /// Converts the value of the current <see cref="Namespace"/> to its
         /// equivalent string representation.
         /// </summary>
@@ -428,6 +483,7 @@ namespace Splunk.Client
         /// <remarks>
         /// The value is converted using <see cref="Uri.EscapeUriString"/>.
         /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings")]
         public string ToUriString()
         {
             return string.Join("/", from segment in this select Uri.EscapeDataString(segment));

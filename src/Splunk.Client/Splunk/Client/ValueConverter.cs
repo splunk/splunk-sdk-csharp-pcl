@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System.IO;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
 
     /// <summary>
     /// Provides a way to convert objects to values of some type.
@@ -37,8 +38,11 @@ namespace Splunk.Client
     /// should accept a value of any type and produce a <typeparamref name="TValue"/>
     /// or throw an <see cref="InvalidDataException"/>.
     /// </remarks>
+    [ContractClass(typeof(ValueConverterContract<>))]
     public abstract class ValueConverter<TValue>
     {
+        #region Properties
+
         /// <summary>
         /// 
         /// </summary>
@@ -47,12 +51,24 @@ namespace Splunk.Client
             get { return default(TValue); } 
         }
 
+        #endregion
+
+        #region Methods
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public abstract TValue Convert(object value);
+        public abstract TValue Convert(object input);
+
+        protected static InvalidDataException NewInvalidDataException(object input)
+        {
+            var text = string.Format(CultureInfo.CurrentCulture, "Expected {0} value: {1}", TypeName, input);
+            return new InvalidDataException(text);
+        }
+
+        #endregion
 
         /// <summary>
         /// 
@@ -63,5 +79,15 @@ namespace Splunk.Client
         /// 
         /// </summary>
         protected static readonly string TypeName = typeof(TValue).Name;
+    }
+
+    [ContractClassFor(typeof(ValueConverter<>))]
+    abstract class ValueConverterContract<TValue> : ValueConverter<TValue>
+    {
+        public override TValue Convert(object value)
+        {
+            Contract.Requires<ArgumentNullException>(value != null);
+            return default(TValue);
+        }
     }
 }

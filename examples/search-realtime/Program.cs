@@ -45,7 +45,7 @@ namespace search_realtime
 
         static async Task Run(Service service)
         {
-            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
             Console.WriteLine("Press return to cancel.");
 
             string searchQuery = "search index=_internal | stats count by method";

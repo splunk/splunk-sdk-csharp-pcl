@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
@@ -51,7 +52,9 @@ namespace Splunk.Client
         /// </exception>
         protected internal Job(Service service, string name)
             : this(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Application"/> class.
@@ -169,7 +172,7 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        public virtual int DefaultSaveTTL
+        public virtual int DefaultSaveTtl
         {
             get { return this.Content.GetValue("DefaultSaveTTL", Int32Converter.Instance); }
         }
@@ -177,7 +180,7 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        public virtual int DefaultTTL
+        public virtual int DefaultTtl
         {
             get { return this.Content.GetValue("DefaultTTL", Int32Converter.Instance); }
         }
@@ -587,9 +590,9 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        public virtual Runtime_t Runtime
+        public virtual RuntimeAdapter Runtime
         {
-            get { return this.Content.GetValue("Runtime", Runtime_t.Converter.Instance); }
+            get { return this.Content.GetValue("Runtime", RuntimeAdapter.Converter.Instance); }
         }
 
         /// <summary>
@@ -1067,7 +1070,8 @@ namespace Splunk.Client
 
         #region Types
 
-        public class Runtime_t : ExpandoAdapter<Runtime_t>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public class RuntimeAdapter : ExpandoAdapter<RuntimeAdapter>
         {
             public bool AutoCancel
             {

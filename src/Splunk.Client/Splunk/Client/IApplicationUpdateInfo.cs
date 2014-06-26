@@ -22,6 +22,6 @@ namespace Splunk.Client
     {
         Eai Eai { get; }
         bool Refresh { get; }
-        ApplicationUpdateInfo.Update_t Update { get; }
+        ApplicationUpdateInfo.UpdateAdapter Update { get; }
     }
 }

@@ -25,6 +25,7 @@ namespace Splunk.Client
     using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -120,7 +121,8 @@ namespace Splunk.Client
         {
             if (feed.Entries.Count != 1)
             {
-                throw new InvalidDataException(string.Format("feed.Entries.Count = {0}", feed.Entries.Count));
+                var text = string.Format(CultureInfo.CurrentCulture, "feed.Entries.Count = {0}", feed.Entries.Count);
+                throw new InvalidDataException(text);
             }
 
             this.Initialize(feed.Entries[0], feed.GeneratorVersion);

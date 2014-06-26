@@ -134,7 +134,7 @@ namespace Splunk.Client
         /// Gets a value indicating whether the server instance is realtime
         /// search enabled.
         /// </summary>
-        public virtual bool IsRealtimeSearchEnabled
+        public virtual bool IsRealTimeSearchEnabled
         {
             get { return this.Content.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
         }
@@ -246,7 +246,7 @@ namespace Splunk.Client
         /// Gets a value that indicates whether realtime search is enabled on
         /// the Splunk server instance.
         /// </summary>
-        public virtual bool RealtimeSearchEnabled
+        public virtual bool RealTimeSearchEnabled
         {
             get { return this.Content.GetValue("RtsearchEnabled", BooleanConverter.Instance); }
         }

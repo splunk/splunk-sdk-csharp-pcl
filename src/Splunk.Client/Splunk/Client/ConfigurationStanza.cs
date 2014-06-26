@@ -20,6 +20,7 @@
 
 namespace Splunk.Client
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -59,7 +60,9 @@ namespace Splunk.Client
         /// </exception>
         protected internal ConfigurationStanza(Service service, string fileName, string stanzaName)
             : this(service.Context, service.Namespace, fileName, stanzaName)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigurationStanza"/>

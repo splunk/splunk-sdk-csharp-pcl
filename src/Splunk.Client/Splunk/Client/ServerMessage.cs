@@ -51,7 +51,9 @@ namespace Splunk.Client
         /// </exception>
         protected internal ServerMessage(Service service, string name)
             : this(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerMessage"/> class.

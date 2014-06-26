@@ -22,6 +22,8 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -50,7 +52,9 @@ namespace Splunk.Client
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         protected internal Entity(Service service, ResourceName name)
             : base(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
@@ -251,7 +255,8 @@ namespace Splunk.Client
 
             if (count > 1)
             {
-                throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
+                var text = string.Format(CultureInfo.CurrentCulture, "Atom feed response contains {0} entries.", count);
+                throw new InvalidDataException(text);
             }
 
             this.CreateSnapshot(feed.Entries[0], feed.GeneratorVersion);

@@ -49,13 +49,13 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        int DefaultSaveTTL
+        int DefaultSaveTtl
         { get; }
 
         /// <summary>
         /// 
         /// </summary>
-        int DefaultTTL
+        int DefaultTtl
         { get; }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        Job.Runtime_t Runtime
+        Job.RuntimeAdapter Runtime
         { get; }
 
         /// <summary>
@@ -637,8 +637,8 @@ namespace Splunk.Client
 
         public abstract bool CanSummarize { get; }
         public abstract DateTime CursorTime { get; }
-        public abstract int DefaultSaveTTL { get; }
-        public abstract int DefaultTTL { get; }
+        public abstract int DefaultSaveTtl { get; }
+        public abstract int DefaultTtl { get; }
         public abstract long DiskUsage { get; }
         public abstract DispatchState DispatchState { get; }
         public abstract double DoneProgress { get; }
@@ -679,7 +679,7 @@ namespace Splunk.Client
         public abstract bool ResultIsStreaming { get; }
         public abstract long ResultPreviewCount { get; }
         public abstract double RunDuration { get; }
-        public abstract Job.Runtime_t Runtime { get; }
+        public abstract Job.RuntimeAdapter Runtime { get; }
         public abstract long ScanCount { get; }
         public abstract string Search { get; }
         public abstract DateTime SearchEarliestTime { get; }

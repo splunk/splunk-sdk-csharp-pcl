@@ -208,18 +208,6 @@ namespace Splunk.Client
             { get; set; }
         }
 
-        class UpdateArgs : Args<UpdateArgs>
-        {
-            /// <summary>
-            /// Gets a value that indicates whether Splunk should check Splunkbase
-            /// for updates to an <see cref="Application"/>.
-            /// </summary>
-            [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
-            [DefaultValue(false)]
-            public bool CheckForUpdates
-            { get; set; }
-        }
-
         /// <summary>
         /// Provides selection criteria for retrieving a slice of an <see cref=
         /// "ApplicationCollection"/>.

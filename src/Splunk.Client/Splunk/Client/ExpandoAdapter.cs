@@ -136,9 +136,11 @@ namespace Splunk.Client
                 return valueConverter.DefaultValue;
             }
 
-            if (value is ConvertedValue)
+            var convertedValue = value as ConvertedValue;
+
+            if (convertedValue != null)
             {
-                return ((ConvertedValue)value).Convert<TValue>(valueConverter);
+                return (convertedValue).Convert<TValue>(valueConverter);
             }
 
             // Tradeoff: 
@@ -149,33 +151,34 @@ namespace Splunk.Client
             // problems in a critical section. We only lock on code/data that's
             // under our direct control.
             
-            object convertedValue;
+            object unconvertedValue;
             int count = 0;
 
             do
             {
-                convertedValue = valueConverter.Convert(value);
+                unconvertedValue = valueConverter.Convert(value);
 
                 lock (this.gate)
                 {
                     value = dictionary[name];
+                    convertedValue = value as ConvertedValue;
 
-                    if (value is ConvertedValue)
+                    if (convertedValue != null)
                     {
-                        convertedValue = ((ConvertedValue)value).GetAs<TValue>();
-                        value = ((ConvertedValue)value).Get();
+                        unconvertedValue = convertedValue.GetAs<TValue>();
+                        value = convertedValue.Get();
                     }
                     else
                     {
-                        dictionary[name] = new ConvertedValue(convertedValue);
+                        dictionary[name] = new ConvertedValue(unconvertedValue);
                     }
                 }
 
                 Debug.Assert(++count < 2, string.Concat("count: ", count));
             }
-            while (convertedValue == null);
+            while (unconvertedValue == null);
 
-            return (TValue)convertedValue;
+            return (TValue)unconvertedValue;
         }
 
         /// <summary>
@@ -315,7 +318,7 @@ namespace Splunk.Client
                     return new ExpandoAdapter(expandoObject);
                 }
 
-                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+                throw NewInvalidDataException(input);
             }
         }
 
@@ -332,7 +335,8 @@ namespace Splunk.Client
     /// The type inheriting from this class.
     /// </typeparam>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = 
-        "Generic and non-generic versions of a class should be contained in the same C# document.")]
+		"Generic and non-generic versions of a class should be contained in the same C# document.")
+	]
     public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter, new()
     {
         #region Constructors
@@ -390,7 +394,7 @@ namespace Splunk.Client
                     return new TExpandoAdapter() { Object = expandoObject };
                 }
 
-                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+                throw NewInvalidDataException(input);
             }
         }
 

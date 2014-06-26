@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
@@ -116,6 +117,8 @@ namespace Splunk.Client
         /// authorization/capabilities</a> endpoint to construct a list of all 
         /// Splunk system capabilities.
         /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         Task<IReadOnlyList<string>> GetCapabilitiesAsync();
 
         /// <summary>
@@ -133,7 +136,7 @@ namespace Splunk.Client
         /// used for subsequent requests. It is accessible via the <see cref=
         /// "SessionKey"/> property.
         /// </remarks>
-        Task LoginAsync(string username, string password);
+        Task LogOnAsync(string username, string password);
 
         /// <summary>
         /// Ends the session by associated with the current instance.
@@ -143,7 +146,7 @@ namespace Splunk.Client
         /// authentication/httpauth-tokens/{name}</a> endpoint to end the
         /// the session by removing <see cref="SessionKey"/>.
         /// </remarks>
-        Task LogoffAsync();
+        Task LogOffAsync();
 
         #endregion
 
@@ -248,7 +251,7 @@ namespace Splunk.Client
         /// This method uses the <a href="http://goo.gl/b02g1d">POST 
         /// search/jobs</a> endpoint to execute a oneshot search.
         /// </remarks>
-        Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null);
+        Task<SearchResultStream> SearchOneShotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null);
 
         #endregion
 
@@ -292,14 +295,14 @@ namespace Splunk.Client
 
         public abstract Task<IReadOnlyList<string>> GetCapabilitiesAsync();
 
-        public Task LoginAsync(string username, string password)
+        public Task LogOnAsync(string username, string password)
         {
             Contract.Requires<ArgumentNullException>(username != null);
             Contract.Requires<ArgumentNullException>(password != null);
             return default(Task);
         }
 
-        public Task LogoffAsync()
+        public Task LogOffAsync()
         {
             Contract.Requires<InvalidOperationException>(this.SessionKey != null);
             return default(Task);
@@ -325,7 +328,7 @@ namespace Splunk.Client
 
         public abstract Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null);
 
-        public Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        public Task<SearchResultStream> SearchOneShotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
         {
             Contract.Requires<ArgumentNullException>(search != null);
             return default(Task<SearchResultStream>);

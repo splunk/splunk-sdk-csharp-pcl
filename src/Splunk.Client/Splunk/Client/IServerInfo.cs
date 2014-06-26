@@ -76,7 +76,7 @@ namespace Splunk.Client
         /// Gets a value indicating whether the server instance is realtime
         /// search enabled.
         /// </summary>
-        bool IsRealtimeSearchEnabled
+        bool IsRealTimeSearchEnabled
         { get; }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Splunk.Client
         /// Gets a value that indicates whether realtime search is enabled on
         /// the Splunk server instance.
         /// </summary>
-        bool RealtimeSearchEnabled
+        bool RealTimeSearchEnabled
         { get; }
 
         /// <summary>

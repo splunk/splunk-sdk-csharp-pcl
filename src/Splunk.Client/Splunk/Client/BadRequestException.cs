@@ -21,14 +21,17 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// The exception that is thrown when a request is rejected by Splunk 
     /// because it is poorly formed.
     /// </summary>
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
     public sealed class BadRequestException : RequestException
     {
         /// <summary>

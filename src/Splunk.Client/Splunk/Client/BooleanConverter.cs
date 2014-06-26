@@ -21,6 +21,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Globalization;
     using System.IO;
 
     /// <summary>
@@ -79,7 +80,7 @@ namespace Splunk.Client
                 return result != 0;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostics
+            throw NewInvalidDataException(input);
         }
 
         #endregion

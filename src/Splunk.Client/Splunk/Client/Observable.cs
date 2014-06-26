@@ -61,10 +61,10 @@ namespace Splunk.Client
         /// Notifies all observers that the provider has experienced an error 
         /// condition.
         /// </summary>
-        /// <param name="e">
+        /// <param name="error">
         /// An <see cref="Exception"/> representing the error condition.
         /// </param>
-        protected void OnError(Exception e)
+        protected void OnError(Exception error)
         {
             if (this.observers == null || this.observers.Count == 0)
             {
@@ -75,7 +75,7 @@ namespace Splunk.Client
             {
                 foreach (var observer in this.observers)
                 {
-                    observer.OnError(e);
+                    observer.OnError(error);
                 }
 
                 this.observers.Clear();

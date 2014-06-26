@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
 
@@ -44,17 +45,12 @@ namespace Splunk.Client
         where TCollection : ICollection<TValue>, new()
         where TConverter : ValueConverter<TValue>, new()
     {
-        static CollectionConverter()
-        {
-            Instance = new CollectionConverter<TValue, TCollection, TConverter>();
-            ValueConverter = new TConverter();
-        }
-
         /// <summary>
         /// The default <see cref="CollectionConverter&lt;TValue, TCollection, TConverter&gt;"/>
         /// instance.
         /// </summary>
-        public static readonly CollectionConverter<TValue, TCollection, TConverter> Instance;
+        public static readonly CollectionConverter<TValue, TCollection, TConverter> Instance = 
+            new CollectionConverter<TValue, TCollection, TConverter>();
 
         public override TCollection Convert(object input)
         {
@@ -62,7 +58,7 @@ namespace Splunk.Client
 
             if (list == null)
             {
-                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostics
+                throw NewInvalidDataException(input);
             }
 
             var collection = new TCollection();
@@ -75,6 +71,6 @@ namespace Splunk.Client
             return collection;
         }
 
-        static readonly TConverter ValueConverter;
+        static readonly TConverter ValueConverter = new TConverter();
     }
 }

@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -35,6 +36,7 @@ namespace Splunk.Client
     /// </typeparam>
     sealed class EnumConverter<TEnum> : ValueConverter<TEnum> where TEnum : struct
     {
+        [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
         static EnumConverter()
         {
             var type = typeof(TEnum);
@@ -42,7 +44,6 @@ namespace Splunk.Client
             var values = (TEnum[])Enum.GetValues(type);
 
             var inputConversionTable = new Dictionary<string, TEnum>(names.Length, StringComparer.OrdinalIgnoreCase);
-            var outputConversionTable = new Dictionary<TEnum, string>(names.Length);
 
             foreach (var member in names.Zip(values, (name, value) => new KeyValuePair<string, TEnum>(name, value)))
             {
@@ -50,12 +51,10 @@ namespace Splunk.Client
                 var name = attribute == null ? member.Key : attribute.Value;
 
                 inputConversionTable[name] = member.Value;
-                outputConversionTable[member.Value] = name;
             }
 
             Instance = new EnumConverter<TEnum>();
             InputConversionTable = inputConversionTable;
-            OutputConversionTable = outputConversionTable;
         }
 
         /// <summary>
@@ -94,10 +93,9 @@ namespace Splunk.Client
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            throw NewInvalidDataException(input);
         }
 
         static readonly IReadOnlyDictionary<string, TEnum> InputConversionTable;
-        static readonly IReadOnlyDictionary<TEnum, string> OutputConversionTable;
     }
 }

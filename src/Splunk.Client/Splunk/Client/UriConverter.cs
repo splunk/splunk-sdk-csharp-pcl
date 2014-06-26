@@ -70,7 +70,7 @@ namespace Splunk.Client
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input));  // TODO: improved diagnostices
+            throw NewInvalidDataException(input);
         }
 
         #region Privates/internals
@@ -111,8 +111,6 @@ namespace Splunk.Client
 
             #region Privates/internals
 
-            static Type uriType = typeof(Uri);
-
             static readonly FieldInfo Source;
             static readonly FieldInfo Path;
             static readonly FieldInfo Query;
@@ -122,7 +120,7 @@ namespace Splunk.Client
 
             static MonoPurifier()
             {
-                IEnumerable<FieldInfo> fields = uriType.GetRuntimeFields();
+                IEnumerable<FieldInfo> fields = typeof(Uri).GetRuntimeFields();
 
                 foreach (var field in fields)
                 {

@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Net;
     using System.Net.Http;
@@ -96,7 +97,9 @@ namespace Splunk.Client
         /// </exception>
         protected internal Configuration(Service service, string fileName)
             : this(service.Context, service.Namespace, fileName)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Configuration"/> class.

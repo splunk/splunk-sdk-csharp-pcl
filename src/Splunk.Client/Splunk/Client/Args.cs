@@ -25,6 +25,8 @@ namespace Splunk.Client
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.Serialization;
@@ -40,6 +42,7 @@ namespace Splunk.Client
     {
         #region Constructors
 
+        [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
         static Args()
         {
             var propertyFormatters = new Dictionary<Type, Formatter>()
@@ -80,7 +83,9 @@ namespace Splunk.Client
 
                 if (dataMember == null)
                 {
-                    throw new InvalidDataContractException(string.Format("Missing DataMemberAttribute on {0}.{1}", propertyInfo.PropertyType.Name, propertyInfo.Name));
+                    var text = string.Format(CultureInfo.CurrentCulture, "Missing DataMemberAttribute on {0}.{1}",
+                        propertyInfo.PropertyType.Name, propertyInfo.Name);
+                    throw new InvalidDataContractException(text);
                 }
 
                 var propertyName = propertyInfo.Name;
@@ -323,7 +328,10 @@ namespace Splunk.Client
                             return name;
                         }
 
-                        throw new ArgumentException(string.Format("{0}.{1}: {2}", typeof(TArgs).Name, propertyName, value));
+                        var text = string.Format(CultureInfo.CurrentCulture, "{0}.{1}: {2}",
+                            typeof(TArgs).Name, propertyName, value);
+
+                        throw new ArgumentException(text);
                     };
 
                     formatter = new Formatter
@@ -398,7 +406,7 @@ namespace Splunk.Client
             public int CompareTo(Ordinal other)
             {
                 int result = this.Position - other.Position;
-                return result != 0 ? result : this.Name.CompareTo(other.Name);
+                return result != 0 ? result : string.Compare(this.Name, other.Name, StringComparison.Ordinal);
             }
 
             public override bool Equals(object o)
@@ -424,7 +432,7 @@ namespace Splunk.Client
 
             public override string ToString()
             {
-                return string.Format("({0}, {1})", this.Position, this.Name);
+                return string.Format(CultureInfo.CurrentCulture, "({0}, {1})", this.Position, this.Name);
             }
 
             #endregion

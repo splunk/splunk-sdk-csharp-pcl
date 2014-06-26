@@ -104,7 +104,7 @@ namespace SplunkSearch
             }
 
             scheme = Scheme.Https;
-            //if (Http.IsChecked == true)
+            if (Http.IsChecked == true)
             {
                 scheme = Scheme.Http;
             }
@@ -128,10 +128,10 @@ namespace SplunkSearch
 
                 splunkHost.Text = localSettings.Values["host"].ToString();
                 inputPort.Text = localSettings.Values["port"].ToString();
-                //if (string.Equals(localSettings.Values["scheme"].ToString(),"Http",StringComparison.OrdinalIgnoreCase))
-                //{
-                //    Http.IsChecked = true;
-                //}
+                if (string.Equals(localSettings.Values["scheme"].ToString(), "Http", StringComparison.OrdinalIgnoreCase))
+                {
+                    Http.IsChecked = true;
+                }
             }
             catch { }
         }

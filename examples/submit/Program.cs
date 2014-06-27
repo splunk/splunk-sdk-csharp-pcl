@@ -60,7 +60,7 @@ namespace Splunk.Examples.Submit
         {
             Console.WriteLine("Login as " + SdkHelper.Splunk.Username);
 
-            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             Console.WriteLine("Create an index");
 
@@ -85,7 +85,7 @@ namespace Splunk.Examples.Submit
                 result = await transmitter.SendAsync("Hello World.", indexName);
                 result = await transmitter.SendAsync("Goodbye world.", indexName);
 
-                using (var results = await service.SearchOneshotAsync(string.Format("search index={0}", indexName)))
+                using (var results = await service.SearchOneShotAsync(string.Format("search index={0}", indexName)))
                 {
                     foreach (SearchResult task in results)
                     {

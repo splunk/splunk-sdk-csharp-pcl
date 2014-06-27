@@ -15,18 +15,17 @@
  */
 
 //// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Linq;
 
     /// <summary>
     /// Provides custom arguments to a <see cref="Job"/>.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ArgumentSet"/>
     public sealed class CustomJobArgs : ArgumentSet
     {
         #region Constructors
@@ -43,6 +42,9 @@ namespace Splunk.Client
         /// Initializes a new instance of the <see cref="CustomJobArgs"/>
         /// class from a collection of <see cref="Argument"/> values.
         /// </summary>
+        /// <param name="collection">
+        /// The collection.
+        /// </param>
         public CustomJobArgs(IEnumerable<Argument> collection)
             : base("custom.", collection)
         { }

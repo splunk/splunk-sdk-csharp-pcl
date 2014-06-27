@@ -15,12 +15,11 @@
  */
 
 //// TODO:
-//// [O]  Documentation
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
-    using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Runtime.Serialization;
 
     /// <summary>
@@ -30,36 +29,53 @@ namespace Splunk.Client
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST search/jobs</a>
+    ///     <a href="http://goo.gl/OWTUws">REST API Reference: POST
+    ///     search/jobs</a>
     /// </description></item>
     /// </list>
     /// </remarks>
+    /// <seealso cref="T:Splunk.Client.Args{Splunk.Client.TransmitterArgs}"/>
     public sealed class TransmitterArgs : Args<TransmitterArgs>
     {
         /// <summary>
-        /// The value to populate in the host field for events from this data input.
+        /// Gets or sets the value to populate in the host field for events from this
+        /// data input.
         /// </summary>
+        /// <value>
+        /// The value to populate in the host field for events from this data input.
+        /// </value>
         [DataMember(Name = "host", EmitDefaultValue = false)]
         public string Host
         { get; set; }
 
         /// <summary>
-        /// A regular expression used to extract the host value from each event.
+        /// Gets or sets a regular expression used to extract the host value from
+        /// each event.
         /// </summary>
+        /// <value>
+        /// A regular expression used to extract the host value from each event.
+        /// </value>
         [DataMember(Name = "host_regex", EmitDefaultValue = false)]
         public string HostRegex
         { get; set; }
 
         /// <summary>
-        /// The source value to fill in the metadata for this input's events.
+        /// Gets or sets the source value to fill in the metadata for this input's
+        /// events.
         /// </summary>
+        /// <value>
+        /// The source value to fill in the metadata for this input's events.
+        /// </value>
         [DataMember(Name = "source", EmitDefaultValue = false)]
         public string Source
         { get; set; }
 
         /// <summary>
-        /// The sourcetype to apply to events from this input.
+        /// Gets or sets the source type to apply to events from this input.
         /// </summary>
+        /// <value>
+        /// The source type to apply to events from this input.
+        /// </value>
         [DataMember(Name = "sourcetype", EmitDefaultValue = false)]
         public string SourceType
         { get; set; }

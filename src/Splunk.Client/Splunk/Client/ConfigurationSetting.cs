@@ -20,25 +20,21 @@
 
 namespace Splunk.Client
 {
-    using Splunk;
     using System;
     using System.Collections.Generic;
-    using System.Dynamic;
-    using System.IO;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
     /// Provides an object representation of a Splunk configuration setting.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.Resource"/>
+    /// <seealso cref="T:Splunk.Client.IConfigurationSetting"/>
     public class ConfigurationSetting : Resource, IConfigurationSetting
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationSetting"/> class.
+        /// Initializes a new instance of the <see cref="ConfigurationSetting"/>
+        /// class.
         /// </summary>
         /// <param name="entry">
         /// An object representing a Splunk atom entry response.
@@ -53,12 +49,12 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ConfigurationSetting"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ConfigurationSetting"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. 
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code.
         /// </remarks>
         public ConfigurationSetting()
         { }
@@ -84,8 +80,8 @@ namespace Splunk.Client
         #region Privates/internals
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ConfigurationSetting"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ConfigurationSetting"/> class.
         /// </summary>
         /// <param name="resource">
         /// An object representing a configuration setting.

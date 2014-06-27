@@ -21,35 +21,40 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
 
     /// <summary>
     /// Provides an object representation of a Splunk server.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.Endpoint"/>
+    /// <seealso cref="T:Splunk.Client.IServer"/>
     public class Server : Endpoint, IServer
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Receiver"/> class
+        /// Initializes a new instance of the <see cref="Receiver"/> class.
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
         protected internal Server(Service service)
             : this(service.Context, service.Namespace)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Server"/> class.
@@ -60,10 +65,11 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal Server(Context context, Namespace ns)

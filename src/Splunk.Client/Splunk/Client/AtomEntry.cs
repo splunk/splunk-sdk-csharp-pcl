@@ -15,18 +15,10 @@
  */
 
 //// TODO:
-////
-//// [O] Either drop or improve AtomEntry.NormalizePropertyName
-////     Improved AtomEntry.NormalizePropertyName since we do not have
-////     known serialization requirements; just deserialization.
-////
 //// [O] Contracts
-////
 //// [O] Documentation
-////
 //// [ ] Performance: NameTable could make in AtomEntry.ReadXmlAsync and 
 ////     AtomFeed.ReadXmlAsync significantly faster.
-////
 //// [ ] Synchronization: AtomFeed.ReadXmlAsync and AtomEntry.ReadXmlAsync can
 ////     be called more than once. (In practice these methods are never called
 ////     move than once.)
@@ -36,18 +28,17 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.Globalization;
     using System.IO;
     using System.Text;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml;
 
     /// <summary>
-    /// Provides an object representation of an individual entry in a Splunk 
-    /// Atom Feed response.
+    /// Provides an object representation of an individual entry in a Splunk Atom
+    /// Feed response.
     /// <para>
     /// <para><b>References:</b></para>
     /// <list type="number">
@@ -77,46 +68,63 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the owner of the resource represented by the current <see 
-        /// cref="AtomEntry"/>, as defined in the access control list.
+        /// Gets the owner of the resource represented by the current
+        /// <see cref="AtomEntry"/>, as defined in the access control list.
         /// </summary>
         /// <remarks>
-        /// This value can be <c>"system"</c>, <c>"nobody"</c> or some specific
-        /// user name. Refer to <a href="http://goo.gl/iTpzO0">Access control 
-        /// lists for Splunk objects</a> in the section on <a href=
-        /// "http://goo.gl/TDthxd">Accessing Splunk resources</a>.
+        /// This value can be <c>"system"</c>, <c>"nobody"</c> or some specific user
+        /// name. Refer to <a href="http://goo.gl/iTpzO0">Access control lists for
+        /// Splunk objects</a> in the section on
+        /// <a href= "http://goo.gl/TDthxd">Accessing Splunk resources</a>.
         /// </remarks>
+        /// <value>
+        /// Owner of the resource represented by the current <see cref= "AtomEntry"/>.
+        /// </value>
         public string Author
         { get; private set; }
 
         /// <summary>
-        /// Gets a dynamic object representing the content returned by the 
-        /// operation for an entry.
+        /// Gets a dynamic object representing the content of the resource
+        /// represented by the current <see cref="AtomEntry"/>.
         /// </summary>
         /// <remarks>
-        /// Splunk typically returns content as dictionaries with key/value 
-        /// pairs that list properties of the entry. However, content can be
-        /// returned as a list of values or as plain text.
+        /// Splunk typically returns content as dictionaries with key/value pairs
+        /// that list properties of the entry. However, content can be returned as a
+        /// list of values or as plain text.
         /// </remarks>
+        /// <value>
+        /// A dynamic object representing the content of the resource represented by
+        /// the current <see cref="AtomEnry"/>.
+        /// </value>
         public dynamic Content
         { get; private set; }
 
         /// <summary>
-        /// Gets the Splunk management URI for accessing the endpoint for 
-        /// accessing the current <see cref="AtomEntry"/>.
+        /// Gets the Splunk management URI for accessing the resource represented by
+        /// the current <see cref="AtomEntry"/>.
         /// </summary>
+        /// <value>
+        /// The Splunk management URI for accessing the resource represented by the
+        /// current <see cref="AtomEntry"/>.
+        /// </value>
         public Uri Id
         { get; private set; }
 
         /// <summary>
-        ///
+        /// Gets the links.
         /// </summary>
+        /// <value>
+        /// The links.
+        /// </value>
         public IReadOnlyDictionary<string, Uri> Links
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the Date/Time of the published.
         /// </summary>
+        /// <value>
+        /// The published.
+        /// </value>
         public DateTime Published
         { get; private set; }
 
@@ -124,14 +132,23 @@ namespace Splunk.Client
         /// Gets the human readable name for the current <see cref="AtomEntry"/>.
         /// </summary>
         /// <remarks>
-        /// This value varies depending on the endpoint.
+        /// This value varies depending on the endpoint used to access the current
+        /// <see cref="AtomEntry"/>.
         /// </remarks>
+        /// <value>
+        /// The human readable name for the current <see cref="AtomEntry"/>.
+        /// </value>
         public string Title
         { get; private set; }
 
         /// <summary>
-        /// Gets the date/time this entry was last updated in Splunk.
+        /// Gets the date and time the current <see cref="AtomEntry"/> was last
+        /// updated in Splunk.
         /// </summary>
+        /// <value>
+        /// The date and time the current <see cref="AtomEntry"/> was last updated in
+        /// Splunk.
+        /// </value>
         public DateTime Updated
         { get; private set; }
 
@@ -142,6 +159,9 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously reads XML data into the current <see cref="AtomEntry"/>.
         /// </summary>
+        /// <exception cref="InvalidDataException">
+        /// Thrown when an Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="reader">
         /// The reader from which to read.
         /// </param>
@@ -237,9 +257,10 @@ namespace Splunk.Client
         /// <returns>
         /// A string representation of the current <see cref="AtomEntry"/>.
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
-            var text= string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", 
+            var text= string.Format(CultureInfo.CurrentCulture, "AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", 
                 this.Title, this.Author, this.Id, this.Published, this.Updated);
             return text;
         }

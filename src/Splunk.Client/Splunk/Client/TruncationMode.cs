@@ -14,16 +14,17 @@
  * under the License.
  */
 
-// TODO:
-// [X] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides enumerated values that specify how Splunk reduces the number 
-    /// of lines in the <c>_raw</c> field of events.
+    /// Provides enumerated values that specify how Splunk reduces the number of
+    /// lines in the <c>_raw</c> field of events.
     /// </summary>
     public enum TruncationMode
     {

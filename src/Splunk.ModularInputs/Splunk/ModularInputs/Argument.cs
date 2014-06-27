@@ -25,7 +25,8 @@ namespace Splunk.ModularInputs
     /// <remarks>
     /// It corresponds to one of the keys that can be defined for an instance
     /// of that modular input in a stanza in inputs.conf.
-    /// <example>Sample XML Argument</example>
+    /// <example>
+    /// Sample XML Argument</example>
     /// <code>
     /// <arg name="interval">
     ///   <description>Polling Interval</description>
@@ -109,10 +110,10 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Set this property to true to make the parameter required for edit.
+        /// Set this property to <c>true</c> to make the parameter required for edit.
         /// </para>
         /// <para>
-        /// This property's default value is false.
+        /// This property's default value is <c>false</c>.
         /// </para>
         /// </remarks>
         [XmlElement("required_on_edit")]
@@ -123,10 +124,10 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Set this property to false to make the parameter optional.
+        /// Set this property to <c>false</c> to make the parameter optional.
         /// </para>
         /// <para>
-        /// This property's default value is true.
+        /// This property's default value is <c>true</c>.
         /// </para>
         /// </remarks>
         [XmlElement("required_on_create")]

@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -31,10 +32,14 @@ namespace Splunk.Client
     /// Provides a converter to convert strings to <see cref="Enum"/> values.
     /// </summary>
     /// <typeparam name="TEnum">
-    /// The type of <see cref="Enum"/> value to convert.
+    /// Type of the <see cref="Enum"/> value to convert.
     /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{TEnum}"/>
     sealed class EnumConverter<TEnum> : ValueConverter<TEnum> where TEnum : struct
     {
+        [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification =
+            "This is by design")
+        ]
         static EnumConverter()
         {
             var type = typeof(TEnum);
@@ -42,7 +47,6 @@ namespace Splunk.Client
             var values = (TEnum[])Enum.GetValues(type);
 
             var inputConversionTable = new Dictionary<string, TEnum>(names.Length, StringComparer.OrdinalIgnoreCase);
-            var outputConversionTable = new Dictionary<TEnum, string>(names.Length);
 
             foreach (var member in names.Zip(values, (name, value) => new KeyValuePair<string, TEnum>(name, value)))
             {
@@ -50,12 +54,10 @@ namespace Splunk.Client
                 var name = attribute == null ? member.Key : attribute.Value;
 
                 inputConversionTable[name] = member.Value;
-                outputConversionTable[member.Value] = name;
             }
 
             Instance = new EnumConverter<TEnum>();
             InputConversionTable = inputConversionTable;
-            OutputConversionTable = outputConversionTable;
         }
 
         /// <summary>
@@ -64,18 +66,22 @@ namespace Splunk.Client
         public static readonly EnumConverter<TEnum> Instance;
 
         /// <summary>
-        /// Converts the string representation of the <paramref name="input"/> 
+        /// Converts the string representation of the <paramref name="input"/>
         /// object to a <typeparamref name="TEnum"/> value.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
-        /// The <paramref name="input"/> does not represent a <typeparamref 
-        /// name="TEnum"/>
+        ///
+        /// ### <exception cref="InvalidDataException">
+        /// The <paramref name="input"/> does not represent a
+        /// <typeparamref name="TEnum"/>
         /// value.
         /// </exception>
         public override TEnum Convert(object input)
@@ -94,10 +100,9 @@ namespace Splunk.Client
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            throw NewInvalidDataException(input);
         }
 
         static readonly IReadOnlyDictionary<string, TEnum> InputConversionTable;
-        static readonly IReadOnlyDictionary<TEnum, string> OutputConversionTable;
     }
 }

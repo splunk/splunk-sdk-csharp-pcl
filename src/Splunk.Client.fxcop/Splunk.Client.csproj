@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProjectGuid>{27FCBC80-3E79-4F87-930B-1EC67609CAD0}</ProjectGuid>
+    <AssemblyName>Splunk.Client</AssemblyName>
+    <OutputType>Library</OutputType>
+    <Platform>AnyCPU</Platform>
+    <TargetFrameworkProfile/>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <CodeAnalysisRuleSet>CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>22455d9b</NuGetPackageImportStamp>
+    <RunCodeAnalysis Condition=" '$(RunCodeAnalysis)' == '' ">False</RunCodeAnalysis>
+    <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
+    <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
+    <WarningLevel>4</WarningLevel>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateDocumentationFile Condition=" '$(GenerateDocumentationFile)' == '' ">False</GenerateDocumentationFile>
+    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' != 'True' ">
+    </DocumentationFile>
+    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'True' ">$(OutputPath)$(AssemblyName).XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GlobalSuppressions.cs" Condition=" '$(RunCodeAnalysis)' == 'True' " />
+    <Compile Include="Splunk\**\*" />
+    <None Include="CodeAnalysisRules.ruleset" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets'))" />
+  </Target>
+  <Import Project="..\..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets" Condition="Exists('..\..\packages\StyleCop.MSBuild.4.7.49.0\build\StyleCop.MSBuild.Targets')" />
+  <Import Project="..\..\packages\BuildTools.StyleCop.4.7.49.0\tools\StyleCop.targets" Condition="Exists('..\..\packages\BuildTools.StyleCop.4.7.49.0\tools\StyleCop.targets')" />
+  <Target Name="______packages_BuildTools_StyleCop_4_7_49_0_tools_StyleCop_targets" Condition="$(StyleCopOutputFile)==''" BeforeTargets="BeforeBuild">
+    <Error Text="BuildTools_StyleCop - the BuildTools_StyleCop package has not been restored.&#xD;&#xA;If you are running this from an IDE, make sure NuGet Package Restore has been enabled, then reload the solution and re-run the build.&#xD;&#xA;If you are running this from the command line, run the build again.&#xD;&#xA;If this is a CI server, you may want to make sure NuGet Package Restore runs before your build with:&#xD;&#xA;	msbuild solution.sln /t:restorepackages" />
+  </Target>
+</Project>

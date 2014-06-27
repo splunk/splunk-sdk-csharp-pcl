@@ -31,7 +31,8 @@ using System.Xml.Serialization;
         /// </summary>
         /// <remarks>
         /// This value is used for XML serialization and deserialization.
-        /// <example>Sample XML</example>
+        /// <example>
+        /// Sample XML</example>
         /// <code>
         /// <param name="param1">value1</param>
         /// </code>

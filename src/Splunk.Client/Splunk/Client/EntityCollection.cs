@@ -24,24 +24,18 @@ namespace Splunk.Client
     using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Net;
-    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a base class for representing a collection of Splunk resources.
     /// </summary>
-    /// <typeparam name="TEntity">
-    /// The type of the entity in <typeparamref name="TCollection"/>.
-    /// </typeparam>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/TDthxd">Accessing Splunk resources</a>, 
+    ///   <a href="http://goo.gl/TDthxd">Accessing Splunk resources</a>,
     ///   especially "Other actions for Splunk REST API endpoints".
     /// </description></item>
     /// <item><description>
@@ -49,6 +43,14 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
+    /// <typeparam name="TEntity">
+    /// Type of the entity.
+    /// </typeparam>
+    /// <typeparam name="TResource">
+    /// Type of the resource.
+    /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.BaseEntity{Splunk.Client.ResourceCollection}"/>
+    /// <seealso cref="T:Splunk.Client.IEntityCollection{TEntity,TResource}"/>
     public class EntityCollection<TEntity, TResource> : BaseEntity<ResourceCollection>, IEntityCollection<TEntity, TResource> 
         where TEntity : BaseEntity<TResource>, new()
         where TResource : BaseResource, new()
@@ -60,18 +62,22 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
         protected internal EntityCollection(Service service, ResourceName name)
             : base(service, name)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/>
+        /// Initializes a new instance of the
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -81,21 +87,26 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
-        /// An object identifying a Splunk entity collection within <paramref name="ns"/>.
+        /// An object identifying a Splunk entity collection within
+        /// <paramref name="ns"/>.
         /// </param>
         protected internal EntityCollection(Context context, Namespace ns, ResourceName name)
             : base(context, ns, name)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
+        /// Initializes a new instance of the
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>
         /// class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="feed">
+        /// <param name="entry">
         /// A entry in a Splunk atom feed response.
+        /// </param>
+        /// <param name="generatorVersion">
+        /// The generator version.
         /// </param>
         protected internal EntityCollection(Context context, AtomEntry entry, Version generatorVersion)
         {
@@ -104,7 +115,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity&gt;"/> 
+        /// Initializes a new instance of the
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -120,12 +132,12 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "EntityCollection&lt;TEntity&gt;"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. 
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code.
         /// </remarks>
         public EntityCollection()
         { }
@@ -149,9 +161,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the number of entities in the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
+        /// Gets the number of entries in the current
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
+        /// <value>
+        /// The number of entries in the current
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// </value>
         public int Count
         {
             get { return this.Resources.Count; }
@@ -199,8 +215,11 @@ namespace Splunk.Client
         /// Asynchronously retrieves a <see cref="TEntity"/> in the current
         /// <see cref="EntityCollection&lt;TEntity&gt;"/> by name.
         /// </summary>
+        /// <param name="name">
+        /// Name of the entity to retrieve.
+        /// </param>
         /// <returns>
-        /// A <see cref="Task"/> representing the operation.
+        /// The entity retrieved.
         /// </returns>
         public virtual async Task<TEntity> GetAsync(string name)
         {
@@ -214,17 +233,17 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously retrieves a fresh copy of the full list of entities
-        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// Asynchronously retrieves a fresh copy of the full list of entities in the
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
+        /// <remarks>
+        /// Following completion of the operation the list of entites in the current
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/> will contain all changes
+        /// since the list was last retrieved.
+        /// </remarks>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        /// <remarks>
-        /// Following completion of the operation the list of entites in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
-        /// all changes since the list was last retrieved.
-        /// </remarks>
         public virtual async Task GetAllAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, GetAll))
@@ -235,15 +254,14 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously retrieves an entity in the current collection by
-        /// name.
+        /// Asynchronously retrieves an entity in the current collection by name.
         /// </summary>
         /// <param name="name">
         /// The name of the entity to retrieve.
         /// </param>
         /// <returns>
-        /// An object representing entity <param name="name"/> or <c>null</c>, 
-        /// if no such entity exists.
+        /// An object representing entity <param name="name"/> or <c>null</c>, if no
+        /// such entity exists.
         /// </returns>
         public virtual async Task<TEntity> GetOrNullAsync(string name)
         {
@@ -264,34 +282,40 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously retrieves select entities from the list of entites
-        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// Asynchronously retrieves select entities from the list of entites in the
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
+        /// <remarks>
+        /// Following completion of the operation the list of entities in the current
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/> will contain all changes
+        /// since the select entites were last retrieved.
+        /// </remarks>
+        /// <param name="arguments">
+        /// A variable-length parameters list containing arguments.
+        /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        /// <remarks>
-        /// Following completion of the operation the list of entities in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
-        /// all changes since the select entites were last retrieved.
-        /// </remarks>
         public virtual async Task GetSliceAsync(params Argument[] arguments)
         {
             await this.GetSliceAsync(arguments.AsEnumerable());
         }
 
         /// <summary>
-        /// Asynchronously retrieves select entities from the list of entites
-        /// in the current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// Asynchronously retrieves select entities from the list of entites in the
+        /// current <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
+        /// <remarks>
+        /// Following completion of the operation the list of entities in the current
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/> will contain all changes
+        /// since the select entites were last retrieved.
+        /// </remarks>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        /// <remarks>
-        /// Following completion of the operation the list of entities in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/> will contain 
-        /// all changes since the select entites were last retrieved.
-        /// </remarks>
         public virtual async Task GetSliceAsync(IEnumerable<Argument> arguments)
         {
             using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
@@ -322,26 +346,18 @@ namespace Splunk.Client
 
         #region IReadOnlyList<TEntity> methods
 
-        /// <summary>
-        /// Gets an enumerator that iterates through the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
-        /// </summary>
-        /// <returns>
-        /// An object for iterating through the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
-        /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
         /// <summary>
-        /// Gets an enumerator that iterates through the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
+        /// Gets an enumerator that iterates through the current
+        /// <see cref= "EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
         /// <returns>
-        /// An object for iterating through the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
+        /// An object for iterating through the current
+        /// <see cref= "EntityCollection&lt;TEntity&gt;"/>.
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {
@@ -378,7 +394,14 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        /// <summary>
+        /// The no resources.
+        /// </summary>
         internal static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<TResource>(new List<TResource>());
+
+        /// <summary>
+        /// The no messages.
+        /// </summary>
         internal static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
 

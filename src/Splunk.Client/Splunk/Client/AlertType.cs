@@ -19,8 +19,8 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Specifies the condition under which the alert actions of a <see cref=
-    /// "SavedSearch"/> are triggered.
+    /// Specifies the condition under which the alert actions of a
+    /// <see cref= "SavedSearch"/> are triggered.
     /// </summary>
     public enum AlertType
     {

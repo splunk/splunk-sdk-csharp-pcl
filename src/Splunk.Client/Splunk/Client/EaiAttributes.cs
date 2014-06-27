@@ -15,21 +15,17 @@
  */
 
 //// TODO:
-//// [X] Contracts
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
 {
-    using System;
     using System.Collections.Generic;
-    using System.Dynamic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a class that represents a Splunk ACL.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ExpandoAdapter{Splunk.Client.EaiAttributes}"/>
     public sealed class EaiAttributes : ExpandoAdapter<EaiAttributes>
     {
         #region Constructors
@@ -45,24 +41,33 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the optional fields.
         /// </summary>
+        /// <value>
+        /// The optional fields.
+        /// </value>
 		public IReadOnlyList<string> OptionalFields
         {
             get { return this.GetValue("OptionalFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the required fields.
         /// </summary>
+        /// <value>
+        /// The required fields.
+        /// </value>
 		public IReadOnlyList<string> RequiredFields
         {
             get { return this.GetValue("RequiredFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the wildcard fields.
         /// </summary>
+        /// <value>
+        /// The wildcard fields.
+        /// </value>
 		public IReadOnlyList<string> WildcardFields
         {
             get { return this.GetValue("WildcardFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }

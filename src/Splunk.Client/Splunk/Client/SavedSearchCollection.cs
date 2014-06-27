@@ -15,7 +15,7 @@
  */
 
 //// TODO:
-//// [O] contracts
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
@@ -23,15 +23,15 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using System.Diagnostics.Contracts;
     using System.Linq;
-    using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
     /// Represents a collection of saved searches.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.EntityCollection{Splunk.Client.SavedSearch,Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.ISavedSearchCollection{Splunk.Client.SavedSearch}"/>
     public class SavedSearchCollection : EntityCollection<SavedSearch, Resource>, ISavedSearchCollection<SavedSearch>
     {
         #region Constructors
@@ -43,7 +43,8 @@ namespace Splunk.Client
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal SavedSearchCollection(Service service)
@@ -51,7 +52,7 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SavedSearchCollection"/> 
+        /// Initializes a new instance of the <see cref="SavedSearchCollection"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -60,10 +61,11 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal SavedSearchCollection(Context context, AtomFeed feed)
@@ -81,7 +83,8 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="args">
+        ///
+        /// ### <param name="args">
         /// Arguments for retrieving the <see cref="SavedSearchCollection"/>.
         /// </param>
         protected internal SavedSearchCollection(Context context, Namespace ns)
@@ -89,13 +92,13 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "SavedSearchCollection"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "SavedSearchCollection"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use <see cref=
-        /// "Service.GetSavedSearchesAsync"/> to asynchronously retrieve a 
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use
+        /// <see cref= "Service.GetSavedSearchesAsync"/> to asynchronously retrieve a
         /// collection of saved searches from Splunk.
         /// </remarks>
         public SavedSearchCollection()
@@ -163,6 +166,9 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        /// <summary>
+        /// Name of the class resource.
+        /// </summary>
         internal static readonly ResourceName ClassResourceName = new ResourceName("saved", "searches");
 
         #endregion
@@ -181,42 +187,56 @@ namespace Splunk.Client
         /// </description></item>
         /// </list>
         /// </remarks>
+        /// <seealso cref="T:Splunk.Client.Args{Splunk.Client.SavedSearchCollection.Filter}"/>
         public sealed class Filter : Args<Filter>
         {
             /// <summary>
-            /// Gets or sets a value specifying the maximum number of <see cref=
-            /// "SavedSearch"/> entries to return.
+            /// Gets or sets a value specifying the maximum number of
+            /// <see cref= "SavedSearch"/> entries to return.
             /// </summary>
             /// <remarks>
-            /// If the value of <c>Count</c> is set to zero, then all <see cref=
-            /// "SavedSearch"/> entries are returned. The default value is 30.
+            /// If the value of <c>Count</c> is set to zero, then all
+            /// <see cref= "SavedSearch"/> entries are returned. The default value is
+            /// <c>30</c>.
             /// </remarks>
+            /// <value>
+            /// A value specifying the maximum number of <see cref="SavedSearch"/>
+            /// entries to return.
+            /// </value>
             [DataMember(Name = "count", EmitDefaultValue = false)]
             [DefaultValue(30)]
             public int Count
             { get; set; }
 
             /// <summary>
-            /// Gets or sets the lower bound of the time window for which saved 
-            /// search schedules should be returned.
+            /// Gets or sets the lower bound of the time window for which
+            /// <see cref="SavedSearch"/> schedules should be returned.
             /// </summary>
             /// <remarks>
-            /// This property specifies that all the scheduled times starting from 
-            /// this time (not just the next run time) should be returned.
+            /// This property specifies that all the scheduled times starting from this
+            /// time (not just the next run time) should be returned.
             /// </remarks>
+            /// <value>
+            /// The lower bound of the time window for which <see cref= "SavedSearch"/>
+            /// schedules should be returned.
+            /// </value>
             [DataMember(Name = "earliest_time", EmitDefaultValue = false)]
             [DefaultValue(null)]
             public string EarliestTime
             { get; set; }
 
             /// <summary>
-            /// Gets or sets the upper bound of the time window for which saved 
-            /// search schedules should be returned.
+            /// Gets or sets the upper bound of the time window for which
+            /// <see cref="SavedSearch"/> schedules should be returned.
             /// </summary>
             /// <remarks>
-            /// This property specifies that all the scheduled times ending with 
-            /// this time (not just the next run time) should be returned.
+            /// This property specifies that all the scheduled times ending with this
+            /// time (not just the next run time) should be returned.
             /// </remarks>
+            /// <value>
+            /// The upper bound of the time window for which <see cref= "SavedSearch"/>
+            /// schedules should be returned.
+            /// </value>
             [DataMember(Name = "latest_time", EmitDefaultValue = false)]
             [DefaultValue(null)]
             public string LatestTime
@@ -229,72 +249,89 @@ namespace Splunk.Client
             /// <remarks>
             /// The default value is <c>false</c>.
             /// </remarks>
+            /// <value>
+            /// <c>true</c>, if default actions should be listed; <c>false</c>
+            /// otherwise.
+            /// </value>
             [DataMember(Name = "listDefaultActionArgs", EmitDefaultValue = false)]
             [DefaultValue(false)]
             public bool ListDefaultActions
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value specifying the first result (inclusive) from 
-            /// which to begin returning entries.
+            /// Gets or sets a value specifying the first result (inclusive)
+            /// from which to begin returning entries.
             /// </summary>
             /// <remarks>
-            /// The <c>Offset</c> property is zero-based and cannot be negative. 
-            /// The default value is zero.
+            /// The <c>Offset</c> property is zero-based and cannot be negative. The
+            /// default value is zero.
             /// </remarks>
-            /// <remarks>
-            /// This value is zero-based and cannot be negative. The default value
-            /// is zero.
-            /// </remarks>
+            /// <value>
+            /// A value specifying the first result (inclusive) from which to begin
+            /// returning entries.
+            /// </value>
             [DataMember(Name = "offset", EmitDefaultValue = false)]
             [DefaultValue(0)]
             public int Offset
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a search expression to filter <see cref=
-            /// "SavedSearch"/> entries.
+            /// Gets or sets a search expression to filter <see cref= "SavedSearch"/>
+            /// entries.
             /// </summary>
             /// <remarks>
-            /// Use this expression to filter the entries returned based on <see
-            /// cref="SavedSearch"/> properties.
+            /// Use this expression to filter the entries returned based on
+            /// <see cref="SavedSearch"/> properties.
             /// </remarks>
+            /// <value>
+            /// A search expression to filter <see cref="SavedSearch"/> entries.
+            /// </value>
             [DataMember(Name = "search", EmitDefaultValue = false)]
             [DefaultValue(null)]
             public string Search // TODO: Good search example for App
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value indicating whether to sort returned <see cref=
-            /// "SavedSearch"/>entries in ascending or descending order.
+            /// Gets or sets a value specifying the sort direction for
+            /// <see cref="SavedSearch"/> entries.
             /// </summary>
             /// <remarks>
             /// The default value is <see cref="SortDirection"/>.Ascending.
             /// </remarks>
+            /// <value>
+            /// The sort direction for <see cref="SavedSearch"/> entries.
+            /// </value>
             [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
             [DefaultValue(SortDirection.Ascending)]
             public SortDirection SortDirection
             { get; set; }
 
             /// <summary>
-            /// <see cref="Job"/> property to use for sorting.
+            /// Gets or sets the <see cref="SavedSearch"/> property to use for sorting
+            /// entries.
             /// </summary>
             /// <remarks>
-            /// The default <see cref="SavedSearch"/> property to use for sorting 
-            /// is <c>"name"</c>.
+            /// The default <see cref="SavedSearch"/> property to use for sorting is
+            /// <c>"name"</c>.
             /// </remarks>
+            /// <value>
+            /// The <see cref="SavedSearch"/> property to use for sorting entries.
+            /// </value>
             [DataMember(Name = "sort_key", EmitDefaultValue = false)]
             [DefaultValue("name")]
             public string SortKey
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value specifying the <see cref="SortMode"/> for <see
-            /// cref="Application"/> entries.
+            /// Gets or sets a value specifying the sort mode for
+            /// <see cref= "SavedSearch"/> entries.
             /// </summary>
             /// <remarks>
             /// The default value is <see cref="SortMode"/>.Automatic.
             /// </remarks>
+            /// <value>
+            /// The sort mode for <see cref="SavedSearch"/> entries.
+            /// </value>
             [DataMember(Name = "sort_mode", EmitDefaultValue = false)]
             [DefaultValue(SortMode.Automatic)]
             public SortMode SortMode

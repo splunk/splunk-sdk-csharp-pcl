@@ -99,7 +99,7 @@ namespace Splunk.Client.UnitTests
                 RequiredFieldList = new List<string>() { "some_unchecked_string", "some_other_uncheck_string" },
                 ReuseMaxSecondsAgo = 9,
                 SearchListener = "some_unchecked_string",
-                SearchMode = SearchMode.Realtime,
+                SearchMode = SearchMode.RealTime,
                 SpawnProcess = false,
                 StatusBuckets = 10,
                 SyncBundleReplication = true,

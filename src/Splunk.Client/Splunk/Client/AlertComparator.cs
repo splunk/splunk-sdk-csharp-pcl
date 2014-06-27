@@ -19,8 +19,8 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Used with a threshold value to trigger the alert actions of a <see 
-    /// cref="SavedSearch"/>.
+    /// Used with a threshold value to trigger the alert actions of a
+    /// <see cref="SavedSearch"/>.
     /// </summary>
     public enum AlertComparator
     {

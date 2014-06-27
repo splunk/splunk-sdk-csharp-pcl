@@ -21,39 +21,48 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
-    /// 
+    /// An awaiter.
     /// </summary>
     /// <typeparam name="TStream">
-    /// 
+    /// Type of the stream.
     /// </typeparam>
     /// <typeparam name="TEvent">
-    /// 
+    /// Type of the event.
     /// </typeparam>
+    /// <seealso cref="T:System.Runtime.CompilerServices.INotifyCompletion"/>
     abstract class Awaiter<TStream, TEvent> : INotifyCompletion
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the Splunk.Client.Awaiter&lt;TStream,
+        /// TEvent&gt; class.
+        /// </summary>
+        /// <param name="stream">
+        /// The stream.
+        /// </param>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification =
+            @"Unless performance or scalability testing reveals that you must dispose of tasks based on your usage
+            patterns in order to meet your goals don't bother disposing them. See <a href='http://goo.gl/SFkBYs'>
+            Parallel Programming with .NET, Do I need to dispose of Tasks</a>.")
+        ]
         protected Awaiter(TStream stream)
         {
-            this.task = new Task(this.ReadEventsAsync);
+            var task = new Task(this.ReadEventsAsync);
 
             this.lastError = null;
             this.stream = stream;
             this.readCount = 0;
             this.readState = 0;
 
-            this.task.Start();
+            task.Start();
         }
 
         #endregion
@@ -61,24 +70,33 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the last error.
         /// </summary>
+        /// <value>
+        /// The last error.
+        /// </value>
         public Exception LastError
         {
             get { return this.lastError; }
         }
 
         /// <summary>
-        /// 
+        /// Gets the number of reads.
         /// </summary>
+        /// <value>
+        /// The number of reads.
+        /// </value>
         public long ReadCount
         {
             get { return Interlocked.Read(ref this.readCount); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the stream.
         /// </summary>
+        /// <value>
+        /// The stream.
+        /// </value>
         protected TStream Stream
         {
             get { return this.stream; }
@@ -88,6 +106,12 @@ namespace Splunk.Client
 
         #region Protected methods
 
+        /// <summary>
+        /// Adds an object onto the end of this queue.
+        /// </summary>
+        /// <param name="result">
+        /// 
+        /// </param>
         protected void Enqueue(TEvent result)
         {
             Interlocked.Increment(ref this.readCount);
@@ -95,6 +119,12 @@ namespace Splunk.Client
             this.Continue();
         }
 
+        /// <summary>
+        /// Asynchronously reads to the end of <see cref="Stream"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
         protected abstract Task ReadToEndAsync();
 
         #endregion
@@ -102,13 +132,13 @@ namespace Splunk.Client
         #region Methods supporting IEnumerable<TEvent>
 
         /// <summary>
-        ///
+        /// Attempts to take from the given data.
         /// </summary>
         /// <param name="result">
-        ///
+        /// 
         /// </param>
         /// <returns>
-        ///
+        /// <c>true</c> if it succeeds, <c>false</c> if it fails.
         /// </returns>
         public bool TryTake(out TEvent result)
         {
@@ -153,6 +183,9 @@ namespace Splunk.Client
         /// <summary>
         /// Tells the state machine whether results are available.
         /// </summary>
+        /// <value>
+        /// <c>true</c> if this object is completed, <c>false</c> if not.
+        /// </value>
         public bool IsCompleted
         {
             get
@@ -161,8 +194,6 @@ namespace Splunk.Client
                 return result;
             }
         }
-
-        ReaderWriterLockSlim gate = new ReaderWriterLockSlim();
 
         /// <summary>
         /// Returns the current awaiter to the async state machine.
@@ -207,7 +238,6 @@ namespace Splunk.Client
         TStream stream;
         long readCount;
         int readState;
-        Task task;
 
         bool IsReading
         {

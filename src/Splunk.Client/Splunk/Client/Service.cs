@@ -20,7 +20,6 @@
 //// [ ] Consider schema validation from schemas stored as resources.
 ////     See [XmlReaderSettings.Schemas Property](http://goo.gl/Syvj4V)
 
-
 namespace Splunk.Client
 {
     using System;
@@ -33,8 +32,10 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// 
+    /// A service.
     /// </summary>
+    /// <seealso cref="T:System.IDisposable"/>
+    /// <seealso cref="T:Splunk.Client.IService"/>
     public class Service : IDisposable, IService
     {
         #region Constructors
@@ -46,11 +47,12 @@ namespace Splunk.Client
         /// The context for requests by the new <see cref="Service"/>.
         /// </param>
         /// <param name="ns">
-        /// The namespace for requests by the new <see cref="Service"/>. The
-        /// default value is <c>null</c> indicating that <see cref=
-        /// "Namespace"/>.Default should be used.
+        /// The namespace for requests by the new <see cref="Service"/>. The default
+        /// value is <c>null</c> indicating that <see cref= "Namespace"/>.Default
+        /// should be used.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> is <c>null</c>.
         /// </exception>
         public Service(Context context, Namespace ns = null)
@@ -85,7 +87,8 @@ namespace Splunk.Client
         /// <param name="ns">
         /// The namespace for requests issue by the new <see cref="Service"/>.
         /// </param>
-        /// <exception name="ArgumentException">
+        ///
+        /// ### <exception name="ArgumentException">
         /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
         /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
         /// or greater than <c>65535</c>.
@@ -194,7 +197,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task LoginAsync(string username, string password)
+        public virtual async Task LogOnAsync(string username, string password)
         {
             using (var response = await this.Context.PostAsync(Namespace.Default, AuthLogin, new Argument[]
             {
@@ -208,7 +211,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task LogoffAsync()
+        public virtual async Task LogOffAsync()
         {
             var resourceName = new ResourceName(AuthenticationHttpAuthTokens, this.SessionKey);
 
@@ -298,7 +301,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<SearchResultStream> SearchOneshotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        public virtual async Task<SearchResultStream> SearchOneShotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
         {
             var resourceName = JobCollection.ClassResourceName;
 
@@ -342,17 +345,23 @@ namespace Splunk.Client
         /// Releases all resources used by the <see cref="Service"/>.
         /// </summary>
         /// <remarks>
-        /// Do not override this method. Override <see cref="Service.Dispose(bool)"/> 
+        /// Do not override this method. Override <see cref="Service.Dispose(bool)"/>
         /// instead.
         /// </remarks>
+        /// <seealso cref="M:System.IDisposable.Dispose()"/>
         public void Dispose()
         {
             this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
         /// Releases all resources used by the <see cref="Service"/>.
         /// </summary>
+        /// <param name="disposing">
+        /// <c>true</c> to release both managed and unmanaged resources; 
+        /// <c>false</c> to release only unmanaged resources.
+        /// </param>
         /// <remarks>
         /// Subclasses should implement the disposable pattern as follows:
         /// <list type="bullet">
@@ -363,14 +372,14 @@ namespace Splunk.Client
         ///     Provide a finalizer, if needed, and call this method from it.
         ///     </description></item>
         /// <item><description>
-        ///     To help ensure that resources are always cleaned up 
-        ///     appropriately, ensure that the override is callable multiple
-        ///     times without throwing an exception.
+        ///     To help ensure that resources are always cleaned up appropriately,
+        ///     ensure that the override is callable multiple times without throwing
+        ///     an exception.
         ///     </description></item>
         /// </list>
-        /// There is no performance benefit in overriding this method on types
-        /// that use only managed resources (such as arrays) because they are 
-        /// automatically reclaimed by the garbage collector. See 
+        /// There is no performance benefit in overriding this method on types that
+        /// use only managed resources (such as arrays) because they are
+        /// automatically reclaimed by the garbage collector. See
         /// <a href="http://goo.gl/VPIovn">Implementing a Dispose Method</a>.
         /// </remarks>
         protected virtual void Dispose(bool disposing)
@@ -383,9 +392,12 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the URI string for this <see cref="Service"/> instance. 
+        /// Gets the URI string for this <see cref="Service"/> instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// A string that represents this object.
+        /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             return string.Join("/", this.Context.ToString(), this.Namespace.ToString());

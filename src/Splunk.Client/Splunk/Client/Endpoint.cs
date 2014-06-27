@@ -21,16 +21,15 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Dynamic;
     using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a base class that represents a Splunk endpoint as an object.
     /// </summary>
+    /// <seealso cref="T:System.IComparable"/>
+    /// <seealso cref="T:System.IComparable{Splunk.Client.Endpoint}"/>
+    /// <seealso cref="T:System.IEquatable{Splunk.Client.Endpoint}"/>
     public class Endpoint : IComparable, IComparable<Endpoint>, IEquatable<Endpoint>
     {
         #region Constructors
@@ -40,12 +39,15 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
         public Endpoint(Service service, ResourceName name)
             : this(service.Context, service.Namespace, name)
         {
@@ -64,11 +66,12 @@ namespace Splunk.Client
         /// <param name="name">
         /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
-        /// "name"/> are <c>null</c>.
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name= "name"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         public Endpoint(Context context, Namespace ns, ResourceName name)
@@ -91,12 +94,12 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref="Endpoint"/> 
+        /// Infrastructure. Initializes a new instance of the <see cref="Endpoint"/>
         /// class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code.
         /// </remarks>
         public Endpoint()
         { }
@@ -106,9 +109,12 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the <see cref="Context"/> instance for the current <see cref=
-        /// "Endpoint"/>.
+        /// Gets the <see cref="Context"/> instance for the current
+        /// <see cref= "Endpoint"/>.
         /// </summary>
+        /// <value>
+        /// The context.
+        /// </value>
         public Context Context
         { get; private set; }
 
@@ -116,6 +122,9 @@ namespace Splunk.Client
         /// Gets the name of the current <see cref="Endpoint"/>, which is the 
         /// final part of <see cref="ResourceName"/>.
         /// </summary>
+        /// <value>
+        /// Name of the current <see cref="Endpoint"/>.
+        /// </value>
         public string Name
         {
             get { return this.ResourceName.Title; }
@@ -124,12 +133,18 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the namespace containing the current <see cref="Endpoint"/>.
         /// </summary>
+        /// <value>
+        /// The namespace.
+        /// </value>
         public Namespace Namespace
         { get; private set; }
 
         /// <summary>
         /// Gets the name of the current <see cref="Endpoint"/>.
         /// </summary>
+        /// <value>
+        /// The name of the resource.
+        /// </value>
         public ResourceName ResourceName
         { get; private set; }
 
@@ -138,35 +153,39 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Compares the specified object with the current <see cref=
-        /// "Endpoint"/> instance and indicates whether the identity of the 
-        /// current instance precedes, follows, or appears in the same position
-        /// in the sort order as the specified object.
+        /// Compares the specified object with the current <see cref= "Endpoint"/>
+        /// instance and indicates whether the identity of the current instance
+        /// precedes, follows, or appears in the same position in the sort order as
+        /// the specified object.
         /// </summary>
         /// <param name="other">
         /// An object to compare or <c>null</c>.
         /// </param>
         /// <returns>
-        /// A signed number indicating the relative values of this instance and
-        /// value.
+        /// A signed number indicating the relative values of this instance and value.
         /// </returns>
+        /// <seealso cref="M:System.IComparable.CompareTo(object)"/>
+        ///
+        /// ### <param name="obj">
+        /// An object to compare with this instance.
+        /// </param>
         public int CompareTo(object other)
         {
             return this.CompareTo(other as Endpoint);
         }
 
         /// <summary>
-        /// Compares the specified <see cref="Endpoint"/> with the current 
-        /// instance and indicates whether the identity of the current instance
-        /// precedes, follows, or appears in the same position
-        /// in the sort order as the specified instance.
+        /// Compares the specified <see cref="Endpoint"/> with the current instance
+        /// and indicates whether the identity of the current instance precedes,
+        /// follows, or appears in the same position in the sort order as the
+        /// specified instance.
         /// </summary>
         /// <param name="other">
         /// An instance to compare or <c>null</c>.
         /// </param>
         /// <returns>
-        /// A signed number indicating the relative values of the current 
-        /// instance and <paramref name="other"/>.
+        /// A signed number indicating the relative values of the current instance
+        /// and <paramref name="other"/>.
         /// </returns>
         public int CompareTo(Endpoint other)
         {
@@ -184,8 +203,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Endpoint"/> refers to 
-        /// the same resource as the current one.
+        /// Determines whether the specified <see cref="Endpoint"/> refers to the
+        /// same resource as the current one.
         /// </summary>
         /// <param name="other">
         /// The <see cref="Endpoint"/> to compare with the current one.
@@ -194,14 +213,19 @@ namespace Splunk.Client
         /// A value of <c>true</c> if the two instances represent the same
         /// <see cref="Endpoint"/>; otherwise, <c>false</c>.
         /// </returns>
+        /// <seealso cref="M:System.Object.Equals(object)"/>
+        ///
+        /// ### <param name="obj">
+        /// The object to compare with the current object.
+        /// </param>
         public override bool Equals(object other)
         {
             return this.Equals(other as Endpoint);
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="Endpoint"/> refers to 
-        /// the same resource as the current one.
+        /// Determines whether the specified <see cref="Endpoint"/> refers to the
+        /// same resource as the current one.
         /// </summary>
         /// <param name="other">
         /// The <see cref="Endpoint"/> to compare with the current one.
@@ -212,7 +236,7 @@ namespace Splunk.Client
         /// </returns>
         public bool Equals(Endpoint other)
         {
-            if (other == null)
+            if ((object)other == null)
             {
                 return false;
             }
@@ -232,35 +256,40 @@ namespace Splunk.Client
         /// <returns>
         /// Hash code for the current <see cref="Endpoint"/>.
         /// </returns>
+        /// <seealso cref="M:System.Object.GetHashCode()"/>
         public override int GetHashCode()
         {
             return this.ResourceName.GetHashCode();
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "Endpoint"/>.
+        /// Infrastructure. Initializes the current uninitialized
+        /// <see cref= "Endpoint"/>.
         /// </summary>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Endpoint"/>
+        /// instantiated by the default constructor.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not intended
+        /// to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        /// <exception cref="InvalidDataException">
+        /// Thrown when an Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="id">
         /// The address of the current <see cref="Endpoint"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="id"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidOperationException">
+        /// ### <exception cref="InvalidOperationException">
         /// The current <see cref="Endpoint"/> is already initialized.
         /// </exception>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="Endpoint"/>
-        /// instantiated by the default constructor.
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </note>
-        /// </remarks>
         protected internal void Initialize(Context context, Uri id)
         {
             Contract.Requires<ArgumentNullException>(context != null);
@@ -312,9 +341,17 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "Endpoint"/>.
+        /// Infrastructure. Initializes the current uninitialized
+        /// <see cref= "Endpoint"/>.
         /// </summary>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="Endpoint"/>
+        /// instantiated by the default constructor.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not intended
+        /// to be used directly from your code.
+        /// </note>
+        /// </remarks>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
@@ -324,23 +361,14 @@ namespace Splunk.Client
         /// <param name="name">
         /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
-        /// "name"/> are <c>null</c>.
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name= "name"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
-        /// The current <see cref="Endpoint"/> is already initialized.
-        /// </exception>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="Endpoint"/>
-        /// instantiated by the default constructor.
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </note>
-        /// </remarks>
         protected internal void Initialize(Context context, Namespace ns, ResourceName name)
         {
             Contract.Requires<ArgumentException>(name != null);
@@ -358,12 +386,143 @@ namespace Splunk.Client
         }
 
         /// <summary>
+        /// Greater-than comparison operator.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static bool operator >(Endpoint a, Endpoint b)
+        {
+            if ((object)a == null)
+            {
+                return false;
+            }
+
+            return a.CompareTo(b) > 0;
+        }
+
+        /// <summary>
+        /// Greater-than-or-equal comparison operator.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static bool operator >=(Endpoint a, Endpoint b)
+        {
+            if ((object)a == null)
+            {
+                return (object)b == null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Endpoint"/> instances refer to the same
+        /// resource.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is the same as the value
+        /// of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator ==(Endpoint a, Endpoint b)
+        {
+            if ((object)a == null)
+            {
+                return (object)b == null;
+            }
+
+            return a.Equals(b);
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="Endpoint"/> instances refer to
+        /// different resources.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is different than the
+        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator !=(Endpoint a, Endpoint b)
+        {
+            return !(a == b);
+        }
+
+        /// <summary>
+        /// Less-than-or-equal comparison operator.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static bool operator <=(Endpoint a, Endpoint b)
+        {
+            if ((object)a == null)
+            {
+                return true;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// Less-than comparison operator.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Endpoint"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static bool operator <(Endpoint a, Endpoint b)
+        {
+            if ((object)a == null)
+            {
+                return b != null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
         /// Gets a string identifying the current <see cref="Endpoint"/>.
         /// </summary>
         /// <returns>
-        /// A string representing the identity of the current <see cref=
-        /// "Endpoint"/>.
+        /// A string representing the identity of the current <see cref= "Endpoint"/>.
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             return string.Join("/", this.Context.ToString(), this.Namespace.ToString(), this.ResourceName.ToString());
@@ -379,7 +538,7 @@ namespace Splunk.Client
         {
             if (initialized)
             {
-                throw new InvalidOperationException("Endpoint was intialized; Initialize operation may not execute again.");
+                throw new InvalidOperationException("Endpoint was initialized; Initialize operation may not execute again.");
             }
         }
 

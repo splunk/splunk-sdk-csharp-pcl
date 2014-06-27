@@ -26,12 +26,15 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// 
+    /// A search result metadata.
     /// </summary>
     sealed class SearchResultMetadata
     {
         #region Fields
 
+        /// <summary>
+        /// The missing.
+        /// </summary>
         public static readonly SearchResultMetadata Missing = new SearchResultMetadata()
         {
             FieldNames = new ReadOnlyCollection<string>(new List<string>()),
@@ -42,20 +45,25 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="SearchPreview"/> 
+        /// Gets a value indicating whether this <see cref="SearchPreview"/>
         /// contains the final results from a search job.
         /// </summary>
+        /// <value>
+        /// <c>true</c> if this object is final, <c>false</c> if not.
+        /// </value>
         public bool IsFinal
         { get; private set; }
 
         /// <summary>
-        /// Gets the read-only list of field names that may appear in a 
+        /// Gets the read-only list of field names that may appear in a
         /// <see cref="SearchResult"/>.
         /// </summary>
         /// <remarks>
-        /// Be aware that any given result will contain a subset of these 
-        /// fields.
+        /// Be aware that any given result will contain a subset of these fields.
         /// </remarks>
+        /// <value>
+        /// A list of names of the fields.
+        /// </value>
         public IReadOnlyList<string> FieldNames
         { get; private set; }
 
@@ -64,7 +72,8 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously reads data into the current <see cref="SearchResultStream"/>.
+        /// Asynchronously reads data into the current
+        /// <see cref="SearchResultStream"/>.
         /// </summary>
         /// <param name="reader">
         /// The <see cref="XmlReader"/> from which to read.

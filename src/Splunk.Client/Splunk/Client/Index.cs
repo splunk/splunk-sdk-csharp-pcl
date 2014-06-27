@@ -21,10 +21,9 @@
 namespace Splunk.Client
 {
     using System;
-    using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Net;
-    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -40,6 +39,8 @@ namespace Splunk.Client
     /// </list>
     /// </para>
     /// </remarks>
+    /// <seealso cref="T:Splunk.Client.Entity{Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IIndex"/>
     public class Index : Entity<Resource>, IIndex
     {
         #region Constructors
@@ -49,16 +50,20 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
         protected internal Index(Service service, string name)
             : this(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Application"/> class.
@@ -69,10 +74,11 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal Index(Context context, AtomFeed feed)
@@ -92,10 +98,11 @@ namespace Splunk.Client
         /// <param name="name">
         /// Name of the index to be represented by the current instance.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         internal Index(Context context, Namespace ns, string name)
@@ -103,13 +110,13 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Index"/> class.
+        /// Infrastructure. Initializes a new instance of the <see cref= "Index"/>
+        /// class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use one of these
-        /// methods to obtain an <see cref="Index"/> instance:
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use one of these methods to obtain an
+        /// <see cref="Index"/> instance:
         /// <list type="table">
         /// <listheader>
         ///   <term>Method</term>
@@ -233,7 +240,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public bool EnableRealtimeSearch
+        public bool EnableRealTimeSearch
         {
             get { return this.Content.GetValue("EnableRealtimeSearch", BooleanConverter.Instance); }
         }
@@ -588,79 +595,12 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        /// <summary>
+        /// Name of the class resource.
+        /// </summary>
         internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");
 
         #endregion
 
-        #region Types
-
-        class CreationArgs : Args<CreationArgs>
-        {
-            /// <summary>
-            /// Gets or sets a name for an index.
-            /// </summary>
-            /// <remarks>
-            /// This value is required.
-            /// </remarks>
-            [DataMember(Name = "name", IsRequired = true)]
-            public string Name
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets the absolute path for the cold databases of an 
-            /// index.
-            /// </summary>
-            /// <remarks>
-            /// <para>
-            /// The path must be readable and writable. The path may be defined
-            /// in terms of a volume definition. The default value is <c>""</c>
-            /// indicating that the cold databases should be stored at the 
-            /// default location.</para>
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="ColdPath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "coldPath")]
-            [DefaultValue("")]
-            public string ColdPath
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets an absolute path that contains the hot and warm 
-            /// buckets for an index.
-            /// </summary>
-            /// <remarks>
-            /// The specified path must be readable and writable. The default 
-            /// value is <c>""</c> indicating that the hot and warm buckets
-            /// should be stored at the default location.
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="HomePath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "homePath")]
-            [DefaultValue("")]
-            public string HomePath
-            { get; set; }
-
-            /// <summary>
-            /// Gets or sets an absolute path that contains the thawed 
-            /// (resurrected) databases for an index.
-            /// </summary>
-            /// <remarks>
-            /// The path must be readable and writable. The path cannot be 
-            /// defined in terms of a volume definition. The default value is 
-            /// <c>""</c> indicating that resurrected databases should be 
-            /// stored at the default location.
-            /// <para>
-            /// <b>Caution:</b> Splunk will not start if an index lacks a valid
-            /// <see cref="ThawedPath"/>.</para>
-            /// </remarks>
-            [DataMember(Name = "thawedPath")]
-            [DefaultValue("")]
-            public string ThawedPath
-            { get; set; }
-        }
-
-        #endregion
     }
 }

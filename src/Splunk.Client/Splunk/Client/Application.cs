@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Net;
     using System.Runtime.Serialization;
@@ -45,6 +46,8 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
+    /// <seealso cref="T:Splunk.Client.Entity{Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IApplication"/>
     public class Application : Entity<Resource>, IApplication
     {
         #region Constructors
@@ -54,16 +57,20 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
         protected internal Application(Service service, string name)
             : this(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Application"/> class.
@@ -74,10 +81,11 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal Application(Context context, AtomFeed feed)
@@ -97,13 +105,14 @@ namespace Splunk.Client
         /// <param name="name">
         /// The name of the <see cref="Application"/>.
         /// </param>
-        /// <exception cref="ArgumentException">
+        ///
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal Application(Context context, Namespace ns, string name)
@@ -111,13 +120,13 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Application"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "Application"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use one of these
-        /// methods to obtain an <see cref="Application"/> instance:
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use one of these methods to obtain an
+        /// <see cref="Application"/> instance:
         /// <list type="table">
         /// <listheader>
         ///   <term>Method</term>
@@ -138,8 +147,7 @@ namespace Splunk.Client
         /// <item>
         ///   <term><see cref="Service.InstallApplicationAsync"/></term>
         ///   <description>
-        ///   Asynchronously installs a new Splunk application from an archive 
-        ///   file.
+        ///   Asynchronously installs a new Splunk application from an archive file.
         ///   </description>
         /// </item>
         /// </list>
@@ -199,6 +207,13 @@ namespace Splunk.Client
             get { return this.Content.GetValue("Label", StringConverter.Instance); }
         }
 
+        /// <summary>
+        /// Gets the links.
+        /// </summary>
+        /// <value>
+        /// The links.
+        /// </value>
+        /// <seealso cref="P:Splunk.Client.IApplication.Links"/>
         public virtual IReadOnlyDictionary<string, Uri> Links
         {
             get { return this.Snapshot.GetValue("Links"); }
@@ -299,8 +314,31 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
         {
-            var arguments = new Argument[] { new Argument("check_for_updates", checkForUpdates) };
-            return await this.UpdateAsync(arguments.AsEnumerable().Concat(attributes));
+            var updateArgs = new UpdateArgs { CheckForUpdates = checkForUpdates };
+            return await this.UpdateAsync(updateArgs.AsEnumerable().Concat(attributes));
+        }
+
+        #endregion
+
+        #region Types
+
+        /// <summary>
+        /// Arguments for update.
+        /// </summary>
+        /// <seealso cref="T:Splunk.Client.Args{Splunk.Client.Application.UpdateArgs}"/>
+        class UpdateArgs : Args<UpdateArgs>
+        {
+            /// <summary>
+            /// Gets or sets a value that indicates whether Splunk should check
+            /// Splunkbase for updates to an <see cref="Application"/>.
+            /// </summary>
+            /// <value>
+            /// <c>true</c> if check for updates, <c>false</c> if not.
+            /// </value>
+            [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
+            [DefaultValue(false)]
+            public bool CheckForUpdates
+            { get; set; }
         }
 
         #endregion

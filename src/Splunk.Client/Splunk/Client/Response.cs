@@ -25,24 +25,17 @@ namespace Splunk.Client
     using System.IO;
     using System.Net;
     using System.Net.Http;
-    using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
 
     /// <summary>
     /// Represents a Splunk service response.
     /// </summary>
+    /// <seealso cref="T:System.IDisposable"/>
     public sealed class Response : IDisposable
     {
         #region Constructors
 
-        /// <summary>
-        /// Intializes a new instance of the <see cref="Response"/> class.
-        /// </summary>
-        /// <param name="message">
-        /// An object representing an HTTP response message including the status
-        /// code and data.
-        /// </param>
         Response(HttpResponseMessage message)
         { this.message = message; }
 
@@ -51,28 +44,38 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the HTTP response message associated with the current <see 
-        /// cref="Response"/>.
+        /// Gets the HTTP response message associated with the current
+        /// <see cref="Response"/>.
         /// </summary>
+        /// <value>
+        /// The message.
+        /// </value>
         public HttpResponseMessage Message
         {
             get { return this.message; }
         }
 
         /// <summary>
-        /// Gets the <see cref="Stream"/> associated with the current <see 
-        /// cref="Response.Message"/>.
+        /// Gets the <see cref="Stream"/> associated with the current
+        /// <see cref="Response.Message"/>.
         /// </summary>
         /// <remarks>
-        /// This object is the one returned by <see cref="HttpContent.ReadAsStreamAsync()"/>.
+        /// This object is the one returned by
+        /// <see cref="HttpContent.ReadAsStreamAsync()"/>.
         /// </remarks>
+        /// <value>
+        /// The stream.
+        /// </value>
         public Stream Stream
         { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="XmlReader"/> for reading HTTP body data from
-        /// the current <see cref="Response.Stream"/>.
+        /// Gets the <see cref="XmlReader"/> for reading HTTP body data from the
+        /// current <see cref="Response.Stream"/>.
         /// </summary>
+        /// <value>
+        /// The XML reader.
+        /// </value>
         public XmlReader XmlReader
         { 
             get 
@@ -91,12 +94,12 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates a <see cref="Response"/> object from an <see
-        /// cref="HttpResponseMessage"/>.
+        /// Asynchronously creates a <see cref="Response"/> object from an
+        /// <see cref="HttpResponseMessage"/>.
         /// </summary>
         /// <param name="message">
-        /// The <see cref="HttpResponseMessage"/> from which to create a <see 
-        /// cref="Response"/> object.
+        /// The <see cref="HttpResponseMessage"/> from which to create a
+        /// <see cref="Response"/> object.
         /// </param>
         /// <returns>
         /// The <see cref="Response"/> object created.
@@ -112,9 +115,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Releases all disposable resources used by the current <see cref=
-        /// "Response"/>.
+        /// Releases all disposable resources used by the current
+        /// <see cref= "Response"/>.
         /// </summary>
+        /// <seealso cref="M:System.IDisposable.Dispose()"/>
         public void Dispose()
         {
             if (this.disposed)
@@ -141,8 +145,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Throws a <see cref="RequestException"/> if the current <see cref=
-        /// "Response"/>.Message.StatusCode is different than expected.
+        /// Throws a <see cref="RequestException"/> if the current
+        /// <see cref= "Response"/>.Message.StatusCode is different than expected.
         /// </summary>
         /// <param name="expected">
         /// The expected <see cref="HttpStatusCode"/>.
@@ -161,18 +165,22 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Throws a <see cref="RequestException"/> if the current <see cref=
-        /// "Response"/>.Message.StatusCode is different than expecteds.
+        /// Throws a <see cref="RequestException"/> if the current
+        /// <see cref= "Response"/>.Message.StatusCode is different than expecteds.
         /// </summary>
-        /// <param name="expected0">
-        /// One expected <see cref="HttpStatusCode"/>.
-        /// </param>
         /// <param name="expected1">
         /// Another expected <see cref="HttpStatusCode"/>.
+        /// </param>
+        /// <param name="expected2">
+        /// The second expected.
         /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
+        ///
+        /// ### <param name="expected0">
+        /// One expected <see cref="HttpStatusCode"/>.
+        /// </param>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected1, HttpStatusCode expected2)
         {
             var statusCode = this.Message.StatusCode;
@@ -203,6 +211,15 @@ namespace Splunk.Client
         XmlReader reader;
         bool disposed;
 
+        /// <summary>
+        /// Throw request exception asynchronous.
+        /// </summary>
+        /// <exception cref="RequestException">
+        /// Thrown when a Request error condition occurs.
+        /// </exception>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
         internal async Task ThrowRequestExceptionAsync()
         {
             var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);

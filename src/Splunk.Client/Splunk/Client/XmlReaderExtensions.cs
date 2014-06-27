@@ -15,19 +15,22 @@
  */
 
 //// TODO:
-//// [X] Eliminate unused extensions and justify the remainder
-//// [O] Contract checks on all public methods
+//// [O] Contract
 //// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Xml;
 
+    /// <summary>
+    /// An XML reader extensions.
+    /// </summary>
     internal static class XmlReaderExtensions
     {
         /// <summary>
@@ -35,8 +38,17 @@ namespace Splunk.Client
         /// positioned as expected.
         /// <paramref name="names"/>.
         /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// If <paramref name="reader"/>.NodeType is different than
+        /// <paramref name="nodeType"/> or—if <paramref name="names"/> are provided—
+        /// paramref name="reader"/&gt;.Name is not in the list of
+        /// <paramref name= "names"/>.
+        /// </exception>
         /// <param name="reader">
-        /// The source <see cref="XmlReader"/>. 
+        /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="nodeType">
         /// Expected XML node type.
@@ -45,14 +57,9 @@ namespace Splunk.Client
         /// Optional list of names which the expected <paramref name="nodeType"/>
         /// may have.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> is <c>null</c>.
-        /// </exception>
-        /// <exception cref="InvalidDataException">
-        /// If <paramref name="reader"/>.NodeType is different than <paramref 
-        /// name="nodeType"/> or—if <paramref name="names"/> are provided—
-        /// paramref name="reader"/>.Name is not in the list of <paramref name=
-        /// "names"/>.
         /// </exception>
         public static void EnsureMarkup(this XmlReader reader, XmlNodeType nodeType, params string[] names)
         {
@@ -78,13 +85,15 @@ namespace Splunk.Client
             {
                 case ReadState.EndOfFile:
                     
-                    message = string.Format("Reached end of file where {0} was expected.", expected);
+                    message = string.Format(CultureInfo.CurrentCulture, "Reached end of file where {0} was expected.", 
+                        expected);
                     break;
                 
                 case ReadState.Interactive:
                 
                     var actual = FormatNode(reader.NodeType, reader.Name);
-                    message = string.Format("Read {1} where {0} was expected.", expected, actual);
+                    message = string.Format(CultureInfo.CurrentCulture, "Read {1} where {0} was expected.", 
+                        expected, actual);
                     break;
                 
                 default: throw new InvalidOperationException(); // TODO: Diagnostics
@@ -96,6 +105,15 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the value of the attribute with the specified name.
         /// </summary>
+        /// <remarks>
+        /// If attribute <paramref name="name"/> is not present or is equal to
+        /// <see cref="string"/>.Empty an <see cref="InvalidDataException"/>
+        /// is thrown.
+        /// </remarks>
+        /// <exception cref="InvalidDataException">
+        /// If the value of attribute <paramref name="name"/> is
+        /// <see cref= "String"/>.Empty or <c>null</c>.
+        /// </exception>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
@@ -105,23 +123,15 @@ namespace Splunk.Client
         /// <returns>
         /// The value of attribute <paramref name="name"/>.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> or <paramref name="name"/> are <c>
         /// null</c>.
         /// </exception>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="reader"/> is not positioned on an <see cref=
-        /// "XmlNodeType"/>.Element.
+        /// ### <exception cref="ArgumentException">
+        /// <paramref name="reader"/> is not positioned on an
+        /// <see cref= "XmlNodeType"/>.Element.
         /// </exception>
-        /// <exception cref="InvalidDataException">
-        /// If the value of attribute <paramref name="name"/> is <see cref=
-        /// "String"/>.Empty or <c>null</c>.
-        /// </exception>
-        /// <remarks>
-        /// If attribute <paramref name="name"/> is not present or is equal to
-        /// <see cref="string"/>.Empty an <see cref="InvalidDataException"/>
-        /// is thrown.
-        /// </remarks>
         public static string GetRequiredAttribute(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
@@ -132,7 +142,8 @@ namespace Splunk.Client
 
             if (string.IsNullOrEmpty(value))
             {
-                var message = string.Format("Value of <{0}> attribute {1} is missing.", reader.Name, name);
+                var message = string.Format(CultureInfo.CurrentCulture, "Value of <{0}> attribute {1} is missing.", 
+                    reader.Name, name);
                 throw new InvalidDataException(message);
             }
 
@@ -140,9 +151,12 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously positions the source <see cref="XmlReader"/> to the
-        /// start-tag following an <see cref="XmlNodeType"/>.XmlDeclaration.
+        /// Asynchronously positions the source <see cref="XmlReader"/> to the start-
+        /// tag following an <see cref="XmlNodeType"/>.XmlDeclaration.
         /// </summary>
+        /// <exception cref="XmlException">
+        /// Thrown when an XML error condition occurs.
+        /// </exception>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
@@ -151,15 +165,18 @@ namespace Splunk.Client
         /// </param>
         /// <returns>
         /// <c>true</c> if the source <see cref="XmlReader"/> is successfully
-        /// positioned at one of the permitted document element <paramref name=
-        /// "names"/>; otherwise, if the end of file is reached, <c>false</c>.
+        /// positioned at one of the permitted document element
+        /// <paramref name= "names"/>; otherwise, if the end of file is reached,
+        /// <c>false</c>.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> is <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
-        /// There is no start-tag following the <see cref="XmlNodeType"/>.XmlDeclaration or
-        /// the start-tag is not in the list of permitted document element names.
+        /// ### <exception cref="InvalidDataException">
+        /// There is no start-tag following the
+        /// <see cref="XmlNodeType"/>.XmlDeclaration or the start-tag is not in the
+        /// list of permitted document element names.
         /// </exception>
         public static async Task<bool> MoveToDocumentElementAsync(this XmlReader reader, params string[] names)
         {
@@ -217,8 +234,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously visits the named descendants of the element at the 
-        /// current <see cref="XmlReader"/> position.
+        /// Asynchronously visits the named descendants of the element at the source
+        /// <see cref="XmlReader"/> position.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
@@ -227,8 +244,8 @@ namespace Splunk.Client
         /// Name of the descendant elements to read.
         /// </param>
         /// <param name="task">
-        /// An awaitable function to apply to <see cref="reader"/> at each of
-        /// the visited elements.
+        /// An awaitable function to apply to <see cref="reader"/> at each of the
+        /// visited elements.
         /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -251,14 +268,20 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// An XmlReader extension method that reads element content asynchronous.
         /// </summary>
-        /// <typeparam name="TValue"></typeparam>
+        /// <typeparam name="TValue">
+        /// Type of the value.
+        /// </typeparam>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
-        /// <param name="valueConverter"></param>
-        /// <returns></returns>
+        /// <param name="valueConverter">
+        /// 
+        /// </param>
+        /// <returns>
+        /// The element content asynchronous.
+        /// </returns>
         public static async Task<TValue> ReadElementContentAsync<TValue>(this XmlReader reader, ValueConverter<TValue> valueConverter)
         {
             return valueConverter.Convert(await reader.ReadElementContentAsStringAsync());
@@ -267,8 +290,15 @@ namespace Splunk.Client
         /// <summary>
         /// Reads a sequence of element start tags.
         /// </summary>
+        /// <remarks>
+        /// The <paramref name="reader"/> should be positioned on the node preceding
+        /// the first start tag in the sequence of <paramref name= "names"/> when
+        /// this method is called. The
+        /// <paramref name="reader"/> will be positioned on the last start
+        /// tag in the sequence of <paramref name="names"/> when this method returns.
+        /// </remarks>
         /// <param name="reader">
-        /// The source <see cref="XmlReader"/>. 
+        /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="names">
         /// The sequence of element start tag names to match.
@@ -276,21 +306,14 @@ namespace Splunk.Client
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> or <paramref name="names"/> is <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
-        /// If the sequence of nodes read from <paramref name="reader"/> does 
-        /// not match the sequence of start tag <paramref name="names"/>.
+        /// ### <exception cref="InvalidDataException">
+        /// If the sequence of nodes read from <paramref name="reader"/> does not
+        /// match the sequence of start tag <paramref name="names"/>.
         /// </exception>
-        /// <remarks>
-        /// The <paramref name="reader"/> should be positioned on the node
-        /// preceding the first start tag in the sequence of <paramref name=
-        /// "names"/> when this method is called. The 
-        /// <paramref name="reader"/> will be positioned on the last start
-        /// tag in the sequence of <paramref name="names"/> when this method 
-        /// returns.
-        /// </remarks>
         public static async Task ReadElementSequenceAsync(this XmlReader reader, params string[] names)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
@@ -306,8 +329,15 @@ namespace Splunk.Client
         /// <summary>
         /// Reads a sequence of element end tags.
         /// </summary>
+        /// <remarks>
+        /// The <paramref name="reader"/> should be positioned on the first end tag
+        /// in the sequence of <paramref name="names"/> when this method is called.
+        /// The <paramref name="reader"/> will be positioned on the node following
+        /// the last end tag in the sequence of <paramref name="names "/> when this
+        /// method returns.
+        /// </remarks>
         /// <param name="reader">
-        /// The source <see cref="XmlReader"/>. 
+        /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="names">
         /// The sequence of element end tag names to match.
@@ -315,20 +345,14 @@ namespace Splunk.Client
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="reader"/> or <paramref name="names"/> is <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
-        /// If the sequence of nodes read from <paramref name="reader"/> does 
-        /// not match the sequence of end tag <paramref name="names"/>.
+        /// ### <exception cref="InvalidDataException">
+        /// If the sequence of nodes read from <paramref name="reader"/> does not
+        /// match the sequence of end tag <paramref name="names"/>.
         /// </exception>
-        /// <remarks>
-        /// The <paramref name="reader"/> should be positioned on the first 
-        /// end tag in the sequence of <paramref name="names"/> when this 
-        /// method is called. The <paramref name="reader"/> will be positioned
-        /// on the node following the last end tag in the sequence of <paramref 
-        /// name="names "/> when this method returns.
-        /// </remarks>
         public static async Task ReadEndElementSequenceAsync(this XmlReader reader, params string[] names)
         {
             Contract.Requires<ArgumentNullException>(reader != null);
@@ -342,7 +366,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// An XmlReader extension method that reads response element
+        /// asynchronous.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
@@ -351,7 +376,7 @@ namespace Splunk.Client
         /// 
         /// </param>
         /// <returns>
-        /// 
+        /// The response element asynchronous.
         /// </returns>
         public static async Task<string> ReadResponseElementAsync(this XmlReader reader, string name)
         {
@@ -366,15 +391,21 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asynchronously advances the source <see cref="XmlReader"/> to the
+        /// next descendant element with the specified name.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
-        /// 
+        /// Name of the descendant element you wish to move to.
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// <c>true</c> if a matching descendant element is found; otherwise 
+        /// <c>false</c>. If a matching child element is not found, the
+        /// <see cref="XmlReader"/> is positioned on the end tag (NodeType is 
+        /// XmlNodeType.EndElement) of the element.
+        /// </returns>
         public static async Task<bool> ReadToDescendantAsync(this XmlReader reader, string name)
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
@@ -409,16 +440,18 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Asyncrhonously reads until an element with the specified name is
+        /// found.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
-        /// 
+        /// Name of the element you wish to move to.
         /// </param>
         /// <returns>
-        /// 
+        /// <c>true</c> if a matching element is found; otherwise <c>false</c>
+        /// and the source <see cref="XmlReader"/> is in an end of file state.
         /// </returns>
         public static async Task<bool> ReadToFollowingAsync(this XmlReader reader, string name)
         {
@@ -439,20 +472,20 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously advances the the source <see cref="XmlReader"/> to 
-        /// the next sibling element with the specified qualified name.
+        /// Asynchronously advances the the source <see cref="XmlReader"/> to the
+        /// next sibling element with the specified qualified name.
         /// </summary>
         /// <param name="reader">
-        /// The source <see cref="XmlReader"/>. 
+        /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
         /// A qualified element name.
         /// </param>
         /// <returns>
-        /// <c>true</c> if a matching sibling element is found; otherwise <c>
-        /// false</c>. If a matching sibling element is not found, <paramref 
-        /// name="reader"/> is positioned on the end tag of the parent parent
-        /// element.
+        /// <c>true</c> if a matching sibling element is found; otherwise
+        /// <c>false</c>. If a matching sibling element is not found,
+        /// <paramref name="reader"/> is positioned on the end tag of the parent
+        /// parent element.
         /// </returns>
         public static async Task<bool> ReadToNextSiblingAsync(this XmlReader reader, string name)
         {
@@ -486,19 +519,19 @@ namespace Splunk.Client
         /// <see cref="XmlReader"/> position, if the specified <paramref name=
         /// "condition"/> is <c>false</c>.
         /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// The source <paramref name="reader"/> is in an error state, is closed, or
+        /// has not yet been called.
+        /// </exception>
+        /// <exception cref="InvalidDataException">
+        /// <paramref name="condition"/> is <c>false</c>.
+        /// </exception>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="condition">
         /// A value indicating whether the required condition is met.
         /// </param>
-        /// <exception cref="InvalidDataException">
-        /// <paramref name="condition"/> is <c>false</c>.
-        /// </exception>
-        /// <exception cref="InvalidOperationException">
-        /// The source <paramref name="reader"/> is in an error state, is 
-        /// closed, or has not yet been called.
-        /// </exception>
         public static void Requires(this XmlReader reader, bool condition)
         {
             if (condition)
@@ -514,7 +547,8 @@ namespace Splunk.Client
                     message = "Premature end of file";
                     break;
                 case ReadState.Interactive:
-                    message = string.Format("Unexpected {0}", FormatNode(reader.NodeType, reader.Name));
+                    message = string.Format(CultureInfo.CurrentCulture, "Unexpected {0}", 
+                        FormatNode(reader.NodeType, reader.Name));
                     break;
                 default: throw new InvalidOperationException(); // TODO: Diagnostics
             }
@@ -565,7 +599,10 @@ namespace Splunk.Client
                     
                     return string.IsNullOrEmpty(name) ? "end-tag" : string.Concat("</", name, ">");
                 
-                default: throw new ArgumentException(string.Format("Unsupported XmlNodeType: {0}", nodeType));
+                default:
+
+                    var text = string.Format(CultureInfo.CurrentCulture, "Unsupported XmlNodeType: {0}", nodeType);
+                    throw new ArgumentException(text);
             }
         }
 

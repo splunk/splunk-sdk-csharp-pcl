@@ -188,8 +188,8 @@ namespace Splunk.Client.UnitTests
 
             Assert.Equal(BooleanConverter.Instance.Convert(content.CanSummarize), job.CanSummarize);
             Assert.Equal(DateTimeConverter.Instance.Convert(content.CursorTime), job.CursorTime);
-            Assert.Equal(Int32Converter.Instance.Convert(content.DefaultSaveTTL), job.DefaultSaveTTL);
-            Assert.Equal(Int32Converter.Instance.Convert(content.DefaultTTL), job.DefaultTTL);
+            Assert.Equal(Int32Converter.Instance.Convert(content.DefaultSaveTTL), job.DefaultSaveTtl);
+            Assert.Equal(Int32Converter.Instance.Convert(content.DefaultTTL), job.DefaultTtl);
             Assert.Equal(Int64Converter.Instance.Convert(content.DiskUsage), job.DiskUsage);
             Assert.Equal(EnumConverter<DispatchState>.Instance.Convert(content.DispatchState), job.DispatchState);
             Assert.Equal(DoubleConverter.Instance.Convert(content.DoneProgress), job.DoneProgress);

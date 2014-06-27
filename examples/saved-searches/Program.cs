@@ -37,7 +37,7 @@ namespace Splunk.Examples.saved_searches
 
         private static async Task Run(Service service)
         {
-            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             string savedSearchName = "example_search";
             string savedSearchQuery = "search index=_internal | head 10";

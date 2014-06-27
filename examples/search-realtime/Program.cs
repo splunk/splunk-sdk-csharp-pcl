@@ -45,14 +45,14 @@ namespace search_realtime
 
         static async Task Run(Service service)
         {
-            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
             Console.WriteLine("Press return to cancel.");
 
             string searchQuery = "search index=_internal | stats count by method";
 
             Job realtimeJob = await service.Jobs.CreateAsync(searchQuery, new JobArgs
             {
-                SearchMode = SearchMode.Realtime,
+                SearchMode = SearchMode.RealTime,
                 EarliestTime = "rt-1h",
                 LatestTime = "rt",
             });

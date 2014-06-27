@@ -15,13 +15,13 @@
  */
 
 //// TODO:
-//// [X] Documentation
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     /// <summary>
-    /// Specifies the state of the license installed on a Splunk server 
-    /// instance.
+    /// Specifies the state of the license installed on a Splunk server instance.
     /// </summary>
     public enum LicenseState
     {
@@ -33,6 +33,6 @@ namespace Splunk.Client
         /// <summary>
         /// The license is in force.
         /// </summary>
-        OK
+        Ok
     }
 }

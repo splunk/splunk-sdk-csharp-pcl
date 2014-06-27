@@ -22,15 +22,14 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
-    using System.Linq;
     using System.Reflection;
 
     /// <summary>
-    /// Provides a converter to convert a string to a relative or absolute 
+    /// Provides a converter to convert a string to a relative or absolute
     /// <see cref="Uri"/> instance.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{System.Uri}"/>
     sealed class UriConverter : ValueConverter<Uri>
     {
         /// <summary>
@@ -39,16 +38,20 @@ namespace Splunk.Client
         public static readonly UriConverter Instance = new UriConverter();
 
         /// <summary>
-        /// Converts the string representation of the <paramref name="input"/> 
+        /// Converts the string representation of the <paramref name="input"/>
         /// object to a <see cref="Uri"/> instance.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
+        ///
+        /// ### <exception cref="InvalidDataException">
         /// The <paramref name="input"/> does not represent a <see cref="Uri"/>.
         /// </exception>
         public override Uri Convert(object input)
@@ -70,7 +73,7 @@ namespace Splunk.Client
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input));  // TODO: improved diagnostices
+            throw NewInvalidDataException(input);
         }
 
         #region Privates/internals
@@ -81,15 +84,29 @@ namespace Splunk.Client
 
         #region Types
 
+        /// <summary>
+        /// Interface for purifier.
+        /// </summary>
+        /// <seealso cref="T:Splunk.Client.ValueConverter{System.Uri}"/>
         interface IPurifier
         {
             void Purify(Uri uri);
         }
 
+        /// <summary>
+        /// A mono purifier.
+        /// </summary>
+        /// <seealso cref="T:Splunk.Client.UriConverter.IPurifier"/>
         class MonoPurifier : IPurifier
         {
             #region Methods
 
+            /// <summary>
+            /// Purifies the given document.
+            /// </summary>
+            /// <param name="uri">
+            /// URI of the document.
+            /// </param>
             public void Purify(Uri uri)
             {
                 if (!uri.IsAbsoluteUri)
@@ -111,8 +128,6 @@ namespace Splunk.Client
 
             #region Privates/internals
 
-            static Type uriType = typeof(Uri);
-
             static readonly FieldInfo Source;
             static readonly FieldInfo Path;
             static readonly FieldInfo Query;
@@ -122,7 +137,7 @@ namespace Splunk.Client
 
             static MonoPurifier()
             {
-                IEnumerable<FieldInfo> fields = uriType.GetRuntimeFields();
+                IEnumerable<FieldInfo> fields = typeof(Uri).GetRuntimeFields();
 
                 foreach (var field in fields)
                 {
@@ -153,10 +168,23 @@ namespace Splunk.Client
             #endregion
         }
 
+        /// <summary>
+        /// Information about the uri.
+        /// </summary>
         class UriInfo
         {
             #region Constructors
 
+            /// <summary>
+            /// Initializes a new instance of the Splunk.Client.UriConverter.UriInfo
+            /// class.
+            /// </summary>
+            /// <param name="uri">
+            /// URI of the document.
+            /// </param>
+            /// <param name="source">
+            /// The source.
+            /// </param>
             public UriInfo(Uri uri, string source)
             {
                 var pathStart = source.IndexOf(uri.Authority, StringComparison.Ordinal) + uri.Authority.Length;
@@ -200,21 +228,45 @@ namespace Splunk.Client
 
             #region Properties
 
+            /// <summary>
+            /// Gets the fragment.
+            /// </summary>
+            /// <value>
+            /// The fragment.
+            /// </value>
             public string Fragment
             {
                 get { return this.fragment; }
             }
 
+            /// <summary>
+            /// Gets the full pathname of the file.
+            /// </summary>
+            /// <value>
+            /// The full pathname of the file.
+            /// </value>
             public string Path 
             { 
                 get { return this.path; } 
             }
 
+            /// <summary>
+            /// Gets the query.
+            /// </summary>
+            /// <value>
+            /// The query.
+            /// </value>
             public string Query
             { 
                 get { return this.query; }
             }
 
+            /// <summary>
+            /// Gets the source for the.
+            /// </summary>
+            /// <value>
+            /// The source.
+            /// </value>
             public string Source
             { 
                 get { return this.source; }

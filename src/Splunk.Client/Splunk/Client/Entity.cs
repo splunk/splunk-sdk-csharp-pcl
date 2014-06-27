@@ -22,6 +22,8 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -33,6 +35,11 @@ namespace Splunk.Client
     /// <remarks>
     /// This is the base class for all Splunk entities.
     /// </remarks>
+    /// <typeparam name="TResource">
+    /// Type of the resource.
+    /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.BaseEntity{TResource}"/>
+    /// <seealso cref="T:Splunk.Client.IEntity"/>
     public class Entity<TResource> : BaseEntity<TResource>, IEntity where TResource : BaseResource, new()
     {
         #region Constructors
@@ -42,15 +49,20 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
         protected internal Entity(Service service, ResourceName name)
             : base(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
@@ -61,14 +73,16 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentException">
+        ///
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="entity"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref 
-        /// name="collection"/>, or <paramref name="entity"/> are <c>null</c>.
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name="collection"/>, or <paramref name="entity"/> are
+        /// <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal Entity(Context context, AtomFeed feed)
@@ -77,7 +91,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> 
+        /// Initializes a new instance of the <see cref="Entity"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -89,11 +103,12 @@ namespace Splunk.Client
         /// <param name="resourceName">
         /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
-        /// "resourceName"/> are <c>null</c>.
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name= "resourceName"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal Entity(Context context, Namespace ns, ResourceName resourceName)
@@ -110,19 +125,26 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="collection">
-        /// The <see cref="ResourceName"/> of an <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// The <see cref="ResourceName"/> of an
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </param>
-        /// <param name="entity">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <param name="entity">
         /// The name of an entity within <paramref name="collection"/>.
         /// </param>
-        /// <exception cref="ArgumentException">
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="entity"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref 
-        /// name="collection"/>, or <paramref name="entity"/> are <c>null</c>.
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name="collection"/>, or <paramref name="entity"/> are
+        /// <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal Entity(Context context, Namespace ns, ResourceName collection, string name)
@@ -130,12 +152,12 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref="Entity"/> 
+        /// Infrastructure. Initializes a new instance of the <see cref="Entity"/>
         /// class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code.
         /// </remarks>
         public Entity()
         { }
@@ -145,8 +167,11 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the content.
         /// </summary>
+        /// <value>
+        /// The content.
+        /// </value>
         protected ExpandoAdapter Content
         {
             get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
@@ -210,6 +235,13 @@ namespace Splunk.Client
         /// Gets a converted property value from the <see cref="CurrentSnapshot"/>
         /// of the current <see cref="Entity"/>.
         /// </summary>
+        /// <remarks>
+        /// Use this method to create static properties from the dynamic properties
+        /// exposed by the <see cref="CurrentSnapshot"/>.
+        /// </remarks>
+        /// <typeparam name="TValue">
+        /// Type of the value.
+        /// </typeparam>
         /// <param name="name">
         /// The name of a property.
         /// </param>
@@ -217,16 +249,14 @@ namespace Splunk.Client
         /// A value converter for converting property <paramref name="name"/>.
         /// </param>
         /// <returns>
-        /// The converted value or <paramref name="valueConverter"/><c>.DefaultValue</c>,
-        /// if <paramref name="name"/> does not exist.
+        /// The converted value or
+        /// <paramref name="valueConverter"/><c>.DefaultValue</c>, if
+        /// <paramref name="name"/> does not exist.
         /// </returns>
-        /// <exception cref="InvalidDataException">
+        ///
+        /// ### <exception cref="InvalidDataException">
         /// The conversion failed.
         /// </exception>
-        /// <remarks>
-        /// Use this method to create static properties from the dynamic 
-        /// properties exposed by the <see cref="CurrentSnapshot"/>.
-        /// </remarks>
         protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
             return this.Snapshot.GetValue(name, valueConverter);
@@ -251,7 +281,8 @@ namespace Splunk.Client
 
             if (count > 1)
             {
-                throw new InvalidDataException(string.Format("Atom feed response contains {0} entries.", count)); // TODO: improve diagnostics
+                var text = string.Format(CultureInfo.CurrentCulture, "Atom feed response contains {0} entries.", count);
+                throw new InvalidDataException(text);
             }
 
             this.CreateSnapshot(feed.Entries[0], feed.GeneratorVersion);

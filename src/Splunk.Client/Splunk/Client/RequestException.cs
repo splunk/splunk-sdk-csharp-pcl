@@ -14,13 +14,17 @@
  * under the License.
  */
 
-//// TODO: 
+//// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -29,6 +33,10 @@ namespace Splunk.Client
     /// <summary>
     /// The expception that is thrown when a Splunk service request fails.
     /// </summary>
+    /// <seealso cref="T:System.Exception"/>
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Justification =
+        "This is by design.")
+    ]
     public class RequestException : Exception
     {
         #region Constructors
@@ -38,17 +46,19 @@ namespace Splunk.Client
         /// class.
         /// </summary>
         /// <param name="message">
-        /// An object representing an HTTP response message including the status
-        /// code and data.
+        /// An object representing an HTTP response message including the status code
+        /// and data.
         /// </param>
         /// <param name="details">
-        /// A sequence of <see cref="Message"/> instances detailing the cause
-        /// of the <see cref="RequestException"/>.
+        /// A sequence of <see cref="Message"/> instances detailing the cause of the
+        /// <see cref="RequestException"/>.
         /// </param>
-        internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
+        protected internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(FormatMessageText(message, details))
         {
-            this.Details = new List<Message>(details ?? Enumerable.Empty<Message>());
+            Contract.Requires<ArgumentNullException>(message != null);
+
+            this.Details = new ReadOnlyCollection<Message>(new List<Message>(details ?? Enumerable.Empty<Message>()));
             this.StatusCode = message.StatusCode;
         }
 
@@ -61,16 +71,22 @@ namespace Splunk.Client
         /// <see cref="RequestException"/>.
         /// </summary>
         /// <remarks>
-        /// This list may be empty. Splunk does not provide <c>Details</c> all
-        /// of the time.
+        /// This list may be empty. Splunk does not provide <c>Details</c> all of the
+        /// time.
         /// </remarks>
+        /// <value>
+        /// The details.
+        /// </value>
         public IReadOnlyList<Message> Details
         { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="HttpStatusCode"/> for the current <see cref=
-        /// "RequestException"/>.
+        /// Gets the <see cref="HttpStatusCode"/> for the current
+        /// <see cref= "RequestException"/>.
         /// </summary>
+        /// <value>
+        /// The status code.
+        /// </value>
         public HttpStatusCode StatusCode
         { get; private set; }
 

@@ -14,21 +14,35 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Interface for configuration setting.
+    /// </summary>
+    /// <seealso cref="T:IBaseResource"/>
     public interface IConfigurationSetting : IBaseResource
     {
         /// <summary>
-        /// 
+        /// Gets the links.
         /// </summary>
+        /// <value>
+        /// The links.
+        /// </value>
         IReadOnlyDictionary<string, Uri> Links { get; }
 
         /// <summary>
         /// Gets the cached value of the current <see cref="ConfigurationSetting"/>.
         /// </summary>
+        /// <value>
+        /// The value.
+        /// </value>
         string Value { get; }
     }
 }

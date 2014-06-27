@@ -15,8 +15,9 @@
  */
 
 //// TODO:
-//// [ ] Name table (?)
+//// [O] Contracts
 //// [O] Documentation
+//// [ ] Name table (?)
 
 namespace Splunk.Client
 {
@@ -26,19 +27,26 @@ namespace Splunk.Client
     /// <summary>
     /// Provides access to read/write permissions.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ExpandoAdapter{Splunk.Client.Permissions}"/>
     public sealed class Permissions : ExpandoAdapter<Permissions>
     {
         /// <summary>
-        /// 
+        /// Gets the set of Splunk user account names with read permissions.
         /// </summary>
+        /// <value>
+        /// The set of Splunk user account names with read permissions.
+        /// </value>
         public ISet<string> Read
         {
             get { return this.GetValue("Read", CollectionConverter<string, SortedSet<string>, StringConverter>.Instance); }
         }
 
         /// <summary>
-        /// 
+        /// Gets the set of Splunk user account names with write permissions.
         /// </summary>
+        /// <value>
+        /// The set of Splunk user account names with write permissions.
+        /// </value>
         public ISet<string> Write
         {
             get { return this.GetValue("Write", CollectionConverter<string, SortedSet<string>, StringConverter>.Instance); }

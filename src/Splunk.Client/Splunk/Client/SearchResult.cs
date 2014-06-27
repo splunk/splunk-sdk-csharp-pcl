@@ -29,30 +29,38 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
-    
+
     /// <summary>
     /// Represents a single record on a <see cref="SearchResultStream"/>.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ExpandoAdapter"/>
     public class SearchResult : ExpandoAdapter
     {
         #region Properties
 
         /// <summary>
-        /// Gets a value indicating whether the current <see cref="SearchResultStream"/> 
+        /// Gets a value indicating whether the current
+        /// <see cref="SearchResultStream"/>
         /// is yielding the final results from a search job.
         /// </summary>
+        /// <value>
+        /// <c>true</c> if this object is final, <c>false</c> if not.
+        /// </value>
         public bool IsFinal
         {
             get { return this.metadata.IsFinal; }
         }
 
         /// <summary>
-        /// Gets the read-only list of field names that may appear in a 
+        /// Gets the read-only list of field names that may appear in a
         /// <see cref="SearchResult"/>.
         /// </summary>
         /// <remarks>
         /// Be aware that any given result may contain a subset of these fields.
         /// </remarks>
+        /// <value>
+        /// A list of names of the fields.
+        /// </value>
         public IReadOnlyList<string> FieldNames
         {
             get { return this.metadata.FieldNames; }
@@ -62,9 +70,12 @@ namespace Splunk.Client
         /// Gets the XML markup for the <c>_raw</c> field value.
         /// </summary>
         /// <remarks>
-        /// This value is different than that of the <c>_raw</c> field value in
-        /// that it is an XML fragment that includes all markup.
+        /// This value is different than that of the <c>_raw</c> field value in that
+        /// it is an XML fragment that includes all markup.
         /// </remarks>
+        /// <value>
+        /// The segmented raw.
+        /// </value>
         public string SegmentedRaw { get; internal set; }
 
         #endregion
@@ -142,6 +153,7 @@ namespace Splunk.Client
         /// <returns>
         /// A string instance representing the current instance.
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             var builder = new StringBuilder("Result(");
@@ -166,11 +178,23 @@ namespace Splunk.Client
 
         readonly SearchResultMetadata metadata;
 
+        /// <summary>
+        /// Initializes a new instance of the Splunk.Client.SearchResult class.
+        /// </summary>
+        /// <param name="metadata">
+        /// The metadata.
+        /// </param>
         internal SearchResult(SearchResultMetadata metadata)
         {
             this.metadata = metadata;
         }
 
+        /// <summary>
+        /// Gets the metadata.
+        /// </summary>
+        /// <value>
+        /// The metadata.
+        /// </value>
         internal SearchResultMetadata Metadata
         {
             get { return this.metadata; }

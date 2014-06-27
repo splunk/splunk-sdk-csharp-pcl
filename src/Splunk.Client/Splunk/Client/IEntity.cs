@@ -32,9 +32,8 @@ namespace Splunk.Client
     public interface IEntity
     {
         /// <summary>
-        /// Asynchronously retrieves a fresh copy of the current <see cref=
-        /// "Entity"/> that contains all changes to it since it was last 
-        /// retrieved.
+        /// Asynchronously retrieves a fresh copy of the current entity that
+        /// contains all changes to it since it was last retrieved.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -50,35 +49,45 @@ namespace Splunk.Client
         Task RemoveAsync();
 
         /// <summary>
-        /// Asynchronously updates the attributes of the current <see cref=
-        /// "Entity"/> on Splunk.
+        /// Asynchronously updates the attributes of the current
+        /// <see cref= "Entity"/> on Splunk.
         /// </summary>
+        /// <remarks>
+        /// Splunk usually returns an updated snapshot on completion of the
+        /// operation. When it does the <see cref="CurrentSnapshot"/> will also be
+        /// updated.
+        /// </remarks>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
         /// <returns>
         /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
         /// </returns>
-        /// <remarks>
-        /// Splunk usually returns an updated snapshot on completion of the
-        /// operation. When it does the <see cref="CurrentSnapshot"/> will
-        /// also be updated.
-        /// </remarks>
         Task<bool> UpdateAsync(params Argument[] arguments);
 
         /// <summary>
-        /// Asynchronously updates the attributes of the current <see cref=
-        /// "Entity"/> on Splunk.
+        /// Asynchronously updates the attributes of the current
+        /// <see cref= "Entity"/> on Splunk.
         /// </summary>
+        /// <remarks>
+        /// Splunk usually returns an updated snapshot on completion of the
+        /// operation. When it does the <see cref="CurrentSnapshot"/> will be updated
+        /// and returns <c>true</c>; otherwise, this method returns
+        /// <c>false</c>.
+        /// </remarks>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
         /// <returns>
         /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
         /// </returns>
-        /// <remarks>
-        /// Splunk usually returns an updated snapshot on completion of the
-        /// operation. When it does the <see cref="CurrentSnapshot"/> will
-        /// be updated and returns <c>true</c>; otherwise, this method returns
-        /// <c>false</c>.
-        /// </remarks>
         Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
     }
 
+    /// <summary>
+    /// An entity contract.
+    /// </summary>
+    /// <seealso cref="T:Splunk.Client.IEntity"/>
     [ContractClassFor(typeof(IEntity))]
     abstract class IEntityContract : IEntity
     {

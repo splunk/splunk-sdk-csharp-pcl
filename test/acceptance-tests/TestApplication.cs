@@ -56,7 +56,7 @@ namespace Splunk.Client.UnitTests
                 if (await service.Applications.RemoveAsync("sdk-tests"))
                 {
                     await service.Server.RestartAsync(2 * 60 * 1000);
-                    await service.LoginAsync();
+                    await service.LogOnAsync();
                 }
 
                 ApplicationAttributes attributes = new ApplicationAttributes
@@ -210,7 +210,7 @@ namespace Splunk.Client.UnitTests
                 });
                 Assert.DoesNotThrow(() =>
                 {
-                    string p = updateInfo.Update.HomePage;
+                    string p = updateInfo.Update.Homepage;
                 });
                 Assert.DoesNotThrow(() =>
                 {

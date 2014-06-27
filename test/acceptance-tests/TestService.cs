@@ -374,7 +374,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.True(false, string.Format("Expected: No exception, Actual: {1}", e.GetType().FullName));
                 }
 
-                await service.LogoffAsync();
+                await service.LogOffAsync();
 
                 Assert.Null(service.SessionKey);
 
@@ -390,7 +390,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 try
                 {
-                    await service.LoginAsync("admin", "bad-password");
+                    await service.LogOnAsync("admin", "bad-password");
                     Assert.False(true, string.Format("Expected: {0}, Actual: {1}", typeof(AuthenticationFailureException).FullName, "no exception"));
                 }
                 catch (AuthenticationFailureException e)
@@ -746,10 +746,12 @@ namespace Splunk.Client.AcceptanceTests
 
                     Console.WriteLine("    # of inputs={0}.", inputsConfiguration.Count);
                     stopwatch.Start();
+
                     foreach (var stanza in inputsConfiguration)  // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                     {
                         await stanza.GetAsync();
                     }
+
                     stopwatch.Stop();
                     Console.WriteLine("    take {0}s to enumberate inputsConfiguration.", stopwatch.Elapsed.Seconds);
                     await service.Configurations.GetAllAsync();
@@ -766,12 +768,14 @@ namespace Splunk.Client.AcceptanceTests
                             await stanza.GetAsync();
                         }
                     }
+                    
                     stopwatch.Stop();
                     Console.WriteLine("    take {0}s to enumberate service.Configurations.", stopwatch.Elapsed.Seconds);
 
                     var configurationList = new List<Configuration>(service.Configurations.Count);
 
                     stopwatch.Start();
+                    
                     for (int i = 0; i < service.Configurations.Count; i++)
                     {
                         Configuration configuration = service.Configurations[i];
@@ -789,6 +793,7 @@ namespace Splunk.Client.AcceptanceTests
 
                         Assert.Equal(configuration.ToList(), stanzaList);
                     }
+                    
                     stopwatch.Stop();
                     Console.WriteLine("take {0}s to add/compare all configurations.", stopwatch.Elapsed.Seconds);
 
@@ -841,7 +846,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.True(index.Disabled);
 
                     await service.Server.RestartAsync(2 * 60 * 1000);
-                    await service.LoginAsync();
+                    await service.LogOnAsync();
 
                     await index.EnableAsync();
                     Assert.False(index.Disabled);
@@ -912,7 +917,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.DoesNotThrow(() => { bool value = entity.Disabled; });
                     Assert.DoesNotThrow(() => { Eai value = entity.Eai; });
                     Assert.DoesNotThrow(() => { bool value = entity.EnableOnlineBucketRepair; });
-                    Assert.DoesNotThrow(() => { bool value = entity.EnableRealtimeSearch; });
+                    Assert.DoesNotThrow(() => { bool value = entity.EnableRealTimeSearch; });
                     Assert.DoesNotThrow(() => { int value = entity.FrozenTimePeriodInSecs; });
                     Assert.DoesNotThrow(() => { string value = entity.HomePath; });
                     Assert.DoesNotThrow(() => { string value = entity.HomePathExpanded; });
@@ -979,7 +984,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.Equal(entity.Disabled, sameEntity.Disabled);
                     // Assert.Equal(entity.Eai, sameEntity.Eai); // TODO: verify this property setting (?)
                     Assert.Equal(entity.EnableOnlineBucketRepair, sameEntity.EnableOnlineBucketRepair);
-                    Assert.Equal(entity.EnableRealtimeSearch, sameEntity.EnableRealtimeSearch);
+                    Assert.Equal(entity.EnableRealTimeSearch, sameEntity.EnableRealTimeSearch);
                     Assert.Equal(entity.FrozenTimePeriodInSecs, sameEntity.FrozenTimePeriodInSecs);
                     Assert.Equal(entity.HomePath, sameEntity.HomePath);
                     Assert.Equal(entity.HomePathExpanded, sameEntity.HomePathExpanded);
@@ -1402,7 +1407,7 @@ namespace Splunk.Client.AcceptanceTests
                     }
                 }
 
-                await service.LogoffAsync();
+                await service.LogOffAsync();
             }
         }
 
@@ -1427,7 +1432,7 @@ namespace Splunk.Client.AcceptanceTests
                     }
                 }
 
-                await service.LogoffAsync();
+                await service.LogOffAsync();
             }
         }
 
@@ -1464,7 +1469,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.NotEmpty(results);
                 }
 
-                await service.LogoffAsync();
+                await service.LogOffAsync();
             }
         }
 
@@ -1517,7 +1522,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.True(stream.ReadCount > 1);
                 }
 
-                await service.LogoffAsync();
+                await service.LogOffAsync();
             }
         }
 
@@ -1541,7 +1546,7 @@ namespace Splunk.Client.AcceptanceTests
                     }
                 }
 
-                await service.LogoffAsync();
+                await service.LogOffAsync();
             }
         }
 
@@ -1594,7 +1599,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.Equal(stream.ReadCount, readCount);
                 }
 
-                await service.LogoffAsync();
+                await service.LogOffAsync();
             }
         }
 
@@ -1627,7 +1632,7 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     var args = new JobArgs { MaxCount = 100000 };
 
-                    using (SearchResultStream stream = await service.SearchOneshotAsync(search.Command, args))
+                    using (SearchResultStream stream = await service.SearchOneShotAsync(search.Command, args))
                     {
                         var list = new List<SearchResult>();
 
@@ -1761,7 +1766,7 @@ namespace Splunk.Client.AcceptanceTests
                     //// Restart the server because it's required following a server settings update
 
                     await service.Server.RestartAsync(2 * 60 * 1000);
-                    await service.LoginAsync();
+                    await service.LogOnAsync();
 
                 }
                 catch (Exception e1)
@@ -1814,7 +1819,7 @@ namespace Splunk.Client.AcceptanceTests
                 string cpuArchitecture = info.CpuArchitecture;
                 Guid guid = info.Guid;
                 bool isFree = info.IsFree;
-                bool isRealtimeSearchEnabled = info.IsRealtimeSearchEnabled;
+                bool isRealtimeSearchEnabled = info.IsRealTimeSearchEnabled;
                 bool isTrial = info.IsTrial;
                 IReadOnlyList<string> licenseKeys = info.LicenseKeys;
                 IReadOnlyList<string> licenseLabels = info.LicenseLabels;
@@ -1852,7 +1857,7 @@ namespace Splunk.Client.AcceptanceTests
                 }
 
                 Assert.Null(service.SessionKey);
-                await service.LoginAsync();
+                await service.LogOnAsync();
             }
         }
 

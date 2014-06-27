@@ -15,21 +15,15 @@
  */
 
 //// TODO:
-//// [X] Contracts
+//// [O] Contracts
 //// [O] Documentation
-//// [O] All unsealed classes that implement IDisposable must also implement 
-////     this method: protected virtual void Dispose(bool);
-////     See [Implementing a Dispose Method](http://goo.gl/VPIovn)
-////     All sealed classes that implement IDisposable must also implemnt this
-////     method: void Dispose(bool);
-////     See [GC.SuppressFinalize Method](http://goo.gl/XiI3HZ) and note the
-////     private void Dispose(bool disposing) implementation.
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;    
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
     using System.Net.Http;
     using System.Text;
@@ -37,16 +31,17 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a class for sending HTTP requests and receiving HTTP responses 
+    /// Provides a class for sending HTTP requests and receiving HTTP responses
     /// from a Splunk server.
     /// </summary>
+    /// <seealso cref="T:System.IDisposable"/>
     public class Context : IDisposable
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Context"/> class with
-        /// a protocol, host, and port number.
+        /// Initializes a new instance of the <see cref="Context"/> class with a
+        /// protocol, host, and port number.
         /// </summary>
         /// <param name="scheme">
         /// The <see cref="Scheme"/> used to communicate with <see cref="Host"/>
@@ -57,12 +52,15 @@ namespace Splunk.Client
         /// <param name="port">
         /// The port number used to communicate with <see cref="Host"/>.
         /// </param>
-        /// <exception name="ArgumentException">
+        /// <param name="timeout">
+        /// The timeout.
+        /// </param>
+        ///
+        /// ### <exception name="ArgumentException">
         /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
         /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
         /// or greater than <c>65535</c>.
         /// </exception>
-
         public Context(Scheme scheme, string host, int port, TimeSpan timeout = default(TimeSpan))
             : this(scheme, host, port, timeout, null)
         {
@@ -71,8 +69,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Context"/> class with
-        /// a protocol, host, port number, and optional message handler.
+        /// Initializes a new instance of the <see cref="Context"/> class with a
+        /// protocol, host, port number, and optional message handler.
         /// </summary>
         /// <param name="scheme">
         /// The <see cref="Scheme"/> used to communicate with <see cref="Host"/>.
@@ -83,15 +81,19 @@ namespace Splunk.Client
         /// <param name="port">
         /// The port number used to communicate with <see cref="Host"/>.
         /// </param>
+        /// <param name="timeout">
+        /// The timeout.
+        /// </param>
         /// <param name="handler">
-        /// The <see cref="HttpMessageHandler"/> responsible for processing the HTTP 
+        /// The <see cref="HttpMessageHandler"/> responsible for processing the HTTP
         /// response messages.
         /// </param>
         /// <param name="disposeHandler">
-        /// <c>true</c> if the inner handler should be disposed of by Dispose, 
+        /// <c>true</c> if the inner handler should be disposed of by Dispose,
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
-        /// <exception name="ArgumentException">
+        ///
+        /// ### <exception name="ArgumentException">
         /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
         /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
         /// or greater than <c>65535</c>.
@@ -118,30 +120,46 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the Splunk host associated with this instance.
+        /// Gets the Splunk host name associated with the current
+        /// <see cref= "Context"/>.
         /// </summary>
+        /// <value>
+        /// A Splunk host name.
+        /// </value>
         public string Host
         { get; private set; }
 
         /// <summary>
-        /// Gets the management port number used to communicate with 
-        /// <see cref="Host"/>
+        /// Gets the management port number used to communicate with
+        /// <see cref= "Host"/>
         /// </summary>
+        /// <value>
+        /// A Splunk management port number.
+        /// </value>
         public int Port
         { get; private set; }
 
         /// <summary>
-        /// Gets the scheme used to communicate with <see cref="Host"/> 
+        /// Gets the scheme used to communicate with <see cref="Host"/> on
+        /// <see cref="Port"/>.
         /// </summary>
+        /// <value>
+        /// The scheme used to communicate with <see cref="Host"/> on
+        /// <see cref="Port"/>.
+        /// </value>
         public Scheme Scheme
         { get; private set; }
 
         /// <summary>
-        /// Gets or sets the session key used by the <see cref="Context"/>.
+        /// Gets or sets the session key used by the current <see cref= "Context"/>.
         /// </summary>
         /// <remarks>
-        /// The value returned is null until it is set.
+        /// This value is <c>null</c> until it is set.
         /// </remarks>
+        /// <value>
+        /// The session key used by the current <see cref="Context"/> or <c>
+        /// null</c>.
+        /// </value>
         public string SessionKey
         { get; set; }
 
@@ -150,16 +168,18 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Releases all disposable resources used by the current <see cref=
-        /// "Context"/>.
+        /// Releases all disposable resources used by the current
+        /// <see cref= "Context"/>.
         /// </summary>
         /// <remarks>
         /// Do not override this method. Override <see cref="Dispose(bool)"/>
         /// instead.
         /// </remarks>
+        /// <seealso cref="M:System.IDisposable.Dispose()"/>
         public void Dispose()
         {
             this.Dispose(true);
+            GC.SuppressFinalize(this); // Enables derivatives that introduce finalizers from needing to reimplement
         }
 
         /// <summary>
@@ -175,16 +195,20 @@ namespace Splunk.Client
         ///   Provide a finalizer, if needed, and call this method from it.
         /// </description></item>
         /// <item><description>
-        ///   To help ensure that resources are always cleaned up 
-        ///   appropriately, ensure that the override is callable multiple
-        ///   times without throwing an exception.
+        ///   To help ensure that resources are always cleaned up appropriately,
+        ///   ensure that the override is callable multiple times without throwing an
+        ///   exception.
         /// </description></item>
         /// </list>
-        /// There is no performance benefit in overriding this method on types
-        /// that use only managed resources (such as arrays) because they are 
-        /// automatically reclaimed by the garbage collector. See 
+        /// There is no performance benefit in overriding this method on types that
+        /// use only managed resources (such as arrays) because they are
+        /// automatically reclaimed by the garbage collector. See
         /// <a href="http://goo.gl/VPIovn">Implementing a Dispose Method</a>.
         /// </remarks>
+        /// <param name="disposing">
+        /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release
+        /// only unmanaged resources.
+        /// </param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing && this.httpClient != null)
@@ -195,16 +219,20 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Sends a DELETE request as an asynchronous operation.
         /// </summary>
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resource">
+        /// 
         /// </param>
         /// <param name="argumentSets">
+        /// 
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// The response to the DELETE request.
+        /// </returns>
         public virtual async Task<Response> DeleteAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
@@ -214,16 +242,20 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Sends a GET request as an asynchronous operation.
         /// </summary>
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resource">
+        /// 
         /// </param>
         /// <param name="argumentSets">
+        /// 
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// The response to the GET request.
+        /// </returns>
         public virtual async Task<Response> GetAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
@@ -233,7 +265,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Sends a GET request as an asynchronous operation.
         /// </summary>
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
@@ -248,7 +280,7 @@ namespace Splunk.Client
         /// 
         /// </param>
         /// <returns>
-        /// 
+        /// The response to the GET request.
         /// </returns>
         public virtual async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token,
             params IEnumerable<Argument>[] argumentSets)
@@ -258,23 +290,29 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Sends a POST request as an asynchronous operation.
         /// </summary>
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="resource"></param>
-        /// <param name="argumentSets"></param>
-        /// <returns></returns>
+        /// <param name="resource">
+        /// 
+        /// </param>
+        /// <param name="argumentSets">
+        /// 
+        /// </param>
+        /// <returns>
+        /// The response to the GET request.
+        /// </returns>
         public virtual async Task<Response> PostAsync(Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
-            var content = this.CreateStringContent(argumentSets);
+            var content = CreateStringContent(argumentSets);
             return await PostAsync(ns, resource, content, null);
         }
 
         /// <summary>
-        /// 
+        /// Sends a POST request as an asynchronous operation.
         /// </summary>
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
@@ -289,7 +327,7 @@ namespace Splunk.Client
         /// 
         /// </param>
         /// <returns>
-        /// 
+        /// The response to the GET request.
         /// </returns>
         public virtual async Task<Response> PostAsync(Namespace ns, ResourceName resource,
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
@@ -305,9 +343,12 @@ namespace Splunk.Client
         /// <returns>
         /// A string representation of the current <see cref="Context"/>.
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
-            return string.Concat(SchemeStrings[(int)this.Scheme], "://", this.Host, ":", this.Port.ToString());
+            var text = string.Concat(CultureInfo.InvariantCulture, SchemeStrings[(int)this.Scheme], "://", this.Host, 
+                ":", this.Port.ToString(CultureInfo.InvariantCulture.NumberFormat));
+            return text;
         }
 
         #endregion
@@ -358,7 +399,7 @@ namespace Splunk.Client
             return uri;
         }
 
-        StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)
+        static StringContent CreateStringContent(params IEnumerable<Argument>[] argumentSets)
         {
             if (argumentSets == null)
             {

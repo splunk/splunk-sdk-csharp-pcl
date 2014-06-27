@@ -1,15 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <ProjectGuid>{DE65F0D5-7753-483E-8933-E6DB22350F04}</ProjectGuid>
     <AssemblyName>Splunk.Client</AssemblyName>
     <OutputType>Library</OutputType>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform>AnyCPU</Platform>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
     <ErrorReport>prompt</ErrorReport>
     <FileAlignment>512</FileAlignment>
@@ -19,8 +21,6 @@
     <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
     <WarningLevel>4</WarningLevel>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
@@ -64,7 +64,6 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).XML</DocumentationFile>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
@@ -107,7 +106,6 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateDocumentationFile Condition=" '$(GenerateDocumentationFile)' == '' ">False</GenerateDocumentationFile>
@@ -117,142 +115,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Splunk\Client\AlertComparator.cs" />
-    <Compile Include="Splunk\Client\AlertSeverity.cs" />
-    <Compile Include="Splunk\Client\AlertTrack.cs" />
-    <Compile Include="Splunk\Client\AlertType.cs" />
-    <Compile Include="Splunk\Client\Application.cs" />
-    <Compile Include="Splunk\Client\ApplicationArchiveInfo.cs" />
-    <Compile Include="Splunk\Client\ApplicationAttributes.cs" />
-    <Compile Include="Splunk\Client\ApplicationCollection.cs" />
-    <Compile Include="Splunk\Client\ApplicationSetupInfo.cs" />
-    <Compile Include="Splunk\Client\ApplicationUpdateInfo.cs" />
-    <Compile Include="Splunk\Client\Args.cs" />
-    <Compile Include="Splunk\Client\Argument.cs" />
-    <Compile Include="Splunk\Client\ArgumentSet.cs" />
-    <Compile Include="Splunk\Client\AtomEntry.cs" />
-    <Compile Include="Splunk\Client\AtomFeed.cs" />
-    <Compile Include="Splunk\Client\AuthenticationFailureException.cs" />
-    <Compile Include="Splunk\Client\Awaiter.cs" />
-    <Compile Include="Splunk\Client\BadRequestException.cs" />
-    <Compile Include="Splunk\Client\BaseEntity.cs" />
-    <Compile Include="Splunk\Client\BaseResource.cs" />
-    <Compile Include="Splunk\Client\BooleanConverter.cs" />
-    <Compile Include="Splunk\Client\CollectionConverter.cs" />
-    <Compile Include="Splunk\Client\Configuration.cs" />
-    <Compile Include="Splunk\Client\ConfigurationCollection.cs" />
-    <Compile Include="Splunk\Client\ConfigurationSetting.cs" />
-    <Compile Include="Splunk\Client\ConfigurationStanza.cs" />
-    <Compile Include="Splunk\Client\Context.cs" />
-    <Compile Include="Splunk\Client\Contract.cs" />
-    <Compile Include="Splunk\Client\CustomJobArgs.cs" />
-    <Compile Include="Splunk\Client\DateTimeConverter.cs" />
-    <Compile Include="Splunk\Client\DispatchState.cs" />
-    <Compile Include="Splunk\Client\DoubleConverter.cs" />
-    <Compile Include="Splunk\Client\Eai.cs" />
-    <Compile Include="Splunk\Client\EaiAcl.cs" />
-    <Compile Include="Splunk\Client\EaiAttributes.cs" />
-    <Compile Include="Splunk\Client\EmailFormat.cs" />
-    <Compile Include="Splunk\Client\Endpoint.cs" />
-    <Compile Include="Splunk\Client\Entity.cs" />
-    <Compile Include="Splunk\Client\EntityCollection.cs" />
-    <Compile Include="Splunk\Client\EnumConverter.cs" />
-    <Compile Include="Splunk\Client\ExecutionMode.cs" />
-    <Compile Include="Splunk\Client\ExpandoAdapter.cs" />
-    <Compile Include="Splunk\Client\GuidConverter.cs" />
-    <Compile Include="Splunk\Client\IApplication.cs" />
-    <Compile Include="Splunk\Client\IApplicationArchiveInfo.cs" />
-    <Compile Include="Splunk\Client\IApplicationCollection.cs" />
-    <Compile Include="Splunk\Client\IApplicationSetupInfo.cs" />
-    <Compile Include="Splunk\Client\IApplicationUpdateInfo.cs" />
-    <Compile Include="Splunk\Client\IBaseResource.cs" />
-    <Compile Include="Splunk\Client\IConfiguration.cs" />
-    <Compile Include="Splunk\Client\IConfigurationCollection.cs" />
-    <Compile Include="Splunk\Client\IConfigurationSetting.cs" />
-    <Compile Include="Splunk\Client\IConfigurationStanza.cs" />
-    <Compile Include="Splunk\Client\IEntity.cs" />
-    <Compile Include="Splunk\Client\IEntityCollection.cs" />
-    <Compile Include="Splunk\Client\IIndex.cs" />
-    <Compile Include="Splunk\Client\IIndexCollection.cs" />
-    <Compile Include="Splunk\Client\IJob.cs" />
-    <Compile Include="Splunk\Client\IJobCollection.cs" />
-    <Compile Include="Splunk\Client\Index.cs" />
-    <Compile Include="Splunk\Client\IndexAttributes.cs" />
-    <Compile Include="Splunk\Client\IndexCollection.cs" />
-    <Compile Include="Splunk\Client\Int32Converter.cs" />
-    <Compile Include="Splunk\Client\Int64Converter.cs" />
-    <Compile Include="Splunk\Client\InternalServerErrorException.cs" />
-    <Compile Include="Splunk\Client\IPaginated.cs" />
-    <Compile Include="Splunk\Client\ISavedSearch.cs" />
-    <Compile Include="Splunk\Client\ISavedSearchCollection.cs" />
-    <Compile Include="Splunk\Client\IServer.cs" />
-    <Compile Include="Splunk\Client\IServerInfo.cs" />
-    <Compile Include="Splunk\Client\IServerMessage.cs" />
-    <Compile Include="Splunk\Client\IServerMessageCollection.cs" />
-    <Compile Include="Splunk\Client\IServerSettings.cs" />
-    <Compile Include="Splunk\Client\IService.cs" />
-    <Compile Include="Splunk\Client\IStoragePassword.cs" />
-    <Compile Include="Splunk\Client\IStoragePasswordCollection.cs" />
-    <Compile Include="Splunk\Client\ITransmitter.cs" />
-    <Compile Include="Splunk\Client\Job.cs" />
-    <Compile Include="Splunk\Client\JobArgs.cs" />
-    <Compile Include="Splunk\Client\JobCollection.cs" />
-    <Compile Include="Splunk\Client\LicenseState.cs" />
-    <Compile Include="Splunk\Client\Message.cs" />
-    <Compile Include="Splunk\Client\MessageType.cs" />
-    <Compile Include="Splunk\Client\Namespace.cs" />
-    <Compile Include="Splunk\Client\Observable.cs" />
-    <Compile Include="Splunk\Client\Pagination.cs" />
-    <Compile Include="Splunk\Client\PaperOrientation.cs" />
-    <Compile Include="Splunk\Client\PaperSize.cs" />
-    <Compile Include="Splunk\Client\Permissions.cs" />
-    <Compile Include="Splunk\Client\RequestException.cs" />
-    <Compile Include="Splunk\Client\Resource.cs" />
-    <Compile Include="Splunk\Client\ResourceCollection.cs" />
-    <Compile Include="Splunk\Client\ResourceName.cs" />
-    <Compile Include="Splunk\Client\ResourceNotFoundException.cs" />
-    <Compile Include="Splunk\Client\Response.cs" />
-    <Compile Include="Splunk\Client\SavedSearch.cs" />
-    <Compile Include="Splunk\Client\SavedSearchAttributes.cs" />
-    <Compile Include="Splunk\Client\SavedSearchCollection.cs" />
-    <Compile Include="Splunk\Client\SavedSearchDispatchArgs.cs" />
-    <Compile Include="Splunk\Client\SavedSearchTemplateArgs.cs" />
-    <Compile Include="Splunk\Client\Scheme.cs" />
-    <Compile Include="Splunk\Client\SearchEventArgs.cs" />
-    <Compile Include="Splunk\Client\SearchExportArgs.cs" />
-    <Compile Include="Splunk\Client\SearchExportStream.cs" />
-    <Compile Include="Splunk\Client\SearchMode.cs" />
-    <Compile Include="Splunk\Client\SearchPreview.cs" />
-    <Compile Include="Splunk\Client\SearchPreviewStream.cs" />
-    <Compile Include="Splunk\Client\SearchResult.cs" />
-    <Compile Include="Splunk\Client\SearchResultArgs.cs" />
-    <Compile Include="Splunk\Client\SearchResultMetadata.cs" />
-    <Compile Include="Splunk\Client\SearchResultStream.cs" />
-    <Compile Include="Splunk\Client\Server.cs" />
-    <Compile Include="Splunk\Client\ServerInfo.cs" />
-    <Compile Include="Splunk\Client\ServerMessage.cs" />
-    <Compile Include="Splunk\Client\ServerMessageCollection.cs" />
-    <Compile Include="Splunk\Client\ServerMessageType.cs" />
-    <Compile Include="Splunk\Client\ServerMode.cs" />
-    <Compile Include="Splunk\Client\ServerSettings.cs" />
-    <Compile Include="Splunk\Client\ServerSettingValues.cs" />
-    <Compile Include="Splunk\Client\Service.cs" />
-    <Compile Include="Splunk\Client\SharingMode.cs" />
-    <Compile Include="Splunk\Client\SortDirection.cs" />
-    <Compile Include="Splunk\Client\SortMode.cs" />
-    <Compile Include="Splunk\Client\StoragePassword.cs" />
-    <Compile Include="Splunk\Client\StoragePasswordAttributes.cs" />
-    <Compile Include="Splunk\Client\StoragePasswordCollection.cs" />
-    <Compile Include="Splunk\Client\StringConverter.cs" />
-    <Compile Include="Splunk\Client\Transmitter.cs" />
-    <Compile Include="Splunk\Client\TransmitterArgs.cs" />
-    <Compile Include="Splunk\Client\TruncationMode.cs" />
-    <Compile Include="Splunk\Client\UnauthorizedAccessException.cs" />
-    <Compile Include="Splunk\Client\UnixDateTimeConverter.cs" />
-    <Compile Include="Splunk\Client\UriConverter.cs" />
-    <Compile Include="Splunk\Client\ValueConverter.cs" />
-    <Compile Include="Splunk\Client\VersionConverter.cs" />
-    <Compile Include="Splunk\Client\XmlReaderExtensions.cs" />
+    <Compile Include="Splunk\**\*" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
@@ -270,8 +133,7 @@
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
- 
-  </Target>
+   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->

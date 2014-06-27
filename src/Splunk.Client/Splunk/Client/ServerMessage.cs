@@ -25,14 +25,13 @@ namespace Splunk.Client
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Runtime.Serialization;
     using System.Threading.Tasks;
-    
+
     /// <summary>
     /// Provides an object representation of a Splunk server message entity.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.Entity{Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IServerMessage"/>
     public class ServerMessage : Entity<Resource>, IServerMessage
     {
         #region Constructors
@@ -42,16 +41,20 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
         protected internal ServerMessage(Service service, string name)
             : this(service.Context, service.Namespace, name)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerMessage"/> class.
@@ -62,10 +65,11 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal ServerMessage(Context context, AtomFeed feed)
@@ -85,13 +89,14 @@ namespace Splunk.Client
         /// <param name="name">
         /// The name of the <see cref="ServerMessage"/>.
         /// </param>
-        /// <exception cref="ArgumentException">
+        ///
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal ServerMessage(Context context, Namespace ns, string name)
@@ -99,13 +104,13 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ServerMessage"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ServerMessage"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use one of these
-        /// methods to obtain a <see cref="ServerMessage"/> instance:
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use one of these methods to obtain a
+        /// <see cref="ServerMessage"/> instance:
         /// <list type="table">
         /// <listheader>
         ///   <term>Method</term>
@@ -161,22 +166,35 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Unsupported. This method is not supported by the <see cref=
-        /// "ServerMessage"/> class because it is not supported by the <a href=
-        /// "http://goo.gl/S13BE0">Splunk messages/{name} endpoint</a>.
+        /// Unsupported. This method is not supported by the
+        /// <see cref= "ServerMessage"/> class because it is not supported by the
+        /// <a href= "http://goo.gl/S13BE0">Splunk messages/{name} endpoint</a>.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="arguments">
+        /// A variable-length parameters list containing arguments.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// </returns>
         public override async Task<bool> UpdateAsync(params Argument[] arguments)
         {
             return await this.UpdateAsync(arguments.AsEnumerable());
         }
 
         /// <summary>
-        /// Unsupported. This method is not supported by the <see cref=
-        /// "ServerMessage"/> class because it is not supported by the <a href=
-        /// "http://goo.gl/S13BE0">Splunk messages/{name} endpoint</a>.
+        /// Unsupported. This method is not supported by the
+        /// <see cref= "ServerMessage"/> class because it is not supported by the
+        /// <a href= "http://goo.gl/S13BE0">Splunk messages/{name} endpoint</a>.
         /// </summary>
-        /// <returns></returns>
+        /// <exception cref="NotSupportedException">
+        /// Thrown when the requested operation is not supported.
+        /// </exception>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// </returns>
         public override Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {
             throw new NotSupportedException("The Splunk messages/{name} endpoint does not provide an update method.")

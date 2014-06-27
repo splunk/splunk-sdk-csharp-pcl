@@ -21,20 +21,20 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Net;
-    using System.Threading.Tasks;
+    using System.Diagnostics.CodeAnalysis;
 
     /// <summary>
-    /// 
+    /// Provides an object representation for the update information available
+    /// for an application.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.Resource"/>
+    /// <seealso cref="T:Splunk.Client.IApplicationUpdateInfo"/>
     public class ApplicationUpdateInfo : Resource, Splunk.Client.IApplicationUpdateInfo
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationUpdateInfo"/> 
+        /// Initializes a new instance of the <see cref="ApplicationUpdateInfo"/>
         /// class.
         /// </summary>
         /// <param name="feed">
@@ -46,14 +46,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ApplicationUpdateInfo"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ApplicationUpdateInfo"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. The <see cref=
-        /// "ApplicationUpdateInfo"/> class is an information object
-        /// returned by these methods.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. The <see cref= "ApplicationUpdateInfo"/>
+        /// class is an information object returned by these methods.
         /// <list type="table">
         /// <listheader>
         ///   <term>Method</term>
@@ -62,15 +61,15 @@ namespace Splunk.Client
         /// <item>
         ///   <term><see cref="Application.PackageAsync"/></term>
         ///   <description>
-        ///   Asychronously packages the current Splunk application into an 
-        ///   archive file.
+        ///   Asychronously packages the current Splunk application into an archive
+        ///   file.
         ///   </description>
         /// </item>
         /// <item>
         ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
         ///   <description>
-        ///   Asychronously packages the named Splunk application into an 
-        ///   archive file.
+        ///   Asychronously packages the named Splunk application into an archive
+        ///   file.
         ///   </description>
         /// </item>
         /// </list>
@@ -83,8 +82,12 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the access control lists for the current instance.
+        /// Gets the extensible administration interface properties for the current
+        /// <see cref="ApplicationUpdateInfo"/>.
         /// </summary>
+        /// <value>
+        /// The extensible administration interface properties.
+        /// </value>
         public Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
@@ -96,15 +99,21 @@ namespace Splunk.Client
         /// <remarks>
         /// A value of <c>null</c> indicates that no update is available.
         /// </remarks>
-        public Update_t Update
+        /// <value>
+        /// The update.
+        /// </value>
+        public UpdateAdapter Update
         {
-            get { return this.Content.GetValue("Update", Update_t.Converter.Instance); }
+            get { return this.Content.GetValue("Update", UpdateAdapter.Converter.Instance); }
         }
 
         /// <summary>
-        /// Gets a value indicating whether to to reload the objects contained 
-        /// in the locally installed application.
+        /// Gets a value indicating whether to to reload the objects contained in the
+        /// locally installed application.
         /// </summary>
+        /// <value>
+        /// <c>true</c> if refresh, <c>false</c> if not.
+        /// </value>
         public bool Refresh
         {
             get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
@@ -114,11 +123,21 @@ namespace Splunk.Client
 
         #region Types
 
-        public class Update_t : ExpandoAdapter<Update_t>
+        /// <summary>
+        /// An update adapter.
+        /// </summary>
+        /// <seealso cref="T:Splunk.Client.ExpandoAdapter{Splunk.Client.ApplicationUpdateInfo.UpdateAdapter}"/>
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = 
+            "This is by design.")
+        ]
+        public class UpdateAdapter : ExpandoAdapter<UpdateAdapter>
         {
             /// <summary>
             /// Get the name of the application.
             /// </summary>
+            /// <value>
+            /// The name of the application.
+            /// </value>
             public string ApplicationName
             {
                 get { return this.GetValue("Name", StringConverter.Instance); }
@@ -127,6 +146,9 @@ namespace Splunk.Client
             /// <summary>
             /// Gets the download URI for the application update.
             /// </summary>
+            /// <value>
+            /// The application URI.
+            /// </value>
             public Uri ApplicationUri
             {
                 get { return this.GetValue("Appurl", UriConverter.Instance); }
@@ -135,15 +157,21 @@ namespace Splunk.Client
             /// <summary>
             /// Gets the checksum for the application update.
             /// </summary>
+            /// <value>
+            /// The checksum.
+            /// </value>
             public string Checksum
             {
                 get { return this.GetValue("Checksum", StringConverter.Instance); }
             }
 
             /// <summary>
-            /// Gets the name of the checksum type used to compute the application
-            /// update <see cref="Checksum"/>.
+            /// Gets the name of the checksum type used to compute the application update
+            /// <see cref="Checksum"/>.
             /// </summary>
+            /// <value>
+            /// The type of the checksum.
+            /// </value>
             public string ChecksumType
             {
                 get { return this.GetValue("ChecksumType", StringConverter.Instance); }
@@ -152,26 +180,35 @@ namespace Splunk.Client
             /// <summary>
             /// Get the URI to the Splunkbase page for the application.
             /// </summary>
-            public string HomePage
+            /// <value>
+            /// The homepage.
+            /// </value>
+            public string Homepage
             {
                 get { return this.GetValue("Homepage", StringConverter.Instance); }
             }
 
             /// <summary>
-            /// Gets a value that indicates if the application has an explicit 
-            /// ID in app.conf.
+            /// Gets a value that indicates if the application has an explicit ID in
+            /// app.conf.
             /// </summary>
             /// <remarks>
             /// Splunk uses application IDs to help identify them during updates.
             /// </remarks>
+            /// <value>
+            /// <c>true</c> if implicit identifier required, <c>false</c> if not.
+            /// </value>
             public bool ImplicitIdRequired
             {
                 get { return this.GetValue("ImplicitIdRequired", BooleanConverter.Instance); }
             }
 
             /// <summary>
-            /// Get the size of the application update.
+            /// Gets the size of the application update.
             /// </summary>
+            /// <value>
+            /// Size of the application update.
+            /// </value>
             public long Size
             {
                 get { return this.GetValue("Size", Int64Converter.Instance); }
@@ -180,6 +217,9 @@ namespace Splunk.Client
             /// <summary>
             /// Get the version of the application update.
             /// </summary>
+            /// <value>
+            /// Version of the applicaiton update.
+            /// </value>
             public string Version
             {
                 get { return this.GetValue("Version", StringConverter.Instance); }

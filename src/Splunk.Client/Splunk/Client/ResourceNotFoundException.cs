@@ -14,22 +14,28 @@
  * under the License.
  */
 
-//// TODO: 
+//// TODO:
+//// [O] Contracts
 //// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Net;
     using System.Net.Http;
 
     /// <summary>
-    /// The exception that is thrown when a request to retrieve a <see cref=
-    /// "Resource&lt;TResource&gt;"/> results in <see cref="HttpStatusCode.NotFound"/>.
+    /// The exception that is thrown when a request to retrieve a
+    /// <see cref= "Resource&lt;TResource&gt;"/> results in
+    /// <see cref="HttpStatusCode.NotFound"/>.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.RequestException"/>
+    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Justification =
+        "This is by design.")
+    ]
     public sealed class ResourceNotFoundException : RequestException
     {
         /// <summary>
@@ -37,12 +43,12 @@ namespace Splunk.Client
         /// class.
         /// </summary>
         /// <param name="message">
-        /// An object representing an HTTP response message including the status
-        /// code and data.
+        /// An object representing an HTTP response message including the status code
+        /// and data.
         /// </param>
         /// <param name="details">
-        /// A sequence of <see cref="Message"/> instances detailing the cause
-        /// of the <see cref="ResourceNotFoundException"/>.
+        /// A sequence of <see cref="Message"/> instances detailing the cause of the
+        /// <see cref="ResourceNotFoundException"/>.
         /// </param>
         internal ResourceNotFoundException(HttpResponseMessage message, IEnumerable<Message> details)
             : base(message, details)

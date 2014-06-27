@@ -14,16 +14,58 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+
 namespace Splunk.Client
 {
     using System;
 
+    /// <summary>
+    /// Interface for application archive information.
+    /// </summary>
+    /// <seealso cref="T:IBaseResource"/>
     public interface IApplicationArchiveInfo : IBaseResource
     {
+        /// <summary>
+        /// Gets the name of the application.
+        /// </summary>
+        /// <value>
+        /// The name of the application.
+        /// </value>
         string ApplicationName { get; }
+
+        /// <summary>
+        /// Gets the extensible administration interface properties.
+        /// </summary>
+        /// <value>
+        /// The extensible administration interface properties.
+        /// </value>
         Eai Eai { get; }
+
+        /// <summary>
+        /// Gets the full pathname of the file.
+        /// </summary>
+        /// <value>
+        /// The full pathname of the file.
+        /// </value>
         string Path { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the refresh.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if refresh, <c>false</c> if not.
+        /// </value>
         bool Refresh { get; }
+
+        /// <summary>
+        /// Gets the download URI of the current application archive.
+        /// </summary>
+        /// <value>
+        /// The download URI.
+        /// </value>
         Uri Uri { get; }
     }
 }

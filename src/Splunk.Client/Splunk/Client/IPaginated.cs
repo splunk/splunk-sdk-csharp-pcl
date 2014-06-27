@@ -28,14 +28,20 @@ namespace Splunk.Client
     public interface IPaginated
     {
         /// <summary>
-        /// 
+        /// Gets the messages.
         /// </summary>
+        /// <value>
+        /// The messages.
+        /// </value>
         IReadOnlyList<Message> Messages
         { get; }
 
         /// <summary>
         /// Gets the pagination properties for the current Splunk entity collection.
         /// </summary>
+        /// <value>
+        /// The pagination.
+        /// </value>
         Pagination Pagination
         { get; }
     }

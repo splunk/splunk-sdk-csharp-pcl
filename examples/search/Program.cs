@@ -44,11 +44,11 @@ namespace Splunk.Client.Examples.Search
         /// <returns></returns>
         static async Task Run(Service service)
         {
-            await service.LoginAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             //// Simple oneshot search
 
-            using (SearchResultStream stream = await service.SearchOneshotAsync("search index=_internal | head 5"))
+            using (SearchResultStream stream = await service.SearchOneShotAsync("search index=_internal | head 5"))
             {
                 foreach (SearchResult result in stream)
                 {

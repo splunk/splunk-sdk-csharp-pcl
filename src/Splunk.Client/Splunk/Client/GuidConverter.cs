@@ -26,6 +26,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a converter to convert strings to <see cref="Guid"/> values.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{System.Guid}"/>
     sealed class GuidConverter : ValueConverter<Guid>
     {
         /// <summary>
@@ -34,16 +35,20 @@ namespace Splunk.Client
         public static readonly GuidConverter Instance = new GuidConverter();
 
         /// <summary>
-        /// Converts the string representation of the <paramref name="input"/> 
+        /// Converts the string representation of the <paramref name="input"/>
         /// object to a <see cref="Guid"/>.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
+        ///
+        /// ### <exception cref="InvalidDataException">
         /// The <paramref name="input"/> does not represent a <see cref="Guid"/>
         /// value.
         /// </exception>
@@ -63,7 +68,7 @@ namespace Splunk.Client
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            throw NewInvalidDataException(input);
         }
     }
 }

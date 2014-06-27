@@ -73,7 +73,7 @@ namespace Splunk.Client.UnitTests
                     dummyBool = index.CompressRawData;
                     long size = index.CurrentDBSizeMB;
                     dummyString = index.DefaultDatabase;
-                    dummyBool = index.EnableRealtimeSearch;
+                    dummyBool = index.EnableRealTimeSearch;
                     dummyInt = index.FrozenTimePeriodInSecs;
                     dummyString = index.HomePath;
                     dummyString = index.HomePathExpanded;
@@ -133,7 +133,7 @@ namespace Splunk.Client.UnitTests
                     dummyBool = index.CompressRawData;
                     long size = index.CurrentDBSizeMB;
                     dummyString = index.DefaultDatabase;
-                    dummyBool = index.EnableRealtimeSearch;
+                    dummyBool = index.EnableRealTimeSearch;
                     dummyInt = index.FrozenTimePeriodInSecs;
                     dummyString = index.HomePath;
                     dummyString = index.HomePathExpanded;
@@ -205,7 +205,7 @@ namespace Splunk.Client.UnitTests
                 Assert.True(testIndex.Disabled); // Because the disable endpoint returns an updated snapshot
 
                 await service.Server.RestartAsync(2 * 60 * 1000); // Because you can't re-enable an index without a restart
-                await service.LoginAsync();
+                await service.LogOnAsync();
 
                 testIndex = await service.Indexes.GetAsync(indexName);
                 await testIndex.EnableAsync(); // Because the enable endpoint returns an updated snapshot
@@ -297,7 +297,7 @@ namespace Splunk.Client.UnitTests
                     Source,
                     SourceType);
 
-                using (SearchResultStream stream = await service.SearchOneshotAsync(search))
+                using (SearchResultStream stream = await service.SearchOneShotAsync(search))
                 {
                     Assert.Equal(0, stream.FieldNames.Count);
                     Assert.False(stream.IsFinal);

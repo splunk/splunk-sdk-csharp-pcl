@@ -29,7 +29,8 @@ namespace Splunk.ModularInputs
     /// When a new input of this modular input type is being created, Splunk
     /// runs the modular input script (that is, executable) to validate its
     /// configuration.
-    /// <example>Sample XML</example>
+    /// <example>
+    /// Sample XML</example>
     /// <code>
     /// <![CDATA[
     ///   <?xml version="1.0" encoding="utf-16"?>

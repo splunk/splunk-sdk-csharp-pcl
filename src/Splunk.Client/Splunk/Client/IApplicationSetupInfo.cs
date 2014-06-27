@@ -14,14 +14,40 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+
 namespace Splunk.Client
 {
-    using System;
-
+    /// <summary>
+    /// Interface for application setup information.
+    /// </summary>
+    /// <seealso cref="T:IBaseResource"/>
     public interface IApplicationSetupInfo : IBaseResource
     {
+        /// <summary>
+        /// Gets the extensible administration interface properties.
+        /// </summary>
+        /// <value>
+        /// The extensible administration interface properties.
+        /// </value>
         Eai Eai { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the refresh.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if refresh, <c>false</c> if not.
+        /// </value>
         bool Refresh { get; }
+
+        /// <summary>
+        /// Gets the setup.
+        /// </summary>
+        /// <value>
+        /// The setup.
+        /// </value>
         dynamic Setup { get; }
     }
 }

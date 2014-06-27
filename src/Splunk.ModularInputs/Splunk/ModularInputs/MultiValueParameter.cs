@@ -16,8 +16,10 @@
 
 namespace Splunk.ModularInputs
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Xml.Serialization;
     using System.Linq;
@@ -38,48 +40,165 @@ namespace Splunk.ModularInputs
     [XmlRoot("param_list")]
     public class MultiValueParameter : Parameter
     {
+        #region Constructors
+
+        public MultiValueParameter(string name, params string[] values)
+            : this(name, values.AsEnumerable())
+        { }
+
+        public MultiValueParameter(string name, IEnumerable<string> values)
+        {
+            this.Values = new Collection<string>();
+
+            foreach (var value in values)
+            {
+                this.Values.Add(value);
+            }
+        }
+
+
+        #endregion
+
         #region Properties
 
         /// <summary>
         /// The values in this this.
         /// </summary>
         [XmlElement("value")]
-        public List<string> Values;
+        public Collection<string> Values
+        { get; private set; }
 
         #endregion
 
         #region Methods
 
-        public List<string> ToListOfString()
+        public override Boolean ToBoolean()
         {
-            return new List<string>(this.Values);
+            throw new NotSupportedException();
         }
 
-        public List<bool> ToListOfBool()
+        /// <summary>
+        /// Converts this object to a boolean collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Boolean&gt;
+        /// </returns>
+        public override Collection<Boolean> ToBooleanCollection()
         {
-            return (from x in this.Values select Util.ParseSplunkBoolean(x)).ToList();
+            var collection = new Collection<bool>();
+            
+            foreach (var value in this.Values)
+            {
+                collection.Add( Util.ParseSplunkBoolean(value));
+            }
+
+            return collection;
         }
 
-        public List<double> ToListOfDouble()
+        public override Double ToDouble()
         {
-            return (from x in this.Values select double.Parse(x)).ToList();
+            throw new NotSupportedException();
         }
 
-        public List<float> ToListOfFloat()
+        /// <summary>
+        /// Converts this object to a double collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Double&gt;
+        /// </returns>
+        public override Collection<Double> ToDoubleCollection()
         {
-            return (from x in this.Values select float.Parse(x)).ToList();
+            var collection = new Collection<double>();
+
+            foreach (var value in this.Values)
+            {
+                collection.Add(double.Parse(value));
+            }
+
+            return collection;
         }
 
-        public List<int> ToListOfInt()
+
+        public override Int32 ToInt32()
         {
-            return (from x in this.Values select int.Parse(x)).ToList();
+            throw new NotSupportedException();
         }
 
-        public List<long> ToListOfLong()
+        /// <summary>
+        /// Converts this object to an int 32 collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Int32&gt;
+        /// </returns>
+        public override Collection<Int32> ToInt32Collection()
         {
-            return (from x in this.Values select long.Parse(x)).ToList();
+            var collection = new Collection<int>();
+
+            foreach (var value in this.Values)
+            {
+                collection.Add(int.Parse(value));
+            }
+
+            return collection;
         }
-        
+
+        public override Int64 ToInt64()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Converts this object to an int 64 collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Int64&gt;
+        /// </returns>
+        public override Collection<Int64> ToInt64Collection()
+        {
+            var collection = new Collection<long>();
+
+            foreach (var value in this.Values)
+            {
+                collection.Add(long.Parse(value));
+            }
+
+            return collection;
+        }
+
+        public override Single ToSingle()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Converts this object to a single collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Single&gt;
+        /// </returns>
+        public override Collection<Single> ToSingleCollection()
+        {
+            var collection = new Collection<float>();
+
+            foreach (var value in this.Values)
+            {
+                collection.Add(float.Parse(value));
+            }
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Converts this object to a string collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;String&gt;
+        /// </returns>
+        public override Collection<String> ToStringCollection()
+        {
+            return new Collection<string>(this.Values);
+        }
+
         #endregion
     }
 }

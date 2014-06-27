@@ -17,7 +17,7 @@
 namespace Splunk.ModularInputs
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Xml.Serialization;
 
     /// <summary>
@@ -30,102 +30,29 @@ namespace Splunk.ModularInputs
         /// The name of the parameter.
         /// </summary>
         [XmlAttribute("name")]
-        public string Name { get; set; }
+        public string Name 
+        { get; set; }
 
-        public string ToString()
-        {
-            if (this is SingleValueParameter)
-                return (string)(SingleValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert multivalued parameter to string");
-        }
+        public abstract bool ToBoolean();
 
-        public int ToInt()
-        {
-            if (this is SingleValueParameter)
-                return (int)(SingleValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert multivalued parameter to int");
-        }
+        public abstract double ToDouble();
 
-        public double ToDouble()
-        {
-            if (this is SingleValueParameter)
-                return (double)(SingleValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert multivalued parameter to double");
-        }
+        public abstract int ToInt32();
 
-        public float ToFloat()
-        {
-            if (this is SingleValueParameter)
-                return (float)(SingleValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert multivalued parameter to float");
-        }
+        public abstract long ToInt64();
 
-        public long ToLong()
-        {
-            if (this is SingleValueParameter)
-                return (long)(SingleValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert multivalued parameter to long");
-        }
+        public abstract float ToSingle();
 
-        public bool ToBool()
-        {
-            if (this is SingleValueParameter)
-                return (bool)(SingleValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert multivalued parameter to bool");
-        }
+        public abstract Collection<bool> ToBooleanCollection();
 
-        public List<string> ToListOfString()
-        {
-            if (this is MultiValueParameter)
-                return (List<string>)(MultiValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert single valued parameter to List<string>");
-        }
+        public abstract Collection<double> ToDoubleCollection();
 
-        public List<bool> ToListOfBool()
-        {
-            if (this is MultiValueParameter)
-                return (List<bool>)(MultiValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert single valued parameter to List<bool>");
-        }
+        public abstract Collection<int> ToInt32Collection();
 
-        public List<double> ToListOfDouble()
-        {
-            if (this is MultiValueParameter)
-                return (List<double>)(MultiValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert single valued parameter to List<double>");
-        }
+        public abstract Collection<long> ToInt64Collection();
 
-        public List<float> ToListOfFloat()
-        {
-            if (this is MultiValueParameter)
-                return (List<float>)(MultiValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert single valued parameter to List<float>");
-        }
+        public abstract Collection<float> ToSingleCollection();
 
-        public List<int> ToListOfInt()
-        {
-            if (this is MultiValueParameter)
-                return (List<int>)(MultiValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert single valued parameter to List<int>");
-        }
-
-        public List<long> ToListOfLong()
-        {
-            if (this is MultiValueParameter)
-                return (List<long>)(MultiValueParameter)this;
-            else
-                throw new InvalidCastException("Could not convert single valued parameter to List<long>");
-        }
+        public abstract Collection<string> ToStringCollection();
     }
 }

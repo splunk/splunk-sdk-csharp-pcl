@@ -17,6 +17,7 @@ namespace Splunk.ModularInputs.UnitTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.IO;
     using System.Threading.Tasks;
 
@@ -108,22 +109,22 @@ namespace Splunk.ModularInputs.UnitTests
         [Fact]
         public void SingleValueParameterConversions()
         {
-            SingleValueParameter parameter = new SingleValueParameter();
+            SingleValueParameter parameter;
 
-            parameter.Value = "abc";
-            Assert.Equal("abc", (string)parameter);
+            parameter = new SingleValueParameter("some_name", "abc");
+            Assert.Equal("abc", parameter.ToString());
 
-            parameter.Value = "52";
-            Assert.Equal(52, (int)parameter);
+            parameter = new SingleValueParameter("some_name", "52");
+            Assert.Equal(52, parameter.ToInt32());
 
-            parameter.Value = "52";
-            Assert.Equal((double)52, (double)parameter);
+            parameter = new SingleValueParameter("some_name", "52");
+            Assert.Equal((double)52, parameter.ToDouble());
 
-            parameter.Value = "1";
-            Assert.True((bool)parameter);
+            parameter = new SingleValueParameter("some_name", "1");
+            Assert.True(parameter.ToBoolean());
 
-            parameter.Value = "52";
-            Assert.Equal((long)52, (long)parameter);
+            parameter = new SingleValueParameter("some_name", "52");
+            Assert.Equal((long)52, parameter.ToInt64());
         }
 
         [Trait("unit-test", "Splunk.ModularInputs.SingleValueParameter")]
@@ -158,27 +159,26 @@ namespace Splunk.ModularInputs.UnitTests
         [Fact]
         public void MultiValueParameterConversions()
         {
-            MultiValueParameter parameter = new MultiValueParameter
-            {
-                Name = "some_name",
-                Values = new List<string> { "abc", "def" }
-            };
-            Assert.Equal(new List<string> { "abc", "def" }, (List<string>)parameter);
+            Collection<string> values;
+            MultiValueParameter parameter;
 
-            parameter.Values = new List<string> { "true", "0" };
-            Assert.Equal(new List<bool> { true, false }, (List<bool>)parameter);
+            values = new Collection<string> { "abc", "def" };
+            parameter = new MultiValueParameter("some_name", values);
+            
+            Assert.Equal(values, parameter.ToStringCollection());
 
-            parameter.Values = new List<string> { "52", "42" };
-            Assert.Equal(new List<double> { 52.0, 42.0 }, (List<double>)parameter);
+            values = new Collection<string> { "true", "0" };
+            parameter = new MultiValueParameter("some_name", values);
+            
+            Assert.Equal(new Collection<bool> { true, false }, parameter.ToBooleanCollection());
 
-            parameter.Values = new List<string> { "52", "42" };
-            Assert.Equal(new List<float> { (float)52, (float)42 }, (List<float>)parameter);
+            values = new Collection<string> { "52", "42" };
+            parameter = new MultiValueParameter("some_name", values);
 
-            parameter.Values = new List<string> { "52", "42" };
-            Assert.Equal(new List<int> { 52, 42 }, (List<int>)parameter);
-
-            parameter.Values = new List<string> { "52", "42" };
-            Assert.Equal(new List<long> { 52, 42 }, (List<long>)parameter);
+            Assert.Equal(new Collection<double> { (double)52, (double)42 }, parameter.ToDoubleCollection());
+            Assert.Equal(new Collection<float> { (float)52, (float)42 }, parameter.ToSingleCollection());
+            Assert.Equal(new Collection<int> { 52, 42 }, parameter.ToInt32Collection());
+            Assert.Equal(new Collection<long> { 52, 42 }, parameter.ToInt64Collection());
         }
 
         class TestInput : ModularInput
@@ -207,7 +207,7 @@ namespace Splunk.ModularInputs.UnitTests
                                 RequiredOnCreate = true,
                                 ValidationDelegate = delegate (Parameter param, out string errorMessage) {
                                     bool isDouble;
-                                    try { double _ = (double)param; isDouble = true; }
+                                    try { double _ = param.ToDouble(); isDouble = true; }
                                     catch (Exception) { isDouble = false; }
                                     if (isDouble)
                                     {
@@ -235,8 +235,8 @@ namespace Splunk.ModularInputs.UnitTests
 
             public override bool Validate(Validation validationItems, out string errorMessage)
             {
-                double min = (double)validationItems.Parameters["min"];
-                double max = (double)validationItems.Parameters["max"];
+                double min = validationItems.Parameters["min"].ToDouble();
+                double max = validationItems.Parameters["max"].ToDouble();
 
                 if (min >= max)
                 {

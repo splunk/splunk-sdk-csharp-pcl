@@ -43,8 +43,8 @@ namespace SplunkSearch
                 try
                 {
                     Service SplunkService = new Service(scheme, splunkHost.Text, port);
-                    await SplunkService.LoginAsync(inputUser.Text, inputPassword.Password);
-                    OutputInfo.Text = "login successfully and credential saved!";
+                    await SplunkService.LogOnAsync(inputUser.Text, inputPassword.Password);
+                    OutputInfo.Text = "log on successfully and credential saved!";
                     this.SaveSettings(inputUser.Text, inputPassword.Password, splunkHost.Text, inputPort.Text, scheme);
                 }
                 catch (Exception ex)

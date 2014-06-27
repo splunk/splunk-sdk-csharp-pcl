@@ -17,7 +17,8 @@
 namespace Splunk.ModularInputs
 {
     using System;
-using System.Xml.Serialization;
+    using System.Collections.ObjectModel;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// The <see cref="SingleValueParameter"/> class represents a parameter
@@ -26,6 +27,18 @@ using System.Xml.Serialization;
     [XmlRoot("param")]
     public class SingleValueParameter : Parameter
     {
+        #region Constructors
+
+        public SingleValueParameter(string name, string value)
+        {
+            this.Name = name;
+            this.Value = value;
+        }
+
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// The value of the parameter.
         /// </summary>
@@ -38,36 +51,110 @@ using System.Xml.Serialization;
         /// </code>
         /// </remarks>
         [XmlText]
-        public string Value { get; set; }
+        public string Value 
+        { get; private set; }
 
-        public string ToString()
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Converts this object to a Boolean.
+        /// </summary>
+        /// <returns>
+        /// This object as a Boolean.
+        /// </returns>
+        public override Boolean ToBoolean()
         {
-            return this.Value;
+            return Util.ParseSplunkBoolean(this.Value);
         }
 
-        public int ToInt()
+        public override Collection<Boolean> ToBooleanCollection()
         {
-            return int.Parse(this.Value);
+            throw new NotSupportedException();
         }
 
-        public double ToDouble()
+        /// <summary>
+        /// Converts this object to a double.
+        /// </summary>
+        /// <returns>
+        /// This object as a Double.
+        /// </returns>
+        public override Double ToDouble()
         {
             return double.Parse(this.Value);
         }
 
-        public float ToFloat()
+        public override Collection<double> ToDoubleCollection()
         {
-            return float.Parse(this.Value);
+            throw new NotSupportedException();
         }
 
-        public long ToLong()
+        /// <summary>
+        /// Converts this object to an int 32.
+        /// </summary>
+        /// <returns>
+        /// This object as an Int32.
+        /// </returns>
+        public override Int32 ToInt32()
+        {
+            return int.Parse(this.Value);
+        }
+
+        public override Collection<int> ToInt32Collection()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Converts this object to an int 64.
+        /// </summary>
+        /// <returns>
+        /// This object as an Int64.
+        /// </returns>
+        public override Int64 ToInt64()
         {
             return long.Parse(this.Value);
         }
 
-        public bool ToBool()
+        public override Collection<long> ToInt64Collection()
         {
-            return Util.ParseSplunkBoolean(this.Value);
+            throw new NotSupportedException();
         }
+
+        /// <summary>
+        /// Converts this object to a single.
+        /// </summary>
+        /// <returns>
+        /// This object as a Single.
+        /// </returns>
+        public override Single ToSingle()
+        {
+            return float.Parse(this.Value);
+        }
+
+        public override Collection<float> ToSingleCollection()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
+        public override string ToString()
+        {
+            return this.Value;
+        }
+
+        public override Collection<string> ToStringCollection()
+        {
+            throw new NotSupportedException();
+        }
+
+        #endregion
     }
 }

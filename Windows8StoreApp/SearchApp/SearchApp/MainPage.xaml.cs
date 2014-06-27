@@ -168,7 +168,7 @@ namespace SplunkSearch
                 SplunkService = new Service(schem, host, port);
 
                 InProgress.IsActive = true;
-                await SplunkService.LoginAsync(user, password);
+                await SplunkService.LogOnAsync(user, password);
                 InProgress.IsActive = false;
                 SearchPage.loginUser = user;
 

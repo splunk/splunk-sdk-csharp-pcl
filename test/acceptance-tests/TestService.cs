@@ -1630,9 +1630,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 foreach (var search in searches)
                 {
-                    var args = new JobArgs { MaxCount = 100000 };
-
-                    using (SearchResultStream stream = await service.SearchOneShotAsync(search.Command, args: args))
+                    using (SearchResultStream stream = await service.SearchOneShotAsync(search.Command, count: 0))
                     {
                         var list = new List<SearchResult>();
 

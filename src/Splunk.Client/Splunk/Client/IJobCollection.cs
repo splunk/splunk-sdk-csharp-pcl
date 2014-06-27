@@ -104,7 +104,6 @@ namespace Splunk.Client
             JobArgs args = null, CustomJobArgs customArgs = null, 
             DispatchState requiredState = DispatchState.Running)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(args == null);
             Contract.Requires<ArgumentNullException>(search != null);
             return default(Task<TJob>);
         }

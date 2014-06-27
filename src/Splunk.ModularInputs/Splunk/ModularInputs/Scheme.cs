@@ -28,7 +28,8 @@ namespace Splunk.ModularInputs
     /// <remarks>
     /// The modular input script (that is, executable) returns the XML output
     /// through standard output to Splunk.
-    /// <example>Sample XML Output Document</example>
+    /// <example>
+    /// Sample XML Output Document</example>
     /// <code>
     /// <![CDATA[
     /// <?xml version="1.0" encoding="utf-16"?>
@@ -101,7 +102,7 @@ namespace Splunk.ModularInputs
         /// Override <see cref="ModularInput.Validate"/> to perform the validation.
         /// </para>
         /// <para>
-        /// This property's default value is true.
+        /// This property's default value is <c>true</c>.
         /// </para>
         /// </remarks>
         [XmlElement("use_external_validation")]
@@ -112,7 +113,7 @@ namespace Splunk.ModularInputs
         /// of the script or one script instance for each input stanza.  
         /// </summary>
         /// <remarks>
-        /// This property's default value is false.
+        /// This property's default value is <c>false</c>.
         /// </remarks>
         [XmlElement("use_single_instance")]
         public bool UseSingleInstance { get; set; }

@@ -31,20 +31,16 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// The <see cref="SearchExportStream"/> class represents a streaming XML 
+    /// The <see cref="SearchExportStream"/> class represents a streaming XML
     /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.Observable{Splunk.Client.SearchResultStream}"/>
+    /// <seealso cref="T:System.IDisposable"/>
+    /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.SearchResultStream}"/>
     public sealed class SearchExportStream : Observable<SearchResultStream>, IDisposable, IEnumerable<SearchResultStream>
     {
         #region Constructors
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SearchExportStream"/>
-        /// class.
-        /// </summary>
-        /// <param name="response">
-        /// The underlying <see cref="Response"/> object.
-        /// </param>
         SearchExportStream(Response response)
         {
             this.response = response;
@@ -55,10 +51,17 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// 
+        /// Creates the asynchronous.
         /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
+        /// <exception cref="InvalidDataException">
+        /// Thrown when an Invalid Data error condition occurs.
+        /// </exception>
+        /// <param name="response">
+        /// 
+        /// </param>
+        /// <returns>
+        /// The new asynchronous.
+        /// </returns>
         internal static async Task<SearchExportStream> CreateAsync(Response response)
         {
             response.XmlReader.MoveToElement(); // ensures we're at an element, not an attribute
@@ -75,9 +78,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Releases all disposable resources used by the current <see cref=
-        /// "SearchExportStream"/>.
+        /// Releases all disposable resources used by the current
+        /// <see cref= "SearchExportStream"/>.
         /// </summary>
+        /// <seealso cref="M:System.IDisposable.Dispose()"/>
         public void Dispose()
         {
             if (this.disposed)
@@ -88,12 +92,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through <see cref="SearchResultStream"/>
+        /// Returns an enumerator that iterates through
+        /// <see cref="SearchResultStream"/>
         /// synchronously.
         /// </summary>
         /// <returns>
-        /// A <see cref="SearchResultStream"/> enumerator structure for the current <see 
-        /// cref="SearchExportStream"/>.
+        /// A <see cref="SearchResultStream"/> enumerator structure for the current
+        /// <see cref="SearchExportStream"/>.
         /// </returns>
         public IEnumerator<SearchResultStream> GetEnumerator()
         {
@@ -105,14 +110,6 @@ namespace Splunk.Client
             while (this.response.XmlReader.ReadToFollowingAsync("results").Result);
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through <see cref="SearchResultStream"/>
-        /// synchronously.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="SearchResultStream"/> enumerator structure for the current <see 
-        /// cref="SearchExportStream"/>.
-        /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         { 
             return this.GetEnumerator(); 

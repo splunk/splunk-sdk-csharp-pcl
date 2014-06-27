@@ -25,29 +25,42 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a Splunk server message entity.
     /// </summary>
+    /// <seealso cref="T:IEntity"/>
     public interface IServerMessage : IEntity
     {
         /// <summary>
-        /// 
+        /// Gets the extensible administration interface properties.
         /// </summary>
+        /// <value>
+        /// The extensible administration interface properties.
+        /// </value>
         Eai Eai
         { get; }
 
         /// <summary>
-        /// 
+        /// Gets the severity.
         /// </summary>
+        /// <value>
+        /// The severity.
+        /// </value>
         ServerMessageSeverity Severity
         { get; }
 
         /// <summary>
-        /// 
+        /// Gets the text of the server message.
         /// </summary>
+        /// <value>
+        /// Text of the server messages.
+        /// </value>
         string Text
         { get; }
 
         /// <summary>
-        /// 
+        /// Gets the Date/Time of the time created.
         /// </summary>
+        /// <value>
+        /// The time created.
+        /// </value>
         DateTime TimeCreated
         { get; }
     }

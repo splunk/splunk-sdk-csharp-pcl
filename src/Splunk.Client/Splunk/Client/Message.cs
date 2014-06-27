@@ -29,10 +29,22 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a class that represents a Splunk service response message.
     /// </summary>
+    /// <seealso cref="T:System.IComparable"/>
+    /// <seealso cref="T:System.IComparable{Splunk.Client.Message}"/>
+    /// <seealso cref="T:System.IEquatable{Splunk.Client.Message}"/>
     public sealed class Message : IComparable, IComparable<Message>, IEquatable<Message>
     {
         #region Constructors
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Message"/> class.
+        /// </summary>
+        /// <param name="type">
+        /// The message type.
+        /// </param>
+        /// <param name="text">
+        /// The message text.
+        /// </param>
         internal Message(MessageType type, string text)
         {
             Contract.Requires<ArgumentOutOfRangeException>(MessageType.Debug <= type && type <= MessageType.Fatal, "type");
@@ -48,12 +60,18 @@ namespace Splunk.Client
         /// <summary>
         /// Gets the text of the current <see cref="Message"/>.
         /// </summary>
+        /// <value>
+        /// Text of the current <see cref="Message"/>.
+        /// </value>
         public string Text
         { get; private set; }
 
         /// <summary>
         /// Gets the type of the current <see cref="Message"/>.
         /// </summary>
+        /// <value>
+        /// Type of the current <see cref="Message"/>.
+        /// </value>
         public MessageType MessageType
         { get; private set; }
 
@@ -62,18 +80,79 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Compares the current <see cref="Message"/> with another object
-        /// and returns an integer that indicates whether the current <see 
-        /// cref="Message"/> precedes, follows, or appears in the same 
-        /// position in the sort order as the other object.
+        /// Compares the current <see cref="Message"/> with another object and
+        /// returns an integer that indicates whether the current
+        /// <see cref="Message"/> precedes, follows, or appears in the same position
+        /// in the sort order as the other object.
         /// </summary>
         /// <param name="other">
         /// The object to compare to the current <see cref="Message"/>.
         /// </param>
         /// <returns>
-        /// A 32-bit signed integer that indicates whether this instance 
-        /// precedes, follows, or appears in the same position in the sort 
-        /// order as <paramref name="other"/>.
+        /// A 32-bit signed integer that indicates whether this instance precedes,
+        /// follows, or appears in the same position in the sort order as
+        /// <paramref name="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <paramref name="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as paramref
+        ///     name="other"/&gt;.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <paramref name="other"/>,
+        ///     <paramref name= "other"/> is not a <see cref="Message"/>, or
+        ///     <paramref name= "other"/> is <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </list>
+        /// </returns>
+        /// <seealso cref="M:System.IComparable.CompareTo(object)"/>
+        ///
+        /// ### <param name="obj">
+        /// An object to compare with this instance.
+        /// </param>
+        public int CompareTo(object other)
+        {
+            return this.CompareTo(other as Message);
+        }
+
+        /// <summary>
+        /// Compares the current <see cref="Message"/> with another one and returns
+        /// an integer that indicates whether the current <see cref= "Message"/>
+        /// precedes, follows, or appears in the same position in the sort order as
+        /// the other one.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="Message"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance precedes,
+        /// follows, or appears in the same position in the sort order as
+        /// <paramref name="other"/>.
         /// <list type="table">
         /// <listheader>
         ///   <term>
@@ -97,62 +176,6 @@ namespace Splunk.Client
         ///   </term>
         ///   <description>
         ///     This instance is in the same position in the sort order as
-        ///     paramref name="other"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term>
-        ///     Greater than zero
-        ///   </term>
-        ///   <description>
-        ///     This instance follows <paramref name="other"/>, <paramref name=
-        ///     "other"/> is not a <see cref="Message"/>, or <paramref name=
-        ///     "other"/> is <c>null</c>.
-        ///   </description>
-        /// </item>
-        /// </list>
-        /// </returns>
-        public int CompareTo(object other)
-        {
-            return this.CompareTo(other as Message);
-        }
-
-        /// <summary>
-        /// Compares the current <see cref="Message"/> with another one and
-        /// returns an integer that indicates whether the current <see cref=
-        /// "Message"/> precedes, follows, or appears in the same position in
-        /// the sort order as the other one.
-        /// </summary>
-        /// <param name="other">
-        /// The object to compare with the current <see cref="Message"/>.
-        /// </param>
-        /// <returns>
-        /// A 32-bit signed integer that indicates whether this instance 
-        /// precedes, follows, or appears in the same position in the sort 
-        /// order as <paramref name="other"/>.
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>
-        ///     Value
-        ///   </term>
-        ///   <description>
-        ///     Condition
-        ///   </description>
-        /// </listheader>
-        /// <item>
-        ///   <term>
-        ///     Less than zero
-        ///   </term>
-        ///   <description>
-        ///     This instance precedes <paramref name="other"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term>
-        ///     Zero
-        ///   </term>
-        ///   <description>
-        ///     This instance is in the same position in the sort order as 
         ///      <paramref name="other"/>.
         ///   </description>
         /// </item>
@@ -161,8 +184,8 @@ namespace Splunk.Client
         ///     Greater than zero
         ///   </term>
         ///   <description>
-        ///     This instance follows <paramref name="other"/> or <paramref 
-        ///     name="other"/> is <c>null</c>.
+        ///     This instance follows <paramref name="other"/> or
+        ///     <paramref name="other"/> is <c>null</c>.
         ///   </description>
         /// </item>
         /// </list>
@@ -185,32 +208,38 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Determines whether the current <see cref="Message"/> and another
-        /// object are equal.
+        /// Determines whether the current <see cref="Message"/> and another object
+        /// are equal.
         /// </summary>
         /// <param name="other">
         /// The object to compare with the current <see cref="Message"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <paramref name="other"/> is a non <c>null</c> <see 
-        /// cref="Message"/> and is the same as the current <see cref="Message"/>;
+        /// <c>true</c> if <paramref name="other"/> is a non <c>null</c>
+        /// <see cref="Message"/> and is the same as the current
+        /// <see cref="Message"/>;
         /// otherwise, <c>false</c>.
         /// </returns>
+        /// <seealso cref="M:System.Object.Equals(object)"/>
+        ///
+        /// ### <param name="obj">
+        /// The object to compare with the current object.
+        /// </param>
         public override bool Equals(object other)
         {
             return this.Equals(other as Message);
         }
 
         /// <summary>
-        /// Determines whether the current <see cref="Message"/> and another
-        /// one are equal.
+        /// Determines whether the current <see cref="Message"/> and another one are
+        /// equal.
         /// </summary>
         /// <param name="other">
         /// The object to compare with the current <see cref="Message"/>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if <paramref name="other"/> is non <c>null</c> and is 
-        /// the same as the current <see cref="Message"/>; otherwise, <c>false</c>.
+        /// <c>true</c> if <paramref name="other"/> is non <c>null</c> and is the
+        /// same as the current <see cref="Message"/>; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Message other)
         {
@@ -227,6 +256,7 @@ namespace Splunk.Client
         /// <returns>
         /// The hash code for the current <see cref="Message"/>.
         /// </returns>
+        /// <seealso cref="M:System.Object.GetHashCode()"/>
         public override int GetHashCode()
         {
             // TODO: Check this against the algorithm presented in Effective Java
@@ -239,11 +269,17 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Greater-than comparison operator.
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
+        /// <param name="a">
+        /// The first <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
         public static bool operator >(Message a, Message b)
         {
             if (a == null)
@@ -255,11 +291,17 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Greater-than-or-equal comparison operator.
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
+        /// <param name="a">
+        /// The first <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
         public static bool operator >=(Message a, Message b)
         {
             if (a == null)
@@ -271,8 +313,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Determines whether two <see cref="Message"/> instances have the
-        /// same value. 
+        /// Determines whether two <see cref="Message"/> instances have the same
+        /// value.
         /// </summary>
         /// <param name="a">
         /// The first <see cref="Message"/> to compare or <c>null</c>.
@@ -281,8 +323,8 @@ namespace Splunk.Client
         /// The second <see cref="Message"/> to compare or <c>null</c>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the value of <paramref name="a"/> is the same as the 
-        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// <c>true</c> if the value of <paramref name="a"/> is the same as the value
+        /// of <paramref name="b"/>; otherwise, <c>false</c>.
         /// </returns>
         public static bool operator ==(Message a, Message b)
         {
@@ -300,8 +342,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Determines whether two <see cref="Message"/> instances have 
-        /// different values. 
+        /// Determines whether two <see cref="Message"/> instances have different
+        /// values.
         /// </summary>
         /// <param name="a">
         /// The first <see cref="Message"/> to compare or <c>null</c>.
@@ -310,8 +352,8 @@ namespace Splunk.Client
         /// The second <see cref="Message"/> to compare or <c>null</c>.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the value of <paramref name="a"/> is different than 
-        /// the value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// <c>true</c> if the value of <paramref name="a"/> is different than the
+        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
         /// </returns>
         public static bool operator !=(Message a, Message b)
         {
@@ -324,17 +366,24 @@ namespace Splunk.Client
         /// <returns>
         /// A string representation of the current <see cref="Message"/>.
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             return string.Concat(this.MessageType.ToString(), ": ", this.Text);
         }
 
         /// <summary>
-        /// 
+        /// Less-than comparison operator.
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
+        /// <param name="a">
+        /// The first <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
         public static bool operator <(Message a, Message b)
         {
             if (a == null)
@@ -346,11 +395,17 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Less-than-or-equal comparison operator.
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
+        /// <param name="a">
+        /// The first <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="Message"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
         public static bool operator <=(Message a, Message b)
         {
             if (a == null)
@@ -365,6 +420,15 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        /// <summary>
+        /// Reads messages asynchronous.
+        /// </summary>
+        /// <param name="reader">
+        /// The reader.
+        /// </param>
+        /// <returns>
+        /// The messages asynchronous.
+        /// </returns>
         internal static async Task<IReadOnlyList<Message>> ReadMessagesAsync(XmlReader reader)
         {
             var messages = new List<Message>();

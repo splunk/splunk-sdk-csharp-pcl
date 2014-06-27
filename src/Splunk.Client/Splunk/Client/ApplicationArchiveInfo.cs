@@ -26,15 +26,17 @@ namespace Splunk.Client
     /// Provides information about an application archive produced by Splunk.
     /// </summary>
     /// <remarks>
-    /// You can produce an application archive using the <see cref=
-    /// "Application.PackageAsync"/> method.
+    /// You can produce an application archive using the
+    /// <see cref= "Application.PackageAsync"/> method.
     /// </remarks>
+    /// <seealso cref="T:Splunk.Client.Resource"/>
+    /// <seealso cref="T:Splunk.Client.IApplicationArchiveInfo"/>
     public class ApplicationArchiveInfo : Resource, IApplicationArchiveInfo
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationArchiveInfo"/> 
+        /// Initializes a new instance of the <see cref="ApplicationArchiveInfo"/>
         /// class.
         /// </summary>
         /// <param name="feed">
@@ -46,13 +48,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ApplicationArchiveInfo"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ApplicationArchiveInfo"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. The <see cref=
-        /// "ApplicationArchiveInfo"/> class is an information object
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. The
+        /// <see cref= "ApplicationArchiveInfo"/> class is an information object
         /// returned by these methods.
         /// <list type="table">
         /// <listheader>
@@ -62,15 +64,15 @@ namespace Splunk.Client
         /// <item>
         ///   <term><see cref="Application.PackageAsync"/></term>
         ///   <description>
-        ///   Asychronously packages the current Splunk application into an 
-        ///   archive file.
+        ///   Asychronously packages the current Splunk application into an archive
+        ///   file.
         ///   </description>
         /// </item>
         /// <item>
         ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
         ///   <description>
-        ///   Asychronously packages the named Splunk application into an 
-        ///   archive file.
+        ///   Asychronously packages the named Splunk application into an archive
+        ///   file.
         ///   </description>
         /// </item>
         /// </list>
@@ -94,15 +96,14 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the name of the application contained by the application 
-        /// archive.
+        /// Gets the name of the application contained by the application archive.
         /// </summary>
-        /// <value>
-        /// Name of the application contained by the archive.
-        /// </value>
         /// <remarks>
         /// This value is the default name of the application folder on disk.
         /// </remarks>
+        /// <value>
+        /// Name of the application contained by the archive.
+        /// </value>
         public string ApplicationName
         {
             get { return this.Content.GetValue("Name", StringConverter.Instance); }
@@ -120,13 +121,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets a value indicating whether to reload the objects contained in
-        /// the locally installed application.
+        /// Gets a value indicating whether to reload the objects contained in the
+        /// locally installed application.
         /// </summary>
         /// <value>
         /// <c>true</c>, if the objects contained in the locally installed
-        /// application should be reloaded; <c>false</c>, if they need not
-        /// be reloaded.
+        /// application should be reloaded; <c>false</c>, if they need not be
+        /// reloaded.
         /// </value>
         public bool Refresh
         {
@@ -137,8 +138,8 @@ namespace Splunk.Client
         /// Gets the download URI for the application archive.
         /// </summary>
         /// <value>
-        /// A download URI for the application archive or <c>null</c>, if
-        /// there is no download URI.
+        /// A download URI for the application archive or <c>null</c>, if there is no
+        /// download URI.
         /// </value>
         public Uri Uri
         {

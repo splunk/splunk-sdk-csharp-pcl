@@ -25,6 +25,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a converter to convert an object to its string form.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{System.String}"/>
     sealed class StringConverter : ValueConverter<String>
     {
         /// <summary>
@@ -33,7 +34,7 @@ namespace Splunk.Client
         public static readonly StringConverter Instance = new StringConverter();
 
         /// <summary>
-        /// Converts the <paramref name="input"/> object to a <see cref="String"/> 
+        /// Converts the <paramref name="input"/> object to a <see cref="String"/>
         /// value.
         /// </summary>
         /// <param name="input">

@@ -23,17 +23,19 @@ namespace Splunk.Client
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for creating <see cref="StoragePassword"/> 
+    /// Provides the arguments required for creating <see cref="StoragePassword"/>
     /// resources.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/JgyIeN">REST API Reference: POST storage/passwords</a>
+    ///   <a href="http://goo.gl/JgyIeN">REST API Reference: POST
+    ///   storage/passwords</a>
     /// </description></item>
     /// </list>
     /// </remarks>
+    /// <seealso cref="T:Splunk.Client.Args{Splunk.Client.StoragePasswordAttributes}"/>
     sealed class StoragePasswordAttributes : Args<StoragePasswordAttributes>
     {
         #region Properties
@@ -41,14 +43,19 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the password for a <see cref="StoragePassword"/>.
         /// </summary>
+        /// <value>
+        /// The password.
+        /// </value>
         [DataMember(Name = "password", IsRequired = true)]
         public string Password
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the realm in which a <see cref="StoragePassword"/> is
-        /// valid.
+        /// Gets or sets the realm in which a <see cref="StoragePassword"/> is valid.
         /// </summary>
+        /// <value>
+        /// The realm.
+        /// </value>
         [DataMember(Name = "realm", EmitDefaultValue = false)]
         public string Realm
         { get; set; }
@@ -56,6 +63,9 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the username for a <see cref="StoragePassword"/>.
         /// </summary>
+        /// <value>
+        /// The username.
+        /// </value>
         [DataMember(Name = "name", IsRequired = true)]
         public string Username
         { get; set; }

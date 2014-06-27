@@ -26,6 +26,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a converter to convert strings to <see cref="Double"/> values.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{System.Double}"/>
     sealed class DoubleConverter : ValueConverter<Double>
     {
         /// <summary>
@@ -34,16 +35,20 @@ namespace Splunk.Client
         public static readonly DoubleConverter Instance = new DoubleConverter();
 
         /// <summary>
-        /// Converts the string representation of the <paramref name="input"/> 
+        /// Converts the string representation of the <paramref name="input"/>
         /// object to a <see cref="Double"/> value.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
+        ///
+        /// ### <exception cref="InvalidDataException">
         /// The <paramref name="input"/> does not represent a <see cref="Double"/>
         /// value.
         /// </exception>

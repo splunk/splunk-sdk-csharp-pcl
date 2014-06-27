@@ -21,7 +21,7 @@
 namespace Splunk.Client
 {
     /// <summary>
-    /// 
+    /// Values that represent Scheme.
     /// </summary>
     public enum Scheme
     {

@@ -31,6 +31,8 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an object representation of a collection of Splunk search jobs.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.EntityCollection{Splunk.Client.Job,Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IJobCollection{Splunk.Client.Job}"/>
     public class JobCollection : EntityCollection<Job, Resource>, IJobCollection<Job>
     {
         #region Constructors
@@ -42,7 +44,8 @@ namespace Splunk.Client
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal JobCollection(Service service)
@@ -50,7 +53,7 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JobCollection"/> 
+        /// Initializes a new instance of the <see cref="JobCollection"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -59,10 +62,11 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal JobCollection(Context context, AtomFeed feed)
@@ -80,13 +84,14 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <exception cref="ArgumentException">
+        ///
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal JobCollection(Context context, Namespace ns)
@@ -94,14 +99,13 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "JobCollection"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "JobCollection"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use <see cref=
-        /// "Service.GetJobsAsync"/> to asynchronously retrieve a collection of
-        /// running Splunk jobs.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use <see cref= "Service.GetJobsAsync"/>
+        /// to asynchronously retrieve a collection of running Splunk jobs.
         /// </remarks>
         public JobCollection()
         { }
@@ -129,25 +133,16 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously creates a new search <see cref="Job"/>.
         /// </summary>
-        /// <param name="search">
-        /// Search string.
-        /// </param>
-        /// <param name="args">
-        /// Optional search arguments.
-        /// </param>
-        /// <param name="customArgs">
-        /// 
-        /// </param>
-        /// <param name="requiredState">
-        /// 
+        /// <param name="arguments">
+        /// The arguments.
         /// </param>
         /// <returns>
         /// An object representing the search job that was created.
         /// </returns>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/JZcPEb">POST 
-        /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
-        /// specified by <paramref name="args"/>.
+        /// This method uses the <a href="http://goo.gl/JZcPEb">POST search/jobs</a>
+        /// endpoint to start a new search <see cref="Job"/> as specified by
+        /// <paramref name="arguments"/>.
         /// </remarks>
         public override async Task<Job> CreateAsync(IEnumerable<Argument> arguments)
         {
@@ -157,6 +152,11 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously creates a new search <see cref="Job"/>.
         /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/JZcPEb">POST search/jobs</a>
+        /// endpoint to start a new search <see cref="Job"/> as specified by
+        /// <paramref name="args"/>.
+        /// </remarks>
         /// <param name="search">
         /// Search string.
         /// </param>
@@ -172,11 +172,6 @@ namespace Splunk.Client
         /// <returns>
         /// An object representing the search job that was created.
         /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/JZcPEb">POST 
-        /// search/jobs</a> endpoint to start a new search <see cref="Job"/> as
-        /// specified by <paramref name="args"/>.
-        /// </remarks>
         public virtual async Task<Job> CreateAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null,
             DispatchState requiredState = DispatchState.Running)
         {
@@ -201,17 +196,23 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously retrieves a filtered collection of all running 
-        /// search jobs.
+        /// Asynchronously retrieves a filtered collection of all running search jobs.
         /// </summary>
-        /// <param name="args">
-        /// Specification of the collection of running search jobs to retrieve.
-        /// </param>
         /// <remarks>
-        /// This method uses the <a href="http://goo.gl/ja2Sev">GET 
-        /// search/jobs</a> endpoint to get the <see cref="JobCollection"/>
+        /// This method uses the <a href="http://goo.gl/ja2Sev">GET search/jobs</a>
+        /// endpoint to get the <see cref="JobCollection"/>
         /// specified by <paramref name="args"/>.
         /// </remarks>
+        /// <param name="criteria">
+        /// The criteria.
+        /// </param>
+        /// <returns>
+        /// The slice asynchronous.
+        /// </returns>
+        ///
+        /// ### <param name="args">
+        /// Specification of the collection of running search jobs to retrieve.
+        /// </param>
         public virtual async Task GetSliceAsync(JobCollection.Filter criteria)
         {
             await this.GetSliceAsync(criteria.AsEnumerable());
@@ -221,6 +222,9 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        /// <summary>
+        /// Name of the class resource.
+        /// </summary>
         internal static readonly ResourceName ClassResourceName = new ResourceName("search", "jobs");
 
         async Task<Job> CreateAsync(IEnumerable<Argument> arguments, DispatchState requiredState)
@@ -256,83 +260,82 @@ namespace Splunk.Client
         /// </description></item>
         /// </list>
         /// </remarks>
+        /// <seealso cref="T:Splunk.Client.Args{Splunk.Client.JobCollection.Filter}"/>
         public sealed class Filter : Args<Filter>
         {
             /// <summary>
-            /// Gets or sets the maximum number of <see cref="Job"/> entries
-            /// to return.
+            /// Gets or sets the maximum number of <see cref="Job"/> entries to return.
             /// </summary>
+            /// <remarks>
+            /// If the value of <c>Count</c> is <c>0</c>, then all available entries are
+            /// returned. The default is <c>30</c>.
+            /// </remarks>
             /// <value>
             /// The maximum number of <see cref="Job"/> entries to return.
             /// </value>
-            /// <remarks>
-            /// If the value of <c>Count</c> is <c>0</c>, then all available
-            /// entries are returned. The default is <c>30</c>.
-            /// </remarks>
             [DataMember(Name = "count", EmitDefaultValue = false)]
             [DefaultValue(30)]
             public int Count
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value specifying the first result (inclusive) 
+            /// Gets or sets a value specifying the first result (inclusive)
             /// from which to begin returning <see cref="Job"/> entries.
             /// </summary>
-            /// <value>
-            /// Index of the first result (inclusive) from which to begin
-            /// returning <see cref="Job"/> entries.
-            /// </value>
             /// <remarks>
-            /// The <c>Offset</c> property is zero-based and cannot be negative. 
-            /// The default value is zero.
+            /// The <c>Offset</c> property is zero-based and cannot be negative. The
+            /// default value is zero.
             /// </remarks>
+            /// <value>
+            /// Index of the first result (inclusive) from which to begin returning
+            /// <see cref="Job"/> entries.
+            /// </value>
             [DataMember(Name = "offset", EmitDefaultValue = false)]
             [DefaultValue(0)]
             public int Offset
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a search expression to filter <see cref="Job"/> 
-            /// entries. 
+            /// Gets or sets a search expression to filter <see cref="Job"/>
+            /// entries.
             /// </summary>
+            /// <remarks>
+            /// Use this expression to filter the entries returned based on search
+            /// <see cref="Job"/> properties. The default is <c>null</c>.
+            /// </remarks>
             /// <value>
             /// A search expression to filter <see cref="Job"/> entries.
             /// </value>
-            /// <remarks>
-            /// Use this expression to filter the entries returned based on 
-            /// search <see cref="Job"/> properties. The default is <c>null</c>.
-            /// </remarks>
             [DataMember(Name = "search", EmitDefaultValue = false)]
             [DefaultValue(null)]
             public string Search
             { get; set; }
 
             /// <summary>
-            /// Gets or sets a value specifying the sort direction for <see
-            /// cref="Job"/> entries.
+            /// Gets or sets a value specifying the sort direction for <see cref="Job"/>
+            /// entries.
             /// </summary>
-            /// <value>
-            /// The sort direction for <see cref="Job"/> entries.
-            /// </value>
             /// <remarks>
             /// The default value is <see cref="SortDirection"/>.Ascending.
             /// </remarks>
+            /// <value>
+            /// The sort direction for <see cref="Job"/> entries.
+            /// </value>
             [DataMember(Name = "sort_dir", EmitDefaultValue = false)]
             [DefaultValue(SortDirection.Descending)]
             public SortDirection SortDirection
             { get; set; }
 
             /// <summary>
-            /// Gets or sets the <see cref="Job"/> property to use for sorting
-            /// entries.
+            /// Gets or sets the <see cref="Job"/> property to use for sorting entries.
             /// </summary>
+            /// <remarks>
+            /// The default <see cref="Job"/> property to use for sorting is
+            /// <c>"dispatch_time"</c>.
+            /// </remarks>
             /// <value>
             /// The <see cref="Job"/> property to use for sorting entries.
             /// </value>
-            /// <remarks>
-            /// The default <see cref="Job"/> property to use for sorting is 
-            /// <c>"dispatch_time"</c>.
-            /// </remarks>
             [DataMember(Name = "sort_key", EmitDefaultValue = false)]
             [DefaultValue("dispatch_time")]
             public string SortKey

@@ -23,30 +23,43 @@ namespace Splunk.Client
     using System.Collections.Generic;
 
     /// <summary>
-    /// Provides a converter to convert an <see cref="IEnumerable&lt;T&gt;"/> 
+    /// Provides a converter to convert an <see cref="IEnumerable&lt;T&gt;"/>
     /// object to a collection.
     /// </summary>
     /// <typeparam name="TValue">
-    /// The type of the values in the collection.
+    /// Type of the value.
     /// </typeparam>
     /// <typeparam name="TCollection">
-    /// The type of the collection.
+    /// Type of the collection.
     /// </typeparam>
     /// <typeparam name="TConverter">
-    /// The type of value converter to convert items enumerated by the <see 
-    /// cref="IEnumerable&lt;T&gt;"/> object.
+    /// Type of the converter.
     /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{TCollection}"/>
     sealed class CollectionConverter<TValue, TCollection, TConverter> : ValueConverter<TCollection> 
         where TCollection : ICollection<TValue>, new()
         where TConverter : ValueConverter<TValue>, new()
     {
         /// <summary>
-        /// The default <see cref="CollectionConverter&lt;TValue, TCollection, TConverter&gt;"/>
+        /// The default
+        /// <see cref="CollectionConverter&lt;TValue, TCollection, TConverter&gt;"/>
         /// instance.
         /// </summary>
         public static readonly CollectionConverter<TValue, TCollection, TConverter> Instance = 
             new CollectionConverter<TValue, TCollection, TConverter>();
 
+        /// <summary>
+        /// Converts the given input.
+        /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
+        /// <param name="input">
+        /// The input.
+        /// </param>
+        /// <returns>
+        /// A TCollection.
+        /// </returns>
         public override TCollection Convert(object input)
         {
             var list = input as IEnumerable<object>;

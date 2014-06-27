@@ -114,14 +114,9 @@
     <DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'True' ">$(OutputPath)$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Splunk\**\*" />
-    <None Include="CodeAnalysisRules.ruleset" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

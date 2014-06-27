@@ -35,13 +35,17 @@ namespace Splunk.Client
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/wAcSfp">Splunk>Blogs: Storing Encrypted Credentials</a>.
+    ///   <a href="http://goo.gl/wAcSfp">Splunk&gt;Blogs: Storing Encrypted
+    ///   Credentials</a>.
     /// </description></item>
     /// <item><description>
-    ///   <a href="http://goo.gl/HTRSVu">REST API Reference: storage/passwords</a>.
+    ///   <a href="http://goo.gl/HTRSVu">REST API Reference:
+    ///   storage/passwords</a>.
     /// </description></item>
     /// </list>
     /// </remarks>
+    /// <seealso cref="T:Splunk.Client.Entity{Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IStoragePassword"/>
     public class StoragePassword : Entity<Resource>, IStoragePassword
     {
         #region Constructors
@@ -49,11 +53,8 @@ namespace Splunk.Client
         /// <summary>
         /// Initializes a new instance of the <see cref="StoragePassword"/> class.
         /// </summary>
-        /// <param name="context">
+        /// <param name="service">
         /// An object representing a Splunk server session.
-        /// </param>
-        /// <param name="ns">
-        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="username">
         /// Username associated with the <see cref="StoragePassword"/>.
@@ -62,13 +63,17 @@ namespace Splunk.Client
         /// Realm associated with the <see cref="StoragePassword"/> or <c>
         /// null</c>. The default value is <c>null</c>.
         /// </param>
-        /// <exception cref="ArgumentException">
+        ///
+        /// ### <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="username"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal StoragePassword(Service service, string username, string realm = null)
@@ -94,13 +99,14 @@ namespace Splunk.Client
         /// Realm associated with the <see cref="StoragePassword"/> or <c>
         /// null</c>. The default value is <c>null</c>.
         /// </param>
-        /// <exception cref="ArgumentException">
+        ///
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="username"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal StoragePassword(Context context, Namespace ns, string username, string realm = null)
@@ -119,10 +125,11 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal StoragePassword(Context context, AtomFeed feed)
@@ -131,13 +138,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "StoragePassword"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "StoragePassword"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use one of these
-        /// methods to obtain a <see cref="StoragePassword"/> instance:
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use one of these methods to obtain a
+        /// <see cref="StoragePassword"/> instance:
         /// <list type="table">
         /// <listheader>
         ///   <term>Method</term>
@@ -226,6 +233,19 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        /// <summary>
+        /// Creates name from realm and username.
+        /// </summary>
+        /// <param name="realm">
+        /// Realm associated with the <see cref="StoragePassword"/> or <c>null</c>.
+        /// The default value is <c>null</c>.
+        /// </param>
+        /// <param name="username">
+        /// Username associated with the <see cref="StoragePassword"/>.
+        /// </param>
+        /// <returns>
+        /// The new name from realm and username.
+        /// </returns>
         internal static string CreateNameFromRealmAndUsername(string realm, string username)
         {
             Contract.Requires<ArgumentNullException>(username != null);

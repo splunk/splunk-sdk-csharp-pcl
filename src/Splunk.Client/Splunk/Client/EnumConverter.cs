@@ -32,11 +32,14 @@ namespace Splunk.Client
     /// Provides a converter to convert strings to <see cref="Enum"/> values.
     /// </summary>
     /// <typeparam name="TEnum">
-    /// The type of <see cref="Enum"/> value to convert.
+    /// Type of the <see cref="Enum"/> value to convert.
     /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{TEnum}"/>
     sealed class EnumConverter<TEnum> : ValueConverter<TEnum> where TEnum : struct
     {
-        [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline")]
+        [SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification =
+            "This is by design")
+        ]
         static EnumConverter()
         {
             var type = typeof(TEnum);
@@ -63,18 +66,22 @@ namespace Splunk.Client
         public static readonly EnumConverter<TEnum> Instance;
 
         /// <summary>
-        /// Converts the string representation of the <paramref name="input"/> 
+        /// Converts the string representation of the <paramref name="input"/>
         /// object to a <typeparamref name="TEnum"/> value.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
-        /// The <paramref name="input"/> does not represent a <typeparamref 
-        /// name="TEnum"/>
+        ///
+        /// ### <exception cref="InvalidDataException">
+        /// The <paramref name="input"/> does not represent a
+        /// <typeparamref name="TEnum"/>
         /// value.
         /// </exception>
         public override TEnum Convert(object input)

@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.IO;
@@ -29,24 +30,28 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a way to convert objects to values of some type.
     /// </summary>
-    /// <typeparam name="TValue">
-    /// The type of values to produce in the conversion.
-    /// </typeparam>
     /// <remarks>
-    /// If you want to create a value converter, create a class that implements 
-    /// the <see cref="Convert"/> method and--optionally--overrides the 
+    /// If you want to create a value converter, create a class that implements
+    /// the <see cref="Convert"/> method and--optionally--overrides the
     /// <see cref="DefaultValue"/> property. Your <see cref="Convert"/> method
-    /// should accept a value of any type and produce a <typeparamref name="TValue"/>
+    /// should accept a value of any type and produce a
+    /// <typeparamref name="TValue"/>
     /// or throw an <see cref="InvalidDataException"/>.
     /// </remarks>
+    /// <typeparam name="TValue">
+    /// Type of the value.
+    /// </typeparam>
     [ContractClass(typeof(ValueConverterContract<>))]
     public abstract class ValueConverter<TValue>
     {
         #region Properties
 
         /// <summary>
-        /// 
+        /// Gets the default value.
         /// </summary>
+        /// <value>
+        /// The default value.
+        /// </value>
         public virtual TValue DefaultValue
         { 
             get { return default(TValue); } 
@@ -57,12 +62,26 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// 
+        /// Converts the given input.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
+        /// </param>
+        /// <param name="input">
+        /// The input.
+        /// </param>
+        /// <returns>
+        /// A TValue.
+        /// </returns>
         public abstract TValue Convert(object input);
 
+        /// <summary>
+        /// Creates a new invalid data exception.
+        /// </summary>
+        /// <param name="input">
+        /// The input.
+        /// </param>
+        /// <returns>
+        /// An InvalidDataException.
+        /// </returns>
         protected static InvalidDataException NewInvalidDataException(object input)
         {
             var text = string.Format(CultureInfo.CurrentCulture, "Expected {0} value: {1}", TypeName, input);
@@ -72,16 +91,26 @@ namespace Splunk.Client
         #endregion
 
         /// <summary>
-        /// 
+        /// The comparer.
         /// </summary>
         protected static readonly EqualityComparer<TValue> Comparer = EqualityComparer<TValue>.Default;
 
         /// <summary>
-        /// 
+        /// Name of the type.
         /// </summary>
         protected static readonly string TypeName = typeof(TValue).Name;
     }
 
+    /// <summary>
+    /// A value converter contract.
+    /// </summary>
+    /// <typeparam name="TValue">
+    /// Type of the value.
+    /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{TValue}"/>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification =
+        "Contract classes should be contained in the same C# document as the class they reprsent.")
+    ]
     [ContractClassFor(typeof(ValueConverter<>))]
     abstract class ValueConverterContract<TValue> : ValueConverter<TValue>
     {

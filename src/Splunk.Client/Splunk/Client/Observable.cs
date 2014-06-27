@@ -30,15 +30,16 @@ namespace Splunk.Client
     /// Defines a provider for push-based notification.
     /// </summary>
     /// <typeparam name="T">
-    /// The type of object that provides notification information.
+    /// Generic type parameter.
     /// </typeparam>
+    /// <seealso cref="T:System.IObservable{T}"/>
     public abstract class Observable<T> : IObservable<T>
     {
         #region Methods
 
         /// <summary>
-        /// Notifies all observers that the provider has finished sending 
-        /// push-based notifications.
+        /// Notifies all observers that the provider has finished sending push-based
+        /// notifications.
         /// </summary>
         protected void OnCompleted()
         {
@@ -58,7 +59,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Notifies all observers that the provider has experienced an error 
+        /// Notifies all observers that the provider has experienced an error
         /// condition.
         /// </summary>
         /// <param name="error">
@@ -113,9 +114,12 @@ namespace Splunk.Client
         protected abstract Task PushObservations();
 
         /// <summary>
-        /// Notifies the current <see cref="SearchPreviewStream"/> that an 
-        /// observer is to receive notifications.
+        /// Notifies the current <see cref="SearchPreviewStream"/> that an observer
+        /// is to receive notifications.
         /// </summary>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when one or more required arguments are null.
+        /// </exception>
         /// <param name="observer">
         /// The object that is to receive notifications.
         /// </param>
@@ -171,12 +175,14 @@ namespace Splunk.Client
         #region Types
 
         /// <summary>
-        /// Represents a disposable subscription to the <see cref="Observable&lt;T&gt;"/>.
+        /// Represents a disposable subscription to the
+        /// <see cref="Observable&lt;T&gt;"/>.
         /// </summary>
         /// <remarks>
         /// This class implements <see cref="IDisposable"/>, but does not require
         /// finalization because it does not access unmanaged resources.
         /// </remarks>
+        /// <seealso cref="T:System.IObservable{T}"/>
         struct Subscription : IDisposable
         {
             public Subscription(Observable<T> observable, LinkedListNode<IObserver<T>> node)
@@ -188,9 +194,6 @@ namespace Splunk.Client
                 this.observable = observable;
             }
 
-            /// <summary>
-            /// Disposes of the current subscription.
-            /// </summary>
             public void Dispose()
             {
                 if (this.node.List == null)

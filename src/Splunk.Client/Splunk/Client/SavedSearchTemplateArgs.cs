@@ -26,6 +26,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides custom arguments to a <see cref="SavedSearch"/>.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ArgumentSet"/>
     public sealed class SavedSearchTemplateArgs : ArgumentSet
     {
         #region Constructors
@@ -38,6 +39,13 @@ namespace Splunk.Client
             : base("args.")
         { }
 
+        /// <summary>
+        /// Initializes a new instance of the Splunk.Client.SavedSearchTemplateArgs
+        /// class.
+        /// </summary>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
         public SavedSearchTemplateArgs(params Argument[] arguments)
             : this(arguments.AsEnumerable())
         { }
@@ -46,6 +54,9 @@ namespace Splunk.Client
         /// Initializes a new instance of the <see cref="SavedSearchTemplateArgs"/>
         /// class from a collection of <see cref="Argument"/> values.
         /// </summary>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
         public SavedSearchTemplateArgs(IEnumerable<Argument> arguments)
             : base("args.", arguments)
         { }

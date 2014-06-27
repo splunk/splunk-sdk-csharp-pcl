@@ -33,16 +33,20 @@ namespace Splunk.Client
     using System.Text;
 
     /// <summary>
-    /// Provides a base class for representing strongly typed arguments to 
-    /// Splunk endpoints.
+    /// Provides a base class for representing strongly typed arguments to Splunk
+    /// endpoints.
     /// </summary>
     /// <typeparam name="TArgs">
+    /// Type of the arguments.
     /// </typeparam>
+    /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.Argument}"/>
     public abstract class Args<TArgs> : IEnumerable<Argument> where TArgs : Args<TArgs>
     {
         #region Constructors
 
-        [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+        [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification =
+            "This is by design.")
+        ]
         static Args()
         {
             var propertyFormatters = new Dictionary<Type, Formatter>()
@@ -162,24 +166,19 @@ namespace Splunk.Client
 
         #region Methods
 
-        /// <summary>
-        /// Gets an enumerator that produces an <see cref="Argument"/> sequence
-        /// based on the serialization attributes of the properties of the 
-        /// current <see cref="Args&lt;TArgs&gt;"/> instance.
-        /// </summary>
-        /// <returns>
-        /// An object for producing the <see cref="Argument"/> sequence.
-        /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
         /// <summary>
-        /// Gets an enumerator that produces an <see cref="Argument"/> sequence
-        /// based on the serialization attributes of the properties of the 
-        /// current <see cref="Args&lt;TArgs&gt;"/> instance.
+        /// Gets an enumerator that produces an <see cref="Argument"/> sequence based
+        /// on the serialization attributes of the properties of the current
+        /// <see cref="Args&lt;TArgs&gt;"/> instance.
         /// </summary>
+        /// <exception cref="SerializationException">
+        /// Thrown when a Serialization error condition occurs.
+        /// </exception>
         /// <returns>
         /// An object for producing the <see cref="Argument"/> sequence.
         /// </returns>
@@ -217,11 +216,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets a string representation for the current <see cref="Args&lt;TArgs&gt;"/>.
+        /// Gets a string representation for the current
+        /// <see cref="Args&lt;TArgs&gt;"/>.
         /// </summary>
         /// <returns>
         /// A string representation of the current <see cref="Args&lt;TArgs&gt;"/>.
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
@@ -375,13 +376,28 @@ namespace Splunk.Client
         #endregion
 
         #region Types
-        
+
+        /// <summary>
+        /// A formatter.
+        /// </summary>
+        /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.Argument}"/>
         struct Formatter
         {
+            /// <summary>
+            /// Describes the format to use.
+            /// </summary>
             public Func<object, string> Format;
+
+            /// <summary>
+            /// <c>true</c> if this object is collection.
+            /// </summary>
             public bool IsCollection;
         }
 
+        /// <summary>
+        /// An ordinal.
+        /// </summary>
+        /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.Argument}"/>
         struct Ordinal : IComparable<Ordinal>, IEquatable<Ordinal>
         {
             #region Constructos
@@ -397,6 +413,7 @@ namespace Splunk.Client
             #region Fields
 
             public readonly int Position;
+
             public readonly string Name;
 
             #endregion
@@ -409,9 +426,9 @@ namespace Splunk.Client
                 return result != 0 ? result : string.Compare(this.Name, other.Name, StringComparison.Ordinal);
             }
 
-            public override bool Equals(object o)
+            public override bool Equals(object other)
             {
-                return o != null && o is Ordinal ? this.Equals((Ordinal)o) : false;
+                return other != null && other is Ordinal ? this.Equals((Ordinal)other) : false;
             }
 
             public bool Equals(Ordinal other)

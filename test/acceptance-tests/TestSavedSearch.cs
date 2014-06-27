@@ -205,7 +205,7 @@ namespace Splunk.Client.UnitTests
                     dummyString = savedSearch.Actions.Rss.MaxTime;
                     dummyBool = savedSearch.Actions.Rss.TrackAlert;
                     dummyString = savedSearch.Actions.Rss.Ttl;
-                    SavedSearch.ActionAdapter.ScriptAdapter scriptT = savedSearch.Actions.Script;
+                    SavedSearch.ActionsAdapter.ScriptAdapter scriptT = savedSearch.Actions.Script;
                     dummyString = scriptT.FileName;
                     dummyString = scriptT.Hostname;
                     dummyInt = scriptT.MaxResults;
@@ -316,7 +316,7 @@ namespace Splunk.Client.UnitTests
                     dummyString = savedSearch.Actions.Rss.MaxTime;
                     dummyBool = savedSearch.Actions.Rss.TrackAlert;
                     dummyString = savedSearch.Actions.Rss.Ttl;
-                    SavedSearch.ActionAdapter.ScriptAdapter script = savedSearch.Actions.Script;
+                    SavedSearch.ActionsAdapter.ScriptAdapter script = savedSearch.Actions.Script;
                     dummyString = script.FileName;
                     dummyString = script.Hostname;
                     dummyInt = script.MaxResults;

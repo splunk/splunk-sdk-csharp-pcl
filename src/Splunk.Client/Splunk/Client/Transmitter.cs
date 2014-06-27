@@ -31,21 +31,26 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a class for sending events to Splunk.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.Endpoint"/>
+    /// <seealso cref="T:Splunk.Client.ITransmitter"/>
     public class Transmitter : Endpoint, ITransmitter
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Receiver"/> class
+        /// Initializes a new instance of the <see cref="Receiver"/> class.
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
         protected internal Transmitter(Service service)
             : this(service.Context)
         {
@@ -58,16 +63,17 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="ns">
+        ///
+        /// ### <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <param name="name">
+        /// ### <param name="name">
         /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal Transmitter(Context context)
@@ -142,6 +148,9 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        /// <summary>
+        /// Name of the class resource.
+        /// </summary>
         internal static readonly ResourceName ClassResourceName = new ResourceName("receivers");
 
         static readonly ResourceName SimpleReceiver = new ResourceName(ClassResourceName, "simple");

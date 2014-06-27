@@ -31,9 +31,9 @@ namespace Splunk.Client
     /// Provides a class for accessing and updating Splunk configuration files.
     /// </summary>
     /// <remarks>
-    /// Splunk's configuration information is stored in configuration files. 
-    /// These files are identified by their .conf extension and hold the 
-    /// information for different aspects of your Splunk configurations, 
+    /// Splunk's configuration information is stored in configuration files.
+    /// These files are identified by their .conf extension and hold the
+    /// information for different aspects of your Splunk configurations,
     /// including:
     /// <list type="bullet">
     /// <item><description>
@@ -53,8 +53,8 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// <para>
-    /// Most configuration files come packaged with your Splunk installation
-    /// and can be found in <c>$SPLUNK_HOME/etc/default</c>.
+    /// Most configuration files come packaged with your Splunk installation and
+    /// can be found in <c>$SPLUNK_HOME/etc/default</c>.
     /// </para>
     /// <para><b>References:</b></para>
     /// <list type="number">
@@ -67,7 +67,7 @@ namespace Splunk.Client
     ///     files</a>.
     /// </description></item>
     /// <item><description>
-    ///     <a href="http://goo.gl/cTdaIH">REST API Reference: Accessing and 
+    ///     <a href="http://goo.gl/cTdaIH">REST API Reference: Accessing and
     ///     updating Splunk configurations</a>.
     /// </description></item>
     /// <item><description>
@@ -75,6 +75,8 @@ namespace Splunk.Client
     /// </description></item>
     /// </list>
     /// </remarks>
+    /// <seealso cref="T:Splunk.Client.EntityCollection{Splunk.Client.ConfigurationStanza,Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IConfiguration{Splunk.Client.ConfigurationStanza}"/>
     public class Configuration : EntityCollection<ConfigurationStanza, Resource>, IConfiguration<ConfigurationStanza>
     {
         #region Constructors
@@ -88,10 +90,11 @@ namespace Splunk.Client
         /// <param name="fileName">
         /// Name of a configuration file.
         /// </param>
-        /// <exception cref="ArgumentException">
+        ///
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="fileName"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal Configuration(Service service, string fileName)
@@ -110,8 +113,7 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="fileName">
-        /// Name of the configuration file to be represented by the current
-        /// instance.
+        /// Name of the configuration file to be represented by the current instance.
         /// </param>
         protected internal Configuration(Context context, Namespace ns, string fileName)
             : base(context, ns, new ResourceName(ConfigurationCollection.ClassResourceName, fileName))
@@ -126,10 +128,11 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal Configuration(Context context, AtomFeed feed)
@@ -138,13 +141,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Configuration"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "Configuration"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use one of these
-        /// methods to obtain a <see cref="Configuration"/> instance:
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use one of these methods to obtain a
+        /// <see cref="Configuration"/> instance:
         /// <list type="table">
         /// <listheader>
         ///   <term>Method</term>
@@ -172,7 +175,7 @@ namespace Splunk.Client
 
         #region Methods
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public override async Task<ConfigurationStanza> CreateAsync(IEnumerable<Argument> arguments)
         {
             //// These gymnastics are required because:
@@ -200,7 +203,7 @@ namespace Splunk.Client
             };
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public virtual async Task<ConfigurationStanza> CreateAsync(string stanzaName)
         {
             var arguments = new Argument[] { new Argument("__stanza", stanzaName) };
@@ -213,7 +216,7 @@ namespace Splunk.Client
             return new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public virtual async Task<string> GetSettingAsync(string stanzaName, string keyName)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
@@ -221,14 +224,14 @@ namespace Splunk.Client
             return value;
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public virtual async Task RemoveAsync(string stanzaName)
         {
             var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
             await resource.RemoveAsync();
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public virtual async Task<ConfigurationStanza> UpdateAsync(string stanzaName, params Argument[] settings)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
@@ -236,14 +239,14 @@ namespace Splunk.Client
             return resourceEndpoint;
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public virtual async Task UpdateSettingAsync(string stanzaName, string keyName, object value)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
             await resourceEndpoint.UpdateAsync(keyName, value);
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public virtual async Task UpdateSettingAsync(string stanzaName, string keyName, string value)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);

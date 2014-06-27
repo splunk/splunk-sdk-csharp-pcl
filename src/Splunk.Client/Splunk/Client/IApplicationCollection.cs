@@ -29,6 +29,11 @@ namespace Splunk.Client
     /// <summary>
     /// Provides an operational interface to the Splunk application collection.
     /// </summary>
+    /// <typeparam name="TApplication">
+    /// Type of the application.
+    /// </typeparam>
+    /// <seealso cref="T:IPaginated"/>
+    /// <seealso cref="T:IEntityCollection{TApplication"/>
     [ContractClass(typeof(IApplicationCollectionContract<>))]
     public interface IApplicationCollection<TApplication> : IPaginated, IEntityCollection<TApplication, Resource> 
         where TApplication : BaseEntity<Resource>, IApplication, new()
@@ -36,6 +41,10 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously creates a new Splunk application from a template.
         /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST apps/local</a>
+        /// endpoint to create the current <see cref= "Application"/>.
+        /// </remarks>
         /// <param name="name">
         /// Name of the application to be created.
         /// </param>
@@ -48,61 +57,97 @@ namespace Splunk.Client
         /// <returns>
         /// An object representing the Splunk application created.
         /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to create the current <see cref=
-        /// "Application"/>.
-        /// </remarks>
         Task<TApplication> CreateAsync(string name, string template, ApplicationAttributes attributes = null);
 
         /// <summary>
-        /// Asynchronously retrieves select entities in the current application 
+        /// Asynchronously retrieves select entities in the current application
         /// entity collection.
         /// </summary>
+        /// <remarks>
+        /// Following completion of the operation the list of entities in the current
+        /// application entity collection will contain all changes since the select
+        /// entities were last retrieved.
+        /// </remarks>
+        /// <param name="criteria">
+        /// The criteria.
+        /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        /// <remarks>
-        /// Following completion of the operation the list of entities in the
-        /// current application entity collection will contain all changes 
-        /// since the select entities were last retrieved.
-        /// </remarks>
         Task GetSliceAsync(ApplicationCollection.Filter criteria);
 
         /// <summary>
-        /// Asynchronously installs an application from a Splunk application
-        /// archive file.
+        /// Asynchronously installs an application from a Splunk application archive
+        /// file.
         /// </summary>
+        /// <remarks>
+        /// This method uses the <a href="http://goo.gl/SzKzNX">POST apps/local</a>
+        /// endpoint to install the application from the archive file on
+        /// <paramref name="path"/>.
+        /// </remarks>
         /// <param name="path">
         /// Specifies the location of a Splunk application archive file.
         /// </param>
         /// <param name="name">
-        /// Optionally specifies an explicit name for the application. This
-        /// value overrides the name of the application as specified in the
-        /// archive file.
+        /// Optionally specifies an explicit name for the application. This value
+        /// overrides the name of the application as specified in the archive file.
         /// </param>
         /// <param name="update">
-        /// <c>true</c> if Splunk should allow the installation to update an
-        /// existing application. The default value is <c>false</c>.
+        /// <c>true</c> if Splunk should allow the installation to update an existing
+        /// application. The default value is <c>false</c>.
         /// </param>
-        /// <returns></returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to install the application from the archive
-        /// file on <paramref name="path"/>.
-        /// </remarks>
+        /// <returns>
+        /// An object representing the installed application.
+        /// </returns>
         Task<TApplication> InstallAsync(string path, string name = null, bool update = false);
     }
 
+    /// <summary>
+    /// An application collection contract.
+    /// </summary>
+    /// <typeparam name="TApplication">
+    /// Type of the application.
+    /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.IApplicationCollection{TApplication}"/>
     [ContractClassFor(typeof(IApplicationCollection<>))]
     abstract class IApplicationCollectionContract<TApplication> : IApplicationCollection<TApplication>
         where TApplication : BaseEntity<Resource>, IApplication, new()
     {
         #region Properties
 
+        /// <summary>
+        /// Indexer to get items within this collection using array index syntax.
+        /// </summary>
+        /// <param name="index">
+        /// Zero-based index of the entry to access.
+        /// </param>
+        /// <returns>
+        /// The indexed item.
+        /// </returns>
         public abstract TApplication this[int index] { get; }
+
+        /// <summary>
+        /// Gets the number of. 
+        /// </summary>
+        /// <value>
+        /// The count.
+        /// </value>
         public abstract int Count { get; }
+
+        /// <summary>
+        /// Gets the messages.
+        /// </summary>
+        /// <value>
+        /// The messages.
+        /// </value>
         public abstract IReadOnlyList<Message> Messages { get; }
+
+        /// <summary>
+        /// Gets the pagination.
+        /// </summary>
+        /// <value>
+        /// The pagination.
+        /// </value>
         public abstract Pagination Pagination { get; }
 
         #endregion

@@ -22,11 +22,41 @@ namespace Splunk.Client
 {
     using System;
 
+    /// <summary>
+    /// Interface for base resource.
+    /// </summary>
     public interface IBaseResource
     {
+        /// <summary>
+        /// Gets the generator version.
+        /// </summary>
+        /// <value>
+        /// The generator version.
+        /// </value>
         Version GeneratorVersion { get; }
+
+        /// <summary>
+        /// Gets the identifier.
+        /// </summary>
+        /// <value>
+        /// The identifier.
+        /// </value>
         Uri Id { get; }
+
+        /// <summary>
+        /// Gets the title.
+        /// </summary>
+        /// <value>
+        /// The title.
+        /// </value>
         string Title { get; }
+
+        /// <summary>
+        /// Gets the Date/Time of the updated.
+        /// </summary>
+        /// <value>
+        /// The updated.
+        /// </value>
         DateTime Updated { get; }
     }
 }

@@ -32,6 +32,10 @@ namespace Splunk.Client
     /// <remarks>
     /// This is the base class for all Splunk entities.
     /// </remarks>
+    /// <typeparam name="TResource">
+    /// Type of the resource.
+    /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.Endpoint"/>
     [ContractClass(typeof(BaseEntityContract<>))]
     public abstract class BaseEntity<TResource> : Endpoint where TResource : BaseResource, new()
     {
@@ -42,12 +46,15 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
         protected BaseEntity(Service service, ResourceName name)
             : base(service.Context, service.Namespace, name)
         {
@@ -55,7 +62,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BaseEntity"/> 
+        /// Initializes a new instance of the <see cref="BaseEntity"/>
         /// class as specified by <paramref name="context"/>, <paramref name="ns"/>
         /// and "<paramref name="resourceName"/>.
         /// </summary>
@@ -68,11 +75,12 @@ namespace Splunk.Client
         /// <param name="resourceName">
         /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref name=
-        /// "resourceName"/> are <c>null</c>.
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name= "resourceName"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected BaseEntity(Context context, Namespace ns, ResourceName resourceName)
@@ -89,19 +97,26 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="collection">
-        /// The <see cref="ResourceName"/> of an <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// The <see cref="ResourceName"/> of an
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </param>
-        /// <param name="entity">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <param name="entity">
         /// The name of an entity within <paramref name="collection"/>.
         /// </param>
-        /// <exception cref="ArgumentException">
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="entity"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref 
-        /// name="collection"/>, or <paramref name="entity"/> are <c>null</c>.
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name="collection"/>, or <paramref name="entity"/> are
+        /// <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected BaseEntity(Context context, Namespace ns, ResourceName collection, string name)
@@ -117,14 +132,16 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentException">
+        ///
+        /// ### <exception cref="ArgumentException">
         /// <paramref name="entity"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref 
-        /// name="collection"/>, or <paramref name="entity"/> are <c>null</c>.
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name="collection"/>, or <paramref name="entity"/> are
+        /// <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
+        /// ### <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected BaseEntity(Context context, AtomFeed feed)
@@ -133,12 +150,12 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "BaseEntity"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "BaseEntity"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code.
         /// </remarks>
         protected BaseEntity()
         { }
@@ -148,8 +165,8 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets an object representing the Splunk resource at the time it was
-        /// last retrieved by the current entity.
+        /// Gets or sets an object representing the Splunk resource at the time it
+        /// was last retrieved by the current entity.
         /// </summary>
         /// <value>
         /// An object representing the Splunk resource at the time it was last
@@ -162,8 +179,11 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// 
+        /// Gets the dynamic.
         /// </summary>
+        /// <value>
+        /// The dynamic.
+        /// </value>
         public dynamic Dynamic
         {
             get { return this.Snapshot; }
@@ -198,12 +218,15 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates an entity from a Splunk atom feed <see cref=
-        /// "Response"/>.
+        /// Asynchronously creates an entity from a Splunk atom feed
+        /// <see cref= "Response"/>.
         /// </summary>
         /// <typeparam name="TEntity">
-        /// The type of the entity to be created.
+        /// Type of the entity.
         /// </typeparam>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
         /// <param name="response">
         /// An object representing a Splunk atom feed response.
         /// </param>
@@ -239,36 +262,40 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Updates the <see cref="Content"/> of the current <see cref=
-        /// "BaseEntity"/>.
+        /// Updates the <see cref="Content"/> of the current
+        /// <see cref= "BaseEntity"/>.
         /// </summary>
         /// <param name="entry">
         /// A Splunk <see cref="AtomEntry"/>.
         /// </param>
+        /// <param name="generatorVersion">
+        /// The version of the generator producing the <see cref="AtomFeed"/> feed
+        /// containing <paramref name="entry"/>.
+        /// </param>
         protected abstract void CreateSnapshot(AtomEntry entry, Version generatorVersion);
 
         /// <summary>
-        /// Updates the <see cref="Snapshot"/> of the current <see cref=
-        /// "BaseEntity"/> in derived types.
+        /// Updates the <see cref="Snapshot"/> of the current
+        /// <see cref= "BaseEntity"/> in derived types.
         /// </summary>
+        /// <remarks>
+        /// Derived types must implement this method.
+        /// </remarks>
         /// <param name="feed">
         /// A Splunk <see cref="AtomFeed"/>.
         /// </param>
-        /// <remarks>
-        /// Derived types must implement this method.
-        /// </remarks>
         protected abstract void CreateSnapshot(AtomFeed feed);
 
         /// <summary>
-        /// Updates the <see cref="Content"/> of the current <see cref=
-        /// "BaseEntity"/> in derived types.
+        /// Updates the <see cref="Content"/> of the current
+        /// <see cref= "BaseEntity"/> in derived types.
         /// </summary>
-        /// <param name="resource">
-        /// An object representing a Splunk resource.
-        /// </param>
         /// <remarks>
         /// Derived types must implement this method.
         /// </remarks>
+        /// <param name="resource">
+        /// An object representing a Splunk resource.
+        /// </param>
         protected virtual void CreateSnapshot(TResource resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null);
@@ -276,10 +303,19 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "BaseEntity"/>.
-        /// class.
+        /// Infrastructure. Initializes the current uninitialized
+        /// <see cref= "BaseEntity"/>. class.
         /// </summary>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="BaseEntity"/>
+        /// instantiated by the default constructor. Override this method to provide
+        /// special initialization code. Call this base method before initialization
+        /// is complete.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not intended
+        /// to be used directly from your code.
+        /// </note>
+        /// </remarks>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
@@ -290,23 +326,14 @@ namespace Splunk.Client
         /// The version of the generator producing the <see cref="AtomFeed"/>
         /// feed containing <paramref name="entry"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="entry"/>, or <paramref 
-        /// name="generatorVersion"/> are <c>null</c>.
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="entry"/>, or
+        /// <paramref name="generatorVersion"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidOperationException">
+        /// ### <exception cref="InvalidOperationException">
         /// The current <see cref="BaseEntity"/> is already initialized.
         /// </exception>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="BaseEntity"/>
-        /// instantiated by the default constructor. Override this method to 
-        /// provide special initialization code. Call this base method before 
-        /// initialization is complete. 
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </note>
-        /// </remarks>
         protected internal void Initialize(Context context, AtomEntry entry, Version generatorVersion)
         {
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
@@ -318,37 +345,40 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "BaseEntity"/>.
-        /// class.
+        /// Infrastructure. Initializes the current uninitialized
+        /// <see cref= "BaseEntity"/>. class.
         /// </summary>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="BaseEntity"/>
+        /// instantiated by the default constructor. Override this method to provide
+        /// special initialization code. Call this base method before initialization
+        /// is complete.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not intended
+        /// to be used directly from your code.
+        /// </note>
+        /// </remarks>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="entry">
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        ///
+        /// ### <param name="entry">
         /// An object representing a Splunk atom entry response.
         /// </param>
-        /// <param name="generatorVersion">
+        /// ### <param name="generatorVersion">
         /// The version of the generator producing the <see cref="AtomFeed"/>
         /// feed containing <paramref name="entry"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="entry"/>, or <paramref 
-        /// name="generatorVersion"/> are <c>null</c>.
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="entry"/>, or
+        /// <paramref name="generatorVersion"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidOperationException">
+        /// ### <exception cref="InvalidOperationException">
         /// The current <see cref="BaseEntity"/> is already initialized.
         /// </exception>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="BaseEntity"/>
-        /// instantiated by the default constructor. Override this method to 
-        /// provide special initialization code. Call this base method before 
-        /// initialization is complete. 
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </note>
-        /// </remarks>
         protected internal void Initialize(Context context, AtomFeed feed)
         {
             Contract.Requires<ArgumentNullException>(context != null);
@@ -359,32 +389,32 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "BaseEntity"/>.
-        /// class.
+        /// Infrastructure. Initializes the current uninitialized
+        /// <see cref= "BaseEntity"/>. class.
         /// </summary>
+        /// <remarks>
+        /// This method may be called once to intialize a <see cref="BaseEntity"/>
+        /// instantiated by the default constructor. Override this method to provide
+        /// special initialization code. Call this base method before initialization
+        /// is complete.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not intended
+        /// to be used directly from your code.
+        /// </note>
+        /// </remarks>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
         /// <param name="resource">
         /// An object representing a Splunk resource.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="resource"/>.
         /// </exception>
-        /// <exception cref="InvalidOperationException">
+        /// ### <exception cref="InvalidOperationException">
         /// The current <see cref="BaseEntity"/> is already initialized.
         /// </exception>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="BaseEntity"/>
-        /// instantiated by the default constructor. Override this method to 
-        /// provide special initialization code. Call this base method before 
-        /// initialization is complete. 
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </note>
-        /// </remarks>
         protected internal void Initialize(Context context, TResource resource)
         {
             Contract.Requires<ArgumentNullException>(resource != null);
@@ -395,7 +425,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously updates the content of the current <see cref="BaseEntity"/>.
+        /// Asynchronously updates the content of the current
+        /// <see cref="BaseEntity"/>.
         /// </summary>
         /// <param name="response">
         /// A Splunk atom feed <see cref="Response"/>.
@@ -431,17 +462,40 @@ namespace Splunk.Client
         #endregion
     }
 
+    /// <summary>
+    /// A base entity contract.
+    /// </summary>
+    /// <typeparam name="TResource">
+    /// Type of the resource.
+    /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.BaseEntity{TResource}"/>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = 
-        "Contract classes should be contained in the same C# document as the class they reprsent.")]
+        "Contract classes should be contained in the same C# document as the class they reprsent.")
+    ]
     [ContractClassFor(typeof(BaseEntity<>))]
     public abstract class BaseEntityContract<TResource> : BaseEntity<TResource> where TResource : BaseResource, new()
     {
+        /// <summary>
+        /// Creates a snapshot.
+        /// </summary>
+        /// <param name="entry">
+        /// The entry.
+        /// </param>
+        /// <param name="generatorVersion">
+        /// The generator version.
+        /// </param>
         protected override void CreateSnapshot(AtomEntry entry, Version generatorVersion)
         {
             Contract.Requires<ArgumentNullException>(entry != null);
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
         }
 
+        /// <summary>
+        /// Creates a snapshot.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
         protected override void CreateSnapshot(AtomFeed feed)
         {
             Contract.Requires<ArgumentNullException>(feed != null);

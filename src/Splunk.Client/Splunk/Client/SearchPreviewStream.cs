@@ -33,9 +33,12 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// The <see cref="SearchPreviewStream"/> class represents a streaming XML 
+    /// The <see cref="SearchPreviewStream"/> class represents a streaming XML
     /// reader for Splunk <see cref="SearchResultStream"/>.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.Observable{Splunk.Client.SearchPreview}"/>
+    /// <seealso cref="T:System.IDisposable"/>
+    /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.SearchPreview}"/>
     public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<SearchPreview>
     {
         #region Constructors
@@ -62,6 +65,9 @@ namespace Splunk.Client
         /// Gets the <see cref="SearchPreview"/> read count for the current
         /// <see cref="SearchResultStream"/>.
         /// </summary>
+        /// <value>
+        /// The number of reads.
+        /// </value>
         public long ReadCount
         {
             get { return this.awaiter.ReadCount; }
@@ -72,9 +78,10 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Releases all disposable resources used by the current <see cref=
-        /// "SearchPreviewStream"/>.
+        /// Releases all disposable resources used by the current
+        /// <see cref= "SearchPreviewStream"/>.
         /// </summary>
+        /// <seealso cref="M:System.IDisposable.Dispose()"/>
         public void Dispose()
         {
             if (Interlocked.CompareExchange(ref this.disposed, 1, 0) != 0)
@@ -90,27 +97,27 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets an enumerator that iterates through <see cref="SearchPreview"/> 
+        /// Gets an enumerator that iterates through <see cref="SearchPreview"/>
         /// objects on the current <see cref="SearchPreviewStream"/> asynchronously.
         /// </summary>
-        /// <returns>
-        /// An enumerator structure for the <see cref="SearchPreviewStream"/>.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">
-        /// The current <see cref="SearchPreviewStream"/> has already been
-        /// enumerated.
-        /// </exception>
         /// <remarks>
         /// You can use the <see cref="GetEnumerator"/> method to
         /// <list type="bullet">
         /// <item><description>
-        ///   Perform LINQ to Objects queries to obtain a filtered set of 
-        ///   search previews.</description></item>
+        ///   Perform LINQ to Objects queries to obtain a filtered set of search
+        ///   previews.</description></item>
         /// <item><description>
         ///   Append search previews to an existing collection of search
         ///   previews.</description></item>
         /// </list>
         /// </remarks>
+        /// <returns>
+        /// An enumerator structure for the <see cref="SearchPreviewStream"/>.
+        /// </returns>
+        ///
+        /// ### <exception cref="InvalidOperationException">
+        /// The current <see cref="SearchPreviewStream"/> has already been enumerated.
+        /// </exception>
         public IEnumerator<SearchPreview> GetEnumerator()
         {
             this.EnsureNotDisposed();
@@ -128,10 +135,10 @@ namespace Splunk.Client
         {
             return this.GetEnumerator();
         }
- 
+
         /// <summary>
-        /// Pushes <see cref="SearchPreview"/> instances to subscribers 
-        /// and then completes.
+        /// Pushes <see cref="SearchPreview"/> instances to subscribers and then
+        /// completes.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -197,12 +204,30 @@ namespace Splunk.Client
 
         #region Types
 
+        /// <summary>
+        /// An awaiter.
+        /// </summary>
+        /// <seealso cref="T:Splunk.Client.Awaiter{Splunk.Client.SearchPreviewStream,Splunk.Client.SearchPreview}"/>
         sealed class Awaiter : Awaiter<SearchPreviewStream, SearchPreview>
         {
+            /// <summary>
+            /// Initializes a new instance of the
+            /// Splunk.Client.SearchPreviewStream.Awaiter class.
+            /// </summary>
+            /// <param name="stream">
+            /// The stream.
+            /// </param>
             public Awaiter(SearchPreviewStream stream)
                 : base(stream)
             { }
 
+            /// <summary>
+            /// Reads to the end of the current <see cref="SearchPreviewStream"/>
+            /// asynchronously.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="Task"/> representing the operation.
+            /// </returns>
             protected override async Task ReadToEndAsync()
             {
                 while (this.Stream.ReadState <= ReadState.Interactive)

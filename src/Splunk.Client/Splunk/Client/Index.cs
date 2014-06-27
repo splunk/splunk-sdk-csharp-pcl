@@ -39,6 +39,8 @@ namespace Splunk.Client
     /// </list>
     /// </para>
     /// </remarks>
+    /// <seealso cref="T:Splunk.Client.Entity{Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IIndex"/>
     public class Index : Entity<Resource>, IIndex
     {
         #region Constructors
@@ -48,11 +50,13 @@ namespace Splunk.Client
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
-        /// <param name="name">
-        /// An object identifying a Splunk resource within <paramref name=
-        /// "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
         protected internal Index(Service service, string name)
@@ -70,10 +74,11 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal Index(Context context, AtomFeed feed)
@@ -93,10 +98,11 @@ namespace Splunk.Client
         /// <param name="name">
         /// Name of the index to be represented by the current instance.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidDataException">
+        /// ### <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         internal Index(Context context, Namespace ns, string name)
@@ -104,13 +110,13 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Index"/> class.
+        /// Infrastructure. Initializes a new instance of the <see cref= "Index"/>
+        /// class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. Use one of these
-        /// methods to obtain an <see cref="Index"/> instance:
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use one of these methods to obtain an
+        /// <see cref="Index"/> instance:
         /// <list type="table">
         /// <listheader>
         ///   <term>Method</term>
@@ -589,6 +595,9 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        /// <summary>
+        /// Name of the class resource.
+        /// </summary>
         internal static readonly ResourceName ClassResourceName = new ResourceName("data", "indexes");
 
         #endregion

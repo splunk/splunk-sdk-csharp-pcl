@@ -21,7 +21,7 @@
 namespace Splunk.Client
 {
     /// <summary>
-    /// 
+    /// Values that represent SharingMode.
     /// </summary>
     public enum SharingMode
     {

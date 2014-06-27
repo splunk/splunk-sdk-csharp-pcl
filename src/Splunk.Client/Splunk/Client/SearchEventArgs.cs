@@ -22,33 +22,38 @@ namespace Splunk.Client
 {
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// Provides the arguments required for retrieving untransformed search results.
+    /// Provides the arguments required for retrieving untransformed search
+    /// results.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/eZzuBh">REST API Reference: POST 
+    ///   <a href="http://goo.gl/eZzuBh">REST API Reference: POST
     ///   search/jobs/{search_id}/events</a>.
     /// </description></item>
     /// </list>
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
+    /// <seealso cref="T:Splunk.Client.Args{Splunk.Client.SearchEventArgs}"/>
+    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification =
+        "This is by design.")
+    ]
     public sealed class SearchEventArgs : Args<SearchEventArgs>
     {
         /// <summary>
         /// Gets or sets the maximum number of results to return.
         /// </summary>
+        /// <remarks>
+        /// If the value of <c>Count</c> is set to zero, then all available results
+        /// are returned. The default value is 100.
+        /// </remarks>
         /// <value>
         /// The maximum number of results to return.
         /// </value>
-        /// <remarks>
-        /// If the value of <c>Count</c> is set to zero, then all available
-        /// results are returned. The default value is 100.
-        /// </remarks>
         [DataMember(Name = "count", EmitDefaultValue = false)]
         [DefaultValue(100)]
         public int Count
@@ -66,16 +71,16 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a time string representing the latest (exclusive), 
+        /// Gets or sets a time string representing the latest (exclusive),
         /// respectively, time bounds for the results to be returned.
         /// </summary>
-        /// <value>
-        /// A time string representing the latest (exclusive), respectively,
-        /// time bounds for the results to be returned.
-        /// </value>
         /// <remarks>
         /// If not specified, the range applies to all results found.
         /// </remarks>
+        /// <value>
+        /// A time string representing the latest (exclusive), respectively, time
+        /// bounds for the results to be returned.
+        /// </value>
         [DataMember(Name = "latest_time", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string LatestTime
@@ -83,33 +88,33 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the maximum lines that any single event's <c>_raw</c>
-        /// field should contain. 
+        /// field should contain.
         /// </summary>
-        /// <value>
-        /// The maximum lines that any single event's <c>_raw</c> field should
-        /// contain. 
-        /// </value>
         /// <remarks>
-        /// Specify <c>0</c> to indicate that all lines should be returned. The 
+        /// Specify <c>0</c> to indicate that all lines should be returned. The
         /// default value is <c>0</c>.
         /// </remarks>
+        /// <value>
+        /// The maximum lines that any single event's <c>_raw</c> field should
+        /// contain.
+        /// </value>
         [DataMember(Name = "max_lines", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int MaxLines
         { get; set; }
 
         /// <summary>
-        /// Gets or sets a value specifying the first result (inclusive) from 
-        /// which to begin returning entries.
+        /// Gets or sets a value specifying the first result (inclusive) from which
+        /// to begin returning entries.
         /// </summary>
+        /// <remarks>
+        /// The <c>Offset</c> property is zero-based and cannot be negative. The
+        /// default value is zero.
+        /// </remarks>
         /// <value>
         /// A value specifying the first result (inclusive) from which to begin
         /// returning entries.
         /// </value>
-        /// <remarks>
-        /// The <c>Offset</c> property is zero-based and cannot be negative. 
-        /// The default value is zero.
-        /// </remarks>
         [DataMember(Name = "offset", EmitDefaultValue = false)]
         [DefaultValue(0)]
         public int Offset
@@ -118,12 +123,12 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the output format for a UTC time.
         /// </summary>
-        /// <value>
-        /// The output format for a UTC time.
-        /// </value>
         /// <remarks>
         /// The default value is specified in <see cref="TimeFormat"/>.
         /// </remarks>
+        /// <value>
+        /// The output format for a UTC time.
+        /// </value>
         [DataMember(Name = "output_time_format", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string OutputTimeFormat
@@ -132,12 +137,12 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the post processing search to apply to the results.
         /// </summary>
-        /// <value>
-        /// The post processing search to apply to the results.
-        /// </value>
         /// <remarks>
         /// The post processing search string can be any Splunk command.
         /// </remarks>
+        /// <value>
+        /// The post processing search to apply to the results.
+        /// </value>
         [DataMember(Name = "search", EmitDefaultValue = false)]
         [DefaultValue(null)]
         public string Search
@@ -146,12 +151,12 @@ namespace Splunk.Client
         /// <summary>
         /// Gets or sets the type of segmentation to perform on the data.
         /// </summary>
-        /// <value>
-        /// The type of segmentation to perform on the data.
-        /// </value>
         /// <remarks>
         /// This incudes an option to perform k/v segmentation.
         /// </remarks>
+        /// <value>
+        /// The type of segmentation to perform on the data.
+        /// </value>
         [DataMember(Name = "segmentation", EmitDefaultValue = false)]
         [DefaultValue("raw")]
         public string Segmentation
@@ -161,13 +166,13 @@ namespace Splunk.Client
         /// Gets or sets an expression to convert a formatted time string from
         /// {start,end}_time into UTC seconds.
         /// </summary>
-        /// <value>
-        /// An expression to convert a formatted time string from 
-        /// {start,end}_time into UTC seconds.
-        /// </value>
         /// <remarks>
         /// The default value is <c>%m/%d/%Y:%H:%M:%S</c>.
         /// </remarks>
+        /// <value>
+        /// An expression to convert a formatted time string from
+        /// {start,end}_time into UTC seconds.
+        /// </value>
         [DataMember(Name = "time_format", EmitDefaultValue = false)]
         [DefaultValue("%m/%d/%Y:%H:%M:%S")]
         public string TimeFormat
@@ -177,13 +182,13 @@ namespace Splunk.Client
         /// Gets or sets a value that specifies how <see cref="MaxLines"/>
         /// should be achieved.
         /// </summary>
-        /// <value>
-        /// A truncation mode that specifies how <see cref="MaxLines"/> should
-        /// be achieved.
-        /// </value>
         /// <remarks>
         /// The default value is <see cref="TruncationMode"/><c>.Abstract</c>.
         /// </remarks>
+        /// <value>
+        /// A truncation mode that specifies how <see cref="MaxLines"/> should be
+        /// achieved.
+        /// </value>
         [DataMember(Name = "truncation_mode", EmitDefaultValue = false)]
         [DefaultValue(TruncationMode.Abstract)]
         public TruncationMode TruncationMode

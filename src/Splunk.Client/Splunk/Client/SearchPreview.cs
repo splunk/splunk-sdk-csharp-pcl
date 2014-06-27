@@ -27,7 +27,7 @@ namespace Splunk.Client
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
     using System.Xml;
-    
+
     /// <summary>
     /// Represents a search result preview on a <see cref="SearchPreviewStream"/>.
     /// </summary>
@@ -36,35 +36,42 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="SearchPreview"/> 
+        /// Gets a value indicating whether this <see cref="SearchPreview"/>
         /// contains the final results from a search job.
         /// </summary>
+        /// <value>
+        /// <c>true</c> if this object is final, <c>false</c> if not.
+        /// </value>
         public bool IsFinal
         {
             get { return this.metadata.IsFinal; }
         }
 
         /// <summary>
-        /// Gets the read-only list of field names that may appear in a 
+        /// Gets the read-only list of field names that may appear in a
         /// <see cref="SearchResult"/>.
         /// </summary>
         /// <remarks>
-        /// Be aware that any given result will contain a subset of these 
-        /// fields.
+        /// Be aware that any given result will contain a subset of these fields.
         /// </remarks>
+        /// <value>
+        /// A list of names of the fields.
+        /// </value>
         public IReadOnlyList<string> FieldNames
         {
             get { return this.metadata.FieldNames; }
         }
 
         /// <summary>
-        /// Gets the read-only list of field names that may appear in a search 
-        /// event <see cref="SearchResult"/>.
+        /// Gets the read-only list of field names that may appear in a search event
+        /// <see cref="SearchResult"/>.
         /// </summary>
         /// <remarks>
-        /// Be aware that any given result will contain a subset of these 
-        /// fields.
+        /// Be aware that any given result will contain a subset of these fields.
         /// </remarks>
+        /// <value>
+        /// The results.
+        /// </value>
         public IReadOnlyList<SearchResult> Results
         { get; private set; }
 
@@ -111,6 +118,7 @@ namespace Splunk.Client
         /// <returns>
         /// A string instance representing the current instance.
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             return base.ToString();

@@ -24,9 +24,10 @@ namespace Splunk.Client
     using System.IO;
 
     /// <summary>
-    /// Provides a converter to convert strings to <see cref="DateTime"/> 
+    /// Provides a converter to convert strings to <see cref="DateTime"/>
     /// values.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{System.DateTime}"/>
     sealed class DateTimeConverter : ValueConverter<DateTime>
     {
         /// <summary>
@@ -35,16 +36,20 @@ namespace Splunk.Client
         public static readonly DateTimeConverter Instance = new DateTimeConverter();
 
         /// <summary>
-        /// Converts the string representation of the <paramref name="input"/> 
+        /// Converts the string representation of the <paramref name="input"/>
         /// object to a <see cref="DateTime"/> value.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
+        ///
+        /// ### <exception cref="InvalidDataException">
         /// The <paramref name="input"/> does not represent a <see cref="DateTime"/>
         /// value.
         /// </exception>

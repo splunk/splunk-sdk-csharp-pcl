@@ -21,8 +21,7 @@
 namespace Splunk.Client
 {
     /// <summary>
-    /// Specifies the state of the license installed on a Splunk server 
-    /// instance.
+    /// Specifies the state of the license installed on a Splunk server instance.
     /// </summary>
     public enum LicenseState
     {

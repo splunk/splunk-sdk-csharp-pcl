@@ -26,6 +26,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a base class that represents a Splunk resource as an object.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.BaseResource"/>
     public class ResourceCollection : BaseResource
     {
         #region Constructors
@@ -67,12 +68,12 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ResourceCollection"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ResourceCollection"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code. 
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code.
         /// </remarks>
         public ResourceCollection()
         { }
@@ -88,56 +89,64 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "ResourceCollection"/>.
+        /// Infrastructure. Initializes the current uninitialized
+        /// <see cref= "ResourceCollection"/>.
         /// </summary>
+        /// <remarks>
+        /// This method may be called once to intialize a
+        /// <see cref="ResourceCollection"/>
+        /// instantiated by the default constructor. Override this method to provide
+        /// special initialization code. Call this base method before initialization
+        /// is complete.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not intended
+        /// to be used directly from your code.
+        /// </note>
+        /// </remarks>
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        /// <seealso cref="M:Splunk.Client.BaseResource.Initialize(AtomFeed)"/>
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidOperationException">
+        /// ### <exception cref="InvalidOperationException">
         /// The current <see cref="ResourceCollection"/> is already initialized.
         /// </exception>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="ResourceCollection"/>
-        /// instantiated by the default constructor. Override this method to 
-        /// provide special initialization code. Call this base method before 
-        /// initialization is complete. 
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </note>
-        /// </remarks>
         protected internal override void Initialize(AtomFeed feed)
         {
             BaseResource.Initialize<ResourceCollection, Resource>(this, feed);
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized <see cref=
-        /// "ResourceCollection"/>.
+        /// Infrastructure. Initializes the current uninitialized
+        /// <see cref= "ResourceCollection"/>.
         /// </summary>
+        /// <remarks>
+        /// This method may be called once to intialize a
+        /// <see cref="ResourceCollection"/>
+        /// instantiated by the default constructor. Override this method to provide
+        /// special initialization code. Call this base method before initialization
+        /// is complete.
+        /// <note type="note">
+        /// This method supports the Splunk client infrastructure and is not intended
+        /// to be used directly from your code.
+        /// </note>
+        /// </remarks>
+        /// <typeparam name="TResource">
+        /// Type of the resource.
+        /// </typeparam>
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
         /// </param>
-        /// <exception cref="ArgumentNullException">
+        ///
+        /// ### <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="InvalidOperationException">
+        /// ### <exception cref="InvalidOperationException">
         /// The current <see cref="ResourceCollection"/> is already initialized.
         /// </exception>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="ResourceCollection"/>
-        /// instantiated by the default constructor. Override this method to 
-        /// provide special initialization code. Call this base method before 
-        /// initialization is complete. 
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </note>
-        /// </remarks>
         protected internal virtual void Initialize<TResource>(AtomFeed feed) where TResource : BaseResource, new()
         {
             BaseResource.Initialize<ResourceCollection, TResource>(this, feed);
@@ -147,9 +156,10 @@ namespace Splunk.Client
         /// Gets a string identifying the current <see cref="ResourceCollection"/>.
         /// </summary>
         /// <returns>
-        /// A string representing the identity of the current <see cref=
-        /// "ResourceCollection"/>.
+        /// A string representing the identity of the current
+        /// <see cref= "ResourceCollection"/>.
         /// </returns>
+        /// <seealso cref="M:Splunk.Client.BaseResource.ToString()"/>
         public override string ToString()
         {
             return this.Id.ToString();

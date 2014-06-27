@@ -69,12 +69,12 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// Gets the list of <see cref="AtomEntry"/> instances returned in
-        /// the current <see cref="AtomFeed"/> response.
+        /// Gets the list of <see cref="AtomEntry"/> instances returned in the
+        /// current <see cref="AtomFeed"/> response.
         /// </summary>
         /// <value>
-        /// The list of <see cref="AtomEntry"/> instances returned in the
-        /// current <see cref="AtomFeed"/> response.
+        /// The list of <see cref="AtomEntry"/> instances returned in the current
+        /// <see cref="AtomFeed"/> response.
         /// </value>
         public IReadOnlyList<AtomEntry> Entries
         { get; private set; }
@@ -90,19 +90,22 @@ namespace Splunk.Client
         { get; private set; }
 
         /// <summary>
-        /// Gets the Splunk management URI for accessing the current <see cref=
-        /// "AtomFeed"/> response.
+        /// Gets the Splunk management URI for accessing the current
+        /// <see cref= "AtomFeed"/> response.
         /// </summary>
         /// <value>
-        /// The Splunk management URI for accessing the current <see cref=
-        /// "AtomFeed"/> response.
+        /// The Splunk management URI for accessing the current
+        /// <see cref= "AtomFeed"/> response.
         /// </value>
         public Uri Id
         { get; private set; }
 
         /// <summary>
-        /// 
+        /// Gets the links.
         /// </summary>
+        /// <value>
+        /// The links.
+        /// </value>
         public IReadOnlyDictionary<string, Uri> Links
         { get; private set; }
 
@@ -110,18 +113,18 @@ namespace Splunk.Client
         /// Gets the list of info, warning, and error messages returned in the
         /// current <see cref="AtomFeed"/> response.
         /// </summary>
-        /// <value>
-        /// The list of info, warning, and error messages returned in the 
-        /// current <see cref="AtomFeed"/> response.
-        /// </value>
         /// <remarks>
         /// Not all responses from an endpoint produce messages.
         /// </remarks>
+        /// <value>
+        /// The list of info, warning, and error messages returned in the current
+        /// <see cref="AtomFeed"/> response.
+        /// </value>
         public IReadOnlyList<Message> Messages
         { get; private set; }
 
         /// <summary>
-        /// Gets the list of pagination attributes for the response to a GET 
+        /// Gets the list of pagination attributes for the response to a GET
         /// operation.
         /// </summary>
         /// <value>
@@ -134,23 +137,23 @@ namespace Splunk.Client
         /// Gets the human readable name of the current <see cref="AtomFeed"/>
         /// response.
         /// </summary>
+        /// <remarks>
+        /// This value is typically derived from the last segment of
+        /// <see cref= "Id"/>.
+        /// </remarks>
         /// <value>
         /// Human readable name of the current <see cref="AtomFeed"/> response.
         /// </value>
-        /// <remarks>
-        /// This value is typically derived from the last segment of <see cref=
-        /// "Id"/>.
-        /// </remarks>
         public string Title
         { get; private set; }
 
         /// <summary>
-        /// Gets the date that the endpoint used to access the current <see 
-        /// cref="AtomFeed"/> response was implemented in Splunk.
+        /// Gets the date that the endpoint used to access the current
+        /// <see cref="AtomFeed"/> response was implemented in Splunk.
         /// </summary>
         /// <value>
-        /// The date that the endpoint used to access the current <see cref=
-        /// "AtomFeed"/> response was implemented in Splunk.
+        /// The date that the endpoint used to access the current
+        /// <see cref= "AtomFeed"/> response was implemented in Splunk.
         /// </value>
         public DateTime Updated
         { get; private set; }
@@ -162,6 +165,9 @@ namespace Splunk.Client
         /// <summary>
         /// Asynchronously reads XML data into the current <see cref="AtomFeed"/>.
         /// </summary>
+        /// <exception cref="InvalidDataException">
+        /// Thrown when an Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="reader">
         /// The reader from which to read.
         /// </param>
@@ -336,6 +342,7 @@ namespace Splunk.Client
         /// <returns>
         /// A string representation of the current <see cref="AtomFeed"/>.
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             var text = string.Format(CultureInfo.CurrentCulture, "AtomFeed(Title={0}, Author={1}, Id={2}, Updated={3})",

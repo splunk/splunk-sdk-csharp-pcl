@@ -30,19 +30,16 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// Represents an enumerable, observable stream of <see cref="SearchResult"/> 
+    /// Represents an enumerable, observable stream of <see cref="SearchResult"/>
     /// records.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.Observable{Splunk.Client.SearchResult}"/>
+    /// <seealso cref="T:System.IDisposable"/>
+    /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.SearchResult}"/>
     public sealed class SearchResultStream : Observable<SearchResult>, IDisposable, IEnumerable<SearchResult>
     {
         #region Constructors
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SearchResultStream"/> class.
-        /// </summary>
-        /// <param name="response">
-        /// The object for reading search results.
-        /// </param>
         SearchResultStream(Response response)
         {
             this.metadata = SearchResultMetadata.Missing;
@@ -55,21 +52,28 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets a value indicating whether the current <see cref="SearchResultStream"/> 
+        /// Gets a value indicating whether the current
+        /// <see cref="SearchResultStream"/>
         /// is yielding the final results from a search job.
         /// </summary>
+        /// <value>
+        /// <c>true</c> if this object is final, <c>false</c> if not.
+        /// </value>
         public bool IsFinal
         {
             get { return this.metadata.IsFinal; }
         }
 
         /// <summary>
-        /// Gets the read-only list of field names that may appear in a 
+        /// Gets the read-only list of field names that may appear in a
         /// <see cref="SearchResult"/>.
         /// </summary>
         /// <remarks>
         /// Be aware that any given result may contain a subset of these fields.
         /// </remarks>
+        /// <value>
+        /// A list of names of the fields.
+        /// </value>
         public IReadOnlyList<string> FieldNames
         {
             get { return this.metadata.FieldNames; }
@@ -79,6 +83,9 @@ namespace Splunk.Client
         /// Gets the <see cref="SearchResult"/> read count for the current
         /// <see cref="SearchResultStream"/>.
         /// </summary>
+        /// <value>
+        /// The number of reads.
+        /// </value>
         public long ReadCount
         {
             get { return this.awaiter.ReadCount; }
@@ -89,11 +96,11 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Asynchronously creates a new <see cref="SearchResultStream"/> 
+        /// Asynchronously creates a new <see cref="SearchResultStream"/>
         /// instance using the specified <see cref="Response"/>.
         /// </summary>
         /// <param name="response">
-        /// An object from which the search results are read. 
+        /// An object from which the search results are read.
         /// </param>
         /// <returns>
         /// A <see cref="SearchResultStream"/> object.
@@ -114,8 +121,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Releases all disposable resources used by the current <see cref="SearchResultStream"/>.
+        /// Releases all disposable resources used by the current
+        /// <see cref="SearchResultStream"/>.
         /// </summary>
+        /// <seealso cref="M:System.IDisposable.Dispose()"/>
         public void Dispose()
         {
             if (Interlocked.CompareExchange(ref this.disposed, 1, 0) != 0)
@@ -130,24 +139,24 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through search result <see 
-        /// cref="Result"/> objects asynchronously.
+        /// Returns an enumerator that iterates through search result
+        /// <see cref="Result"/> objects asynchronously.
         /// </summary>
-        /// <returns>
-        /// A <see cref="SearchResult"/> enumerator structure for the <see 
-        /// cref="SearchResultStream"/>.
-        /// </returns>
         /// <remarks>
         /// You can use the <see cref="GetEnumerator"/> method to
         /// <list type="bullet">
         /// <item><description>
-        ///   Perform LINQ to Objects queries to obtain a filtered set of 
-        ///   search result records.</description></item>
+        ///   Perform LINQ to Objects queries to obtain a filtered set of search
+        ///   result records.</description></item>
         /// <item><description>
         ///   Append search results to an existing <see cref="Result"/>
         ///   collection.</description></item>
         /// </list>
         /// </remarks>
+        /// <returns>
+        /// A <see cref="SearchResult"/> enumerator structure for the
+        /// <see cref="SearchResultStream"/>.
+        /// </returns>
         public IEnumerator<SearchResult> GetEnumerator()
         {
             this.EnsureNotDisposed();
@@ -161,15 +170,15 @@ namespace Splunk.Client
             this.EnsureAwaiterSucceeded();
         }
 
-        /// <inheritdoc cref="GetEnumerator">
+        /// <inheritdoc cref="GetEnumerator"/>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
 
         /// <summary>
-        /// Asynchronously pushes <see cref="SearchResult"/> objects to observers 
-        /// and then completes.
+        /// Asynchronously pushes <see cref="SearchResult"/> objects to observers and
+        /// then completes.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -264,12 +273,30 @@ namespace Splunk.Client
 
         #region Types
 
+        /// <summary>
+        /// An awaiter.
+        /// </summary>
+        /// <seealso cref="T:Splunk.Client.Awaiter{Splunk.Client.SearchResultStream,Splunk.Client.SearchResult}"/>
         sealed class Awaiter : Awaiter<SearchResultStream, SearchResult>
         {
+            /// <summary>
+            /// Initializes a new instance of the
+            /// Splunk.Client.SearchResultStream.Awaiter class.
+            /// </summary>
+            /// <param name="stream">
+            /// The stream.
+            /// </param>
             public Awaiter(SearchResultStream stream)
                 : base(stream)
             { }
 
+            /// <summary>
+            /// Reads to the end of the current <see cref="SearchResultStream"/>
+            /// asynchronously.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="Task"/> representing the operation.
+            /// </returns>
             protected override async Task ReadToEndAsync()
             {
                 //// TODO: Metadata must track to results

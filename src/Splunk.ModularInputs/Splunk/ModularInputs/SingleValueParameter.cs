@@ -18,6 +18,7 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.ObjectModel;
+    using System.Diagnostics.Contracts;
     using System.Xml.Serialization;
 
     /// <summary>
@@ -31,6 +32,9 @@ namespace Splunk.ModularInputs
 
         public SingleValueParameter(string name, string value)
         {
+            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires<ArgumentNullException>(value != null);
+
             this.Name = name;
             this.Value = value;
         }
@@ -64,14 +68,9 @@ namespace Splunk.ModularInputs
         /// <returns>
         /// This object as a Boolean.
         /// </returns>
-        public override Boolean ToBoolean()
+        public Boolean ToBoolean()
         {
             return Util.ParseSplunkBoolean(this.Value);
-        }
-
-        public override Collection<Boolean> ToBooleanCollection()
-        {
-            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -80,14 +79,9 @@ namespace Splunk.ModularInputs
         /// <returns>
         /// This object as a Double.
         /// </returns>
-        public override Double ToDouble()
+        public Double ToDouble()
         {
             return double.Parse(this.Value);
-        }
-
-        public override Collection<double> ToDoubleCollection()
-        {
-            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -96,14 +90,9 @@ namespace Splunk.ModularInputs
         /// <returns>
         /// This object as an Int32.
         /// </returns>
-        public override Int32 ToInt32()
+        public Int32 ToInt32()
         {
             return int.Parse(this.Value);
-        }
-
-        public override Collection<int> ToInt32Collection()
-        {
-            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -112,14 +101,9 @@ namespace Splunk.ModularInputs
         /// <returns>
         /// This object as an Int64.
         /// </returns>
-        public override Int64 ToInt64()
+        public Int64 ToInt64()
         {
             return long.Parse(this.Value);
-        }
-
-        public override Collection<long> ToInt64Collection()
-        {
-            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -128,14 +112,9 @@ namespace Splunk.ModularInputs
         /// <returns>
         /// This object as a Single.
         /// </returns>
-        public override Single ToSingle()
+        public Single ToSingle()
         {
             return float.Parse(this.Value);
-        }
-
-        public override Collection<float> ToSingleCollection()
-        {
-            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -145,14 +124,9 @@ namespace Splunk.ModularInputs
         /// A string that represents the current object.
         /// </returns>
         /// <seealso cref="M:System.Object.ToString()"/>
-        public override string ToString()
+        public string ToString()
         {
             return this.Value;
-        }
-
-        public override Collection<string> ToStringCollection()
-        {
-            throw new NotSupportedException();
         }
 
         #endregion

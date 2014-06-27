@@ -23,37 +23,45 @@ namespace Splunk.ModularInputs
     /// <summary>
     /// Represents the specification of a modular input instance.
     /// </summary>
-    public class InputDefinition
+    public class InputDefinition : IDisposable
     {
+        #region Properties
+
         /// <summary>
         /// The name of this instance.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        { get; set; }
 
         /// <summary>
         /// A dictionary of all the parameters and their values for this instance.
         /// </summary>
-        public IDictionary<string, Parameter> Parameters { get; set; }
+        public IDictionary<string, Parameter> Parameters
+        { get; set; }
 
         /// <summary>
         /// The hostname of the splunkd server that invoked this program.
         /// </summary>
-        public string ServerHost { get; set; }
+        public string ServerHost
+        { get; set; }
 
         /// <summary>
         /// The URI to reach the REST API of the splunkd instance that invoked this program.
         /// </summary>
-        public string ServerUri { get; set; }
+        public string ServerUri
+        { get; set; }
 
         /// <summary>
         /// A directory to write state that needs to be shared between executions of this program.
         /// </summary>
-        public string CheckpointDirectory { get; set; }
+        public string CheckpointDirectory
+        { get; set; }
 
         /// <summary>
         /// A REST API session key allowing the instance to make REST calls.
         /// </summary>
-        public string SessionKey { get; set; }
+        public string SessionKey
+        { get; set; }
 
         /// <summary>
         /// A Service instance connected to the Splunk instance that invoked this program.
@@ -62,37 +70,76 @@ namespace Splunk.ModularInputs
         {
             get
             {
-                //// TODO: Getters should always return the same reference value
-                //// 1. Either pre-allocate (e.g., in constructor) or create and then cache the service object here.
-                //// 2. Convert this property to the GetService method => no question that the user owns it and is
-                ////    responsible for calling Dispose
-                //// Number two may be the better option
-
                 if (ServerUri == null)
-                    throw new NullReferenceException("Cannot get a Service object without ServerUri");
-                Uri parsedServerUri;
-                if (Uri.TryCreate(ServerUri, UriKind.Absolute, out parsedServerUri))
                 {
-                    Splunk.Client.Scheme scheme;
-                    if (parsedServerUri.Scheme.Equals("https"))
-                        scheme = Splunk.Client.Scheme.Https;
-                    else if (parsedServerUri.Scheme.Equals("http"))
-                        scheme = Splunk.Client.Scheme.Http;
-                    else
-                        throw new FormatException("Invalid URI scheme: " + parsedServerUri.Scheme + "; expected http or https");
-                    Service service = new Service(
-                        scheme: scheme,
-                        host: parsedServerUri.Host,
-                        port: parsedServerUri.Port
-                    );
-                    service.SessionKey = SessionKey;
-                    return service;
+                    throw new InvalidOperationException("Cannot get a Service object without a ServerUri");
                 }
-                else
+
+                if (this.service == null)
                 {
-                    throw new FormatException("Invalid server URI");
+                    lock (gate)
+                    {
+                        if (this.service == null)
+                        {
+                            Uri uri;
+
+                            if (!Uri.TryCreate(ServerUri, UriKind.Absolute, out uri))
+                            {
+                                throw new FormatException("Invalid server URI");
+                            }
+
+                            Splunk.Client.Scheme scheme;
+
+                            if (uri.Scheme.Equals("https"))
+                            {
+                                scheme = Splunk.Client.Scheme.Https;
+                            }
+                            else if (uri.Scheme.Equals("http"))
+                            {
+                                scheme = Splunk.Client.Scheme.Http;
+                            }
+                            else
+                            {
+                                var text = "Invalid URI scheme: " + uri.Scheme + "; expected http or https";
+                                throw new FormatException(text);
+                            }
+
+                            Service service = new Service(scheme, uri.Host, uri.Port);
+                            service.SessionKey = this.SessionKey;
+                            this.service = service;
+                        }
+                    }
                 }
+
+                return this.service;
             }
         }
+
+        #endregion
+
+        #region Methods
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && this.service != null)
+            {
+                this.service.Dispose();
+            }
+        }
+
+        #endregion
+
+        #region Privates
+
+        object gate = new object();
+        Service service;
+
+        #endregion
     }
 }

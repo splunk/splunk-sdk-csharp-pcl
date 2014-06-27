@@ -17,12 +17,11 @@
 namespace Splunk.ModularInputs
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Xml.Serialization;
+    using System.Diagnostics.Contracts;
     using System.Linq;
+    using System.Xml.Serialization;
 
     /// <summary>
     /// The <see cref="MultiValueParameter"/> class represents a this that
@@ -48,6 +47,9 @@ namespace Splunk.ModularInputs
 
         public MultiValueParameter(string name, IEnumerable<string> values)
         {
+            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires<ArgumentNullException>(values != null);
+
             this.Values = new Collection<string>();
 
             foreach (var value in values)
@@ -72,18 +74,13 @@ namespace Splunk.ModularInputs
 
         #region Methods
 
-        public override Boolean ToBoolean()
-        {
-            throw new NotSupportedException();
-        }
-
         /// <summary>
         /// Converts this object to a boolean collection.
         /// </summary>
         /// <returns>
         /// This object as a Collection&lt;Boolean&gt;
         /// </returns>
-        public override Collection<Boolean> ToBooleanCollection()
+        public Collection<Boolean> ToBooleanCollection()
         {
             var collection = new Collection<bool>();
             
@@ -95,18 +92,13 @@ namespace Splunk.ModularInputs
             return collection;
         }
 
-        public override Double ToDouble()
-        {
-            throw new NotSupportedException();
-        }
-
         /// <summary>
         /// Converts this object to a double collection.
         /// </summary>
         /// <returns>
         /// This object as a Collection&lt;Double&gt;
         /// </returns>
-        public override Collection<Double> ToDoubleCollection()
+        public Collection<Double> ToDoubleCollection()
         {
             var collection = new Collection<double>();
 
@@ -118,19 +110,13 @@ namespace Splunk.ModularInputs
             return collection;
         }
 
-
-        public override Int32 ToInt32()
-        {
-            throw new NotSupportedException();
-        }
-
         /// <summary>
         /// Converts this object to an int 32 collection.
         /// </summary>
         /// <returns>
         /// This object as a Collection&lt;Int32&gt;
         /// </returns>
-        public override Collection<Int32> ToInt32Collection()
+        public Collection<Int32> ToInt32Collection()
         {
             var collection = new Collection<int>();
 
@@ -142,18 +128,13 @@ namespace Splunk.ModularInputs
             return collection;
         }
 
-        public override Int64 ToInt64()
-        {
-            throw new NotSupportedException();
-        }
-
         /// <summary>
         /// Converts this object to an int 64 collection.
         /// </summary>
         /// <returns>
         /// This object as a Collection&lt;Int64&gt;
         /// </returns>
-        public override Collection<Int64> ToInt64Collection()
+        public Collection<Int64> ToInt64Collection()
         {
             var collection = new Collection<long>();
 
@@ -165,18 +146,13 @@ namespace Splunk.ModularInputs
             return collection;
         }
 
-        public override Single ToSingle()
-        {
-            throw new NotSupportedException();
-        }
-
         /// <summary>
         /// Converts this object to a single collection.
         /// </summary>
         /// <returns>
         /// This object as a Collection&lt;Single&gt;
         /// </returns>
-        public override Collection<Single> ToSingleCollection()
+        public Collection<Single> ToSingleCollection()
         {
             var collection = new Collection<float>();
 
@@ -194,7 +170,7 @@ namespace Splunk.ModularInputs
         /// <returns>
         /// This object as a Collection&lt;String&gt;
         /// </returns>
-        public override Collection<String> ToStringCollection()
+        public Collection<String> ToStringCollection()
         {
             return new Collection<string>(this.Values);
         }

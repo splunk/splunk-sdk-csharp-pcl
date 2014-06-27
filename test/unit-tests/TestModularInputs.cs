@@ -198,17 +198,38 @@ namespace Splunk.ModularInputs.UnitTests
                     {
                         Title = "Random numbers",
                         Description = "Generate random numbers in the specified range",
-                        Arguments = new List<Argument> {
+                        
+                        Arguments = new List<Argument>
+                        {
                             new Argument
                             {
                                 Name = "min",
                                 Description = "Generated value should be at least min",
                                 DataType = DataType.Number,
                                 RequiredOnCreate = true,
-                                ValidationDelegate = delegate (Parameter param, out string errorMessage) {
+                                
+                                ValidationDelegate = delegate (Parameter param, out string errorMessage) 
+                                {
                                     bool isDouble;
-                                    try { double _ = param.ToDouble(); isDouble = true; }
-                                    catch (Exception) { isDouble = false; }
+                                    
+                                    try 
+                                    { 
+                                        double _ = ((SingleValueParameter)param).ToDouble(); 
+                                        isDouble = true; 
+                                    }
+                                    catch (FormatException)
+                                    {
+                                        isDouble = false;
+                                    }
+                                    catch (InvalidCastException)
+                                    { 
+                                        isDouble = false; 
+                                    }
+                                    catch (OverflowException)
+                                    {
+                                        isDouble = false;
+                                    }
+
                                     if (isDouble)
                                     {
                                         errorMessage = "";
@@ -235,8 +256,8 @@ namespace Splunk.ModularInputs.UnitTests
 
             public override bool Validate(Validation validationItems, out string errorMessage)
             {
-                double min = validationItems.Parameters["min"].ToDouble();
-                double max = validationItems.Parameters["max"].ToDouble();
+                double min = ((SingleValueParameter)validationItems.Parameters["min"]).ToDouble();
+                double max = ((SingleValueParameter)validationItems.Parameters["max"]).ToDouble();
 
                 if (min >= max)
                 {

@@ -32,27 +32,5 @@ namespace Splunk.ModularInputs
         [XmlAttribute("name")]
         public string Name 
         { get; set; }
-
-        public abstract bool ToBoolean();
-
-        public abstract double ToDouble();
-
-        public abstract int ToInt32();
-
-        public abstract long ToInt64();
-
-        public abstract float ToSingle();
-
-        public abstract Collection<bool> ToBooleanCollection();
-
-        public abstract Collection<double> ToDoubleCollection();
-
-        public abstract Collection<int> ToInt32Collection();
-
-        public abstract Collection<long> ToInt64Collection();
-
-        public abstract Collection<float> ToSingleCollection();
-
-        public abstract Collection<string> ToStringCollection();
     }
 }

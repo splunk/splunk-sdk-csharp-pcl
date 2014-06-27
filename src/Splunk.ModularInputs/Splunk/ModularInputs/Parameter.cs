@@ -35,7 +35,7 @@ namespace Splunk.ModularInputs
         public string ToString()
         {
             if (this is SingleValueParameter)
-                return (string)(SingleValueParameter)this;
+                return ((SingleValueParameter)this).ToString();
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to string");
         }
@@ -43,7 +43,7 @@ namespace Splunk.ModularInputs
         public int ToInt()
         {
             if (this is SingleValueParameter)
-                return (int)(SingleValueParameter)this;
+                return ((SingleValueParameter)this).ToInt();
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to int");
         }
@@ -51,7 +51,7 @@ namespace Splunk.ModularInputs
         public double ToDouble()
         {
             if (this is SingleValueParameter)
-                return (double)(SingleValueParameter)this;
+                return ((SingleValueParameter)this).ToDouble();
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to double");
         }
@@ -59,7 +59,7 @@ namespace Splunk.ModularInputs
         public float ToFloat()
         {
             if (this is SingleValueParameter)
-                return (float)(SingleValueParameter)this;
+                return ((SingleValueParameter)this).ToFloat();
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to float");
         }
@@ -67,7 +67,7 @@ namespace Splunk.ModularInputs
         public long ToLong()
         {
             if (this is SingleValueParameter)
-                return (long)(SingleValueParameter)this;
+                return ((SingleValueParameter)this).ToLong();
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to long");
         }
@@ -75,7 +75,7 @@ namespace Splunk.ModularInputs
         public bool ToBool()
         {
             if (this is SingleValueParameter)
-                return (bool)(SingleValueParameter)this;
+                return ((SingleValueParameter)this).ToBool();
             else
                 throw new InvalidCastException("Could not convert multivalued parameter to bool");
         }
@@ -83,7 +83,7 @@ namespace Splunk.ModularInputs
         public List<string> ToListOfString()
         {
             if (this is MultiValueParameter)
-                return (List<string>)(MultiValueParameter)this;
+                return ((MultiValueParameter)this).ToListOfString();
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<string>");
         }
@@ -91,7 +91,7 @@ namespace Splunk.ModularInputs
         public List<bool> ToListOfBool()
         {
             if (this is MultiValueParameter)
-                return (List<bool>)(MultiValueParameter)this;
+                return ((MultiValueParameter)this).ToListOfBool();
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<bool>");
         }
@@ -99,7 +99,7 @@ namespace Splunk.ModularInputs
         public List<double> ToListOfDouble()
         {
             if (this is MultiValueParameter)
-                return (List<double>)(MultiValueParameter)this;
+                return ((MultiValueParameter)this).ToListOfDouble();
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<double>");
         }
@@ -107,7 +107,7 @@ namespace Splunk.ModularInputs
         public List<float> ToListOfFloat()
         {
             if (this is MultiValueParameter)
-                return (List<float>)(MultiValueParameter)this;
+                return ((MultiValueParameter)this).ToListOfFloat();
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<float>");
         }
@@ -115,7 +115,7 @@ namespace Splunk.ModularInputs
         public List<int> ToListOfInt()
         {
             if (this is MultiValueParameter)
-                return (List<int>)(MultiValueParameter)this;
+                return ((MultiValueParameter)this).ToListOfInt();
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<int>");
         }
@@ -123,7 +123,7 @@ namespace Splunk.ModularInputs
         public List<long> ToListOfLong()
         {
             if (this is MultiValueParameter)
-                return (List<long>)(MultiValueParameter)this;
+                return ((MultiValueParameter)this).ToListOfLong();
             else
                 throw new InvalidCastException("Could not convert single valued parameter to List<long>");
         }

@@ -111,19 +111,19 @@ namespace Splunk.ModularInputs.UnitTests
             SingleValueParameter parameter = new SingleValueParameter();
 
             parameter.Value = "abc";
-            Assert.Equal("abc", (string)parameter);
+            Assert.Equal("abc", parameter.ToString());
 
             parameter.Value = "52";
-            Assert.Equal(52, (int)parameter);
+            Assert.Equal(52, parameter.ToInt());
 
             parameter.Value = "52";
-            Assert.Equal((double)52, (double)parameter);
+            Assert.Equal((double)52, parameter.ToDouble());
 
             parameter.Value = "1";
-            Assert.True((bool)parameter);
+            Assert.True(parameter.ToBool());
 
             parameter.Value = "52";
-            Assert.Equal((long)52, (long)parameter);
+            Assert.Equal((long)52, parameter.ToLong());
         }
 
         [Trait("unit-test", "Splunk.ModularInputs.SingleValueParameter")]
@@ -163,22 +163,22 @@ namespace Splunk.ModularInputs.UnitTests
                 Name = "some_name",
                 Values = new List<string> { "abc", "def" }
             };
-            Assert.Equal(new List<string> { "abc", "def" }, (List<string>)parameter);
+            Assert.Equal(new List<string> { "abc", "def" }, parameter.ToListOfString());
 
             parameter.Values = new List<string> { "true", "0" };
-            Assert.Equal(new List<bool> { true, false }, (List<bool>)parameter);
+            Assert.Equal(new List<bool> { true, false }, parameter.ToListOfBool());
 
             parameter.Values = new List<string> { "52", "42" };
-            Assert.Equal(new List<double> { 52.0, 42.0 }, (List<double>)parameter);
+            Assert.Equal(new List<double> { 52.0, 42.0 }, parameter.ToListOfDouble());
 
             parameter.Values = new List<string> { "52", "42" };
-            Assert.Equal(new List<float> { (float)52, (float)42 }, (List<float>)parameter);
+            Assert.Equal(new List<float> { (float)52, (float)42 }, parameter.ToListOfFloat());
 
             parameter.Values = new List<string> { "52", "42" };
-            Assert.Equal(new List<int> { 52, 42 }, (List<int>)parameter);
+            Assert.Equal(new List<int> { 52, 42 }, parameter.ToListOfInt());
 
             parameter.Values = new List<string> { "52", "42" };
-            Assert.Equal(new List<long> { 52, 42 }, (List<long>)parameter);
+            Assert.Equal(new List<long> { 52, 42 }, parameter.ToListOfLong());
         }
 
         class TestInput : ModularInput
@@ -207,7 +207,7 @@ namespace Splunk.ModularInputs.UnitTests
                                 RequiredOnCreate = true,
                                 ValidationDelegate = delegate (Parameter param, out string errorMessage) {
                                     bool isDouble;
-                                    try { double _ = (double)param; isDouble = true; }
+                                    try { param.ToDouble(); isDouble = true; }
                                     catch (Exception) { isDouble = false; }
                                     if (isDouble)
                                     {
@@ -235,8 +235,8 @@ namespace Splunk.ModularInputs.UnitTests
 
             public override bool Validate(Validation validationItems, out string errorMessage)
             {
-                double min = (double)validationItems.Parameters["min"];
-                double max = (double)validationItems.Parameters["max"];
+                double min = validationItems.Parameters["min"].ToDouble();
+                double max = validationItems.Parameters["max"].ToDouble();
 
                 if (min >= max)
                 {

@@ -1621,8 +1621,8 @@ namespace Splunk.Client.AcceptanceTests
                     },
                     new 
                     { 
-                        Command = "search index=_internal | head 100",
-                        ResultCount = 100
+                        Command = "search index=_internal | head 1000",
+                        ResultCount = 1000
                     }
                 };
 
@@ -1632,7 +1632,7 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     var args = new JobArgs { MaxCount = 100000 };
 
-                    using (SearchResultStream stream = await service.SearchOneShotAsync(search.Command, args))
+                    using (SearchResultStream stream = await service.SearchOneShotAsync(search.Command, args: args))
                     {
                         var list = new List<SearchResult>();
 

@@ -50,7 +50,7 @@ namespace search_realtime
 
             string searchQuery = "search index=_internal | stats count by method";
 
-            Job realtimeJob = await service.Jobs.CreateAsync(searchQuery, new JobArgs
+            Job realtimeJob = await service.Jobs.CreateAsync(searchQuery, args: new JobArgs
             {
                 SearchMode = SearchMode.RealTime,
                 EarliestTime = "rt-1h",

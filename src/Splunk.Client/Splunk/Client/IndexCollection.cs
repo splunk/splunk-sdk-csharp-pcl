@@ -169,10 +169,6 @@ namespace Splunk.Client
 
         #region Types
 
-        /// <summary>
-        /// Arguments for creation.
-        /// </summary>
-        /// <seealso cref="T:Splunk.Client.Args{Splunk.Client.IndexCollection.CreationArgs}"/>
         class CreationArgs : Args<CreationArgs>
         {
             [DataMember(Name = "name", IsRequired = true)]

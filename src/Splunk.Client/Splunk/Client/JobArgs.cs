@@ -122,20 +122,6 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="ExecutionMode"/> for a search
-        /// <see cref="Job"/>.
-        /// </summary>
-        /// <remarks>
-        /// The default value is <see cref="ExecutionMode"/>.Normal.
-        /// </remarks>
-        /// <value>
-        /// The <see cref="ExecutionMode"/> for a search <see cref="Job"/>.
-        /// </value>
-        [DataMember(Name = "exec_mode", EmitDefaultValue = false)]
-        public ExecutionMode? ExecutionMode
-        { get; set; }
-
-        /// <summary>
         /// Gets or sets a value that specifies whether a <see cref="Job"/>
         /// should cause (and wait, depending on the value of
         /// <see cref= "SyncBundleReplication"/> for bundle synchronization 

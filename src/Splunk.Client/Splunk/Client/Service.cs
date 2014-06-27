@@ -25,10 +25,12 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -294,21 +296,25 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        public virtual async Task<Job> SearchAsync(string search, int count = 100, 
+            ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null, 
+            CustomJobArgs customArgs = null)
         {
-            var job = await this.Jobs.CreateAsync(search, args, customArgs);
+            var job = await this.Jobs.CreateAsync(search, count, mode, args, customArgs);
             return job;
         }
 
         /// <inheritdoc/>
-        public virtual async Task<SearchResultStream> SearchOneShotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        public virtual async Task<SearchResultStream> SearchOneShotAsync(string search, int count = 100, 
+            JobArgs args = null,  CustomJobArgs customArgs = null)
         {
             var resourceName = JobCollection.ClassResourceName;
 
-            var arguments = new Argument[]
+            var arguments = new SearchArgs
             {
-                new Argument("search", search),
-                new Argument("exec_mode", "oneshot")
+                Search = search,
+                Count = count,
+                ExecutionMode = ExecutionMode.OneShot
             }
             .AsEnumerable();
 
@@ -427,6 +433,27 @@ namespace Splunk.Client
         readonly Server server;
 
         bool disposed;
+
+        #endregion
+
+        #region Types
+
+        class SearchArgs : Args<SearchArgs>
+        {
+            [DataMember(Name = "search", IsRequired = true)]
+            public string Search
+            { get; set; }
+
+            [DataMember(Name = "count")]
+            [DefaultValue(100)]
+            public int Count
+            { get; set; }
+
+            [DataMember(Name = "exec_mode")]
+            [DefaultValue(ExecutionMode.Normal)]
+            public ExecutionMode ExecutionMode
+            { get; set; }
+        }
 
         #endregion
     }

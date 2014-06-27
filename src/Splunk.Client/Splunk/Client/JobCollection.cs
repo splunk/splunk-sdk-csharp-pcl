@@ -172,12 +172,15 @@ namespace Splunk.Client
         /// <returns>
         /// An object representing the search job that was created.
         /// </returns>
-        public virtual async Task<Job> CreateAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null,
+        public virtual async Task<Job> CreateAsync(string search, int count = 100, 
+            ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null, 
+            CustomJobArgs customArgs = null, 
             DispatchState requiredState = DispatchState.Running)
         {
             var arguments = new Argument[] 
             {
-               new Argument("search", search)
+               new Argument("search", search),
+               new Argument("count", count)
             }
             .AsEnumerable();
 

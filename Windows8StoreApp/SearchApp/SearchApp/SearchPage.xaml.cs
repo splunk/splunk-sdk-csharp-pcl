@@ -166,7 +166,7 @@ namespace SplunkSearch
             args.EarliestTime = this.searchEarliestTime;
             args.LatestTime = this.searchLatestTime;
             args.SearchMode = SearchMode.RealTime;
-            Job realtimeJob = await MainPage.SplunkService.Jobs.CreateAsync(searchStr, args);
+            Job realtimeJob = await MainPage.SplunkService.Jobs.CreateAsync(searchStr, args: args);
 
             Stopwatch watch = new Stopwatch();
             watch.Start();

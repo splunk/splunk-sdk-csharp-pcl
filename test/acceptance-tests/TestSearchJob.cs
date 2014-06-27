@@ -81,7 +81,7 @@ namespace Splunk.Client.UnitTests
                 JobArgs jobArgs = new JobArgs();
 
                 jobArgs.SearchMode = SearchMode.Normal;
-                Job job = await service.Jobs.CreateAsync(Search, jobArgs);
+                Job job = await service.Jobs.CreateAsync(Search, args: jobArgs);
                 Assert.NotNull(job);
 
                 jobArgs.SearchMode = SearchMode.RealTime;
@@ -102,20 +102,16 @@ namespace Splunk.Client.UnitTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                JobArgs jobArgs = new JobArgs();
-
-                jobArgs.ExecutionMode = ExecutionMode.Blocking;
-
-                Job job = await service.Jobs.CreateAsync(Search, jobArgs);
+                Job job;
+                
+                job = await service.Jobs.CreateAsync(Search, mode: ExecutionMode.Normal);
                 Assert.NotNull(job);
 
-                jobArgs.ExecutionMode = ExecutionMode.Normal;
-                await job.UpdateAsync(jobArgs);
+                job = await service.Jobs.CreateAsync(Search, mode: ExecutionMode.OneShot);
                 Assert.NotNull(job);
 
-                jobArgs.ExecutionMode = ExecutionMode.OneShot;
-                bool updatedSnapshot = await job.UpdateAsync(jobArgs);
-                Assert.True(updatedSnapshot);
+                job = await service.Jobs.CreateAsync(Search, mode: ExecutionMode.Blocking);
+                Assert.NotNull(job);
 
                 await job.CancelAsync();
             }
@@ -135,7 +131,7 @@ namespace Splunk.Client.UnitTests
 
                 await ForEachEnum(typeof(TruncationMode), async enumValue =>
                     {
-                        var job = await service.Jobs.CreateAsync(Search, jobArgs);
+                        var job = await service.Jobs.CreateAsync(Search, args: jobArgs);
 
                         var args = new SearchEventArgs 
                         {
@@ -324,7 +320,7 @@ namespace Splunk.Client.UnitTests
             {
                 await ForEachEnum(enumType, async @enum =>
                 {
-                    var job = await service.Jobs.CreateAsync(Search, getJobArgs(@enum));
+                    var job = await service.Jobs.CreateAsync(Search, args: getJobArgs(@enum));
                     await job.CancelAsync();
                 });
             }

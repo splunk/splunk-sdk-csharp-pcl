@@ -274,7 +274,8 @@ namespace Splunk.Client
         /// <returns>
         /// An object representing a Splunk search job.
         /// </returns>
-        Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null);
+        Task<Job> SearchAsync(string search, int count = 100, ExecutionMode mode = ExecutionMode.Normal, 
+            JobArgs args = null, CustomJobArgs customArgs = null);
 
         /// <summary>
         /// Executes a oneshot search.
@@ -295,7 +296,7 @@ namespace Splunk.Client
         /// <returns>
         /// An object representing the stream search results.
         /// </returns>
-        Task<SearchResultStream> SearchOneShotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null);
+        Task<SearchResultStream> SearchOneShotAsync(string search, int count = 100, JobArgs args = null, CustomJobArgs customArgs = null);
 
         #endregion
 
@@ -383,9 +384,15 @@ namespace Splunk.Client
             return default(Task<SearchResultStream>);
         }
         
-        public abstract Task<Job> SearchAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null);
+        public Task<Job> SearchAsync(string search, int count = 100, 
+            ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null,
+            CustomJobArgs customArgs = null)
+        {
+            Contract.Requires<ArgumentNullException>(search != null);
+            return default(Task<Job>);
+        }
         
-        public Task<SearchResultStream> SearchOneShotAsync(string search, JobArgs args = null, CustomJobArgs customArgs = null)
+        public Task<SearchResultStream> SearchOneShotAsync(string search, int count = 100, JobArgs args = null, CustomJobArgs customArgs = null)
         {
             Contract.Requires<ArgumentNullException>(search != null);
             return default(Task<SearchResultStream>);

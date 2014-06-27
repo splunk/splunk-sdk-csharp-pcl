@@ -37,7 +37,6 @@ namespace Splunk.Client.UnitTests
                 "auto_pause=null; " +
                 "earliest_time=null; " +
                 "enable_lookups=null; " +
-                "exec_mode=null; " +
                 "force_bundle_replication=null; " +
                 "id=null; " +
                 "index_earliest=null; " +
@@ -79,7 +78,6 @@ namespace Splunk.Client.UnitTests
                 AutoPause = 3,
                 EarliestTime = "some_unchecked_string",
                 EnableLookups = false,
-                ExecutionMode = ExecutionMode.Blocking,
                 ForceBundleReplication = true,
                 Id = "some_unchecked_string",
                 IndexEarliest = "some_unchecked_string",
@@ -113,7 +111,6 @@ namespace Splunk.Client.UnitTests
                 "auto_pause=3; " + 
                 "earliest_time=some_unchecked_string; " + 
                 "enable_lookups=0; " +
-                "exec_mode=blocking; " +
                 "force_bundle_replication=1; " +
                 "id=some_unchecked_string; " +
                 "index_earliest=some_unchecked_string; " +
@@ -149,7 +146,6 @@ namespace Splunk.Client.UnitTests
                     new Argument("auto_pause", "3"),
                     new Argument("earliest_time", "some_unchecked_string"),
                     new Argument("enable_lookups", 0),
-                    new Argument("exec_mode", "blocking"),
                     new Argument("force_bundle_replication", 1),
                     new Argument("id", "some_unchecked_string"),
                     new Argument("index_earliest", "some_unchecked_string"),

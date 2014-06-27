@@ -56,7 +56,7 @@ namespace Splunk.ModularInputs
         /// </remarks>
         [XmlText]
         public string Value 
-        { get; private set; }
+        { get; set; }
 
         #endregion
 
@@ -128,6 +128,13 @@ namespace Splunk.ModularInputs
         {
             return this.Value;
         }
+
+        #endregion
+
+        #region Privates/internals
+
+        SingleValueParameter()
+        { }
 
         #endregion
     }

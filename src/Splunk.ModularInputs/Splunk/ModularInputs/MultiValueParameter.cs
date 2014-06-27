@@ -64,11 +64,14 @@ namespace Splunk.ModularInputs
         #region Properties
 
         /// <summary>
-        /// The values in this this.
+        /// The values in the current <see cref="MultiValueParameter"/>.
         /// </summary>
+        /// <value>
+        /// The values.
+        /// </value>
         [XmlElement("value")]
         public Collection<string> Values
-        { get; private set; }
+        { get; set; }
 
         #endregion
 
@@ -174,6 +177,13 @@ namespace Splunk.ModularInputs
         {
             return new Collection<string>(this.Values);
         }
+
+        #endregion
+
+        #region Privates/internals
+
+        MultiValueParameter()
+        { }
 
         #endregion
     }

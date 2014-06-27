@@ -323,7 +323,7 @@ namespace Splunk.Client
         /// </returns>
         public bool Equals(ResourceName other)
         {
-            if (other == null)
+            if ((object)other == null)
             {
                 return false;
             }
@@ -386,7 +386,7 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator >(ResourceName a, ResourceName b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
                 return false;
             }
@@ -408,9 +408,9 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator >=(ResourceName a, ResourceName b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
-                return b == null;
+                return (object)b == null;
             }
 
             return a.CompareTo(b) < 0;
@@ -478,9 +478,9 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator <(ResourceName a, ResourceName b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
-                return b != null;
+                return (object)b != null;
             }
 
             return a.CompareTo(b) < 0;
@@ -500,7 +500,7 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator <=(ResourceName a, ResourceName b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
                 return true;
             }

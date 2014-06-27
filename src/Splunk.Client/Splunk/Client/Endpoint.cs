@@ -236,7 +236,7 @@ namespace Splunk.Client
         /// </returns>
         public bool Equals(Endpoint other)
         {
-            if (other == null)
+            if ((object)other == null)
             {
                 return false;
             }
@@ -399,7 +399,7 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator >(Endpoint a, Endpoint b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
                 return false;
             }
@@ -421,9 +421,9 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator >=(Endpoint a, Endpoint b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
-                return b == null;
+                return (object)b == null;
             }
 
             return a.CompareTo(b) < 0;
@@ -445,9 +445,9 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator ==(Endpoint a, Endpoint b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
-                return b == null;
+                return (object)b == null;
             }
 
             return a.Equals(b);
@@ -486,7 +486,7 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator <=(Endpoint a, Endpoint b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
                 return true;
             }
@@ -508,7 +508,7 @@ namespace Splunk.Client
         /// </returns>
         public static bool operator <(Endpoint a, Endpoint b)
         {
-            if (a == null)
+            if ((object)a == null)
             {
                 return b != null;
             }

@@ -194,7 +194,7 @@ namespace Splunk.Client
         /// </returns>
         public bool Equals(BaseResource other)
         {
-            if (other == null)
+            if ((object)other == null)
             {
                 return false;
             }

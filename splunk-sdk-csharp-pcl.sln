@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. test", "2. test", "{BBE2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. examples", "3. examples", "{5A4BA6B9-305F-4E0D-A11A-35AE005C678A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. windows8StoreApp", "4. windows8StoreApp", "{1770E69B-3013-4604-9771-3D814FE4E06D}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8674D19F-5BF3-4D17-90B9-AB3226A8E12A}"
 	ProjectSection(SolutionItems) = preProject
 		REST API coverage.xlsx = REST API coverage.xlsx
@@ -41,9 +43,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-realtime", "examples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splunk.Client.Helpers", "src\Splunk.Client.Helpers\Splunk.Client.Helpers.csproj", "{21A7DE9F-1E62-484F-945F-01E222B26B5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplunkSearch", "Windows8StoreApp\SearchApp\SearchApp\SplunkSearch.csproj", "{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{DE65F0D5-7753-483E-8933-E6DB22350F04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -102,40 +107,12 @@ Global
 		{21A7DE9F-1E62-484F-945F-01E222B26B5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{21A7DE9F-1E62-484F-945F-01E222B26B5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{21A7DE9F-1E62-484F-945F-01E222B26B5B}.Release|Any CPU.Build.0 = Release|Any CPU
-		EndGlobalSection
-		{21A7DE9F-1E62-484F-945F-01E222B26B5B}.Release|ARM.ActiveCfg = Release|Any CPU
-		{21A7DE9F-1E62-484F-945F-01E222B26B5B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{21A7DE9F-1E62-484F-945F-01E222B26B5B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{21A7DE9F-1E62-484F-945F-01E222B26B5B}.Release|x64.ActiveCfg = Release|Any CPU
-		{21A7DE9F-1E62-484F-945F-01E222B26B5B}.Release|x86.ActiveCfg = Release|Any CPU
 		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|ARM.ActiveCfg = Debug|ARM
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|ARM.Build.0 = Debug|ARM
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|ARM.Deploy.0 = Debug|ARM
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|Mixed Platforms.Deploy.0 = Debug|Any CPU
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|x64.ActiveCfg = Debug|x64
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|x64.Build.0 = Debug|x64
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|x64.Deploy.0 = Debug|x64
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|x86.ActiveCfg = Debug|x86
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|x86.Build.0 = Debug|x86
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Debug|x86.Deploy.0 = Debug|x86
 		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|ARM.ActiveCfg = Release|ARM
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|ARM.Build.0 = Release|ARM
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|ARM.Deploy.0 = Release|ARM
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|Mixed Platforms.Build.0 = Release|x86
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|Mixed Platforms.Deploy.0 = Release|x86
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|x64.ActiveCfg = Release|x64
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|x64.Build.0 = Release|x64
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|x64.Deploy.0 = Release|x64
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|x86.ActiveCfg = Release|x86
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|x86.Build.0 = Release|x86
-		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,5 +132,6 @@ Global
 		{907193BC-937D-4353-93FC-53F8B7AF0092} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
 		{D10A0063-A2DA-4F41-B54F-EE6E7FC57C41} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
 		{21A7DE9F-1E62-484F-945F-01E222B26B5B} = {19A10C52-242D-4B86-8C6C-F6628BBD68C2}
+		{1EAF3631-8C5D-4DE1-BC35-5AD2627908A2} = {1770E69B-3013-4604-9771-3D814FE4E06D}
 	EndGlobalSection
 EndGlobal

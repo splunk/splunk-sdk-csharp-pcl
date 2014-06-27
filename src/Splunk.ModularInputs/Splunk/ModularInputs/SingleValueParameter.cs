@@ -40,34 +40,34 @@ using System.Xml.Serialization;
         [XmlText]
         public string Value { get; set; }
 
-        public static explicit operator string(SingleValueParameter parameter)
+        public string ToString()
         {
-            return parameter.Value;
+            return this.Value;
         }
 
-        public static explicit operator int(SingleValueParameter parameter)
+        public int ToInt()
         {
-            return int.Parse(parameter.Value);
+            return int.Parse(this.Value);
         }
 
-        public static explicit operator double(SingleValueParameter parameter)
+        public double ToDouble()
         {
-            return double.Parse(parameter.Value);
+            return double.Parse(this.Value);
         }
 
-        public static explicit operator float(SingleValueParameter parameter)
+        public float ToFloat()
         {
-            return float.Parse(parameter.Value);
+            return float.Parse(this.Value);
         }
 
-        public static explicit operator long(SingleValueParameter parameter)
+        public long ToLong()
         {
-            return long.Parse(parameter.Value);
+            return long.Parse(this.Value);
         }
 
-        public static explicit operator bool(SingleValueParameter parameter)
+        public bool ToBool()
         {
-            return Util.ParseSplunkBoolean(parameter.Value);
+            return Util.ParseSplunkBoolean(this.Value);
         }
     }
 }

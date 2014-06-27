@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Navigation;
 using Splunk.Client;
 using System.Threading;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 namespace SplunkSearch
@@ -29,7 +30,7 @@ namespace SplunkSearch
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
 
-        private CancellationTokenSource tokenSource;
+        private CancellationTokenSource cancelSearchTokenSource;
 
         //private string searchTimeConstraint = "All Time";
         private string searchEarliestTime = null;
@@ -52,7 +53,7 @@ namespace SplunkSearch
         {
             get { return this.navigationHelper; }
         }
-        
+
         public SearchPage()
         {
             this.InitializeComponent();
@@ -64,12 +65,12 @@ namespace SplunkSearch
             if (MainPage.SplunkService != null)
             {
                 UserName1.Text = string.Format("User: ");
-                UserName2.Text = string.Format(" {0}",loginUser);
+                UserName2.Text = string.Format(" {0}", loginUser);
                 HostName1.Text = string.Format("Server:");
                 HostName2.Text = string.Format(" {0}", MainPage.SplunkService.Server.Context.Host);
             }
         }
-        
+
         /// <summary>
         /// Populates the page with content passed during navigation. Any saved state is also
         /// provided when recreating a page from a prior session.
@@ -124,85 +125,115 @@ namespace SplunkSearch
 
         private async void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            tokenSource = new CancellationTokenSource();
+            cancelSearchTokenSource = new CancellationTokenSource();
+
             string searchStr = SearchInput.Text.Trim();
-
-            titleGrid.Visibility = Visibility.Collapsed;
-
             if (!searchStr.StartsWith("search ", StringComparison.OrdinalIgnoreCase))
             {
                 searchStr = "search " + searchStr;
             }
 
+            titleGrid.Visibility = Visibility.Collapsed;
             this.PageContentSearchInProgress();
-
-            CancellationToken token = tokenSource.Token;
 
             try
             {
-                ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
-                resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
-
-                SearchExportArgs jobArgs = new SearchExportArgs();
-
                 if (TimeSelectComboBox.SelectedIndex == 1)
                 {
-                    if (this.searchEarliestTime != null)
-                    {
-                        jobArgs.EarliestTime = this.searchEarliestTime;
-                    }
-
-                    if (this.searchLatestTime != null)
-                    {
-                        jobArgs.LatestTime = this.searchLatestTime;
-                    }
+                    this.DisplaySearchPreviewResult(searchStr);
                 }
-
-                titleGrid.Visibility = Visibility.Visible;
-
-                using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr, jobArgs))
+                else
                 {
-                    int resultCount = 0;
-
-                    try
-                    {
-                        foreach (SearchResult result in resultStream)
-                        {
-                            if (!tokenSource.IsCancellationRequested)
-                            {
-                                List<string> results = this.ParseResult(result);
-                                resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
-                            }
-                        }
-
-                        if (resultStream.IsFinal)
-                        {
-                            this.PageContentReset();
-                        }
-                    }
-                    catch
-                    { }
+                    this.DisplaySearchResult(searchStr);
                 }
             }
             catch (Exception ex)
             {
                 Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(ex.ToString(), "Error in Search");
-                messageDialog.Content = ex.ToString();
-                messageDialog.ShowAsync().GetResults();
+                messageDialog.ShowAsync();
+
                 titleGrid.Visibility = Visibility.Collapsed;
                 this.PageContentReset();
             }
         }
-    
+
+        private async void DisplaySearchPreviewResult(string searchStr)
+        {
+            int resultCount = 0;
+            ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
+            resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
+            JobArgs args = new JobArgs();
+            args.EarliestTime = this.searchEarliestTime;
+            args.LatestTime = this.searchLatestTime;
+            args.SearchMode = SearchMode.Realtime;
+            Job realtimeJob = await MainPage.SplunkService.Jobs.CreateAsync(searchStr, args);
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            int count = 0;
+
+            do
+            {
+                using (SearchResultStream stream = await realtimeJob.GetSearchPreviewAsync())
+                {
+                    titleGrid.Visibility = Visibility.Visible;
+
+                    foreach (SearchResult result in stream)
+                    {
+                        count++;
+                        List<string> results = this.ParseResult(result);
+                        resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
+                    }
+                    await Task.Delay(1000);
+                }
+
+            } while ((count == 0 || count < 2000) && watch.Elapsed.TotalSeconds <= 5 && !this.cancelSearchTokenSource.Token.IsCancellationRequested);
+
+            this.PageContentReset();
+            await realtimeJob.CancelAsync();
+        }
+
+        private async void DisplaySearchResult(string searchStr)
+        {
+            int resultCount = 0;
+            SearchExportArgs jobArgs = new SearchExportArgs();
+
+            if (this.searchEarliestTime != null)
+            {
+                jobArgs.EarliestTime = this.searchEarliestTime;
+            }
+
+            if (this.searchLatestTime != null)
+            {
+                jobArgs.LatestTime = this.searchLatestTime;
+            }
+
+            ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
+            resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
+            using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr, jobArgs))
+            {
+                titleGrid.Visibility = Visibility.Visible;
+
+                int count = 0;
+                foreach (SearchResult result in resultStream)
+                {
+                    List<string> results = this.ParseResult(result);
+                    resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
+
+                    //TODO: need to do paging
+                    if (count++ > 2000 || this.cancelSearchTokenSource.Token.IsCancellationRequested) break;
+                }
+
+                this.PageContentReset();
+            }
+        }
+
         private void SearchCancelButton_Click(object sender, RoutedEventArgs e)
         {
-            tokenSource.Cancel();
+            cancelSearchTokenSource.Cancel();
             SearchCancel.Content = "Cancelling...";
         }
 
-        private void SearchTimeButton_Click(object sender, RoutedEventArgs e)
-        {
-        }
         private void backButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -245,14 +276,13 @@ namespace SplunkSearch
             SearchCancel.Content = "Cancel";
             SearchCancel.Visibility = Visibility.Collapsed;
             searchInProgress.IsActive = false;
-
         }
 
         private void PageContentSearchInProgress()
         {
+            SearchCancel.Content = "Cancel";
+            SearchCancel.Visibility = Visibility.Visible;
             SearchSubmit.Content = "Searching";
-            //SearchCancel.Content = "Cancel";
-            //SearchCancel.Visibility = Visibility.Visible;
             searchInProgress.IsActive = true;
         }
 
@@ -270,42 +300,97 @@ namespace SplunkSearch
             }
         }
 
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ApplyRelativeTimeSearchClick()
+        {
+            int relativeTime = 0;
+            try
+            {
+                if ((relativeTime = int.Parse(RelativeEarlistTimeValue.Text.Trim().TrimEnd(' '))) <= 0)
+                {
+                    throw new Exception("value must be positive value");
+                }
+            }
+            catch (Exception ex)
+            {
+                string msg = "Invalid input: value must be positive integer";
+                Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(msg, "Error in Input");
+                messageDialog.ShowAsync();
+            }
+
+            string unit = "s";
+            switch (RelativeEarlistTimeValueUnit.SelectedIndex)
+            {
+                case 1: unit = "m"; break;
+                case 2: unit = "h"; break;
+                case 3: unit = "d"; break;
+            }
+
+            this.searchEarliestTime = string.Format("rt-{0}{1}", relativeTime, unit);
+            this.searchLatestTime = "rt";
+        }
+
+        private void ApplyDateTimeRangeClick()
+        {
+            DateTime start = new DateTime(EarlistDate.Date.Year, EarlistDate.Date.Month, EarlistDate.Date.Day).AddSeconds(EarlistTime.Time.TotalSeconds);
+            DateTime end = new DateTime(LatestDate.Date.Year, LatestDate.Date.Month, LatestDate.Date.Day).AddSeconds(LatestTime.Time.TotalSeconds);
+            this.searchEarliestTime = start.ToString("yyyy-MM-ddThh:mm:ss");
+            this.searchLatestTime = end.ToString("yyyy-MM-ddThh:mm:ss");
+            if (start >= end)
+            {
+                string msg = "Latest time must be greater than earlist time";
+                Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(msg, "Error in Input");
+                messageDialog.ShowAsync();
+            }
+        }
+
+        private void ApplyAdvancedTimeSelectionClick()
+        {
+            try
+            {
+                DateTime start = DateTime.Parse(customerEarlistInput.Text.Trim().TrimEnd(' '));
+                DateTime end = DateTime.Parse(customerLatestInput.Text.Trim().TrimEnd(' '));
+                this.searchEarliestTime = start.ToString("yyyy-MM-ddThh:mm:ss");
+                this.searchLatestTime = end.ToString("yyyy-MM-ddThh:mm:ss");
+                if (start >= end)
+                {
+                    throw new Exception("Latest time must be greater than earlist time");
+                }
+            }
+            catch (Exception ex)
+            {
+                Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(ex.Message, "Error in Input");
+                messageDialog.ShowAsync();
+            }
+        }
+
+        private void TimeSelectComboBox_DropDownClosed(object sender, object e)
         {
             if (TimeSelectComboBox != null)
             {
                 if (TimeSelectComboBox.SelectedIndex == 0)
                 {
-                    //this.searchTimeConstraint = "All Time";
+                    //"All Time";
                     this.searchLatestTime = null;
                     this.searchLatestTime = null;
                 }
-                else if (TimeSelectComboBox.SelectedIndex == 1)
+
+                if (TimeSelectComboBox.SelectedIndex == 1)
                 {
-                    this.searchEarliestTime = new DateTime(EarlistDate.Date.Year, EarlistDate.Date.Month, EarlistDate.Date.Day).AddSeconds(EarlistTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
-                    this.searchLatestTime = new DateTime(LatestDate.Date.Year, LatestDate.Date.Month, LatestDate.Date.Day).AddSeconds(LatestTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
+                    //Relative time
+                    this.ApplyRelativeTimeSearchClick();
+                }
+
+                if (TimeSelectComboBox.SelectedIndex == 2)
+                {
+                    //Date and Time range
+                    this.ApplyDateTimeRangeClick();
+                }
+                else if (TimeSelectComboBox.SelectedIndex == 3)
+                {
+                    //Advanced
+                    this.ApplyAdvancedTimeSelectionClick();
                 }
             }
-        }
-
-        private void EarlistDate_DateChanged(object sender, DatePickerValueChangedEventArgs e)
-        {
-            this.searchEarliestTime = new DateTime(EarlistDate.Date.Year, EarlistDate.Date.Month, EarlistDate.Date.Day).AddSeconds(EarlistTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
-        }
-
-        private void EarlistTime_DateChanged(object sender, TimePickerValueChangedEventArgs e)
-        {
-            this.searchEarliestTime = new DateTime(EarlistDate.Date.Year,EarlistDate.Date.Month,EarlistDate.Date.Day).AddSeconds(EarlistTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");             
-        }
-
-        private void LatestDate_DateChanged(object sender, DatePickerValueChangedEventArgs e)
-        {
-            this.searchLatestTime = new DateTime(LatestDate.Date.Year, LatestDate.Date.Month, LatestDate.Date.Day).AddSeconds(LatestTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
-        }
-
-        private void LatestTime_DateChanged(object sender, TimePickerValueChangedEventArgs e)
-        {
-            this.searchLatestTime = new DateTime(LatestDate.Date.Year,LatestDate.Date.Month,LatestDate.Date.Day).AddSeconds(LatestTime.Time.TotalSeconds).ToString("yyyy-MM-ddThh:mm:ss");
         }
     }
 }

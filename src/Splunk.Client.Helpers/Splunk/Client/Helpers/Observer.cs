@@ -75,7 +75,7 @@ namespace Splunk.Client.Helpers
 
         #region Privates/internals
 
-        static readonly Action onCompletedNoop = new Action(() => { return;  });
+        static readonly Action onCompletedNoop = new Action(() => { return; });
         static readonly Action<Exception> onErrorNoop = new Action<Exception>((e) => { return; }); 
 
         Action onCompleted;

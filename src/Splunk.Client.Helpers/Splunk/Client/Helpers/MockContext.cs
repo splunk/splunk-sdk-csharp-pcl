@@ -18,6 +18,7 @@ namespace Splunk.Client.Helpers
 {
     using Splunk.Client;
     using System;
+    using System.CodeDom;
     using System.Collections.Generic;
     using System.Configuration;
     using System.Diagnostics;
@@ -31,6 +32,7 @@ namespace Splunk.Client.Helpers
     using System.Runtime.Serialization.Json;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -117,7 +119,8 @@ namespace Splunk.Client.Helpers
 
                 case MockContextMode.Playback:
 
-                    var serializer = new DataContractJsonSerializer(typeof(Session));
+                    var serializer = new DataContractJsonSerializer(
+                        typeof(Session), null, int.MaxValue, false, new JsonDataContractSurrogate(), false);
 
                     using (var stream = new FileStream(RecordingFilename, FileMode.Open))
                     {
@@ -191,7 +194,7 @@ namespace Splunk.Client.Helpers
             string setting;
 
             setting = ConfigurationManager.AppSettings["MockContext.RecordingDirectoryName"];
-            recordingDirectoryName =  setting ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Recordings");
+            recordingDirectoryName = setting ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Recordings");
 
             setting = ConfigurationManager.AppSettings["MockContext.Mode"];
             mode = setting == null ? MockContextMode.Run : (MockContextMode)Enum.Parse(typeof(MockContextMode), setting);
@@ -218,6 +221,16 @@ namespace Splunk.Client.Helpers
 
         static object Enqueue(object o)
         {
+            //// DateTime values are serialized with millisecond precision, not
+            //// at the precision of a tick, hence we must compensate.
+
+            var dt = o as DateTime?;
+
+            if (dt.HasValue)
+            {
+                dt.Value.AddTicks(-(dt.Value.Ticks % TimeSpan.TicksPerSecond));
+            }
+
             session.Data.Enqueue(o);
             return o;
         }
@@ -230,6 +243,92 @@ namespace Splunk.Client.Helpers
         #endregion
 
         #region Types
+
+        class JsonDataContractSurrogate : IDataContractSurrogate
+        {
+            public object GetCustomDataToExport(Type clrType, Type dataContractType)
+            {
+                return null; // unused
+            }
+
+            public object GetCustomDataToExport(System.Reflection.MemberInfo memberInfo, Type dataContractType)
+            {
+                return null; // unused
+            }
+
+            public Type GetDataContractType(Type type)
+            {
+                return null; // unused
+            }
+
+            public object GetDeserializedObject(object obj, Type targetType)
+            {
+                var data = obj as Queue<object>;
+
+                if (data == null)
+                {
+                    return obj;
+                }
+                
+                if (data.Count == 0)
+                {
+                    return obj;
+                }
+
+                var replacement = new Queue<object>(data.Count);
+
+                foreach (var item in data)
+                {
+                    var enqueuedItem = item;
+                    var s = item as string;
+
+                    if (s != null)
+                    {
+                        var match = DateTimeFormat.Match(s);
+
+                        if (match.Success)
+                        {
+                            var timeZoneDesignator = short.Parse(match.Groups[2].Value);
+                            var milliseconds = long.Parse(match.Groups[1].Value);
+                            var dateTime = Epoch.Add(TimeSpan.FromMilliseconds(milliseconds));
+
+                            dateTime = dateTime.AddHours(timeZoneDesignator / 100);
+                            dateTime = dateTime.AddMinutes(timeZoneDesignator % 100);
+
+                            enqueuedItem = dateTime;
+                        }
+                    }
+
+                    replacement.Enqueue(enqueuedItem);
+                }
+                while (data.Count > 0);
+
+                return replacement;
+            }
+
+            public void GetKnownCustomDataTypes(System.Collections.ObjectModel.Collection<Type> customDataTypes)
+            {
+                // unused
+            }
+
+            public object GetObjectToSerialize(object obj, Type targetType)
+            {
+                return obj; // unused
+            }
+
+            public Type GetReferencedTypeOnImport(string typeName, string typeNamespace, object customData)
+            {
+                return null; // unused
+            }
+
+            public CodeTypeDeclaration ProcessImportedType(CodeTypeDeclaration typeDeclaration, CodeCompileUnit compileUnit)
+            {
+                return typeDeclaration; // unused
+            }
+
+            static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            static readonly Regex DateTimeFormat = new Regex(@"/Date\((\d+)([+-]\d+)\)/");
+        }
 
         abstract class MessageHandler : HttpMessageHandler
         {
@@ -368,7 +467,8 @@ namespace Splunk.Client.Helpers
 
                     if (checksum != recording.Checksum)
                     {
-                        string text = string.Format("The recording in {0} is out of sync with {1}.", 
+                        string text = string.Format(
+                            "The recording in {0} is out of sync with {1}.", 
                             MockContext.recordingDirectoryName,
                             MockContext.CallerId);
                         throw new InvalidOperationException(text);
@@ -507,7 +607,6 @@ namespace Splunk.Client.Helpers
             #endregion
         }
 
-        [KnownType(typeof(DateTime))]
         [DataContract]
         class Session
         {

@@ -126,8 +126,8 @@ namespace SplunkSearch
         private async void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             cancelSearchTokenSource = new CancellationTokenSource();
-
             string searchStr = SearchInput.Text.Trim();
+
             if (!searchStr.StartsWith("search ", StringComparison.OrdinalIgnoreCase))
             {
                 searchStr = "search " + searchStr;
@@ -310,7 +310,7 @@ namespace SplunkSearch
                     throw new Exception("value must be positive value");
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 string msg = "Invalid input: value must be positive integer";
                 Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(msg, "Error in Input");

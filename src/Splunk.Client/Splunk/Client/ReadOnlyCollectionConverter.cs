@@ -21,6 +21,7 @@
 namespace Splunk.Client
 {
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     /// <summary>
     /// Provides a converter to convert an <see cref="IEnumerable&lt;T&gt;"/>
@@ -36,16 +37,17 @@ namespace Splunk.Client
     /// Type of the converter.
     /// </typeparam>
     /// <seealso cref="T:Splunk.Client.ValueConverter{TCollection}"/>
-    sealed class CollectionConverter<TCollection, TConverter, TValue> : ValueConverter<TCollection> 
-        where TCollection : ICollection<TValue>, new()
+    sealed class ReadOnlyCollectionConverter<TCollection, TConverter, TValue>
+        : ValueConverter<ReadOnlyCollection<TValue>>
+        where TCollection : IList<TValue>, new()
         where TConverter : ValueConverter<TValue>, new()
     {
         /// <summary>
         /// The default <see cref="CollectionConverter&lt;TCollection, TConverter, TValue&gt;"/>
         /// instance.
         /// </summary>
-        public static readonly CollectionConverter<TCollection, TConverter, TValue> Instance =
-            new CollectionConverter<TCollection, TConverter, TValue>();
+        public static readonly ReadOnlyCollectionConverter<TCollection, TConverter, TValue> Instance =
+            new ReadOnlyCollectionConverter<TCollection, TConverter, TValue>();
 
         /// <summary>
         /// Converts the given input.
@@ -57,9 +59,9 @@ namespace Splunk.Client
         /// The input.
         /// </param>
         /// <returns>
-        /// A TCollection.
+        /// A read only collection of <typeparamref name="TValue"/>.
         /// </returns>
-        public override TCollection Convert(object input)
+        public override ReadOnlyCollection<TValue> Convert(object input)
         {
             var list = input as IEnumerable<object>;
 
@@ -75,7 +77,7 @@ namespace Splunk.Client
                 collection.Add(ValueConverter.Convert(value));
             }
 
-            return collection;
+            return new ReadOnlyCollection<TValue>(collection);
         }
 
         static readonly TConverter ValueConverter = new TConverter();

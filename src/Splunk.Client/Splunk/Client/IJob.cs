@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
@@ -577,7 +578,7 @@ namespace Splunk.Client
         /// <value>
         /// The search providers.
         /// </value>
-        IReadOnlyList<string> SearchProviders
+        ReadOnlyCollection<string> SearchProviders
         { get; }
 
         /// <summary>
@@ -933,7 +934,7 @@ namespace Splunk.Client
 
         public abstract DateTime SearchLatestTime { get; }
 
-        public abstract IReadOnlyList<string> SearchProviders { get; }
+        public abstract ReadOnlyCollection<string> SearchProviders { get; }
 
         public abstract string Sid { get; }
 

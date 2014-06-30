@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
@@ -212,7 +213,7 @@ namespace Splunk.Client
         /// <value>
         /// A list of times of the scheduled.
         /// </value>
-        IReadOnlyList<DateTime> ScheduledTimes
+        ReadOnlyCollection<DateTime> ScheduledTimes
         { get; }
 
         /// <summary>
@@ -548,7 +549,7 @@ namespace Splunk.Client
         /// A list of times of the scheduled.
         /// </value>
         /// <seealso cref="P:Splunk.Client.ISavedSearch.ScheduledTimes"/>
-        public abstract IReadOnlyList<DateTime> ScheduledTimes { get; }
+        public abstract ReadOnlyCollection<DateTime> ScheduledTimes { get; }
 
         /// <summary>
         /// Gets the search command for the current <see cref="SavedSearch"/>.

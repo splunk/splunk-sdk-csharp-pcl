@@ -151,7 +151,7 @@ namespace Splunk.Client
         /// <value>
         /// The resources.
         /// </value>
-        protected internal IReadOnlyList<BaseResource> Resources
+        protected internal ReadOnlyCollection<BaseResource> Resources
         {
             get { return this.GetValue("Resources") ?? NoResources; }
         }
@@ -437,7 +437,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<Resource>(new Resource[0]);
+        static readonly ReadOnlyCollection<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new BaseResource[0]);
 
         bool initialized;
 

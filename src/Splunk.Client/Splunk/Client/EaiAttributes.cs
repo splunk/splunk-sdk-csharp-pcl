@@ -21,6 +21,7 @@
 namespace Splunk.Client
 {
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     /// <summary>
     /// Provides a class that represents a Splunk ACL.
@@ -46,9 +47,13 @@ namespace Splunk.Client
         /// <value>
         /// The optional fields.
         /// </value>
-		public IReadOnlyList<string> OptionalFields
+		public ReadOnlyCollection<string> OptionalFields
         {
-            get { return this.GetValue("OptionalFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get
+            {
+                return this.GetValue(
+                    "OptionalFields", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
 
         /// <summary>
@@ -57,9 +62,13 @@ namespace Splunk.Client
         /// <value>
         /// The required fields.
         /// </value>
-		public IReadOnlyList<string> RequiredFields
+		public ReadOnlyCollection<string> RequiredFields
         {
-            get { return this.GetValue("RequiredFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get
+            {
+                return this.GetValue(
+                    "RequiredFields", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
 
         /// <summary>
@@ -68,9 +77,13 @@ namespace Splunk.Client
         /// <value>
         /// The wildcard fields.
         /// </value>
-		public IReadOnlyList<string> WildcardFields
+		public ReadOnlyCollection<string> WildcardFields
         {
-            get { return this.GetValue("WildcardFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get
+            {
+                return this.GetValue(
+                    "WildcardFields", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
 
         #endregion

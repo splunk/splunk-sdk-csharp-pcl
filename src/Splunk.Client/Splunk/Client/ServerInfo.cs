@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     /// <summary>
     /// Provides information about a Splunk server instance.
@@ -127,15 +128,23 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual IReadOnlyList<string> LicenseKeys
+        public virtual ReadOnlyCollection<string> LicenseKeys
         {
-            get { return this.Content.GetValue("LicenseKeys", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get 
+            {
+                return this.Content.GetValue(
+                    "LicenseKeys", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance); 
+            }
         }
 
         /// <inheritdoc/>
-        public virtual IReadOnlyList<string> LicenseLabels
+        public virtual ReadOnlyCollection<string> LicenseLabels
         {
-            get { return this.Content.GetValue("LicenseLabels", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get 
+            {
+                return this.Content.GetValue(
+                    "LicenseLabels", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
 
         /// <inheritdoc/>

@@ -1255,13 +1255,12 @@ namespace Splunk.Client.AcceptanceTests
                 //// Read schedule
 
                 var dateTime = MockContext.GetOrElse(DateTime.Now);
-                var schedule = await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
 
+                var schedule = await savedSearch.GetScheduledTimesAsync("0", "+2d");
                 Assert.Equal(48, schedule.Count);
 
                 var expected = dateTime.AddMinutes(60);
                 expected = expected.Date.AddHours(expected.Hour);
-
                 Assert.Equal(expected, schedule[0]);
 
                 //// Update
@@ -1299,7 +1298,7 @@ namespace Splunk.Client.AcceptanceTests
                 //// timezone names like "Pacific Daylight Time".
 
                 await savedSearch.ScheduleAsync(dateTime.AddMinutes(15)); // Does not return anything but status
-                await savedSearch.GetScheduledTimesAsync(dateTime, dateTime.AddDays(2));
+                await savedSearch.GetScheduledTimesAsync("0", "+2d");
 
                 //// Delete
 

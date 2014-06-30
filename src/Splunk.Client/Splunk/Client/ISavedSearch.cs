@@ -308,7 +308,7 @@ namespace Splunk.Client
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification =
             "This is by design")
         ]
-        Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(DateTime earliestTime, DateTime latestTime);
+        Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(string earliestTime, string latestTime);
 
         /// <summary>
         /// Asynchronously reschedules the saved search represented by the current
@@ -623,8 +623,13 @@ namespace Splunk.Client
         /// <returns>
         /// The scheduled times asynchronous.
         /// </returns>
-        /// <seealso cref="M:Splunk.Client.ISavedSearch.GetScheduledTimesAsync(DateTime,DateTime)"/>
-        public abstract Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(DateTime earliestTime, DateTime latestTime);
+        /// <seealso cref="M:Splunk.Client.ISavedSearch.GetScheduledTimesAsync(string,string)"/>
+        public Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(string earliestTime, string latestTime) 
+        {
+            Contract.Requires<ArgumentNullException>(earliestTime != null);
+            Contract.Requires<ArgumentNullException>(latestTime != null);
+            return default(Task<IReadOnlyList<DateTime>>);
+        }
 
         /// <summary>
         /// Asynchronously reschedules the saved search represented by the current

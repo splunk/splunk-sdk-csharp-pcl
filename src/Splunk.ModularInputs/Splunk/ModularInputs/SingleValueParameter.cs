@@ -124,7 +124,7 @@ namespace Splunk.ModularInputs
         /// A string that represents the current object.
         /// </returns>
         /// <seealso cref="M:System.Object.ToString()"/>
-        public string ToString()
+        public override string ToString()
         {
             return this.Value;
         }

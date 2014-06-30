@@ -300,19 +300,15 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(DateTime earliestTime,
-            DateTime latestTime)
+        public virtual async Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(string earliestTime,
+            string latestTime)
         {
             var resourceName = new ResourceName(this.ResourceName, "scheduled_times");
-            var dateTime = DateTime.Now;
-
-            var min = (long)(earliestTime - dateTime).TotalSeconds;
-            var max = (long)(latestTime - dateTime).TotalSeconds;
 
             var args = new Argument[] 
             {
-                new Argument("earliest_time", min.ToString("+#;-#;0")),
-                new Argument("latest_time", max.ToString("+#;-#;0"))
+                new Argument("earliest_time", earliestTime),
+                new Argument("latest_time", latestTime)
             };
 
             using (var response = await this.Context.GetAsync(this.Namespace, resourceName, args))

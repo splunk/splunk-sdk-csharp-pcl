@@ -228,7 +228,7 @@ namespace Splunk.Client.Helpers
 
             if (dt.HasValue)
             {
-                dt.Value.AddTicks(-(dt.Value.Ticks % TimeSpan.TicksPerSecond));
+                o = dt.Value.AddTicks(-(dt.Value.Ticks % TimeSpan.TicksPerSecond));
             }
 
             session.Data.Enqueue(o);
@@ -301,7 +301,6 @@ namespace Splunk.Client.Helpers
 
                     replacement.Enqueue(enqueuedItem);
                 }
-                while (data.Count > 0);
 
                 return replacement;
             }

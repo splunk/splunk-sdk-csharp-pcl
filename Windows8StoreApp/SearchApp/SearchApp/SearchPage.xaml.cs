@@ -127,6 +127,8 @@ namespace SplunkSearch
         {
             cancelSearchTokenSource = new CancellationTokenSource();
 
+            this.TimeSelectComboBox_DropDownClosed(null, null);
+
             string searchStr = SearchInput.Text.Trim();
             if (!searchStr.StartsWith("search ", StringComparison.OrdinalIgnoreCase))
             {
@@ -170,7 +172,6 @@ namespace SplunkSearch
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            int count = 0;
 
             do
             {
@@ -178,16 +179,27 @@ namespace SplunkSearch
                 {
                     titleGrid.Visibility = Visibility.Visible;
 
-                    foreach (SearchResult result in stream)
+                    try
                     {
-                        count++;
-                        List<string> results = this.ParseResult(result);
-                        resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
+                        foreach (SearchResult result in stream)
+                        {
+                            List<string> results = this.ParseResult(result);
+                            resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
+
+                            //TODO: need to do paging
+                            if (resultCount > 2000 || this.cancelSearchTokenSource.Token.IsCancellationRequested) break;
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        //the stream has some broken fields
+                        // Enumeration ended prematurely : System.IO.InvalidDataException: Read <fieldOrder> where </fieldOrder> was expected.   
+                    }
+
                     await Task.Delay(1000);
                 }
 
-            } while ((count == 0 || count < 2000) && watch.Elapsed.TotalSeconds <= 5 && !this.cancelSearchTokenSource.Token.IsCancellationRequested);
+            } while (resultCount == 0 && watch.Elapsed.TotalSeconds <= 5 && !this.cancelSearchTokenSource.Token.IsCancellationRequested);
 
             this.PageContentReset();
             await realtimeJob.CancelAsync();
@@ -195,7 +207,6 @@ namespace SplunkSearch
 
         private async void DisplaySearchResult(string searchStr)
         {
-            int resultCount = 0;
             SearchExportArgs jobArgs = new SearchExportArgs();
 
             if (this.searchEarliestTime != null)
@@ -208,20 +219,29 @@ namespace SplunkSearch
                 jobArgs.LatestTime = this.searchLatestTime;
             }
 
+            int resultCount = 0;
             ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
             resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
             using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr, jobArgs))
             {
                 titleGrid.Visibility = Visibility.Visible;
 
-                int count = 0;
-                foreach (SearchResult result in resultStream)
+                try
                 {
-                    List<string> results = this.ParseResult(result);
-                    resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
+                    foreach (SearchResult result in resultStream)
+                    {
 
-                    //TODO: need to do paging
-                    if (count++ > 2000 || this.cancelSearchTokenSource.Token.IsCancellationRequested) break;
+                        List<string> results = this.ParseResult(result);
+                        resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
+
+                        //TODO: need to do paging
+                        if (resultCount > 2000 || this.cancelSearchTokenSource.Token.IsCancellationRequested) break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //the stream has some broken fields
+                    // Enumeration ended prematurely : System.IO.InvalidDataException: Read <fieldOrder> where </fieldOrder> was expected.   
                 }
 
                 this.PageContentReset();

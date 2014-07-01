@@ -19,7 +19,7 @@ namespace Splunk.Client.AcceptanceTests
     using Splunk.Client;
     using Splunk.Client.Helpers;
     using Splunk.Client.UnitTests;
-    
+
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -31,7 +31,7 @@ namespace Splunk.Client.AcceptanceTests
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Security;
-    
+
     using Xunit;
 
     public class TestService
@@ -45,9 +45,9 @@ namespace Splunk.Client.AcceptanceTests
             {
                 using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, ns))
                 {
-                    Assert.Equal(string.Format("{0}://{1}:{2}/{3}", 
-                        SdkHelper.Splunk.Scheme.ToString().ToLower(), 
-                        SdkHelper.Splunk.Host, 
+                    Assert.Equal(string.Format("{0}://{1}:{2}/{3}",
+                        SdkHelper.Splunk.Scheme.ToString().ToLower(),
+                        SdkHelper.Splunk.Host,
                         SdkHelper.Splunk.Port,
                         ns),
                         service.ToString());
@@ -144,7 +144,7 @@ namespace Splunk.Client.AcceptanceTests
                         Assert.Equal(realm, sp.Realm);
 
                         //// Remove
-                    
+
                         await sp.RemoveAsync();
 
                         try
@@ -155,7 +155,7 @@ namespace Splunk.Client.AcceptanceTests
                         catch (ResourceNotFoundException)
                         { }
 
-                        try 
+                        try
                         {
                             await sps.GetAsync(username, realm);
                             Assert.True(false);
@@ -650,7 +650,7 @@ namespace Splunk.Client.AcceptanceTests
                 await service.Server.RestartAsync(2 * 60 * 1000);
             }
 
-            using (var service = await(SdkHelper.CreateService(new Namespace("nobody", testApplicationName))))
+            using (var service = await (SdkHelper.CreateService(new Namespace("nobody", testApplicationName))))
             {
                 var fileName = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
 
@@ -736,6 +736,8 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetConfigurations()
         {
+            Stopwatch watch1 = new Stopwatch();
+            watch1.Start();
             Stopwatch stopwatch = new Stopwatch();
             foreach (Namespace ns in TestNamespaces)
             {
@@ -744,62 +746,114 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     var inputsConfiguration = await service.Configurations.GetAsync("inputs");
 
-                    Console.WriteLine("    # of inputs={0}.", inputsConfiguration.Count);
                     stopwatch.Start();
-
                     foreach (var stanza in inputsConfiguration)  // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                     {
-                        await stanza.GetAsync();
+                        try
+                        {
+                            Console.WriteLine(stanza.Name);
+                            await stanza.GetAsync();
+                            Console.WriteLine("        stanza={0}", stanza.Name);
+                            Console.WriteLine("        currentStopwatch={0}.", stopwatch.Elapsed.TotalMinutes);
+                            if (stopwatch.Elapsed.TotalMinutes > 10) { Console.WriteLine("!!!execute more than 10 minutes!!!!"); break; }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}: {1}===", stanza.Name, e);
+                        }
                     }
+                    
 
                     stopwatch.Stop();
-                    Console.WriteLine("    take {0}s to enumberate inputsConfiguration.", stopwatch.Elapsed.Seconds);
+                    Console.WriteLine("    take {0}m to enumberate inputsConfiguration.", stopwatch.Elapsed.TotalMinutes);
                     await service.Configurations.GetAllAsync();
 
                     Console.WriteLine("    # of service.Configurations={0}.", service.Configurations.Count);
                     stopwatch.Start();
+
+                    Configuration temp = null;
+                    Console.WriteLine("=======================all config=============================");
                     foreach (Configuration configuration in service.Configurations)
                     {
-                        await configuration.GetAllAsync();
-
-                        Console.WriteLine("        # of configuration={0}.", configuration.Count);
-                        foreach (ConfigurationStanza stanza in configuration)
+                        temp = configuration;
+                        try
                         {
-                            await stanza.GetAsync();
+                            await configuration.GetAllAsync();
+                            Console.WriteLine("       configuration={0}", configuration.Name);
+                            foreach (ConfigurationStanza stanza in configuration)
+                            {
+                                try
+                                {
+
+                                    await stanza.GetAsync();
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine("======2.1====== exception on stanza={0}: {1}=========", stanza.Name, e);
+                                }
+
+                            }
+                            Console.WriteLine("        currentStopwatch={0}.", stopwatch.Elapsed.TotalMinutes);
                         }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("======2====== exception on config- {0}: {1}=========", configuration.Name, e);
+                        }
+
+                        if (stopwatch.Elapsed.TotalMinutes > 10) { Console.WriteLine("!!!execute more than 10 minutes!!!!"); break; }
                     }
                     
                     stopwatch.Stop();
-                    Console.WriteLine("    take {0}s to enumberate service.Configurations.", stopwatch.Elapsed.Seconds);
+                    Console.WriteLine("    take {0}m to enumberate service.Configurations.", stopwatch.Elapsed.TotalMinutes);
+                    Console.WriteLine("total take {0} to here3", watch1.Elapsed.TotalMinutes);
 
                     var configurationList = new List<Configuration>(service.Configurations.Count);
 
                     stopwatch.Start();
-                    
+
                     for (int i = 0; i < service.Configurations.Count; i++)
                     {
                         Configuration configuration = service.Configurations[i];
+
+
                         configurationList.Add(configuration);
 
                         await configuration.GetAllAsync();
+                        Console.WriteLine("        2.configuration={0},count=", configuration.Name, configuration.Count);
                         var stanzaList = new List<ConfigurationStanza>(configuration.Count);
 
                         for (int j = 0; j < configuration.Count; j++)
                         {
                             ConfigurationStanza stanza = configuration[j];
-                            stanzaList.Add(stanza);
-                            await stanza.GetAsync();
+
+                            try
+                            {
+                                stanzaList.Add(stanza);
+                                await stanza.GetAsync();
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("======3====== exception on add {0}: {1}=========", stanza.Name, e);
+                            }
                         }
 
+                        if (stopwatch.Elapsed.TotalMinutes > 10) { Console.WriteLine("!!!execute more than 10 minutes!!!!"); break; }
                         Assert.Equal(configuration.ToList(), stanzaList);
+                        Console.WriteLine("        2.currentStopwatch={0}.", stopwatch.Elapsed.TotalMinutes);
+
                     }
                     
-                    stopwatch.Stop();
-                    Console.WriteLine("take {0}s to add/compare all configurations.", stopwatch.Elapsed.Seconds);
 
+                    stopwatch.Stop();
+                    Console.WriteLine("take {0}m to add/compare all configurations.", stopwatch.Elapsed.TotalMinutes);
+
+                    Console.WriteLine("total take {0} to here", watch1.Elapsed.TotalMinutes);
                     Assert.Equal(service.Configurations.ToList(), configurationList);
+                    Console.WriteLine("total take {0} to here2", watch1.Elapsed.TotalMinutes);
                 }
             }
+
+            Console.WriteLine("Finally, total take {0} to here2", watch1.Elapsed.TotalMinutes);
         }
 
         #endregion
@@ -817,7 +871,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 var indexName = MockContext.GetOrElse(string.Format("delete-me-{0}", Guid.NewGuid()));
                 Index index;
-                
+
                 //// Create
 
                 index = await service.Indexes.CreateAsync(indexName);
@@ -859,7 +913,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Delete
 
-                try 
+                try
                 {
                     await index.RemoveAsync();
                 }
@@ -868,7 +922,7 @@ namespace Splunk.Client.AcceptanceTests
                     if (updateException != null)
                     {
                         var text = string.Format("Update/remove failed:\nUpdate failure: {0}\n\n{1}\nRemove failure: {2}\n{3}",
-                            updateException.Message, updateException.StackTrace, 
+                            updateException.Message, updateException.StackTrace,
                             removeException.Message, removeException.StackTrace);
                         Assert.True(false, text);
                     }
@@ -1005,7 +1059,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.Equal(entity.MaxMetaEntries, sameEntity.MaxMetaEntries);
                     Assert.Equal(entity.MaxRunningProcessGroups, sameEntity.MaxRunningProcessGroups);
                     Assert.Equal(entity.MaxRunningProcessGroupsLowPriority, sameEntity.MaxRunningProcessGroupsLowPriority);
-                    Assert.True((sameEntity.MaxTime - entity.MaxTime)<=new TimeSpan(0,0,20));//expect the test finish run within 20s which means new events comes only within 20s
+                    Assert.True((sameEntity.MaxTime - entity.MaxTime) <= new TimeSpan(0, 0, 20));//expect the test finish run within 20s which means new events comes only within 20s
                     Assert.Equal(entity.MaxTimeUnreplicatedNoAcks, sameEntity.MaxTimeUnreplicatedNoAcks);
                     Assert.Equal(entity.MaxTimeUnreplicatedWithAcks, sameEntity.MaxTimeUnreplicatedWithAcks);
                     Assert.Equal(entity.MaxTotalDataSizeMB, sameEntity.MaxTotalDataSizeMB);
@@ -1065,7 +1119,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.NotNull(result);
                 }
 
-                Stopwatch watch = Stopwatch.StartNew();                
+                Stopwatch watch = Stopwatch.StartNew();
 
                 while (watch.Elapsed < new TimeSpan(0, 0, 120) && index.TotalEventCount != currentEventCount + sendEventCount)
                 {
@@ -1111,7 +1165,7 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         #endregion
-       
+
         #region Search
 
         [Trait("acceptance-test", "Splunk.Client.Job")]
@@ -1314,7 +1368,7 @@ namespace Splunk.Client.AcceptanceTests
             using (var service = await SdkHelper.CreateService())
             {
                 Job job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours");
-                
+
                 using (SearchResultStream stream = await job.GetSearchResultsAsync())
                 {
                     var results = new List<SearchResult>();
@@ -1328,7 +1382,7 @@ namespace Splunk.Client.AcceptanceTests
                 }
             }
         }
-            
+
         [Trait("acceptance-test", "Splunk.Client.JobCollection")]
         [MockContext]
         [Fact]
@@ -1344,10 +1398,10 @@ namespace Splunk.Client.AcceptanceTests
                     await service.Jobs.CreateAsync("search index=_internal | head 10"),
                     await service.Jobs.CreateAsync("search index=_internal | head 10"),
                 };
-                
+
                 await service.Jobs.GetAllAsync();
                 Assert.True(service.Jobs.Count >= jobs.Length);
-                
+
                 foreach (var job in jobs)
                 {
                     Assert.Contains(job, service.Jobs);
@@ -1633,7 +1687,7 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         var list = new List<SearchResult>();
 
-                        foreach (SearchResult result in stream) 
+                        foreach (SearchResult result in stream)
                         {
                             list.Add(result);
                         }
@@ -1837,7 +1891,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanRestartServer()
         {
-            Stopwatch watch = Stopwatch.StartNew();            
+            Stopwatch watch = Stopwatch.StartNew();
 
             using (var service = await SdkHelper.CreateService())
             {

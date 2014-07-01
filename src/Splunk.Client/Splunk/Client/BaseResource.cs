@@ -151,7 +151,7 @@ namespace Splunk.Client
         /// <value>
         /// The resources.
         /// </value>
-        protected internal ReadOnlyCollection<BaseResource> Resources
+        protected internal IReadOnlyList<BaseResource> Resources
         {
             get { return this.GetValue("Resources") ?? NoResources; }
         }

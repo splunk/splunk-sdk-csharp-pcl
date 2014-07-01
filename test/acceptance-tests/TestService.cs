@@ -753,7 +753,7 @@ namespace Splunk.Client.AcceptanceTests
                     }
 
                     stopwatch.Stop();
-                    Console.WriteLine("    take {0}s to enumberate inputsConfiguration.", stopwatch.Elapsed.Seconds);
+                    Console.WriteLine("    take {0}s to enumerate inputsConfiguration.", stopwatch.Elapsed.Seconds);
                     await service.Configurations.GetAllAsync();
 
                     Console.WriteLine("    # of service.Configurations={0}.", service.Configurations.Count);
@@ -770,7 +770,7 @@ namespace Splunk.Client.AcceptanceTests
                     }
                     
                     stopwatch.Stop();
-                    Console.WriteLine("    take {0}s to enumberate service.Configurations.", stopwatch.Elapsed.Seconds);
+                    Console.WriteLine("    take {0}s to enumerate service.Configurations.", stopwatch.Elapsed.Seconds);
 
                     var configurationList = new List<Configuration>(service.Configurations.Count);
 

@@ -157,7 +157,7 @@ namespace Splunk.Client
         /// </returns>
         public TEntity this[int index]
         {
-            get { return this.Create(this.Resources[index]); }
+            get { return this.Create((TResource)this.Snapshot.Resources[index]); }
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Splunk.Client
         /// </value>
         public int Count
         {
-            get { return this.Resources.Count; }
+            get { return this.Snapshot.Resources.Count; }
         }
 
         #endregion
@@ -352,8 +352,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets an enumerator that iterates through the current
-        /// <see cref= "EntityCollection&lt;TEntity&gt;"/>.
+        /// Gets an enumerator that iterates through the current <see cref=
+        /// "EntityCollection&lt;TEntity&gt;"/>.
         /// </summary>
         /// <returns>
         /// An object for iterating through the current
@@ -361,7 +361,7 @@ namespace Splunk.Client
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {
-            return this.Resources.Select(resource => Create(resource)).GetEnumerator();
+            return this.Snapshot.Resources.Select(resource => Create((TResource)resource)).GetEnumerator();
         }
 
         #endregion
@@ -394,21 +394,8 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        /// <summary>
-        /// The no resources.
-        /// </summary>
-        internal static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<TResource>(new List<TResource>());
-
-        /// <summary>
-        /// The no messages.
-        /// </summary>
-        internal static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
+        internal static readonly ReadOnlyCollection<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
-
-        IReadOnlyList<TResource> Resources
-        { 
-            get { return (IReadOnlyList<TResource>)this.Snapshot.Resources; } 
-        }
 
         TEntity Create(TResource resource)
         {

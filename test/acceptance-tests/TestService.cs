@@ -177,7 +177,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                IReadOnlyList<string> capabilities = await service.GetCapabilitiesAsync();
+                ReadOnlyCollection<string> capabilities = await service.GetCapabilitiesAsync();
                 var serverInfo = await service.Server.GetInfoAsync();
 
                 if (serverInfo.OSName == "Windows")
@@ -765,7 +765,8 @@ namespace Splunk.Client.AcceptanceTests
                     
 
                     stopwatch.Stop();
-                    Console.WriteLine("    take {0}m to enumberate inputsConfiguration.", stopwatch.Elapsed.TotalMinutes);
+                    Console.WriteLine("    take {0}m to enumerate inputsConfiguration.", stopwatch.Elapsed.TotalMinutes);
+
                     await service.Configurations.GetAllAsync();
 
                     Console.WriteLine("    # of service.Configurations={0}.", service.Configurations.Count);
@@ -804,7 +805,8 @@ namespace Splunk.Client.AcceptanceTests
                     }
                     
                     stopwatch.Stop();
-                    Console.WriteLine("    take {0}m to enumberate service.Configurations.", stopwatch.Elapsed.TotalMinutes);
+
+                    Console.WriteLine("    take {0}m to enumerate service.Configurations.", stopwatch.Elapsed.TotalMinutes);
                     Console.WriteLine("total take {0} to here3", watch1.Elapsed.TotalMinutes);
 
                     var configurationList = new List<Configuration>(service.Configurations.Count);
@@ -1505,11 +1507,11 @@ namespace Splunk.Client.AcceptanceTests
 
                     foreach (var preview in stream)
                     {
-                        Assert.Equal<IEnumerable<string>>(new List<string>
+                        Assert.Equal<IEnumerable<string>>(new ReadOnlyCollection<string>(new string[]
                             {
                                 "method",
                                 "count",
-                            },
+                            }),
                             preview.FieldNames);
 
                         if (preview.IsFinal)
@@ -1545,11 +1547,11 @@ namespace Splunk.Client.AcceptanceTests
                     stream.Subscribe(new Observer<SearchPreview>(
                         onNext: (preview) =>
                         {
-                            Assert.Equal<IEnumerable<string>>(new List<string>
+                            Assert.Equal<IEnumerable<string>>(new ReadOnlyCollection<string>(new string[]
                                 {
                                     "method",
                                     "count",
-                                },
+                                }),
                                 preview.FieldNames);
 
                             if (preview.IsFinal)
@@ -1872,8 +1874,8 @@ namespace Splunk.Client.AcceptanceTests
                 bool isFree = info.IsFree;
                 bool isRealtimeSearchEnabled = info.IsRealTimeSearchEnabled;
                 bool isTrial = info.IsTrial;
-                IReadOnlyList<string> licenseKeys = info.LicenseKeys;
-                IReadOnlyList<string> licenseLabels = info.LicenseLabels;
+                ReadOnlyCollection<string> licenseKeys = info.LicenseKeys;
+                ReadOnlyCollection<string> licenseLabels = info.LicenseLabels;
                 string licenseSignature = info.LicenseSignature;
                 LicenseState licenseState = info.LicenseState;
                 Guid masterGuid = info.MasterGuid;
@@ -1916,12 +1918,12 @@ namespace Splunk.Client.AcceptanceTests
 
         #region Privates/internals
 
-        static readonly IReadOnlyList<Namespace> TestNamespaces = new Namespace[] 
+        static readonly ReadOnlyCollection<Namespace> TestNamespaces = new ReadOnlyCollection<Namespace>(new Namespace[] 
         { 
             Namespace.Default, 
             new Namespace("admin", "search"), 
-            new Namespace("nobody", "search"),
-        };
+            new Namespace("nobody", "search")
+        });
 
         #endregion
     }

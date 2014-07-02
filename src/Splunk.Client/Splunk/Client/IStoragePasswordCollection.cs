@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
@@ -129,56 +130,14 @@ namespace Splunk.Client
     abstract class IStoragePasswordCollectionContract<TStoragePassword> : IStoragePasswordCollection<TStoragePassword>
         where TStoragePassword : BaseEntity<Resource>, IStoragePassword, new()
     {
-        /// <summary>
-        /// Indexer to get items within this collection using array index syntax.
-        /// </summary>
-        /// <param name="index">
-        /// Zero-based index of the entry to access.
-        /// </param>
-        /// <returns>
-        /// The indexed item.
-        /// </returns>
         public abstract TStoragePassword this[int index] { get; }
 
-        /// <summary>
-        /// Gets the number of. 
-        /// </summary>
-        /// <value>
-        /// The count.
-        /// </value>
         public abstract int Count { get; }
 
-        /// <summary>
-        /// Gets the messages.
-        /// </summary>
-        /// <value>
-        /// The messages.
-        /// </value>
-        public abstract IReadOnlyList<Message> Messages { get; }
+        public abstract ReadOnlyCollection<Message> Messages { get; }
 
-        /// <summary>
-        /// Gets the pagination.
-        /// </summary>
-        /// <value>
-        /// The pagination.
-        /// </value>
         public abstract Pagination Pagination { get; }
 
-        /// <summary>
-        /// Creates the asynchronous.
-        /// </summary>
-        /// <param name="password">
-        /// The password.
-        /// </param>
-        /// <param name="username">
-        /// The username.
-        /// </param>
-        /// <param name="realm">
-        /// The realm.
-        /// </param>
-        /// <returns>
-        /// The new asynchronous.
-        /// </returns>
         public Task<TStoragePassword> CreateAsync(string password, string username, string realm)
         {
             Contract.Requires<ArgumentException>(password != null);
@@ -186,38 +145,10 @@ namespace Splunk.Client
             return default(Task<TStoragePassword>);
         }
 
-        /// <summary>
-        /// Gets all asynchronously.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"> representing this operation.
-        /// </returns>
         public abstract Task GetAllAsync();
 
-        /// <summary>
-        /// Asynchronously retrieves a <see cref="StoragePassword"/> by name.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="StoragePassword"/> to retrieve.
-        /// </param>
-        /// <returns>
-        /// The <see cref="StoragePassword"/> retrieved.
-        /// </returns>
         public abstract Task<TStoragePassword> GetAsync(string name);
 
-        /// <summary>
-        /// Asynchronously retrieves a <see cref="StoragePassword"/> by username
-        /// and realm.
-        /// </summary>
-        /// <param name="username">
-        /// The username.
-        /// </param>
-        /// <param name="realm">
-        /// The realm.
-        /// </param>
-        /// <returns>
-        /// The <see cref="StoragePassword"/> retrieved.
-        /// </returns>
         public Task<TStoragePassword> GetAsync(string username, string realm)
         {
             Contract.Requires<ArgumentNullException>(username != null);
@@ -229,75 +160,24 @@ namespace Splunk.Client
             return default(IEnumerator);
         }
 
-        /// <summary>
-        /// Gets the enumerator.
-        /// </summary>
-        /// <returns>
-        /// The enumerator.
-        /// </returns>
         public abstract IEnumerator<TStoragePassword> GetEnumerator();
 
-        /// <summary>
-        /// Gets or null asynchronous.
-        /// </summary>
-        /// <param name="username">
-        /// The username.
-        /// </param>
-        /// <param name="realm">
-        /// The realm.
-        /// </param>
-        /// <returns>
-        /// The or null asynchronous.
-        /// </returns>
         public Task<TStoragePassword> GetOrNullAsync(string username, string realm)
         {
             Contract.Requires<ArgumentNullException>(username != null);
             return default(Task<TStoragePassword>);
         }
 
-        /// <summary>
-        /// Gets slice asynchronous.
-        /// </summary>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <returns>
-        /// The slice asynchronous.
-        /// </returns>
         public abstract Task GetSliceAsync(params Argument[] arguments);
 
-        /// <summary>
-        /// Gets slice asynchronous.
-        /// </summary>
-        /// <param name="arguments">
-        /// The arguments.
-        /// </param>
-        /// <returns>
-        /// The slice asynchronous.
-        /// </returns>
         public abstract Task GetSliceAsync(IEnumerable<Argument> arguments);
 
-        /// <summary>
-        /// Gets slice asynchronous.
-        /// </summary>
-        /// <param name="criteria">
-        /// The criteria.
-        /// </param>
-        /// <returns>
-        /// The slice asynchronous.
-        /// </returns>
         public Task GetSliceAsync(StoragePasswordCollection.Filter criteria)
         {
             Contract.Requires<ArgumentException>(criteria != null);
             return default(Task);
         }
 
-        /// <summary>
-        /// Reload asynchronous.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Task"/> representing the operation.
-        /// </returns>
         public abstract Task ReloadAsync();
     }
 }

@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
@@ -92,7 +93,7 @@ namespace Splunk.Client
 
         public abstract int Count { get; }
 
-        public abstract IReadOnlyList<Message> Messages { get; }
+        public abstract ReadOnlyCollection<Message> Messages { get; }
 
         public abstract Pagination Pagination { get; }
 

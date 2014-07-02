@@ -53,13 +53,13 @@ namespace Splunk.Client
         /// A sequence of <see cref="Message"/> instances detailing the cause of the
         /// <see cref="RequestException"/>.
         /// </param>
-        protected internal RequestException(HttpResponseMessage message, IEnumerable<Message> details)
+        protected internal RequestException(HttpResponseMessage message, ReadOnlyCollection<Message> details)
             : base(FormatMessageText(message, details))
         {
             Contract.Requires<ArgumentNullException>(message != null);
 
-            this.Details = new ReadOnlyCollection<Message>(new List<Message>(details ?? Enumerable.Empty<Message>()));
             this.StatusCode = message.StatusCode;
+            this.Details = details ?? NoDetails;
         }
 
         #endregion
@@ -77,7 +77,7 @@ namespace Splunk.Client
         /// <value>
         /// The details.
         /// </value>
-        public IReadOnlyList<Message> Details
+        public ReadOnlyCollection<Message> Details
         { get; private set; }
 
         /// <summary>
@@ -93,6 +93,8 @@ namespace Splunk.Client
         #endregion
 
         #region Privates/internals
+
+        static readonly ReadOnlyCollection<Message> NoDetails = new ReadOnlyCollection<Message>(new Message[0]);
 
         static string FormatMessageText(HttpResponseMessage message, IEnumerable<Message> details)
         {

@@ -419,7 +419,7 @@ namespace Splunk.Client
             return value;  // TODO: what's the type seen by dynamic?
         }
 
-        static async Task<IReadOnlyList<dynamic>> ParseListAsync(XmlReader reader, int level)
+        static async Task<ReadOnlyCollection<dynamic>> ParseListAsync(XmlReader reader, int level)
         {
             List<dynamic> value = new List<dynamic>();
 
@@ -436,7 +436,7 @@ namespace Splunk.Client
             }
 
             await reader.ReadAsync();
-            return value;
+            return new ReadOnlyCollection<dynamic>(value);
         }
 
         static async Task<dynamic> ParsePropertyValueAsync(XmlReader reader, int level)

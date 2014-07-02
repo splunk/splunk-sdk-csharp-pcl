@@ -22,6 +22,7 @@
 namespace Splunk.Client
 {
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Dynamic;
 
     /// <summary>
@@ -36,9 +37,13 @@ namespace Splunk.Client
         /// <value>
         /// The set of Splunk user account names with read permissions.
         /// </value>
-        public ISet<string> Read
+        public ReadOnlyCollection<string> Read
         {
-            get { return this.GetValue("Read", CollectionConverter<string, SortedSet<string>, StringConverter>.Instance); }
+            get
+            { 
+                return this.GetValue(
+                    "Read", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance); 
+            }
         }
 
         /// <summary>
@@ -47,9 +52,13 @@ namespace Splunk.Client
         /// <value>
         /// The set of Splunk user account names with write permissions.
         /// </value>
-        public ISet<string> Write
+        public ReadOnlyCollection<string> Write
         {
-            get { return this.GetValue("Write", CollectionConverter<string, SortedSet<string>, StringConverter>.Instance); }
+            get
+            {
+                return this.GetValue(
+                    "Write", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
     }
 }

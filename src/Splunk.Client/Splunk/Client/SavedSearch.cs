@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
@@ -238,9 +239,14 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual IReadOnlyList<DateTime> ScheduledTimes
+        public virtual ReadOnlyCollection<DateTime> ScheduledTimes
         {
-            get { return this.Content.GetValue("ScheduledTimes", CollectionConverter<DateTime, List<DateTime>, UnixDateTimeConverter>.Instance); }
+            get
+            { 
+                return this.Content.GetValue(
+                    "ScheduledTimes",
+                    ReadOnlyCollectionConverter<List<DateTime>, UnixDateTimeConverter, DateTime>.Instance);
+            }
         }
 
         /// <inheritdoc/>
@@ -300,7 +306,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(string earliestTime,
+        public virtual async Task<ReadOnlyCollection<DateTime>> GetScheduledTimesAsync(string earliestTime,
             string latestTime)
         {
             var resourceName = new ResourceName(this.ResourceName, "scheduled_times");

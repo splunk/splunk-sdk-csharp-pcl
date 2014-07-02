@@ -1818,8 +1818,8 @@ namespace Splunk.Client.AcceptanceTests
                 bool isFree = info.IsFree;
                 bool isRealtimeSearchEnabled = info.IsRealTimeSearchEnabled;
                 bool isTrial = info.IsTrial;
-                IReadOnlyList<string> licenseKeys = info.LicenseKeys;
-                IReadOnlyList<string> licenseLabels = info.LicenseLabels;
+                ReadOnlyCollection<string> licenseKeys = info.LicenseKeys;
+                ReadOnlyCollection<string> licenseLabels = info.LicenseLabels;
                 string licenseSignature = info.LicenseSignature;
                 LicenseState licenseState = info.LicenseState;
                 Guid masterGuid = info.MasterGuid;
@@ -1862,12 +1862,12 @@ namespace Splunk.Client.AcceptanceTests
 
         #region Privates/internals
 
-        static readonly IReadOnlyList<Namespace> TestNamespaces = new Namespace[] 
+        static readonly ReadOnlyCollection<Namespace> TestNamespaces = new ReadOnlyCollection<Namespace>(new Namespace[] 
         { 
             Namespace.Default, 
             new Namespace("admin", "search"), 
-            new Namespace("nobody", "search"),
-        };
+            new Namespace("nobody", "search")
+        });
 
         #endregion
     }

@@ -394,14 +394,6 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        /// <summary>
-        /// The no resources.
-        /// </summary>
-        internal static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<TResource>(new List<TResource>());
-
-        /// <summary>
-        /// The no messages.
-        /// </summary>
         internal static readonly ReadOnlyCollection<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
 

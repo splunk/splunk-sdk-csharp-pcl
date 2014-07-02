@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
@@ -156,7 +157,7 @@ namespace Splunk.Client
         [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate", Justification =
             "This is not a property")
         ]
-        Task<IReadOnlyList<string>> GetCapabilitiesAsync();
+        Task<ReadOnlyCollection<string>> GetCapabilitiesAsync();
 
         /// <summary>
         /// Provides user authentication asynchronously.
@@ -351,7 +352,7 @@ namespace Splunk.Client
 
         #region Access control
 
-        public abstract Task<IReadOnlyList<string>> GetCapabilitiesAsync();
+        public abstract Task<ReadOnlyCollection<string>> GetCapabilitiesAsync();
         
         public Task LogOnAsync(string username, string password)
         {

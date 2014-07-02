@@ -177,7 +177,7 @@ namespace Splunk.Client
         #region Access control
 
         /// <inheritdoc/>
-        public virtual async Task<IReadOnlyList<string>> GetCapabilitiesAsync()
+        public virtual async Task<ReadOnlyCollection<string>> GetCapabilitiesAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities))
             {
@@ -192,8 +192,8 @@ namespace Splunk.Client
                 }
 
                 var entry = feed.Entries[0];
-                List<object> capabilities = entry.Content.Capabilities;
 
+                ReadOnlyCollection<dynamic> capabilities = entry.Content.Capabilities;
                 return new ReadOnlyCollection<string>(capabilities.Cast<string>().ToList());
             }
         }

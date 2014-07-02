@@ -306,7 +306,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<IReadOnlyList<DateTime>> GetScheduledTimesAsync(string earliestTime,
+        public virtual async Task<ReadOnlyCollection<DateTime>> GetScheduledTimesAsync(string earliestTime,
             string latestTime)
         {
             var resourceName = new ResourceName(this.ResourceName, "scheduled_times");

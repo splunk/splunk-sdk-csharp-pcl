@@ -43,8 +43,7 @@ namespace Splunk.Client
         where TConverter : ValueConverter<TValue>, new()
     {
         /// <summary>
-        /// The default <see cref="CollectionConverter&lt;TCollection, TConverter, TValue&gt;"/>
-        /// instance.
+        /// The default <see cref="ReadOnlyCollectionConverter&lt;TCollection, TConverter, TValue&gt;"/> instance.
         /// </summary>
         public static readonly ReadOnlyCollectionConverter<TCollection, TConverter, TValue> Instance =
             new ReadOnlyCollectionConverter<TCollection, TConverter, TValue>();

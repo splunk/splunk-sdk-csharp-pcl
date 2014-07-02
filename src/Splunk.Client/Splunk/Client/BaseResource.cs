@@ -267,8 +267,8 @@ namespace Splunk.Client
         /// A Splunk atom feed entry containing resource data.
         /// </param>
         /// <param name="generatorVersion">
-        /// Version number of the Splunk atom feed generator that produced 
-        /// <paramref name="entry"/>.
+        /// The version of the generator producing the <see cref="AtomFeed"/>
+        /// containing <paramref name="entry"/>.
         /// </param>
         protected internal static void Initialize<TResource>(TResource resource, AtomEntry entry,
             Version generatorVersion)
@@ -390,7 +390,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        static readonly ReadOnlyCollection<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new BaseResource[0]);
+        static readonly IReadOnlyList<BaseResource> NoResources = new ReadOnlyCollection<BaseResource>(new BaseResource[0]);
 
         bool initialized;
 

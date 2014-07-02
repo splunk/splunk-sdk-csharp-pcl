@@ -177,13 +177,13 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public ConfigurationSetting this[int index]
         {
-            get { return this.Resources[index]; }
+            get { return (ConfigurationSetting)this.Snapshot.Resources[index]; }
         }
 
         /// <inheritdoc/>
         public int Count
         {
-            get { return this.Resources.Count; }
+            get { return this.Snapshot.Resources.Count; }
         }
 
         /// <inheritdoc/>
@@ -229,7 +229,7 @@ namespace Splunk.Client
         /// </returns>
         public IEnumerator<ConfigurationSetting> GetEnumerator()
         {
-            return this.Resources.GetEnumerator();
+            return ((IReadOnlyList<ConfigurationSetting>)this.Snapshot.Resources).GetEnumerator();
         }
 
         /// <summary>
@@ -297,17 +297,6 @@ namespace Splunk.Client
 
         #endregion
         
-        #endregion
-
-        #region Privates/internals
-
-        static readonly IReadOnlyList<ConfigurationSetting> NoResources = new ReadOnlyCollection<ConfigurationSetting>(new ConfigurationSetting[0]);
-
-        IReadOnlyList<ConfigurationSetting> Resources
-        {
-            get { return this.Snapshot.GetValue("Resources") ?? NoResources; }
-        }
-
         #endregion
     }
 }

@@ -177,7 +177,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                IReadOnlyList<string> capabilities = await service.GetCapabilitiesAsync();
+                ReadOnlyCollection<string> capabilities = await service.GetCapabilitiesAsync();
                 var serverInfo = await service.Server.GetInfoAsync();
 
                 if (serverInfo.OSName == "Windows")
@@ -1451,11 +1451,11 @@ namespace Splunk.Client.AcceptanceTests
 
                     foreach (var preview in stream)
                     {
-                        Assert.Equal<IEnumerable<string>>(new List<string>
+                        Assert.Equal<IEnumerable<string>>(new ReadOnlyCollection<string>(new string[]
                             {
                                 "method",
                                 "count",
-                            },
+                            }),
                             preview.FieldNames);
 
                         if (preview.IsFinal)
@@ -1491,11 +1491,11 @@ namespace Splunk.Client.AcceptanceTests
                     stream.Subscribe(new Observer<SearchPreview>(
                         onNext: (preview) =>
                         {
-                            Assert.Equal<IEnumerable<string>>(new List<string>
+                            Assert.Equal<IEnumerable<string>>(new ReadOnlyCollection<string>(new string[]
                                 {
                                     "method",
                                     "count",
-                                },
+                                }),
                                 preview.FieldNames);
 
                             if (preview.IsFinal)

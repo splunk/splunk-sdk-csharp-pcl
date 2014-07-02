@@ -21,6 +21,7 @@
 namespace Splunk.Client
 {
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq;
     using System.Net;
@@ -115,7 +116,7 @@ namespace Splunk.Client
         #region Properties
 
         /// <inheritdoc/>
-        public virtual IReadOnlyList<Message> Messages
+        public virtual ReadOnlyCollection<Message> Messages
         {
             get { return this.Snapshot.GetValue("Messages") ?? NoMessages; }
         }

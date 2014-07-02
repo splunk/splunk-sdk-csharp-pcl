@@ -90,67 +90,37 @@ namespace Splunk.Client
 
         #region Properties
 
-        /// <summary>
-        /// Gets the generator version.
-        /// </summary>
-        /// <value>
-        /// The generator version.
-        /// </value>
+        /// <inheritdoc/>
         public Version GeneratorVersion
         {
             get { return this.GetValue("GeneratorVersion"); }
         }
 
-        /// <summary>
-        /// Gets the identifier.
-        /// </summary>
-        /// <value>
-        /// The identifier.
-        /// </value>
+        /// <inheritdoc/>
         public Uri Id
         {
             get { return this.GetValue("Id"); }
         }
 
-        /// <summary>
-        /// Gets the title.
-        /// </summary>
-        /// <value>
-        /// The title.
-        /// </value>
+        /// <inheritdoc/>
         public string Title
         {
             get { return this.GetValue("Title"); }
         }
 
-        /// <summary>
-        /// Gets the Date/Time of the updated.
-        /// </summary>
-        /// <value>
-        /// The updated.
-        /// </value>
+        /// <inheritdoc/>
         public DateTime Updated
         {
             get { return this.GetValue("Updated"); }
         }
 
-        /// <summary>
-        /// Gets the content.
-        /// </summary>
-        /// <value>
-        /// The content.
-        /// </value>
+        /// <inheritdoc/>
         protected ExpandoAdapter Content
         {
             get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
         }
 
-        /// <summary>
-        /// Gets the resources.
-        /// </summary>
-        /// <value>
-        /// The resources.
-        /// </value>
+        /// <inheritdoc/>
         protected internal IReadOnlyList<BaseResource> Resources
         {
             get { return this.GetValue("Resources") ?? NoResources; }
@@ -161,8 +131,8 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Determines whether the specified <see cref="BaseResource"/> refers to the
-        /// same resource as the current one.
+        /// Determines whether the specified resource refers to the same 
+        /// resource as the current one.
         /// </summary>
         /// <param name="other">
         /// The <see cref="BaseResource"/> to compare with the current one.
@@ -172,25 +142,21 @@ namespace Splunk.Client
         /// <see cref="BaseResource"/>; otherwise, <c>false</c>.
         /// </returns>
         /// <seealso cref="M:System.Object.Equals(object)"/>
-        ///
-        /// ### <param name="obj">
-        /// The object to compare with the current object.
-        /// </param>
         public override bool Equals(object other)
         {
             return this.Equals(other as BaseResource);
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="BaseResource"/> refers to the
-        /// same resource as the current one.
+        /// Determines whether the specified resource refers to the same
+        /// resource as the current one.
         /// </summary>
         /// <param name="other">
         /// The <see cref="BaseResource"/> to compare with the current one.
         /// </param>
         /// <returns>
         /// A value of <c>true</c> if the two instances represent the same
-        /// <see cref="BaseResource"/>; otherwise, <c>false</c>.
+        /// resource; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(BaseResource other)
         {
@@ -209,10 +175,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns the hash code for the current <see cref="BaseResource"/>.
+        /// Returns the hash code for the current resource.
         /// </summary>
         /// <returns>
-        /// Hash code for the current <see cref="BaseResource"/>.
+        /// Hash code for the current resource.
         /// </returns>
         /// <seealso cref="M:System.Object.GetHashCode()"/>
         public override int GetHashCode()
@@ -221,83 +187,90 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized
-        /// <see cref= "BaseResource"/>. class.
+        /// Infrastructure. Initializes the current uninitialized resource.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="BaseResource"/>
-        /// instantiated by the default constructor. Override this method to provide
-        /// special initialization code. Call this base method before initialization
+        /// This method may be called once to intialize a resource instantiated
+        /// by the default constructor. Override this method to provide special
+        /// initialization code. Call this base method before initialization
         /// is complete.
         /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not intended
-        /// to be used directly from your code.
+        /// This method supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        ///
         /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/>, <paramref name="entry"/>, or
         /// <paramref name="generatorVersion"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The current <see cref="BaseResource"/> is already initialized.
+        /// The current resource is already initialized.
         /// </exception>
         /// <param name="entry">
         /// An object representing a Splunk atom entry response.
         /// </param>
         /// <param name="generatorVersion">
         /// The version of the generator producing the <see cref="AtomFeed"/>
-        /// feed containing <paramref name="entry"/>.
+        /// containing <paramref name="entry"/>.
         /// </param>
         protected internal abstract void Initialize(AtomEntry entry, Version generatorVersion);
 
         /// <summary>
-        /// Infrastructure. Initializes the current uninitialized
-        /// <see cref= "BaseResource"/>.
+        /// Infrastructure. Initializes the current uninitialized resource.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="BaseResource"/>
-        /// instantiated by the default constructor. Override this method to provide
-        /// special initialization code. Call this base method before initialization
+        /// This method may be called once to intialize a resource instantiated
+        /// by the default constructor. Override this method to provide special
+        /// initialization code. Call this base method before initialization
         /// is complete.
         /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not intended
-        /// to be used directly from your code.
+        /// This method supports the Splunk client infrastructure and is not
+        /// intended to be used directly from your code.
         /// </note>
         /// </remarks>
-        ///
         /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        /// The current <see cref="BaseResource"/> is already initialized.
+        /// The current resource is already initialized.
         /// </exception>
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
         /// </param>
         protected internal abstract void Initialize(AtomFeed feed);
 
+        /// <summary>
+        /// Gets a string identifying the current resource.
+        /// </summary>
+        /// <returns>
+        /// A string representing the identity of the current
+        /// <see cref= "BaseResource"/>.
+        /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
+        public override string ToString()
+        {
+            return this.Id.ToString();
+        }
+
         #region Initialization helpers
 
         /// <summary>
-        /// Initializes this object.
+        /// Initializes an unitialized resource.
         /// </summary>
         /// <typeparam name="TResource">
-        /// Type of the resource.
+        /// Type of the resource to be initialized.
         /// </typeparam>
         /// <param name="resource">
-        /// 
+        /// The resource to be initialized.
         /// </param>
         /// <param name="entry">
-        /// 
+        /// A Splunk atom feed entry containing resource data.
         /// </param>
         /// <param name="generatorVersion">
-        /// 
+        /// Version number of the Splunk atom feed generator that produced 
+        /// <paramref name="entry"/>.
         /// </param>
-        /// <returns>
-        /// A TResource.
-        /// </returns>
-        protected internal static TResource Initialize<TResource>(TResource resource, AtomEntry entry,
+        protected internal static void Initialize<TResource>(TResource resource, AtomEntry entry,
             Version generatorVersion)
             where TResource : BaseResource, new()
         {
@@ -344,29 +317,24 @@ namespace Splunk.Client
 
             resource.Object = expando;
             resource.MarkInitialized();
-
-            return resource;
         }
 
         /// <summary>
-        /// Initializes this object.
+        /// Initializes an unitialized resource collection.
         /// </summary>
         /// <typeparam name="TCollection">
-        /// Type of the collection.
+        /// Type of the resource collection to be initialized.
         /// </typeparam>
         /// <typeparam name="TResource">
-        /// Type of the resource.
+        /// Type of the resources in the resource collection to be initialized.
         /// </typeparam>
         /// <param name="collection">
-        /// The collection.
+        /// The resource collection to be initialized.
         /// </param>
         /// <param name="feed">
-        /// An object representing a Splunk atom feed response.
+        /// A Splunk atom feed entry containing resource data.
         /// </param>
-        /// <returns>
-        /// A TCollection.
-        /// </returns>
-        protected internal static TCollection Initialize<TCollection, TResource>(TCollection collection, AtomFeed feed)
+        protected internal static void Initialize<TCollection, TResource>(TCollection collection, AtomFeed feed)
             where TCollection : BaseResource, new()
             where TResource : BaseResource, new()
         {
@@ -414,24 +382,9 @@ namespace Splunk.Client
 
             collection.Object = expando;
             collection.MarkInitialized();
-            
-            return collection;
         }
 
         #endregion
-
-        /// <summary>
-        /// Gets a string identifying the current <see cref="BaseResource"/>.
-        /// </summary>
-        /// <returns>
-        /// A string representing the identity of the current
-        /// <see cref= "BaseResource"/>.
-        /// </returns>
-        /// <seealso cref="M:System.Object.ToString()"/>
-        public override string ToString()
-        {
-            return this.Id.ToString();
-        }
 
         #endregion
 
@@ -449,20 +402,8 @@ namespace Splunk.Client
             }
         }
 
-        /// <summary>
-        /// Asynchronously creates a <see cref="BaseResource"/> from a Splunk atom
-        /// feed <see cref="Response"/>.
-        /// </summary>
-        /// <typeparam name="TResource">
-        /// Type of the resource.
-        /// </typeparam>
-        /// <param name="response">
-        /// An object representing a Splunk atom feed response.
-        /// </param>
-        /// <returns>
-        /// The <see cref="BaseResource"/> created.
-        /// </returns>
-        internal static async Task<TResource> CreateAsync<TResource>(Response response) where TResource : BaseResource, new()
+        internal static async Task<TResource> CreateAsync<TResource>(Response response)
+            where TResource : BaseResource, new()
         {
             var feed = new AtomFeed();
 
@@ -473,32 +414,6 @@ namespace Splunk.Client
             return resource;
         }
 
-        /// <summary>
-        /// Infrastructure. Initializes the current uninitialized resource.
-        /// </summary>
-        /// <remarks>
-        /// This method may be called once to intialize a <see cref="BaseResource"/>
-        /// instantiated by the default constructor. Override this method to provide
-        /// special initialization code. Call this base method before initialization
-        /// is complete.
-        /// <note type="note">
-        /// This method supports the Splunk client infrastructure and is not intended
-        /// to be used directly from your code.
-        /// </note>
-        /// </remarks>
-        /// <param name="object">
-        /// The object.
-        /// </param>
-        ///
-        /// ### <param name="feed">
-        /// An object representing a Splunk atom feed response.
-        /// </param>
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
-        /// </exception>
-        /// ### <exception cref="InvalidOperationException">
-        /// The current <see cref="BaseResource"/> is already initialized.
-        /// </exception>
         internal void Initialize(ExpandoObject @object)
         {
             Contract.Requires<ArgumentNullException>(@object != null);
@@ -516,42 +431,18 @@ namespace Splunk.Client
         #endregion
     }
 
-    /// <summary>
-    /// A base resource contract.
-    /// </summary>
-    /// <seealso cref="T:Splunk.Client.BaseResource"/>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification =
         "Contract classes should be contained in the same C# document as the class they reprsent.")
     ]
     [ContractClassFor(typeof(BaseResource))]
     abstract class BaseResourceContract : BaseResource
     {
-        /// <summary>
-        /// Infrastructure. Initializes the current uninitialized
-        /// <see cref= "BaseResource"/>. class.
-        /// </summary>
-        /// <param name="entry">
-        /// An object representing a Splunk atom entry response.
-        /// </param>
-        /// <param name="generatorVersion">
-        /// The version of the generator producing the <see cref="AtomFeed"/>feed
-        /// containing <paramref name="entry"/>.
-        /// </param>
-        /// <seealso cref="M:Splunk.Client.BaseResource.Initialize(AtomEntry,Version)"/>
         protected internal override void Initialize(AtomEntry entry, Version generatorVersion)
         {
             Contract.Requires<ArgumentNullException>(entry != null);
             Contract.Requires<ArgumentNullException>(generatorVersion != null);
         }
 
-        /// <summary>
-        /// Infrastructure. Initializes the current uninitialized
-        /// <see cref= "BaseResource"/>.
-        /// </summary>
-        /// <param name="feed">
-        /// An object representing a Splunk atom feed response.
-        /// </param>
-        /// <seealso cref="M:Splunk.Client.BaseResource.Initialize(AtomFeed)"/>
         protected internal override void Initialize(AtomFeed feed)
         {
             Contract.Requires<ArgumentNullException>(feed != null);

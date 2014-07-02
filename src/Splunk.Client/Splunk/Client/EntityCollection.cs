@@ -402,7 +402,7 @@ namespace Splunk.Client
         /// <summary>
         /// The no messages.
         /// </summary>
-        internal static readonly IReadOnlyList<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
+        internal static readonly ReadOnlyCollection<Message> NoMessages = new ReadOnlyCollection<Message>(new List<Message>());
         static readonly Argument[] GetAll = new Argument[] { new Argument("count", 0) };
 
         TEntity Create(TResource resource)

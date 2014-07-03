@@ -145,7 +145,7 @@ namespace Splunk.Client
         /// disabling an <see cref="Application"/>.
         /// </remarks>
         /// <value>
-        /// <c>true</c> if state change requires restart, <c>false</c> if not.
+        /// <c>true</c> if a state change requires a restart, <c>false</c> if not.
         /// </value>
         bool StateChangeRequiresRestart
         { get; }

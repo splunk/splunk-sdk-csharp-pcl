@@ -151,8 +151,12 @@ namespace Splunk.Client
         /// </value>
         /// <remarks>
         /// This value is expressed as a search-like time range.
-        /// <example>
-        /// Examples:</example>
+        /// <example>Examples:</example>
+        /// <code>
+        /// args.SessionTimeout = "24h"; // 24 hours
+        /// args.SessionTimeout = "3d";  // 3 days
+        /// args.SessionTimeout = 7200s; // 7,200 seconds or two hours
+        /// </code>
         /// </remarks>
         string SessionTimeout
         { get; }

@@ -413,8 +413,10 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// Express this value as a string of the form <![CDATA[<search-state>;<results-condition>;<http-method>;<uri>;]]>.
-        /// <example>
-        /// Example:</example>
+        /// <example>Example:</example>
+        /// <code>
+        /// job.SearchListener = "onResults;true;POST;/servicesNS/admin/search/saved/search/foobar/notify;";
+        /// </code>
         /// </remarks>
         /// <value>
         /// Search state listener registration entry.

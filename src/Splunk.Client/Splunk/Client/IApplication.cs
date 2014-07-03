@@ -157,8 +157,16 @@ namespace Splunk.Client
         /// Version strings are a number followed by a sequence of numbers or dots.
         /// Pre-release versions may append a space and a single-word suffix like
         /// "beta2".
-        /// <example>
-        /// Examples:</example>
+        /// <example>Examples:</example>
+        /// <code>
+        /// "1.2"
+        /// "11.0.34"
+        /// "2.0 beta"
+        /// "1.3 beta2"
+        /// "1.0 b2"
+        /// "12.4 alpha"
+        /// "11.0.34.234.254"
+        /// </code>
         /// </remarks>
         /// <value>
         /// The version.

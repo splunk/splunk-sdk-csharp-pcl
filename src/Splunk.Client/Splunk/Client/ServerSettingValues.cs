@@ -169,8 +169,12 @@ namespace Splunk.Client
         /// The session timeout.
         /// </value>
         /// <remarks>
-        /// <example>Examples.</example>
-        /// </remarks>
+        /// <example>Examples:</example>
+        /// <code>
+        /// args.SessionTimeout = "24h"; // 24 hours
+        /// args.SessionTimeout = "3d";  // 3 days
+        /// args.SessionTimeout = 7200s; // 7,200 seconds or two hours
+        /// </code>        /// </remarks>
         [DataMember(Name = "sessionTimeout", EmitDefaultValue = false)]
         public string SessionTimeout
         { get; set; }

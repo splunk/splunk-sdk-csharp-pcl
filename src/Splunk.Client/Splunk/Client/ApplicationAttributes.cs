@@ -89,8 +89,12 @@ namespace Splunk.Client
         /// <remarks>
         /// Splunk recommends lengths between five and eighty characters. Values must
         /// not include "Splunk For" as a prefix.
-        /// <example>
-        /// Examples of good labels:</example>
+        /// <example>Examples of good labels:</example>
+        /// <code>
+        /// "IMAP Monitor"
+        /// "FISMA Compliance"
+        /// "SQL Server Integration Services"
+        /// </code>
         /// </remarks>
         [DataMember(Name = "label", EmitDefaultValue = false)]
         public string Label
@@ -103,8 +107,16 @@ namespace Splunk.Client
         /// Version strings are a number followed by a sequence of numbers or dots.
         /// Pre-release versions can append a space and a single-word suffix like
         /// "beta2". Each release of an application must change the version number.
-        /// <example>
-        /// Examples:</example>
+        /// <example>Examples:</example>
+        /// <code>
+        /// "1.2"
+        /// "11.0.34"
+        /// "2.0 beta"
+        /// "1.3 beta2"
+        /// "1.0 b2"
+        /// "12.4 alpha"
+        /// "11.0.34.234.254"
+        /// </code>
         /// </remarks>
         /// <value>
         /// An application version string.

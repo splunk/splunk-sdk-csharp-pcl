@@ -48,11 +48,10 @@ namespace Splunk.Client
         /// Gets the earliest time from which no events are later scanned.
         /// </summary>
         /// <remarks>
-        /// This value can be used to indicate progress. See
-        /// <see cref= "DoneProgress"/>.
+        /// This value can be used to indicate progress. See <see cref="DoneProgress"/>.
         /// </remarks>
         /// <value>
-        /// The cursor time.
+        /// The earliest time from which no events are later scanned.
         /// </value>
         DateTime CursorTime
         { get; }
@@ -76,32 +75,33 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// The total number of bytes of disk space used by the current
-        /// <see cref="Job"/>.
+        /// Gets the total number of bytes of disk space used by the current 
+        /// search job.
         /// </summary>
         /// <value>
-        /// The disk usage.
+        /// The total number of bytes of disk space used by the current search
+        /// job.
         /// </value>
         long DiskUsage
         { get; }
 
         /// <summary>
-        /// Gets the <see cref="DispatchState"/> of the current <see cref="Job"/>.
+        /// Gets the <see cref="DispatchState"/> of the current search job.
         /// </summary>
         /// <value>
-        /// A <see cref="DispatchState"/> value.
+        /// The <see cref="DispatchState"/> of the current search job.
         /// </value>
         DispatchState DispatchState
         { get; }
 
         /// <summary>
-        /// Gets a number between 0 and 1.0 that indicates the approximate progress
-        /// of the current <see cref="Job"/>
+        /// Gets a number between 0 and 1.0 that indicates the approximate 
+        /// progress of the current search job.
         /// </summary>
         /// <remarks>
-        /// This value is computed as (<see cref="LatestTime"/> -
-        /// <see cref= "CursorTime"/>) / (<see cref="LatestTime"/> -
-        /// <see cref= "EarliestTime"/>).
+        /// This value is computed as (<see cref="LatestTime"/> - <see cref=
+        /// "CursorTime"/>) / (<see cref="LatestTime"/> - <see cref=
+        /// "EarliestTime"/>).
         /// </remarks>
         /// <value>
         /// The done progress.
@@ -111,7 +111,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the number of possible events that were dropped from the current
-        /// <see cref="Job"/> due to the realtime queue size.
+        /// search job due to the realtime queue size.
         /// </summary>
         /// <remarks>
         /// This value only applies to realtime search jobs.
@@ -123,8 +123,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the extensible administration interface properties for the current
-        /// <see cref="Job"/>.
+        /// Gets the extensible administration interface properties for the
+        /// current search job.
         /// </summary>
         /// <value>
         /// The extensible administration interface properties.
@@ -133,12 +133,11 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the earliest time the current <see cref="Job"/> is configured to
+        /// Gets the earliest time the current search job is configured to
         /// start.
         /// </summary>
         /// <remarks>
-        /// This value can be used to indicate progress. See
-        /// <see cref= "DoneProgress"/>.
+        /// This value can be used to indicate progress. See <see cref= "DoneProgress"/>.
         /// </remarks>
         /// <value>
         /// The earliest time.
@@ -147,8 +146,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the number of events that are available for export from the current
-        /// <see cref="Job"/>.
+        /// Gets the number of events that are available for export from the 
+        /// current search job.
         /// </summary>
         /// <value>
         /// The number of event availables.
@@ -157,7 +156,7 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the number of events found by the current <see cref="Job"/>.
+        /// Gets the number of events found by the current search job.
         /// </summary>
         /// <value>
         /// The number of events.
@@ -166,8 +165,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the number of fields found in the search results produced by the
-        /// current <see cref="Job"/>.
+        /// Gets the number of fields found in the search results produced by 
+        /// the current search job.
         /// </summary>
         /// <value>
         /// The number of event fields.
@@ -176,8 +175,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates if the events of the current
-        /// <see cref= "Job"/> are being streamed.
+        /// Gets a value that indicates if the events of the current search job
+        /// are being streamed.
         /// </summary>
         /// <value>
         /// <c>true</c> if event is streaming, <c>false</c> if not.
@@ -187,8 +186,8 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets a value that indicates if the events produced by the current
-        /// <see cref="Job"/> have not been stored, and thus are not available
-        /// from the events endpoint for the <see cref="Job"/>.
+        /// search job have not been stored, and thus are not available from 
+        /// the events endpoint for the job.
         /// </summary>
         /// <value>
         /// <c>true</c> if event is truncated, <c>false</c> if not.
@@ -212,7 +211,7 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the <see cref="SortDirection"/> of the current <see cref="Job"/>.
+        /// Gets the <see cref="SortDirection"/> of the current search job.
         /// </summary>
         /// <value>
         /// The event sorting.
@@ -248,7 +247,7 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates whether the current <see cref="Job"/>
+        /// Gets a value that indicates whether the current search job.
         /// has completed.
         /// </summary>
         /// <value>
@@ -258,12 +257,12 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates whether the current <see cref="Job"/>
-        /// failed due to a fatal error.
+        /// Gets a value that indicates whether the current search job failed
+        /// due to a fatal error.
         /// </summary>
         /// <remarks>
-        /// A <see cref="Job"/> may fail, for example, because of syntax errors in
-        /// the search command.
+        /// A search job may fail, for example, because of syntax errors in the
+        /// search command.
         /// </remarks>
         /// <value>
         /// <c>true</c> if this object is failed, <c>false</c> if not.
@@ -272,8 +271,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates whether the current <see cref="Job"/>
-        /// was finalized before completion.
+        /// Gets a value that indicates whether the current search job was
+        /// finalized before completion.
         /// </summary>
         /// <value>
         /// <c>true</c> if this object is finalized, <c>false</c> if not.
@@ -282,8 +281,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates whether the current <see cref="Job"/>
-        /// is paused.
+        /// Gets a value that indicates whether the current search job is
+        /// paused.
         /// </summary>
         /// <value>
         /// <c>true</c> if this object is paused, <c>false</c> if not.
@@ -292,8 +291,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates whether previews are enabled for the current
-        /// <see cref="Job"/>.
+        /// Gets a value that indicates whether previews are enabled for the 
+        /// current search job.
         /// </summary>
         /// <value>
         /// <c>true</c> if a preview is enabled, <c>false</c> if not.
@@ -302,8 +301,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates whether the current <see cref="Job"/>
-        /// is executing a realtime search.
+        /// Gets a value that indicates whether the current search job is
+        /// executing a realtime search.
         /// </summary>
         /// <value>
         /// <c>true</c> if this object is real time search, <c>false</c> if not.
@@ -312,8 +311,8 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates whether the timeline feature is enabled for
-        /// the current <see cref="Job"/>.
+        /// Gets a value that indicates whether the timeline feature is enabled 
+        /// for the current search job.
         /// </summary>
         /// <value>
         /// <c>true</c> if this object is remote timeline, <c>false</c> if not.
@@ -322,8 +321,7 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates whether the current <see cref="Job"/>
-        /// is saved.
+        /// Gets a value that indicates whether the current search job is saved.
         /// </summary>
         /// <remarks>
         /// A value of <c>true</c> indicates that the current <see cref="Job"/>
@@ -339,7 +337,7 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets a value that indicates if the current <see cref="Job"/> is a saved
+        /// Gets a value that indicates if the current search job is a saved
         /// search that was run by the Splunk scheduler.
         /// </summary>
         /// <value>
@@ -350,7 +348,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets a value that indicates if the process running the current
-        /// <see cref="Job"/> is dead, but with the search not finished.
+        /// search job is dead, but with the search not finished.
         /// </summary>
         /// <value>
         /// <c>true</c> if this object is zombie, <c>false</c> if not.
@@ -396,7 +394,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the number of previews that have been generated by the current
-        /// <see cref="Job"/> so far.
+        /// search job so far.
         /// </summary>
         /// <value>
         /// The total number of previews.
@@ -405,10 +403,10 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the executions costs of the current <see cref="Job"/>.
+        /// Gets the execution costs of the current search job.
         /// </summary>
         /// <value>
-        /// The performance.
+        /// The execution costs of the current search job.
         /// </value>
         dynamic Performance
         { get; }
@@ -424,7 +422,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets an integer value between <c>0</c> and <c>10</c> that indicates the
-        /// priority of the current <see cref="Job"/>.
+        /// priority of the current search job.
         /// </summary>
         /// <remarks>
         /// The priority is mapped to the OS process priority. The higher the number
@@ -445,7 +443,7 @@ namespace Splunk.Client
         /// Gets the search string that is sent to every search peer.
         /// </summary>
         /// <value>
-        /// The remote search.
+        /// The search string that is sent to every search peer.
         /// </value>
         string RemoteSearch
         { get; }
@@ -455,7 +453,8 @@ namespace Splunk.Client
         /// reporting commands.
         /// </summary>
         /// <remarks>
-        /// A value of <c>indicates</c> that search command has no reporting commands.
+        /// A value of <c>indicates</c> that search command has no reporting 
+        /// commands.
         /// </remarks>
         /// <value>
         /// The report search.
@@ -477,10 +476,11 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This is the subset of scanned events (represented by the
-        /// <see cref= "ScanCount"/> property) that actually matches the search terms.
+        /// <see cref= "ScanCount"/> property) that actually matches the search
+        /// terms.
         /// </remarks>
         /// <value>
-        /// The number of results.
+        /// The total number of results returned by the search.
         /// </value>
         long ResultCount
         { get; }
@@ -505,7 +505,7 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the time in seconds that the current <see cref="Job"/> took to
+        /// Gets the time in seconds that the current search job took to
         /// complete.
         /// </summary>
         /// <value>
@@ -533,22 +533,23 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the full text of the search command for the current
-        /// <see cref= "Job"/>.
+        /// Gets the full text of the search command for the current search job.
         /// </summary>
         /// <value>
-        /// The search.
+        /// The full text of the search command for the current search job.
         /// </value>
         string Search
         { get; }
 
         /// <summary>
-        /// Gets the earliest time for the current <see cref="Job"/> as specified in
-        /// the search command rather than the <see cref= "EarliestTime"/> parameter.
+        /// Gets the earliest time for the current search job as specified in
+        /// the search command rather than the <see cref= "EarliestTime"/>
+        /// parameter.
         /// </summary>
         /// <remarks>
-        /// This value does not snap to the indexed data time bounds for all-time
-        /// searches as <see cref="EarliestTime"/> and <see cref= "LatestTime"/> do.
+        /// This value does not snap to the indexed data time bounds for 
+        /// all-time searches as <see cref="EarliestTime"/> and <see cref=
+        /// "LatestTime"/> do.
         /// </remarks>
         /// <value>
         /// The search earliest time.
@@ -557,13 +558,13 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the latest time for the current <see cref="Job"/> as specified the
-        /// search command rather than the <see cref="LatestTime"/>
-        /// parameter.
+        /// Gets the latest time for the current search job as specified in the
+        /// search command rather than the <see cref="LatestTime"/> parameter.
         /// </summary>
         /// <remarks>
-        /// This value does not snap to the indexed data time bounds for all-time
-        /// searches as <see cref="EarliestTime"/> and <see cref= "LatestTime"/> do.
+        /// This value does not snap to the indexed data time bounds for 
+        /// all-time searches as <see cref="EarliestTime"/> and <see cref=
+        /// "LatestTime"/> do.
         /// </remarks>
         /// <value>
         /// The search latest time.
@@ -573,7 +574,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the list of all search peers that were contacted by the current
-        /// <see cref="Job"/>
+        /// search job.
         /// </summary>
         /// <value>
         /// The search providers.
@@ -582,11 +583,10 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the search ID for the current <see cref="Job"/>.
+        /// Gets the ID of the current search job.
         /// </summary>
         /// <remarks>
-        /// This property is a synonym for
-        /// <see cref="Resource&lt;TResource&gt;.Name"/>.
+        /// This property is a synonym for <see cref="Resource&lt;TResource&gt;.Name"/>.
         /// </remarks>
         /// <value>
         /// The search ID of the current <see cref="Job"/>.
@@ -604,12 +604,12 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the time in seconds before the current <see cref="Job"/> expires
+        /// Gets the time in seconds before the current search job expires 
         /// after it completes.
         /// </summary>
         /// <value>
-        /// The time in seconds before the current <see cref="Job"/> expires after
-        /// it completes.
+        /// The time in seconds before the current search job expires after it
+        /// completes.
         /// </value>
         long Ttl
         { get; }
@@ -621,9 +621,9 @@ namespace Splunk.Client
         #region Getting, removing, and updating the current Job
 
         /// <summary>
-        /// Asynchronously retrieves a fresh copy of the current <see cref= "Job"/>
-        /// that is in or has moved past a desired <see cref= "DispatchState"/> and
-        /// contains all changes to it since it was last retrieved.
+        /// Asynchronously retrieves a fresh copy of the current search hob
+        /// that is in or has moved past a desired <see cref= "DispatchState"/>
+        /// and contains all changes to it since it was last retrieved.
         /// </summary>
         /// <remarks>
         /// This method always retrieves a fresh copy of the current
@@ -647,25 +647,25 @@ namespace Splunk.Client
         Task GetAsync(DispatchState dispatchState, int delay, int retryInterval);
 
         /// <summary>
-        /// Asynchronously retrieves a fresh copy of the current <see cref= "Job"/>
-        /// that is in or has moved past a desired <see cref= "DispatchState"/> and
-        /// contains all changes to it since it was last retrieved.
+        /// Asynchronously retrieves a fresh copy of the current search job
+        /// that is in or has moved past a desired <see cref= "DispatchState"/>
+        /// and contains all changes to it since it was last retrieved.
         /// </summary>
         /// <remarks>
-        /// This method returns immediately if <see cref="DispatchState"/> is greater
-        /// than or equal to <paramref name="dispatchState"/>.
+        /// This method returns immediately if <see cref="DispatchState"/> is 
+        /// greater than or equal to <paramref name="dispatchState"/>.
         /// </remarks>
         /// <param name="dispatchState">
         /// Desired dispatch state.
         /// </param>
         /// <param name="delay">
-        /// Number of milliseconds to wait for the current <see cref="Job"/> to move
-        /// into the desired <paramref name="dispatchState"/>.
+        /// Number of milliseconds to wait for the current <see cref="Job"/> to
+        /// move into the desired <paramref name="dispatchState"/>.
         /// </param>
         /// <param name="retryInterval">
-        /// Number of milliseconds to wait between checks for the dispatch state of
-        /// the current <see cref="Job"/>. This value is increased by 50% on each
-        /// retry.
+        /// Number of milliseconds to wait between checks for the dispatch 
+        /// state of the current <see cref="Job"/>. This value is increased
+        /// by 50% on each retry.
         /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -677,8 +677,8 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/bL4tFk">POST
-        /// search/jobs/{search_id}</a> endpoint to update custom arguments to the
-        /// current <see cref="Job"/>.
+        /// search/jobs/{search_id}</a> endpoint to update custom arguments to
+        /// the current <see cref="Job"/>.
         /// </remarks>
         /// <param name="arguments">
         /// The arguments.
@@ -696,7 +696,7 @@ namespace Splunk.Client
         /// Gets search events asynchronous.
         /// </summary>
         /// <param name="args">
-        /// 
+        /// Optional search event arguments.
         /// </param>
         /// <returns>
         /// The search events asynchronous.
@@ -707,7 +707,7 @@ namespace Splunk.Client
         /// Gets search preview asynchronous.
         /// </summary>
         /// <param name="args">
-        /// 
+        /// Optional search result arguments.
         /// </param>
         /// <returns>
         /// The search preview asynchronous.
@@ -718,7 +718,7 @@ namespace Splunk.Client
         /// Gets search results asynchronous.
         /// </summary>
         /// <param name="args">
-        /// 
+        /// Optional search result arguments.
         /// </param>
         /// <returns>
         /// The search results asynchronous.
@@ -730,7 +730,8 @@ namespace Splunk.Client
         #region Job control
 
         /// <summary>
-        /// Cancel asynchronous.
+        /// Asynchronously stops the current search and deletes the result 
+        /// cache.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -738,7 +739,8 @@ namespace Splunk.Client
         Task CancelAsync();
 
         /// <summary>
-        /// Disables the preview asynchronous.
+        /// Asynchronously disables preview generation for the current search
+        /// job.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -746,7 +748,8 @@ namespace Splunk.Client
         Task DisablePreviewAsync();
 
         /// <summary>
-        /// Enables the preview asynchronous.
+        /// Asynchronously enables preview generation for the current search
+        /// job.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -754,7 +757,8 @@ namespace Splunk.Client
         Task EnablePreviewAsync();
 
         /// <summary>
-        /// Finalize asynchronous.
+        /// Asynchronously stops the current search job and provides intermediate
+        /// results to its results endpoint.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -762,7 +766,7 @@ namespace Splunk.Client
         Task FinalizeAsync();
 
         /// <summary>
-        /// Pause asynchronous.
+        /// Asynchronously suspends execution of the current search job.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -770,18 +774,24 @@ namespace Splunk.Client
         Task PauseAsync();
 
         /// <summary>
-        /// Saves the asynchronous.
+        /// Asynchronously saves the current search job, storing its artifacts
+        /// on disk for seven days.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
+        /// <remarks>
+        /// Add or edit the <c>default_save_ttl</c> value in <a href=
+        /// "http://goo.gl/yj4XrO">limits.conf</a> to override the default
+        /// value of seven days.
+        /// </remarks>
         Task SaveAsync();
 
         /// <summary>
-        /// Sets priority asynchronous.
+        /// Sets the priority of the search process.
         /// </summary>
         /// <param name="priority">
-        /// 
+        /// A value between <c>0</c> and <c>10</c>.
         /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -789,10 +799,11 @@ namespace Splunk.Client
         Task SetPriorityAsync(int priority);
 
         /// <summary>
-        /// Sets TTL asynchronous.
+        /// Sets the time-to-live for the results of the current search job.
         /// </summary>
         /// <param name="ttl">
-        /// 
+        /// The time-to-live in seconds.
+        /// seconds.
         /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -800,10 +811,11 @@ namespace Splunk.Client
         Task SetTtlAsync(int ttl);
 
         /// <summary>
-        /// Touch asynchronous.
+        /// Extends the expiration time for the results of the current search
+        /// job.
         /// </summary>
         /// <param name="ttl">
-        /// 
+        /// The extended time in seconds.
         /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -811,7 +823,8 @@ namespace Splunk.Client
         Task TouchAsync(int ttl);
 
         /// <summary>
-        /// Unpause asynchronous.
+        /// Asynchronously resumes execution of the current search job, if
+        /// it is paused.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -819,7 +832,7 @@ namespace Splunk.Client
         Task UnpauseAsync();
 
         /// <summary>
-        /// Unsave asynchronous.
+        /// Asynchronously disables any action performed by <see cref="Save"/>.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.

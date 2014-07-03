@@ -50,8 +50,7 @@ namespace Splunk.Client
         /// An object identifying a Splunk resource within
         /// <paramref name= "service"/>.<see cref="Namespace"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
         protected internal Job(Service service, string name)
@@ -69,11 +68,10 @@ namespace Splunk.Client
         /// <param name="entry">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal Job(Context context, AtomEntry entry)
@@ -93,14 +91,13 @@ namespace Splunk.Client
         /// <param name="name">
         /// Name of the search <see cref="Job"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
+        /// <exception cref="ArgumentException">
         /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal Job(Context context, Namespace ns, string name)

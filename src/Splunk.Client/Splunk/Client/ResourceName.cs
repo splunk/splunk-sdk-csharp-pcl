@@ -21,8 +21,8 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Globalization;
@@ -31,11 +31,12 @@ namespace Splunk.Client
     /// <summary>
     /// Represents a Splunk resource name.
     /// </summary>
+    /// <seealso cref="T:System.Collections.ObjectModel.ReadOnlyCollection{T}"/>
     /// <seealso cref="T:System.IComparable"/>
-    /// <seealso cref="T:System.IComparable{Splunk.Client.ResourceName}"/>
-    /// <seealso cref="T:System.IEquatable{Splunk.Client.ResourceName}"/>
-    /// <seealso cref="T:System.Collections.Generic.IReadOnlyList{System.String}"/>
-    public sealed class ResourceName : IComparable, IComparable<ResourceName>, IEquatable<ResourceName>, IReadOnlyList<string>
+    /// <seealso cref="T:System.IComparable{T}"/>
+    /// <seealso cref="T:System.IEquatable{T}"/>
+    public sealed class ResourceName : ReadOnlyCollection<string>, IComparable, IComparable<ResourceName>, 
+        IEquatable<ResourceName>
     {
         #region Constructors
 
@@ -62,9 +63,17 @@ namespace Splunk.Client
         /// 
         /// </param>
         public ResourceName(params string[] parts)
-            : this(parts.AsEnumerable<string>())
+            : base(parts)
         {
             Contract.Requires<ArgumentNullException>(parts != null);
+
+            foreach (var part in this)
+            {
+                if (string.IsNullOrEmpty(part))
+                {
+                    throw new ArgumentException(string.Concat("parts: ", this.ToString()));
+                }
+            }
         }
 
         /// <summary>
@@ -77,47 +86,12 @@ namespace Splunk.Client
         /// 
         /// </param>
         public ResourceName(IEnumerable<string> parts)
-        {
-            this.parts = parts.Select((part, i) =>
-            {
-                if (string.IsNullOrEmpty(part))
-                {
-                    throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "parts[{0}]", i));
-                }
-
-                return part;
-            })
-            .ToArray();
-        }
+            : this(parts.ToArray())
+        { }
 
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// Indexer to get items within this collection using array index syntax.
-        /// </summary>
-        /// <param name="index">
-        /// 
-        /// </param>
-        /// <returns>
-        /// The indexed item.
-        /// </returns>
-        public string this[int index]
-        {
-	        get { return this.parts[index]; }
-        }
-
-        /// <summary>
-        /// Gets the number of. 
-        /// </summary>
-        /// <value>
-        /// The count.
-        /// </value>
-        public int Count
-        {
-            get { return this.parts.Count; }
-        }
 
         /// <summary>
         /// Gets the collection.
@@ -127,7 +101,7 @@ namespace Splunk.Client
         /// </value>
         public string Collection
         {
-            get { return this.parts.Count > 1 ? this.parts[this.parts.Count - 2] : null; }
+            get { return this.Items.Count > 1 ? this.Items[this.Items.Count - 2] : null; }
         }
 
         /// <summary>
@@ -138,7 +112,7 @@ namespace Splunk.Client
         /// </value>
         public string Title
         {
-            get { return this.parts[this.parts.Count - 1]; }
+            get { return this.Items[this.Items.Count - 1]; }
         }
 
         #endregion
@@ -268,15 +242,15 @@ namespace Splunk.Client
                 return 0;
             }
 
-            int diff = this.parts.Count - other.parts.Count;
+            int diff = this.Items.Count - other.Items.Count;
 
             if (diff != 0)
             {
                 return diff;
             }
 
-            var pair = this.parts
-                .Zip(other.parts, (p1, p2) => new { ThisPart = p1, OtherPart = p2 })
+            var pair = this.Items
+                .Zip(other.Items, (p1, p2) => new { ThisPart = p1, OtherPart = p2 })
                 .FirstOrDefault(p => p.ThisPart != p.OtherPart);
 
             if (pair == null)
@@ -333,30 +307,12 @@ namespace Splunk.Client
                 return true;
             }
 
-            if (this.parts.Count != other.parts.Count)
+            if (this.Items.Count != other.Items.Count)
             {
                 return false;
             }
 
-            return this.parts.SequenceEqual(other.parts);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.parts.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Gets an enumerator for iterating over the parts of this
-        /// <see cref= "ResourceName"/>
-        /// </summary>
-        /// <returns>
-        /// An enumerator for iterating over the parts of this
-        /// <see cref= "ResourceName"/>
-        /// </returns>
-        public IEnumerator<string> GetEnumerator()
-        {
-            return this.parts.GetEnumerator();
+            return this.Items.SequenceEqual(other.Items);
         }
 
         /// <summary>
@@ -369,7 +325,7 @@ namespace Splunk.Client
         public override int GetHashCode()
         {
             // TODO: Check this against the algorithm presented in Effective Java
-            return this.parts.Aggregate(seed: 17, func: (value, part) => (value * 23) + part.GetHashCode());
+            return this.Items.Aggregate(seed: 17, func: (value, part) => (value * 23) + part.GetHashCode());
         }
 
         /// <summary>
@@ -538,12 +494,6 @@ namespace Splunk.Client
         {
             return string.Join("/", from segment in this select Uri.EscapeDataString(segment));
         }
-
-        #endregion
-
-        #region Privates
-
-        readonly IReadOnlyList<string> parts;
 
         #endregion
     }

@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     /// <summary>
     /// Provides an operational interface to the Splunk server info resource.
@@ -120,7 +121,7 @@ namespace Splunk.Client
         /// <value>
         /// The license keys.
         /// </value>
-        IReadOnlyList<string> LicenseKeys
+        ReadOnlyCollection<string> LicenseKeys
         { get; }
 
         /// <summary>
@@ -130,7 +131,7 @@ namespace Splunk.Client
         /// <value>
         /// The license labels.
         /// </value>
-        IReadOnlyList<string> LicenseLabels
+        ReadOnlyCollection<string> LicenseLabels
         { get; }
 
         /// <summary>

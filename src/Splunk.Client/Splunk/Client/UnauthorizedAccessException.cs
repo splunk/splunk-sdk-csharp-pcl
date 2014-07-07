@@ -21,7 +21,7 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Net;
@@ -51,7 +51,7 @@ namespace Splunk.Client
         /// A sequence of <see cref="Message"/> instances detailing the cause of the
         /// <see cref="UnauthorizedAccessException"/>.
         /// </param>
-        internal UnauthorizedAccessException(HttpResponseMessage message, IEnumerable<Message> details)
+        internal UnauthorizedAccessException(HttpResponseMessage message, ReadOnlyCollection<Message> details)
             : base(message, details)
         {
             Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.Forbidden);

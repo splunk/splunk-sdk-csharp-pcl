@@ -61,7 +61,7 @@ namespace Splunk.Client
         /// <value>
         /// A list of names of the fields.
         /// </value>
-        public IReadOnlyList<string> FieldNames
+        public ReadOnlyCollection<string> FieldNames
         {
             get { return this.metadata.FieldNames; }
         }

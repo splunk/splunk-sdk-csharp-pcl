@@ -17,6 +17,7 @@
 namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -33,10 +34,10 @@ namespace Splunk.Client.UnitTests
 
             foreach (var type in new MessageType[] { MessageType.Debug, MessageType.Error, MessageType.Fatal, MessageType.Information, MessageType.Warning })
             {
-                var details = new Message[] 
+                var details = new ReadOnlyCollection<Message>(new Message[] 
                 {
                     new Message(type, "Information on the cause of the RequestException")
-                };
+                });
                 
                 requestException = new RequestException(new HttpResponseMessage(HttpStatusCode.InternalServerError), details);
 
@@ -63,7 +64,9 @@ namespace Splunk.Client.UnitTests
                     message.Append(details[j]);
                 }
 
-                requestException = new RequestException(new HttpResponseMessage(HttpStatusCode.NoContent), details);
+                requestException = new RequestException(
+                    new HttpResponseMessage(HttpStatusCode.NoContent), new ReadOnlyCollection<Message>(details));
+
                 Assert.Equal(HttpStatusCode.NoContent, requestException.StatusCode);
                 Assert.Equal(message.ToString(), requestException.Message);
                 Assert.Equal(i, requestException.Details.Count);

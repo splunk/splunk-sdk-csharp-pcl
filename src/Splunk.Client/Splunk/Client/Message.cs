@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
     using System.Xml;
@@ -421,15 +422,15 @@ namespace Splunk.Client
         #region Privates/internals
 
         /// <summary>
-        /// Reads messages asynchronous.
+        /// Reads messages asynchronously.
         /// </summary>
         /// <param name="reader">
         /// The reader.
         /// </param>
         /// <returns>
-        /// The messages asynchronous.
+        /// The messages.
         /// </returns>
-        internal static async Task<IReadOnlyList<Message>> ReadMessagesAsync(XmlReader reader)
+        internal static async Task<ReadOnlyCollection<Message>> ReadMessagesAsync(XmlReader reader)
         {
             var messages = new List<Message>();
 
@@ -451,7 +452,7 @@ namespace Splunk.Client
                 reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
             }
 
-            return messages;
+            return new ReadOnlyCollection<Message>(messages);
         }
 
         #endregion

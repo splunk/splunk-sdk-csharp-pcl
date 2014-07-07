@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Globalization;
     using System.Threading;
@@ -74,7 +75,7 @@ namespace Splunk.Client
         /// <value>
         /// A list of names of the fields.
         /// </value>
-        public IReadOnlyList<string> FieldNames
+        public ReadOnlyCollection<string> FieldNames
         {
             get { return this.metadata.FieldNames; }
         }

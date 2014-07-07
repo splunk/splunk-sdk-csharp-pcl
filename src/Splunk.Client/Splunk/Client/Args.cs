@@ -166,23 +166,34 @@ namespace Splunk.Client
 
         #region Methods
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
         /// <summary>
-        /// Gets an enumerator that produces an <see cref="Argument"/> sequence based
-        /// on the serialization attributes of the properties of the current
-        /// <see cref="Args&lt;TArgs&gt;"/> instance.
+        /// Gets an enumerator that produces an <see cref="Argument"/> sequence
+        /// based on the serialization attributes of the properties of the 
+        /// current <see cref="Args&lt;TArgs&gt;"/> instance.
         /// </summary>
         /// <exception cref="SerializationException">
         /// Thrown when a Serialization error condition occurs.
         /// </exception>
         /// <returns>
-        /// An object for producing the <see cref="Argument"/> sequence.
+        /// An object for enumerating the <see cref="Argument"/> sequence.
         /// </returns>
-        public IEnumerator<Argument> GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<Argument>)this).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an enumerator that produces an <see cref="Argument"/> sequence
+        /// based on the serialization attributes of the properties of the 
+        /// current <see cref="Args&lt;TArgs&gt;"/> instance.
+        /// </summary>
+        /// <exception cref="SerializationException">
+        /// Thrown when a Serialization error condition occurs.
+        /// </exception>
+        /// <returns>
+        /// An object for enumerating the <see cref="Argument"/> sequence.
+        /// </returns>
+        IEnumerator<Argument> IEnumerable<Argument>.GetEnumerator()
         {
             foreach (var parameter in Args<TArgs>.Parameters)
             {

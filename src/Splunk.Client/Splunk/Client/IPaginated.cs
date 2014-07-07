@@ -20,7 +20,7 @@
 
 namespace Splunk.Client
 {
-    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     /// <summary>
     /// Provides an operational interface to the Splunk application collection.
@@ -33,7 +33,7 @@ namespace Splunk.Client
         /// <value>
         /// The messages.
         /// </value>
-        IReadOnlyList<Message> Messages
+        ReadOnlyCollection<Message> Messages
         { get; }
 
         /// <summary>

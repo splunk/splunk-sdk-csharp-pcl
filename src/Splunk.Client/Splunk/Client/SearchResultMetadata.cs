@@ -37,7 +37,7 @@ namespace Splunk.Client
         /// </summary>
         public static readonly SearchResultMetadata Missing = new SearchResultMetadata()
         {
-            FieldNames = new ReadOnlyCollection<string>(new List<string>()),
+            FieldNames = new ReadOnlyCollection<string>(new string[0]),
         };
 
         #endregion
@@ -64,7 +64,7 @@ namespace Splunk.Client
         /// <value>
         /// A list of names of the fields.
         /// </value>
-        public IReadOnlyList<string> FieldNames
+        public ReadOnlyCollection<string> FieldNames
         { get; private set; }
 
         #endregion
@@ -85,7 +85,7 @@ namespace Splunk.Client
         {
             var fieldNames = new List<string>();
 
-            this.FieldNames = fieldNames;
+            this.FieldNames = new ReadOnlyCollection<string>(fieldNames);
             this.IsFinal = true;
 
             if (!await reader.MoveToDocumentElementAsync("results"))

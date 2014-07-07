@@ -57,7 +57,7 @@ namespace Splunk.Client
         /// <value>
         /// A list of names of the fields.
         /// </value>
-        public IReadOnlyList<string> FieldNames
+        public ReadOnlyCollection<string> FieldNames
         {
             get { return this.metadata.FieldNames; }
         }
@@ -72,7 +72,7 @@ namespace Splunk.Client
         /// <value>
         /// The results.
         /// </value>
-        public IReadOnlyList<SearchResult> Results
+        public ReadOnlyCollection<SearchResult> Results
         { get; private set; }
 
         #endregion

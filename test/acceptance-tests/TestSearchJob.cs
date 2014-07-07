@@ -21,6 +21,7 @@ namespace Splunk.Client.UnitTests
 
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Globalization;
     using System.Threading;
@@ -271,7 +272,7 @@ namespace Splunk.Client.UnitTests
             dummyString = job.EventSearch;// Search;
             DateTime jobearliestTime = job.EarliestTime;//SearchEarliestTime;
             DateTime joblatestTime = job.LatestTime;
-            IReadOnlyList<string> providers = job.SearchProviders;
+            ReadOnlyCollection<string> providers = job.SearchProviders;
             dummyString = job.Sid;
             dummyInt = job.StatusBuckets;
             dummyInt = job.Ttl;

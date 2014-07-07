@@ -76,7 +76,7 @@ namespace Splunk.Client
         /// The list of <see cref="AtomEntry"/> instances returned in the current
         /// <see cref="AtomFeed"/> response.
         /// </value>
-        public IReadOnlyList<AtomEntry> Entries
+        public ReadOnlyCollection<AtomEntry> Entries
         { get; private set; }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Splunk.Client
         /// The list of info, warning, and error messages returned in the current
         /// <see cref="AtomFeed"/> response.
         /// </value>
-        public IReadOnlyList<Message> Messages
+        public ReadOnlyCollection<Message> Messages
         { get; private set; }
 
         /// <summary>

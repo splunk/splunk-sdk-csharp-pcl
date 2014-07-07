@@ -22,6 +22,7 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.IO;
@@ -450,9 +451,13 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual IReadOnlyList<string> SearchProviders
+        public virtual ReadOnlyCollection<string> SearchProviders
         {
-            get { return this.Content.GetValue("SearchProviders", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get
+            {
+                return this.Content.GetValue(
+                    "SearchProviders", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
 
         /// <inheritdoc/>

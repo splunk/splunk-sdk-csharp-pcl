@@ -66,58 +66,61 @@
             <DatePicker x:Name="endTime" Margin="10,9,0,10" Height="31" Width="293"/>-->
         </StackPanel>
 
-        <ComboBox x:Name="TimeSelectComboBox" Margin="50,0,0,0" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="0" 
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <ComboBox x:Name="TimeSelectComboBox" Margin="50,0,0,0" HorizontalAlignment="Left" Grid.Column="0" 
                   Width="300" Height="40" SelectedIndex="0" DropDownClosed="TimeSelectComboBox_DropDownClosed"
                   Padding="10,0" IsTapEnabled="False">
-            <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">All time</ComboBoxItem>
-            <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">
-                <StackPanel Orientation="Vertical">
-                <TextBlock Text="Relative"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Foreground="Gray" Text="Earlist"/>
-                        <TextBox x:Name="RelativeEarlistTimeValue" Text="0" InputScope="Number" />
-                        <ComboBox x:Name="RelativeEarlistTimeValueUnit" SelectedIndex="0">
-                            <ComboBoxItem Content="Seconds Ago"/>
-                            <ComboBoxItem Content="Minutes Ago"/>
-                            <ComboBoxItem Content="Hours Ago"/>
-                        </ComboBox>
-                        <TextBlock Margin="0,0,200,0" Foreground="Gray" Text="    Latest: Now"/>
-                    </StackPanel>
-                </StackPanel>
-            </ComboBoxItem>
-            <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="Date and Time Range" />
-                    <TextBlock Text="Earlist:" Foreground="Gray"/>
-                    <StackPanel Orientation="Horizontal">
-                        <DatePicker x:Name="EarlistDate" Margin="0,0,0,0" />
-                        <TimePicker x:Name="EarlistTime" Margin="30,0,0,0"/>
-                    </StackPanel>
-                    <TextBlock Text="Latest:" Foreground="Gray" />
-                    <StackPanel Orientation="Horizontal">
-                        <DatePicker  x:Name="LatestDate" Margin="0,0,0,0" />
-                        <TimePicker  x:Name="LatestTime" Margin="30,0,0,0" />
-                    </StackPanel>
-                </StackPanel>
-            </ComboBoxItem>
-            <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">
-                <StackPanel Orientation="Vertical">
-                    <TextBlock Text="Advanced"/>
+                <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">All time</ComboBoxItem>
+                <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Relative"/>
                         <StackPanel Orientation="Horizontal">
-                        <TextBlock Foreground="Gray" Text="Earlist:"/>
-                            <StackPanel Orientation="Vertical">
-                                <TextBox x:Name="customerEarlistInput" Text=""></TextBox>
-                            <TextBlock Foreground="Gray" Text="12/31/69 6:00:00.000 pm"/>
-                            </StackPanel>
-                        <TextBlock Foreground="Gray" Text="    Latest:"/>
-                            <StackPanel Orientation="Vertical">
-                            <TextBox x:Name="customerLatestInput" Text=""></TextBox>
-                            <TextBlock Foreground="Gray" Text="6/25/14 6:00:00.000 pm"/>
+                            <TextBlock Foreground="Gray" Text="Earlist"/>
+                            <TextBox x:Name="RelativeEarlistTimeValue" Text="0" InputScope="Number" />
+                            <ComboBox x:Name="RelativeEarlistTimeValueUnit" SelectedIndex="0">
+                                <ComboBoxItem Content="Seconds Ago"/>
+                                <ComboBoxItem Content="Minutes Ago"/>
+                                <ComboBoxItem Content="Hours Ago"/>
+                            </ComboBox>
+                            <TextBlock Margin="0,0,200,0" Foreground="Gray" Text="    Latest: Now"/>
                         </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </ComboBoxItem>
-        </ComboBox>
+                </ComboBoxItem>
+                <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Date and Time Range" />
+                        <TextBlock Text="Earlist:" Foreground="Gray"/>
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker x:Name="EarlistDate" Margin="0,0,0,0" />
+                            <TimePicker x:Name="EarlistTime" Margin="30,0,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="Latest:" Foreground="Gray" />
+                        <StackPanel Orientation="Horizontal">
+                            <DatePicker  x:Name="LatestDate" Margin="0,0,0,0" />
+                            <TimePicker  x:Name="LatestTime" Margin="30,0,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </ComboBoxItem>
+                <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="Advanced"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Foreground="Gray" Text="Earlist:"/>
+                            <StackPanel Orientation="Vertical">
+                                <TextBox x:Name="customerEarlistInput" Text=""></TextBox>
+                                <TextBlock Foreground="Gray" Text="12/31/69 6:00:00.000 pm"/>
+                            </StackPanel>
+                            <TextBlock Foreground="Gray" Text="    Latest:"/>
+                            <StackPanel Orientation="Vertical">
+                                <TextBox x:Name="customerLatestInput" Text=""></TextBox>
+                                <TextBlock Foreground="Gray" Text="6/25/14 6:00:00.000 pm"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ComboBoxItem>
+            </ComboBox>
+            <StackPanel x:Name="pagelink" VerticalAlignment="Center" Margin="50,0,0,0" Orientation="Horizontal"></StackPanel>
+        </StackPanel>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50"/>

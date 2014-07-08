@@ -208,12 +208,12 @@ namespace SplunkSearch
 
         private async void DisplaySearchPreviewResult(string searchStr)
         {
+            int maxResultCount = 10000;
             JobArgs args = new JobArgs();
             args.EarliestTime = this.searchEarliestTime;
             args.LatestTime = this.searchLatestTime;
             args.SearchMode = SearchMode.RealTime;
-            //todo: job args should specify no limited the result to 100
-            Job realtimeJob = await MainPage.SplunkService.Jobs.CreateAsync(searchStr, args: args);
+            Job realtimeJob = await MainPage.SplunkService.Jobs.CreateAsync(searchStr, count: maxResultCount, args: args);
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -230,7 +230,9 @@ namespace SplunkSearch
             } while (resultCount == 0 && watch.Elapsed.TotalSeconds <= 10 && !this.cancelSearchTokenSource.Token.IsCancellationRequested);
 
             bool showFirstPage = false;
-            using (SearchResultStream resultStream = await realtimeJob.GetSearchPreviewAsync())
+            SearchResultArgs searchArgs = new SearchResultArgs();
+            searchArgs.Count = maxResultCount;
+            using (SearchResultStream resultStream = await realtimeJob.GetSearchPreviewAsync(searchArgs))
             {
                 titleGrid.Visibility = Visibility.Visible;
                 Task task = this.GetResultTask(resultStream);
@@ -452,14 +454,6 @@ namespace SplunkSearch
 
         private bool ShowResultPage(List<ResultData> allResults, int pageIndex, int itemsPerPage)
         {
-            if(allResults.Count>0)
-            {
-                if(allResults.First().Time!="Event Time")
-                {
-                    allResults.Insert(0, new ResultData(0, "Event Time", "Event"));
-                }
-            }
-
             int currentPageMinValue = pageIndex * itemsPerPage;
             int currentPageMaxValue = (pageIndex + 1) * itemsPerPage;
             currentPageMaxValue = allResults.Count < currentPageMaxValue ? allResults.Count : currentPageMaxValue;

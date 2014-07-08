@@ -12,7 +12,69 @@
 
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
-        <x:String x:Key="AppName">Splunk Search</x:String>
+
+        <Style x:Key="HyperlinkButtonStyle1" TargetType="HyperlinkButton">
+            <Setter Property="MinWidth" Value="0"/>
+            <Setter Property="MinHeight" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ButtonBase">
+                        <Grid Background="Transparent">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Text">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ApplicationPointerOverForegroundThemeBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Text">
+                                                <DiscreteObjectKeyFrame x:Name="ApplicationPressedForegroundThemeBrush" KeyTime="0" Value="{ThemeResource ApplicationPressedForegroundThemeBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Text">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ApplicationPressedForegroundThemeBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="FocusStates">
+                                    <VisualState x:Name="Focused">
+                                        <Storyboard>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisualWhite"/>
+                                            <DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="FocusVisualBlack"/>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Unfocused"/>
+                                </VisualStateGroup>
+                                <VisualStateGroup x:Name="CheckStates">
+                                    <VisualState x:Name="Checked"/>
+                                    <VisualState x:Name="Unchecked">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="Text">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ApplicationSecondaryForegroundThemeBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Indeterminate"/>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="Text" Content="{TemplateBinding Content}"/>
+                            <Rectangle x:Name="FocusVisualWhite" IsHitTestVisible="False" Opacity="0" StrokeDashOffset="1.5" StrokeEndLineCap="Square" Stroke="{ThemeResource FocusVisualWhiteStrokeThemeBrush}" StrokeDashArray="1,1"/>
+                            <Rectangle x:Name="FocusVisualBlack" IsHitTestVisible="False" Opacity="0" StrokeDashOffset="0.5" StrokeEndLineCap="Square" Stroke="{ThemeResource FocusVisualBlackStrokeThemeBrush}" StrokeDashArray="1,1"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Page.Resources>
 
     <!--
@@ -75,28 +137,27 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Relative"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Foreground="Gray" Text="Earlist"/>
-                            <TextBox x:Name="RelativeEarlistTimeValue" Text="0" InputScope="Number" />
-                            <ComboBox x:Name="RelativeEarlistTimeValueUnit" SelectedIndex="0">
-                                <ComboBoxItem Content="Seconds Ago"/>
-                                <ComboBoxItem Content="Minutes Ago"/>
-                                <ComboBoxItem Content="Hours Ago"/>
-                            </ComboBox>
-                            <TextBlock Margin="0,0,200,0" Foreground="Gray" Text="    Latest: Now"/>
+                            <TextBlock Foreground="Gray" Text="Earliest:"/>
+                            <TextBox x:Name="RelativeEarliestTimeValue" Text="0" InputScope="Number" Margin="10,0,0,0"/>                            
+                            <RadioButton Name="RelativeTimeUnitSecond" Content="Seconds Ago" IsChecked="True"/>
+                            <RadioButton Name="RelativeTimeUnitMinute" Content="Minutes Ago"/>
+                            <RadioButton Name="RelativeTimeUnitHour" Content="Hours Ago"/>
+                            <TextBlock Margin="10,0,0,0" Foreground="Gray" Text="Latest:"/>
+                            <TextBlock Margin="10,5,0,0" Foreground="Black" Text="Now"/>
                         </StackPanel>
                     </StackPanel>
                 </ComboBoxItem>
                 <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Date and Time Range" />
-                        <TextBlock Text="Earlist:" Foreground="Gray"/>
+                        <TextBlock Text="Earliest:" Foreground="Gray"/>
                         <StackPanel Orientation="Horizontal">
-                            <DatePicker x:Name="EarlistDate" Margin="0,0,0,0" />
-                            <TimePicker x:Name="EarlistTime" Margin="30,0,0,0"/>
+                            <DatePicker x:Name="EarliestDate" Margin="10,0,0,0" />
+                            <TimePicker x:Name="EarliestTime" Margin="30,0,0,0"/>
                         </StackPanel>
                         <TextBlock Text="Latest:" Foreground="Gray" />
                         <StackPanel Orientation="Horizontal">
-                            <DatePicker  x:Name="LatestDate" Margin="0,0,0,0" />
+                            <DatePicker  x:Name="LatestDate" Margin="10,0,0,0" />
                             <TimePicker  x:Name="LatestTime" Margin="30,0,0,0" />
                         </StackPanel>
                     </StackPanel>
@@ -105,20 +166,29 @@
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="Advanced"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Foreground="Gray" Text="Earlist:"/>
-                            <StackPanel Orientation="Vertical">
-                                <TextBox x:Name="customerEarlistInput" Text=""></TextBox>
-                                <TextBlock Foreground="Gray" Text="12/31/69 6:00:00.000 pm"/>
+                            <TextBlock Foreground="Gray" Text="Earliest:"/>
+                            <StackPanel Orientation="Vertical" Margin="10,0,0,0">
+                                <TextBox x:Name="customerEarliestInput" Text=""></TextBox>
+                                <TextBlock Foreground="Gray" Text="12/31/69 6:00:00.000 pm" Width="220"/>
                             </StackPanel>
                             <TextBlock Foreground="Gray" Text="    Latest:"/>
-                            <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Vertical" Margin="10,0,0,0">
                                 <TextBox x:Name="customerLatestInput" Text=""></TextBox>
-                                <TextBlock Foreground="Gray" Text="6/25/14 6:00:00.000 pm"/>
+                                <TextBlock Foreground="Gray" Text="6/25/14 6:00:00.000 pm" Width="220"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </ComboBoxItem>
             </ComboBox>
+            <ComboBox x:Name="ResultsPerPage"  Margin="10,10,0,10" VerticalAlignment="Center"
+                  Height="40" SelectedIndex="0" DropDownClosed="ResultsPerPageComboBox_DropDownClosed"
+                  Padding="10,0" IsTapEnabled="False">
+                <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">50</ComboBoxItem>
+                <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">100</ComboBoxItem>
+                <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">150</ComboBoxItem>
+                <ComboBoxItem BorderThickness="0,0,0,2" BorderBrush="DarkGray">200</ComboBoxItem>
+            </ComboBox>
+            <TextBlock Text="Per page" Margin="5,20" FontSize="14"/>
             <StackPanel x:Name="pagelink" VerticalAlignment="Center" Margin="50,0,0,0" Orientation="Horizontal"></StackPanel>
         </StackPanel>
         <Grid Grid.Row="3">
@@ -131,7 +201,7 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-
+            
             <Grid x:Name="titleGrid" Grid.Column="1" Grid.Row="0" Visibility="Collapsed">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>

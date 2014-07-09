@@ -27,6 +27,7 @@ namespace Splunk.Client
     using System.Collections;
     using System.Collections.Generic;
     using System.IO;
+    using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
 
@@ -44,6 +45,20 @@ namespace Splunk.Client
         SearchExportStream(Response response)
         {
             this.response = response;
+        }
+
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// Returns the raw HTTP response message for the job.
+        /// </summary>
+        public HttpResponseMessage Response
+        {
+            get
+            {
+                return response.Message;
+            }
         }
 
         #endregion

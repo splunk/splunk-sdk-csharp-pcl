@@ -28,6 +28,7 @@ namespace Splunk.Client
     using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
@@ -71,6 +72,17 @@ namespace Splunk.Client
         public long ReadCount
         {
             get { return this.awaiter.ReadCount; }
+        }
+
+        /// <summary>
+        /// Returns the raw HTTP response message for the job.
+        /// </summary>
+        public HttpResponseMessage Response
+        {
+            get
+            {
+                return response.Message;
+            }
         }
 
         #endregion

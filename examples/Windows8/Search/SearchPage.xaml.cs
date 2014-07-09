@@ -36,7 +36,15 @@ namespace SplunkSearch
         private string searchEarliestTime = null;
         private string searchLatestTime = null;
 
+        private List<ResultData> allResults = new List<ResultData>();
+        private int itemsPerPage = 50;
+        private int totalPage = 0;
+        private int currentShownPageIndex = -1;
+
         private List<object> comboBoxItems = new List<object>();
+        private Brush blackBrush = new SolidColorBrush(new Windows.UI.Color() { R = 0, G = 0, B = 0, A = 100 });
+
+
         /// <summary>
         /// This can be changed to a strongly typed view model.
         /// </summary>
@@ -123,7 +131,7 @@ namespace SplunkSearch
 
         public static string loginUser { get; set; }
 
-        private async void SearchButton_Click(object sender, RoutedEventArgs e)
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
             cancelSearchTokenSource = new CancellationTokenSource();
             this.TimeSelectComboBox_DropDownClosed(null, null);
@@ -137,6 +145,12 @@ namespace SplunkSearch
 
             titleGrid.Visibility = Visibility.Collapsed;
             this.PageContentSearchInProgress();
+            pagelink.Children.Clear();
+            this.allResults = new List<ResultData>();
+            this.totalPage = 0;
+            this.currentShownPageIndex = -1;
+            this.ShowResultPage(new List<ResultData>(), 0, 0);
+            this.cancelSearchTokenSource = new CancellationTokenSource();
 
             try
             {
@@ -159,50 +173,102 @@ namespace SplunkSearch
             }
         }
 
-        private async void DisplaySearchPreviewResult(string searchStr)
+        private Task GetResultTask(SearchResultStream resultStream)
         {
             int resultCount = 0;
-            ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
-            resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
+
+            //start a task to get all results
+            return Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    foreach (SearchResult result in resultStream)
+                    {
+                        List<string> results = this.ParseResult(result);
+                        allResults.Add(new ResultData(++resultCount, results[0], results[1]));
+
+                        if (resultCount > this.totalPage * itemsPerPage)
+                        {
+                            this.totalPage++;
+                        }
+
+                        if (this.cancelSearchTokenSource.Token.IsCancellationRequested)
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //the stream has some broken fields
+                    // Enumeration ended prematurely : System.IO.InvalidDataException: Read <fieldOrder> where </fieldOrder> was expected.   
+                }
+            });
+        }
+
+        private async void DisplaySearchPreviewResult(string searchStr)
+        {
+            int maxResultCount = 10000;
             JobArgs args = new JobArgs();
             args.EarliestTime = this.searchEarliestTime;
             args.LatestTime = this.searchLatestTime;
             args.SearchMode = SearchMode.RealTime;
-            Job realtimeJob = await MainPage.SplunkService.Jobs.CreateAsync(searchStr, args: args);
+            Job realtimeJob = await MainPage.SplunkService.Jobs.CreateAsync(searchStr, count: maxResultCount, args: args);
 
             Stopwatch watch = new Stopwatch();
             watch.Start();
 
+            this.allResults.Clear();
+            int resultCount = 0;
+
             do
             {
-                using (SearchResultStream stream = await realtimeJob.GetSearchPreviewAsync())
+                using (SearchResultStream resultStream = await realtimeJob.GetSearchPreviewAsync())
                 {
-                    titleGrid.Visibility = Visibility.Visible;
+                    resultCount = resultStream.Count();
+                }
+            } while (resultCount == 0 && watch.Elapsed.TotalSeconds <= 10 && !this.cancelSearchTokenSource.Token.IsCancellationRequested);
 
-                    try
+            bool showFirstPage = false;
+            SearchResultArgs searchArgs = new SearchResultArgs();
+            searchArgs.Count = maxResultCount;
+            using (SearchResultStream resultStream = await realtimeJob.GetSearchPreviewAsync(searchArgs))
+            {
+                titleGrid.Visibility = Visibility.Visible;
+                Task task = this.GetResultTask(resultStream);
+
+                //start a task to get all results
+                do
+                {
+                    if (this.allResults.Count > 0)
                     {
-                        foreach (SearchResult result in stream)
+                        if (!showFirstPage && this.ShowResultPage(this.allResults, 0, this.itemsPerPage))
                         {
-                            List<string> results = this.ParseResult(result);
-                            resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
-
-                            //TODO: need to do paging
-                            if (resultCount > 2000 || this.cancelSearchTokenSource.Token.IsCancellationRequested) break;
+                            showFirstPage = true;
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        //the stream has some broken fields
-                        // Enumeration ended prematurely : System.IO.InvalidDataException: Read <fieldOrder> where </fieldOrder> was expected.   
+
+                        if (this.currentShownPageIndex < 0)
+                        {
+                            ShowPagingLink(0);
+                        }
                     }
 
                     await Task.Delay(1000);
+                } while (!(task.Status == TaskStatus.RanToCompletion || task.Status == TaskStatus.Faulted || task.Status == TaskStatus.Canceled));
+
+
+                if (!showFirstPage)
+                {
+                    this.ShowResultPage(this.allResults, 0, this.itemsPerPage);
+                }
+                if (this.currentShownPageIndex < 0)
+                {
+                    ShowPagingLink(0);
                 }
 
-            } while (resultCount == 0 && watch.Elapsed.TotalSeconds <= 5 && !this.cancelSearchTokenSource.Token.IsCancellationRequested);
-
-            this.PageContentReset();
-            await realtimeJob.CancelAsync();
+                this.PageContentReset();
+                await realtimeJob.CancelAsync();
+            }
         }
 
         private async void DisplaySearchResult(string searchStr)
@@ -219,32 +285,211 @@ namespace SplunkSearch
                 jobArgs.LatestTime = this.searchLatestTime;
             }
 
-            int resultCount = 0;
-            ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
-            resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
             using (SearchResultStream resultStream = await MainPage.SplunkService.ExportSearchResultsAsync(searchStr, jobArgs))
             {
                 titleGrid.Visibility = Visibility.Visible;
 
-                try
+                this.allResults.Clear();
+                Task task = this.GetResultTask(resultStream);
+
+                bool showFirstPage = false;
+                do
                 {
-                    foreach (SearchResult result in resultStream)
+                    if (this.allResults.Count > 0)
                     {
+                        if (!showFirstPage && this.ShowResultPage(this.allResults, 0, this.itemsPerPage))
+                        {
+                            showFirstPage = true;
+                        }
 
-                        List<string> results = this.ParseResult(result);
-                        resultDatas.Add(new ResultData(++resultCount, results[0], results[1]));
-
-                        //TODO: need to do paging
-                        if (resultCount > 2000 || this.cancelSearchTokenSource.Token.IsCancellationRequested) break;
+                        if (this.currentShownPageIndex < 0)
+                        {
+                            ShowPagingLink(0);
+                        }
                     }
-                }
-                catch (Exception ex)
+
+                    await Task.Delay(1000);
+                } while (!(task.Status == TaskStatus.RanToCompletion || task.Status == TaskStatus.Faulted || task.Status == TaskStatus.Canceled));
+
+                if (!showFirstPage)
                 {
-                    //the stream has some broken fields
-                    // Enumeration ended prematurely : System.IO.InvalidDataException: Read <fieldOrder> where </fieldOrder> was expected.   
+                    this.ShowResultPage(this.allResults, 0, this.itemsPerPage);
+                }
+
+                if (this.currentShownPageIndex < 0)
+                {
+                    ShowPagingLink(0);
                 }
 
                 this.PageContentReset();
+            }
+        }
+
+        /// <summary>
+        /// show paging links
+        /// </summary>
+        /// <param name="startPageIndex">0 based page index</param>
+        /// <param name="totalPage"> total number of pages</param>
+        /// <param name="totalLinkShown"></param>
+        private void ShowPagingLink(int currentPageIndex)
+        {
+            if (this.totalPage <= 1)
+            {
+                return;
+            }
+
+            this.currentShownPageIndex = currentPageIndex;
+
+            pagelink.Children.Clear();
+
+            //show hyperlinks around the currentIndex
+
+            if (currentPageIndex != 0)
+            {
+                HyperlinkButton hyperlink = new HyperlinkButton();
+                hyperlink.Content = "<Prev";
+                hyperlink.CommandParameter = (currentPageIndex).ToString();
+                hyperlink.Click += new RoutedEventHandler(PageLinkClick);
+                pagelink.Children.Add(hyperlink);
+
+                hyperlink = new HyperlinkButton();
+                hyperlink.Content = "1";
+                hyperlink.Click += new RoutedEventHandler(PageLinkClick);
+                pagelink.Children.Add(hyperlink);
+            }
+            else
+            {
+                HyperlinkButton hyperlink = new HyperlinkButton();
+                hyperlink = new HyperlinkButton();
+                hyperlink.Content = "1";
+                hyperlink.Background = this.blackBrush;
+                pagelink.Children.Add(hyperlink);
+            }
+
+            if (currentPageIndex > 4)
+            {
+                TextBlock textblock = new TextBlock();
+                textblock.Text = "...";
+                textblock.VerticalAlignment = VerticalAlignment.Center;
+                pagelink.Children.Add(textblock);
+            }
+
+            for (int i = currentPageIndex - 3; i <= currentPageIndex; i++)
+            {
+                if (i <= 0)
+                {
+                    continue;
+                }
+
+                HyperlinkButton hyperlink = new HyperlinkButton();
+                int content = i + 1;
+                hyperlink.Content = content;
+
+                if (i != currentPageIndex)
+                {
+                    hyperlink.Click += new RoutedEventHandler(PageLinkClick);
+                }
+                else
+                {
+                    hyperlink.Background = blackBrush;
+
+                }
+
+                pagelink.Children.Add(hyperlink);
+            }
+
+            int showPageTill = 0; //1 based pageIndex
+            if (currentPageIndex < 5)
+            {
+                showPageTill = totalPage > 10 ? 10 : totalPage;
+            }
+            else
+            {
+                showPageTill = currentPageIndex + 4 > totalPage ? totalPage : currentPageIndex + 4;
+            }
+
+            for (int i = currentPageIndex + 1; i < showPageTill; i++)
+            {
+                HyperlinkButton hyperlink = new HyperlinkButton();
+                int content = i + 1;
+                hyperlink.Content = content;
+                hyperlink.Click += new RoutedEventHandler(PageLinkClick);
+                pagelink.Children.Add(hyperlink);
+            }
+
+            if (showPageTill < totalPage)
+            {
+                TextBlock textblock = new TextBlock();
+                textblock.Text = "...";
+                textblock.VerticalAlignment = VerticalAlignment.Center;
+                pagelink.Children.Add(textblock);
+            }
+
+            if (currentPageIndex + 1 < showPageTill)
+            {
+                HyperlinkButton hyperlink = new HyperlinkButton();
+                hyperlink.Content = "Next>";
+                hyperlink.CommandParameter = (currentPageIndex + 2).ToString();
+                hyperlink.Click += new RoutedEventHandler(PageLinkClick);
+                pagelink.Children.Add(hyperlink);
+            }
+        }
+
+        private void PageLinkClick(object sender, RoutedEventArgs e)
+        {
+            string str;
+            if (((HyperlinkButton)sender).CommandParameter != null)
+            {
+                str = ((HyperlinkButton)sender).CommandParameter.ToString();
+            }
+            else
+            {
+                str = ((HyperlinkButton)sender).Content.ToString();
+            }
+
+            int page = int.Parse(str) - 1;
+            ShowResultPage(this.allResults, page, this.itemsPerPage);
+            ShowPagingLink(page);
+        }
+
+        private bool ShowResultPage(List<ResultData> allResults, int pageIndex, int itemsPerPage)
+        {
+            int currentPageMinValue = pageIndex * itemsPerPage;
+            int currentPageMaxValue = (pageIndex + 1) * itemsPerPage;
+            currentPageMaxValue = allResults.Count < currentPageMaxValue ? allResults.Count : currentPageMaxValue;
+
+            ObservableCollection<ResultData> resultDatas = new ObservableCollection<ResultData>();
+            resultListView.DataContext = new CollectionViewSource { Source = resultDatas };
+
+            for (int i = currentPageMinValue; i < currentPageMaxValue; i++)
+            {
+                resultDatas.Add(allResults[i]);
+            }
+
+            if (pageIndex == 0 && currentPageMaxValue >= itemsPerPage)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void GetAllResults(SearchResultStream resultStream, ref List<ResultData> allResults)
+        {
+            int resultCount = 0;
+
+            try
+            {
+                foreach (SearchResult result in resultStream)
+                {
+                    List<string> results = this.ParseResult(result);
+                    allResults.Add(new ResultData(++resultCount, results[0], results[1]));
+                }
+            }
+            catch (Exception ex)
+            {
+                //the stream has some broken fields
+                // Enumeration ended prematurely : System.IO.InvalidDataException: Read <fieldOrder> where </fieldOrder> was expected.   
             }
         }
 
@@ -325,7 +570,7 @@ namespace SplunkSearch
             int relativeTime = 0;
             try
             {
-                if ((relativeTime = int.Parse(RelativeEarlistTimeValue.Text.Trim().TrimEnd(' '))) <= 0)
+                if ((relativeTime = int.Parse(RelativeEarliestTimeValue.Text.Trim().TrimEnd(' '))) <= 0)
                 {
                     throw new Exception("value must be positive value");
                 }
@@ -338,11 +583,17 @@ namespace SplunkSearch
             }
 
             string unit = "s";
-            switch (RelativeEarlistTimeValueUnit.SelectedIndex)
+            if ((bool)RelativeTimeUnitSecond.IsChecked)
             {
-                case 1: unit = "m"; break;
-                case 2: unit = "h"; break;
-                case 3: unit = "d"; break;
+                unit = "s";
+            }
+            if ((bool)RelativeTimeUnitMinute.IsChecked)
+            {
+                unit = "m";
+            }
+            if ((bool)RelativeTimeUnitHour.IsChecked)
+            {
+                unit = "h";
             }
 
             this.searchEarliestTime = string.Format("rt-{0}{1}", relativeTime, unit);
@@ -351,7 +602,7 @@ namespace SplunkSearch
 
         private void ApplyDateTimeRangeClick()
         {
-            DateTime start = new DateTime(EarlistDate.Date.Year, EarlistDate.Date.Month, EarlistDate.Date.Day).AddSeconds(EarlistTime.Time.TotalSeconds);
+            DateTime start = new DateTime(EarliestDate.Date.Year, EarliestDate.Date.Month, EarliestDate.Date.Day).AddSeconds(EarliestTime.Time.TotalSeconds);
             DateTime end = new DateTime(LatestDate.Date.Year, LatestDate.Date.Month, LatestDate.Date.Day).AddSeconds(LatestTime.Time.TotalSeconds);
             this.searchEarliestTime = start.ToString("yyyy-MM-ddThh:mm:ss");
             this.searchLatestTime = end.ToString("yyyy-MM-ddThh:mm:ss");
@@ -367,7 +618,7 @@ namespace SplunkSearch
         {
             try
             {
-                DateTime start = DateTime.Parse(customerEarlistInput.Text.Trim().TrimEnd(' '));
+                DateTime start = DateTime.Parse(customerEarliestInput.Text.Trim().TrimEnd(' '));
                 DateTime end = DateTime.Parse(customerLatestInput.Text.Trim().TrimEnd(' '));
                 this.searchEarliestTime = start.ToString("yyyy-MM-ddThh:mm:ss");
                 this.searchLatestTime = end.ToString("yyyy-MM-ddThh:mm:ss");
@@ -410,6 +661,33 @@ namespace SplunkSearch
                     //Advanced
                     this.ApplyAdvancedTimeSelectionClick();
                 }
+            }
+        }
+
+        private void ResultsPerPageComboBox_DropDownClosed(object sender, object e)
+        {
+            if (ResultsPerPage != null)
+            {
+                if (ResultsPerPage.SelectedIndex == 0)
+                {
+                    this.itemsPerPage = 50;
+                }
+
+                if (ResultsPerPage.SelectedIndex == 1)
+                {
+                    this.itemsPerPage = 100;
+                }
+
+                if (ResultsPerPage.SelectedIndex == 2)
+                {
+                    this.itemsPerPage = 150;
+                }
+
+                if (ResultsPerPage.SelectedIndex == 3)
+                {
+                    this.itemsPerPage = 200;
+                }
+
             }
         }
     }

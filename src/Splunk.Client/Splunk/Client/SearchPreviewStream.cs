@@ -28,6 +28,7 @@ namespace Splunk.Client
     using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
@@ -41,24 +42,6 @@ namespace Splunk.Client
     /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.SearchPreview}"/>
     public sealed class SearchPreviewStream : Observable<SearchPreview>, IDisposable, IEnumerable<SearchPreview>
     {
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SearchPreviewStream"/>
-        /// class.
-        /// </summary>
-        /// <param name="response">
-        /// The underlying <see cref="Response"/> object.
-        /// </param>
-        internal SearchPreviewStream(Response response)
-        {
-            this.metadata = SearchResultMetadata.Missing;
-            this.response = response;
-            this.awaiter = new Awaiter(this);
-        }
-
-        #endregion
-
         #region Properties
 
         /// <summary>
@@ -76,6 +59,39 @@ namespace Splunk.Client
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Asynchronously creates a new <see cref="SearchExportStream"/>
+        /// using the specified <see cref="HttpResponseMessage"/>.
+        /// </summary>
+        /// <param name="response">
+        /// An object from which search results are read.
+        /// </param>
+        /// <returns>
+        /// A <see cref="SearchExportStream"/> object.
+        /// </returns>
+        public static async Task<SearchPreviewStream> CreateAsync(HttpResponseMessage message)
+        {
+            return await CreateAsync(await Response.CreateAsync(message));
+        }
+
+        /// <summary>
+        /// Asynchronously creates a new <see cref="SearchExportStream"/>
+        /// using the specified <see cref="Response"/>.
+        /// </summary>
+        /// <exception cref="InvalidDataException">
+        /// Thrown when an Invalid Data error condition occurs.
+        /// </exception>
+        /// <param name="response">
+        /// An object from which search results are read.
+        /// </param>
+        /// <returns>
+        /// The new asynchronous.
+        /// </returns>
+        public static Task<SearchPreviewStream> CreateAsync(Response response)
+        {
+            return Task.FromResult(new SearchPreviewStream(response));
+        }
 
         /// <summary>
         /// Releases all disposable resources used by the current
@@ -164,6 +180,13 @@ namespace Splunk.Client
         readonly Response response;
         readonly Awaiter awaiter;
         int disposed;
+
+        SearchPreviewStream(Response response)
+        {
+            this.metadata = SearchResultMetadata.Missing;
+            this.response = response;
+            this.awaiter = new Awaiter(this);
+        }
 
         ReadState ReadState
         {

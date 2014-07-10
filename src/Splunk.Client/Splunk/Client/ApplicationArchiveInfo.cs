@@ -48,8 +48,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the
-        /// <see cref= "ApplicationArchiveInfo"/> class.
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "ApplicationArchiveInfo"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
@@ -90,7 +90,7 @@ namespace Splunk.Client
         /// <value>
         /// Access control list for the application archive.
         /// </value>
-        public Eai Eai
+        public virtual Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
@@ -104,7 +104,7 @@ namespace Splunk.Client
         /// <value>
         /// Name of the application contained by the archive.
         /// </value>
-        public string ApplicationName
+        public virtual string ApplicationName
         {
             get { return this.Content.GetValue("Name", StringConverter.Instance); }
         }
@@ -115,7 +115,7 @@ namespace Splunk.Client
         /// <value>
         /// A local path to the application archive.
         /// </value>
-        public string Path
+        public virtual string Path
         {
             get { return this.Content.GetValue("Path", StringConverter.Instance); }
         }
@@ -129,7 +129,7 @@ namespace Splunk.Client
         /// application should be reloaded; <c>false</c>, if they need not be
         /// reloaded.
         /// </value>
-        public bool Refresh
+        public virtual bool Refresh
         {
             get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
@@ -141,7 +141,7 @@ namespace Splunk.Client
         /// A download URI for the application archive or <c>null</c>, if there is no
         /// download URI.
         /// </value>
-        public Uri Uri
+        public virtual Uri Uri
         {
             get { return this.Content.GetValue("Url", UriConverter.Instance); }
         }

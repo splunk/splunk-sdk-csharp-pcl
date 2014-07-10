@@ -26,6 +26,7 @@ namespace Splunk.Client
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Globalization;
+    using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Xml;
@@ -39,17 +40,6 @@ namespace Splunk.Client
     /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.SearchResult}"/>
     public sealed class SearchResultStream : Observable<SearchResult>, IDisposable, IEnumerable<SearchResult>
     {
-        #region Constructors
-
-        SearchResultStream(Response response)
-        {
-            this.metadata = SearchResultMetadata.Missing;
-            this.response = response;
-            this.awaiter = new Awaiter(this);
-        }
-
-        #endregion
-
         #region Properties
 
         /// <summary>
@@ -98,15 +88,30 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously creates a new <see cref="SearchResultStream"/>
-        /// instance using the specified <see cref="Response"/>.
+        /// using the specified <see cref="HttpResponseMessage"/>.
         /// </summary>
         /// <param name="response">
-        /// An object from which the search results are read.
+        /// An object from which search results are read.
         /// </param>
         /// <returns>
         /// A <see cref="SearchResultStream"/> object.
         /// </returns>
-        internal static async Task<SearchResultStream> CreateAsync(Response response)
+        public static async Task<SearchResultStream> CreateAsync(HttpResponseMessage message)
+        {
+            return await CreateAsync(await Response.CreateAsync(message));
+        }
+
+        /// <summary>
+        /// Asynchronously creates a new <see cref="SearchResultStream"/>
+        /// using the specified <see cref="Response"/>.
+        /// </summary>
+        /// <param name="response">
+        /// An object from which search results are read.
+        /// </param>
+        /// <returns>
+        /// A <see cref="SearchResultStream"/> object.
+        /// </returns>
+        public static async Task<SearchResultStream> CreateAsync(Response response)
         {
             XmlReader reader = response.XmlReader;
 
@@ -208,6 +213,13 @@ namespace Splunk.Client
 
         volatile SearchResultMetadata metadata;
 
+        SearchResultStream(Response response)
+        {
+            this.metadata = SearchResultMetadata.Missing;
+            this.response = response;
+            this.awaiter = new Awaiter(this);
+        }
+
         ReadState ReadState
         {
             get { return this.response.XmlReader.ReadState; }
@@ -300,8 +312,6 @@ namespace Splunk.Client
             /// </returns>
             protected override async Task ReadToEndAsync()
             {
-                //// TODO: Metadata must track to results
-
                 var metadata = await this.Stream.ReadMetadataAsync();
 
                 while (this.Stream.ReadState <= ReadState.Interactive)

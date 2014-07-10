@@ -99,6 +99,16 @@ namespace Splunk.Client
             : this(new Context(scheme, host, port), ns)
         { }
 
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the <see cref=
+        /// "Service"/> class.
+        /// </summary>
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not 
+        /// intended to be used directly from your code.
+        public Service()
+        { }
+
         #endregion
 
         #region Properties
@@ -257,7 +267,7 @@ namespace Splunk.Client
             try
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                var stream = new SearchPreviewStream(response);
+                var stream = await SearchPreviewStream.CreateAsync(response);
                 return stream;
             }
             catch

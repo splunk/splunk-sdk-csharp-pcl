@@ -33,7 +33,7 @@ namespace Splunk.Client
         Debug = 1,
 
         /// <summary>
-        /// Specified that an alert was triggered by a debug action.
+        /// 
         /// </summary>
         [EnumMember(Value = "2")]
         Information = 2, 

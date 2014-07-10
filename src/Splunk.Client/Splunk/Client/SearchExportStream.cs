@@ -49,6 +49,17 @@ namespace Splunk.Client
 
         #endregion
 
+        #region Properties
+        /// <summary>
+        /// Returns the raw HTTP response message for the job.
+        /// </summary>
+        public HttpResponseMessage Response
+        {
+            get { return response.Message; }
+        }
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -63,7 +74,7 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<SearchExportStream> CreateAsync(HttpResponseMessage message)
         {
-            return await CreateAsync(await Response.CreateAsync(message));
+            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message));
         }
 
         /// <summary>

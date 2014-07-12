@@ -109,9 +109,11 @@ The Splunk SDK for C# supports development in the following environments:
 The Splunk SDK for C# supports development in [Microsoft Visual Studio](http://www.microsoft.com/visualstudio/downloads) 2012 and later
 
 You will need to install [Code Contracts for .NET](http://visualstudiogallery.msdn.microsoft.com/1ec7db13-3363-46c9-851f-1ce455f66970)
-(be sure to close Visual Studio before you install it or the install will not work, despite appearing to) and a way of running
-the xUnit tests. If you use Resharper, install its [xUnit.net Test Support](https://resharper-plugins.jetbrains.com/packages/xunitcontrib/1.6.2),
-Otherwise, install the [xUnit.net runner for Visual Studio 2012 and 2013](http://visualstudiogallery.msdn.microsoft.com/463c5987-f82b-46c8-a97e-b1cde42b9099).
+(be sure to close Visual Studio before you install it or the install will not work, despite appearing to).
+
+To run the unit tests you will need to install an [xUnit](https://github.com/xunit/xunit) runner:
+* If you use resharper, install its [xUnit.net Test Support](https://resharper-plugins.jetbrains.com/packages/xunitcontrib/1.6.2).
+* Otherwise, install the [xUnit.net runner for Visual Studio 2012 and 2013](http://visualstudiogallery.msdn.microsoft.com/463c5987-f82b-46c8-a97e-b1cde42b9099).
 
 ##### Xamarin Studio / Mono Develop
 The Splunk SDK for C# support development in Xamarin Studio and Mono Develop. You will need to set the __MonoCS__ complitation constant in the project settings for Splunk.Client.csproj and Splunk.ModularInputs.csproj. 

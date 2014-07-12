@@ -105,22 +105,22 @@ running Splunk Enterprise and system requirements, see the
 
 #### Developer environments
 
-* The Splunk SDK for C# supports development in Microsoft Visual Studio 2012 and later.  Visual Studio downloads are available on the 
-[Visual Studio Downloads webpage](http://www.microsoft.com/visualstudio/downloads).
-* Support for Xamarin Studio and MonoDevelop is in progress.
+The Splunk SDK for C# supports development in the following environments:
+
+##### Visual Studio
+The Splunk SDK for C# supports development in [Microsoft Visual Studio](http://www.microsoft.com/visualstudio/downloads) 2012 and later
 
 You will need to install [Code Contracts for .NET](http://visualstudiogallery.msdn.microsoft.com/1ec7db13-3363-46c9-851f-1ce455f66970)
 (be sure to close Visual Studio before you install it or the install will not work, despite appearing to) and a way of running
 the xUnit tests. If you use Resharper, install its [xUnit.net Test Support](https://resharper-plugins.jetbrains.com/packages/xunitcontrib/1.6.2),
 Otherwise, install the [xUnit.net runner for Visual Studio 2012 and 2013](http://visualstudiogallery.msdn.microsoft.com/463c5987-f82b-46c8-a97e-b1cde42b9099).
 
+##### Xamarin Studio / Mono Develop
+The Splunk SDK for C# support development in Xamarin Studio and Mono Develop. You will need to set the __MonoCS__ complitation constant in the project settings for Splunk.Client.csproj and Splunk.ModularInputs.csproj. 
+
+To run the unit tests you will need to [download](https://github.com/xunit/xunit/releases) the latest release of xUnit and run using the command line tools or GUI runner. 
+
 #### Splunk SDK for C# 
-
-[Get the Splunk SDK for C#](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip). Download the ZIP file and extract its contents.
-
-If you are interested in contributing to the Splunk SDK for C#, you can 
-[get it from GitHub](https://github.com/splunk/splunk-sdk-csharp) and clone the 
-resources to your computer.
 
 ### MyGet feed
 
@@ -129,11 +129,20 @@ Before the intial release, you can download the Splunk SDK C# NuGet packages fro
 The following packages are in that feed:
 * Splunk.Client - Client for Splunk's REST API. This is a portable library.
 * Splunk.ModularInputs - Functionality for building Modular Inputs.
-*Note*: We will publish to NuGet once we release.
+
+*Note*: Both packages will be published to NuGet when the SDK releases.
+
+### Getting the source
+
+[Get the Splunk SDK for C#](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip). Download the ZIP file and extract its contents.
+
+If you are interested in contributing to the Splunk SDK for C#, you can 
+[get it from GitHub](https://github.com/splunk/splunk-sdk-csharp) and clone the 
+resources to your computer.
 
 ### Building the SDK
 
-To build from source after extracting or clong the SDK, do the following"
+To build from source after extracting or cloning the SDK, do the following"
 
 1. At the root level of the **splunk-sdk-csharp-pcl** directory, open the 
 **splunk-sdk-csharp-pcl.sln** file in Visual Studio.
@@ -143,7 +152,7 @@ This will build the SDK, the examples, and the unit tests.
 
 ### Examples and unit tests
 
-The Splunk SDK for C# includes full unit tests which run using [xunit](https://github.com/xunit/xunit). Examples are a work in progress.
+The Splunk SDK for C# includes full unit tests which run using [xunit](https://github.com/xunit/xunit) as well as several examples.
 
 ### Changelog
 

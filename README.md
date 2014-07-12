@@ -122,6 +122,15 @@ If you are interested in contributing to the Splunk SDK for C#, you can
 [get it from GitHub](https://github.com/splunk/splunk-sdk-csharp) and clone the 
 resources to your computer.
 
+### MyGet feed
+
+Before the intial release, you can download the Splunk SDK C# NuGet packages from [MyGet](http://www.myget.org). Add the following feed to your package sources in Visual Studio: https://www.myget.org/F/splunk-sdk-csharp-pcl/
+
+The following packages are in that feed:
+* Splunk.Client - Client for Splunk's REST API. This is a portable library.
+* Splunk.ModularInputs - Functionality for building Modular Inputs.
+*Note*: We will publish to NuGet once we release.
+
 ### Building the SDK
 
 Before starting to develop custom software, you must first build the SDK. Once 

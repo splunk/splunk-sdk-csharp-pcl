@@ -163,7 +163,7 @@ The solution is organized into `src`, `examples` and `tests` folders.
 * `Splunk.ModularInputs` - Functionality for building Modular Inputs.
 * `Splunk.Client.Helpers` - Helper utilities used by tests and samples.
 
-#### examples (folders)
+#### examples 
 * `Windows8/Search` - Contains a Windows Store Search App.
 * `authenticate` - Connects to a Splunk Instance and retrieves Splunk's session token.
 * `list_apps` - Lists installed applications on a Splunk instance.

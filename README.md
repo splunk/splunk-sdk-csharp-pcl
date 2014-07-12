@@ -53,7 +53,7 @@ foreach (var record in searchResults)
 
 ## Supported platforms
 
-.NET 4.5, PCL (Windows 8.1, Windows Phone 8.1, iOS (via Xamarin.iOS), Android (via Xamarin.Android)
+.NET 4.5/Mono 3.4, PCL (Windows 8.1, Windows Phone 8.1, iOS (via Xamarin.iOS), Android (via Xamarin.Android)
 
 ## Compatibility
 

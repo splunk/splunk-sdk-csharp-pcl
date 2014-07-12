@@ -55,8 +55,6 @@ foreach (var record in searchResults)
 
 .NET 4.5, PCL (Windows 8.1, Windows Phone 8.1, iOS (via Xamarin.iOS), Android (via Xamarin.Android)
 
-*Note - Xamarin support is a work in progress
-
 ## Compatibility
 
 The Splunk SDK for C# version 2.0 is a rewrite of the existing SDK, and introduces completely new APIs. 

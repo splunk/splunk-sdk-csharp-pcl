@@ -133,8 +133,7 @@ The following packages are in that feed:
 
 ### Building the SDK
 
-Before starting to develop custom software, you must first build the SDK. Once 
-you've downloaded and extracted—or cloned—the SDK, do the following:
+To build from source after extracting or clong the SDK, do the following"
 
 1. At the root level of the **splunk-sdk-csharp-pcl** directory, open the 
 **splunk-sdk-csharp-pcl.sln** file in Visual Studio.

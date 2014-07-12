@@ -164,19 +164,19 @@ The solution is organized into `src`, `examples` and `tests` folders.
 * `Splunk.Client.Helpers` - Helper utilities used by tests and samples.
 
 #### examples (folders)
-* Windows8/Search - Contains a Windows Store Search App.
-* authenticate - Connects to a Splunk Instance and retrieves Splunk's session token.
-* list_apps - Lists installed applications on a Splunk instance.
-* mock-context - Demonstrates how to use the included HTTP record/play framework for unit tests.
-* mock-interface - Demonstrates how to mock the functional interface for Splunk entities.
-* mock-object - Demontrates how to mock concrete SDK objects and fake out HTTP responses for unit tests.
-* normal-search - Performs a normal search against a Splunk instance and retrieves results using both enumeration and with Rx.
-* random-numbers - Sample modular input which returns a randoml generated numbers.
-* saved-searches - Creates a new saved serach and retrieves results.
-* search-export - Creates a search and usings splunk's Export endpoint to push back results.
-* search-realtime - Creates a realtime search.
-* search - Performs a One Shot search.
-* submit - Creates an index and then sends events over HTTP to that index
+* `Windows8/Search` - Contains a Windows Store Search App.
+* `authenticate` - Connects to a Splunk Instance and retrieves Splunk's session token.
+* `list_apps` - Lists installed applications on a Splunk instance.
+* `mock-context` - Demonstrates how to use the included HTTP record/play framework for unit tests.
+* `mock-interface` - Demonstrates how to mock the functional interface for Splunk entities.
+* `mock-object` - Demontrates how to mock concrete SDK objects and fake out HTTP responses for unit tests.
+* `normal-search` - Performs a normal search against a Splunk instance and retrieves results using both enumeration and with Rx.
+* `random-numbers` - Sample modular input which returns a randoml generated numbers.
+* `saved-searches` - Creates a new saved search and retrieves results.
+* `search-export` - Creates a search and usings splunk's Export endpoint to push back results.
+* `search-realtime` - Creates a realtime search.
+* `search` - Performs a One Shot search.
+* `submit` - Creates an index and then sends events over HTTP to that index
 
 #### tests
 * unit-tests - Contains unit tests for all of the classes in the SDK. Does not require a Splunk instance.

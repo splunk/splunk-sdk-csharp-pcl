@@ -36,6 +36,12 @@ namespace Splunk.Client.Helpers
     using System.Threading;
     using System.Threading.Tasks;
 
+    #if __MonoCs__
+
+    using Contract = Splunk.Client.Contract;
+
+    #endif
+
     /// <summary>
     /// Provides a class for faking HTTP requests and responses from a Splunk server.
     /// </summary>

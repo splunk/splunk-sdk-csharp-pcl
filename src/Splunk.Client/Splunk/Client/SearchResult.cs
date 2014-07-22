@@ -29,6 +29,7 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
+    using System.Xml.Linq;
 
     /// <summary>
     /// Represents a single record on a <see cref="SearchResultStream"/>.
@@ -76,7 +77,8 @@ namespace Splunk.Client
         /// <value>
         /// The segmented raw.
         /// </value>
-        public string SegmentedRaw { get; internal set; }
+        public XElement SegmentedRaw 
+        { get; internal set; }
 
         #endregion
 
@@ -101,11 +103,13 @@ namespace Splunk.Client
             this.Object = new ExpandoObject();
             var dictionary = (IDictionary<string, object>)this.Object;
 
+            this.SegmentedRaw = null;
+
             await reader.ReadEachDescendantAsync("field", async (r) =>
             {
                 var key = r.GetRequiredAttribute("k");
-                var fieldDepth = r.Depth;
                 var values = new List<string>();
+                var fieldDepth = r.Depth;
 
                 while (await r.ReadAsync())
                 {
@@ -126,9 +130,12 @@ namespace Splunk.Client
                     }
                     else if (r.Name == "v")
                     {
+                        Debug.Assert(this.SegmentedRaw == null);
+                        Debug.Assert(key == "_raw");
+
                         string value = await r.ReadOuterXmlAsync();
-                        this.SegmentedRaw = value;
-                        values.Add(value);
+                        this.SegmentedRaw = XElement.Parse(value);
+                        values.Add(this.SegmentedRaw.Value);
                     }
                 }
 

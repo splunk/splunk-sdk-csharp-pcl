@@ -507,7 +507,7 @@ namespace SplunkSearch
         private List<string> ParseResult(SearchResult searchResult)
         {
             List<string> results = new List<string>();
-            string rawData = searchResult.SegmentedRaw;
+            string rawData = searchResult.SegmentedRaw.Value;
 
             //DateTime time = DateTime.Parse(searchResult["_time"]);
             //string format = "yyyy/M/d hh:mm:ss.fff";

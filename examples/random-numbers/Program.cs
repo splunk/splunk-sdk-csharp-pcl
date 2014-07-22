@@ -5,6 +5,13 @@ using Splunk.ModularInputs;
 
 namespace random_numbers
 {
+    /// <summary>
+    /// This example shows how to create a modular input with C# 2.0 SDK.
+    /// After build, it will generate a folder @ bin\Debug\app\random-numbers (or bin\Release\app\random-numbers).
+    /// if to install this app on splunk hosted on Windows server, zip the folder of bin\Debug\app\random-numbers, and name it as random-numbers.spl, then install the app.
+    /// if to install this app on splunk hosted on Linux/OSX server, use tar command to targiz the folder of bin\Debug\app\random-numbers, and name it as random-numbers.tar.gz, then install the app; 
+    /// Noted this will need your install MONO Make sure the app can run on non-windows environment; make sure the random-numbers.sh file contain the right path to your MONO path
+    /// </summary>
     public class Program : ModularInput
     {
         private static Random rnd = new Random();

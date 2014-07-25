@@ -1520,9 +1520,9 @@ namespace Splunk.Client.AcceptanceTests
                         }
                     }
                     watch.Stop();
-                    Console.WriteLine(watch.Elapsed.TotalSeconds);
-                    Console.WriteLine(stream.ReadCount);
-                    Assert.True(stream.ReadCount > 1);
+                    Console.WriteLine("spent {0} to read all stream", watch.Elapsed.TotalSeconds);
+                    Console.WriteLine("stream.ReadCount={0}", stream.ReadCount);
+                    Assert.True(stream.ReadCount >= 1);
                     Assert.NotEmpty(results);
                 }
 
@@ -1576,7 +1576,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     Assert.Null(exception);
                     Assert.NotEmpty(results);
-                    Assert.True(stream.ReadCount > 1);
+                    Assert.True(stream.ReadCount >= 1);
                 }
 
                 await service.LogOffAsync();

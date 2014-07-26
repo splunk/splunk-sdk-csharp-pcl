@@ -14,12 +14,11 @@
  * under the License.
  */
 
-namespace Splunk.Client.Helpers
+namespace Splunk.Client
 {
     using Splunk.Client;
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.IO;
@@ -29,13 +28,12 @@ namespace Splunk.Client.Helpers
     using System.Net.Http;
     using System.Runtime.Serialization;
     using System.Runtime.Serialization.Json;
-    using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a class for faking HTTP requests and responses from a Splunk server.
+    /// Provides a class for faking git requests and responses from a Splunk server.
     /// </summary>
     public class Observer<T> : IObserver<T>
     {

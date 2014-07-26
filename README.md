@@ -124,7 +124,7 @@ To run the unit tests you will need to [download](https://github.com/xunit/xunit
 
 #### MyGet feed
 
-Before the intial release, you can download the Splunk SDK C# NuGet packages from [MyGet](http://www.myget.org). Add the following feed to your package sources in Visual Studio: https://www.myget.org/F/splunk-sdk-csharp-pcl/
+Before the intial release, you can download the Splunk SDK C# NuGet packages from [MyGet](http://www.myget.org). Add the following feed to your package sources in Visual Studio: https://splunk.myget.org/F/splunk-sdk-csharp-pcl/
 
 The following packages are in that feed:
 * Splunk.Client - Client for Splunk's REST API. This is a portable library.

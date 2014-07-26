@@ -18,8 +18,6 @@ namespace Splunk.Client.AcceptanceTests
 {
     using Splunk.Client;
     using Splunk.Client.Helpers;
-    using Splunk.Client.UnitTests;
-
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
@@ -1498,9 +1496,11 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                const string search = "search index=_internal | tail 1000 | stats count by method";
-                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h" };
+                const string search = "search index=_internal | sort time |head 5000 | stats count by method";
+                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-7d" };
 
+                Stopwatch watch = new Stopwatch();
+                watch.Start();
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
@@ -1519,8 +1519,10 @@ namespace Splunk.Client.AcceptanceTests
                             results.AddRange(preview.Results);
                         }
                     }
-
-                    Assert.True(stream.ReadCount > 1);
+                    watch.Stop();
+                    Console.WriteLine("spent {0} to read all stream", watch.Elapsed.TotalSeconds);
+                    Console.WriteLine("stream.ReadCount={0}", stream.ReadCount);
+                    Assert.True(stream.ReadCount >= 1);
                     Assert.NotEmpty(results);
                 }
 
@@ -1535,7 +1537,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                const string search = "search index=_internal | tail 1000 | stats count by method";
+                const string search = "search index=_internal | sort time |head 5000 | stats count by method";
                 var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h" };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
@@ -1574,7 +1576,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     Assert.Null(exception);
                     Assert.NotEmpty(results);
-                    Assert.True(stream.ReadCount > 1);
+                    Assert.True(stream.ReadCount >= 1);
                 }
 
                 await service.LogOffAsync();

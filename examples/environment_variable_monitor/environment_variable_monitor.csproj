@@ -56,8 +56,8 @@
     <ProjectGuid>{97C3A57B-8ED8-42A7-9FB3-8120BA265FCC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>modular_input</RootNamespace>
-    <AssemblyName>modular_input</AssemblyName>
+    <RootNamespace>environment_variable_monitor</RootNamespace>
+    <AssemblyName>environment_variable_monitor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
@@ -107,10 +107,10 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <Content Include="modular_input\default\app.conf">
+    <Content Include="environment_variable_monitor\default\app.conf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="modular_input\README\inputs.conf.spec">
+    <Content Include="environment_variable_monitor\README\inputs.conf.spec">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -150,16 +150,16 @@
   <Target Name="AfterBuild">
     <!-- At this point, we have a directory AppSkeleton in the project directory that
          contains app.conf and inputs.conf.spec. -->
-    <MakeDir Directories="$(AppSkeletonPath);$(AppSkeletonPath)\modular_input" />
-    <MakeDir Directories="$(AppSkeletonPath)\modular_input\bin;$(AppSkeletonPath)\modular_input\default;$(AppSkeletonPath)\modular_input\README" />
-    <Copy SourceFiles="$(MSBuildProjectDirectory)\modular_input\default\app.conf" DestinationFolder="$(AppSkeletonPath)\modular_input\default" />
-    <Copy SourceFiles="$(MSBuildProjectDirectory)\modular_input\README\inputs.conf.spec" DestinationFolder="$(AppSkeletonPath)\modular_input\README" />
-    <Copy SourceFiles="$(OutputPath)\modular_input.exe" DestinationFolder="$(AppSkeletonPath)\modular_input\bin" />
+    <MakeDir Directories="$(AppSkeletonPath);$(AppSkeletonPath)\environment_variable_monitor" />
+    <MakeDir Directories="$(AppSkeletonPath)\environment_variable_monitor\bin;$(AppSkeletonPath)\environment_variable_monitor\default;$(AppSkeletonPath)\environment_variable_monitor\README" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\environment_variable_monitor\default\app.conf" DestinationFolder="$(AppSkeletonPath)\environment_variable_monitor\default" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\environment_variable_monitor\README\inputs.conf.spec" DestinationFolder="$(AppSkeletonPath)\environment_variable_monitor\README" />
+    <Copy SourceFiles="$(OutputPath)\environment_variable_monitor.exe" DestinationFolder="$(AppSkeletonPath)\environment_variable_monitor\bin" />
     <ItemGroup>
       <DLLsToInclude Include="$(OutputPath)\*.dll" />
     </ItemGroup>
-    <Copy SourceFiles="@(DLLsToInclude)" DestinationFolder="$(AppSkeletonPath)\modular_input\bin" />
-    <!--<ZipFolder FolderToCompress="$(AppSkeletonPath)" OutputFileName="$(OutputPath)\modular_input.spl" OverwriteExistingFile="true" /> -->
-    <Message Importance="high" Text="Finished building .spl file in $(OutputPath)modular_input.spl" />
+    <Copy SourceFiles="@(DLLsToInclude)" DestinationFolder="$(AppSkeletonPath)\environment_variable_monitor\bin" />
+    <!--<ZipFolder FolderToCompress="$(AppSkeletonPath)" OutputFileName="$(OutputPath)\environment_variable_monitor.spl" OverwriteExistingFile="true" /> -->
+    <Message Importance="high" Text="Finished building .spl file in $(OutputPath)environment_variable_monitor.spl" />
   </Target>
 </Project>

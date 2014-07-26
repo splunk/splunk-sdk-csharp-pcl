@@ -22,7 +22,7 @@ namespace Splunk.Client
     //// Mono 2.8 notes: http://www.mono-project.com/Release_Notes_Mono_2.8
     //// as it states if the CONTRACTS_FULL compiler directive is not set, the
     //// calls to Contract should be removed by the compiler. However when
-    ////  testing in Xamarin Studio, this does not appear to be the case.
+    //// testing in Xamarin Studio, this does not appear to be the case.
     public static class Contract
     {
         public static void Requires (bool check, string name="") 

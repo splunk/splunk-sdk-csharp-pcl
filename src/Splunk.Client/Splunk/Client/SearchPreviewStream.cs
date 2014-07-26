@@ -203,11 +203,9 @@ namespace Splunk.Client
 
         void EnsureAwaiterSucceeded()
         {
-            if (this.awaiter.LastError != null)
+            if (this.awaiter.LastError != null && this.disposed == 0)
             {
-                var text = string.Format(CultureInfo.CurrentCulture, "Enumeration ended prematurely : {0}.", 
-                    this.awaiter.LastError);
-                throw new TaskCanceledException(text, this.awaiter.LastError);
+                throw this.awaiter.LastError;
             }
         }
 

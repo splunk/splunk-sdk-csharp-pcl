@@ -26,9 +26,9 @@ Version 2.0 introduces new modern APIs that leverage the latest .NET platform ad
 * Async - All APIs are 100% asynchronous supporting the new [async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) features.
 * All APIs follow .NET guidelines and abide by FxCop and StyleCop rules.
 * Reactive Extensions - Splunk Enterprise query results implement [IObservable<T>](http://msdn.microsoft.com/library/dd990377), allowing usage with the [.NET Reactive Extensions](http://msdn.microsoft.com/data/gg577610).
-* Support for cross-platform development - The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx).
+* Support for cross-platform development - The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx) supporting .NET development on multiple platforms.
 
-Below is an example of a simple normal search:
+Below is an example of a simple One Shot Search:
 
 ```csharp
 using Splunk.Client;
@@ -36,18 +36,16 @@ using Splunk.Client;
 var service = new Service(Scheme.Https, "localhost", 8089));
 
 //login
-await service.LoginAsync("admin", "changeme");
+await service.LogOnAsync("admin", "changeme");
 
-//create a job
-var job = await service.StartJobAsync("search index=_internal | head 10");
-
-//get the results
-var searchResults = await job.GetSearchResultsAsync());
+//create a One Shot Search and retrieve the results
+var searchResults = await service.SearchOneShotSearchAsync("search index=_internal | head 10");
 
 //loop through the results
-foreach (var record in searchResults)
+foreach (var result in searchResults)
 {
-    Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+    //write out the raw event
+    Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result.GetValue("_raw")));
 }
 ```
 

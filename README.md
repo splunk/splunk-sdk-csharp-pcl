@@ -1,5 +1,5 @@
 # Splunk SDK for C# 
-### Version 2.0 pre-release
+## Version 2.0 beta
 
 **Note: The Splunk SDK for C# is in development and is not currently supported.**
 
@@ -21,7 +21,7 @@ that are enabled by Splunk's unique capabilities.
 
 ## What's new in Version 2.0
 
-Version 2.0 introduces new modern APIs that leverage the latest .NET platform advancements. 
+Version 2.0 beta introduces new modern APIs that leverage the latest .NET platform advancements. 
 
 * Async - All APIs are 100% asynchronous supporting the new [async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) features.
 * All APIs follow .NET guidelines and abide by FxCop and StyleCop rules.

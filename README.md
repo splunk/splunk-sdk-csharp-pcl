@@ -26,9 +26,9 @@ Version 2.0 introduces new modern APIs that leverage the latest .NET platform ad
 * Async - All APIs are 100% asynchronous supporting the new [async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) features.
 * All APIs follow .NET guidelines and abide by FxCop and StyleCop rules.
 * Reactive Extensions - Splunk Enterprise query results implement [IObservable<T>](http://msdn.microsoft.com/library/dd990377), allowing usage with the [.NET Reactive Extensions](http://msdn.microsoft.com/data/gg577610).
-* Support for cross-platform development - The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx).
+* Support for cross-platform development - The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx) supporting .NET development on multiple platforms.
 
-Below is an example of a simple normal search:
+Below is an example of a simple One Shot Search:
 
 ```csharp
 using Splunk.Client;
@@ -36,26 +36,22 @@ using Splunk.Client;
 var service = new Service(Scheme.Https, "localhost", 8089));
 
 //login
-await service.LoginAsync("admin", "changeme");
+await service.LogOnAsync("admin", "changeme");
 
-//create a job
-var job = await service.StartJobAsync("search index=_internal | head 10");
-
-//get the results
-var searchResults = await job.GetSearchResultsAsync());
+//create a One Shot Search and retrieve the results
+var searchResults = await service.SearchOneShotSearchAsync("search index=_internal | head 10");
 
 //loop through the results
-foreach (var record in searchResults)
+foreach (var result in searchResults)
 {
-    Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+    //write out the raw event
+    Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, result.GetValue("_raw")));
 }
 ```
 
 ## Supported platforms
 
-.NET 4.5, PCL (Windows 8.1, Windows Phone 8.1, iOS (via Xamarin.iOS), Android (via Xamarin.Android)
-
-*Note - Xamarin support is a work in progress
+.NET 4.5/Mono 3.4, PCL (Windows 8.1, Windows Phone 8.1, iOS (via Xamarin.iOS), Android (via Xamarin.Android)
 
 ## Compatibility
 
@@ -105,11 +101,36 @@ running Splunk Enterprise and system requirements, see the
 
 #### Developer environments
 
-* The Splunk SDK for C# supports development in Microsoft Visual Studio 2012 and later.  Visual Studio downloads are available on the 
-[Visual Studio Downloads webpage](http://www.microsoft.com/visualstudio/downloads).
-* Support for Xamarin Studio and MonoDevelop is in progress.
+The Splunk SDK for C# supports development in the following environments:
 
-#### Splunk SDK for C# 
+##### Visual Studio
+The Splunk SDK for C# supports development in [Microsoft Visual Studio](http://www.microsoft.com/visualstudio/downloads) 2012 and later
+
+You will need to install [Code Contracts for .NET](http://visualstudiogallery.msdn.microsoft.com/1ec7db13-3363-46c9-851f-1ce455f66970)
+(be sure to close Visual Studio before you install it or the install will not work, despite appearing to).
+
+To run the unit tests you will need to install an [xUnit](https://github.com/xunit/xunit) runner:
+* If you use resharper, install its [xUnit.net Test Support](https://resharper-plugins.jetbrains.com/packages/xunitcontrib/1.6.2).
+* Otherwise, install the [xUnit.net runner for Visual Studio 2012 and 2013](http://visualstudiogallery.msdn.microsoft.com/463c5987-f82b-46c8-a97e-b1cde42b9099).
+
+##### Xamarin Studio / Mono Develop
+The Splunk SDK for C# support development in Xamarin Studio and Mono Develop. You will need to set the __MonoCS__ complitation constant in the project settings for Splunk.Client.csproj and Splunk.ModularInputs.csproj. 
+
+To run the unit tests you will need to [download](https://github.com/xunit/xunit/releases) the latest release of xUnit and run using the command line tools or GUI runner. 
+
+### Splunk SDK for C# 
+
+#### MyGet feed
+
+Before the intial release, you can download the Splunk SDK C# NuGet packages from [MyGet](http://www.myget.org). Add the following feed to your package sources in Visual Studio: https://splunk.myget.org/F/splunk-sdk-csharp-pcl/
+
+The following packages are in that feed:
+* Splunk.Client - Client for Splunk's REST API. This is a portable library.
+* Splunk.ModularInputs - Functionality for building Modular Inputs.
+
+*Note*: Both packages will be published to NuGet when the SDK releases.
+
+#### Getting the source
 
 [Get the Splunk SDK for C#](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip). Download the ZIP file and extract its contents.
 
@@ -117,10 +138,9 @@ If you are interested in contributing to the Splunk SDK for C#, you can
 [get it from GitHub](https://github.com/splunk/splunk-sdk-csharp) and clone the 
 resources to your computer.
 
-### Building the SDK
+#### Building the SDK
 
-Before starting to develop custom software, you must first build the SDK. Once 
-you've downloaded and extracted—or cloned—the SDK, do the following:
+To build from source after extracting or cloning the SDK, do the following"
 
 1. At the root level of the **splunk-sdk-csharp-pcl** directory, open the 
 **splunk-sdk-csharp-pcl.sln** file in Visual Studio.
@@ -128,9 +148,37 @@ you've downloaded and extracted—or cloned—the SDK, do the following:
 
 This will build the SDK, the examples, and the unit tests.
 
-### Examples and unit tests
+#### Examples and unit tests
 
-The Splunk SDK for C# includes full unit tests which run using [xunit](https://github.com/xunit/xunit). Examples are a work in progress.
+The Splunk SDK for C# includes full unit tests which run using [xunit](https://github.com/xunit/xunit) as well as several examples.
+
+#### Solution Layout
+
+The solution is organized into `src`, `examples` and `tests` folders. 
+
+##### src
+* `Splunk.Client` - Client for Splunk's REST API.
+* `Splunk.ModularInputs` - Functionality for building Modular Inputs.
+* `Splunk.Client.Helpers` - Helper utilities used by tests and samples.
+
+#### examples 
+* `Windows8/Search` - Contains a Windows Store Search App.
+* `authenticate` - Connects to a Splunk Instance and retrieves Splunk's session token.
+* `list_apps` - Lists installed applications on a Splunk instance.
+* `mock-context` - Demonstrates how to use the included HTTP record/play framework for unit tests.
+* `mock-interface` - Demonstrates how to mock the functional interface for Splunk entities.
+* `mock-object` - Demontrates how to mock concrete SDK objects and fake out HTTP responses for unit tests.
+* `normal-search` - Performs a normal search against a Splunk instance and retrieves results using both enumeration and with Rx.
+* `random-numbers` - Sample modular input which returns a randoml generated numbers.
+* `saved-searches` - Creates a new saved search and retrieves results.
+* `search-export` - Creates a search and usings splunk's Export endpoint to push back results.
+* `search-realtime` - Creates a realtime search.
+* `search` - Performs a One Shot search.
+* `submit` - Creates an index and then sends events over HTTP to that index
+
+#### tests
+* unit-tests - Contains unit tests for all of the classes in the SDK. Does not require a Splunk instance.
+* acceptance-tests - Contains end to end tests using the SDK. These tests by default will go against a Splunk instance. Tests can also be run in playback mode by setting `MockContext.Mode` to `Playback` in `App.Config`. 
 
 ### Changelog
 

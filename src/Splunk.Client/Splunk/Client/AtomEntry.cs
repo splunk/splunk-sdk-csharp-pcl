@@ -94,7 +94,7 @@ namespace Splunk.Client
         /// </remarks>
         /// <value>
         /// A dynamic object representing the content of the resource represented by
-        /// the current <see cref="AtomEnry"/>.
+        /// the current <see cref="AtomEntry"/>.
         /// </value>
         public dynamic Content
         { get; private set; }

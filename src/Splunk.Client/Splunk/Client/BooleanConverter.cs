@@ -44,17 +44,13 @@ namespace Splunk.Client
         /// Converts the string representation of an object to a
         /// <see cref= "Boolean"/> value.
         /// </summary>
-        /// <exception cref="NewInvalidDataException">
-        /// Thrown when a New Invalid Data error condition occurs.
-        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        ///
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="InvalidDataException">
         /// The <paramref name="input"/> does not represent a <see cref="Boolean"/>
         /// value.
         /// </exception>

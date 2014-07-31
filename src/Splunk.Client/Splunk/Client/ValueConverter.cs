@@ -64,7 +64,6 @@ namespace Splunk.Client
         /// <summary>
         /// Converts the given input.
         /// </summary>
-        /// </param>
         /// <param name="input">
         /// The input.
         /// </param>

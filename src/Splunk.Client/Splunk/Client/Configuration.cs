@@ -90,11 +90,10 @@ namespace Splunk.Client
         /// <param name="fileName">
         /// Name of a configuration file.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
+        /// <exception cref="ArgumentException">
         /// <paramref name="fileName"/> is <c>null</c> or empty.
         /// </exception>
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal Configuration(Service service, string fileName)
@@ -128,11 +127,10 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal Configuration(Context context, AtomFeed feed)
@@ -146,27 +144,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain a
-        /// <see cref="Configuration"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="Service.CreateConfigurationAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new <see cref="Configuration"/> file.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetConfigurationAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves an existing <see cref="Configuration"/>
-        ///   file.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public Configuration()
         { }
@@ -180,7 +158,7 @@ namespace Splunk.Client
         {
             //// These gymnastics are required because:
             //// * The POST properties/{file_name} endpoint returns nothing in the
-            ////   response body. 
+            ////   response body.
             //// * This method is obliged to return a ConfigurationStanza and we can
             ////   do that, if we can do that without an extra round trip by probing
             ////   arguments for the stanza name.

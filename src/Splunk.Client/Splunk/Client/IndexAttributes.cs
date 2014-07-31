@@ -455,7 +455,7 @@ namespace Splunk.Client
         /// <remarks>
         /// The default value is <c>15</c>. Zero means the indexer will check child
         /// process status every second. This value is capped at
-        /// <c>4294967295</c>, equivalent to <see cref="UInt32.Max"/>.
+        /// <c>4294967295</c>, equivalent to <see cref="System.UInt32.MaxValue"/>.
         /// </remarks>
         /// <value>
         /// A value that specifies in seconds how often the indexer checks the status

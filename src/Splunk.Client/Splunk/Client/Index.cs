@@ -74,11 +74,10 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="System.IO.InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal Index(Context context, AtomFeed feed)
@@ -98,12 +97,9 @@ namespace Splunk.Client
         /// <param name="name">
         /// Name of the index to be represented by the current instance.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
-        /// </exception>
-        /// ### <exception cref="InvalidDataException">
-        /// <paramref name="feed"/> is in an invalid format.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref
+        /// name="name"/> are <c>null</c>.
         /// </exception>
         internal Index(Context context, Namespace ns, string name)
             : base(context, ns, ClassResourceName, name)
@@ -115,26 +111,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain an
-        /// <see cref="Index"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="Service.CreateIndexAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new <see cref="Index"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetIndexAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves an existing index.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public Index()
         { }

@@ -125,10 +125,6 @@ namespace Splunk.Client
         /// <returns>
         /// A value of type <typeparamref name="TValue"/>.
         /// </returns>
-        ///
-        /// ### <typeparam name="TValue">
-        /// The type of value to return.
-        /// </typeparam>
         public TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
             Contract.Requires<ArgumentNullException>(name != null);
@@ -319,15 +315,17 @@ namespace Splunk.Client
             /// <summary>
             /// Converts the given input.
             /// </summary>
-            /// <exception cref="NewInvalidDataException">
-            /// Thrown when a New Invalid Data error condition occurs.
-            /// </exception>
             /// <param name="input">
             /// 
             /// </param>
             /// <returns>
             /// An ExpandoAdapter.
             /// </returns>
+            /// <exception cref="System.IO.InvalidDataException">
+            /// The <paramref name="input"/> does not represent an <see cref=
+            /// "ExpandoAdapter"/>.
+            /// value.
+            /// </exception>
             public override ExpandoAdapter Convert(object input)
             {
                 var value = input as ExpandoAdapter;
@@ -358,7 +356,7 @@ namespace Splunk.Client
     /// <see cref="System.Dynamic.ExpandoObject"/> instances.
     /// </summary>
     /// <typeparam name="TExpandoAdapter">
-    /// Type of the expando adapter.
+    /// Type of the adapter.
     /// </typeparam>
     /// <seealso cref="T:Splunk.Client.ExpandoAdapter"/>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = 
@@ -403,15 +401,16 @@ namespace Splunk.Client
             /// <summary>
             /// Converts the given input.
             /// </summary>
-            /// <exception cref="NewInvalidDataException">
-            /// Thrown when a New Invalid Data error condition occurs.
-            /// </exception>
             /// <param name="input">
             /// 
             /// </param>
             /// <returns>
             /// A TExpandoAdapter.
             /// </returns>
+            /// <exception cref="System.IO.InvalidDataException">
+            /// The <paramref name="input"/> does not represent an <see cref=
+            /// "ExpandoAdapter"/>.
+            /// </exception>
             public override TExpandoAdapter Convert(object input)
             {
                 var value = input as TExpandoAdapter;

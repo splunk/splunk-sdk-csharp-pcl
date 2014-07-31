@@ -272,7 +272,7 @@ namespace Splunk.Client
         /// the current <see cref="Application"/> instance.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false);
 
@@ -494,7 +494,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         public abstract Task<bool> UpdateAsync(params Argument[] arguments);
 
@@ -506,7 +506,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         public abstract Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
 
@@ -522,7 +522,7 @@ namespace Splunk.Client
         /// the current <see cref="Application"/> instance.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         /// <seealso cref="M:Splunk.Client.IApplication.UpdateAsync(ApplicationAttributes,bool)"/>
         public Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates)

@@ -62,9 +62,8 @@ namespace Splunk.Client
         /// An object identifying a Splunk resource within
         /// <paramref name= "service"/>.<see cref="Namespace"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal Application(Service service, string name)
             : this(service.Context, service.Namespace, name)
@@ -81,13 +80,6 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
-        /// </exception>
-        /// ### <exception cref="InvalidDataException">
-        /// <paramref name="feed"/> is in an invalid format.
-        /// </exception>
         protected internal Application(Context context, AtomFeed feed)
         {
             this.Initialize(context, feed);
@@ -105,16 +97,6 @@ namespace Splunk.Client
         /// <param name="name">
         /// The name of the <see cref="Application"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
-        /// <paramref name="name"/> is <c>null</c> or empty.
-        /// </exception>
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
-        /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="ns"/> is not specific.
-        /// </exception>
         protected internal Application(Context context, Namespace ns, string name)
             : base(context, ns, ApplicationCollection.ClassResourceName, name)
         { }
@@ -125,32 +107,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain an
-        /// <see cref="Application"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="Service.CreateApplicationAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new Splunk application from a template.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetApplicationAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves an existing Splunk application.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.InstallApplicationAsync"/></term>
-        ///   <description>
-        ///   Asynchronously installs a new Splunk application from an archive file.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public Application()
         { }

@@ -39,17 +39,13 @@ namespace Splunk.Client
         /// Converts the string representation of a <paramref name="input"/> Unix
         /// time value to a <see cref="DateTime"/> value.
         /// </summary>
-        /// <exception cref="NewInvalidDataException">
-        /// Thrown when a New Invalid Data error condition occurs.
-        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        ///
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="InvalidDataException">
         /// The <paramref name="input"/> does not represent a <see cref="DateTime"/>
         /// value.
         /// </exception>

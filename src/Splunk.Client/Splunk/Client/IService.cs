@@ -257,13 +257,15 @@ namespace Splunk.Client
         Task<SearchResultStream> ExportSearchResultsAsync(string search, SearchExportArgs args = null);
 
         /// <summary>
-        /// Searches for the first asynchronous.
+        /// Asycnrononusly creates and executes a normal or blocking Splunk search job.
         /// </summary>
-        ///
-        /// <param name="blocking">
+        /// <param name="search">
         /// 
         /// </param>
-        /// <param name="search">
+        /// <param name="count">
+        ///                     
+        /// </param>
+        /// <param name="mode">
         /// 
         /// </param>
         /// <param name="args">
@@ -273,20 +275,23 @@ namespace Splunk.Client
         /// 
         /// </param>
         /// <returns>
-        /// An object representing a Splunk search job.
+        /// An object representing the Splunk search job created.
         /// </returns>
         Task<Job> SearchAsync(string search, int count = 100, ExecutionMode mode = ExecutionMode.Normal, 
             JobArgs args = null, CustomJobArgs customArgs = null);
 
         /// <summary>
-        /// Executes a oneshot search.
+        /// Asynchronously executes a one shot search.
         /// </summary>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/b02g1d">POST search/jobs</a>
-        /// endpoint to execute a oneshot search.
+        /// endpoint to execute a one shot search.
         /// </remarks>
         /// <param name="search">
         /// Search string.
+        /// </param>
+        /// <param name="count">
+        /// 
         /// </param>
         /// <param name="args">
         /// Optional job arguments.

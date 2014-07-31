@@ -177,10 +177,6 @@ namespace Splunk.Client
         /// </list>
         /// </returns>
         /// <seealso cref="M:System.IComparable.CompareTo(object)"/>
-        ///
-        /// ### <param name="obj">
-        /// An object to compare with this instance.
-        /// </param>
         public int CompareTo(object other)
         {
             return this.CompareTo(other as Namespace);
@@ -265,10 +261,6 @@ namespace Splunk.Client
         /// <see cref= "Namespace"/>; otherwise, <c>false</c>.
         /// </returns>
         /// <seealso cref="M:System.Object.Equals(object)"/>
-        ///
-        /// ### <param name="obj">
-        /// The object to compare with the current object.
-        /// </param>
         public override bool Equals(object other)
         {
             return this.Equals(other as Namespace);

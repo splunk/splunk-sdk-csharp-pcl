@@ -95,7 +95,7 @@ namespace Splunk.Client
         /// <see cref= "Resource"/>.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="Resource"/>
+        /// This method may be called once to initialize a <see cref="Resource"/>
         /// instantiated by the default constructor. Override this method to provide
         /// special initialization code. Call this base method before initialization
         /// is complete.
@@ -111,11 +111,10 @@ namespace Splunk.Client
         /// An object representing a Splunk atom feed response.
         /// </param>
         /// <seealso cref="M:Splunk.Client.BaseResource.Initialize(AtomFeed)"/>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="feed"/> is <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         /// The current <see cref="Resource"/> is already initialized.
         /// </exception>
         protected internal override void Initialize(AtomFeed feed)

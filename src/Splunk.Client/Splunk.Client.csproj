@@ -108,9 +108,8 @@
     <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateDocumentationFile Condition=" '$(GenerateDocumentationFile)' == '' ">False</GenerateDocumentationFile>
-    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' != 'True' ">
-    </DocumentationFile>
+    <GenerateDocumentationFile Condition=" '$(GenerateDocumentationFile)' == '' ">True</GenerateDocumentationFile>
+    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' != 'True' " />
     <DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'True' ">$(OutputPath)$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <Choose>

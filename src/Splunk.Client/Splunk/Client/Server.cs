@@ -37,18 +37,13 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Receiver"/> class.
+        /// Initializes a new instance of the <see cref="Server"/> class.
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
         /// </param>
-        ///
-        /// ### <param name="name">
-        /// An object identifying a Splunk resource within
-        /// <paramref name= "service"/>.<see cref="Namespace"/>.
-        /// </param>
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal Server(Service service)
             : this(service.Context, service.Namespace)
@@ -65,11 +60,10 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal Server(Context context, Namespace ns)

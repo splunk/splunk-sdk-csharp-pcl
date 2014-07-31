@@ -100,7 +100,7 @@ namespace Splunk.Client
         /// Asynchronously creates a new <see cref="SearchResultStream"/>
         /// using the specified <see cref="HttpResponseMessage"/>.
         /// </summary>
-        /// <param name="response">
+        /// <param name="message">
         /// An object from which search results are read.
         /// </param>
         /// <returns>
@@ -155,8 +155,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through search result
-        /// <see cref="Result"/> objects asynchronously.
+        /// Returns an enumerator that iterates through search results.
         /// </summary>
         /// <remarks>
         /// You can use the <see cref="GetEnumerator"/> method to
@@ -165,8 +164,7 @@ namespace Splunk.Client
         ///   Perform LINQ to Objects queries to obtain a filtered set of search
         ///   result records.</description></item>
         /// <item><description>
-        ///   Append search results to an existing <see cref="Result"/>
-        ///   collection.</description></item>
+        ///   Append search results to an existing search result collection.</description></item>
         /// </list>
         /// </remarks>
         /// <returns>

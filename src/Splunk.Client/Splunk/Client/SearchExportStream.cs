@@ -66,7 +66,7 @@ namespace Splunk.Client
         /// Asynchronously creates a new <see cref="SearchExportStream"/>
         /// using the specified <see cref="HttpResponseMessage"/>.
         /// </summary>
-        /// <param name="response">
+        /// <param name="message">
         /// An object from which search results are read.
         /// </param>
         /// <returns>

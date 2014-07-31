@@ -58,7 +58,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new <see cref="EntityCollection"/> instance.
+        /// Initializes a new <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> instance.
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
@@ -77,7 +77,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/>
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -96,7 +96,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/>
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -116,7 +116,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/>
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -133,7 +133,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the
-        /// <see cref= "EntityCollection&lt;TEntity&gt;"/> class.
+        /// <see cref= "EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
@@ -162,11 +162,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets the number of entries in the current
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </summary>
         /// <value>
         /// The number of entries in the current
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </value>
         public int Count
         {
@@ -212,8 +212,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously retrieves a <see cref="TEntity"/> in the current
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/> by name.
+        /// Asynchronously retrieves a <see cref="Entity&lt;TResource&gt;"/> in the current
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> by name.
         /// </summary>
         /// <param name="name">
         /// Name of the entity to retrieve.
@@ -234,11 +234,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously retrieves a fresh copy of the full list of entities in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// current <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </summary>
         /// <remarks>
         /// Following completion of the operation the list of entites in the current
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/> will contain all changes
+        /// <see cref="EntityCollection&lt;TEntity,TREsource&gt;"/> will contain all changes
         /// since the list was last retrieved.
         /// </remarks>
         /// <returns>
@@ -260,8 +260,8 @@ namespace Splunk.Client
         /// The name of the entity to retrieve.
         /// </param>
         /// <returns>
-        /// An object representing entity <param name="name"/> or <c>null</c>, if no
-        /// such entity exists.
+        /// An object representing entity <paramref name="name"/> or <c>null</c>,
+        /// if no such entity exists.
         /// </returns>
         public virtual async Task<TEntity> GetOrNullAsync(string name)
         {
@@ -283,11 +283,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously retrieves select entities from the list of entites in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// current <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </summary>
         /// <remarks>
         /// Following completion of the operation the list of entities in the current
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/> will contain all changes
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> will contain all changes
         /// since the select entites were last retrieved.
         /// </remarks>
         /// <param name="arguments">
@@ -303,11 +303,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously retrieves select entities from the list of entites in the
-        /// current <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// current <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </summary>
         /// <remarks>
         /// Following completion of the operation the list of entities in the current
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/> will contain all changes
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> will contain all changes
         /// since the select entites were last retrieved.
         /// </remarks>
         /// <param name="arguments">
@@ -327,7 +327,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Asynchronously forces the Splunk server to reload data for the current
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -353,11 +353,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets an enumerator that iterates through the current <see cref=
-        /// "EntityCollection&lt;TEntity&gt;"/>.
+        /// "EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </summary>
         /// <returns>
         /// An object for iterating through the current
-        /// <see cref= "EntityCollection&lt;TEntity&gt;"/>.
+        /// <see cref= "EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {

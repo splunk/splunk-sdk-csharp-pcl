@@ -93,7 +93,7 @@ namespace Splunk.Client
         /// <see cref= "ResourceCollection"/>.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a
+        /// This method may be called once to initialize a
         /// <see cref="ResourceCollection"/>
         /// instantiated by the default constructor. Override this method to provide
         /// special initialization code. Call this base method before initialization
@@ -107,11 +107,10 @@ namespace Splunk.Client
         /// An object representing a Splunk atom feed response.
         /// </param>
         /// <seealso cref="M:Splunk.Client.BaseResource.Initialize(AtomFeed)"/>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="feed"/> is <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         /// The current <see cref="ResourceCollection"/> is already initialized.
         /// </exception>
         protected internal override void Initialize(AtomFeed feed)
@@ -124,7 +123,7 @@ namespace Splunk.Client
         /// <see cref= "ResourceCollection"/>.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a
+        /// This method may be called once to initialize a
         /// <see cref="ResourceCollection"/>
         /// instantiated by the default constructor. Override this method to provide
         /// special initialization code. Call this base method before initialization
@@ -140,11 +139,10 @@ namespace Splunk.Client
         /// <param name="feed">
         /// An object representing a Splunk atom feed response.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="feed"/> is <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidOperationException">
+        /// <exception cref="InvalidOperationException">
         /// The current <see cref="ResourceCollection"/> is already initialized.
         /// </exception>
         protected internal virtual void Initialize<TResource>(AtomFeed feed) where TResource : BaseResource, new()

@@ -244,8 +244,8 @@ namespace Splunk.Client
         /// Name of the descendant elements to read.
         /// </param>
         /// <param name="task">
-        /// An awaitable function to apply to <see cref="reader"/> at each of the
-        /// visited elements.
+        /// An awaitable function to apply to <paramref name="reader"/> at each 
+        /// of the visited elements.
         /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.

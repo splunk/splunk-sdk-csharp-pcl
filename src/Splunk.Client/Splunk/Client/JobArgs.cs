@@ -358,8 +358,8 @@ namespace Splunk.Client
         /// The default value is <c>true</c>.
         /// </remarks>
         /// <value>
-        /// <c>true</c>, if macro definitions should be reloaded from &lt;a href=
-        /// "http://goo.gl/4iCRz4"&gt;macros.conf</c></a>.
+        /// <c>true</c>, if macro definitions should be reloaded from <a href=
+        /// "http://goo.gl/4iCRz4"><c>macros.conf</c></a>.
         /// </value>
         [DataMember(Name = "reload_macros", EmitDefaultValue = false)]
         public bool? ReloadMacros

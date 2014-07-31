@@ -109,26 +109,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain a
-        /// <see cref="ServerMessage"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="Server.CreateMessageAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new <see cref="ServerMessage"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Server.GetMessageAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves an existing <see cref="ServerMessage"/>.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public ServerMessage()
         { }
@@ -174,7 +155,7 @@ namespace Splunk.Client
         /// A variable-length parameters list containing arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         public override async Task<bool> UpdateAsync(params Argument[] arguments)
         {
@@ -193,7 +174,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         public override Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {

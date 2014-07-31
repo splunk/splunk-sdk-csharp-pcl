@@ -198,7 +198,7 @@ namespace Splunk.Client
         /// Gets all asynchronously.
         /// </summary>
         /// <returns>
-        /// A <see cref="Task"> representing this operation.
+        /// A <see cref="Task"/> representing the operation.
         /// </returns>
         public abstract Task GetAllAsync();
         IEnumerator IEnumerable.GetEnumerator() { return default(IEnumerator); }

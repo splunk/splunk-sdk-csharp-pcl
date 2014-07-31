@@ -177,10 +177,6 @@ namespace Splunk.Client
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        ///
-        /// ### <param name="expected0">
-        /// One expected <see cref="HttpStatusCode"/>.
-        /// </param>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected1, HttpStatusCode expected2)
         {
             var statusCode = this.Message.StatusCode;

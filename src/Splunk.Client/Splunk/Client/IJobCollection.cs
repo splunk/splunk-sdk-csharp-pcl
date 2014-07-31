@@ -46,7 +46,10 @@ namespace Splunk.Client
         /// The search.
         /// </param>
         /// <param name="count">
-        /// Number of.
+        /// 
+        /// </param>
+        /// <param name="mode">
+        ///                    
         /// </param>
         /// <param name="args">
         /// The arguments.

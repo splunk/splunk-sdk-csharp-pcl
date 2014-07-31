@@ -45,8 +45,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/JgyIeN">POST
         /// storage/passwords</a> endpoint to create a <see cref= "StoragePassword"/>
-        /// identified by <paramref name="name"/> and
-        /// <paramref name="realm"/>.
+        /// identified by <paramref name="username"/> and <paramref name="realm"/>.
         /// </remarks>
         /// <param name="password">
         /// Password to be stored.

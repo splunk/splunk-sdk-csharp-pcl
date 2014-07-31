@@ -51,15 +51,16 @@ namespace Splunk.Client
         /// <summary>
         /// Converts the given input.
         /// </summary>
-        /// <exception cref="NewInvalidDataException">
-        /// Thrown when a New Invalid Data error condition occurs.
-        /// </exception>
         /// <param name="input">
         /// The input.
         /// </param>
         /// <returns>
         /// A read only collection of <typeparamref name="TValue"/>.
         /// </returns>
+        /// <exception cref="System.IO.InvalidDataException">
+        /// The <paramref name="input"/> does not represent a collection of
+        /// <typeparamref name="TValue"/> items.
+        /// </exception>
         public override ReadOnlyCollection<TValue> Convert(object input)
         {
             var list = input as IEnumerable<object>;

@@ -55,8 +55,7 @@ namespace Splunk.Client
         /// <param name="timeout">
         /// The timeout.
         /// </param>
-        ///
-        /// ### <exception name="ArgumentException">
+        /// <exception name="ArgumentException">
         /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
         /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
         /// or greater than <c>65535</c>.
@@ -92,8 +91,7 @@ namespace Splunk.Client
         /// <c>true</c> if the inner handler should be disposed of by Dispose,
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
-        ///
-        /// ### <exception name="ArgumentException">
+        /// <exception name="ArgumentException">
         /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
         /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
         /// or greater than <c>65535</c>.

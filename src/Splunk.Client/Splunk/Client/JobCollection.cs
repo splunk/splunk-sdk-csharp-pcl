@@ -63,11 +63,10 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="System.IO.InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal JobCollection(Context context, AtomFeed feed)
@@ -85,14 +84,10 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
-        /// <paramref name="name"/> is <c>null</c> or empty.
-        /// </exception>
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal JobCollection(Context context, Namespace ns)
@@ -105,8 +100,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use <see cref= "Service.GetJobsAsync"/>
-        /// to asynchronously retrieve a collection of running Splunk jobs.
+        /// be used directly from your code.
         /// </remarks>
         public JobCollection()
         { }
@@ -161,6 +155,12 @@ namespace Splunk.Client
         /// <param name="search">
         /// Search string.
         /// </param>
+        /// <param name="count">
+        ///                     
+        /// </param>
+        /// <param name="mode">
+        ///                    
+        /// </param>
         /// <param name="args">
         /// Optional search arguments.
         /// </param>
@@ -204,8 +204,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This method uses the <a href="http://goo.gl/ja2Sev">GET search/jobs</a>
-        /// endpoint to get the <see cref="JobCollection"/>
-        /// specified by <paramref name="args"/>.
+        /// endpoint to get the filtered collection of running search jobs.
         /// </remarks>
         /// <param name="criteria">
         /// The criteria.
@@ -213,10 +212,6 @@ namespace Splunk.Client
         /// <returns>
         /// The slice asynchronous.
         /// </returns>
-        ///
-        /// ### <param name="args">
-        /// Specification of the collection of running search jobs to retrieve.
-        /// </param>
         public virtual async Task GetSliceAsync(JobCollection.Filter criteria)
         {
             await this.GetSliceAsync(criteria.AsEnumerable());

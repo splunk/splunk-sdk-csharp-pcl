@@ -106,6 +106,7 @@ namespace Splunk.Client
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not 
         /// intended to be used directly from your code.
+        /// </remarks>
         public Service()
         { }
 

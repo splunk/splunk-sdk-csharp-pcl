@@ -52,12 +52,11 @@ namespace Splunk.Client
         /// Name of a stanza within <paramref name="fileName"/> containing the
         /// configuration stanza to be represented by the current instance.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
+        /// <exception cref="ArgumentException">
         /// <paramref name="fileName"/>, or <paramref name="stanzaName"/> are
         /// <c>null</c> or empty.
         /// </exception>
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal ConfigurationStanza(Service service, string fileName, string stanzaName)
@@ -83,12 +82,11 @@ namespace Splunk.Client
         /// Name of a stanza within <paramref name="fileName"/> containing the
         /// configuration stanza to be represented by the current instance.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
+        /// <exception cref="ArgumentException">
         /// <paramref name="fileName"/> or <paramref name="stanzaName"/> are
         /// <c>null</c> or <paramref name="ns"/> is non-specific.
         /// </exception>
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
         protected internal ConfigurationStanza(Context context, Namespace ns, string fileName, string stanzaName)
@@ -105,11 +103,10 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal ConfigurationStanza(Context context, AtomFeed feed)
@@ -123,49 +120,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain a
-        /// <see cref="ConfigurationStanza"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="Configuration.CreateStanzaAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new <see cref="ConfigurationStanza"/>
-        ///   in the current <see cref="Configuration"/> file.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Configuration.GetStanzaAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves an existing <see cref="ConfigurationStanza"/>
-        ///   in the current <see cref="Configuration"/> file.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Configuration.UpdateStanzaAsync"/></term>
-        ///   <description>
-        ///   Asynchronously updates an existing <see cref="ConfigurationStanza"/>
-        ///   in the current <see cref="Configuration"/> file.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.CreateConfigurationStanzaAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a <see cref="ConfigurationStanza"/>
-        ///   identified by configuration file and stanza name.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetConfigurationStanzaAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves a <see cref="ConfigurationStanza"/>
-        ///   identified by configuration file and stanza name.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code. 
         /// </remarks>
         public ConfigurationStanza()
         { }

@@ -96,32 +96,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain a
-        /// <see cref="SavedSearch"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="Service.CreateSavedSearchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new <see cref="SavedSearch"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetSavedSearchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves an existing <see cref="SavedSearch"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.UpdateSavedSearchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously updates an existing <see cref="SavedSearch"/>.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public SavedSearch()
         { }

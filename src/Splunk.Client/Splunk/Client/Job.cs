@@ -69,10 +69,10 @@ namespace Splunk.Client
         /// A Splunk response atom feed.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="entry"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidDataException">
-        /// <paramref name="feed"/> is in an invalid format.
+        /// <paramref name="entry"/> is in an invalid format.
         /// </exception>
         protected internal Job(Context context, AtomEntry entry)
         {
@@ -110,39 +110,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain a
-        /// <see cref="Job"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="SavedSearch.DispatchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously dispatches the current <see cref="SavedSearch"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.CreateJobAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new search <see cref="Job"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.DispatchSavedSearchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously dispatches a <see cref="SavedSearch"/> identified by
-        ///   name.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetJobAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves a <see cref="Job"/> identified by search ID.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public Job()
         { }

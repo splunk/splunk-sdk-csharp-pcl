@@ -45,7 +45,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/> class.
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
@@ -65,7 +65,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -73,17 +73,9 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
-        /// <paramref name="entity"/> is <c>null</c> or empty.
-        /// </exception>
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or
-        /// <paramref name="collection"/>, or <paramref name="entity"/> are
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are
         /// <c>null</c>.
-        /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal Entity(Context context, AtomFeed feed)
         {
@@ -91,7 +83,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/>
+        /// Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/>
         /// class.
         /// </summary>
         /// <param name="context">
@@ -103,12 +95,11 @@ namespace Splunk.Client
         /// <param name="resourceName">
         /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/>, <paramref name="ns"/>, or
         /// <paramref name= "resourceName"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal Entity(Context context, Namespace ns, ResourceName resourceName)
@@ -116,7 +107,7 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -125,26 +116,16 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="collection">
-        /// The <see cref="ResourceName"/> of an
-        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
+        /// The <see cref="ResourceName"/> of an <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>.
         /// </param>
         /// <param name="name">
-        /// An object identifying a Splunk resource within
-        /// <paramref name= "service"/>.<see cref="Namespace"/>.
-        /// </param>
-        ///
-        /// ### <param name="entity">
         /// The name of an entity within <paramref name="collection"/>.
         /// </param>
-        /// ### <exception cref="ArgumentException">
-        /// <paramref name="entity"/> is <c>null</c> or empty.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or <paramref
+        /// name="collection"/>, or <paramref name="name"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="ns"/>, or
-        /// <paramref name="collection"/>, or <paramref name="entity"/> are
-        /// <c>null</c>.
-        /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal Entity(Context context, Namespace ns, ResourceName collection, string name)
@@ -152,7 +133,7 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref="Entity"/>
+        /// Infrastructure. Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/>
         /// class.
         /// </summary>
         /// <remarks>
@@ -232,12 +213,12 @@ namespace Splunk.Client
         #region Infrastructure methods
 
         /// <summary>
-        /// Gets a converted property value from the <see cref="CurrentSnapshot"/>
-        /// of the current <see cref="Entity"/>.
+        /// Gets a converted property value from the current snapshot of the
+        /// current <see cref="Entity&lt;TResource&gt;"/>.
         /// </summary>
         /// <remarks>
         /// Use this method to create static properties from the dynamic properties
-        /// exposed by the <see cref="CurrentSnapshot"/>.
+        /// exposed by the current snapshot.
         /// </remarks>
         /// <typeparam name="TValue">
         /// Type of the value.
@@ -253,8 +234,7 @@ namespace Splunk.Client
         /// <paramref name="valueConverter"/><c>.DefaultValue</c>, if
         /// <paramref name="name"/> does not exist.
         /// </returns>
-        ///
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="InvalidDataException">
         /// The conversion failed.
         /// </exception>
         protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)

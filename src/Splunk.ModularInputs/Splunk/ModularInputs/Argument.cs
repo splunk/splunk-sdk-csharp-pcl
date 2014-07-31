@@ -25,7 +25,8 @@ namespace Splunk.ModularInputs
     /// <remarks>
     /// It corresponds to one of the keys that can be defined for an instance
     /// of that modular input in a stanza in inputs.conf.
-    /// <example>Sample XML Argument</example>
+    /// <example>
+    /// Sample XML Argument</example>
     /// <code>
     /// <arg name="interval">
     ///   <description>Polling Interval</description>
@@ -39,6 +40,9 @@ namespace Splunk.ModularInputs
     [XmlRoot("arg")]
     public class Argument
     {
+
+        #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Argument" /> class.
         /// </summary>
@@ -48,6 +52,10 @@ namespace Splunk.ModularInputs
             this.RequiredOnEdit = false;
             this.RequiredOnCreate = true;
         }
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// The unique name for the parameter.
@@ -74,6 +82,15 @@ namespace Splunk.ModularInputs
         [XmlElement("validation")]
         public string Validation { get; set; }
 
+        public delegate bool ValidationHandler(Parameter parameter, out string errorMessage);
+
+        /// <summary>
+        /// Specify a delegate to run on the argument's value during validation (before the overall
+        /// Validate method is called).
+        /// </summary>
+        [XmlIgnore]
+        public ValidationHandler ValidationDelegate { get; set; }
+
         /// <summary>
         /// The value for use with scripts that return data in JSON format.
         /// </summary>
@@ -93,10 +110,10 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Set this property to true to make the parameter required for edit.
+        /// Set this property to <c>true</c> to make the parameter required for edit.
         /// </para>
         /// <para>
-        /// This property's default value is false.
+        /// This property's default value is <c>false</c>.
         /// </para>
         /// </remarks>
         [XmlElement("required_on_edit")]
@@ -107,13 +124,15 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <remarks>
         /// <para>
-        /// Set this property to false to make the parameter optional.
+        /// Set this property to <c>false</c> to make the parameter optional.
         /// </para>
         /// <para>
-        /// This property's default value is true.
+        /// This property's default value is <c>true</c>.
         /// </para>
         /// </remarks>
         [XmlElement("required_on_create")]
         public bool RequiredOnCreate { get; set; }
+
+        #endregion
     }
 }

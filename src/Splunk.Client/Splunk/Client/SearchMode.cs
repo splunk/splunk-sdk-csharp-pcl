@@ -14,6 +14,10 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+
 namespace Splunk.Client
 {
     using System.Runtime.Serialization;
@@ -33,6 +37,6 @@ namespace Splunk.Client
         /// Indicates taht a search job should run over realtime data.
         /// </summary>
         [EnumMember(Value = "realtime")]
-        Realtime
+        RealTime
     }
 }

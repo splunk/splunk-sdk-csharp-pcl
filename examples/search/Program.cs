@@ -14,119 +14,47 @@
  * under the License.
  */
 
-namespace Splunk.Client.Examples
+namespace Splunk.Client.Examples.Search
 {
+    using Splunk.Client.Helpers;
     using System;
     using System.Net;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Starts a normal search and polls for completion to find out when the search has finished.
+    /// Executes a oneshot search and prints the results.
     /// </summary>
     class Program
     {
-        static Program()
-        {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
-            // 1. Instantiate a WebRequestHandler
-            // 2. Set its ServerCertificateValidationCallback
-            // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
-
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
-            {
-                return true;
-            };
-        }
-
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
-                SearchRealTime(service).Wait();
-                OneshotSearch(service).Wait();
+                Run(service).Wait();
             }
-        }
 
+            Console.WriteLine("Press return to continue: ");
+            Console.ReadLine();
+        }
 
         /// <summary>
         /// Called when [search].
         /// </summary>
         /// <param name="service">The service.</param>
         /// <returns></returns>
-        static async Task OneshotSearch(Service service)
+        static async Task Run(Service service)
         {
-            //// Login
-            await service.LoginAsync("admin", "changeme");
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
-            // Simple oneshot search
-            using (SearchResults searchResults = await service.SearchOneshotAsync("search index=_internal | head 5"))
+            //// Simple oneshot search
+
+            using (SearchResultStream stream = await service.SearchOneShotAsync("search index=_internal | head 5"))
             {
-                foreach (Result record in searchResults)
+                foreach (SearchResult result in stream)
                 {
-                    Console.WriteLine(record);
+                    Console.WriteLine(result);
                 }
             }
-
-            //Use JobArgs to define the search
-            JobArgs args = new JobArgs("search index=_internal | head 5")
-            {
-                AutoCancel = 0,
-            };
-
-            using (SearchResults searchResults = await service.SearchOneshotAsync(args))
-            {
-                foreach (Result record in searchResults)
-                {
-                    Console.WriteLine(record);
-                }
-            }
-
-            await service.LogoffAsync();
-        }
-
-        /// <summary>
-        /// Do real time seach
-        /// </summary>
-        /// <param name="service">The service.</param>
-        /// <returns></returns>
-        static async Task SearchRealTime(Service service)
-        {
-
-            await service.LoginAsync("admin", "changeme");
-
-            // Realtime window is 5 minutes
-            var jobArgs = new JobArgs("search index=_internal")
-            {
-                SearchMode = SearchMode.Realtime,
-                EarliestTime = "rt-5m",
-                LatestTime = "rt",
-            };
-
-            Job job = await service.CreateJobAsync(jobArgs);
-
-
-            //this sleep should be removed if DVPL-4503 is fixed.
-            //Thread.Sleep(5000);
-            for (var i = 0; i < 5; i++)
-            {
-                System.Console.WriteLine("============================= Snapshot {0}=================================", i);
-
-                using (SearchResults searchResults = await job.GetSearchResultsPreviewAsync())
-                {
-                    System.Diagnostics.Debug.Assert(!searchResults.AreFinal);
-                    System.Console.WriteLine("searchResults count:{0}", searchResults.Count());
-
-                }
-
-                Thread.Sleep(1000);
-            }
-
-            await job.CancelAsync();
-
-            await service.LogoffAsync();
         }
     }
 }

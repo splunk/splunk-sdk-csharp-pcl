@@ -26,6 +26,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a converter to convert strings to <see cref="Boolean"/> values.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{System.Boolean}"/>
     sealed class BooleanConverter : ValueConverter<Boolean>
     {
         #region Fields
@@ -40,17 +41,21 @@ namespace Splunk.Client
         #region Methods
 
         /// <summary>
-        /// Converts the string representation of an object to a <see cref=
-        /// "Boolean"/> value.
+        /// Converts the string representation of an object to a
+        /// <see cref= "Boolean"/> value.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="Boolean"/>
+        ///
+        /// ### <exception cref="InvalidDataException">
+        /// The <paramref name="input"/> does not represent a <see cref="Boolean"/>
         /// value.
         /// </exception>
         public override Boolean Convert(object input)
@@ -68,6 +73,8 @@ namespace Splunk.Client
             {
                 case "t": return true;
                 case "f": return false;
+                case "true": return true;
+                case "false": return false;
             }
 
             Int32 result;
@@ -77,7 +84,7 @@ namespace Splunk.Client
                 return result != 0;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostics
+            throw NewInvalidDataException(input);
         }
 
         #endregion

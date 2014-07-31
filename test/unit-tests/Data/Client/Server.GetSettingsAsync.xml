@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>server-settings</title>
+  <id>https://localhost:8089/services/server/settings</id>
+  <updated>2014-05-28T09:13:06-07:00</updated>
+  <generator build="207789" version="6.1.1"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:itemsPerPage>30</opensearch:itemsPerPage>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <s:messages/>
+  <entry>
+    <title>settings</title>
+    <id>https://localhost:8089/services/server/settings/settings</id>
+    <updated>2014-05-28T09:13:06-07:00</updated>
+    <link href="/services/server/settings/settings" rel="alternate"/>
+    <author>
+      <name>system</name>
+    </author>
+    <link href="/services/server/settings/settings" rel="list"/>
+    <link href="/services/server/settings/settings" rel="edit"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="SPLUNK_DB">C:\Program Files\Splunk\var\lib\splunk</s:key>
+        <s:key name="SPLUNK_HOME">C:\Program Files\Splunk</s:key>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app"></s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">system</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="eai:attributes">
+          <s:dict>
+            <s:key name="optionalFields">
+              <s:list>
+                <s:item>SPLUNK_DB</s:item>
+                <s:item>enableSplunkWebSSL</s:item>
+                <s:item>host</s:item>
+                <s:item>httpport</s:item>
+                <s:item>mgmtHostPort</s:item>
+                <s:item>minFreeSpace</s:item>
+                <s:item>pass4SymmKey</s:item>
+                <s:item>serverName</s:item>
+                <s:item>sessionTimeout</s:item>
+                <s:item>startwebserver</s:item>
+                <s:item>trustedIP</s:item>
+              </s:list>
+            </s:key>
+            <s:key name="requiredFields">
+              <s:list/>
+            </s:key>
+            <s:key name="wildcardFields">
+              <s:list/>
+            </s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="enableSplunkWebSSL">0</s:key>
+        <s:key name="host">DNoble-MSW8</s:key>
+        <s:key name="httpport">8000</s:key>
+        <s:key name="mgmtHostPort">8089</s:key>
+        <s:key name="minFreeSpace">5000</s:key>
+        <s:key name="pass4SymmKey">changeme</s:key>
+        <s:key name="serverName">DNoble-MSW8</s:key>
+        <s:key name="sessionTimeout">1h</s:key>
+        <s:key name="startwebserver">1</s:key>
+        <s:key name="trustedIP"></s:key>
+      </s:dict>
+    </content>
+  </entry>
+</feed>

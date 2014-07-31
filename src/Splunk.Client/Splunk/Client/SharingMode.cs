@@ -14,13 +14,14 @@
  * under the License.
  */
 
-// TODO:
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     /// <summary>
-    /// 
+    /// Values that represent SharingMode.
     /// </summary>
     public enum SharingMode
     {

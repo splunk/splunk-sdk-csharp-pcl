@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <UsingTask TaskName="ZipFolder" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <FolderToCompress ParameterType="System.String" Required="true" />
+      <OutputFileName ParameterType="System.String" Required="true" />
+      <OverwriteExistingFile ParameterType="System.Boolean" Required="false" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression" />
+      <Using Namespace="System.IO.Compression" />
+      <Code Type="Fragment" Language="cs"><![CDATA[        
+            const int BufferSize = 64 * 1024;
+
+            var buffer = new byte[BufferSize];
+            var fileMode = OverwriteExistingFile ? FileMode.Create : FileMode.CreateNew;
+
+            Action<string, ZipArchive> addPathToZip = null;
+            addPathToZip = new Action<string, ZipArchive>((string path, ZipArchive zip) =>
+            {
+                 if ((File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory)
+                 {
+                     foreach (string p in Directory.GetFileSystemEntries(path))
+                     {
+                         addPathToZip(p, zip);
+                     }
+                 }
+                 else // It's not a directory
+                 {
+                     var archivePath = path.Substring(FolderToCompress.TrimEnd('\\', '/').Count() + 1);
+                     var archiveEntry = zip.CreateEntry(archivePath);
+                     using (var fs = new FileStream(path, FileMode.Open))
+                     using (var zipStream = archiveEntry.Open())
+                     {
+                         int bytesRead = -1;
+                         while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
+                         {
+                             zipStream.Write(buffer, 0, bytesRead);
+                         }
+                     }
+                 };
+             });
+
+            using (var outputFileStream = new FileStream(OutputFileName, fileMode))
+            using (var archive = new ZipArchive(outputFileStream, ZipArchiveMode.Create))
+            {
+                addPathToZip(FolderToCompress, archive);
+            }    
+      ]]></Code>
+    </Task>
+  </UsingTask>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{92ED069A-80B3-468A-BDA8-510F84907EB2}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>random_numbers</RootNamespace>
+    <AssemblyName>random-numbers</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <Content Include="random-numbers\default\app.conf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="random-numbers\README\inputs.conf.spec">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="random-numbers\random-numbers.sh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
+      <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
+      <Name>Splunk.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Splunk.ModularInputs\Splunk.ModularInputs.csproj">
+      <Project>{0777f751-a5a1-42c3-9966-8be3d41e592f}</Project>
+      <Name>Splunk.ModularInputs</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target> -->
+  <PropertyGroup>
+    <AppSkeletonPath>$(OutputPath)\app\</AppSkeletonPath>
+  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <!-- At this point, we have a directory AppSkeleton in the project directory that
+         contains app.conf and inputs.conf.spec. -->
+    <MakeDir Directories="$(AppSkeletonPath);$(AppSkeletonPath)\random-numbers" />
+    <MakeDir Directories="$(AppSkeletonPath)\random-numbers\bin;$(AppSkeletonPath)\random-numbers\default;$(AppSkeletonPath)\random-numbers\README" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\random-numbers\default\app.conf" DestinationFolder="$(AppSkeletonPath)\random-numbers\default" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\random-numbers\README\inputs.conf.spec" DestinationFolder="$(AppSkeletonPath)\random-numbers\README" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\random-numbers\random-numbers.sh" DestinationFolder="$(AppSkeletonPath)\random-numbers\bin" />
+    <Copy SourceFiles="$(OutputPath)\random-numbers.exe" DestinationFolder="$(AppSkeletonPath)\random-numbers\bin" />
+    <ItemGroup>
+      <DLLsToInclude Include="$(OutputPath)\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DLLsToInclude)" DestinationFolder="$(AppSkeletonPath)\random-numbers\bin" />
+    <!--<ZipFolder FolderToCompress="$(AppSkeletonPath)" OutputFileName="$(OutputPath)\random-numbers.spl" OverwriteExistingFile="true" /> -->
+    <Message Importance="high" Text="Finished building .spl file in $(OutputPath)random-numbers.spl" />
+  </Target>
+</Project>

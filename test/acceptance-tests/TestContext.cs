@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,34 +14,29 @@
  * under the License.
  */
 
-namespace Splunk.Client.UnitTesting
+namespace Splunk.Client.AcceptanceTests
 {
-    using System;
-    using System.Net;
-    using System.Threading.Tasks;
-    using System.Xml.Linq;
-    
+    using Splunk.Client.Helpers;
     using Xunit;
 
-    public class TestContext : IUseFixture<AcceptanceTestingSetup>
+    public class TestContext
     {
-        [Trait("class", "Context")]
+        [Trait("acceptance-test", "Splunk.Client.Context")]
+        [MockContext]
         [Fact]
-        public void Construct()
+        public void CanConstructContext()
         {
-            client = new Context(Scheme.Https, "localhost", 8089);
+            client = new Context(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port);
 
             Assert.Equal(client.Scheme, Scheme.Https);
-            Assert.Equal(client.Host, "localhost");
-            Assert.Equal(client.Port, 8089);
+            Assert.Equal(client.Host.ToLower(), SdkHelper.Splunk.Host);
+            Assert.Equal(client.Port, SdkHelper.Splunk.Port);
             Assert.Null(client.SessionKey);
 
-            Assert.Equal(client.ToString(), "https://localhost:8089");
+            Assert.Equal(client.ToString().ToLower(), string.Format("https://{0}:{1}", SdkHelper.Splunk.Host.ToLower(), SdkHelper.Splunk.Port));
         }
 
         static Context client;
-
-        public void SetFixture(AcceptanceTestingSetup data)
-        { }
+       
     }
 }

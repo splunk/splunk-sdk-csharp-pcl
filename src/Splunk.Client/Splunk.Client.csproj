@@ -2,23 +2,61 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
-    <AssemblyName>Splunk.Client</AssemblyName>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <OutputType>Library</OutputType>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{DE65F0D5-7753-483E-8933-E6DB22350F04}</ProjectGuid>
+    <AssemblyName>Splunk.Client</AssemblyName>
+    <OutputType>Library</OutputType>
+    <Platform>AnyCPU</Platform>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
+    <CodeAnalysisRuleSet>CodeAnalysisRules.ruleset</CodeAnalysisRuleSet>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+    <ErrorReport>prompt</ErrorReport>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>22455d9b</NuGetPackageImportStamp>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <RootNamespace>
-    </RootNamespace>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile7</TargetFrameworkProfile>
-    <StyleCopOverrideSettingsFile>Settings.StyleCop</StyleCopOverrideSettingsFile>
-    <BuildToolsStyleCopVersion>4.7.44.0</BuildToolsStyleCopVersion>
+    <RunCodeAnalysis Condition=" '$(RunCodeAnalysis)' == '' ">False</RunCodeAnalysis>
+    <StyleCopEnabled Condition=" '$(StyleCopEnabled)' == '' ">False</StyleCopEnabled>
+    <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
+    <WarningLevel>4</WarningLevel>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -26,8 +64,6 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
@@ -46,6 +82,7 @@
     <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
     <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
     <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
@@ -59,167 +96,38 @@
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <StyleCopEnabled>False</StyleCopEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
-    <CodeContractsInferRequires>True</CodeContractsInferRequires>
-    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
-    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
-    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
-    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
-    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly />
-    <CodeContractsCustomRewriterClass />
-    <CodeContractsLibPaths />
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsExtraAnalysisOptions />
-    <CodeContractsSQLServerOption />
-    <CodeContractsBaseLineFile />
-    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
-    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
-    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <StyleCopEnabled>True</StyleCopEnabled>
-    <StyleCopTreatErrorsAsWarnings>False</StyleCopTreatErrorsAsWarnings>
   </PropertyGroup>
+  <PropertyGroup>
+    <GenerateDocumentationFile Condition=" '$(GenerateDocumentationFile)' == '' ">False</GenerateDocumentationFile>
+    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' != 'True' ">
+    </DocumentationFile>
+    <DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'True' ">$(OutputPath)$(AssemblyName).XML</DocumentationFile>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " >
+      <PropertyGroup>
+        <DefineConstants>DEBUG;TRACE;__MonoCs__</DefineConstants>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " >
+      <PropertyGroup>
+        <DefineConstants>TRACE;CODE_ANALYSIS;__MonoCs__</DefineConstants>
+      </PropertyGroup>
+    </When>
+  </Choose>
   <ItemGroup>
-    <Compile Include="Splunk\Client\EaiAttributes.cs" />
-    <Compile Include="Splunk\Client\EaiAcl.cs" />
-    <Compile Include="Splunk\Client\AlertType.cs" />
-    <Compile Include="Splunk\Client\AlertComparator.cs" />
-    <Compile Include="Splunk\Client\AlertTrack.cs" />
-    <Compile Include="Splunk\Client\AlertSeverity.cs" />
-    <Compile Include="Splunk\Client\ApplicationUpdateInfo.cs" />
-    <Compile Include="Splunk\Client\ApplicationSetupInfo.cs" />
-    <Compile Include="Splunk\Client\ApplicationArchiveInfo.cs" />
-    <Compile Include="Splunk\Client\EntitySnapshot.cs" />
-    <Compile Include="Splunk\Client\StoragePassword.cs" />
-    <Compile Include="Splunk\Client\ApplicationAttributes.cs" />
-    <Compile Include="Splunk\Client\StoragePasswordCollection.cs" />
-    <Compile Include="Splunk\Client\StoragePasswordAttributes.cs" />
-    <Compile Include="Splunk\Client\StoragePasswordCollectionArgs.cs" />
-    <Compile Include="Splunk\Client\UnixDateTimeConverter.cs" />
-    <Compile Include="Splunk\Client\ServerSettingValues.cs" />
-    <Compile Include="Splunk\Client\ServerSettings.cs" />
-    <Compile Include="Splunk\Client\ServerMessageType.cs" />
-    <Compile Include="Splunk\Client\ServerMessageArgs.cs" />
-    <Compile Include="Splunk\Client\ReceiverArgs.cs" />
-    <Compile Include="Splunk\Client\Receiver.cs" />
-    <Compile Include="Splunk\Client\Index.cs" />
-    <Compile Include="Splunk\Client\IndexCollectionArgs.cs" />
-    <Compile Include="Splunk\Client\IndexCollection.cs" />
-    <Compile Include="Splunk\Client\ConfigurationSetting.cs" />
-    <Compile Include="Splunk\Client\IndexAttributes.cs" />
-    <Compile Include="Splunk\Client\Int64Converter.cs" />
-    <Compile Include="Splunk\Client\AuthenticationFailureException.cs" />
-    <Compile Include="Splunk\Client\ServerMessage.cs" />
-    <Compile Include="Splunk\Client\UnauthorizedAccessException.cs" />
-    <Compile Include="Splunk\Client\ResourceNotFoundException.cs" />
-    <Compile Include="Splunk\Client\Resource.cs" />
-    <Compile Include="Splunk\Client\ConfigurationStanza.cs" />
-    <Compile Include="Splunk\Client\Configuration.cs" />
-    <Compile Include="Splunk\Client\ConfigurationCollection.cs" />
-    <Compile Include="Splunk\Client\DoubleConverter.cs" />
-    <Compile Include="Splunk\Client\Pagination.cs" />
-    <Compile Include="Splunk\Client\PaperSize.cs" />
-    <Compile Include="Splunk\Client\SavedSearch.cs" />
-    <Compile Include="Splunk\Client\SavedSearchFilterArgs.cs" />
-    <Compile Include="Splunk\Client\SavedSearchCollectionArgs.cs" />
-    <Compile Include="Splunk\Client\SavedSearchCollection.cs" />
-    <Compile Include="Splunk\Client\DateTimeConverter.cs" />
-    <Compile Include="Splunk\Client\ApplicationCollection.cs" />
-    <Compile Include="Splunk\Client\JobCollection.cs" />
-    <Compile Include="Splunk\Client\Argument.cs" />
-    <Compile Include="Splunk\Client\ApplicationCollectionArgs.cs" />
-    <Compile Include="Splunk\Client\Eai.cs" />
-    <Compile Include="Splunk\Client\ExpandoAdapter.cs" />
-    <Compile Include="Splunk\Client\JobCollectionArgs.cs" />
-    <Compile Include="Splunk\Client\SavedSearchAttributes.cs" />
-    <Compile Include="Splunk\Client\SearchSummaryArgs.cs" />
-    <Compile Include="Splunk\Client\SearchSummary.cs" />
-    <Compile Include="Splunk\Client\EmailFormat.cs" />
-    <Compile Include="Splunk\Client\PaperOrientation.cs" />
-    <Compile Include="Splunk\Client\ServerMessageCollection.cs" />
-    <Compile Include="Splunk\Client\SortMode.cs" />
-    <Compile Include="Splunk\Client\SortDirection.cs" />
-    <Compile Include="Splunk\Client\StringConverter.cs" />
-    <Compile Include="Splunk\Client\CollectionConverter.cs" />
-    <Compile Include="Splunk\Client\BooleanConverter.cs" />
-    <Compile Include="Splunk\Client\UriConverter.cs" />
-    <Compile Include="Splunk\Client\VersionConverter.cs" />
-    <Compile Include="Splunk\Client\GuidConverter.cs" />
-    <Compile Include="Splunk\Client\Int32Converter.cs" />
-    <Compile Include="Splunk\Client\EnumConverter.cs" />
-    <Compile Include="Splunk\Client\ValueConverter.cs" />
-    <Compile Include="Splunk\Client\ServerMode.cs" />
-    <Compile Include="Splunk\Client\LicenseState.cs" />
-    <Compile Include="Splunk\Client\Permissions.cs" />
-    <Compile Include="Splunk\Client\SavedSearchDispatchArgs.cs" />
-    <Compile Include="Splunk\Client\Application.cs" />
-    <Compile Include="Splunk\Client\Args.cs" />
-    <Compile Include="Splunk\Client\AtomEntry.cs" />
-    <Compile Include="Splunk\Client\AtomFeed.cs" />
-    <Compile Include="Splunk\Client\Context.cs" />
-    <Compile Include="Splunk\Client\DispatchState.cs" />
-    <Compile Include="Splunk\Client\Entity.cs" />
-    <Compile Include="Splunk\Client\EntityCollection.cs" />
-    <Compile Include="Splunk\Client\ExecutionMode.cs" />
-    <Compile Include="Splunk\Client\SavedSearchTemplateArgs.cs" />
-    <Compile Include="Splunk\Client\SearchEventArgs.cs" />
-    <Compile Include="Splunk\Client\SearchResultsArgs.cs" />
-    <Compile Include="Splunk\Client\Response.cs" />
-    <Compile Include="Splunk\Client\SearchExportArgs.cs" />
-    <Compile Include="Splunk\Client\ServerInfo.cs" />
-    <Compile Include="Splunk\Client\Server.cs" />
-    <Compile Include="Splunk\Client\TruncationMode.cs" />
-    <Compile Include="Splunk\Client\XmlReaderExtensions.cs" />
-    <Compile Include="Splunk\Client\Field.cs" />
-    <Compile Include="Splunk\Client\Job.cs" />
-    <Compile Include="Splunk\Client\JobArgs.cs" />
-    <Compile Include="Splunk\Client\Message.cs" />
-    <Compile Include="Splunk\Client\MessageType.cs" />
-    <Compile Include="Splunk\Client\SearchResultsReader.cs" />
-    <Compile Include="Splunk\Client\Namespace.cs" />
-    <Compile Include="Splunk\Client\Result.cs" />
-    <Compile Include="Splunk\Client\RequestException.cs" />
-    <Compile Include="Splunk\Client\ResourceName.cs" />
-    <Compile Include="Splunk\Client\SearchResults.cs" />
-    <Compile Include="Splunk\Client\Scheme.cs" />
-    <Compile Include="Splunk\Client\SearchMode.cs" />
-    <Compile Include="Splunk\Client\Service.cs" />
-    <Compile Include="Splunk\Client\SharingMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Splunk\Client\Observable.cs" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Splunk\**\*" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
@@ -237,8 +145,7 @@
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
- 
-  </Target>
+   </Target>
   <Target Name="AfterBuild">
   </Target>
   -->

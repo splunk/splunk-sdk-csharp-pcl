@@ -14,34 +14,44 @@
  * under the License.
  */
 
-// TODO:
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
+    using System.Runtime.Serialization;
+
     /// <summary>
-    /// 
+    /// Specifies the format of text in an e-mail.
     /// </summary>
+    /// <remarks>
+    /// This value also applies to any attachments.
+    /// </remarks>
     public enum EmailFormat
     {
         /// <summary>
-        /// 
+        /// Specifies that an e-mail is formatted as comma-separated values.
         /// </summary>
-        Plain, 
+        [EnumMember(Value = "csv")]
+        Csv,
         
         /// <summary>
-        /// 
+        /// Specifies that an e-mail is formatted as HTML text.
         /// </summary>
-        Html, 
-        
+        [EnumMember(Value = "html")]
+        Html,
+
         /// <summary>
-        /// 
+        /// Specifies that an e-mail is formatted as plain text.
         /// </summary>
-        Raw, 
-        
+        [EnumMember(Value = "plain")]
+        Plain,
+
         /// <summary>
-        /// 
+        /// Specifies that an e-mail contains raw data.
         /// </summary>
-        Csv, 
+        [EnumMember(Value = "raw")]
+        Raw
     }
 }

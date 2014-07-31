@@ -34,13 +34,13 @@ namespace Splunk.Client
         /// <summary>
         /// Force tracking.
         /// </summary>
-        [EnumMember(Value = "true")]
+        [EnumMember(Value = "1")]
         True, 
         
         /// <summary>
         /// Disable tracking.
         /// </summary>
-        [EnumMember(Value = "false")]
+        [EnumMember(Value = "0")]
         False 
     }
 }

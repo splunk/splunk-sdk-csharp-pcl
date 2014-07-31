@@ -16,10 +16,10 @@
 
 namespace Splunk.Client.Examples
 {
+    using Splunk.Client.Helpers;
+
     using System;
     using System.Net;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -28,47 +28,36 @@ namespace Splunk.Client.Examples
     /// </summary>
     class Program
     {
-        static Program()
-        {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
-            // 1. Instantiate a WebRequestHandler
-            // 2. Set its ServerCertificateValidationCallback
-            // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
-
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
-            {
-                return true;
-            };
-        }
-
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
+
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
         }
 
         static async Task Run(Service service)
         {
-            //// Login
-
-            await service.LoginAsync("admin", "changeme");
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             //// Search : Pull model (foreach loop => IEnumerable)
 
-            Job job = await service.CreateJobAsync("search index=_internal | head 10");
-            SearchResults searchResults;
+            Job job = await service.Jobs.CreateAsync("search index=_internal | head 10");
+            SearchResultStream stream;
 
-            using (searchResults = await job.GetSearchResultsAsync())
+            using (stream = await job.GetSearchResultsAsync())
             {
-                int recordNumber = 0;
                 try
                 {
-                    foreach (var record in searchResults)
+                    foreach (SearchResult result in stream)
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, result));
                     }
+                    
+                    Console.WriteLine("End of search results");
                 }
                 catch (Exception e)
                 {
@@ -78,17 +67,16 @@ namespace Splunk.Client.Examples
 
             //// Search : Push model (by way of subscription to search result records => IObservable)
 
-            job = await service.CreateJobAsync("search index=_internal | head 10");
+            job = await service.Jobs.CreateAsync("search index=_internal | head 10");
 
-            using (searchResults = await job.GetSearchResultsAsync())
+            using (stream = await job.GetSearchResultsAsync())
             {
                 var manualResetEvent = new ManualResetEvent(true);
-                int recordNumber = 0;
 
-                searchResults.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
-                    onNext: (record) =>
+                stream.Subscribe(new Observer<SearchResult>(
+                    onNext: (result) =>
                     {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
+                        Console.WriteLine(string.Format("{0:D8}: {1}", stream.ReadCount, result));
                     },
                     onError: (e) =>
                     {
@@ -97,126 +85,12 @@ namespace Splunk.Client.Examples
                     },
                     onCompleted: () =>
                     {
+                        Console.WriteLine("End of search results");
                         manualResetEvent.Set();
-                    });
+                    }));
 
                 manualResetEvent.Reset();
                 manualResetEvent.WaitOne();
-            }
-
-            //// Search : Export
-
-            SearchResultsReader searchResultsReader;
-
-            using (searchResultsReader = service.SearchExportAsync("search index=_internal | head 100").Result)
-            {
-                int recordNumber = 0;
-                int setNumber = 0;
-
-                foreach (var searchResultSet in searchResultsReader)
-                {
-                    Console.WriteLine(string.Format("Result set {0}", ++setNumber));
-
-                    foreach (var record in searchResultSet)
-                    {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
-                    }
-                }
-            }
-
-            //// Search : Oneshot
-
-            using (searchResults = await service.SearchOneshotAsync("search index=_internal | head 10"))
-            {
-                foreach (var record in searchResults)
-                {
-                    Console.WriteLine(record);
-                }
-            }
-
-            //// Search : Results preview
-
-            job = await service.CreateJobAsync("search index=_internal | head 10000");
-            do
-            {
-                using (searchResults = await job.GetSearchResultsPreviewAsync(new SearchResultsArgs() { Count = 0 }))
-                {
-                    int recordNumber = 0;
-
-                    foreach (var record in searchResults)
-                    {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
-                    }
-                }
-            }
-            while (searchResults.ArePreview);
-
-            //// Search : Saved search
-
-            job = await service.DispatchSavedSearchAsync("Splunk errors last 24 hours", dispatchArgs: new SavedSearchDispatchArgs());
-
-            using (searchResults = await job.GetSearchResultsAsync(new SearchResultsArgs() { Count = 0 }))
-            {
-                int recordNumber = 0;
-
-                foreach (var record in searchResults)
-                {
-                    Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
-                }
-            }
-        }
-
-        static async void Other()
-        {
-            SearchResults searchResults;
-            Job job;
-
-            //// Login
-
-            var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search"));
-            await service.LoginAsync("admin", "changeme");
-
-            Console.WriteLine("Blocking search");
-            job = await service.CreateJobAsync("search index=_internal | head 10", ExecutionMode.Blocking);
-
-            using (searchResults = await job.GetSearchResultsAsync())
-            {
-                foreach (var record in searchResults)
-                {
-                    Console.WriteLine(record);
-                }
-            }
-
-            using (var searchResultsReader = await service.SearchExportAsync("search index=_internal | head 100000"))
-            {
-                Console.WriteLine("Begin: Service.SearchExportAsync: Asyncrhonous use case");
-                int recordNumber = 0;
-                int setNumber = 0;
-
-                foreach (var resultSet in searchResultsReader)
-                {
-                    Console.WriteLine(string.Format("Result set {0}", ++setNumber));
-                    var manualResetEvent = new ManualResetEvent(true);
-
-                    resultSet.SubscribeOn(ThreadPoolScheduler.Instance).Subscribe(
-                        onNext: (record) =>
-                        {
-                            Console.WriteLine(string.Format("{0:D8}: {1}", ++recordNumber, record));
-                        },
-                        onError: (exception) =>
-                        {
-                            Console.WriteLine(string.Format("SearchResults error: {0}", exception.Message));
-                            manualResetEvent.Set();
-                        },
-                        onCompleted: () =>
-                        {
-                            Console.WriteLine("Service.SearchExportAsync: Asyncrhonous use case");
-                            manualResetEvent.Set();
-                        });
-
-                    manualResetEvent.Reset(); 
-                    manualResetEvent.WaitOne();
-                }
             }
         }
     }

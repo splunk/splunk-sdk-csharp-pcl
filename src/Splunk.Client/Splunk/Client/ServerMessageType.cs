@@ -14,29 +14,33 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+
 namespace Splunk.Client
 {
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Specifies the severity of a <see cref="ServerMessage"/>.
     /// </summary>
     public enum ServerMessageSeverity
     {
         /// <summary>
-        /// 
+        /// A <see cref="ServerMessage"/> is at the error severity level.
         /// </summary>
         [EnumMember(Value = "error")]
         Error,
 
         /// <summary>
-        /// 
+        /// A <see cref="ServerMessage"/> is at the information severity level.
         /// </summary>
         [EnumMember(Value = "info")]
         Information, 
         
         /// <summary>
-        /// 
+        /// A <see cref="ServerMessage"/> is at the warning severity level.
         /// </summary>
         [EnumMember(Value = "warn")]
         Warning

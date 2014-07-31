@@ -26,6 +26,7 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a converter to convert strings to <see cref="Int64"/> values.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{System.Int64}"/>
     sealed class Int64Converter : ValueConverter<Int64>
     {
         /// <summary>
@@ -34,17 +35,21 @@ namespace Splunk.Client
         public static readonly Int64Converter Instance = new Int64Converter();
 
         /// <summary>
-        /// Converts the string representation of the <see cref="input"/> 
+        /// Converts the string representation of the <paramref name="input"/>
         /// object to a <see cref="Int64"/> value.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="Int64"/>
+        ///
+        /// ### <exception cref="InvalidDataException">
+        /// The <paramref name="input"/> does not represent a <see cref="Int64"/>
         /// value.
         /// </exception>
         public override Int64 Convert(object input)
@@ -63,7 +68,7 @@ namespace Splunk.Client
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            throw NewInvalidDataException(input);
         }
     }
 }

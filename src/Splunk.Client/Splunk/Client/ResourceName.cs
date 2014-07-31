@@ -14,77 +14,222 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Diagnostics.Contracts;
+    using System.Globalization;
     using System.Linq;
 
     /// <summary>
-    /// Provides a class for representing a Splunk resource name.
+    /// Represents a Splunk resource name.
     /// </summary>
-    public sealed class ResourceName : IComparable, IComparable<ResourceName>, IEquatable<ResourceName>, IReadOnlyList<string>
+    /// <seealso cref="T:System.Collections.ObjectModel.ReadOnlyCollection{T}"/>
+    /// <seealso cref="T:System.IComparable"/>
+    /// <seealso cref="T:System.IComparable{T}"/>
+    /// <seealso cref="T:System.IEquatable{T}"/>
+    public sealed class ResourceName : ReadOnlyCollection<string>, IComparable, IComparable<ResourceName>, 
+        IEquatable<ResourceName>
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceName"/> class.
+        /// </summary>
+        /// <param name="resourceName">
+        /// Another resource name.
+        /// </param>
+        /// <param name="parts">
+        /// Names to be appended <paramref name="resourceName"/>.
+        /// </param>
         public ResourceName(ResourceName resourceName, params string[] parts)
             : this(resourceName.Concat(parts))
-        { }
-
-        public ResourceName(params string[] parts)
-            : this(parts.AsEnumerable<string>())
-        { }
-
-        public ResourceName(IEnumerable<string> parts)
         {
-            this.parts = parts.Select((part, i) =>
+            Contract.Requires<ArgumentNullException>(resourceName != null);
+            Contract.Requires<ArgumentNullException>(parts != null);
+        }
+
+        /// <summary>
+        /// Intializes a new instance of the <see cref="ResourceName"/> class.
+        /// </summary>
+        /// <param name="parts">
+        /// 
+        /// </param>
+        public ResourceName(params string[] parts)
+            : base(parts)
+        {
+            Contract.Requires<ArgumentNullException>(parts != null);
+
+            foreach (var part in this)
             {
                 if (string.IsNullOrEmpty(part))
                 {
-                    throw new ArgumentException(string.Format("parts[{0}]", i));  // TODO: Diagnostics
+                    throw new ArgumentException(string.Concat("parts: ", this.ToString()));
                 }
-                return part;
-            }).ToArray();
+            }
         }
+
+        /// <summary>
+        /// Intializes a new instance of the <see cref="ResourceName"/> class.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        /// Thrown when one or more arguments have unsupported or illegal values.
+        /// </exception>
+        /// <param name="parts">
+        /// 
+        /// </param>
+        public ResourceName(IEnumerable<string> parts)
+            : this(parts.ToArray())
+        { }
 
         #endregion
 
         #region Properties
 
-        public string this[int index]
-        {
-	        get { return this.parts[index]; }
-        }
-
-        public int Count
-        {
-            get { return this.parts.Count; }
-        }
-
+        /// <summary>
+        /// Gets the collection.
+        /// </summary>
+        /// <value>
+        /// The collection.
+        /// </value>
         public string Collection
         {
-            get { return this.parts.Count > 1 ? this.parts[this.parts.Count - 2] : null; }
+            get { return this.Items.Count > 1 ? this.Items[this.Items.Count - 2] : null; }
         }
 
+        /// <summary>
+        /// Gets the title.
+        /// </summary>
+        /// <value>
+        /// The title.
+        /// </value>
         public string Title
         {
-            get { return this.parts[this.parts.Count - 1]; }
+            get { return this.Items[this.Items.Count - 1]; }
         }
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        /// Compares the current <see cref="ResourceName"/> with another object and
+        /// returns an integer that indicates whether the current
+        /// <see cref="ResourceName"/> precedes, follows, or appears in the same
+        /// position in the sort order as the other object.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare to the current <see cref="ResourceName"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance precedes,
+        /// follows, or appears in the same position in the sort order as
+        /// <paramref name="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <paramref name="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as
+        ///     <paramref name="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <paramref name="other"/>,
+        ///     <paramref name= "other"/> is not a <see cref="ResourceName"/>, or
+        ///     <paramref name="other"/> is <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </list>
+        /// </returns>
+        /// <seealso cref="M:System.IComparable.CompareTo(object)"/>
+        ///
+        /// ### <param name="obj">
+        /// An object to compare with this instance.
+        /// </param>
         public int CompareTo(object other)
         {
             return this.CompareTo(other as ResourceName);
         }
 
+        /// <summary>
+        /// Compares the current <see cref="ResourceName"/> with another one and
+        /// returns an integer that indicates whether the current
+        /// <see cref= "ResourceName"/> precedes, follows, or appears in the same
+        /// position in the sort order as the other one.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="ResourceName"/>.
+        /// </param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates whether this instance precedes,
+        /// follows, or appears in the same position in the sort order as
+        /// <paramref name="other"/>.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>
+        ///     Value
+        ///   </term>
+        ///   <description>
+        ///     Condition
+        ///   </description>
+        /// </listheader>
+        /// <item>
+        ///   <term>
+        ///     Less than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance precedes <paramref name="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Zero
+        ///   </term>
+        ///   <description>
+        ///     This instance is in the same position in the sort order as
+        ///     <paramref name="other"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term>
+        ///     Greater than zero
+        ///   </term>
+        ///   <description>
+        ///     This instance follows <paramref name="other"/> or
+        ///     <paramref name="other"/> is <c>null</c>.
+        ///   </description>
+        /// </item>
+        /// </list>
+        /// </returns>
         public int CompareTo(ResourceName other)
         {
             if (other == null)
@@ -97,15 +242,15 @@ namespace Splunk.Client
                 return 0;
             }
 
-            int diff = this.parts.Count - other.parts.Count;
+            int diff = this.Items.Count - other.Items.Count;
 
             if (diff != 0)
             {
                 return diff;
             }
 
-            var pair = this.parts
-                .Zip(other.parts, (p1, p2) => new { ThisPart = p1, OtherPart = p2 })
+            var pair = this.Items
+                .Zip(other.Items, (p1, p2) => new { ThisPart = p1, OtherPart = p2 })
                 .FirstOrDefault(p => p.ThisPart != p.OtherPart);
 
             if (pair == null)
@@ -113,17 +258,46 @@ namespace Splunk.Client
                 return 0;
             }
 
-            return pair.ThisPart.CompareTo(pair.OtherPart);
+            return string.Compare(pair.ThisPart, pair.OtherPart, StringComparison.Ordinal);
         }
 
+        /// <summary>
+        /// Determines whether the current <see cref="ResourceName"/> and another
+        /// object are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="ResourceName"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <paramref name="other"/> is a non <c>null</c>
+        /// <see cref="ResourceName"/> and is the same as the current
+        /// <see cref= "ResourceName"/>; otherwise, <c>false</c>.
+        /// </returns>
+        /// <seealso cref="M:System.Object.Equals(object)"/>
+        ///
+        /// ### <param name="obj">
+        /// The object to compare with the current object.
+        /// </param>
         public override bool Equals(object other)
         {
             return this.Equals(other as ResourceName);
         }
 
+        /// <summary>
+        /// Determines whether the current <see cref="ResourceName"/> and another one
+        /// are equal.
+        /// </summary>
+        /// <param name="other">
+        /// The object to compare with the current <see cref="ResourceName"/>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if <paramref name="other"/> is non <c>null</c> and is the
+        /// same as the current <see cref="ResourceName"/>; otherwise,
+        /// <c>false</c>.
+        /// </returns>
         public bool Equals(ResourceName other)
         {
-            if (other == null)
+            if ((object)other == null)
             {
                 return false;
             }
@@ -133,42 +307,85 @@ namespace Splunk.Client
                 return true;
             }
 
-            if (this.parts.Count != other.parts.Count)
+            if (this.Items.Count != other.Items.Count)
             {
                 return false;
             }
 
-            return this.parts.SequenceEqual(other.parts);
-        }
-
-        public IEnumerator<string> GetEnumerator()
-        {
-            return this.parts.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.parts.GetEnumerator();
-        }
-
-        public override int GetHashCode()
-        {
-            // TODO: Check this against the algorithm presented in Effective Java
-            return this.parts.Aggregate(seed: 17, func: (value, part) => (value * 23) + part.GetHashCode());
+            return this.Items.SequenceEqual(other.Items);
         }
 
         /// <summary>
-        /// Gets the parent of this ResourceName.
+        /// Computes the hash code for the current <see cref="ResourceName"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="ResourceName"/> representing the parent of the current
-        /// instance.
+        /// The hash code for the current <see cref="ResourceName"/>.
         /// </returns>
-        public ResourceName GetParent()
+        /// <seealso cref="M:System.Object.GetHashCode()"/>
+        public override int GetHashCode()
         {
-            return new ResourceName(parts.Take(parts.Count - 1));
+            // TODO: Check this against the algorithm presented in Effective Java
+            return this.Items.Aggregate(seed: 17, func: (value, part) => (value * 23) + part.GetHashCode());
         }
 
+        /// <summary>
+        /// Greater-than comparison operator.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static bool operator >(ResourceName a, ResourceName b)
+        {
+            if ((object)a == null)
+            {
+                return false;
+            }
+
+            return a.CompareTo(b) > 0;
+        }
+
+        /// <summary>
+        /// Greater-than-or-equal comparison operator.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static bool operator >=(ResourceName a, ResourceName b)
+        {
+            if ((object)a == null)
+            {
+                return (object)b == null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// Determines whether two <see cref="ResourceName"/> instances have the same
+        /// value.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is the same as the value
+        /// of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
         public static bool operator ==(ResourceName a, ResourceName b)
         {
             if (object.ReferenceEquals(a, b))
@@ -184,9 +401,67 @@ namespace Splunk.Client
             return a.Equals(b);
         }
 
+        /// <summary>
+        /// Determines whether two <see cref="ResourceName"/> instances have
+        /// different values.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the value of <paramref name="a"/> is different than the
+        /// value of <paramref name="b"/>; otherwise, <c>false</c>.
+        /// </returns>
         public static bool operator !=(ResourceName a, ResourceName b)
         {
             return !(a == b);
+        }
+
+        /// <summary>
+        /// Less-than comparison operator.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static bool operator <(ResourceName a, ResourceName b)
+        {
+            if ((object)a == null)
+            {
+                return (object)b != null;
+            }
+
+            return a.CompareTo(b) < 0;
+        }
+
+        /// <summary>
+        /// Less-than-or-equal comparison operator.
+        /// </summary>
+        /// <param name="a">
+        /// The first <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <param name="b">
+        /// The second <see cref="ResourceName"/> to compare or <c>null</c>.
+        /// </param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static bool operator <=(ResourceName a, ResourceName b)
+        {
+            if ((object)a == null)
+            {
+                return true;
+            }
+
+            return a.CompareTo(b) < 0;
         }
 
         /// <summary>
@@ -196,31 +471,29 @@ namespace Splunk.Client
         /// <returns>
         /// A string representation of the current <see cref="Namespace"/>
         /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             return string.Join("/", from segment in this select segment);
         }
 
         /// <summary>
-        /// Converts the value of the current <see cref="Namespace"/> object to
-        /// its equivalent URI encoded string representation.
+        /// Converts the value of the current <see cref="Namespace"/> object to its
+        /// equivalent URI encoded string representation.
         /// </summary>
-        /// <returns>
-        /// A string representation of the current <see cref="Namespace"/>
-        /// </returns>
         /// <remarks>
         /// The value is converted using <see cref="Uri.EscapeUriString"/>.
         /// </remarks>
+        /// <returns>
+        /// A string representation of the current <see cref="Namespace"/>
+        /// </returns>
+        [SuppressMessage("Microsoft.Design", "CA1055:UriReturnValuesShouldNotBeStrings", Justification =
+            "This is by design")
+        ]
         public string ToUriString()
         {
             return string.Join("/", from segment in this select Uri.EscapeDataString(segment));
         }
-
-        #endregion
-
-        #region Privates
-
-        readonly IReadOnlyList<string> parts;
 
         #endregion
     }

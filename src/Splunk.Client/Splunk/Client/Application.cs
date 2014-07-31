@@ -14,38 +14,63 @@
  * under the License.
  */
 
-// TODO:
-// [O] Contracts
-// [O] Documentation
-// [O] Properties & Methods
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
+    using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
-    using System.IO;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
     using System.Net;
     using System.Runtime.Serialization;
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Provides a class that represents a Splunk application resource.
+    /// Provides a class for managing Splunk applications.
     /// </summary>
     /// <remarks>
     /// <para><b>References:</b></para>
     /// <list type="number">
     /// <item><description>
-    ///   <a href="http://goo.gl/OsgrYx">Apps and add-ons: an introduction</a>
+    ///   <a href="http://goo.gl/OsgrYx">Apps and add-ons: an introduction</a>.
     /// </description></item>
     /// <item><description>
-    ///   <a href="http://goo.gl/1txQUG">Package your app or add-on</a>
+    ///   <a href="http://goo.gl/1txQUG">Package your app or add-on</a>.
     /// </description></item>
     /// <item><description>
-    ///   <a href="http://goo.gl/a7HqRp">REST API Reference: Applications</a>
+    ///   <a href="http://goo.gl/a7HqRp">REST API Reference: Applications</a>.
     /// </description></item>
+    /// </list>
     /// </remarks>
-    public class Application : Entity<Application>
+    /// <seealso cref="T:Splunk.Client.Entity{Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IApplication"/>
+    public class Application : Entity<Resource>, IApplication
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Application"/> class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
+        protected internal Application(Service service, string name)
+            : this(service.Context, service.Namespace, name)
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Application"/> class.
@@ -53,32 +78,79 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// </exception>
+        /// ### <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal Application(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Application"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
-        /// The name of this application.
+        /// The name of the <see cref="Application"/>.
         /// </param>
-        /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        ///
+        /// ### <exception cref="ArgumentException">
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
-        internal Application(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ApplicationCollection.ClassResourceName, name)
+        protected internal Application(Context context, Namespace ns, string name)
+            : base(context, ns, ApplicationCollection.ClassResourceName, name)
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Application"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "Application"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use one of these methods to obtain an
+        /// <see cref="Application"/> instance:
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Service.CreateApplicationAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates a new Splunk application from a template.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.GetApplicationAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves an existing Splunk application.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Service.InstallApplicationAsync"/></term>
+        ///   <description>
+        ///   Asynchronously installs a new Splunk application from an archive file.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public Application()
         { }
@@ -87,168 +159,96 @@ namespace Splunk.Client
 
         #region Properties
 
-        /// <summary>
-        /// Gets the username of the splunk.com account for publishing the
-        /// current <see cref="Application"/> to Splunkbase.
-        /// </summary>
-        public string ApplicationAuthor
+        /// <inheritdoc/>
+        public virtual string ApplicationAuthor
+        {
+            get { return this.Content.GetValue("Author", StringConverter.Instance); }
+        }
+
+        /// <inheritdoc/>
+        public virtual string Author
         {
             get { return this.GetValue("Author", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets a value that indicates whether Splunk should check Splunkbase
-        /// for updates to the current <see cref="Application"/>.
-        /// </summary>
-        public bool CheckForUpdates
+        /// <inheritdoc/>
+        public virtual bool CheckForUpdates
         {
-            get { return this.GetValue("CheckForUpdates", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("CheckForUpdates", BooleanConverter.Instance); }
+        }
+
+        /// <inheritdoc/>
+        public virtual bool Configured
+        {
+            get { return this.Content.GetValue("Configured", BooleanConverter.Instance); }
+        }
+
+        /// <inheritdoc/>
+        public virtual string Description
+        {
+            get { return this.Content.GetValue("Description", StringConverter.Instance); }
+        }
+
+        /// <inheritdoc/>
+        public virtual bool Disabled
+        {
+            get { return this.Content.GetValue("Disabled", BooleanConverter.Instance); }
+        }
+
+        /// <inheritdoc/>
+        public virtual Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        /// <inheritdoc/>
+        public virtual string Label
+        {
+            get { return this.Content.GetValue("Label", StringConverter.Instance); }
         }
 
         /// <summary>
-        /// Gets a value that indicates whether custom setup has been performed
-        /// on the current <see cref="Application"/>.
+        /// Gets the links.
         /// </summary>
-        public bool Configured
+        /// <value>
+        /// The links.
+        /// </value>
+        /// <seealso cref="P:Splunk.Client.IApplication.Links"/>
+        public virtual IReadOnlyDictionary<string, Uri> Links
         {
-            get { return this.GetValue("Configured", BooleanConverter.Instance); }
+            get { return this.Snapshot.GetValue("Links"); }
         }
 
-        /// <summary>
-        /// Gets the short explanatory string displayed underneath the title of
-        /// the current <see cref="Application"/> in Launcher.
-        /// </summary>
-        public string Description
+        /// <inheritdoc/>
+        public virtual bool Refresh
         {
-            get { return this.GetValue("Description", StringConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the current <see cref="Application"/>
-        /// is disabled.
-        /// </summary>
-        public bool Disabled
+        /// <inheritdoc/>
+        public virtual bool StateChangeRequiresRestart
         {
-            get { return this.GetValue("Disabled", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets the access control lists for the current <see cref=
-        /// "Appliciation"/>.
-        /// </summary>
-        public Eai Eai
+        /// <inheritdoc/>
+        public virtual string Version
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Version", StringConverter.Instance); }
         }
 
-        /// <summary>
-        /// Gets the name of the current <see cref="Application"/> for display 
-        /// in the Splunk GUI and Launcher.
-        /// </summary>
-        public string Label
+        /// <inheritdoc/>
+        public virtual bool Visible
         {
-            get { return this.GetValue("Label", StringConverter.Instance); }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates whether objects contained in the 
-        /// current <see cref="Application"/> should be reloaded.
-        /// </summary>
-        public bool Refresh
-        {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates whether changing the state of the 
-        /// current <see cref="Application"/> always requires restarting 
-        /// Splunk.
-        /// </summary>
-        /// <remarks>
-        /// A value of <c>true</c> indicates that a state change always 
-        /// requires a restart. A value of <c>false</c> indicates that modifying 
-        /// state may or may not require a restart depending on what state
-        /// has been changed. A value of <c>false</c> does not indicate that a 
-        /// restart will never be required to effect a state change. State 
-        /// changes include enabling or disabling an <see cref="Application"/>.
-        /// </remarks>
-        public bool StateChangeRequiresRestart
-        {
-            get { return this.GetValue("StateChangeRequiresRestart", BooleanConverter.Instance); }
-        }
-
-        /// <summary>
-        /// Gets the version string for the current <see cref="Application"/>.
-        /// </summary>
-        /// <remarks>
-        /// Version strings are a number followed by a sequence of numbers or 
-        /// dots. Pre-release versions may append a space and a single-word 
-        /// suffix like "beta2".
-        /// <example>Examples</example>
-        /// <code>
-        /// "1.2"
-        /// "11.0.34"
-        /// "2.0 beta"
-        /// "1.3 beta2"
-        /// "1.0 b2"
-        /// "12.4 alpha"
-        /// "11.0.34.234.254"
-        /// </code>
-        /// </remarks>
-        public string Version
-        {
-            get { return this.GetValue("Version", StringConverter.Instance); }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates if the current <see cref="Application"/> 
-        /// is visible and navigable from Splunk Web.
-        /// </summary>
-        public bool Visible
-        {
-            get { return this.GetValue("Visible", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Visible", BooleanConverter.Instance); }
         }
         
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously creates the current <see cref="Application"/>.
-        /// instance.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to create the current <see cref=
-        /// "Application"/>.
-        /// </remarks>
-        public async Task CreateAsync(string template, ApplicationAttributes attributes = null)
-        {
-            var resourceName = ApplicationCollection.ClassResourceName;
-
-            var args = new CreationArgs()
-            {
-                ExplicitApplicationName = this.Name,
-                Filename = false,
-                Name = this.Name,
-                Template = template
-            };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args, attributes))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateSnapshotAsync(response);
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously disables the current <see cref="Application"/>.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the POST apps/local/{name}/disable </a> endpoint 
-        /// to disable the current <see cref="Application"/>.
-        /// </remarks>
-        public async Task DisableAsync()
+        /// <inheritdoc/>
+        public virtual async Task DisableAsync()
         {
             var resourceName = new ResourceName(this.ResourceName, "disable");
 
@@ -258,14 +258,8 @@ namespace Splunk.Client
             }
         }
 
-        /// <summary>
-        /// Asynchronously enables the current <see cref="Application"/>.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the POST apps/local/{name}/enable </a> endpoint 
-        /// to enable the current <see cref="Index"/>.
-        /// </remarks>
-        public async Task EnableAsync()
+        /// <inheritdoc/>
+        public virtual async Task EnableAsync()
         {
             var resourceName = new ResourceName(this.ResourceName, "enable");
 
@@ -275,167 +269,72 @@ namespace Splunk.Client
             }
         }
 
-        /// <summary>
-        /// Asynchronously gets setup information for the current <see cref=
-        /// "Application"/>.
-        /// </summary>
-        /// <returns>
-        /// An object containing setup information for the current <see cref=
-        /// "Application"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/mUT9gU">GET 
-        /// apps/local/{name}/setup</a> endpoint to construct the <see cref=
-        /// "ApplicationSetupInfo"/> instance it returns.
-        /// </remarks>
-        public async Task<ApplicationSetupInfo> GetSetupInfoAsync()
+        /// <inheritdoc/>
+        public virtual async Task<ApplicationSetupInfo> GetSetupInfoAsync()
         {
-            var resource = new ApplicationSetupInfo(this.Context, this.Namespace, this.Name);
-            await resource.GetAsync();
-            return resource;
-        }
+            var resourceName = new ResourceName(this.ResourceName, "setup");
 
-        /// <summary>
-        /// Asynchronously gets update information for the current <see cref=
-        /// "Application"/>.
-        /// </summary>
-        /// <returns>
-        /// An object containing update information for the current <see cref=
-        /// "Application"/>.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/mrbtRj">GET 
-        /// apps/local/{name}/update</a> endpoint to construct the <see cref=
-        /// "ApplicationUpdateInfo"/> instance it returns.
-        /// </remarks>
-        public async Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
-        {
-            var resource = new ApplicationUpdateInfo(this.Context, this.Namespace, this.Name);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously creates the application represented by the current
-        /// instance.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/SzKzNX">POST 
-        /// apps/local</a> endpoint to create the current <see cref=
-        /// "Application"/>.
-        /// </remarks>
-        public async Task InstallAsync(string path, bool update = false)
-        {
-            var resourceName = ApplicationCollection.ClassResourceName;
-
-            var args = new CreationArgs()
-            {
-                ExplicitApplicationName = this.Name,
-                Filename = true,
-                Name = path,
-                Update = update
-            };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateSnapshotAsync(response);
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously archives the current <see cref="Application"/>.
-        /// </summary>
-        /// <returns>
-        /// An object containing information about the newly created archive.
-        /// </returns>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/DJkT7S">GET 
-        /// apps/local/{name}/package</a> endpoint to create an archive of the 
-        /// current <see cref="Application"/>.
-        /// </remarks>
-        public async Task<ApplicationArchiveInfo> PackageAsync()
-        {
-            var resource = new ApplicationArchiveInfo(this.Context, this.Namespace, this.Name);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously removes the application represented by the current
-        /// instance.
-        /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/fIQOrK">DELETE 
-        /// apps/local/{name}</a> endpoint to remove the current <see cref=
-        /// "Application"/>.
-        /// </remarks>
-        public async Task RemoveAsync()
-        {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var resource = await BaseResource.CreateAsync<ApplicationSetupInfo>(response);
+                return resource;
             }
         }
 
-        /// <summary>
-        /// Asynchronously updates the attributes of the application represented 
-        /// by the current instance.
-        /// </summary>
-        /// <param name="attributes">
-        /// New attributes for the current <see cref="Application"/> instance.
-        /// </param>
-        /// <param name="checkForUpdates">
-        /// A value of <c>true</c>, if Splunk should check Splunkbase for 
-        /// updates to the current <see cref="Application"/> instance.
-        /// </param>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/dKraaR">POST 
-        /// apps/local/{name}</a> endpoint to update the attributes of the 
-        /// current <see cref="Application"/> and optionally check for
-        /// updates on Splunkbase.
-        /// </remarks>
-        public async Task UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
+        /// <inheritdoc/>
+        public virtual async Task<ApplicationUpdateInfo> GetUpdateInfoAsync()
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            var resourceName = new ResourceName(this.ResourceName, "update");
+
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var resource = await BaseResource.CreateAsync<ApplicationUpdateInfo>(response);
+                return resource;
             }
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<ApplicationArchiveInfo> PackageAsync()
+        {
+            var resourceName = new ResourceName(this.ResourceName, "package");
+
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var resource = await BaseResource.CreateAsync<ApplicationArchiveInfo>(response);
+                return resource;
+            }
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
+        {
+            var updateArgs = new UpdateArgs { CheckForUpdates = checkForUpdates };
+            return await this.UpdateAsync(updateArgs.AsEnumerable().Concat(attributes));
         }
 
         #endregion
 
         #region Types
 
-        class CreationArgs : Args<CreationArgs>
-        {
-            [DataMember(Name = "explicit_appname", IsRequired = true)]
-            public string ExplicitApplicationName
-            { get; set; }
-
-            [DataMember(Name = "filename", IsRequired = true)]
-            public bool? Filename
-            { get; set; }
-
-            [DataMember(Name = "name", IsRequired = true)]
-            public string Name
-            { get; set; }
-
-            [DataMember(Name = "template", EmitDefaultValue = true)]
-            public string Template
-            { get; set; }
-
-            [DataMember(Name = "update", EmitDefaultValue = false)]
-            public bool? Update
-            { get; set; }
-        }
-
+        /// <summary>
+        /// Arguments for update.
+        /// </summary>
+        /// <seealso cref="T:Splunk.Client.Args{Splunk.Client.Application.UpdateArgs}"/>
         class UpdateArgs : Args<UpdateArgs>
         {
             /// <summary>
-            /// Gets a value that indicates whether Splunk should check Splunkbase
-            /// for updates to an <see cref="Application"/>.
+            /// Gets or sets a value that indicates whether Splunk should check
+            /// Splunkbase for updates to an <see cref="Application"/>.
             /// </summary>
+            /// <value>
+            /// <c>true</c> if check for updates, <c>false</c> if not.
+            /// </value>
             [DataMember(Name = "check_for_updates", EmitDefaultValue = false)]
             [DefaultValue(false)]
             public bool CheckForUpdates

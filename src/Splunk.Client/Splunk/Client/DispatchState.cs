@@ -14,9 +14,9 @@
  * under the License.
  */
 
-// TODO:
-//
-// [ ] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -26,44 +26,43 @@ namespace Splunk.Client
     public enum DispatchState
     {
         /// <summary>
-        /// 
+        /// Specifies that a <see cref="Job"/> has not yet been created.
         /// </summary>
         None,
         
         /// <summary>
-        /// 
+        /// Specifies that a <see cref="Job"/> has been queued by the dispatcher.
         /// </summary>
         Queued, 
         
         /// <summary>
-        /// 
+        /// Specifies that a <see cref="Job"/> is being parsed.
         /// </summary>
         Parsing, 
         
         /// <summary>
-        /// 
+        /// Specifies that a <see cref="Job"/> is running.
         /// </summary>
-        Running, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Paused, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        Finalizing, 
-        
-        /// <summary>
-        /// 
-        /// </summary>
+        Running,
 
+        /// <summary>
+        /// Specifies that a <see cref="Job"/> is finalizing.
+        /// </summary>
+        Finalizing,
+
+        /// <summary>
+        /// Specifies that a <see cref="Job"/> completed.
+        /// </summary>
         Done,
 
         /// <summary>
-        /// 
+        /// Specifies that a <see cref="Job"/> terminated due to a fatal error.
         /// </summary>
-        Failed, 
+        Failed,
+
+        /// <summary>
+        /// Specifies that a <see cref="Job"/> is paused.
+        /// </summary>
+        Paused
     }
 }

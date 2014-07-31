@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2013 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -16,14 +16,12 @@
 
 namespace Splunk.Examples.Submit
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System;
     using System.Linq;
     using System.Net;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Splunk.Client;
 
     /// <summary>
     /// An example program to submit events into Splunk.
@@ -32,10 +30,10 @@ namespace Splunk.Examples.Submit
     {
         static Program()
         {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
-            // 1. Instantiate a WebRequestHandler
-            // 2. Set its ServerCertificateValidationCallback
-            // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
+            //// TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
+            //// 1. Instantiate a WebRequestHandler
+            //// 2. Set its ServerCertificateValidationCallback
+            //// 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
 
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
@@ -43,13 +41,15 @@ namespace Splunk.Examples.Submit
             };
         }
 
-
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();
             }
+
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -58,50 +58,51 @@ namespace Splunk.Examples.Submit
         /// <param name="argv">The command line arguments</param>
         static async Task Run(Service service)
         {
-            Console.WriteLine("Login as admin");
-            string username = "admin";
-            string password = "changeme";
-            await service.LoginAsync(username, password);
+            Console.WriteLine("Login as " + SdkHelper.Splunk.Username);
 
-            Console.WriteLine("create a  index");
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+
+            Console.WriteLine("Create an index");
+
             string indexName = "user-index";
-            string source = "*\\splunkd.log";
-            string sourceType = "splunkd";
+            Index index = await service.Indexes.GetOrNullAsync(indexName);
 
-            if (service.GetIndexesAsync().Result.Any(a => a.Name == indexName))
+            if (index != null)
             {
-                await service.RemoveIndexAsync(indexName);
+                await index.RemoveAsync();
             }
 
-            Index index = await service.CreateIndexAsync(indexName);
+            index = await service.Indexes.CreateAsync(indexName);
+            Exception exception = null;
+
             try
             {
                 await index.EnableAsync();
 
-                Receiver receiver = service.Receiver;
-                ReceiverArgs args = new ReceiverArgs()
+                Transmitter transmitter = service.Transmitter;
+                SearchResult result;
+
+                result = await transmitter.SendAsync("Hello World.", indexName);
+                result = await transmitter.SendAsync("Goodbye world.", indexName);
+
+                using (var results = await service.SearchOneShotAsync(string.Format("search index={0}", indexName)))
                 {
-                    Index = indexName,
-                    Source = source,
-                    SourceType = sourceType,
-                };
-
-                await receiver.SendAsync("Hello World.", args);
-                await receiver.SendAsync("Goodbye world.", args);
-
-                SearchResults results = service.SearchOneshotAsync(
-                    string.Format(
-                        "search index={0}",// source={2} sourcetype={3}",
-                        indexName
-                        //source,
-                        //sourceType
-                        )).Result;
-
-                Console.WriteLine(results);              
+                    foreach (SearchResult task in results)
+                    {
+                        Console.WriteLine(task);
+                    }
+                }
             }
-            finally
+            catch (Exception e)
             {
-                service.RemoveIndexAsync(indexName).Wait();
+                exception = e;
+            }
+
+            await index.RemoveAsync();
+
+            if (exception != null)
+            {
+                throw exception;
             }
         }
     }

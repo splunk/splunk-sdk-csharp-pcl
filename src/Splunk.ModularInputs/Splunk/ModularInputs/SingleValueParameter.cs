@@ -16,6 +16,9 @@
 
 namespace Splunk.ModularInputs
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.Contracts;
     using System.Xml.Serialization;
 
     /// <summary>
@@ -23,66 +26,116 @@ namespace Splunk.ModularInputs
     /// that contains a single value.
     /// </summary>
     [XmlRoot("param")]
-    public class SingleValueParameter : ParameterBase
+    public class SingleValueParameter : Parameter
     {
+        #region Constructors
+
+        public SingleValueParameter(string name, string value)
+        {
+            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires<ArgumentNullException>(value != null);
+
+            this.Name = name;
+            this.Value = value;
+        }
+
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// The value of the parameter.
         /// </summary>
         /// <remarks>
         /// This value is used for XML serialization and deserialization.
-        /// <example>Sample XML</example>
+        /// <example>
+        /// Sample XML</example>
         /// <code>
         /// <param name="param1">value1</param>
         /// </code>
         /// </remarks>
         [XmlText]
-        public string ValueXmlText { get; set; }
+        public string Value 
+        { get; set; }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
-        /// Gets the value of the parameter.
+        /// Converts this object to a Boolean.
         /// </summary>
-        internal override ValueBase ValueAsBaseType
+        /// <returns>
+        /// This object as a Boolean.
+        /// </returns>
+        public Boolean ToBoolean()
         {
-            get { return new Value(this.ValueXmlText); }
+            return Util.ParseSplunkBoolean(this.Value);
         }
 
         /// <summary>
-        /// The <see cref="Value"/> class represents a single value.
+        /// Converts this object to a double.
         /// </summary>
-        public class Value : ValueBase
+        /// <returns>
+        /// This object as a Double.
+        /// </returns>
+        public Double ToDouble()
         {
-            /// <summary>
-            /// The single value.
-            /// </summary>
-            readonly string stringValue;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="Value"/> class.
-            /// </summary>
-            /// <param name="value">Value of this type.</param>
-            public Value(string value)
-            {
-                this.stringValue = value;
-            }
-
-            /// <summary>
-            /// Converts a value to a string.
-            /// </summary>
-            /// <param name="singleValue">The value.</param>
-            /// <returns>The string value.</returns>
-            public static implicit operator string(Value singleValue)
-            {
-                return singleValue.ToString();
-            }
-
-            /// <summary>
-            /// Converts to a string.
-            /// </summary>
-            /// <returns>The string value.</returns>
-            public override string ToString()
-            {
-                return this.stringValue;
-            }
+            return double.Parse(this.Value);
         }
+
+        /// <summary>
+        /// Converts this object to an int 32.
+        /// </summary>
+        /// <returns>
+        /// This object as an Int32.
+        /// </returns>
+        public Int32 ToInt32()
+        {
+            return int.Parse(this.Value);
+        }
+
+        /// <summary>
+        /// Converts this object to an int 64.
+        /// </summary>
+        /// <returns>
+        /// This object as an Int64.
+        /// </returns>
+        public Int64 ToInt64()
+        {
+            return long.Parse(this.Value);
+        }
+
+        /// <summary>
+        /// Converts this object to a single.
+        /// </summary>
+        /// <returns>
+        /// This object as a Single.
+        /// </returns>
+        public Single ToSingle()
+        {
+            return float.Parse(this.Value);
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>
+        /// A string that represents the current object.
+        /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
+        public override string ToString()
+        {
+            return this.Value;
+        }
+
+        #endregion
+
+        #region Privates/internals
+
+        SingleValueParameter()
+        { }
+
+        #endregion
     }
 }

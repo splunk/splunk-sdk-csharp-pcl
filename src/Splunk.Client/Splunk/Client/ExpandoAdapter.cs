@@ -14,87 +14,127 @@
  * under the License.
  */
 
-// TODO:
-// [O] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
-    using System.IO;
 
     /// <summary>
-    /// Provides a base class for implementing strong types over an <see cref=
-    /// "ExpandoObject"/>.
+    /// Provides a base class for implementing strong types backed by
+    /// <see cref="System.Dynamic.ExpandoObject"/> instances.
     /// </summary>
-    public class ExpandoAdapter
+    /// <seealso cref="T:System.Dynamic.DynamicObject"/>
+    public class ExpandoAdapter : DynamicObject
     {
         #region Constructors
 
-        public ExpandoAdapter(ExpandoObject expandoObject)
+        /// <summary>
+        /// Intializes a new instance of the <see cref="ExpandoAdapter"/>
+        /// class.
+        /// </summary>
+        /// <param name="expandoObject">
+        /// An object backing the current <see cref="ExpandoAdapter"/>.
+        /// </param>
+        protected ExpandoAdapter(ExpandoObject expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
-            this.ExpandoObject = expandoObject;
+            this.expandoObject = expandoObject;
         }
 
-        protected ExpandoAdapter()
+        /// <summary>
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref="ExpandoAdapter"/>
+        /// class.
+        /// </summary>
+        public ExpandoAdapter()
         { }
 
         #endregion
 
         #region Fields
 
+        /// <summary>
+        /// The empty.
+        /// </summary>
         public static readonly ExpandoAdapter Empty = new ExpandoAdapter(new ExpandoObject());
 
-        #endregion
-
-        #region Properties
-
-        internal ExpandoObject ExpandoObject
-        {
-            get; set; // TODO: Synchronization
-        }
-                            
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Gets a named item from the underlying <see cref="ExpandoObject"/>"/>
-        /// and applies a <see cref="ValueConverter"/>.
+        /// Returns the enumeration of all dynamic member names.
         /// </summary>
-        /// <typeparam name="TValue">
-        /// The type of value to return.
-        /// </typeparam>
+        /// <returns>
+        /// The list of dynamic member names.
+        /// </returns>
+        /// <seealso cref="M:System.Dynamic.DynamicObject.GetDynamicMemberNames()"/>
+        public override IEnumerable<string> GetDynamicMemberNames()
+        {
+            return ((IDictionary<string, object>)this.Object).Keys;
+        }
+
+        /// <summary>
+        /// Gets a named item from the
+        /// <see cref="System.Dynamic.ExpandoObject"/>"/&gt;
+        /// backing the current <see cref="ExpandoAdapter"/>.
+        /// </summary>
+        /// <param name="name">
+        /// The name of the item to be returned.
         /// </param>
+        /// <returns>
+        /// A dynamic value.
+        /// </returns>
+        public dynamic GetValue(string name)
+        {
+            Contract.Requires<ArgumentNullException>(name != null);
+
+            var dictionary = (IDictionary<string, object>)this.Object;
+            object value;
+            dictionary.TryGetValue(name, out value);
+            
+            return value;
+        }
+
+        /// <summary>
+        /// Gets a named item from the underlying <see cref="Object"/>"/&gt;
+        /// and applies a <see cref="ValueConverter&lt;TValue&gt;"/>.
+        /// </summary>
+        /// <remarks>
+        /// The value returned by this method is stored into the backing
+        /// <see cref="System.Dynamic.ExpandoObject"/> to reduce conversion overhead.
+        /// </remarks>
+        /// <typeparam name="TValue">
+        /// Type of the value.
+        /// </typeparam>
         /// <param name="name">
         /// The name of the item to be returned.
         /// </param>
         /// <param name="valueConverter">
-        /// The <see cref="ValueConverter"/> applied to the item identified by
-        /// <see cref="name"/>.
+        /// The <see cref="ValueConverter&lt;TValue&gt;"/> applied to the item
+        /// identified by <paramref name="name"/>.
         /// </param>
         /// <returns>
-        /// A value of type <see cref="TValue"/>.
+        /// A value of type <typeparamref name="TValue"/>.
         /// </returns>
-        /// <remarks>
-        /// The value returned by this method is stored into underlying <see 
-        /// cref="ExpandoObject"/> to reduce conversion overhead. 
-        /// </remarks>
+        ///
+        /// ### <typeparam name="TValue">
+        /// The type of value to return.
+        /// </typeparam>
         public TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
             Contract.Requires<ArgumentNullException>(name != null);
             Contract.Requires<ArgumentNullException>(valueConverter != null);
 
-            if (this.ExpandoObject == null)
-            {
-                throw new InvalidOperationException(); // TODO: diagnostics
-            }
-
-            var dictionary = (IDictionary<string, object>)this.ExpandoObject;
+            var dictionary = (IDictionary<string, object>)this.Object;
             object value;
 
             if (!dictionary.TryGetValue(name, out value) || value == null)
@@ -102,9 +142,11 @@ namespace Splunk.Client
                 return valueConverter.DefaultValue;
             }
 
-            if (value is ConvertedValue)
+            var convertedValue = value as ConvertedValue;
+
+            if (convertedValue != null)
             {
-                return ((ConvertedValue)value).Convert<TValue>(valueConverter);
+                return convertedValue.Convert<TValue>(valueConverter);
             }
 
             // Tradeoff: 
@@ -115,45 +157,111 @@ namespace Splunk.Client
             // problems in a critical section. We only lock on code/data that's
             // under our direct control.
             
-            object convertedValue;
+            object unconvertedValue;
             int count = 0;
 
             do
             {
-                convertedValue = valueConverter.Convert(value);
+                unconvertedValue = valueConverter.Convert(value);
 
                 lock (this.gate)
                 {
                     value = dictionary[name];
+                    convertedValue = value as ConvertedValue;
 
-                    if (value is ConvertedValue)
+                    if (convertedValue != null)
                     {
-                        convertedValue = ((ConvertedValue)value).GetAs<TValue>();
-                        value = ((ConvertedValue)value).Get();
+                        unconvertedValue = convertedValue.GetAs<TValue>();
+                        value = convertedValue.Get();
                     }
                     else
                     {
-                        dictionary[name] = new ConvertedValue(convertedValue);
+                        dictionary[name] = new ConvertedValue(unconvertedValue);
                     }
                 }
 
-                Debug.Assert(++count < 2);
+                Debug.Assert(++count < 2, string.Concat("count: ", count));
             }
-            while (convertedValue == null);
+            while (unconvertedValue == null);
 
-            return (TValue)convertedValue;
+            return (TValue)unconvertedValue;
+        }
+
+        /// <summary>
+        /// Provides the implementation for operations that get dynamic member values.
+        /// </summary>
+        /// <exception cref="NotSupportedException">
+        /// Thrown when the requested operation is not supported.
+        /// </exception>
+        /// <param name="binder">
+        /// Provides information about the object that called the dynamic operation.
+        /// The <paramref name="binder"/>.Name property provides the name of the
+        /// member on which the dynamic operation is performed. The
+        /// <paramref name="binder"/>.IgnoreCase property specifies whether the
+        /// member name is case-sensitive.
+        /// </param>
+        /// <param name="result">
+        /// The result of the operation.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the operation is successful; otherwise, <c>false</c>. If
+        /// this method returns <c>false</c>, the run-time binder of the language
+        /// determines the behavior. In most cases, a run-time exception is thrown.
+        /// </returns>
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            if (binder.IgnoreCase)
+            {
+                throw new NotSupportedException("Case insensitive language bindings are not supported");
+            }
+
+            result = this.GetValue(binder.Name);
+            return result != null;
         }
 
         #endregion
 
-        #region Privates
+        #region Privates/internals
 
+        ExpandoObject expandoObject;
         object gate = new object();
+
+        /// <summary>
+        /// Gets or sets the object.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the requested operation is invalid.
+        /// </exception>
+        /// <value>
+        /// The object.
+        /// </value>
+        internal ExpandoObject Object
+        { 
+            get
+            {
+                return this.expandoObject;
+            }
+
+            set
+            {
+                Debug.Assert(this.Object == null, "Object is not null");
+
+                if (this.expandoObject != null)
+                {
+                    throw new InvalidOperationException("ExpandoAdapter.Object is already initialized."); // TODO: diagnostics
+                }
+
+                this.expandoObject = value;
+            }
+        }
 
         #endregion
 
-        #region Type
+        #region Types
 
+        /// <summary>
+        /// A converted value.
+        /// </summary>
         class ConvertedValue
         {
             public ConvertedValue(object value)
@@ -184,41 +292,126 @@ namespace Splunk.Client
             readonly object value;
         }
 
-        #endregion
-    }
-
-    /// <summary>
-    /// Provides a generic base class for implementing strong types over an 
-    /// <see cref="ExpandoObject"/>.
-    /// </summary>
-    /// <typeparam name="TExpandoAdapter">
-    /// The type inheriting from this class.
-    /// </typeparam>
-    public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter<TExpandoAdapter>, new()
-    {
-        #region Constructors
-
-        public ExpandoAdapter()
-        { }
-
-        #endregion
-
-        #region Type
+        #region Types
 
         /// <summary>
-        /// Provides a converter to create <see cref="ExpandoAdapter"/> 
-        /// instances from <see cref="ExpandoObject"/> instances.
+        /// Provides a converter to create <see cref="ExpandoAdapter"/>
+        /// instances from <see cref="System.Dynamic.ExpandoObject"/>
+        /// instances.
         /// </summary>
-        public class Converter : ValueConverter<TExpandoAdapter>
+        /// <seealso cref="T:Splunk.Client.ValueConverter{Splunk.Client.ExpandoAdapter}"/>
+        public class Converter : ValueConverter<ExpandoAdapter>
         {
             static Converter()
             {
                 Instance = new Converter();
             }
 
+            /// <summary>
+            /// Gets the instance.
+            /// </summary>
+            /// <value>
+            /// The instance.
+            /// </value>
             public static Converter Instance
             { get; private set; }
 
+            /// <summary>
+            /// Converts the given input.
+            /// </summary>
+            /// <exception cref="NewInvalidDataException">
+            /// Thrown when a New Invalid Data error condition occurs.
+            /// </exception>
+            /// <param name="input">
+            /// 
+            /// </param>
+            /// <returns>
+            /// An ExpandoAdapter.
+            /// </returns>
+            public override ExpandoAdapter Convert(object input)
+            {
+                var value = input as ExpandoAdapter;
+
+                if (value != null)
+                {
+                    return value;
+                }
+
+                var expandoObject = input as ExpandoObject;
+
+                if (expandoObject != null)
+                {
+                    return new ExpandoAdapter(expandoObject);
+                }
+
+                throw NewInvalidDataException(input);
+            }
+        }
+
+        #endregion
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Provides a generic base class for implementing strong types backed by
+    /// <see cref="System.Dynamic.ExpandoObject"/> instances.
+    /// </summary>
+    /// <typeparam name="TExpandoAdapter">
+    /// Type of the expando adapter.
+    /// </typeparam>
+    /// <seealso cref="T:Splunk.Client.ExpandoAdapter"/>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = 
+		"Generic and non-generic versions of a class should be contained in the same C# document.")
+	]
+    public class ExpandoAdapter<TExpandoAdapter> : ExpandoAdapter where TExpandoAdapter : ExpandoAdapter, new()
+    {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the ExpandoAdapter class.
+        /// </summary>
+        public ExpandoAdapter()
+        { }
+
+        #endregion
+
+        #region Types
+
+        /// <summary>
+        /// Provides a converter to create <see cref="ExpandoAdapter"/>
+        /// instances from <see cref="System.Dynamic.ExpandoObject"/>
+        /// instances.
+        /// </summary>
+        /// <seealso cref="T:Splunk.Client.ValueConverter{TExpandoAdapter}"/>
+        new public class Converter : ValueConverter<TExpandoAdapter>
+        {
+            static Converter()
+            {
+                Instance = new Converter();
+            }
+
+            /// <summary>
+            /// Gets the instance.
+            /// </summary>
+            /// <value>
+            /// The instance.
+            /// </value>
+            public static Converter Instance
+            { get; private set; }
+
+            /// <summary>
+            /// Converts the given input.
+            /// </summary>
+            /// <exception cref="NewInvalidDataException">
+            /// Thrown when a New Invalid Data error condition occurs.
+            /// </exception>
+            /// <param name="input">
+            /// 
+            /// </param>
+            /// <returns>
+            /// A TExpandoAdapter.
+            /// </returns>
             public override TExpandoAdapter Convert(object input)
             {
                 var value = input as TExpandoAdapter;
@@ -232,10 +425,10 @@ namespace Splunk.Client
 
                 if (expandoObject != null)
                 {
-                    return new TExpandoAdapter() { ExpandoObject = expandoObject };
+                    return new TExpandoAdapter() { Object = expandoObject };
                 }
 
-                throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+                throw NewInvalidDataException(input);
             }
         }
 

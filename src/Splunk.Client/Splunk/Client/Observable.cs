@@ -14,16 +14,10 @@
  * under the License.
  */
 
-// TODO:
-//
-// [X] Remove Observers property and replace it with gated OnNext, OnError,
-//     and OnCompleted methods
-//
-// [O] Contracts
-//
-// [O] Documentation
-//
-// [ ] Trace messages (e.g., when there are no observers)
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+//// [ ] Trace messages (e.g., when there are no observers)
 
 namespace Splunk.Client
 {
@@ -36,15 +30,16 @@ namespace Splunk.Client
     /// Defines a provider for push-based notification.
     /// </summary>
     /// <typeparam name="T">
-    /// The type of object that provides notification information.
+    /// Generic type parameter.
     /// </typeparam>
+    /// <seealso cref="T:System.IObservable{T}"/>
     public abstract class Observable<T> : IObservable<T>
     {
         #region Methods
 
         /// <summary>
-        /// Notifies all observers that the provider has finished sending 
-        /// push-based notifications.
+        /// Notifies all observers that the provider has finished sending push-based
+        /// notifications.
         /// </summary>
         protected void OnCompleted()
         {
@@ -64,13 +59,13 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Notifies all observers that the provider has experienced an error 
+        /// Notifies all observers that the provider has experienced an error
         /// condition.
         /// </summary>
-        /// <param name="e">
-        /// An <see cref="Exception"/> representing the error condition
+        /// <param name="error">
+        /// An <see cref="Exception"/> representing the error condition.
         /// </param>
-        protected void OnError(Exception e)
+        protected void OnError(Exception error)
         {
             if (this.observers == null || this.observers.Count == 0)
             {
@@ -81,8 +76,9 @@ namespace Splunk.Client
             {
                 foreach (var observer in this.observers)
                 {
-                    observer.OnError(e);
+                    observer.OnError(error);
                 }
+
                 this.observers.Clear();
             }
         }
@@ -118,15 +114,18 @@ namespace Splunk.Client
         protected abstract Task PushObservations();
 
         /// <summary>
-        /// Notifies the current <see cref="SearchResultsReader"/> that an 
-        /// observer is to receive notifications.
+        /// Notifies the current <see cref="SearchPreviewStream"/> that an observer
+        /// is to receive notifications.
         /// </summary>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when one or more required arguments are null.
+        /// </exception>
         /// <param name="observer">
         /// The object that is to receive notifications.
         /// </param>
         /// <returns>
         /// A reference to an interface that allows observers to stop receiving
-        /// notifications before the current <see cref="SearchResultsReader"/>
+        /// notifications before the current <see cref="SearchPreviewStream"/>
         /// has finished sending them.
         /// </returns>
         public IDisposable Subscribe(IObserver<T> observer)
@@ -144,6 +143,7 @@ namespace Splunk.Client
                 {
                     this.observers = new LinkedList<IObserver<T>>();
                 }
+
                 unsubscriber = new Subscription(this, this.observers.AddLast(observer));
             }
 
@@ -175,12 +175,14 @@ namespace Splunk.Client
         #region Types
 
         /// <summary>
-        /// Represents a disposable subscription to the <see cref="Observable"/>.
+        /// Represents a disposable subscription to the
+        /// <see cref="Observable&lt;T&gt;"/>.
         /// </summary>
         /// <remarks>
         /// This class implements <see cref="IDisposable"/>, but does not require
         /// finalization because it does not access unmanaged resources.
         /// </remarks>
+        /// <seealso cref="T:System.IObservable{T}"/>
         struct Subscription : IDisposable
         {
             public Subscription(Observable<T> observable, LinkedListNode<IObserver<T>> node)
@@ -190,25 +192,22 @@ namespace Splunk.Client
                 
                 this.node = node;
                 this.observable = observable;
-
-                GC.SuppressFinalize(this);
             }
 
-            /// <summary>
-            /// Disposes of the current subscription.
-            /// </summary>
             public void Dispose()
             {
                 if (this.node.List == null)
                 {
                     return;
                 }
+
                 lock (this.observable.gate)
                 {
                     if (this.node.List == null)
                     {
                         return;
                     }
+
                     node.List.Remove(this.node);
                 }
             }

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2014 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -14,70 +14,52 @@
  * under the License.
  */
 
-// TODO:
-//
-// [ ] Consider IValueConverter as an alternative to As<data-type> methods
-//     in this class as well as in the Field class
-//
-//     Idea: A single set of value converters for all Splunk data types 
-//     providing consistent conversion, manipulation, and presentation on 
-//     all Portable Class Library platforms with consideration for 
-//     CultureInfo.
-//
-//     Selling point: One of the handy things you can do with data binding 
-//     in WPF and Silverlight is convert the data as you pull it from the 
-//     data source. The interface used for doing this is IValueConverter.
-//     It is part of the Portable Class Library profile and available on 
-//     all current Windows platforms as well as Xamarin (?)
-//
-//     Note: TypeConverter, an alternative to IValueConverter, is not
-//     part of the Portable Class Library profile because it is not 
-//     implemented for Windows Store apps.
-//
-//     References:
-//     1. [IValueConverter in WPF data binding](http://goo.gl/wHBov)
-//     2. [IValueConverter Class](http://goo.gl/Dep0VT)
-//     3. [ValueConversionAttribute Class](http://goo.gl/0aKer9)
-//
-// [O] Improve error handling. Bad data should in an element should 
-//     produce diagnostic field-oriented error messages via 
-//     InvalidDataException.
-//
-// [ ] Identify optional properties and sensible default values, if
-//     they're missing.
-//
-// [ ] Check AtomEntry properties against splunk-sdk-csharp-1.0.X
-//
-// [X] Either drop or improve AtomEntry.NormalizePropertyName
-//     Improved AtomEntry.NormalizePropertyName since we do not have
-//     known serialization requirements; just deserialization.
-//
-// [O] Contracts
-//
-// [ ] Documentation
-//
-// [ ] Use NameTable in AtomEntry and AtomFeed
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+//// [ ] Performance: NameTable could make in AtomEntry.ReadXmlAsync and 
+////     AtomFeed.ReadXmlAsync significantly faster.
+//// [ ] Synchronization: AtomFeed.ReadXmlAsync and AtomEntry.ReadXmlAsync can
+////     be called more than once. (In practice these methods are never called
+////     move than once.)
 
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
+    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.Globalization;
     using System.IO;
     using System.Text;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Xml;
 
     /// <summary>
-    /// 
+    /// Provides an object representation of an individual entry in a Splunk Atom
+    /// Feed response.
+    /// <para>
+    /// <para><b>References:</b></para>
+    /// <list type="number">
+    /// <item><description>
+    ///   <a href="http://goo.gl/TDthxd">REST API Reference Manual: Accessing
+    ///   Splunk resources</a>.
+    /// </description></item>
+    /// <item><description>
+    ///   <a href="http://goo.gl/YVTE9l">REST API Reference Manual: Atom Feed
+    ///   responses</a>.
+    /// </description></item>
+    /// </list>
+    /// </para>
     /// </summary>
     public sealed class AtomEntry
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AtomEntry"/> class.
+        /// </summary>
         public AtomEntry()
         { }
 
@@ -85,24 +67,88 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// Gets the owner of the resource represented by the current
+        /// <see cref="AtomEntry"/>, as defined in the access control list.
+        /// </summary>
+        /// <remarks>
+        /// This value can be <c>"system"</c>, <c>"nobody"</c> or some specific user
+        /// name. Refer to <a href="http://goo.gl/iTpzO0">Access control lists for
+        /// Splunk objects</a> in the section on
+        /// <a href= "http://goo.gl/TDthxd">Accessing Splunk resources</a>.
+        /// </remarks>
+        /// <value>
+        /// Owner of the resource represented by the current <see cref= "AtomEntry"/>.
+        /// </value>
         public string Author
         { get; private set; }
 
+        /// <summary>
+        /// Gets a dynamic object representing the content of the resource
+        /// represented by the current <see cref="AtomEntry"/>.
+        /// </summary>
+        /// <remarks>
+        /// Splunk typically returns content as dictionaries with key/value pairs
+        /// that list properties of the entry. However, content can be returned as a
+        /// list of values or as plain text.
+        /// </remarks>
+        /// <value>
+        /// A dynamic object representing the content of the resource represented by
+        /// the current <see cref="AtomEnry"/>.
+        /// </value>
         public dynamic Content
         { get; private set; }
 
+        /// <summary>
+        /// Gets the Splunk management URI for accessing the resource represented by
+        /// the current <see cref="AtomEntry"/>.
+        /// </summary>
+        /// <value>
+        /// The Splunk management URI for accessing the resource represented by the
+        /// current <see cref="AtomEntry"/>.
+        /// </value>
         public Uri Id
         { get; private set; }
 
+        /// <summary>
+        /// Gets the links.
+        /// </summary>
+        /// <value>
+        /// The links.
+        /// </value>
         public IReadOnlyDictionary<string, Uri> Links
         { get; private set; }
 
+        /// <summary>
+        /// Gets the Date/Time of the published.
+        /// </summary>
+        /// <value>
+        /// The published.
+        /// </value>
         public DateTime Published
         { get; private set; }
 
+        /// <summary>
+        /// Gets the human readable name for the current <see cref="AtomEntry"/>.
+        /// </summary>
+        /// <remarks>
+        /// This value varies depending on the endpoint used to access the current
+        /// <see cref="AtomEntry"/>.
+        /// </remarks>
+        /// <value>
+        /// The human readable name for the current <see cref="AtomEntry"/>.
+        /// </value>
         public string Title
         { get; private set; }
 
+        /// <summary>
+        /// Gets the date and time the current <see cref="AtomEntry"/> was last
+        /// updated in Splunk.
+        /// </summary>
+        /// <value>
+        /// The date and time the current <see cref="AtomEntry"/> was last updated in
+        /// Splunk.
+        /// </value>
         public DateTime Updated
         { get; private set; }
 
@@ -110,32 +156,33 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// Asynchronously reads XML data into the current <see cref="AtomEntry"/>.
+        /// </summary>
+        /// <exception cref="InvalidDataException">
+        /// Thrown when an Invalid Data error condition occurs.
+        /// </exception>
+        /// <param name="reader">
+        /// The reader from which to read.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            if (reader.ReadState == ReadState.Initial)
-            {
-                await reader.ReadAsync();
+            this.Author = null;
+            this.Content = null;
+            this.Id = null;
+            this.Links = null;
+            this.Published = DateTime.MinValue;
+            this.Title = null;
+            this.Updated = DateTime.MinValue;
 
-                if (reader.NodeType == XmlNodeType.XmlDeclaration)
-                {
-                    await reader.ReadAsync();
-                }
-            }
-            else
-            {
-                reader.MoveToElement();
-            }
+            reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
 
-            if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "entry"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
-            var links = new Dictionary<string, Uri>();
-            this.Links = links;
-
+            Dictionary<string, Uri> links = null;
             await reader.ReadAsync();
 
             while (reader.NodeType == XmlNodeType.Element)
@@ -155,21 +202,11 @@ namespace Splunk.Client
                         break;
 
                     case "author":
-
+                        
                         await reader.ReadAsync();
-
-                        if (!(reader.NodeType == XmlNodeType.Element && reader.Name == "name"))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
+                        reader.EnsureMarkup(XmlNodeType.Element, "name");
                         this.Author = await reader.ReadElementContentAsync(StringConverter.Instance);
-
-                        if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "author"))
-                        {
-                            throw new InvalidDataException(); // TODO: Diagnostics
-                        }
-
+                        reader.EnsureMarkup(XmlNodeType.EndElement, "author");
                         await reader.ReadAsync();
                         break;
 
@@ -185,44 +222,47 @@ namespace Splunk.Client
 
                     case "link":
 
-                        string href = reader.GetAttribute("href");
-
-                        if (string.IsNullOrWhiteSpace(href))
+                        if (links == null)
                         {
-                            throw new InvalidDataException();  // TODO: Diagnostics
+                            links = new Dictionary<string, Uri>();
                         }
 
-                        string rel = reader.GetAttribute("rel");
-
-                        if (string.IsNullOrWhiteSpace(rel))
-                        {
-                            throw new InvalidDataException();  // TODO: Diagnostics
-                        }
-
+                        var href = reader.GetRequiredAttribute("href");
+                        var rel = reader.GetRequiredAttribute("rel");
                         links[rel] = UriConverter.Instance.Convert(href);
                         await reader.ReadAsync();
                         break;
 
                     case "content":
 
-                        this.Content = await ParsePropertyValueAsync(reader);
+                        this.Content = await ParsePropertyValueAsync(reader, 0);
                         break;
 
-                    default: throw new InvalidDataException(); // TODO: Diagnostics
+                    default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
                 }
             }
 
-            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "entry"))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
+            reader.EnsureMarkup(XmlNodeType.EndElement, "entry");
             await reader.ReadAsync();
+
+            if (links != null)
+            {
+                this.Links = new ReadOnlyDictionary<string, Uri>(links);
+            }
         }
 
+        /// <summary>
+        /// Gets a string representation for the current <see cref="AtomEntry"/>.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="AtomEntry"/>.
+        /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
-            return string.Format("AtomEntry(Title={0}, Author={1}, Id={2}, Updated={3})", this.Title, this.Author, this.Id, this.Updated);
+            var text= string.Format(CultureInfo.CurrentCulture, "AtomEntry(Title={0}, Author={1}, Id={2}, Published={3}, Updated={4})", 
+                this.Title, this.Author, this.Id, this.Published, this.Updated);
+            return text;
         }
 
         #endregion
@@ -282,7 +322,7 @@ namespace Splunk.Client
             }
         }
 
-        static async Task<dynamic> ParseDictionaryAsync(XmlReader reader)
+        static async Task<dynamic> ParseDictionaryAsync(XmlReader reader, int level)
         {
             var value = (IDictionary<string, dynamic>)new ExpandoObject();
 
@@ -296,35 +336,50 @@ namespace Splunk.Client
 
                     // TODO: Include a domain-specific name translation capability (?)
 
-                    switch (name)
+                    if (level == 0)
                     {
-                        case "action.email":
-                        case "action.populate_lookup":
-                        case "action.rss":
-                        case "action.script":
-                        case "action.summary_index":
-                        case "alert.suppress":
-                        case "auto_summarize":
-                            name += ".IsEnabled";
-                            break;
-                        case "alert_comparator":
-                            name = "alert.comparator";
-                            break;
-                        case "alert_condition":
-                            name = "alert.condition";
-                            break;
-                        case "alert_threshold":
-                            name = "alert.threshold";
-                            break;
-                        case "alert_type":
-                            name = "alert.type";
-                            break;
-                        case "display.visualizations.charting.chart":
-                            name += ".Type";
-                            break;
-                        case "update.checksum.type":
-                            name = "update.checksum_type";
-                            break;
+                        switch (name)
+                        {
+                            case "action.email.subject.alert":
+                                name = "action.email.subject_alert";
+                                break;
+                            case "action.email.subject.report":
+                                name = "action.email.subject_report";
+                                break;
+                            case "action.email":
+                            case "action.populate_lookup":
+                            case "action.rss":
+                            case "action.script":
+                            case "action.summary_index":
+                            case "alert.suppress":
+                            case "auto_summarize":
+                                name += ".IsEnabled";
+                                break;
+                            case "alert_comparator":
+                                name = "alert.comparator";
+                                break;
+                            case "alert_condition":
+                                name = "alert.condition";
+                                break;
+                            case "alert_threshold":
+                                name = "alert.threshold";
+                                break;
+                            case "alert_type":
+                                name = "alert.type";
+                                break;
+                            case "coldPath.maxDataSizeMB":
+                                name = "coldPath_maxDataSizeMB";
+                                break;
+                            case "display.visualizations.charting.chart":
+                                name += ".Type";
+                                break;
+                            case "homePath.maxDataSizeMB":
+                                name = "homePath_maxDataSizeMB";
+                                break;
+                            case "update.checksum.type":
+                                name = "update.checksum_type";
+                                break;
+                        }
                     }
 
                     string[] names = name.Split(':', '.');
@@ -340,7 +395,7 @@ namespace Splunk.Client
                         {
                             if (!(propertyValue is ExpandoObject))
                             {
-                                throw new InvalidDataException(); // TODO: Diagnostics
+                                throw new InvalidDataException(); // TODO: Diagnostics : conversion error
                             }
                         }
                         else
@@ -353,21 +408,18 @@ namespace Splunk.Client
                     }
 
                     propertyName = NormalizePropertyName(names[names.Length - 1]);
-                    propertyValue = await ParsePropertyValueAsync(reader);
+                    propertyValue = await ParsePropertyValueAsync(reader, level + 1);
                     dictionary.Add(propertyName, propertyValue);
                 }
 
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:dict"))
-                {
-                    throw new InvalidDataException();
-                }
+                reader.EnsureMarkup(XmlNodeType.EndElement, "s:dict");
             }
 
             await reader.ReadAsync();
             return value;  // TODO: what's the type seen by dynamic?
         }
 
-        static async Task<IReadOnlyList<dynamic>> ParseListAsync(XmlReader reader)
+        static async Task<ReadOnlyCollection<dynamic>> ParseListAsync(XmlReader reader, int level)
         {
             List<dynamic> value = new List<dynamic>();
 
@@ -377,20 +429,17 @@ namespace Splunk.Client
 
                 while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:item")
                 {
-                    value.Add(await ParsePropertyValueAsync(reader));
+                    value.Add(await ParsePropertyValueAsync(reader, level + 1));
                 }
-
-                if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == "s:list"))
-                {
-                    throw new InvalidDataException();
-                }
+                
+                reader.EnsureMarkup(XmlNodeType.EndElement, "s:list");
             }
 
             await reader.ReadAsync();
-            return value;
+            return new ReadOnlyCollection<dynamic>(value);
         }
 
-        static async Task<dynamic> ParsePropertyValueAsync(XmlReader reader)
+        static async Task<dynamic> ParsePropertyValueAsync(XmlReader reader, int level)
         {
             if (reader.IsEmptyElement)
             {
@@ -418,35 +467,29 @@ namespace Splunk.Client
                     {
                         case "s:dict":
 
-                            value = await ParseDictionaryAsync(reader);
+                            value = await ParseDictionaryAsync(reader, level);
                             break;
 
                         case "s:list":
 
-                            value = await ParseListAsync(reader);
+                            value = await ParseListAsync(reader, level);
                             break;
 
-                        default: throw new InvalidDataException(string.Format("Unexpected element name: {0}", reader.Name));
+                        default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
                     }
 
                     break;
 
                 case XmlNodeType.EndElement:
 
-                    if (reader.Name != name)
-                    {
-                        throw new InvalidDataException(); // TODO: Diagnostics
-                    }
+                    reader.EnsureMarkup(XmlNodeType.EndElement, name);
                     value = null;
                     break;
             }
 
-            if (!(reader.NodeType == XmlNodeType.EndElement && reader.Name == name))
-            {
-                throw new InvalidDataException(); // TODO: Diagnostics
-            }
-
+            reader.EnsureMarkup(XmlNodeType.EndElement, name);
             await reader.ReadAsync();
+
             return value;
         }
 

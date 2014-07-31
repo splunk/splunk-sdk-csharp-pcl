@@ -14,158 +14,53 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Documentation
-// [ ] Diagnostics
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Linq;
 
     /// <summary>
-    /// 
+    /// Provides custom arguments to a <see cref="SavedSearch"/>.
     /// </summary>
-    public sealed class SavedSearchTemplateArgs : ISet<Argument>
+    /// <seealso cref="T:Splunk.Client.ArgumentSet"/>
+    public sealed class SavedSearchTemplateArgs : ArgumentSet
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SavedSearchTemplateArgs"/>
+        /// class.
+        /// </summary>
         public SavedSearchTemplateArgs()
-        {
-            this.set = new HashSet<Argument>();
-        }
+            : base("args.")
+        { }
 
-        public SavedSearchTemplateArgs(IEnumerable<Argument> collection)
-        {
-            Contract.Requires<ArgumentNullException>(collection != null, "collection");
-            this.set = new HashSet<Argument>(collection);
-        }
+        /// <summary>
+        /// Initializes a new instance of the Splunk.Client.SavedSearchTemplateArgs
+        /// class.
+        /// </summary>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        public SavedSearchTemplateArgs(params Argument[] arguments)
+            : this(arguments.AsEnumerable())
+        { }
 
-        #endregion
-
-        #region Properties
-
-        public int Count
-        { get { return this.set.Count; } }
-
-        public bool IsReadOnly
-        { get { return false; } }
-
-        #endregion
-
-        #region Methods
-
-        public void Clear()
-        {
-            this.set.Clear();
-        }
-
-        public IEnumerator<Argument> GetEnumerator()
-        {
-            foreach (var item in this.set)
-            {
-                yield return new Argument("args." + item.Name, item.Value);
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
- 
-        public override string ToString()
-        {
-            return string.Join("; ", from arg in this select arg.ToString());
-        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SavedSearchTemplateArgs"/>
+        /// class from a collection of <see cref="Argument"/> values.
+        /// </summary>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        public SavedSearchTemplateArgs(IEnumerable<Argument> arguments)
+            : base("args.", arguments)
+        { }
 
         #endregion
-
-        #region privates
-
-        HashSet<Argument> set;
-
-        #endregion
-
-        public bool Add(Argument item)
-        {
-            return this.set.Add(item);
-        }
-
-        public void ExceptWith(IEnumerable<Argument> other)
-        {
-            this.set.ExceptWith(other);
-        }
-
-        public void IntersectWith(IEnumerable<Argument> other)
-        {
-            this.set.IntersectWith(other);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<Argument> other)
-        {
-            return this.IsProperSubsetOf(other);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<Argument> other)
-        {
-            return this.IsProperSupersetOf(other);
-        }
-
-        public bool IsSubsetOf(IEnumerable<Argument> other)
-        {
-            return this.set.IsSubsetOf(other);
-        }
-
-        public bool IsSupersetOf(IEnumerable<Argument> other)
-        {
-            return this.set.IsSupersetOf(other);
-        }
-
-        public bool Overlaps(IEnumerable<Argument> other)
-        {
-            return this.set.Overlaps(other);
-        }
-
-        public bool SetEquals(IEnumerable<Argument> other)
-        {
-            return this.SetEquals(other);
-        }
-
-        public void SymmetricExceptWith(IEnumerable<Argument> other)
-        {
-            this.set.SymmetricExceptWith(other);
-        }
-
-        public void UnionWith(IEnumerable<Argument> other)
-        {
-            this.set.UnionWith(other);
-        }
-
-        void ICollection<Argument>.Add(Argument item)
-        {
-            this.set.Add(item);
-        }
-
-        public bool Contains(Argument item)
-        {
-            return this.set.Contains(item);
-        }
-
-        public void CopyTo(Argument[] array, int index)
-        {
-            this.set.CopyTo(array, index);
-        }
-
-        public bool Remove(Argument item)
-        {
-            return this.set.Remove(item);
-        }
-
-        IEnumerator<Argument> IEnumerable<Argument>.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

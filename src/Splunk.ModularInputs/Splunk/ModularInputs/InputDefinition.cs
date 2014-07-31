@@ -18,106 +18,128 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Xml.Serialization;
+    using Splunk.Client;
 
     /// <summary>
-    /// The <see cref="InputDefinition"/> class is used to parse and access
-    /// the XML data that defines the input from Splunk.
+    /// Represents the specification of a modular input instance.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// When Splunk executes a modular input script to stream events into
-    /// Splunk, it reads configuration information from inputs.conf files in
-    /// the system. It then passes this configuration in XML format to the
-    /// script. The modular input script reads the configuration information
-    /// from standard input.
-    /// </para>
-    /// <example>Sample XML</example>
-    /// <code>
-    /// <![CDATA[
-    ///   <?xml version="1.0" encoding="utf-16"?>
-    ///   <input xmlns:xsi="http:www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http:www.w3.org/2001/XMLSchema">
-    ///     <server_host>tiny</server_host>
-    ///     <server_uri>https:127.0.0.1:8089</server_uri>
-    ///     <checkpoint_dir>/opt/splunk/var/lib/splunk/modinputs</checkpoint_dir>
-    ///     <session_key>123102983109283019283</session_key>
-    ///     <configuration>
-    ///       <stanza name="foobar:aaa">
-    ///         <param name="param1">value1</param>
-    ///         <param name="param2">value2</param>
-    ///         <param name="disabled">0</param>
-    ///         <param name="index">default</param>
-    ///       </stanza>
-    ///       <stanza name="foobar:bbb">
-    ///         <param name="param1">value11</param>
-    ///         <param name="param2">value22</param>
-    ///         <param name="disabled">0</param>
-    ///         <param name="index">default</param>
-    ///         <param_list name="multiValue">
-    ///           <value>value1</value>
-    ///           <value>value2</value>
-    ///         </param_list>
-    ///         <param_list name="multiValue2">
-    ///           <value>value3</value>
-    ///           <value>value4</value>
-    ///         </param_list>
-    ///       </stanza>
-    ///     </configuration>
-    ///   </input>]]>
-    /// </code>
-    /// </remarks>
-    [XmlRoot("input")]
-    public class InputDefinition : InputDefinitionBase
+    public class InputDefinition : IDisposable
     {
-        /// <summary>
-        /// A dictionary of stanzas keyed by stanza name.
-        /// </summary>
-        Dictionary<string, Stanza> stanzas;
-
-        /// <summary> 
-        /// The stanza elements in the configuration element.
-        /// </summary>
-        [XmlArray("configuration")]
-        [XmlArrayItem("stanza")]
-        public List<Stanza> StanzaXmlElements { get; set; }
+        #region Properties
 
         /// <summary>
-        /// Gets a dictionary of stanzas keyed by stanza name.
+        /// The name of this instance.
         /// </summary>
-        public IDictionary<string, Stanza> Stanzas
+        public string Name
+        { get; set; }
+
+        /// <summary>
+        /// A dictionary of all the parameters and their values for this instance.
+        /// </summary>
+        public IDictionary<string, Parameter> Parameters
+        { get; set; }
+
+        /// <summary>
+        /// The hostname of the splunkd server that invoked this program.
+        /// </summary>
+        public string ServerHost
+        { get; set; }
+
+        /// <summary>
+        /// The URI to reach the REST API of the splunkd instance that invoked this program.
+        /// </summary>
+        public string ServerUri
+        { get; set; }
+
+        /// <summary>
+        /// A directory to write state that needs to be shared between executions of this program.
+        /// </summary>
+        public string CheckpointDirectory
+        { get; set; }
+
+        /// <summary>
+        /// A REST API session key allowing the instance to make REST calls.
+        /// </summary>
+        public string SessionKey
+        { get; set; }
+
+        /// <summary>
+        /// A Service instance connected to the Splunk instance that invoked this program.
+        /// </summary>
+        public Service Service
         {
             get
             {
-                if (this.stanzas == null)
+                if (ServerUri == null)
                 {
-                    this.stanzas = this.StanzaXmlElements.ToDictionary(p => p.Name);
+                    throw new InvalidOperationException("Cannot get a Service object without a ServerUri");
                 }
 
-                return this.stanzas;
+                if (this.service == null)
+                {
+                    lock (gate)
+                    {
+                        if (this.service == null)
+                        {
+                            Uri uri;
+
+                            if (!Uri.TryCreate(ServerUri, UriKind.Absolute, out uri))
+                            {
+                                throw new FormatException("Invalid server URI");
+                            }
+
+                            Splunk.Client.Scheme scheme;
+
+                            if (uri.Scheme.Equals("https"))
+                            {
+                                scheme = Splunk.Client.Scheme.Https;
+                            }
+                            else if (uri.Scheme.Equals("http"))
+                            {
+                                scheme = Splunk.Client.Scheme.Http;
+                            }
+                            else
+                            {
+                                var text = "Invalid URI scheme: " + uri.Scheme + "; expected http or https";
+                                throw new FormatException(text);
+                            }
+
+                            Service service = new Service(scheme, uri.Host, uri.Port);
+                            service.SessionKey = this.SessionKey;
+                            this.service = service;
+                        }
+                    }
+                }
+
+                return this.service;
             }
         }
 
-        /// <summary>
-        /// Gets the stanza in the input definition.
-        /// </summary>
-        /// <remarks>
-        /// This method is provided because it is very common to have only one
-        /// stanza.  That is the case when <see cref="UseSingleInstance"/> is 
-        /// true. If there is more than one stanza, this property will fail.
-        /// </remarks>
-        public Stanza Stanza
+        #endregion
+
+        #region Methods
+
+        public void Dispose()
         {
-            get
-            {
-                if (this.StanzaXmlElements.Count > 1)
-                {
-                    throw new InvalidOperationException(
-                        "There are more than one stanza. Use Stanzas property instead.");
-                }
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-                return this.StanzaXmlElements[0];
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && this.service != null)
+            {
+                this.service.Dispose();
             }
         }
+
+        #endregion
+
+        #region Privates
+
+        object gate = new object();
+        Service service;
+
+        #endregion
     }
 }

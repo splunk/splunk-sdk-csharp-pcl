@@ -14,10 +14,14 @@
  * under the License.
  */
 
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+
 namespace Splunk.Client
 {
     /// <summary>
-    /// 
+    /// Values that represent Scheme.
     /// </summary>
     public enum Scheme
     {

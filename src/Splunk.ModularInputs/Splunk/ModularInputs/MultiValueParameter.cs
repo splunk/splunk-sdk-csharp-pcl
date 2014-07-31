@@ -16,14 +16,16 @@
 
 namespace Splunk.ModularInputs
 {
-    using System.Collections;
+    using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.Contracts;
+    using System.Linq;
     using System.Xml.Serialization;
 
     /// <summary>
-    /// The <see cref="MultiValueParameter"/> class represents a parameter that
-    /// contains a multivalue.
+    /// The <see cref="MultiValueParameter"/> class represents a this that
+    /// contains multiple values.
     /// </summary>
     /// <remarks>
     /// <example>Sample XML</example>
@@ -35,153 +37,153 @@ namespace Splunk.ModularInputs
     /// </code>
     /// </remarks>
     [XmlRoot("param_list")]
-    public class MultiValueParameter : ParameterBase
+    public class MultiValueParameter : Parameter
     {
+        #region Constructors
+
+        public MultiValueParameter(string name, params string[] values)
+            : this(name, values.AsEnumerable())
+        { }
+
+        public MultiValueParameter(string name, IEnumerable<string> values)
+        {
+            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires<ArgumentNullException>(values != null);
+
+            this.Values = new Collection<string>();
+
+            foreach (var value in values)
+            {
+                this.Values.Add(value);
+            }
+        }
+
+
+        #endregion
+
         #region Properties
 
         /// <summary>
-        /// The value of the parameter.
+        /// The values in the current <see cref="MultiValueParameter"/>.
         /// </summary>
+        /// <value>
+        /// The values.
+        /// </value>
         [XmlElement("value")]
-        public Value ValueXmlElements { get; set; }
+        public Collection<string> Values
+        { get; set; }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Converts this object to a boolean collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Boolean&gt;
+        /// </returns>
+        public Collection<Boolean> ToBooleanCollection()
+        {
+            var collection = new Collection<bool>();
+            
+            foreach (var value in this.Values)
+            {
+                collection.Add( Util.ParseSplunkBoolean(value));
+            }
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Converts this object to a double collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Double&gt;
+        /// </returns>
+        public Collection<Double> ToDoubleCollection()
+        {
+            var collection = new Collection<double>();
+
+            foreach (var value in this.Values)
+            {
+                collection.Add(double.Parse(value));
+            }
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Converts this object to an int 32 collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Int32&gt;
+        /// </returns>
+        public Collection<Int32> ToInt32Collection()
+        {
+            var collection = new Collection<int>();
+
+            foreach (var value in this.Values)
+            {
+                collection.Add(int.Parse(value));
+            }
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Converts this object to an int 64 collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Int64&gt;
+        /// </returns>
+        public Collection<Int64> ToInt64Collection()
+        {
+            var collection = new Collection<long>();
+
+            foreach (var value in this.Values)
+            {
+                collection.Add(long.Parse(value));
+            }
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Converts this object to a single collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;Single&gt;
+        /// </returns>
+        public Collection<Single> ToSingleCollection()
+        {
+            var collection = new Collection<float>();
+
+            foreach (var value in this.Values)
+            {
+                collection.Add(float.Parse(value));
+            }
+
+            return collection;
+        }
+
+        /// <summary>
+        /// Converts this object to a string collection.
+        /// </summary>
+        /// <returns>
+        /// This object as a Collection&lt;String&gt;
+        /// </returns>
+        public Collection<String> ToStringCollection()
+        {
+            return new Collection<string>(this.Values);
+        }
 
         #endregion
 
         #region Privates/internals
 
-        /// <summary>
-        /// Gets the value of the parameter.
-        /// </summary>
-        internal override ValueBase ValueAsBaseType
-        {
-            get { return this.ValueXmlElements; }
-        }
-
-        #endregion
-
-        #region Types
-
-        /// <summary>
-        /// The <see cref="Value"/> class represents a multivalue.
-        /// </summary>
-        [SuppressMessage(
-            "Microsoft.StyleCop.CSharp.DocumentationRules",
-            "SA1600:ElementsMustBeDocumented",
-            Justification = "Internal class. Pure passthrough.")]
-        public class Value : ValueBase, IList<string>
-        {
-            readonly List<string> value = new List<string>();
-
-            public int Count
-            {
-                get { return this.value.Count; }
-            }
-
-            public bool IsReadOnly
-            {
-                get { return ((ICollection<string>)this.value).IsReadOnly; }
-            }
-
-            public string this[int index]
-            {
-                get { return this.value[index]; }
-                set { this.value[index] = value; }
-            }
-
-            public int IndexOf(string item)
-            {
-                return this.value.IndexOf(item);
-            }
-
-            public void Insert(int index, string item)
-            {
-                this.value.Insert(index, item);
-            }
-
-            public void RemoveAt(int index)
-            {
-                this.value.RemoveAt(index);
-            }
-
-            public void Add(string item)
-            {
-                this.value.Add(item);
-            }
-
-            public void Clear()
-            {
-                this.value.Clear();
-            }
-
-            public bool Contains(string item)
-            {
-                return this.value.Contains(item);
-            }
-
-            public void CopyTo(string[] array, int arrayIndex)
-            {
-                this.value.CopyTo(array, arrayIndex);
-            }
-
-            public bool Remove(string item)
-            {
-                return this.value.Remove(item);
-            }
-
-            public IEnumerator<string> GetEnumerator()
-            {
-                return this.value.GetEnumerator();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return this.GetEnumerator();
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="ValueXmlElement"/> class represents the <b>value</b> 
-        /// XML element.
-        /// </summary>
-        /// <remarks>
-        /// This class is used for serializing and deserializing the
-        /// <b>value</b> XML element for a multivalue parameter.
-        /// </remarks>
-        [XmlRoot("value")]
-        public class ValueXmlElement
-        {
-            /// <summary>
-            /// The value of the parameter.
-            /// </summary>
-            [XmlText]
-            public string Text { get; set; }
-
-            /// <summary>
-            /// Returns the string value.
-            /// </summary>
-            /// <returns>
-            /// The string value.
-            /// </returns>
-            public override string ToString()
-            {
-                return this.Text;
-            }
-
-            /// <summary>
-            /// Converts a <see cref="ValueXmlElement"/> to a <c>string</c>.
-            /// </summary>
-            /// <param name="value">Field value.</param>
-            /// <returns>
-            /// The string value delimiter.
-            /// </returns>
-            /// <remarks>
-            /// This method is the same as <see cref="ToString" />.
-            /// </remarks>
-            public static implicit operator string(ValueXmlElement value)
-            {
-                return value.ToString();
-            }
-        }
+        MultiValueParameter()
+        { }
 
         #endregion
     }

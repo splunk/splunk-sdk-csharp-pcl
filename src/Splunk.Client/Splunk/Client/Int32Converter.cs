@@ -26,25 +26,30 @@ namespace Splunk.Client
     /// <summary>
     /// Provides a converter to convert strings to <see cref="Int32"/> values.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ValueConverter{System.Int32}"/>
     sealed class Int32Converter : ValueConverter<Int32>
     {
         /// <summary>
-        /// The default <see cref="EnumConverter"/> instance.
+        /// The default <see cref="EnumConverter&lt;TEnum&gt;"/> instance.
         /// </summary>
         public static readonly Int32Converter Instance = new Int32Converter();
 
         /// <summary>
-        /// Converts the string representation of the <see cref="input"/> 
+        /// Converts the string representation of the <paramref name="input"/>
         /// object to a <see cref="Int32"/> value.
         /// </summary>
+        /// <exception cref="NewInvalidDataException">
+        /// Thrown when a New Invalid Data error condition occurs.
+        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        /// <exception cref="InvalidDataException">
-        /// The <see cref="input"/> does not represent a <see cref="Int32"/>
+        ///
+        /// ### <exception cref="InvalidDataException">
+        /// The <paramref name="input"/> does not represent a <see cref="Int32"/>
         /// value.
         /// </exception>
         public override Int32 Convert(object input)
@@ -63,7 +68,7 @@ namespace Splunk.Client
                 return value;
             }
 
-            throw new InvalidDataException(string.Format("Expected {0}: {1}", TypeName, input)); // TODO: improved diagnostices
+            throw NewInvalidDataException(input);
         }
     }
 }

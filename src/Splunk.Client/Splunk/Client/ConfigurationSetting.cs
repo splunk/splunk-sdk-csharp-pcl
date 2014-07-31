@@ -14,40 +14,47 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
-// [ ] Properties & Methods
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
-    using System.Dynamic;
-    using System.IO;
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using System.Xml;
+    using System.Collections.Generic;
 
     /// <summary>
-    /// 
+    /// Provides an object representation of a Splunk configuration setting.
     /// </summary>
-    public class ConfigurationSetting : Entity<ConfigurationSetting>
+    /// <seealso cref="T:Splunk.Client.Resource"/>
+    /// <seealso cref="T:Splunk.Client.IConfigurationSetting"/>
+    public class ConfigurationSetting : Resource, IConfigurationSetting
     {
         #region Constructors
 
-        internal ConfigurationSetting(Context context, Namespace @namespace, string fileName, string stanzaName, 
-            string keyName)
-            : base(context, @namespace, new ResourceName(ConfigurationCollection.ClassResourceName, fileName, stanzaName), keyName)
-        { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConfigurationSetting"/>
+        /// class.
+        /// </summary>
+        /// <param name="entry">
+        /// An object representing a Splunk atom entry response.
+        /// </param>
+        /// <param name="generatorVersion">
+        /// The version of the generator producing the <see cref="AtomFeed"/>
+        /// feed containing <paramref name="entry"/>.
+        /// </param>
+        protected internal ConfigurationSetting(AtomEntry entry, Version generatorVersion)
+        {
+            this.Initialize(entry, generatorVersion);
+        }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ConfigurationSetting"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ConfigurationSetting"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code.
         /// </remarks>
         public ConfigurationSetting()
         { }
@@ -56,9 +63,13 @@ namespace Splunk.Client
 
         #region Properties
 
-        /// <summary>
-        /// Gets the cached value of the current <see cref="ConfigurationSetting"/>.
-        /// </summary>
+        /// <inheritdoc/>
+        public IReadOnlyDictionary<string, Uri> Links
+        {
+            get { return this.GetValue("Links"); }
+        }
+
+        /// <inheritdoc/>
         public string Value 
         {
             get { return this.GetValue("Value", StringConverter.Instance); }
@@ -66,49 +77,18 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Methods
+        #region Privates/internals
 
         /// <summary>
-        /// Asynchrononously retrieves the value of the current <see cref=
-        /// "ConfigurationSetting"/>.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ConfigurationSetting"/> class.
         /// </summary>
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/cqT50u">GET 
-        /// properties/{file_name}/{stanza_name}/{key_name}</a> endpoint to 
-        /// retrieve the configuration setting represented by this instance.
-        /// </remarks>
-        public override async Task GetAsync()
+        /// <param name="resource">
+        /// An object representing a configuration setting.
+        /// </param>
+        internal ConfigurationSetting(BaseResource resource)
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                
-                var reader = new StreamReader(response.Stream);
-                var content = await reader.ReadToEndAsync();
-
-                this.Snapshot = new EntitySnapshot(this.Snapshot, content.Length == 0 ? null : content);
-            }
-        }
-
-        /// <summary>
-        /// Asynchronously updates the value of the current <see cref=
-        /// "ConfigurationSetting"/>.
-        /// </summary>
-        /// <param name="value">
-        /// A new value for the current <see cref="ConfigurationSetting"/>.
-        /// <remarks>
-        /// This method uses the <a href="http://goo.gl/sSzcMy">POST 
-        /// properties/{file_name}/{stanza_name}/{key_Name}</a> endpoint to 
-        /// update the current <see cref="ConfigurationSetting"/> value.
-        /// </remarks>
-        public async Task UpdateAsync(string value)
-        {
-            var args = new Argument[] { new Argument("value", value) };
-
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, args))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
+            this.Object = resource.Object;
         }
 
         #endregion

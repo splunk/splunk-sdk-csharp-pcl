@@ -14,208 +14,281 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Check for HTTP Status Code 204 (No Content) and empty atoms in 
-//     Entity<TEntity>.UpdateAsync.
-//
-// [O] Contracts
-//
-// [O] Documentation
-//
-// [X] Pick up standard properties from AtomEntry on Update, not just AtomEntry.Content
-//     See [Splunk responses to REST operations](http://goo.gl/tyXDfs).
-//
-// [X] Remove Entity<TEntity>.Invalidate method
-//     FJR: This gets called when we set the record value. Add a comment saying what it's
-//     supposed to do when it's overridden.
-//     DSN: I've adopted an alternative method for getting strongly-typed values. See, for
-//     example, Job.DispatchState or ServerInfo.Guid.
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
-    using Microsoft.CSharp.RuntimeBinder;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
-    using System.Dynamic;
+    using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using System.Xml;
 
     /// <summary>
-    /// Provides a base class for representing a Splunk entity resource.
+    /// Provides an object representation of a Splunk entity.
     /// </summary>
-    /// <typeparam name="TEntity">
-    /// The entity type inheriting from this class.
+    /// <remarks>
+    /// This is the base class for all Splunk entities.
+    /// </remarks>
+    /// <typeparam name="TResource">
+    /// Type of the resource.
     /// </typeparam>
-    public class Entity<TEntity> : Resource<TEntity> where TEntity : Entity<TEntity>, new()
+    /// <seealso cref="T:Splunk.Client.BaseEntity{TResource}"/>
+    /// <seealso cref="T:Splunk.Client.IEntity"/>
+    public class Entity<TResource> : BaseEntity<TResource>, IEntity where TResource : BaseResource, new()
     {
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity&lt;TEntity&gt;"/> 
-        /// class as specified by <see cref="context"/>, <see cref="namespace"/>
-        /// and "<see cref="resourceName"/>.
+        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
+        protected internal Entity(Service service, ResourceName name)
+            : base(service.Context, service.Namespace, name)
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Entity"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentException">
+        /// <paramref name="entity"/> is <c>null</c> or empty.
+        /// </exception>
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name="collection"/>, or <paramref name="entity"/> are
+        /// <c>null</c>.
+        /// </exception>
+        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
+        /// </exception>
+        protected internal Entity(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Entity"/>
+        /// class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resourceName">
-        /// An object identifying a Splunk resource within <see cref="namespace"/>.
+        /// An object identifying a Splunk resource within <paramref name="ns"/>.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/>, <see cref="namespace"/>, or <see cref=
-        /// "resourceName"/> are <c>null</c>.
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name= "resourceName"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
-
-        protected Entity(Context context, Namespace @namespace, ResourceName resourceName)
-            : base(context, @namespace, resourceName)
+        protected internal Entity(Context context, Namespace ns, ResourceName resourceName)
+            : base(context, ns, resourceName)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity&lt;TEntity&gt;"/> 
-        /// class as specified by <see cref="context"/>, <see cref="namespace"/>,
-        /// and resource <see cref="collection"/> and <see cref="title"/>.
+        /// Initializes a new instance of the <see cref="Entity"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="collection">
-        /// An object identifying a Splunk resource collection within <see 
-        /// cref="namespace"/>.
+        /// The <see cref="ResourceName"/> of an
+        /// <see cref="EntityCollection&lt;TEntity&gt;"/>.
         /// </param>
-        /// <param name="entity">
-        /// The name of a resource within <see cref="collection"/>.
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
         /// </param>
-        /// <exception cref="ArgumentException">
-        /// <see cref="entity"/> is <c>null</c> or empty.
+        ///
+        /// ### <param name="entity">
+        /// The name of an entity within <paramref name="collection"/>.
+        /// </param>
+        /// ### <exception cref="ArgumentException">
+        /// <paramref name="entity"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/>, <see cref="namespace"/>, or <see cref=
-        /// "collection"/> are <c>null</c>.
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/>, <paramref name="ns"/>, or
+        /// <paramref name="collection"/>, or <paramref name="entity"/> are
+        /// <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
-        protected Entity(Context context, Namespace @namespace, ResourceName collection, string entity)
-            : this(context, @namespace, new ResourceName(collection, entity))
-        {  }
-
-        public Entity()
-        {
-            this.snapshot = EntitySnapshot.Missing;
-        }
-
-        #endregion
-
-        #region Properties backed by AtomEntry
-
-        public string Author
-        { 
-            get { return this.Snapshot.Author; }
-        }
-
-        public Uri Id
-        { 
-            get { return this.Snapshot.Id; } 
-        }
-
-        public IReadOnlyDictionary<string, Uri> Links
-        { 
-            get { return this.Snapshot.Links; } 
-        }
-
-        public DateTime Published
-        {
-            get { return this.Snapshot.Published; }
-        }
-
-        public DateTime Updated
-        { 
-            get { return this.Snapshot.Updated; }
-        }
-
-        #region Protected properties
+        protected internal Entity(Context context, Namespace ns, ResourceName collection, string name)
+            : this(context, ns, new ResourceName(collection, name))
+        { }
 
         /// <summary>
-        /// 
+        /// Infrastructure. Initializes a new instance of the <see cref="Entity"/>
+        /// class.
         /// </summary>
-        protected EntitySnapshot Snapshot
-        {
-            get { return this.snapshot; }
-            set { this.snapshot = value; }
-        }
+        /// <remarks>
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code.
+        /// </remarks>
+        public Entity()
+        { }
 
         #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the content.
+        /// </summary>
+        /// <value>
+        /// The content.
+        /// </value>
+        protected ExpandoAdapter Content
+        {
+            get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
+        }
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Refreshes the cached state of the current <see cref="Entity<TEntity>"/>.
-        /// </summary>
+        #region Operational interface
+
+        /// <inheritdoc/>
         public virtual async Task GetAsync()
         {
             using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.UpdateSnapshotAsync(response);
+                await this.ReconstructSnapshotAsync(response);
             }
         }
 
-        protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
+        /// <inheritdoc/>
+        public virtual async Task RemoveAsync()
         {
-            return this.Snapshot.Adapter.GetValue(name, valueConverter);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context">
-        /// An object representing a Splunk server session.
-        /// </param>
-        /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
-        /// </param>
-        /// <param name="collection">
-        /// </param>
-        /// <param name="entry">
-        /// </param>
-        protected internal override void Initialize(Context context, AtomEntry entry)
-        {
-            this.snapshot = new EntitySnapshot(entry);
-            base.Initialize(context, entry);
-        }
-
-        protected async Task UpdateSnapshotAsync(Response response)
-        {
-            var feed = new AtomFeed();
-            await feed.ReadXmlAsync(response.XmlReader);
-
-            if (feed.Entries.Count != 1)
+            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
             {
-                throw new InvalidDataException();  // TODO: Diagnostics
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
+        }
 
-            this.Snapshot = new EntitySnapshot(feed.Entries[0]);
+        /// <inheritdoc/>
+        public virtual async Task<bool> UpdateAsync(params Argument[] arguments)
+        {
+            return await this.UpdateAsync(arguments.AsEnumerable());
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
+        {
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                var reader = response.XmlReader;
+
+                await reader.MoveToDocumentElementAsync("feed", "entry", "response");
+
+                if (reader.Name == "response")
+                {
+                    return false;
+                }
+
+                return await this.ReconstructSnapshotAsync(response);
+            }
         }
 
         #endregion
 
-        #region Privates
+        #region Infrastructure methods
 
-        volatile EntitySnapshot snapshot;
+        /// <summary>
+        /// Gets a converted property value from the <see cref="CurrentSnapshot"/>
+        /// of the current <see cref="Entity"/>.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to create static properties from the dynamic properties
+        /// exposed by the <see cref="CurrentSnapshot"/>.
+        /// </remarks>
+        /// <typeparam name="TValue">
+        /// Type of the value.
+        /// </typeparam>
+        /// <param name="name">
+        /// The name of a property.
+        /// </param>
+        /// <param name="valueConverter">
+        /// A value converter for converting property <paramref name="name"/>.
+        /// </param>
+        /// <returns>
+        /// The converted value or
+        /// <paramref name="valueConverter"/><c>.DefaultValue</c>, if
+        /// <paramref name="name"/> does not exist.
+        /// </returns>
+        ///
+        /// ### <exception cref="InvalidDataException">
+        /// The conversion failed.
+        /// </exception>
+        protected TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
+        {
+            return this.Snapshot.GetValue(name, valueConverter);
+        }
+
+        /// <inheritdoc/>
+        protected override void CreateSnapshot(AtomEntry entry, Version generatorVersion)
+        {
+            this.Snapshot = new TResource();
+            this.Snapshot.Initialize(entry, generatorVersion);
+        }
+
+        /// <inheritdoc/>
+        protected override void CreateSnapshot(AtomFeed feed)
+        {
+            int count = feed.Entries.Count;
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            if (count > 1)
+            {
+                var text = string.Format(CultureInfo.CurrentCulture, "Atom feed response contains {0} entries.", count);
+                throw new InvalidDataException(text);
+            }
+
+            this.CreateSnapshot(feed.Entries[0], feed.GeneratorVersion);
+        }
+
+        #endregion
 
         #endregion
     }

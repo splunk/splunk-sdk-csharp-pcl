@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:s="http://dev.splunk.com/ns/rest" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+  <title>messages</title>
+  <id>https://localhost:8089/services/messages</id>
+  <updated>2014-05-27T15:36:34-07:00</updated>
+  <generator build="207789" version="6.1.1"/>
+  <author>
+    <name>Splunk</name>
+  </author>
+  <link href="/services/messages/_new" rel="create"/>
+  <opensearch:totalResults>2</opensearch:totalResults>
+  <opensearch:itemsPerPage>30</opensearch:itemsPerPage>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <s:messages/>
+  <entry>
+    <title>some_message_name</title>
+    <id>https://localhost:8089/services/messages/some_message_name</id>
+    <updated>2014-05-27T15:36:34-07:00</updated>
+    <link href="/services/messages/some_message_name" rel="alternate"/>
+    <author>
+      <name>system</name>
+    </author>
+    <link href="/services/messages/some_message_name" rel="remove"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app"></s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">system</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="message">some_message_text</s:key>
+        <s:key name="severity">info</s:key>
+        <s:key name="some_message_name">some_message_text</s:key>
+        <s:key name="timeCreated_epochSecs">1401229682</s:key>
+        <s:key name="timeCreated_iso">2014-05-27T15:28:02-07:00</s:key>
+      </s:dict>
+    </content>
+  </entry>
+  <entry>
+    <title>some_other_message_name</title>
+    <id>https://localhost:8089/services/messages/some_other_message_name</id>
+    <updated>2014-05-27T15:36:34-07:00</updated>
+    <link href="/services/messages/some_other_message_name" rel="alternate"/>
+    <author>
+      <name>system</name>
+    </author>
+    <link href="/services/messages/some_other_message_name" rel="remove"/>
+    <content type="text/xml">
+      <s:dict>
+        <s:key name="eai:acl">
+          <s:dict>
+            <s:key name="app"></s:key>
+            <s:key name="can_list">1</s:key>
+            <s:key name="can_write">1</s:key>
+            <s:key name="modifiable">0</s:key>
+            <s:key name="owner">system</s:key>
+            <s:key name="perms">
+              <s:dict>
+                <s:key name="read">
+                  <s:list>
+                    <s:item>*</s:item>
+                  </s:list>
+                </s:key>
+                <s:key name="write">
+                  <s:list>
+                    <s:item>admin</s:item>
+                    <s:item>splunk-system-role</s:item>
+                  </s:list>
+                </s:key>
+              </s:dict>
+            </s:key>
+            <s:key name="removable">0</s:key>
+            <s:key name="sharing">system</s:key>
+          </s:dict>
+        </s:key>
+        <s:key name="message">some_message_text</s:key>
+        <s:key name="severity">error</s:key>
+        <s:key name="some_other_message_name">some_message_text</s:key>
+        <s:key name="timeCreated_epochSecs">1401229924</s:key>
+        <s:key name="timeCreated_iso">2014-05-27T15:32:04-07:00</s:key>
+      </s:dict>
+    </content>
+  </entry>
+</feed>

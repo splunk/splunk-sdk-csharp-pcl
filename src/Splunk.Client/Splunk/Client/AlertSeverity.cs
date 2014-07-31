@@ -14,14 +14,15 @@
  * under the License.
  */
 
-// [ ] Documentation
+//// TODO:
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System.Runtime.Serialization;
 
     /// <summary>
-    /// 
+    /// Specifies the severity of an alert triggered by a scheduled search.
     /// </summary>
     public enum AlertSeverity
     {
@@ -29,8 +30,8 @@ namespace Splunk.Client
         /// 
         /// </summary>
         [EnumMember(Value = "1")]
-        Debug = 1, 
-        
+        Debug = 1,
+
         /// <summary>
         /// 
         /// </summary>

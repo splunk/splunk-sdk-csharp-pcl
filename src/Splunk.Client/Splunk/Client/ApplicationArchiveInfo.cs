@@ -14,29 +14,68 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
     using System;
 
-    public sealed class ApplicationArchiveInfo : Entity<ApplicationArchiveInfo>
+    /// <summary>
+    /// Provides information about an application archive produced by Splunk.
+    /// </summary>
+    /// <remarks>
+    /// You can produce an application archive using the
+    /// <see cref= "Application.PackageAsync"/> method.
+    /// </remarks>
+    /// <seealso cref="T:Splunk.Client.Resource"/>
+    /// <seealso cref="T:Splunk.Client.IApplicationArchiveInfo"/>
+    public class ApplicationArchiveInfo : Resource, IApplicationArchiveInfo
     {
         #region Constructors
 
-        internal ApplicationArchiveInfo(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, new ResourceName(ApplicationCollection.ClassResourceName, name, "package"))
-        { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationArchiveInfo"/>
+        /// class.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        internal ApplicationArchiveInfo(AtomFeed feed)
+        {
+            this.Initialize(feed);
+        }
 
         /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "ApplicationArchiveInfo"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. The
+        /// <see cref= "ApplicationArchiveInfo"/> class is an information object
+        /// returned by these methods.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Application.PackageAsync"/></term>
+        ///   <description>
+        ///   Asychronously packages the current Splunk application into an archive
+        ///   file.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
+        ///   <description>
+        ///   Asychronously packages the named Splunk application into an archive
+        ///   file.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public ApplicationArchiveInfo()
         { }
@@ -46,52 +85,65 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the access control lists for the current <see cref=
-        /// "ApplicationArchiveInfo"/>.
+        /// Gets the access control list for the application archive.
         /// </summary>
-        public Eai Eai
+        /// <value>
+        /// Access control list for the application archive.
+        /// </value>
+        public virtual Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
-        /// Gets the name of the application contained by the archive represented 
-        /// by the current <see cref="ApplicationArchiveInfo"/> instance.
+        /// Gets the name of the application contained by the application archive.
         /// </summary>
         /// <remarks>
-        /// This value is the default the name of the folder on disk that 
-        /// contains the application.
+        /// This value is the default name of the application folder on disk.
         /// </remarks>
-        public string ApplicationName
+        /// <value>
+        /// Name of the application contained by the archive.
+        /// </value>
+        public virtual string ApplicationName
         {
-            get { return this.GetValue("Name", StringConverter.Instance); }
+            get { return this.Content.GetValue("Name", StringConverter.Instance); }
         }
 
         /// <summary>
-        /// Gets the local path to the archive represented by the current <see 
-        /// cref="ApplicationArchiveInfo"/> instance.
+        /// Gets the local path to the application archive.
         /// </summary>
-        public string Path
+        /// <value>
+        /// A local path to the application archive.
+        /// </value>
+        public virtual string Path
         {
-            get { return this.GetValue("Path", StringConverter.Instance); }
+            get { return this.Content.GetValue("Path", StringConverter.Instance); }
         }
 
         /// <summary>
-        /// Gets a value indicating whether to to reload the objects contained 
-        /// in the locally installed application.
+        /// Gets a value indicating whether to reload the objects contained in the
+        /// locally installed application.
         /// </summary>
-        public bool Refresh
+        /// <value>
+        /// <c>true</c>, if the objects contained in the locally installed
+        /// application should be reloaded; <c>false</c>, if they need not be
+        /// reloaded.
+        /// </value>
+        public virtual bool Refresh
         {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
         }
 
         /// <summary>
-        /// Gets the download URI for the archive represented by the current
-        /// <see cref="ApplicationArchiveInfo"/> instance.
+        /// Gets the download URI for the application archive.
         /// </summary>
-        public Uri Uri
+        /// <value>
+        /// A download URI for the application archive or <c>null</c>, if there is no
+        /// download URI.
+        /// </value>
+        public virtual Uri Uri
         {
-            get { return this.GetValue("Url", UriConverter.Instance); }
+            get { return this.Content.GetValue("Url", UriConverter.Instance); }
         }
 
         #endregion

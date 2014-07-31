@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>22a30ca1-e24f-4093-88ea-c0a4310fd3e1</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
+
+    <!-- 
+    The configuration and platform are used to determine which assemblies to 
+    include from solution and project documentation sources.
+    -->
+
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+
+    <!-- SHFB properties -->
+
+    <HtmlHelpName>Splunk.Client.namespace</HtmlHelpName>
+    <FrameworkVersion>.NET Portable Library 4.5</FrameworkVersion>
+    <Language>en-US</Language>
+    <OutputPath>Help\</OutputPath>
+
+    <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
+    <CleanIntermediates>True</CleanIntermediates>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <CppCommentsFixup>False</CppCommentsFixup>
+    <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
+    <HelpFileFormat>Website</HelpFileFormat>
+    <HelpTitle>A Sandcastle Documented Class Library</HelpTitle>
+    <IndentHtml>True</IndentHtml>
+    <KeepLogFile>True</KeepLogFile>
+    <MaximumGroupParts>2</MaximumGroupParts>
+    <NamespaceGrouping>False</NamespaceGrouping>
+    <NamingMethod>Guid</NamingMethod>
+    <Preliminary>False</Preliminary>
+    <PresentationStyle>VS2013</PresentationStyle>
+    <RootNamespaceContainer>True</RootNamespaceContainer>
+    <SdkLinkTarget>Blank</SdkLinkTarget>
+    <SyntaxFilters>C#, Visual Basic, Managed C++, F#, JavaScript, XAML Usage</SyntaxFilters>
+    <ComponentConfigurations>
+      <ComponentConfig id="API Token Resolution" enabled="True" xmlns="">
+        <component id="API Token Resolution">
+          {@TokenFiles}
+          <replace elements="/*//token" item="string(.)" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Code Block Component" enabled="True" xmlns="">
+        <component id="Code Block Component">
+          <basePath value="{@HtmlEncProjectFolder}" />
+          <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
+          <allowMissingSource value="false" />
+          <removeRegionMarkers value="false" />
+          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="4" numberLines="true" outlining="true" keepSeeTags="true" defaultTitle="true" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Comments Index Data (ESENT Cache)" enabled="True" xmlns="">
+        <component id="Comments Index Data (ESENT Cache)">
+          <index name="comments" value="/doc/members/member" key="@name" cache="30" localCacheSize="2500" frameworkCachePath="{@LocalDataFolder}Cache\CommentsIndexCache" projectCachePath="">
+            {@FrameworkCommentList}
+            {@CommentFileList}
+          </index>
+          <copy name="comments" source="*" target="/document/comments" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Reflection Index Data (ESENT Cache)" enabled="True" xmlns="">
+        <component id="Reflection Index Data (ESENT Cache)">
+          <index name="reflection" value="/reflection/apis/api" key="@id" cache="15" localCacheSize="2500" frameworkCachePath="{@LocalDataFolder}Cache\ReflectionIndexCache" projectCachePath="">
+            <data base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" duplicateWarning="false" groupId="ReflectionIndexCache">
+              {@ReferenceLinkNamespaceFiles}
+            </data>
+            <data files="reflection.xml" groupId="Project_Ref_{@UniqueID}" />
+          </index>
+          <copy name="reflection" source="*" target="/document/reference" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Resolve Reference Links (ESENT Cache)" enabled="True" xmlns="">
+        <component id="Resolve Reference Links (ESENT Cache)">
+          <locale value="{@Locale}" />
+          <linkTarget value="{@SdkLinkTarget}" />
+          <helpOutput format="HtmlHelp1">
+            <msdnContentIdCache path="{@LocalDataFolder}Cache\MsdnContentId.cache" cachePath="{@LocalDataFolder}Cache\ESentMsdnContentIdCache" localCacheSize="2500" />
+            <targets base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" type="{@HtmlSdkLinkType}" id="FrameworkTargets" cachePath="{@LocalDataFolder}Cache\ESentFrameworkTargetCache" localCacheSize="2500">
+              {@ReferenceLinkNamespaceFiles}
+            </targets>
+            <targets files="reflection.xml" type="Local" id="ProjectTargets" cachePath="" localCacheSize="2500" noReload="true" />
+          </helpOutput>
+          <helpOutput format="MSHelp2">
+            <msdnContentIdCache path="{@LocalDataFolder}Cache\MsdnContentId.cache" cachePath="{@LocalDataFolder}Cache\ESentMsdnContentIdCache" localCacheSize="2500" />
+            <targets base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelp2SdkLinkType}" id="FrameworkTargets" cachePath="{@LocalDataFolder}Cache\ESentFrameworkTargetCache" localCacheSize="2500">
+              {@ReferenceLinkNamespaceFiles}
+            </targets>
+            <targets files="reflection.xml" type="Index" id="ProjectTargets" cachePath="" localCacheSize="2500" noReload="true" />
+          </helpOutput>
+          <helpOutput format="MSHelpViewer">
+            <msdnContentIdCache path="{@LocalDataFolder}Cache\MsdnContentId.cache" cachePath="{@LocalDataFolder}Cache\ESentMsdnContentIdCache" localCacheSize="2500" />
+            <targets base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelpViewerSdkLinkType}" id="FrameworkTargets" cachePath="{@LocalDataFolder}Cache\ESentFrameworkTargetCache" localCacheSize="2500">
+              {@ReferenceLinkNamespaceFiles}
+            </targets>
+            <targets files="reflection.xml" type="Id" id="ProjectTargets" cachePath="" localCacheSize="2500" noReload="true" />
+          </helpOutput>
+          <helpOutput format="Website">
+            <msdnContentIdCache path="{@LocalDataFolder}Cache\MsdnContentId.cache" cachePath="{@LocalDataFolder}Cache\ESentMsdnContentIdCache" localCacheSize="2500" />
+            <targets base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" type="{@WebsiteSdkLinkType}" id="FrameworkTargets" cachePath="{@LocalDataFolder}Cache\ESentFrameworkTargetCache" localCacheSize="2500">
+              {@ReferenceLinkNamespaceFiles}
+            </targets>
+            <targets files="reflection.xml" type="Local" id="ProjectTargets" cachePath="" localCacheSize="2500" noReload="true" />
+          </helpOutput>
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Syntax Component" enabled="True" xmlns="">
+        <component id="Syntax Component">
+          <syntax input="/document/reference" output="/document/syntax" renderReferenceLinks="false" />
+          <generators>
+            {@SyntaxFilters}
+          </generators>
+        </component>
+      </ComponentConfig>
+    </ComponentConfigurations>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="..\..\src\Splunk.Client\Splunk.Client.csproj" />
+    </DocumentationSources>
+  </PropertyGroup>
+  <!-- 
+  PropertyGroup elements that ensure Sandcastle projects load into Visual Studio 2013 
+  It is mysterious, but true that if you remove these property groups Sandcastle 
+  projects will fail to load into Visual Studio 2013 and—perhaps—other versions
+  of Visual Studio as well.
+  -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Win32' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
+  </PropertyGroup>
+  
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+  
+</Project>

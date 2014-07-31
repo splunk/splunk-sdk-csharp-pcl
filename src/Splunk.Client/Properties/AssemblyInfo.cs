@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Splunk, Inc.")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © 2014")]
 [assembly: AssemblyTrademark("Splunk®")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US")]
@@ -35,6 +35,7 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
+[assembly: InternalsVisibleTo("Splunk.Client.Helpers")]
 [assembly: InternalsVisibleTo("acceptance-tests")]
 [assembly: InternalsVisibleTo("unit-tests")]
 

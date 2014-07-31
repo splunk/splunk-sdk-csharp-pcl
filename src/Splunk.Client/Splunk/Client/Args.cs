@@ -14,15 +14,10 @@
  * under the License.
  */
 
-// TODO: Ensure this code is solid
-// [O] Documentation
-// [X] Respect DataMemberAttribute.Order
-// [X] Do not serialize default values => define default values and check for them
-// [X] Rework this into a real parameter-passing class, not just a ToString implementation tool (toString shows all parameterts; args are passed as parameters by way of GetEnumerator)
-// [X] Work on nomenclature (serialization nomenclature is not necessarily appropriate)
-// [X] Ensure this class works with nullable types.
-// [ ] Support more than one level of inheritance => move away from generic implementation.
-// [ ] More (?)
+//// TODO: Ensure this code is solid
+//// [ ] Support more than one level of inheritance => move away from generic implementation.
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -30,19 +25,28 @@ namespace Splunk.Client
     using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.Serialization;
     using System.Text;
 
     /// <summary>
-    /// 
+    /// Provides a base class for representing strongly typed arguments to Splunk
+    /// endpoints.
     /// </summary>
-    /// <typeparam name="TArgs"></typeparam>
+    /// <typeparam name="TArgs">
+    /// Type of the arguments.
+    /// </typeparam>
+    /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.Argument}"/>
     public abstract class Args<TArgs> : IEnumerable<Argument> where TArgs : Args<TArgs>
     {
         #region Constructors
 
+        [SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification =
+            "This is by design.")
+        ]
         static Args()
         {
             var propertyFormatters = new Dictionary<Type, Formatter>()
@@ -83,7 +87,9 @@ namespace Splunk.Client
 
                 if (dataMember == null)
                 {
-                    throw new InvalidDataContractException(string.Format("Missing DataMemberAttribute on {0}.{1}", propertyInfo.PropertyType.Name, propertyInfo.Name));
+                    var text = string.Format(CultureInfo.CurrentCulture, "Missing DataMemberAttribute on {0}.{1}",
+                        propertyInfo.PropertyType.Name, propertyInfo.Name);
+                    throw new InvalidDataContractException(text);
                 }
 
                 var propertyName = propertyInfo.Name;
@@ -105,12 +111,19 @@ namespace Splunk.Client
                         {
                             if (@interface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                             {
+                                //// IEnumerable<T> implements IEnumerable => we are good to go
+
                                 Type itemType = @interface.GenericTypeArguments[0];
+
                                 formatter = GetPropertyFormatter(propertyName, propertyType, itemType, itemType.GetTypeInfo(), propertyFormatters);
+                                isCollection = true;
+
+                                break;
                             }
                         }
                         else if (@interface == typeof(IEnumerable))
                         {
+                            //// Keep looking because we'd prefer to use a more specific formatter
                             isCollection = true;
                         }
                     }
@@ -138,6 +151,9 @@ namespace Splunk.Client
             Parameters = parameters;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Args&lt;TArgs&gt;"/> class.
+        /// </summary>
         protected Args()
         {
             foreach (var serializationEntry in Parameters.Where(entry => entry.DefaultValue != null))
@@ -148,15 +164,36 @@ namespace Splunk.Client
 
         #endregion
 
-        #region Fields
-
-        public static readonly IEnumerable<Argument> Empty = Enumerable.Empty<Argument>();
-
-        #endregion
-
         #region Methods
 
-        public IEnumerator<Argument> GetEnumerator()
+        /// <summary>
+        /// Gets an enumerator that produces an <see cref="Argument"/> sequence
+        /// based on the serialization attributes of the properties of the 
+        /// current <see cref="Args&lt;TArgs&gt;"/> instance.
+        /// </summary>
+        /// <exception cref="SerializationException">
+        /// Thrown when a Serialization error condition occurs.
+        /// </exception>
+        /// <returns>
+        /// An object for enumerating the <see cref="Argument"/> sequence.
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<Argument>)this).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets an enumerator that produces an <see cref="Argument"/> sequence
+        /// based on the serialization attributes of the properties of the 
+        /// current <see cref="Args&lt;TArgs&gt;"/> instance.
+        /// </summary>
+        /// <exception cref="SerializationException">
+        /// Thrown when a Serialization error condition occurs.
+        /// </exception>
+        /// <returns>
+        /// An object for enumerating the <see cref="Argument"/> sequence.
+        /// </returns>
+        IEnumerator<Argument> IEnumerable<Argument>.GetEnumerator()
         {
             foreach (var parameter in Args<TArgs>.Parameters)
             {
@@ -189,11 +226,14 @@ namespace Splunk.Client
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
+        /// <summary>
+        /// Gets a string representation for the current
+        /// <see cref="Args&lt;TArgs&gt;"/>.
+        /// </summary>
+        /// <returns>
+        /// A string representation of the current <see cref="Args&lt;TArgs&gt;"/>.
+        /// </returns>
+        /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
@@ -215,11 +255,13 @@ namespace Splunk.Client
                     append("null", parameter.Name, FormatString);
                     continue;
                 }
+
                 if (!parameter.IsCollection)
                 {
                     append(value, parameter.Name, parameter.Format);
                     continue;
                 }
+                
                 foreach (var item in (IEnumerable)value)
                 {
                     append(item, parameter.Name, parameter.Format);
@@ -242,7 +284,7 @@ namespace Splunk.Client
 
         static string FormatBoolean(object value)
         {
-            return (bool)value ? "t" : "f";
+            return (bool)value ? "1" : "0";
         }
 
         static string FormatNumber(object value)
@@ -266,23 +308,30 @@ namespace Splunk.Client
 
             if (container != null && formatters.TryGetValue(type, out formatter))
             {
-                formatter = new Formatter { Format = formatter.Format, IsCollection = true };
+                formatter.IsCollection = true;
             }
-            else if (info.IsEnum)
+            else
             {
-                var map = new Dictionary<int, string>();
-
-                foreach (var value in Enum.GetValues(type))
+                var enumType = GetEnum(type, info);
+                
+                if (enumType != null)
                 {
-                    string name = Enum.GetName(type, value);
-                    FieldInfo field = type.GetRuntimeField(name);
-                    var enumMember = field.GetCustomAttribute<EnumMemberAttribute>();
+                    //// TODO: Add two items to formatters for each enum: 
+                    //// formatters.Add(enumType, formatter)
+                    //// formatters.Add(info.IsEnum ? typeof(Nullable<>).MakeGenericType(type), formatter)
 
-                    map[(int)value] = enumMember == null ? name : enumMember.Value;
-                }
+                    var map = new Dictionary<int, string>();
 
-                formatter = new Formatter { 
-                    Format = (object value) => 
+                    foreach (var value in Enum.GetValues(enumType))
+                    {
+                        string name = Enum.GetName(enumType, value);
+                        FieldInfo field = enumType.GetRuntimeField(name);
+                        var enumMember = field.GetCustomAttribute<EnumMemberAttribute>();
+
+                        map[(int)value] = enumMember == null ? name : enumMember.Value;
+                    }
+
+                    Func<object, string> format = (object value) =>
                     {
                         string name;
 
@@ -290,34 +339,76 @@ namespace Splunk.Client
                         {
                             return name;
                         }
-                        throw new ArgumentException(string.Format("{0}.{1}: {2}", typeof(TArgs).Name, propertyName, value));
-                    },
-                    IsCollection = container != null
-                };
-            }
-            else if (container != null)
-            {
-                formatter = new Formatter { Format = FormatString, IsCollection = true };
-            }
-            else
-            {
-                return null;
+
+                        var text = string.Format(CultureInfo.CurrentCulture, "{0}.{1}: {2}",
+                            typeof(TArgs).Name, propertyName, value);
+
+                        throw new ArgumentException(text);
+                    };
+
+                    formatter = new Formatter
+                    {
+                        Format = format,
+                        IsCollection = container != null
+                    };
+                }
+                else if (container != null)
+                {
+                    formatter = new Formatter { Format = FormatString, IsCollection = true };
+                }
+                else
+                {
+                    return null;
+                }
             }
 
             formatters.Add(container ?? type, formatter);
             return formatter;
         }
 
+        static Type GetEnum(Type type, TypeInfo info)
+        {
+            if (info.IsEnum)
+            {
+                return type;
+            }
+
+            type = Nullable.GetUnderlyingType(type);
+
+            if (type == null)
+            {
+                return null;
+            }
+
+            info = type.GetTypeInfo();
+            return info.IsEnum ? type : null;
+        }
+
         #endregion
 
         #region Types
-        
+
+        /// <summary>
+        /// A formatter.
+        /// </summary>
+        /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.Argument}"/>
         struct Formatter
         {
+            /// <summary>
+            /// Describes the format to use.
+            /// </summary>
             public Func<object, string> Format;
+
+            /// <summary>
+            /// <c>true</c> if this object is collection.
+            /// </summary>
             public bool IsCollection;
         }
 
+        /// <summary>
+        /// An ordinal.
+        /// </summary>
+        /// <seealso cref="T:System.Collections.Generic.IEnumerable{Splunk.Client.Argument}"/>
         struct Ordinal : IComparable<Ordinal>, IEquatable<Ordinal>
         {
             #region Constructos
@@ -333,6 +424,7 @@ namespace Splunk.Client
             #region Fields
 
             public readonly int Position;
+
             public readonly string Name;
 
             #endregion
@@ -342,12 +434,12 @@ namespace Splunk.Client
             public int CompareTo(Ordinal other)
             {
                 int result = this.Position - other.Position;
-                return result != 0 ? result : this.Name.CompareTo(other.Name);
+                return result != 0 ? result : string.Compare(this.Name, other.Name, StringComparison.Ordinal);
             }
 
-            public override bool Equals(object o)
+            public override bool Equals(object other)
             {
-                return o != null && o is Ordinal ? this.Equals((Ordinal)o) : false;
+                return other != null && other is Ordinal ? this.Equals((Ordinal)other) : false;
             }
 
             public bool Equals(Ordinal other)
@@ -368,7 +460,7 @@ namespace Splunk.Client
 
             public override string ToString()
             {
-                return string.Format("({0}, {1})", this.Position, this.Name);
+                return string.Format(CultureInfo.CurrentCulture, "({0}, {1})", this.Position, this.Name);
             }
 
             #endregion

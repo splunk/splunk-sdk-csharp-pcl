@@ -14,32 +14,62 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
+//// [ ] Represent ApplicationSetupInfo.Setup as a static type
 
 namespace Splunk.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Threading.Tasks;
-
-    public sealed class ApplicationSetupInfo : Entity<ApplicationSetupInfo>
+    /// <summary>
+    /// Represents the setup information for an <see cref="Application"/>.
+    /// </summary>
+    /// <seealso cref="T:Splunk.Client.Resource"/>
+    /// <seealso cref="T:Splunk.Client.IApplicationSetupInfo"/>
+    public class ApplicationSetupInfo : Resource, IApplicationSetupInfo
     {
         #region Constructors
 
-        internal ApplicationSetupInfo(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, new ResourceName(ApplicationCollection.ClassResourceName, name, "setup"))
-        { }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationSetupInfo"/>
+        /// class.
+        /// </summary>
+        /// <param name="feed">
+        /// An object representing a Splunk atom feed response.
+        /// </param>
+        internal ApplicationSetupInfo(AtomFeed feed)
+        {
+            this.Initialize(feed);
+        }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ApplicationSetupInfo"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ApplicationSetupInfo"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. The <see cref= "ApplicationSetupInfo"/>
+        /// class is an information object returned by these methods.
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Application.PackageAsync"/></term>
+        ///   <description>
+        ///   Asychronously packages the current Splunk application into an archive
+        ///   file.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
+        ///   <description>
+        ///   Asychronously packages the named Splunk application into an archive
+        ///   file.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public ApplicationSetupInfo()
         { }
@@ -49,20 +79,38 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the 
+        /// Gets The extensible administration interface properties for the current
+        /// <see cref="ApplicationSetupInfo"/>.
         /// </summary>
+        /// <value>
+        /// The extensible administration interface properties.
+        /// </value>
         public Eai Eai
         {
-            get { return this.GetValue("Eai", Eai.Converter.Instance); }
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
         }
 
         /// <summary>
-        /// Gets a value indicating whether to to reload the objects contained 
-        /// in the locally installed application.
+        /// Gets a value indicating whether to to reload the objects contained in the
+        /// locally installed application.
         /// </summary>
+        /// <value>
+        /// <c>true</c> if refresh, <c>false</c> if not.
+        /// </value>
         public bool Refresh
         {
-            get { return this.GetValue("Refresh", BooleanConverter.Instance); }
+            get { return this.Content.GetValue("Refresh", BooleanConverter.Instance); }
+        }
+
+        /// <summary>
+        /// Gets a listing of the setup script for the application.
+        /// </summary>
+        /// <value>
+        /// The setup.
+        /// </value>
+        public dynamic Setup
+        {
+            get { return this.Eai.GetValue("Setup"); }
         }
 
         #endregion

@@ -14,22 +14,19 @@
  * under the License.
  */
 
-// TODO:
-// [ ] Contracts
-// [ ] Documentation
+//// TODO:
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
-    using System;
     using System.Collections.Generic;
-    using System.Dynamic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using System.Collections.ObjectModel;
 
     /// <summary>
     /// Provides a class that represents a Splunk ACL.
     /// </summary>
+    /// <seealso cref="T:Splunk.Client.ExpandoAdapter{Splunk.Client.EaiAttributes}"/>
     public sealed class EaiAttributes : ExpandoAdapter<EaiAttributes>
     {
         #region Constructors
@@ -44,19 +41,49 @@ namespace Splunk.Client
 
         #region Properties
 
-		public IReadOnlyList<string> OptionalFields
+        /// <summary>
+        /// Gets the optional fields.
+        /// </summary>
+        /// <value>
+        /// The optional fields.
+        /// </value>
+		public ReadOnlyCollection<string> OptionalFields
         {
-            get { return this.GetValue("OptionalFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get
+            {
+                return this.GetValue(
+                    "OptionalFields", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
 
-		public IReadOnlyList<string> RequiredFields
+        /// <summary>
+        /// Gets the required fields.
+        /// </summary>
+        /// <value>
+        /// The required fields.
+        /// </value>
+		public ReadOnlyCollection<string> RequiredFields
         {
-            get { return this.GetValue("RequiredFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get
+            {
+                return this.GetValue(
+                    "RequiredFields", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
 
-		public IReadOnlyList<string> WildcardFields
+        /// <summary>
+        /// Gets the wildcard fields.
+        /// </summary>
+        /// <value>
+        /// The wildcard fields.
+        /// </value>
+		public ReadOnlyCollection<string> WildcardFields
         {
-            get { return this.GetValue("WildcardFields", CollectionConverter<string, List<string>, StringConverter>.Instance); }
+            get
+            {
+                return this.GetValue(
+                    "WildcardFields", ReadOnlyCollectionConverter<List<string>, StringConverter, string>.Instance);
+            }
         }
 
         #endregion

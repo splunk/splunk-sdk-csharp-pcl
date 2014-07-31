@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2013 Splunk, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"): you may
@@ -16,10 +16,11 @@
 
 namespace Splunk.Examples.Authenticate
 {
+    using Splunk.Client;
+    using Splunk.Client.Helpers;
     using System;
     using System.Net;
     using System.Threading.Tasks;
-    using Splunk.Client;
 
     /// <summary>
     /// An example program to authenticate to the server and print the received
@@ -45,11 +46,14 @@ namespace Splunk.Examples.Authenticate
         /// <param name="args">The arguments.</param>
         static void Main(string[] args)
         {
-            using (var service = new Service(Scheme.Https, "localhost", 8089))
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port))
             {
                 Console.WriteLine("Connected to {0}:{1} ", service.Server.Context.Host, service.Server.Context.Port);
                 Run(service).Wait();
             }
+
+            Console.Write("Press return to exit: ");
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -61,27 +65,25 @@ namespace Splunk.Examples.Authenticate
         {
             try
             {
-                await service.GetConfigurationsAsync();
+                await service.Configurations.GetAllAsync();
             }
-            catch (AuthenticationFailureException e)
+            catch (AuthenticationFailureException)
             {
-                Console.WriteLine("Can't get service configuration without log in");
+                Console.WriteLine("Can't get service configuration without logging in.");
             }
 
-            Console.WriteLine("Login as admin");
-            string username = "admin";
-            string password = "changeme";
-            await service.LoginAsync(username, password);
+            await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             Console.WriteLine("List all configurations of the Splunk service:");
-            ConfigurationCollection configs = service.GetConfigurationsAsync().Result;
-            foreach (Configuration config in configs)
+            await service.Configurations.GetAllAsync();
+
+            foreach (Configuration config in service.Configurations)
             {
                 Console.WriteLine(config.Id);
             }
 
             Console.WriteLine("Log off");
-            await service.LogoffAsync();
+            await service.LogOffAsync();
         }
     }
 }

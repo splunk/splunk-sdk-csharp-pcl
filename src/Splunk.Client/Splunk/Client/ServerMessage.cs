@@ -17,24 +17,44 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
-//// [X] Property accessors should not throw, but return default value if the underlying field is undefined (?)
-////     Guaranteed across the code base by ExpandoAdapter.GetValue.
 
 namespace Splunk.Client
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.Contracts;
     using System.IO;
-    using System.Net;
-    using System.Net.Http;
+    using System.Linq;
     using System.Threading.Tasks;
-    
+
     /// <summary>
-    /// Provides an object representation of a Splunk server message resource.
+    /// Provides an object representation of a Splunk server message entity.
     /// </summary>
-    public sealed class ServerMessage : Entity<ServerMessage>
+    /// <seealso cref="T:Splunk.Client.Entity{Splunk.Client.Resource}"/>
+    /// <seealso cref="T:Splunk.Client.IServerMessage"/>
+    public class ServerMessage : Entity<Resource>, IServerMessage
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerMessage"/> class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        /// <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
+        protected internal ServerMessage(Service service, string name)
+            : this(service.Context, service.Namespace, name)
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerMessage"/> class.
@@ -42,32 +62,73 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// <param name="feed">
+        /// A Splunk response atom feed.
+        /// </param>
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// </exception>
+        /// ### <exception cref="InvalidDataException">
+        /// <paramref name="feed"/> is in an invalid format.
+        /// </exception>
+        protected internal ServerMessage(Context context, AtomFeed feed)
+        {
+            this.Initialize(context, feed);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerMessage"/> class.
+        /// </summary>
+        /// <param name="context">
+        /// An object representing a Splunk server session.
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="name">
-        /// The name of the <see cref="ServerMessage"/>
+        /// The name of the <see cref="ServerMessage"/>.
         /// </param>
-        /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
+        ///
+        /// ### <exception cref="ArgumentException">
+        /// <paramref name="name"/> is <c>null</c> or empty.
         /// </exception>
-        /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
-        internal ServerMessage(Context context, Namespace @namespace, string name)
-            : base(context, @namespace, ServerMessageCollection.ClassResourceName, name)
+        protected internal ServerMessage(Context context, Namespace ns, string name)
+            : base(context, ns, ServerMessageCollection.ClassResourceName, name)
         { }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "ServerMessage"/> class.
+        /// Infrastructure. Initializes a new instance of the
+        /// <see cref= "ServerMessage"/> class.
         /// </summary>
         /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
+        /// This API supports the Splunk client infrastructure and is not intended to
+        /// be used directly from your code. Use one of these methods to obtain a
+        /// <see cref="ServerMessage"/> instance:
+        /// <list type="table">
+        /// <listheader>
+        ///   <term>Method</term>
+        ///   <description>Description</description>
+        /// </listheader>
+        /// <item>
+        ///   <term><see cref="Server.CreateMessageAsync"/></term>
+        ///   <description>
+        ///   Asynchronously creates a new <see cref="ServerMessage"/>.
+        ///   </description>
+        /// </item>
+        /// <item>
+        ///   <term><see cref="Server.GetMessageAsync"/></term>
+        ///   <description>
+        ///   Asynchronously retrieves an existing <see cref="ServerMessage"/>.
+        ///   </description>
+        /// </item>
+        /// </list>
         /// </remarks>
         public ServerMessage()
         { }
@@ -76,48 +137,70 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <inheritdoc/>
+        public Eai Eai
+        {
+            get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }
+        }
+
+        /// <inheritdoc/>
         public ServerMessageSeverity Severity
         {
-            get { return this.GetValue("Severity", EnumConverter<ServerMessageSeverity>.Instance); }
+            get { return this.Content.GetValue("Severity", EnumConverter<ServerMessageSeverity>.Instance); }
         }
 
+        /// <inheritdoc/>
         public string Text
         {
-            get { return this.GetValue("Message", StringConverter.Instance); }
+            get { return this.Content.GetValue("Message", StringConverter.Instance); }
         }
 
-        public long TimeCreatedEpochSecs
+        /// <inheritdoc/>
+        public DateTime TimeCreated
         {
-            get { return this.GetValue("TimeCreatedEpochSecs", Int64Converter.Instance); }
+            get { return this.Content.GetValue("TimeCreatedEpochSecs", UnixDateTimeConverter.Instance); }
         }
 
         #endregion
 
         #region Methods
 
-        public async Task CreateAsync(ServerMessageSeverity type, string text)
+        /// <summary>
+        /// Unsupported. This method is not supported by the
+        /// <see cref= "ServerMessage"/> class because it is not supported by the
+        /// <a href= "http://goo.gl/S13BE0">Splunk messages/{name} endpoint</a>.
+        /// </summary>
+        /// <param name="arguments">
+        /// A variable-length parameters list containing arguments.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// </returns>
+        public override async Task<bool> UpdateAsync(params Argument[] arguments)
         {
-            await CreateAsync(new ServerMessageArgs(type, text));
+            return await this.UpdateAsync(arguments.AsEnumerable());
         }
 
-        public async Task CreateAsync(ServerMessageArgs args)
+        /// <summary>
+        /// Unsupported. This method is not supported by the
+        /// <see cref= "ServerMessage"/> class because it is not supported by the
+        /// <a href= "http://goo.gl/S13BE0">Splunk messages/{name} endpoint</a>.
+        /// </summary>
+        /// <exception cref="NotSupportedException">
+        /// Thrown when the requested operation is not supported.
+        /// </exception>
+        /// <param name="arguments">
+        /// The arguments.
+        /// </param>
+        /// <returns>
+        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// </returns>
+        public override Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {
-            var name = new Argument[] { new Argument("name", this.Name) };
-            var resourceName = ServerMessageCollection.ClassResourceName;
-
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, name, args))
+            throw new NotSupportedException("The Splunk messages/{name} endpoint does not provide an update method.")
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                await this.UpdateSnapshotAsync(response);
-            }
-        }
-
-        public async Task RemoveAsync()
-        {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
-            {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-            }
+                HelpLink = "http://docs.splunk.com/Documentation/Splunk/latest/RESTAPI/RESTsystem#messages.2F.7Bname.7D"
+            };
         }
 
         #endregion

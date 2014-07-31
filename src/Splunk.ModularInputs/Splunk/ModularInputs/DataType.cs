@@ -24,7 +24,7 @@ namespace Splunk.ModularInputs
     public enum DataType
     {
         /// <summary>
-        /// A Boolean value: true or false
+        /// A Boolean value: <c>true</c> or <c>false</c>
         /// </summary>
         [XmlEnum(Name = "boolean")]
         Boolean,

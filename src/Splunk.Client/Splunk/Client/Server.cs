@@ -17,9 +17,6 @@
 //// TODO:
 //// [O] Contracts
 //// [O] Documentation
-//// [ ] Server.RestartAsync should post a restart_required message followed by
-////     a request to restart the server. It should then poll the server until
-////     the restart_required message goes away.
 
 namespace Splunk.Client
 {
@@ -29,14 +26,35 @@ namespace Splunk.Client
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Xml.Linq;
 
     /// <summary>
-    /// 
+    /// Provides an object representation of a Splunk server.
     /// </summary>
-    public class Server : Entity<Server>
+    /// <seealso cref="T:Splunk.Client.Endpoint"/>
+    /// <seealso cref="T:Splunk.Client.IServer"/>
+    public class Server : Endpoint, IServer
     {
         #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Receiver"/> class.
+        /// </summary>
+        /// <param name="service">
+        /// An object representing a root Splunk service endpoint.
+        /// </param>
+        ///
+        /// ### <param name="name">
+        /// An object identifying a Splunk resource within
+        /// <paramref name= "service"/>.<see cref="Namespace"/>.
+        /// </param>
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// </exception>
+        protected internal Server(Service service)
+            : this(service.Context, service.Namespace)
+        {
+            Contract.Requires<ArgumentNullException>(service != null);
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Server"/> class.
@@ -44,233 +62,158 @@ namespace Splunk.Client
         /// <param name="context">
         /// An object representing a Splunk server session.
         /// </param>
-        /// <param name="namespace">
-        /// An object identifying a Splunk service namespace.
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
         /// </param>
-        /// <exception cref="ArgumentNullException">
-        /// <see cref="context"/> or <see cref="namespace"/> are <c>null</c>.
+        ///
+        /// ### <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="namespace"/> is not specific.
+        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="ns"/> is not specific.
         /// </exception>
-        internal Server(Context context, Namespace @namespace)
-            : base(context, @namespace, ClassResourceName)
-        { }
+        internal Server(Context context, Namespace ns)
+            : base(context, ns, ClassResourceName)
+        {
+            this.messages = new ServerMessageCollection(context, ns);
+        }
 
-        /// <summary>
-        /// Infrastructure. Initializes a new instance of the <see cref=
-        /// "Server"/> class.
-        /// </summary>
-        /// <remarks>
-        /// This API supports the Splunk client infrastructure and is not 
-        /// intended to be used directly from your code.
-        /// </remarks>
-        public Server()
-        { }
+        #endregion
+
+        #region Properties
+
+        /// <inheritdoc/>
+        public virtual ServerMessageCollection Messages
+        {
+            get { return this.messages; }
+        }
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Asynchronously creates a <see cref="ServerMessage"/> on the Splunk 
-        /// server represented by the current instance.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the message to create.
-        /// </param>
-        /// <returns>
-        /// An object representing the server message created.
-        /// </returns>
-        public async Task<ServerMessage> CreateMessageAsync(string name, ServerMessageSeverity type, string text)
+        /// <inheritdoc/>
+        public virtual async Task<ServerInfo> GetInfoAsync()
         {
-            var resource = new ServerMessage(this.Context, this.Namespace, name);
-            await resource.CreateAsync(type, text);
-            return resource;
+            using (var response = await this.Context.GetAsync(this.Namespace, Info))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+                var info = new ServerInfo(feed);
+                
+                return info;
+            }
         }
 
-        /// <summary>
-        /// Asynchronously gets <see cref="ServerInfo"/> from the Splunk server
-        /// represented by the current instance.
-        /// </summary>
-        /// <returns>
-        /// An object representing information about the Splunk server
-        /// </returns>
-        public async Task<ServerInfo> GetInfoAsync()
+        /// <inheritdoc/>
+        public virtual async Task<ServerSettings> GetSettingsAsync()
         {
-            var resource = new ServerInfo(this.Context, this.Namespace);
-            await resource.GetAsync();
-            return resource;
+            using (var response = await this.Context.GetAsync(this.Namespace, Settings))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+                var settings = new ServerSettings(feed);
+
+                return settings;
+            }
         }
 
-        /// <summary>
-        /// Asynchronously gets a <see cref="ServerMessage"/> from the Splunk 
-        /// server represented by the current instance.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the message to get.
-        /// </param>
-        /// <returns>
-        /// An object representing the server message identified by <see cref=
-        /// "name"/>.
-        /// </returns>
-        /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
-        /// </exception>
-        public async Task<ServerMessage> GetMessageAsync(string name)
+        /// <inheritdoc/>
+        public virtual async Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
-            var resource = new ServerMessage(this.Context, this.Namespace, name);
-            await resource.GetAsync();
-            return resource;
-        }
+            var info = await this.GetInfoAsync();
+            var startupTime = info.StartupTime;
 
-        /// <summary>
-        /// Asynchronously gets the <see cref="ServerMessageCollection"/> from 
-        /// the Splunk server represented by the current instance.
-        /// </summary>
-        /// <returns>
-        /// An object representing the collection of server messages.
-        /// </returns>
-        public async Task<ServerMessageCollection> GetMessagesAsync()
-        {
-            var resource = new ServerMessageCollection(this.Context, this.Namespace);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Asynchronously gets the <see cref="ServerSettings"/> from the Splunk 
-        /// server represented by the current instance.
-        /// </summary>
-        /// <returns>
-        /// An object representing the server settings from the Splunk server
-        /// represented by the current instance.
-        /// </returns>
-        public async Task<ServerSettings> GetSettingsAsync()
-        {
-            var resource = new ServerSettings(this.Context, this.Namespace);
-            await resource.GetAsync();
-            return resource;
-        }
-
-        /// <summary>
-        /// Removes a <see cref="ServerMessage"/> from the Splunk server 
-        /// represented by the current instance.
-        /// </summary>
-        /// <param name="name">
-        /// Name of the <see cref="ServerMessage"/> to remove.
-        /// </param>
-        /// <exception cref="ArgumentException">
-        /// <see cref="name"/> is <c>null</c> or empty.
-        /// </exception>
-        public async Task RemoveMessageAsync(string name)
-        {
-            var resource = new ServerMessage(this.Context, this.Namespace, name);
-            await resource.RemoveAsync();
-        }
-
-        /// <summary>
-        /// Restarts the Splunk server represented by the current instance 
-        /// and then optionally checks for a specified period of time for 
-        /// server availability.
-        /// </summary>
-        /// <param name="millisecondsDelay">
-        /// The time to wait before canceling the check for server availability.
-        /// The default value is <c>60000</c> indicating that the check for
-        /// server avaialability will continue for up to 60 seconds. A value
-        /// of <c>0</c> specifices that no check should be made. A value of 
-        /// <c>-1</c> specifies an infinite wait time.
-        /// </param>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <see cref="millisecondsDelay"/> is less than <c>-1</c>.
-        /// </exception>
-        /// <exception cref="AuthenticationFailureException">
-        /// </exception>
-        /// <exception cref="HttpRequestException">
-        /// </exception>
-        /// <exception cref="OperationCanceledException">
-        /// </exception>
-        public async Task RestartAsync(int millisecondsDelay = 60000)
-        {
-            Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
-
-            using (var response = await this.Context.PostAsync(this.Namespace, new ResourceName(this.ResourceName, "restart")))
+            using (var response = await this.Context.PostAsync(this.Namespace, Restart))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
             }
-            
+
+            this.Context.SessionKey = null; // because this session is now or shortly will be gone
+
             if (millisecondsDelay == 0)
             {
                 return;
             }
-
-            //// Wait until the server goes down
-
-            for (int i = 0; ; i++)
-            {
-                try
-                {
-                    using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName))
-                    {
-                        await Task.Delay(millisecondsDelay: 500);
-                    }
-                }
-                catch (HttpRequestException)
-                {
-                    break;
-                }
-            }
-
-            //// Wait for millisecondsDelay for the server to come up
-
-            this.Context.SessionKey = null; // We're no longer authenticated
 
             using (var cancellationTokenSource = new CancellationTokenSource())
             {
                 cancellationTokenSource.CancelAfter(millisecondsDelay);
                 var token = cancellationTokenSource.Token;
 
-                for (int i = 0; ; i++)
+                for (int i = 0; !token.IsCancellationRequested ; i++)
                 {
                     try
                     {
-                        using (var response = await this.Context.GetAsync(this.Namespace, ClassResourceName, token))
+                        info = await this.GetInfoAsync();
+
+                        if (startupTime < info.StartupTime)
                         {
-                            await response.EnsureStatusCodeAsync(HttpStatusCode.Unauthorized);
-                            break;
+                            return;
                         }
                     }
-                    catch (HttpRequestException)
+                    catch (RequestException)
                     {
-                        continue;
+                        //// Because the server may return a failure code on the way up or down
                     }
+                    catch (WebException e) 
+                    {
+                        //// Because the HttpClient that Mono 3.4 depends on is known to throw a WebException on 
+                        //// connection failure
+
+                        if (e.Status != WebExceptionStatus.ConnectFailure) 
+                        {
+                            throw new HttpRequestException(e.Message, e);
+                        }
+                    }
+                    catch (HttpRequestException e)
+                    {
+                        //// Because Microsoft's HttpClient code always throws an HttpRequestException
+
+                        var innerException = e.InnerException as WebException;
+
+                        if (innerException == null || innerException.Status != WebExceptionStatus.ConnectFailure)
+                        {
+                            throw;
+                        }
+                    }
+
+                    await Task.Delay(millisecondsDelay: retryInterval);
                 }
+
+                throw new OperationCanceledException();
             }
         }
 
-        /// <summary>
-        /// Asynchronously updates the <see cref="ServerSettings"/> on the 
-        /// Splunk server represented by the current instance.
-        /// </summary>
-        /// <param name="values">
-        /// An object representing the updated server setting values.
-        /// </param>
-        /// <returns>
-        /// An object representing the updated server settings on the Splunk 
-        /// server represented by the current instance.
-        /// </returns>
-        public async Task<ServerSettings> UpdateSettingsAsync(ServerSettingValues values)
+        /// <inheritdoc/>
+        public virtual async Task<ServerSettings> UpdateSettingsAsync(ServerSettingValues values)
         {
-            var resource = new ServerSettings(this.Context, this.Namespace);
-            await resource.UpdateAsync(values);
-            return resource;
+            using (var response = await this.Context.PostAsync(this.Namespace, Settings, values))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(response.XmlReader);
+                var settings = new ServerSettings(feed);
+
+                return settings;
+            }
         }
 
         #endregion
 
         #region Privates/internals
 
-        internal static readonly ResourceName ClassResourceName = new ResourceName("server", "control");
+        protected internal static readonly ResourceName ClassResourceName = new ResourceName("server");
+        protected internal static readonly ResourceName Info = new ResourceName("server", "info");
+        protected internal static readonly ResourceName Restart = new ResourceName("server", "control", "restart");
+        protected internal static readonly ResourceName Settings = new ResourceName("server", "settings", "settings");
+        
+        ServerMessageCollection messages;
 
         #endregion
     }

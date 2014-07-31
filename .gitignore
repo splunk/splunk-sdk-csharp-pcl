@@ -88,6 +88,10 @@ csx
 # Windows Store app package directory
 AppPackages/
 
+# Xamarin Studio and OS X
+*.DS_Store*
+*.userprefs
+
 # Others
 [Bb]in
 [Oo]bj

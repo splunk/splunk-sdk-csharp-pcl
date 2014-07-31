@@ -15,10 +15,8 @@
  */
 
 //// TODO:
-//// [ ] Contracts
-//// [ ] Documentation
-//// [ ] Ensure that Response.EnsureStatusCodeAsync is used instead of
-////     throwing RequestException or its derivatives directly.
+//// [O] Contracts
+//// [O] Documentation
 
 namespace Splunk.Client
 {
@@ -31,8 +29,9 @@ namespace Splunk.Client
     using System.Xml;
 
     /// <summary>
-    /// Provides a class that represents a Splunk service response.
+    /// Represents a Splunk service response.
     /// </summary>
+    /// <seealso cref="T:System.IDisposable"/>
     public sealed class Response : IDisposable
     {
         #region Constructors
@@ -44,87 +43,154 @@ namespace Splunk.Client
 
         #region Properties
 
+        /// <summary>
+        /// Gets the HTTP response message associated with the current
+        /// <see cref="Response"/>.
+        /// </summary>
+        /// <value>
+        /// The message.
+        /// </value>
         public HttpResponseMessage Message
         {
             get { return this.message; }
         }
 
+        /// <summary>
+        /// Gets the <see cref="Stream"/> associated with the current
+        /// <see cref="Response.Message"/>.
+        /// </summary>
+        /// <remarks>
+        /// This object is the one returned by
+        /// <see cref="HttpContent.ReadAsStreamAsync()"/>.
+        /// </remarks>
+        /// <value>
+        /// The stream.
+        /// </value>
         public Stream Stream
         { get; private set; }
 
+        /// <summary>
+        /// Gets the <see cref="XmlReader"/> for reading HTTP body data from the
+        /// current <see cref="Response.Stream"/>.
+        /// </summary>
+        /// <value>
+        /// The XML reader.
+        /// </value>
         public XmlReader XmlReader
-        { get; private set; }
+        { 
+            get 
+            { 
+                if (this.reader == null)
+                {
+                    this.reader = XmlReader.Create(this.Stream, XmlReaderSettings);
+                }
+
+                return this.reader;
+            }
+        }
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// 
+        /// Asynchronously creates a <see cref="Response"/> object from an
+        /// <see cref="HttpResponseMessage"/>.
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="message">
+        /// The <see cref="HttpResponseMessage"/> from which to create a
+        /// <see cref="Response"/> object.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Response"/> object created.
+        /// </returns>
         public static async Task<Response> CreateAsync(HttpResponseMessage message)
         {
             Contract.Requires(message != null);
 
             var response = new Response(message);
             response.Stream = await message.Content.ReadAsStreamAsync();
-            response.XmlReader = XmlReader.Create(response.Stream, XmlReaderSettings);
 
             return response;
         }
 
         /// <summary>
-        /// Releases all disposable resources used by the current <see cref=
-        /// "Response"/>.
+        /// Releases all disposable resources used by the current
+        /// <see cref= "Response"/>.
         /// </summary>
+        /// <seealso cref="M:System.IDisposable.Dispose()"/>
         public void Dispose()
         {
-            if (!this.disposed)
+            if (this.disposed)
             {
-                this.Message.Dispose();
-                this.XmlReader.Dispose();
-                this.disposed = true;
+                return;
             }
+
+            if (this.reader != null) // Because it's possible to be disposed before this.XmlReader is created
+            {
+                for (int i = 0; ; i++)
+                {
+                    try
+                    {
+                        this.reader.Dispose();
+                        break;
+                    }
+                    catch (InvalidOperationException)
+                    { }
+                }
+            }
+
+            this.message.Dispose();
+            this.disposed = true;
         }
 
         /// <summary>
-        /// Throws a <see cref="RequestException"/> if the current <see cref=
-        /// "Response.Message.StatusCode"/> is different than <see cref=
-        /// "expected"/>.
+        /// Throws a <see cref="RequestException"/> if the current
+        /// <see cref= "Response"/>.Message.StatusCode is different than expected.
         /// </summary>
         /// <param name="expected">
         /// The expected <see cref="HttpStatusCode"/>.
         /// </param>
-        /// <returns></returns>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected)
+        {
+            if (this.Message.StatusCode == expected)
+            {
+                return;
+            }
+
+            await ThrowRequestExceptionAsync();
+        }
+
+        /// <summary>
+        /// Throws a <see cref="RequestException"/> if the current
+        /// <see cref= "Response"/>.Message.StatusCode is different than expecteds.
+        /// </summary>
+        /// <param name="expected1">
+        /// Another expected <see cref="HttpStatusCode"/>.
+        /// </param>
+        /// <param name="expected2">
+        /// The second expected.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        ///
+        /// ### <param name="expected0">
+        /// One expected <see cref="HttpStatusCode"/>.
+        /// </param>
+        public async Task EnsureStatusCodeAsync(HttpStatusCode expected1, HttpStatusCode expected2)
         {
             var statusCode = this.Message.StatusCode;
 
-            if (statusCode == expected)
-                return;
-
-            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
-            RequestException requestException;
-
-            switch (statusCode)
+            if (statusCode == expected1 || statusCode == expected2)
             {
-                case HttpStatusCode.Forbidden:
-                    requestException = new UnauthorizedAccessException(this.Message, details);
-                    break;
-                case HttpStatusCode.NotFound:
-                    requestException = new ResourceNotFoundException(this.Message, details);
-                    break;
-                case HttpStatusCode.Unauthorized:
-                    requestException = new AuthenticationFailureException(this.Message, details);
-                    break;
-                default:
-                    requestException = new RequestException(this.Message, details);
-                    break;
+                return;
             }
 
-            throw requestException;
+            await ThrowRequestExceptionAsync();
         }
 
         #endregion
@@ -141,8 +207,48 @@ namespace Splunk.Client
             IgnoreWhitespace = true
         };
 
-        HttpResponseMessage message;
+        readonly HttpResponseMessage message;
+        XmlReader reader;
         bool disposed;
+
+        /// <summary>
+        /// Throw request exception asynchronous.
+        /// </summary>
+        /// <exception cref="RequestException">
+        /// Thrown when a Request error condition occurs.
+        /// </exception>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        internal async Task ThrowRequestExceptionAsync()
+        {
+            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
+            RequestException requestException;
+
+            switch (this.Message.StatusCode)
+            {
+                case HttpStatusCode.BadRequest:
+                    requestException = new BadRequestException(this.Message, details);
+                    break;
+                case HttpStatusCode.Forbidden:
+                    requestException = new UnauthorizedAccessException(this.Message, details);
+                    break;
+                case HttpStatusCode.InternalServerError:
+                    requestException = new InternalServerErrorException(this.Message, details);
+                    break;
+                case HttpStatusCode.NotFound:
+                    requestException = new ResourceNotFoundException(this.Message, details);
+                    break;
+                case HttpStatusCode.Unauthorized:
+                    requestException = new AuthenticationFailureException(this.Message, details);
+                    break;
+                default:
+                    requestException = new RequestException(this.Message, details);
+                    break;
+            }
+
+            throw requestException;
+        }
 
         #endregion
     }

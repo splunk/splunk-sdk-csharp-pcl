@@ -180,28 +180,20 @@ namespace SplunkSearch
             //start a task to get all results
             return Task.Factory.StartNew(() =>
             {
-                try
+                foreach (SearchResult result in resultStream)
                 {
-                    foreach (SearchResult result in resultStream)
+                    List<string> results = this.ParseResult(result);
+                    allResults.Add(new ResultData(++resultCount, results[0], results[1]));
+
+                    if (resultCount > this.totalPage * itemsPerPage)
                     {
-                        List<string> results = this.ParseResult(result);
-                        allResults.Add(new ResultData(++resultCount, results[0], results[1]));
-
-                        if (resultCount > this.totalPage * itemsPerPage)
-                        {
-                            this.totalPage++;
-                        }
-
-                        if (this.cancelSearchTokenSource.Token.IsCancellationRequested)
-                        {
-                            break;
-                        }
+                        this.totalPage++;
                     }
-                }
-                catch (Exception ex)
-                {
-                    //the stream has some broken fields
-                    // Enumeration ended prematurely : System.IO.InvalidDataException: Read <fieldOrder> where </fieldOrder> was expected.   
+
+                    if (this.cancelSearchTokenSource.Token.IsCancellationRequested)
+                    {
+                        break;
+                    }
                 }
             });
         }

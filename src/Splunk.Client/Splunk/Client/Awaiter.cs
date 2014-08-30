@@ -271,7 +271,7 @@ namespace Splunk.Client
 
             try
             {
-                await this.ReadToEndAsync();
+                await this.ReadToEndAsync().IgnoreSyncContext();
             }
             catch (Exception error)
             {
@@ -279,7 +279,7 @@ namespace Splunk.Client
             }
 
             Interlocked.Increment(ref this.readState);
-            await Task.Delay(1);
+            await Task.Delay(1).IgnoreSyncContext();
             this.Continue();
         }
 

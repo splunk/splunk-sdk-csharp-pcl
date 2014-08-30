@@ -189,10 +189,10 @@ namespace Splunk.Client
         {
             var attributes = new Argument[] { new Argument("password", password) };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, attributes).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.ReconstructSnapshotAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
             }
         }
 

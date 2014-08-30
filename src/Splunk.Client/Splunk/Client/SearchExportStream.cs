@@ -74,7 +74,7 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<SearchExportStream> CreateAsync(HttpResponseMessage message)
         {
-            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message));
+            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message)).IgnoreSyncContext();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Splunk.Client
 
             if (!response.XmlReader.IsStartElement("results"))
             {
-                if (!await response.XmlReader.ReadToFollowingAsync("results"))
+                if (!await response.XmlReader.ReadToFollowingAsync("results").IgnoreSyncContext())
                 {
                     throw new InvalidDataException();  // TODO: diagnostics
                 }
@@ -152,10 +152,10 @@ namespace Splunk.Client
         {
             do
             {
-                var searchResults = await SearchResultStream.CreateAsync(this.response);
+                var searchResults = await SearchResultStream.CreateAsync(this.response).IgnoreSyncContext();
                 this.OnNext(searchResults);
             }
-            while (await this.response.XmlReader.ReadToFollowingAsync("results"));
+            while (await this.response.XmlReader.ReadToFollowingAsync("results").IgnoreSyncContext());
 
             this.OnCompleted();
         }

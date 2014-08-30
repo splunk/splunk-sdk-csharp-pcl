@@ -190,12 +190,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<ReadOnlyCollection<string>> GetCapabilitiesAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities))
+            using (var response = await this.Context.GetAsync(this.Namespace, AuthorizationCapabilities).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).IgnoreSyncContext();
 
                 if (feed.Entries.Count != 1)
                 {
@@ -216,10 +216,10 @@ namespace Splunk.Client
             {
                 new Argument("username", username),
                 new Argument("password", password)
-            }))
+            }).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                this.SessionKey = await response.XmlReader.ReadResponseElementAsync("sessionKey");
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                this.SessionKey = await response.XmlReader.ReadResponseElementAsync("sessionKey").IgnoreSyncContext();
             }
         }
 
@@ -228,9 +228,9 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(AuthenticationHttpAuthTokens, this.SessionKey);
 
-            using (var response = await this.Context.DeleteAsync(Namespace.Default, resourceName))
+            using (var response = await this.Context.DeleteAsync(Namespace.Default, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
                 this.SessionKey = null;
             }
         }
@@ -245,7 +245,7 @@ namespace Splunk.Client
             SavedSearchTemplateArgs templateArgs = null)
         {
             var savedSearch = new SavedSearch(this.Context, this.Namespace, name);
-            var job = await savedSearch.DispatchAsync(dispatchArgs, templateArgs);
+            var job = await savedSearch.DispatchAsync(dispatchArgs, templateArgs).IgnoreSyncContext();
             return job;
         }
 
@@ -263,12 +263,12 @@ namespace Splunk.Client
                 arguments = arguments.Concat(args);
             }
 
-            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, arguments);
+            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, arguments).IgnoreSyncContext();
 
             try
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                var stream = await SearchPreviewStream.CreateAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                var stream = await SearchPreviewStream.CreateAsync(response).IgnoreSyncContext();
                 return stream;
             }
             catch
@@ -292,12 +292,12 @@ namespace Splunk.Client
                 arguments = arguments.Concat(args);
             }
 
-            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, arguments);
+            var response = await this.Context.GetAsync(this.Namespace, SearchJobsExport, arguments).IgnoreSyncContext();
 
             try
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                return await SearchResultStream.CreateAsync(response); // Transfers response ownership
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                return await SearchResultStream.CreateAsync(response).IgnoreSyncContext(); // Transfers response ownership
             }
             catch
             {
@@ -311,7 +311,7 @@ namespace Splunk.Client
             ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null, 
             CustomJobArgs customArgs = null)
         {
-            var job = await this.Jobs.CreateAsync(search, count, mode, args, customArgs);
+            var job = await this.Jobs.CreateAsync(search, count, mode, args, customArgs).IgnoreSyncContext();
             return job;
         }
 
@@ -339,12 +339,12 @@ namespace Splunk.Client
                 arguments = arguments.Concat(customArgs);
             }
 
-            Response response = await this.Context.PostAsync(this.Namespace, resourceName, arguments);
+            Response response = await this.Context.PostAsync(this.Namespace, resourceName, arguments).IgnoreSyncContext();
 
             try
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                var stream = await SearchResultStream.CreateAsync(response); // Transfers response ownership
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                var stream = await SearchResultStream.CreateAsync(response).IgnoreSyncContext(); // Transfers response ownership
                 return stream;
             }
             catch

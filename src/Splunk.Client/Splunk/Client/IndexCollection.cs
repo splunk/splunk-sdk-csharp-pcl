@@ -140,13 +140,13 @@ namespace Splunk.Client
                 arguments = arguments.Concat(attributes);
             }
 
-            return await this.CreateAsync(arguments);
+            return await this.CreateAsync(arguments).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task GetSliceAsync(Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable());
+            await this.GetSliceAsync(criteria.AsEnumerable()).IgnoreSyncContext();
         }
 
         #endregion

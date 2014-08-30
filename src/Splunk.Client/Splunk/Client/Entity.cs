@@ -167,44 +167,44 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task GetAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.ReconstructSnapshotAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
             }
         }
 
         /// <inheritdoc/>
         public virtual async Task RemoveAsync()
         {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName))
+            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
             }
         }
 
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(params Argument[] arguments)
         {
-            return await this.UpdateAsync(arguments.AsEnumerable());
+            return await this.UpdateAsync(arguments.AsEnumerable()).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
                 var reader = response.XmlReader;
 
-                await reader.MoveToDocumentElementAsync("feed", "entry", "response");
+                await reader.MoveToDocumentElementAsync("feed", "entry", "response").IgnoreSyncContext();
 
                 if (reader.Name == "response")
                 {
                     return false;
                 }
 
-                return await this.ReconstructSnapshotAsync(response);
+                return await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
             }
         }
 

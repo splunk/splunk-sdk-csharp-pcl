@@ -543,10 +543,10 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "disable");
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.ReconstructSnapshotAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
             }
         }
 
@@ -555,17 +555,17 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "enable");
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.ReconstructSnapshotAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
             }
         }
 
         /// <inheritdoc/>
         public async Task<bool> UpdateAsync(IndexAttributes attributes)
         {
-            return await this.UpdateAsync(attributes.AsEnumerable());
+            return await this.UpdateAsync(attributes.AsEnumerable()).IgnoreSyncContext();
         }
 
         #endregion

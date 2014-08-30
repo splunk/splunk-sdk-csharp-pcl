@@ -209,9 +209,9 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "disable");
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
             }
         }
 
@@ -220,9 +220,9 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "enable");
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
             }
         }
 
@@ -231,11 +231,11 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "setup");
 
-            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
-                var resource = await BaseResource.CreateAsync<ApplicationSetupInfo>(response);
+                var resource = await BaseResource.CreateAsync<ApplicationSetupInfo>(response).IgnoreSyncContext();
                 return resource;
             }
         }
@@ -245,11 +245,11 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "update");
 
-            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
-                var resource = await BaseResource.CreateAsync<ApplicationUpdateInfo>(response);
+                var resource = await BaseResource.CreateAsync<ApplicationUpdateInfo>(response).IgnoreSyncContext();
                 return resource;
             }
         }
@@ -259,11 +259,11 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "package");
 
-            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
-                var resource = await BaseResource.CreateAsync<ApplicationArchiveInfo>(response);
+                var resource = await BaseResource.CreateAsync<ApplicationArchiveInfo>(response).IgnoreSyncContext();
                 return resource;
             }
         }
@@ -272,7 +272,7 @@ namespace Splunk.Client
         public virtual async Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates = false)
         {
             var updateArgs = new UpdateArgs { CheckForUpdates = checkForUpdates };
-            return await this.UpdateAsync(updateArgs.AsEnumerable().Concat(attributes));
+            return await this.UpdateAsync(updateArgs.AsEnumerable().Concat(attributes)).IgnoreSyncContext();
         }
 
         #endregion

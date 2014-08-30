@@ -135,13 +135,13 @@ namespace Splunk.Client
                 Text = text
             };
 
-            return await this.CreateAsync(args.AsEnumerable());
+            return await this.CreateAsync(args.AsEnumerable()).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task GetSliceAsync(Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable());
+            await this.GetSliceAsync(criteria.AsEnumerable()).IgnoreSyncContext();
         }
 
         #endregion

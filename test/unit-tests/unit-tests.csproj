@@ -42,6 +42,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Splunk.Client.Helpers\Splunk.Client.Helpers.csproj">
+      <Project>{21a7de9f-1e62-484f-945f-01e222b26b5b}</Project>
+      <Name>Splunk.Client.Helpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">
       <Project>{de65f0d5-7753-483e-8933-e6db22350f04}</Project>
       <Name>Splunk.Client</Name>
@@ -69,6 +73,7 @@
     <Compile Include="TestSavedSearchCollection.cs" />
     <Compile Include="TestServer.cs" />
     <Compile Include="TestServerMessageCollection.cs" />
+    <Compile Include="TestService.cs" />
     <Compile Include="TestStoragePasswordCollection.cs" />
     <Content Include="Data\Client\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

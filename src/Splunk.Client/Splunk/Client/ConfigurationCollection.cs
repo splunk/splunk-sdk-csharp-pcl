@@ -124,9 +124,9 @@ namespace Splunk.Client
         {
             //// We override this method because the "POST properties" endpoint returns nothing.
 
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).IgnoreSyncContext();
                 
                 var fileName = arguments.First(arg => arg.Name == "__conf").Value;
                 var configuration = new Configuration(this.Context, this.Namespace, fileName);
@@ -139,14 +139,14 @@ namespace Splunk.Client
         public virtual async Task<Configuration> CreateAsync(string fileName)
         {
             var arguments = new Argument[] { new Argument("__conf", fileName) };
-            return await this.CreateAsync(arguments.AsEnumerable());
+            return await this.CreateAsync(arguments.AsEnumerable()).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task<ConfigurationStanza> GetAsync(string fileName, string stanzaName)
         {
             var stanza = new ConfigurationStanza(this.Context, this.Namespace, fileName, stanzaName);
-            await stanza.GetAsync();
+            await stanza.GetAsync().IgnoreSyncContext();
             return stanza;
         }
 
@@ -163,7 +163,7 @@ namespace Splunk.Client
         /// </returns>
         public override async Task GetSliceAsync(params Argument[] arguments)
         {
-            await this.GetSliceAsync(arguments.AsEnumerable());
+            await this.GetSliceAsync(arguments.AsEnumerable()).IgnoreSyncContext();
         }
 
         /// <summary>

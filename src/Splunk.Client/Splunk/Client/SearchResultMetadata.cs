@@ -88,7 +88,7 @@ namespace Splunk.Client
             this.FieldNames = new ReadOnlyCollection<string>(fieldNames);
             this.IsFinal = true;
 
-            if (!await reader.MoveToDocumentElementAsync("results"))
+            if (!await reader.MoveToDocumentElementAsync("results").IgnoreSyncContext())
             {
                 return;
             }
@@ -96,23 +96,23 @@ namespace Splunk.Client
             string preview = reader.GetRequiredAttribute("preview");
             this.IsFinal = !BooleanConverter.Instance.Convert(preview);
 
-            if (!await reader.ReadAsync())
+            if (!await reader.ReadAsync().IgnoreSyncContext())
             {
                 return;
             }
 
             reader.EnsureMarkup(XmlNodeType.Element, "meta");
-            await reader.ReadAsync();
+            await reader.ReadAsync().IgnoreSyncContext();
             reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");
 
             await reader.ReadEachDescendantAsync("field", async (r) =>
             {
-                await r.ReadAsync();
-                var fieldName = await r.ReadContentAsStringAsync();
+                await r.ReadAsync().IgnoreSyncContext();
+                var fieldName = await r.ReadContentAsStringAsync().IgnoreSyncContext();
                 fieldNames.Add(fieldName);
-            });
+            }).IgnoreSyncContext();
 
-            await reader.ReadEndElementSequenceAsync("fieldOrder", "meta");
+            await reader.ReadEndElementSequenceAsync("fieldOrder", "meta").IgnoreSyncContext();
 
             if (reader.NodeType == XmlNodeType.Element && reader.Name == "messages")
             {
@@ -121,10 +121,10 @@ namespace Splunk.Client
                 await reader.ReadEachDescendantAsync("msg", (r) =>
                 {
                     return Task.FromResult(true);
-                });
+                }).IgnoreSyncContext();
 
                 reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
-                await reader.ReadAsync();
+                await reader.ReadAsync().IgnoreSyncContext();
             }
         }
 

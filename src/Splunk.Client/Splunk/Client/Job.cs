@@ -452,7 +452,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public override async Task GetAsync()
         {
-            await GetAsync(DispatchState.Running);
+            await GetAsync(DispatchState.Running).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
@@ -465,12 +465,12 @@ namespace Splunk.Client
 
                 for (int i = 0; ; i++)
                 {
-                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, token))
+                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, token).IgnoreSyncContext())
                     {
                         if (response.Message.StatusCode != HttpStatusCode.NoContent)
                         {
-                            await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                            await this.ReconstructSnapshotAsync(response);
+                            await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                            await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
 
                             if (this.DispatchState >= dispatchState)
                             {
@@ -479,7 +479,7 @@ namespace Splunk.Client
                         }
                     }
 
-                    await Task.Delay(retryInterval);
+                    await Task.Delay(retryInterval).IgnoreSyncContext();
                     retryInterval += retryInterval / 2;
                 }
             }
@@ -493,13 +493,13 @@ namespace Splunk.Client
                 return;
             }
 
-            await this.GetAsync(dispatchState, delay, retryInterval);
+            await this.GetAsync(dispatchState, delay, retryInterval).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(CustomJobArgs arguments)
         {
-            return await this.UpdateAsync(arguments.AsEnumerable());
+            return await this.UpdateAsync(arguments.AsEnumerable()).IgnoreSyncContext();
         }
 
         #endregion
@@ -509,21 +509,21 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args = null)
         {
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args).IgnoreSyncContext();
             return searchResults;
         }
 
         /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args = null)
         {
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args).IgnoreSyncContext();
             return searchResults;
         }
 
         /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args = null)
         {
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Running, "results_preview", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Running, "results_preview", args).IgnoreSyncContext();
             return searchResults;
         }
 
@@ -534,93 +534,93 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task CancelAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Cancel);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
+            await this.PostControlCommandAsync(Cancel).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task DisablePreviewAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(DisablePreview);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
+            await this.PostControlCommandAsync(DisablePreview).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task EnablePreviewAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(EnablePreview);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
+            await this.PostControlCommandAsync(EnablePreview).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task FinalizeAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Finalize);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
+            await this.PostControlCommandAsync(Finalize).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task PauseAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Pause);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
+            await this.PostControlCommandAsync(Pause).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task SaveAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Save);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
+            await this.PostControlCommandAsync(Save).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task SetPriorityAsync(int priority)
         {
-            await this.TransitionAsync(DispatchState.Running);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
 
             await this.PostControlCommandAsync(new Argument[] 
             { 
                 new Argument("action", "priority"),
                 new Argument("priority", priority.ToString())
-            });
+            }).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task SetTtlAsync(int ttl)
         {
-            await this.TransitionAsync(DispatchState.Running);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
 
             await this.PostControlCommandAsync(new Argument[]
             { 
                 new Argument("action", "setttl"),
                 new Argument("ttl", ttl.ToString())
-            });
+            }).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task TouchAsync(int ttl)
         {
-            await this.TransitionAsync(DispatchState.Running);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
 
             await this.PostControlCommandAsync(new Argument[]
             { 
                 new Argument("action", "touch"),
                 new Argument("ttl", ttl.ToString())
-            });
+            }).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task UnpauseAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Unpause);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
+            await this.PostControlCommandAsync(Unpause).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
         public virtual async Task UnsaveAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Unsave);
+            await this.TransitionAsync(DispatchState.Running).IgnoreSyncContext();
+            await this.PostControlCommandAsync(Unsave).IgnoreSyncContext();
         }
 
         #endregion
@@ -632,7 +632,7 @@ namespace Splunk.Client
         {
             var entry = new AtomEntry();
 
-            await entry.ReadXmlAsync(response.XmlReader);
+            await entry.ReadXmlAsync(response.XmlReader).IgnoreSyncContext();
             this.CreateSnapshot(entry, new Version(0, 0));
 
             return true;
@@ -686,14 +686,14 @@ namespace Splunk.Client
 
         async Task<SearchResultStream> GetSearchResultsAsync(DispatchState dispatchState, string endpoint, IEnumerable<Argument> args)
         {
-            await this.TransitionAsync(dispatchState);
+            await this.TransitionAsync(dispatchState).IgnoreSyncContext();
 
             var resourceName = new ResourceName(this.ResourceName, endpoint);
-            var response = await this.Context.GetAsync(this.Namespace, resourceName, args);
+            var response = await this.Context.GetAsync(this.Namespace, resourceName, args).IgnoreSyncContext();
 
             try
             {
-                var searchResults = await SearchResultStream.CreateAsync(response);
+                var searchResults = await SearchResultStream.CreateAsync(response).IgnoreSyncContext();
                 return searchResults;
             }
             catch 
@@ -707,9 +707,9 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "control");
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
             }
         }
 

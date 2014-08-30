@@ -89,12 +89,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<ServerInfo> GetInfoAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, Info))
+            using (var response = await this.Context.GetAsync(this.Namespace, Info).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).IgnoreSyncContext();
                 var info = new ServerInfo(feed);
                 
                 return info;
@@ -104,12 +104,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<ServerSettings> GetSettingsAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, Settings))
+            using (var response = await this.Context.GetAsync(this.Namespace, Settings).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).IgnoreSyncContext();
                 var settings = new ServerSettings(feed);
 
                 return settings;
@@ -119,12 +119,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
-            var info = await this.GetInfoAsync();
+            var info = await this.GetInfoAsync().IgnoreSyncContext();
             var startupTime = info.StartupTime;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, Restart))
+            using (var response = await this.Context.PostAsync(this.Namespace, Restart).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
             }
 
             this.Context.SessionKey = null; // because this session is now or shortly will be gone
@@ -143,7 +143,7 @@ namespace Splunk.Client
                 {
                     try
                     {
-                        info = await this.GetInfoAsync();
+                        info = await this.GetInfoAsync().IgnoreSyncContext();
 
                         if (startupTime < info.StartupTime)
                         {
@@ -176,7 +176,7 @@ namespace Splunk.Client
                         }
                     }
 
-                    await Task.Delay(millisecondsDelay: retryInterval);
+                    await Task.Delay(millisecondsDelay: retryInterval).IgnoreSyncContext();
                 }
 
                 throw new OperationCanceledException();
@@ -186,12 +186,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<ServerSettings> UpdateSettingsAsync(ServerSettingValues values)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, Settings, values))
+            using (var response = await this.Context.PostAsync(this.Namespace, Settings, values).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).IgnoreSyncContext();
                 var settings = new ServerSettings(feed);
 
                 return settings;

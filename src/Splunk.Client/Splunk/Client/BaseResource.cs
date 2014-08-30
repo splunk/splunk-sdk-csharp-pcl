@@ -407,7 +407,7 @@ namespace Splunk.Client
         {
             var feed = new AtomFeed();
 
-            await feed.ReadXmlAsync(response.XmlReader);
+            await feed.ReadXmlAsync(response.XmlReader).IgnoreSyncContext();
             var resource = new TResource();
             resource.Initialize(feed);
 

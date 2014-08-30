@@ -180,10 +180,10 @@ namespace Splunk.Client
             this.Title = null;
             this.Updated = DateTime.MinValue;
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("entry"));
+            reader.Requires(await reader.MoveToDocumentElementAsync("entry").IgnoreSyncContext());
 
             Dictionary<string, Uri> links = null;
-            await reader.ReadAsync();
+            await reader.ReadAsync().IgnoreSyncContext();
 
             while (reader.NodeType == XmlNodeType.Element)
             {
@@ -193,31 +193,31 @@ namespace Splunk.Client
                 {
                     case "title":
 
-                        this.Title = await reader.ReadElementContentAsync(StringConverter.Instance);
+                        this.Title = await reader.ReadElementContentAsync(StringConverter.Instance).IgnoreSyncContext();
                         break;
 
                     case "id":
 
-                        this.Id = await reader.ReadElementContentAsync(UriConverter.Instance);
+                        this.Id = await reader.ReadElementContentAsync(UriConverter.Instance).IgnoreSyncContext();
                         break;
 
                     case "author":
-                        
-                        await reader.ReadAsync();
+
+                        await reader.ReadAsync().IgnoreSyncContext();
                         reader.EnsureMarkup(XmlNodeType.Element, "name");
-                        this.Author = await reader.ReadElementContentAsync(StringConverter.Instance);
+                        this.Author = await reader.ReadElementContentAsync(StringConverter.Instance).IgnoreSyncContext();
                         reader.EnsureMarkup(XmlNodeType.EndElement, "author");
-                        await reader.ReadAsync();
+                        await reader.ReadAsync().IgnoreSyncContext();
                         break;
 
                     case "published":
 
-                        this.Published = await reader.ReadElementContentAsync(DateTimeConverter.Instance);
+                        this.Published = await reader.ReadElementContentAsync(DateTimeConverter.Instance).IgnoreSyncContext();
                         break;
 
                     case "updated":
 
-                        this.Updated = await reader.ReadElementContentAsync(DateTimeConverter.Instance);
+                        this.Updated = await reader.ReadElementContentAsync(DateTimeConverter.Instance).IgnoreSyncContext();
                         break;
 
                     case "link":
@@ -230,12 +230,12 @@ namespace Splunk.Client
                         var href = reader.GetRequiredAttribute("href");
                         var rel = reader.GetRequiredAttribute("rel");
                         links[rel] = UriConverter.Instance.Convert(href);
-                        await reader.ReadAsync();
+                        await reader.ReadAsync().IgnoreSyncContext();
                         break;
 
                     case "content":
 
-                        this.Content = await ParsePropertyValueAsync(reader, 0);
+                        this.Content = await ParsePropertyValueAsync(reader, 0).IgnoreSyncContext();
                         break;
 
                     default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
@@ -243,7 +243,7 @@ namespace Splunk.Client
             }
 
             reader.EnsureMarkup(XmlNodeType.EndElement, "entry");
-            await reader.ReadAsync();
+            await reader.ReadAsync().IgnoreSyncContext();
 
             if (links != null)
             {
@@ -328,7 +328,7 @@ namespace Splunk.Client
 
             if (!reader.IsEmptyElement)
             {
-                await reader.ReadAsync();
+                await reader.ReadAsync().IgnoreSyncContext();
 
                 while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:key")
                 {
@@ -408,14 +408,14 @@ namespace Splunk.Client
                     }
 
                     propertyName = NormalizePropertyName(names[names.Length - 1]);
-                    propertyValue = await ParsePropertyValueAsync(reader, level + 1);
+                    propertyValue = await ParsePropertyValueAsync(reader, level + 1).IgnoreSyncContext();
                     dictionary.Add(propertyName, propertyValue);
                 }
 
                 reader.EnsureMarkup(XmlNodeType.EndElement, "s:dict");
             }
 
-            await reader.ReadAsync();
+            await reader.ReadAsync().IgnoreSyncContext();
             return value;  // TODO: what's the type seen by dynamic?
         }
 
@@ -425,17 +425,17 @@ namespace Splunk.Client
 
             if (!reader.IsEmptyElement)
             {
-                await reader.ReadAsync();
+                await reader.ReadAsync().IgnoreSyncContext();
 
                 while (reader.NodeType == XmlNodeType.Element && reader.Name == "s:item")
                 {
-                    value.Add(await ParsePropertyValueAsync(reader, level + 1));
+                    value.Add(await ParsePropertyValueAsync(reader, level + 1).IgnoreSyncContext());
                 }
                 
                 reader.EnsureMarkup(XmlNodeType.EndElement, "s:list");
             }
 
-            await reader.ReadAsync();
+            await reader.ReadAsync().IgnoreSyncContext();
             return new ReadOnlyCollection<dynamic>(value);
         }
 
@@ -443,20 +443,20 @@ namespace Splunk.Client
         {
             if (reader.IsEmptyElement)
             {
-                await reader.ReadAsync();
+                await reader.ReadAsync().IgnoreSyncContext();
                 return null;
             }
 
             string name = reader.Name;
             dynamic value;
 
-            await reader.ReadAsync();
+            await reader.ReadAsync().IgnoreSyncContext();
 
             switch (reader.NodeType)
             {
                 default:
 
-                    value = await reader.ReadContentAsStringAsync();
+                    value = await reader.ReadContentAsStringAsync().IgnoreSyncContext();
                     break;
 
                 case XmlNodeType.Element:
@@ -467,12 +467,12 @@ namespace Splunk.Client
                     {
                         case "s:dict":
 
-                            value = await ParseDictionaryAsync(reader, level);
+                            value = await ParseDictionaryAsync(reader, level).IgnoreSyncContext();
                             break;
 
                         case "s:list":
 
-                            value = await ParseListAsync(reader, level);
+                            value = await ParseListAsync(reader, level).IgnoreSyncContext();
                             break;
 
                         default: throw new InvalidDataException(); // TODO: Diagnostics : unexpected start tag
@@ -488,7 +488,7 @@ namespace Splunk.Client
             }
 
             reader.EnsureMarkup(XmlNodeType.EndElement, name);
-            await reader.ReadAsync();
+            await reader.ReadAsync().IgnoreSyncContext();
 
             return value;
         }

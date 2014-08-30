@@ -141,7 +141,7 @@ namespace Splunk.Client
         /// </remarks>
         public override async Task<Job> CreateAsync(IEnumerable<Argument> arguments)
         {
-            return await this.CreateAsync(arguments, DispatchState.Running);
+            return await this.CreateAsync(arguments, DispatchState.Running).IgnoreSyncContext();
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Splunk.Client
                 arguments = arguments.Concat(customArgs);
             }
 
-            var job = await this.CreateAsync(arguments, requiredState);
+            var job = await this.CreateAsync(arguments, requiredState).IgnoreSyncContext();
             return job;
         }
 
@@ -214,7 +214,7 @@ namespace Splunk.Client
         /// </returns>
         public virtual async Task GetSliceAsync(JobCollection.Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable());
+            await this.GetSliceAsync(criteria.AsEnumerable()).IgnoreSyncContext();
         }
 
         #endregion
@@ -230,16 +230,16 @@ namespace Splunk.Client
         {
             string searchId;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, ClassResourceName, arguments))
+            using (var response = await this.Context.PostAsync(this.Namespace, ClassResourceName, arguments).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                searchId = await response.XmlReader.ReadResponseElementAsync("sid");
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).IgnoreSyncContext();
+                searchId = await response.XmlReader.ReadResponseElementAsync("sid").IgnoreSyncContext();
             }
 
             Job job = new Job(this.Context, this.Namespace, name: searchId);
 
-            await job.GetAsync();
-            await job.TransitionAsync(requiredState);
+            await job.GetAsync().IgnoreSyncContext();
+            await job.TransitionAsync(requiredState).IgnoreSyncContext();
 
             return job;
         }

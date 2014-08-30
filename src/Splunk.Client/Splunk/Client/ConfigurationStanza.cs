@@ -158,12 +158,12 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, keyName);
 
-            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
                 var reader = new StreamReader(response.Stream);
-                var value = await reader.ReadToEndAsync();
+                var value = await reader.ReadToEndAsync().IgnoreSyncContext();
 
                 return value;
             }
@@ -203,18 +203,18 @@ namespace Splunk.Client
         {
             var rn = new ResourceName("configs", string.Concat("conf-", this.ResourceName[1]), this.ResourceName[2]);
 
-            using (var response = await this.Context.DeleteAsync(this.Namespace, rn))
+            using (var response = await this.Context.DeleteAsync(this.Namespace, rn).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
             }
         }
 
         /// <inheritdoc/>
         public override async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
                 return false;
             }
         }
@@ -225,16 +225,16 @@ namespace Splunk.Client
             var resourceName = new ResourceName(this.ResourceName, keyName);
             var arguments = new Argument[] { new Argument("value", value) };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, arguments))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, arguments).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
             }
         }
 
         /// <inheritdoc/>
         public virtual async Task UpdateAsync(string keyName, object value)
         {
-            await this.UpdateAsync(keyName, value.ToString());
+            await this.UpdateAsync(keyName, value.ToString()).IgnoreSyncContext();
         }
 
         #endregion

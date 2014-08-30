@@ -40,12 +40,11 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task IndexCollection()
         {
-            const string indexName = "sdk-tests2_indexaccessors";
+            string indexName = string.Format("delete-me-{0}", Guid.NewGuid());
 
             using (var service = await SdkHelper.CreateService())
             {
                 IndexCollection indexes = service.Indexes;
-                await indexes.RemoveAsync(indexName);
 
                 Index testIndex = await indexes.CreateAsync(indexName);
                 //// TODO: Verify testIndex
@@ -213,13 +212,10 @@ namespace Splunk.Client.AcceptanceTests
 
                 await testIndex.RemoveAsync();
 
-                try
+                await SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
                 {
                     await testIndex.GetAsync();
-                    Assert.True(false);
-                }
-                catch (ResourceNotFoundException)
-                { }
+                });
 
                 testIndex = await indexes.GetOrNullAsync(indexName);
                 Assert.Null(testIndex);
@@ -235,7 +231,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task Transmitter1()
         {
-            const string indexName = "sdk-tests2_indexargs";
+            string indexName = string.Format("delete-me-{0}", Guid.NewGuid());
 
             using (var service = await SdkHelper.CreateService())
             {

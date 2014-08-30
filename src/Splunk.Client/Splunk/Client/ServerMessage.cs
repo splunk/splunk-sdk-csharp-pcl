@@ -159,7 +159,7 @@ namespace Splunk.Client
         /// </returns>
         public override async Task<bool> UpdateAsync(params Argument[] arguments)
         {
-            return await this.UpdateAsync(arguments.AsEnumerable());
+            return await this.UpdateAsync(arguments.AsEnumerable()).IgnoreSyncContext();
         }
 
         /// <summary>

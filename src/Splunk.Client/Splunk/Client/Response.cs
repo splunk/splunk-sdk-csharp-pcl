@@ -109,7 +109,7 @@ namespace Splunk.Client
             Contract.Requires(message != null);
 
             var response = new Response(message);
-            response.Stream = await message.Content.ReadAsStreamAsync();
+            response.Stream = await message.Content.ReadAsStreamAsync().IgnoreSyncContext();
 
             return response;
         }
@@ -161,7 +161,7 @@ namespace Splunk.Client
                 return;
             }
 
-            await ThrowRequestExceptionAsync();
+            await ThrowRequestExceptionAsync().IgnoreSyncContext();
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Splunk.Client
                 return;
             }
 
-            await ThrowRequestExceptionAsync();
+            await ThrowRequestExceptionAsync().IgnoreSyncContext();
         }
 
         #endregion
@@ -218,7 +218,7 @@ namespace Splunk.Client
         /// </returns>
         internal async Task ThrowRequestExceptionAsync()
         {
-            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
+            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader).IgnoreSyncContext();
             RequestException requestException;
 
             switch (this.Message.StatusCode)

@@ -241,14 +241,14 @@ namespace Splunk.Client
             var resourceName = new ResourceName(this.ResourceName, "dispatch");
             string searchId;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, dispatchArgs, templateArgs))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, dispatchArgs, templateArgs).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                searchId = await response.XmlReader.ReadResponseElementAsync("sid");
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).IgnoreSyncContext();
+                searchId = await response.XmlReader.ReadResponseElementAsync("sid").IgnoreSyncContext();
             }
 
             Job job = new Job(this.Context, this.Namespace, searchId);
-            await job.GetAsync();
+            await job.GetAsync().IgnoreSyncContext();
 
             return job;
         }
@@ -256,10 +256,10 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task GetAsync(Filter criteria)
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, criteria))
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, criteria).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.ReconstructSnapshotAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
             }
         }
 
@@ -268,12 +268,12 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "history");
 
-            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).IgnoreSyncContext();
                 var jobs = new JobCollection(this.Context, feed);
 
                 return jobs;
@@ -292,10 +292,10 @@ namespace Splunk.Client
                 new Argument("latest_time", latestTime)
             };
 
-            using (var response = await this.Context.GetAsync(this.Namespace, resourceName, args))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName, args).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.ReconstructSnapshotAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
             }
 
             return this.ScheduledTimes;
@@ -311,9 +311,9 @@ namespace Splunk.Client
                 new Argument("schedule_time", scheduleTime.Value.ToString("u")) //string.Format("{0:s}Z", scheduleTime.Value.ToUniversalTime()))
             };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
             }
         }
 
@@ -345,7 +345,7 @@ namespace Splunk.Client
                 arguments = arguments.Concat(templateArgs);
             }
 
-            return await this.UpdateAsync(arguments);
+            return await this.UpdateAsync(arguments).IgnoreSyncContext();
         }
 
         #endregion

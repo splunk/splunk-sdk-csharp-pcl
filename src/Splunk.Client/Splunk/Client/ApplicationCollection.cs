@@ -140,14 +140,14 @@ namespace Splunk.Client
                 arguments = arguments.Concat(attributes);
             }
 
-            var resourceEndpoint = await this.CreateAsync(arguments);
+            var resourceEndpoint = await this.CreateAsync(arguments).IgnoreSyncContext();
             return resourceEndpoint;
         }
 
         /// <inheritdoc/>
         public virtual async Task GetSliceAsync(Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable());
+            await this.GetSliceAsync(criteria.AsEnumerable()).IgnoreSyncContext();
         }
 
         /// <inheritdoc/>
@@ -163,11 +163,11 @@ namespace Splunk.Client
                 Update = update
             };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args).IgnoreSyncContext())
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                
-                var resourceEndpoint = await Entity<Resource>.CreateAsync<Application>(this.Context, response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).IgnoreSyncContext();
+
+                var resourceEndpoint = await Entity<Resource>.CreateAsync<Application>(this.Context, response).IgnoreSyncContext();
                 return resourceEndpoint;
             }
         }

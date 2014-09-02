@@ -167,44 +167,44 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task GetAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName).IgnoreSyncContext())
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
-                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
             }
         }
 
         /// <inheritdoc/>
         public virtual async Task RemoveAsync()
         {
-            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName).IgnoreSyncContext())
+            using (var response = await this.Context.DeleteAsync(this.Namespace, this.ResourceName).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
             }
         }
 
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(params Argument[] arguments)
         {
-            return await this.UpdateAsync(arguments.AsEnumerable()).IgnoreSyncContext();
+            return await this.UpdateAsync(arguments.AsEnumerable()).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).IgnoreSyncContext())
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                 var reader = response.XmlReader;
 
-                await reader.MoveToDocumentElementAsync("feed", "entry", "response").IgnoreSyncContext();
+                await reader.MoveToDocumentElementAsync("feed", "entry", "response").ConfigureAwait(false);
 
                 if (reader.Name == "response")
                 {
                     return false;
                 }
 
-                return await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
+                return await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
             }
         }
 

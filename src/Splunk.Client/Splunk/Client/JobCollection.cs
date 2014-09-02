@@ -141,7 +141,7 @@ namespace Splunk.Client
         /// </remarks>
         public override async Task<Job> CreateAsync(IEnumerable<Argument> arguments)
         {
-            return await this.CreateAsync(arguments, DispatchState.Running).IgnoreSyncContext();
+            return await this.CreateAsync(arguments, DispatchState.Running).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Splunk.Client
                 arguments = arguments.Concat(customArgs);
             }
 
-            var job = await this.CreateAsync(arguments, requiredState).IgnoreSyncContext();
+            var job = await this.CreateAsync(arguments, requiredState).ConfigureAwait(false);
             return job;
         }
 
@@ -214,7 +214,7 @@ namespace Splunk.Client
         /// </returns>
         public virtual async Task GetSliceAsync(JobCollection.Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable()).IgnoreSyncContext();
+            await this.GetSliceAsync(criteria.AsEnumerable()).ConfigureAwait(false);
         }
 
         #endregion
@@ -230,16 +230,16 @@ namespace Splunk.Client
         {
             string searchId;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, ClassResourceName, arguments).IgnoreSyncContext())
+            using (var response = await this.Context.PostAsync(this.Namespace, ClassResourceName, arguments).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).IgnoreSyncContext();
-                searchId = await response.XmlReader.ReadResponseElementAsync("sid").IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).ConfigureAwait(false);
+                searchId = await response.XmlReader.ReadResponseElementAsync("sid").ConfigureAwait(false);
             }
 
             Job job = new Job(this.Context, this.Namespace, name: searchId);
 
-            await job.GetAsync().IgnoreSyncContext();
-            await job.TransitionAsync(requiredState).IgnoreSyncContext();
+            await job.GetAsync().ConfigureAwait(false);
+            await job.TransitionAsync(requiredState).ConfigureAwait(false);
 
             return job;
         }

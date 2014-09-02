@@ -235,7 +235,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, token, argumentSets).IgnoreSyncContext();
+            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -258,7 +258,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets).IgnoreSyncContext();
+            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -283,7 +283,7 @@ namespace Splunk.Client
         public virtual async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token,
             params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets).IgnoreSyncContext();
+            var response = await this.SendAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -306,7 +306,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var content = CreateStringContent(argumentSets);
-            return await PostAsync(ns, resource, content, null).IgnoreSyncContext();
+            return await PostAsync(ns, resource, content, null).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -331,7 +331,7 @@ namespace Splunk.Client
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets).IgnoreSyncContext();
+            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -429,8 +429,8 @@ namespace Splunk.Client
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
 
-                var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).IgnoreSyncContext();
-                var response = await Response.CreateAsync(message).IgnoreSyncContext();
+                var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                var response = await Response.CreateAsync(message).ConfigureAwait(false);
 
                 return response;
             }

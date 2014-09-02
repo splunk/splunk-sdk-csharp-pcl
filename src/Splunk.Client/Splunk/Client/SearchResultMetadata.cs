@@ -88,7 +88,7 @@ namespace Splunk.Client
             this.FieldNames = new ReadOnlyCollection<string>(fieldNames);
             this.IsFinal = true;
 
-            if (!await reader.MoveToDocumentElementAsync("results").IgnoreSyncContext())
+            if (!await reader.MoveToDocumentElementAsync("results").ConfigureAwait(false))
             {
                 return;
             }
@@ -96,23 +96,23 @@ namespace Splunk.Client
             string preview = reader.GetRequiredAttribute("preview");
             this.IsFinal = !BooleanConverter.Instance.Convert(preview);
 
-            if (!await reader.ReadAsync().IgnoreSyncContext())
+            if (!await reader.ReadAsync().ConfigureAwait(false))
             {
                 return;
             }
 
             reader.EnsureMarkup(XmlNodeType.Element, "meta");
-            await reader.ReadAsync().IgnoreSyncContext();
+            await reader.ReadAsync().ConfigureAwait(false);
             reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");
 
             await reader.ReadEachDescendantAsync("field", async (r) =>
             {
-                await r.ReadAsync().IgnoreSyncContext();
-                var fieldName = await r.ReadContentAsStringAsync().IgnoreSyncContext();
+                await r.ReadAsync().ConfigureAwait(false);
+                var fieldName = await r.ReadContentAsStringAsync().ConfigureAwait(false);
                 fieldNames.Add(fieldName);
-            }).IgnoreSyncContext();
+            }).ConfigureAwait(false);
 
-            await reader.ReadEndElementSequenceAsync("fieldOrder", "meta").IgnoreSyncContext();
+            await reader.ReadEndElementSequenceAsync("fieldOrder", "meta").ConfigureAwait(false);
 
             if (reader.NodeType == XmlNodeType.Element && reader.Name == "messages")
             {
@@ -121,10 +121,10 @@ namespace Splunk.Client
                 await reader.ReadEachDescendantAsync("msg", (r) =>
                 {
                     return Task.FromResult(true);
-                }).IgnoreSyncContext();
+                }).ConfigureAwait(false);
 
                 reader.EnsureMarkup(XmlNodeType.EndElement, "messages");
-                await reader.ReadAsync().IgnoreSyncContext();
+                await reader.ReadAsync().ConfigureAwait(false);
             }
         }
 

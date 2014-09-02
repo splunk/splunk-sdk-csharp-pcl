@@ -426,17 +426,17 @@ namespace Splunk.Client
         {
             var messages = new List<Message>();
 
-            if (await reader.MoveToDocumentElementAsync("response").IgnoreSyncContext())
+            if (await reader.MoveToDocumentElementAsync("response").ConfigureAwait(false))
             {
-                await reader.ReadAsync().IgnoreSyncContext();
+                await reader.ReadAsync().ConfigureAwait(false);
                 reader.EnsureMarkup(XmlNodeType.Element, "messages");
-                await reader.ReadAsync().IgnoreSyncContext();
+                await reader.ReadAsync().ConfigureAwait(false);
 
                 while (reader.NodeType == XmlNodeType.Element && reader.Name == "msg")
                 {
                     var name = reader.GetRequiredAttribute("type");
                     var type = EnumConverter<MessageType>.Instance.Convert(name);
-                    var text = await reader.ReadElementContentAsStringAsync().IgnoreSyncContext();
+                    var text = await reader.ReadElementContentAsStringAsync().ConfigureAwait(false);
                     
                     messages.Add(new Message(type, text));
                 }

@@ -108,7 +108,7 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<SearchResultStream> CreateAsync(HttpResponseMessage message)
         {
-            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message)).IgnoreSyncContext();
+            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -125,11 +125,11 @@ namespace Splunk.Client
         {
             XmlReader reader = response.XmlReader;
 
-            await reader.MoveToDocumentElementAsync("results", "response").IgnoreSyncContext();
+            await reader.MoveToDocumentElementAsync("results", "response").ConfigureAwait(false);
 
             if (reader.Name == "response")
             {
-                await response.ThrowRequestExceptionAsync().IgnoreSyncContext();
+                await response.ThrowRequestExceptionAsync().ConfigureAwait(false);
             }
 
             var stream = new SearchResultStream(response);
@@ -253,7 +253,7 @@ namespace Splunk.Client
         {
             var metadata = new SearchResultMetadata();
 
-            await metadata.ReadXmlAsync(this.response.XmlReader).IgnoreSyncContext();
+            await metadata.ReadXmlAsync(this.response.XmlReader).ConfigureAwait(false);
 
             return metadata;
         }
@@ -273,12 +273,12 @@ namespace Splunk.Client
             reader.EnsureMarkup(XmlNodeType.Element, "result");
 
             var result = new SearchResult(metadata);
-            await result.ReadXmlAsync(reader).IgnoreSyncContext();
-            await reader.ReadAsync().IgnoreSyncContext();
+            await result.ReadXmlAsync(reader).ConfigureAwait(false);
+            await reader.ReadAsync().ConfigureAwait(false);
 
             if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "results")
             {
-                await reader.ReadAsync().IgnoreSyncContext();
+                await reader.ReadAsync().ConfigureAwait(false);
             }
             else
             {
@@ -318,13 +318,13 @@ namespace Splunk.Client
             /// </returns>
             protected override async Task ReadToEndAsync()
             {
-                var metadata = await this.Stream.ReadMetadataAsync().IgnoreSyncContext();
+                var metadata = await this.Stream.ReadMetadataAsync().ConfigureAwait(false);
 
                 while (this.Stream.ReadState <= ReadState.Interactive)
                 {
                     while (this.Stream.ReadState <= ReadState.Interactive)
                     {
-                        SearchResult result = await this.Stream.ReadResultAsync(metadata).IgnoreSyncContext();
+                        SearchResult result = await this.Stream.ReadResultAsync(metadata).ConfigureAwait(false);
 
                         if (result == null)
                         {
@@ -334,7 +334,7 @@ namespace Splunk.Client
                         this.Enqueue(result);
                     }
 
-                    metadata = await this.Stream.ReadMetadataAsync().IgnoreSyncContext();
+                    metadata = await this.Stream.ReadMetadataAsync().ConfigureAwait(false);
                 }
             }
         }

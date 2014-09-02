@@ -80,7 +80,7 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<SearchPreviewStream> CreateAsync(HttpResponseMessage message)
         {
-            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message).IgnoreSyncContext());
+            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message).ConfigureAwait(false));
         }
 
         /// <summary>
@@ -221,10 +221,10 @@ namespace Splunk.Client
         {
             XmlReader reader = this.response.XmlReader;
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("results").IgnoreSyncContext());
+            reader.Requires(await reader.MoveToDocumentElementAsync("results").ConfigureAwait(false));
             var preview = new SearchPreview();
-            await preview.ReadXmlAsync(reader).IgnoreSyncContext();
-            await reader.ReadAsync().IgnoreSyncContext();
+            await preview.ReadXmlAsync(reader).ConfigureAwait(false);
+            await reader.ReadAsync().ConfigureAwait(false);
 
             return preview;
         }
@@ -261,7 +261,7 @@ namespace Splunk.Client
             {
                 while (this.Stream.ReadState <= ReadState.Interactive)
                 {
-                    var preview = await this.Stream.ReadPreviewAsync().IgnoreSyncContext();
+                    var preview = await this.Stream.ReadPreviewAsync().ConfigureAwait(false);
                     this.Enqueue(preview);
                 }
             }

@@ -167,7 +167,7 @@ namespace Splunk.Client
             {
                 if (argument.Name == "__stanza")
                 {
-                    await base.CreateAsync(arguments).IgnoreSyncContext();
+                    await base.CreateAsync(arguments).ConfigureAwait(false);
                     return new ConfigurationStanza(this.Context, this.Namespace, this.Name, argument.Name);
                 }
             }
@@ -186,9 +186,9 @@ namespace Splunk.Client
         {
             var arguments = new Argument[] { new Argument("__stanza", stanzaName) };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).IgnoreSyncContext())
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).ConfigureAwait(false);
             }
 
             return new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
@@ -198,7 +198,7 @@ namespace Splunk.Client
         public virtual async Task<string> GetSettingAsync(string stanzaName, string keyName)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
-            var value = await resourceEndpoint.GetAsync(keyName).IgnoreSyncContext();
+            var value = await resourceEndpoint.GetAsync(keyName).ConfigureAwait(false);
             return value;
         }
 
@@ -206,14 +206,14 @@ namespace Splunk.Client
         public virtual async Task RemoveAsync(string stanzaName)
         {
             var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
-            await resource.RemoveAsync().IgnoreSyncContext();
+            await resource.RemoveAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task<ConfigurationStanza> UpdateAsync(string stanzaName, params Argument[] settings)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
-            await resourceEndpoint.UpdateAsync(settings).IgnoreSyncContext();
+            await resourceEndpoint.UpdateAsync(settings).ConfigureAwait(false);
             return resourceEndpoint;
         }
 
@@ -221,14 +221,14 @@ namespace Splunk.Client
         public virtual async Task UpdateSettingAsync(string stanzaName, string keyName, object value)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
-            await resourceEndpoint.UpdateAsync(keyName, value).IgnoreSyncContext();
+            await resourceEndpoint.UpdateAsync(keyName, value).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task UpdateSettingAsync(string stanzaName, string keyName, string value)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
-            await resourceEndpoint.UpdateAsync(keyName, value).IgnoreSyncContext();
+            await resourceEndpoint.UpdateAsync(keyName, value).ConfigureAwait(false);
         }
 
         #endregion

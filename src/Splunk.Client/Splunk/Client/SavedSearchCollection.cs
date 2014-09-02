@@ -145,14 +145,14 @@ namespace Splunk.Client
                 args = args.Concat(templateArgs);
             }
 
-            var savedSearch = await this.CreateAsync(args).IgnoreSyncContext();
+            var savedSearch = await this.CreateAsync(args).ConfigureAwait(false);
             return savedSearch;
         }
 
         /// <inheritdoc/>
         public virtual async Task GetSliceAsync(Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable()).IgnoreSyncContext();
+            await this.GetSliceAsync(criteria.AsEnumerable()).ConfigureAwait(false);
         }
 
         #endregion

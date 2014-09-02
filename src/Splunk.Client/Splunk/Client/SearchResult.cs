@@ -111,7 +111,7 @@ namespace Splunk.Client
                 var values = new List<string>();
                 var fieldDepth = r.Depth;
 
-                while (await r.ReadAsync().IgnoreSyncContext())
+                while (await r.ReadAsync().ConfigureAwait(false))
                 {
                     if (r.Depth == fieldDepth)
                     {
@@ -123,9 +123,9 @@ namespace Splunk.Client
 
                     if (r.Name == "value")
                     {
-                        if (await r.ReadToDescendantAsync("text").IgnoreSyncContext())
+                        if (await r.ReadToDescendantAsync("text").ConfigureAwait(false))
                         {
-                            values.Add(await r.ReadElementContentAsStringAsync().IgnoreSyncContext());
+                            values.Add(await r.ReadElementContentAsStringAsync().ConfigureAwait(false));
                         }
                     }
                     else if (r.Name == "v")
@@ -133,7 +133,7 @@ namespace Splunk.Client
                         Debug.Assert(this.SegmentedRaw == null);
                         Debug.Assert(key == "_raw");
 
-                        string value = await r.ReadOuterXmlAsync().IgnoreSyncContext();
+                        string value = await r.ReadOuterXmlAsync().ConfigureAwait(false);
                         this.SegmentedRaw = XElement.Parse(value);
                         values.Add(this.SegmentedRaw.Value);
                     }
@@ -151,7 +151,7 @@ namespace Splunk.Client
                         dictionary.Add(key, new ReadOnlyCollection<string>(values));
                         break;
                 }
-            }).IgnoreSyncContext();
+            }).ConfigureAwait(false);
         }
 
         /// <summary>

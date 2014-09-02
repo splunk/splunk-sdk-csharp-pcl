@@ -95,7 +95,7 @@ namespace Splunk.Client
             //// Intitialize data members
             
             this.metadata = new SearchResultMetadata();
-            await metadata.ReadXmlAsync(reader).IgnoreSyncContext();
+            await metadata.ReadXmlAsync(reader).ConfigureAwait(false);
 
             var results = new List<SearchResult>();
             this.Results = new ReadOnlyCollection<SearchResult>(results);
@@ -106,9 +106,9 @@ namespace Splunk.Client
             {
                 var result = new SearchResult(this.metadata);
 
-                await result.ReadXmlAsync(reader).IgnoreSyncContext();
+                await result.ReadXmlAsync(reader).ConfigureAwait(false);
                 results.Add(result);
-                await reader.ReadAsync().IgnoreSyncContext();
+                await reader.ReadAsync().ConfigureAwait(false);
             }
         }
 

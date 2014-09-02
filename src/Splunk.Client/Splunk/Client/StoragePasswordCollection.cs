@@ -136,14 +136,14 @@ namespace Splunk.Client
                 Realm = realm
             };
 
-            return await this.CreateAsync(arguments.AsEnumerable()).IgnoreSyncContext();
+            return await this.CreateAsync(arguments.AsEnumerable()).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task<StoragePassword> GetAsync(string username, string realm = null)
         {
             var passwordName = StoragePassword.CreateNameFromRealmAndUsername(realm, username);
-            var password = await base.GetAsync(passwordName).IgnoreSyncContext();
+            var password = await base.GetAsync(passwordName).ConfigureAwait(false);
 
             return password;
         }
@@ -152,7 +152,7 @@ namespace Splunk.Client
         public virtual async Task<StoragePassword> GetOrNullAsync(string username, string realm = null)
         {
             var passwordName = StoragePassword.CreateNameFromRealmAndUsername(realm, username);
-            var password = await base.GetOrNullAsync(passwordName).IgnoreSyncContext();
+            var password = await base.GetOrNullAsync(passwordName).ConfigureAwait(false);
 
             return password;
         }
@@ -160,7 +160,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task GetSliceAsync(Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable()).IgnoreSyncContext();
+            await this.GetSliceAsync(criteria.AsEnumerable()).ConfigureAwait(false);
         }
 
         #endregion

@@ -188,14 +188,14 @@ namespace Splunk.Client
             this.Title = null;
             this.Updated = DateTime.MinValue;
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("feed").IgnoreSyncContext());
+            reader.Requires(await reader.MoveToDocumentElementAsync("feed").ConfigureAwait(false));
             var documentElementName = reader.Name;
 
             List<AtomEntry> entries = null;
             Dictionary<string, Uri> links = null;
             List<Message> messages = null;
 
-            await reader.ReadAsync().IgnoreSyncContext();
+            await reader.ReadAsync().ConfigureAwait(false);
 
             while (reader.NodeType == XmlNodeType.Element)
             {
@@ -205,21 +205,21 @@ namespace Splunk.Client
                 {
                     case "title":
 
-                        this.Title = await reader.ReadElementContentAsync(StringConverter.Instance).IgnoreSyncContext();
+                        this.Title = await reader.ReadElementContentAsync(StringConverter.Instance).ConfigureAwait(false);
                         break;
 
                     case "id":
 
-                        this.Id = await reader.ReadElementContentAsync(UriConverter.Instance).IgnoreSyncContext();
+                        this.Id = await reader.ReadElementContentAsync(UriConverter.Instance).ConfigureAwait(false);
                         break;
 
                     case "author":
 
-                        await reader.ReadAsync().IgnoreSyncContext();
+                        await reader.ReadAsync().ConfigureAwait(false);
                         reader.EnsureMarkup(XmlNodeType.Element, "name");
-                        this.Author = await reader.ReadElementContentAsync(StringConverter.Instance).IgnoreSyncContext();
+                        this.Author = await reader.ReadElementContentAsync(StringConverter.Instance).ConfigureAwait(false);
                         reader.EnsureMarkup(XmlNodeType.EndElement, "author");
-                        await reader.ReadAsync().IgnoreSyncContext();
+                        await reader.ReadAsync().ConfigureAwait(false);
                         break;
 
                     case "generator":
@@ -227,12 +227,12 @@ namespace Splunk.Client
                         // string build = reader.GetRequiredAttribute("build"); // TODO: Incorporate build number? Build number sometimes adds a fifth digit.
                         string version = reader.GetRequiredAttribute("version");
                         this.GeneratorVersion = VersionConverter.Instance.Convert(string.Join(".", version));
-                        await reader.ReadAsync().IgnoreSyncContext();
+                        await reader.ReadAsync().ConfigureAwait(false);
                         break;
 
                     case "updated":
 
-                        this.Updated = await reader.ReadElementContentAsync(DateTimeConverter.Instance).IgnoreSyncContext();
+                        this.Updated = await reader.ReadElementContentAsync(DateTimeConverter.Instance).ConfigureAwait(false);
                         break;
 
                     case "entry":
@@ -246,7 +246,7 @@ namespace Splunk.Client
 
                         entries.Add(entry);
 
-                        await entry.ReadXmlAsync(reader).IgnoreSyncContext();
+                        await entry.ReadXmlAsync(reader).ConfigureAwait(false);
                         break;
 
                     case "link":
@@ -260,13 +260,13 @@ namespace Splunk.Client
                         }
 
                         links[rel] = UriConverter.Instance.Convert(href);
-                        await reader.ReadAsync().IgnoreSyncContext();
+                        await reader.ReadAsync().ConfigureAwait(false);
                         break;
 
                     case "s:messages":
 
                         bool isEmptyElement = reader.IsEmptyElement;
-                        await reader.ReadAsync().IgnoreSyncContext();
+                        await reader.ReadAsync().ConfigureAwait(false);
 
                         if (messages == null)
                         {
@@ -282,7 +282,7 @@ namespace Splunk.Client
                         {
                             var value = reader.GetRequiredAttribute("type");
                             var type = EnumConverter<MessageType>.Instance.Convert(value);
-                            var text = await reader.ReadElementContentAsStringAsync().IgnoreSyncContext();
+                            var text = await reader.ReadElementContentAsStringAsync().ConfigureAwait(false);
                             
                             messages.Add(new Message(type, text));
                         }
@@ -290,26 +290,26 @@ namespace Splunk.Client
                         if (reader.NodeType == XmlNodeType.EndElement)
                         {
                             reader.EnsureMarkup(XmlNodeType.EndElement, "s:messages");
-                            await reader.ReadAsync().IgnoreSyncContext();
+                            await reader.ReadAsync().ConfigureAwait(false);
                         }
 
                         break;
 
                     case "opensearch:itemsPerPage":
 
-                        int itemsPerPage = await reader.ReadElementContentAsync(Int32Converter.Instance).IgnoreSyncContext();
+                        int itemsPerPage = await reader.ReadElementContentAsync(Int32Converter.Instance).ConfigureAwait(false);
                         this.Pagination = new Pagination(itemsPerPage, this.Pagination.StartIndex, this.Pagination.TotalResults);
                         break;
 
                     case "opensearch:startIndex":
 
-                        int startIndex = await reader.ReadElementContentAsync(Int32Converter.Instance).IgnoreSyncContext();
+                        int startIndex = await reader.ReadElementContentAsync(Int32Converter.Instance).ConfigureAwait(false);
                         this.Pagination = new Pagination(this.Pagination.ItemsPerPage, startIndex, this.Pagination.TotalResults);
                         break;
 
                     case "opensearch:totalResults":
 
-                        int totalResults = await reader.ReadElementContentAsync(Int32Converter.Instance).IgnoreSyncContext();
+                        int totalResults = await reader.ReadElementContentAsync(Int32Converter.Instance).ConfigureAwait(false);
                         this.Pagination = new Pagination(this.Pagination.ItemsPerPage, this.Pagination.StartIndex, totalResults);
                         break;
 
@@ -318,7 +318,7 @@ namespace Splunk.Client
             }
 
             reader.EnsureMarkup(XmlNodeType.EndElement, documentElementName);
-            await reader.ReadAsync().IgnoreSyncContext();
+            await reader.ReadAsync().ConfigureAwait(false);
 
             if (entries != null)
             {

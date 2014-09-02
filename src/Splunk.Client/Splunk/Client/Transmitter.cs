@@ -84,9 +84,9 @@ namespace Splunk.Client
                     arguments = arguments.Concat(args);
                 }
 
-                using (var response = await this.Context.PostAsync(this.Namespace, StreamReceiver, content, arguments).IgnoreSyncContext())
+                using (var response = await this.Context.PostAsync(this.Namespace, StreamReceiver, content, arguments).ConfigureAwait(false))
                 {
-                    await response.EnsureStatusCodeAsync(HttpStatusCode.NoContent).IgnoreSyncContext();
+                    await response.EnsureStatusCodeAsync(HttpStatusCode.NoContent).ConfigureAwait(false);
                 }
             }
         }
@@ -108,18 +108,18 @@ namespace Splunk.Client
                     arguments = arguments.Concat(args);
                 }
 
-                using (var response = await this.Context.PostAsync(this.Namespace, SimpleReceiver, content, arguments).IgnoreSyncContext())
+                using (var response = await this.Context.PostAsync(this.Namespace, SimpleReceiver, content, arguments).ConfigureAwait(false))
                 {
-                    await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                    await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                     var reader = response.XmlReader;
 
-                    reader.Requires(await reader.MoveToDocumentElementAsync("response").IgnoreSyncContext());
-                    await reader.ReadElementSequenceAsync("results", "result").IgnoreSyncContext();
+                    reader.Requires(await reader.MoveToDocumentElementAsync("response").ConfigureAwait(false));
+                    await reader.ReadElementSequenceAsync("results", "result").ConfigureAwait(false);
 
                     var result = new SearchResult(SearchResultMetadata.Missing);
 
-                    await result.ReadXmlAsync(reader).IgnoreSyncContext();
-                    await reader.ReadEndElementSequenceAsync("result", "results", "response").IgnoreSyncContext();
+                    await result.ReadXmlAsync(reader).ConfigureAwait(false);
+                    await reader.ReadEndElementSequenceAsync("result", "results", "response").ConfigureAwait(false);
 
                     return result;
                 }

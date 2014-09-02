@@ -190,7 +190,7 @@ namespace Splunk.Client
         /// </returns>
         public virtual async Task<TEntity> CreateAsync(params Argument[] arguments)
         {
-            return await this.CreateAsync(arguments.AsEnumerable()).IgnoreSyncContext();
+            return await this.CreateAsync(arguments.AsEnumerable()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -204,10 +204,10 @@ namespace Splunk.Client
         /// </returns>
         public virtual async Task<TEntity> CreateAsync(IEnumerable<Argument> arguments)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).IgnoreSyncContext())
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).IgnoreSyncContext();
-                return await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).ConfigureAwait(false);
+                return await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response).ConfigureAwait(false);
             }
         }
 
@@ -225,10 +225,10 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, name);
 
-            using (Response response = await this.Context.GetAsync(this.Namespace, resourceName).IgnoreSyncContext())
+            using (Response response = await this.Context.GetAsync(this.Namespace, resourceName).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
-                return await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                return await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response).ConfigureAwait(false);
             }
         }
 
@@ -246,10 +246,10 @@ namespace Splunk.Client
         /// </returns>
         public virtual async Task GetAllAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, GetAll).IgnoreSyncContext())
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, GetAll).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
-                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
             }
         }
 
@@ -267,14 +267,14 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, name);
 
-            using (Response response = await this.Context.GetAsync(this.Namespace, resourceName).IgnoreSyncContext())
+            using (Response response = await this.Context.GetAsync(this.Namespace, resourceName).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK, HttpStatusCode.NotFound).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK, HttpStatusCode.NotFound).ConfigureAwait(false);
                 TEntity resourceEndpoint = null;
 
                 if (response.Message.StatusCode == HttpStatusCode.OK)
                 {
-                    resourceEndpoint = await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response).IgnoreSyncContext();
+                    resourceEndpoint = await BaseEntity<TResource>.CreateAsync<TEntity>(this.Context, response).ConfigureAwait(false);
                 }
 
                 return resourceEndpoint;
@@ -298,7 +298,7 @@ namespace Splunk.Client
         /// </returns>
         public virtual async Task GetSliceAsync(params Argument[] arguments)
         {
-            await this.GetSliceAsync(arguments.AsEnumerable()).IgnoreSyncContext();
+            await this.GetSliceAsync(arguments.AsEnumerable()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -318,10 +318,10 @@ namespace Splunk.Client
         /// </returns>
         public virtual async Task GetSliceAsync(IEnumerable<Argument> arguments)
         {
-            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName).IgnoreSyncContext())
+            using (Response response = await this.Context.GetAsync(this.Namespace, this.ResourceName).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
-                await this.ReconstructSnapshotAsync(response).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
             }
         }
 
@@ -336,9 +336,9 @@ namespace Splunk.Client
         {
             var reload = new ResourceName(this.ResourceName, "_reload");
 
-            using (Response response = await this.Context.GetAsync(this.Namespace, reload).IgnoreSyncContext())
+            using (Response response = await this.Context.GetAsync(this.Namespace, reload).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).IgnoreSyncContext();
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
             }
         }
 

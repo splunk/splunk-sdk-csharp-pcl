@@ -162,7 +162,7 @@ namespace Splunk.Client
         {
             try
             {
-                await this.PushObservations().IgnoreSyncContext();
+                await this.PushObservations().ConfigureAwait(false);
             }
             catch (Exception e)
             {

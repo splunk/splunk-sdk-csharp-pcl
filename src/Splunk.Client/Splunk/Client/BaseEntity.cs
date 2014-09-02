@@ -208,13 +208,13 @@ namespace Splunk.Client
             var reader = response.XmlReader;
             TEntity resourceEndpoint;
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry").IgnoreSyncContext());
+            reader.Requires(await reader.MoveToDocumentElementAsync("feed", "entry").ConfigureAwait(false));
 
             if (reader.Name == "entry")
             {
                 var entry = new AtomEntry();
 
-                await entry.ReadXmlAsync(reader).IgnoreSyncContext();
+                await entry.ReadXmlAsync(reader).ConfigureAwait(false);
                 resourceEndpoint = new TEntity();
                 resourceEndpoint.Initialize(context, entry, new Version(0, 0));
             }
@@ -222,7 +222,7 @@ namespace Splunk.Client
             {
                 var feed = new AtomFeed();
 
-                await feed.ReadXmlAsync(reader).IgnoreSyncContext();
+                await feed.ReadXmlAsync(reader).ConfigureAwait(false);
                 resourceEndpoint = new TEntity();
                 resourceEndpoint.Initialize(context, feed);
             }
@@ -389,7 +389,7 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(response != null);
             var feed = new AtomFeed();
 
-            await feed.ReadXmlAsync(response.XmlReader).IgnoreSyncContext();
+            await feed.ReadXmlAsync(response.XmlReader).ConfigureAwait(false);
             this.CreateSnapshot(feed);
 
             return true;

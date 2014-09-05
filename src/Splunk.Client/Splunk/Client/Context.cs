@@ -21,14 +21,14 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
-    using System.Globalization;
-    using System.Linq;
-    using System.Net.Http;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Globalization;
+using System.Linq;
+using System.Net.Http;
     using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
+using System.Threading;
+using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a class for sending HTTP requests and receiving HTTP responses
@@ -106,6 +106,7 @@ namespace Splunk.Client
             this.Host = host;
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
+            this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.0");
 
             if (timeout != default(TimeSpan))
             {

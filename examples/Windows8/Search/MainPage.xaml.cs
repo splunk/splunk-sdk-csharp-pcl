@@ -1,6 +1,5 @@
 ﻿using SplunkSearch.Common;
 using System;
-using System.Net;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -166,7 +165,6 @@ namespace SplunkSearch
         {
             try
             {
-            	ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
                 SplunkService = new Service(schem, host, port);
 
                 InProgress.IsActive = true;

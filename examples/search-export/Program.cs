@@ -18,14 +18,15 @@ namespace search_export
 {
     using Splunk.Client;
     using Splunk.Client.Helpers;
-
     using System;
+    using System.Net;
     using System.Threading.Tasks;
 
     class Program
     {
         static void Main(string[] args)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
             using (var service = new Service(Scheme.Https, "localhost", 8089, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();

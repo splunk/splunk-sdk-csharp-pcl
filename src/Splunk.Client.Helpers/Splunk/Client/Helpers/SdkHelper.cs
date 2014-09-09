@@ -65,6 +65,7 @@ namespace Splunk.Client.Helpers
         /// </returns>
         public static async Task<Service> CreateService(Namespace ns = null)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
             var context = new MockContext(Splunk.Scheme, Splunk.Host, Splunk.Port);
             var service = new Service(context, ns);
             

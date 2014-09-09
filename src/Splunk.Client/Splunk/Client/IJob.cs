@@ -150,7 +150,8 @@ namespace Splunk.Client
         /// current search job.
         /// </summary>
         /// <value>
-        /// The number of event availables.
+        /// The number of events that are available for export from the current
+        /// search job.
         /// </value>
         long EventAvailableCount
         { get; }
@@ -586,7 +587,7 @@ namespace Splunk.Client
         /// Gets the ID of the current search job.
         /// </summary>
         /// <remarks>
-        /// This property is a synonym for <see cref="Resource&lt;TResource&gt;.Name"/>.
+        /// This property is a synonym for the job name.
         /// </remarks>
         /// <value>
         /// The search ID of the current <see cref="Job"/>.
@@ -595,7 +596,7 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the maximum number of timeline buckets.
+        /// Gets the maximum number of time line buckets.
         /// </summary>
         /// <value>
         /// The status buckets.
@@ -684,7 +685,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         Task<bool> UpdateAsync(CustomJobArgs arguments);
 
@@ -832,7 +833,7 @@ namespace Splunk.Client
         Task UnpauseAsync();
 
         /// <summary>
-        /// Asynchronously disables any action performed by <see cref="Save"/>.
+        /// Asynchronously disables any action performed by <see cref="SaveAsync"/>.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.

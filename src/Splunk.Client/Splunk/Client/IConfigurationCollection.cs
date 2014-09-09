@@ -45,10 +45,6 @@ namespace Splunk.Client
         /// endpoint to create the configuration stanza represented by the object it
         /// returns.
         /// </remarks>
-        ///
-        /// <param name="name">
-        /// Name of the configuration file to create.
-        /// </param>
         /// <param name="fileName">
         /// The name of a configuration file.
         /// </param>

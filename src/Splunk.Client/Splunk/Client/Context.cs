@@ -26,6 +26,7 @@ namespace Splunk.Client
     using System.Globalization;
     using System.Linq;
     using System.Net.Http;
+    using System.Net;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -55,8 +56,7 @@ namespace Splunk.Client
         /// <param name="timeout">
         /// The timeout.
         /// </param>
-        ///
-        /// ### <exception name="ArgumentException">
+        /// <exception name="ArgumentException">
         /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
         /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
         /// or greater than <c>65535</c>.
@@ -92,8 +92,7 @@ namespace Splunk.Client
         /// <c>true</c> if the inner handler should be disposed of by Dispose,
         /// <c>false</c> if you intend to reuse the inner handler.
         /// </param>
-        ///
-        /// ### <exception name="ArgumentException">
+        /// <exception name="ArgumentException">
         /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
         /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
         /// or greater than <c>65535</c>.
@@ -108,6 +107,7 @@ namespace Splunk.Client
             this.Host = host;
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
+            this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.0");
 
             if (timeout != default(TimeSpan))
             {
@@ -237,7 +237,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -260,7 +260,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -285,7 +285,7 @@ namespace Splunk.Client
         public virtual async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token,
             params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -308,7 +308,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var content = CreateStringContent(argumentSets);
-            return await PostAsync(ns, resource, content, null);
+            return await PostAsync(ns, resource, content, null).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace Splunk.Client
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets);
+            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -431,8 +431,8 @@ namespace Splunk.Client
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
 
-                var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-                var response =  await Response.CreateAsync(message);
+                var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                var response = await Response.CreateAsync(message).ConfigureAwait(false);
 
                 return response;
             }

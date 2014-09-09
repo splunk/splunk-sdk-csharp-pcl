@@ -46,8 +46,7 @@ namespace Splunk.Client
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal StoragePasswordCollection(Service service)
@@ -65,10 +64,10 @@ namespace Splunk.Client
         /// A Splunk response atom feed.
         /// </param>
         ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// <exception cref="System.ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="System.IO.InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal StoragePasswordCollection(Context context, AtomFeed feed)
@@ -86,14 +85,10 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
-        /// <paramref name="name"/> is <c>null</c> or empty.
-        /// </exception>
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal StoragePasswordCollection(Context context, Namespace ns)
@@ -106,9 +101,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use
-        /// <see cref= "Service.GetStoragePasswordsAsync"/> to asynchronously
-        /// retrieve a collection of storage passwords.
+        /// be used directly from your code.
         /// </remarks>
         public StoragePasswordCollection()
         { }
@@ -143,14 +136,14 @@ namespace Splunk.Client
                 Realm = realm
             };
 
-            return await this.CreateAsync(arguments.AsEnumerable());
+            return await this.CreateAsync(arguments.AsEnumerable()).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task<StoragePassword> GetAsync(string username, string realm = null)
         {
             var passwordName = StoragePassword.CreateNameFromRealmAndUsername(realm, username);
-            var password = await base.GetAsync(passwordName);
+            var password = await base.GetAsync(passwordName).ConfigureAwait(false);
 
             return password;
         }
@@ -159,7 +152,7 @@ namespace Splunk.Client
         public virtual async Task<StoragePassword> GetOrNullAsync(string username, string realm = null)
         {
             var passwordName = StoragePassword.CreateNameFromRealmAndUsername(realm, username);
-            var password = await base.GetOrNullAsync(passwordName);
+            var password = await base.GetOrNullAsync(passwordName).ConfigureAwait(false);
 
             return password;
         }
@@ -167,7 +160,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task GetSliceAsync(Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable());
+            await this.GetSliceAsync(criteria.AsEnumerable()).ConfigureAwait(false);
         }
 
         #endregion

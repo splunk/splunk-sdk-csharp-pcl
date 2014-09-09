@@ -80,7 +80,7 @@ namespace Splunk.Client
         /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="millisecondsDelay"/> is less than <c>-1</c>.
         /// </exception>
-        /// <exception cref="HttpRequestException">
+        /// <exception cref="System.Net.Http.HttpRequestException">
         /// The restart operation failed.
         /// </exception>
         /// <exception cref="OperationCanceledException">
@@ -188,18 +188,17 @@ namespace Splunk.Client
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
         /// <seealso cref="M:Splunk.Client.IServer.RestartAsync(int,int)"/>
-        ///
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="millisecondsDelay"/> is less than <c>-1</c>.
         /// </exception>
-        /// ### <exception cref="HttpRequestException">
+        /// <exception cref="System.Net.Http.HttpRequestException">
         /// The restart operation failed.
         /// </exception>
-        /// ### <exception cref="OperationCanceledException">
+        /// <exception cref="OperationCanceledException">
         /// The check for server availability was canceled after
         /// <paramref name="millisecondsDelay"/>.
         /// </exception>
-        /// ### <exception cref="UnauthorizedAccessException">
+        /// <exception cref="UnauthorizedAccessException">
         /// Insufficient privileges to restart the current <see cref="Server"/>.
         /// </exception>
         public Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)

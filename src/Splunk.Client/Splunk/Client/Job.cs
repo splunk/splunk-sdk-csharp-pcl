@@ -69,10 +69,10 @@ namespace Splunk.Client
         /// A Splunk response atom feed.
         /// </param>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// <paramref name="context"/> or <paramref name="entry"/> are <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidDataException">
-        /// <paramref name="feed"/> is in an invalid format.
+        /// <paramref name="entry"/> is in an invalid format.
         /// </exception>
         protected internal Job(Context context, AtomEntry entry)
         {
@@ -110,39 +110,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain a
-        /// <see cref="Job"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="SavedSearch.DispatchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously dispatches the current <see cref="SavedSearch"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.CreateJobAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new search <see cref="Job"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.DispatchSavedSearchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously dispatches a <see cref="SavedSearch"/> identified by
-        ///   name.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetJobAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves a <see cref="Job"/> identified by search ID.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public Job()
         { }
@@ -484,7 +452,7 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public override async Task GetAsync()
         {
-            await GetAsync(DispatchState.Running);
+            await GetAsync(DispatchState.Running).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -497,12 +465,12 @@ namespace Splunk.Client
 
                 for (int i = 0; ; i++)
                 {
-                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, token))
+                    using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, token).ConfigureAwait(false))
                     {
                         if (response.Message.StatusCode != HttpStatusCode.NoContent)
                         {
-                            await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                            await this.ReconstructSnapshotAsync(response);
+                            await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                            await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
 
                             if (this.DispatchState >= dispatchState)
                             {
@@ -511,7 +479,7 @@ namespace Splunk.Client
                         }
                     }
 
-                    await Task.Delay(retryInterval);
+                    await Task.Delay(retryInterval).ConfigureAwait(false);
                     retryInterval += retryInterval / 2;
                 }
             }
@@ -525,13 +493,13 @@ namespace Splunk.Client
                 return;
             }
 
-            await this.GetAsync(dispatchState, delay, retryInterval);
+            await this.GetAsync(dispatchState, delay, retryInterval).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task<bool> UpdateAsync(CustomJobArgs arguments)
         {
-            return await this.UpdateAsync(arguments.AsEnumerable());
+            return await this.UpdateAsync(arguments.AsEnumerable()).ConfigureAwait(false);
         }
 
         #endregion
@@ -541,21 +509,21 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args = null)
         {
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args).ConfigureAwait(false);
             return searchResults;
         }
 
         /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args = null)
         {
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args).ConfigureAwait(false);
             return searchResults;
         }
 
         /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args = null)
         {
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Running, "results_preview", args);
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Running, "results_preview", args).ConfigureAwait(false);
             return searchResults;
         }
 
@@ -566,93 +534,93 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task CancelAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Cancel);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
+            await this.PostControlCommandAsync(Cancel).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task DisablePreviewAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(DisablePreview);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
+            await this.PostControlCommandAsync(DisablePreview).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task EnablePreviewAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(EnablePreview);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
+            await this.PostControlCommandAsync(EnablePreview).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task FinalizeAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Finalize);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
+            await this.PostControlCommandAsync(Finalize).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task PauseAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Pause);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
+            await this.PostControlCommandAsync(Pause).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task SaveAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Save);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
+            await this.PostControlCommandAsync(Save).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task SetPriorityAsync(int priority)
         {
-            await this.TransitionAsync(DispatchState.Running);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
 
             await this.PostControlCommandAsync(new Argument[] 
             { 
                 new Argument("action", "priority"),
                 new Argument("priority", priority.ToString())
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task SetTtlAsync(int ttl)
         {
-            await this.TransitionAsync(DispatchState.Running);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
 
             await this.PostControlCommandAsync(new Argument[]
             { 
                 new Argument("action", "setttl"),
                 new Argument("ttl", ttl.ToString())
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task TouchAsync(int ttl)
         {
-            await this.TransitionAsync(DispatchState.Running);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
 
             await this.PostControlCommandAsync(new Argument[]
             { 
                 new Argument("action", "touch"),
                 new Argument("ttl", ttl.ToString())
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task UnpauseAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Unpause);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
+            await this.PostControlCommandAsync(Unpause).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task UnsaveAsync()
         {
-            await this.TransitionAsync(DispatchState.Running);
-            await this.PostControlCommandAsync(Unsave);
+            await this.TransitionAsync(DispatchState.Running).ConfigureAwait(false);
+            await this.PostControlCommandAsync(Unsave).ConfigureAwait(false);
         }
 
         #endregion
@@ -664,7 +632,7 @@ namespace Splunk.Client
         {
             var entry = new AtomEntry();
 
-            await entry.ReadXmlAsync(response.XmlReader);
+            await entry.ReadXmlAsync(response.XmlReader).ConfigureAwait(false);
             this.CreateSnapshot(entry, new Version(0, 0));
 
             return true;
@@ -718,14 +686,14 @@ namespace Splunk.Client
 
         async Task<SearchResultStream> GetSearchResultsAsync(DispatchState dispatchState, string endpoint, IEnumerable<Argument> args)
         {
-            await this.TransitionAsync(dispatchState);
+            await this.TransitionAsync(dispatchState).ConfigureAwait(false);
 
             var resourceName = new ResourceName(this.ResourceName, endpoint);
-            var response = await this.Context.GetAsync(this.Namespace, resourceName, args);
+            var response = await this.Context.GetAsync(this.Namespace, resourceName, args).ConfigureAwait(false);
 
             try
             {
-                var searchResults = await SearchResultStream.CreateAsync(response);
+                var searchResults = await SearchResultStream.CreateAsync(response).ConfigureAwait(false);
                 return searchResults;
             }
             catch 
@@ -739,9 +707,9 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "control");
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
             }
         }
 

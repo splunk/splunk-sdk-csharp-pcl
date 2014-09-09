@@ -184,13 +184,13 @@ namespace Splunk.Client
 
             if (reader.ReadState == ReadState.Initial)
             {
-                await reader.ReadAsync();
+                await reader.ReadAsync().ConfigureAwait(false);
 
                 if (reader.NodeType == XmlNodeType.XmlDeclaration)
                 {
                     try
                     {
-                        await reader.ReadAsync();
+                        await reader.ReadAsync().ConfigureAwait(false);
                     }
                     catch (XmlException)
                     {
@@ -244,8 +244,8 @@ namespace Splunk.Client
         /// Name of the descendant elements to read.
         /// </param>
         /// <param name="task">
-        /// An awaitable function to apply to <see cref="reader"/> at each of the
-        /// visited elements.
+        /// An awaitable function to apply to <paramref name="reader"/> at each 
+        /// of the visited elements.
         /// </param>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -256,13 +256,13 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(task != null, "action");
             Contract.Requires<ArgumentNullException>(reader != null, "reader");
 
-            if (await reader.ReadToDescendantAsync(name))
+            if (await reader.ReadToDescendantAsync(name).ConfigureAwait(false))
             {
-                await task(reader);
+                await task(reader).ConfigureAwait(false);
 
-                while (await reader.ReadToNextSiblingAsync(name))
+                while (await reader.ReadToNextSiblingAsync(name).ConfigureAwait(false))
                 {
-                    await task(reader);
+                    await task(reader).ConfigureAwait(false);
                 }
             }
         }
@@ -284,7 +284,7 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<TValue> ReadElementContentAsync<TValue>(this XmlReader reader, ValueConverter<TValue> valueConverter)
         {
-            return valueConverter.Convert(await reader.ReadElementContentAsStringAsync());
+            return valueConverter.Convert(await reader.ReadElementContentAsStringAsync().ConfigureAwait(false));
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace Splunk.Client
 
             foreach (var name in names)
             {
-                await reader.ReadAsync();
+                await reader.ReadAsync().ConfigureAwait(false);
                 reader.EnsureMarkup(XmlNodeType.Element, name);
             }
         }
@@ -361,7 +361,7 @@ namespace Splunk.Client
             foreach (var name in names)
             {
                 reader.EnsureMarkup(XmlNodeType.EndElement, name);
-                await reader.ReadAsync();
+                await reader.ReadAsync().ConfigureAwait(false);
             }
         }
 
@@ -383,9 +383,9 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(reader != null);
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("response"));
-            await reader.ReadElementSequenceAsync(name);
-            var text = await reader.ReadElementContentAsStringAsync();
+            reader.Requires(await reader.MoveToDocumentElementAsync("response").ConfigureAwait(false));
+            await reader.ReadElementSequenceAsync(name).ConfigureAwait(false);
+            var text = await reader.ReadElementContentAsStringAsync().ConfigureAwait(false);
 
             return text;
         }
@@ -428,7 +428,7 @@ namespace Splunk.Client
             
             name = reader.NameTable.Add(name);
 
-            while (await reader.ReadAsync() && (reader.Depth > depth))
+            while (await reader.ReadAsync().ConfigureAwait(false) && (reader.Depth > depth))
             {
                 if (reader.NodeType == XmlNodeType.Element && reader.Name == name)
                 {
@@ -460,7 +460,7 @@ namespace Splunk.Client
 
             name = reader.NameTable.Add(name);
 
-            while (await reader.ReadAsync())
+            while (await reader.ReadAsync().ConfigureAwait(false))
             {
                 if (reader.NodeType == XmlNodeType.Element && reader.Name == name)
                 {
@@ -497,7 +497,7 @@ namespace Splunk.Client
 
             do
             {
-                if (! await reader.SkipSubtreeAsync())
+                if (!await reader.SkipSubtreeAsync().ConfigureAwait(false))
                 {
                     break;
                 }
@@ -614,7 +614,7 @@ namespace Splunk.Client
             {
                 int depth = reader.Depth;
 
-                while (await reader.ReadAsync() && (depth < reader.Depth))
+                while (await reader.ReadAsync().ConfigureAwait(false) && (depth < reader.Depth))
                 { }
 
                 if (reader.NodeType != XmlNodeType.EndElement)
@@ -623,7 +623,7 @@ namespace Splunk.Client
                 }
             }
 
-            return await reader.ReadAsync();
+            return await reader.ReadAsync().ConfigureAwait(false);
         }
 
         #endregion

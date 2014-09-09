@@ -72,7 +72,7 @@ namespace Splunk.Client
         /// Asynchronously creates a new <see cref="SearchExportStream"/>
         /// using the specified <see cref="HttpResponseMessage"/>.
         /// </summary>
-        /// <param name="response">
+        /// <param name="message">
         /// An object from which search results are read.
         /// </param>
         /// <returns>
@@ -80,22 +80,22 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<SearchPreviewStream> CreateAsync(HttpResponseMessage message)
         {
-            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message));
+            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message).ConfigureAwait(false));
         }
 
         /// <summary>
         /// Asynchronously creates a new <see cref="SearchExportStream"/>
         /// using the specified <see cref="Response"/>.
         /// </summary>
-        /// <exception cref="InvalidDataException">
-        /// Thrown when an Invalid Data error condition occurs.
-        /// </exception>
         /// <param name="response">
         /// An object from which search results are read.
         /// </param>
         /// <returns>
         /// The new asynchronous.
         /// </returns>
+        /// <exception cref="System.IO.InvalidDataException">
+        /// Thrown when an invalid Data error condition occurs.
+        /// </exception>
         public static Task<SearchPreviewStream> CreateAsync(Response response)
         {
             return Task.FromResult(new SearchPreviewStream(response));
@@ -221,10 +221,10 @@ namespace Splunk.Client
         {
             XmlReader reader = this.response.XmlReader;
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("results"));
+            reader.Requires(await reader.MoveToDocumentElementAsync("results").ConfigureAwait(false));
             var preview = new SearchPreview();
-            await preview.ReadXmlAsync(reader);
-            await reader.ReadAsync();
+            await preview.ReadXmlAsync(reader).ConfigureAwait(false);
+            await reader.ReadAsync().ConfigureAwait(false);
 
             return preview;
         }
@@ -261,7 +261,7 @@ namespace Splunk.Client
             {
                 while (this.Stream.ReadState <= ReadState.Interactive)
                 {
-                    var preview = await this.Stream.ReadPreviewAsync();
+                    var preview = await this.Stream.ReadPreviewAsync().ConfigureAwait(false);
                     this.Enqueue(preview);
                 }
             }

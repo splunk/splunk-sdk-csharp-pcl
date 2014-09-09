@@ -131,7 +131,7 @@ namespace Splunk.Client
         /// </returns>
         Task UpdateSettingAsync(string stanzaName, string keyName, object value);
 
-        /// <inheritdoc cref="UpdateSettingAsync"/>
+        /// <inheritdoc cref="UpdateSettingAsync(string,string,object)"/>
         Task UpdateSettingAsync(string stanzaName, string keyName, string value);
     }
 

@@ -132,10 +132,6 @@ namespace Splunk.Client
         /// </list>
         /// </returns>
         /// <seealso cref="M:System.IComparable.CompareTo(object)"/>
-        ///
-        /// ### <param name="obj">
-        /// An object to compare with this instance.
-        /// </param>
         public int CompareTo(object other)
         {
             return this.CompareTo(other as Message);
@@ -222,10 +218,6 @@ namespace Splunk.Client
         /// otherwise, <c>false</c>.
         /// </returns>
         /// <seealso cref="M:System.Object.Equals(object)"/>
-        ///
-        /// ### <param name="obj">
-        /// The object to compare with the current object.
-        /// </param>
         public override bool Equals(object other)
         {
             return this.Equals(other as Message);
@@ -434,17 +426,17 @@ namespace Splunk.Client
         {
             var messages = new List<Message>();
 
-            if (await reader.MoveToDocumentElementAsync("response"))
+            if (await reader.MoveToDocumentElementAsync("response").ConfigureAwait(false))
             {
-                await reader.ReadAsync();
+                await reader.ReadAsync().ConfigureAwait(false);
                 reader.EnsureMarkup(XmlNodeType.Element, "messages");
-                await reader.ReadAsync();
+                await reader.ReadAsync().ConfigureAwait(false);
 
                 while (reader.NodeType == XmlNodeType.Element && reader.Name == "msg")
                 {
                     var name = reader.GetRequiredAttribute("type");
                     var type = EnumConverter<MessageType>.Instance.Convert(name);
-                    var text = await reader.ReadElementContentAsStringAsync();
+                    var text = await reader.ReadElementContentAsStringAsync().ConfigureAwait(false);
                     
                     messages.Add(new Message(type, text));
                 }

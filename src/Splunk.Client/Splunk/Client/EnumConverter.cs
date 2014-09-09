@@ -69,17 +69,13 @@ namespace Splunk.Client
         /// Converts the string representation of the <paramref name="input"/>
         /// object to a <typeparamref name="TEnum"/> value.
         /// </summary>
-        /// <exception cref="NewInvalidDataException">
-        /// Thrown when a New Invalid Data error condition occurs.
-        /// </exception>
         /// <param name="input">
         /// The object to convert.
         /// </param>
         /// <returns>
         /// Result of the conversion.
         /// </returns>
-        ///
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="InvalidDataException">
         /// The <paramref name="input"/> does not represent a
         /// <typeparamref name="TEnum"/>
         /// value.

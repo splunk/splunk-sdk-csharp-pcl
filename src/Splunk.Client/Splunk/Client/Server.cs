@@ -37,18 +37,13 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Receiver"/> class.
+        /// Initializes a new instance of the <see cref="Server"/> class.
         /// </summary>
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
         /// </param>
-        ///
-        /// ### <param name="name">
-        /// An object identifying a Splunk resource within
-        /// <paramref name= "service"/>.<see cref="Namespace"/>.
-        /// </param>
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal Server(Service service)
             : this(service.Context, service.Namespace)
@@ -65,11 +60,10 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         internal Server(Context context, Namespace ns)
@@ -95,12 +89,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<ServerInfo> GetInfoAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, Info))
+            using (var response = await this.Context.GetAsync(this.Namespace, Info).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).ConfigureAwait(false);
                 var info = new ServerInfo(feed);
                 
                 return info;
@@ -110,12 +104,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<ServerSettings> GetSettingsAsync()
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, Settings))
+            using (var response = await this.Context.GetAsync(this.Namespace, Settings).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).ConfigureAwait(false);
                 var settings = new ServerSettings(feed);
 
                 return settings;
@@ -125,12 +119,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
-            var info = await this.GetInfoAsync();
+            var info = await this.GetInfoAsync().ConfigureAwait(false);
             var startupTime = info.StartupTime;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, Restart))
+            using (var response = await this.Context.PostAsync(this.Namespace, Restart).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
             }
 
             this.Context.SessionKey = null; // because this session is now or shortly will be gone
@@ -149,7 +143,7 @@ namespace Splunk.Client
                 {
                     try
                     {
-                        info = await this.GetInfoAsync();
+                        info = await this.GetInfoAsync().ConfigureAwait(false);
 
                         if (startupTime < info.StartupTime)
                         {
@@ -182,7 +176,7 @@ namespace Splunk.Client
                         }
                     }
 
-                    await Task.Delay(millisecondsDelay: retryInterval);
+                    await Task.Delay(millisecondsDelay: retryInterval).ConfigureAwait(false);
                 }
 
                 throw new OperationCanceledException();
@@ -192,12 +186,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<ServerSettings> UpdateSettingsAsync(ServerSettingValues values)
         {
-            using (var response = await this.Context.PostAsync(this.Namespace, Settings, values))
+            using (var response = await this.Context.PostAsync(this.Namespace, Settings, values).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).ConfigureAwait(false);
                 var settings = new ServerSettings(feed);
 
                 return settings;

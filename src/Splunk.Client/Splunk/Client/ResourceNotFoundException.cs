@@ -28,9 +28,8 @@ namespace Splunk.Client
     using System.Net.Http;
 
     /// <summary>
-    /// The exception that is thrown when a request to retrieve a
-    /// <see cref= "Resource&lt;TResource&gt;"/> results in
-    /// <see cref="HttpStatusCode.NotFound"/>.
+    /// The exception that is thrown when a request to retrieve a resource
+    /// results in <see cref="HttpStatusCode.NotFound"/>.
     /// </summary>
     /// <seealso cref="T:Splunk.Client.RequestException"/>
     [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors", Justification =

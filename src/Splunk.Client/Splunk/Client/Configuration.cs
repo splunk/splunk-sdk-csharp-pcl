@@ -90,11 +90,10 @@ namespace Splunk.Client
         /// <param name="fileName">
         /// Name of a configuration file.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
+        /// <exception cref="ArgumentException">
         /// <paramref name="fileName"/> is <c>null</c> or empty.
         /// </exception>
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal Configuration(Service service, string fileName)
@@ -128,11 +127,10 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal Configuration(Context context, AtomFeed feed)
@@ -146,27 +144,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain a
-        /// <see cref="Configuration"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="Service.CreateConfigurationAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new <see cref="Configuration"/> file.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetConfigurationAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves an existing <see cref="Configuration"/>
-        ///   file.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public Configuration()
         { }
@@ -180,7 +158,7 @@ namespace Splunk.Client
         {
             //// These gymnastics are required because:
             //// * The POST properties/{file_name} endpoint returns nothing in the
-            ////   response body. 
+            ////   response body.
             //// * This method is obliged to return a ConfigurationStanza and we can
             ////   do that, if we can do that without an extra round trip by probing
             ////   arguments for the stanza name.
@@ -189,7 +167,7 @@ namespace Splunk.Client
             {
                 if (argument.Name == "__stanza")
                 {
-                    await base.CreateAsync(arguments);
+                    await base.CreateAsync(arguments).ConfigureAwait(false);
                     return new ConfigurationStanza(this.Context, this.Namespace, this.Name, argument.Name);
                 }
             }
@@ -208,9 +186,9 @@ namespace Splunk.Client
         {
             var arguments = new Argument[] { new Argument("__stanza", stanzaName) };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments))
+            using (var response = await this.Context.PostAsync(this.Namespace, this.ResourceName, arguments).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).ConfigureAwait(false);
             }
 
             return new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
@@ -220,7 +198,7 @@ namespace Splunk.Client
         public virtual async Task<string> GetSettingAsync(string stanzaName, string keyName)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
-            var value = await resourceEndpoint.GetAsync(keyName);
+            var value = await resourceEndpoint.GetAsync(keyName).ConfigureAwait(false);
             return value;
         }
 
@@ -228,14 +206,14 @@ namespace Splunk.Client
         public virtual async Task RemoveAsync(string stanzaName)
         {
             var resource = new ConfigurationStanza(this.Context, this.Namespace, this.ResourceName.Title, stanzaName);
-            await resource.RemoveAsync();
+            await resource.RemoveAsync().ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task<ConfigurationStanza> UpdateAsync(string stanzaName, params Argument[] settings)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
-            await resourceEndpoint.UpdateAsync(settings);
+            await resourceEndpoint.UpdateAsync(settings).ConfigureAwait(false);
             return resourceEndpoint;
         }
 
@@ -243,14 +221,14 @@ namespace Splunk.Client
         public virtual async Task UpdateSettingAsync(string stanzaName, string keyName, object value)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
-            await resourceEndpoint.UpdateAsync(keyName, value);
+            await resourceEndpoint.UpdateAsync(keyName, value).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public virtual async Task UpdateSettingAsync(string stanzaName, string keyName, string value)
         {
             var resourceEndpoint = new ConfigurationStanza(this.Context, this.Namespace, this.Name, stanzaName);
-            await resourceEndpoint.UpdateAsync(keyName, value);
+            await resourceEndpoint.UpdateAsync(keyName, value).ConfigureAwait(false);
         }
 
         #endregion

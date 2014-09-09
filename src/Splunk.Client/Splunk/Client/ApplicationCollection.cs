@@ -44,8 +44,7 @@ namespace Splunk.Client
         /// <param name="service">
         /// An object representing a root Splunk service endpoint.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// <paramref name="service"/> is <c>null</c>.
         /// </exception>
         protected internal ApplicationCollection(Service service)
@@ -62,11 +61,10 @@ namespace Splunk.Client
         /// <param name="feed">
         /// A Splunk response atom feed.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <see cref="feed"/> are <c>null</c>.
+        /// <exception cref="System.ArgumentNullException">
+        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="InvalidDataException">
+        /// <exception cref="System.IO.InvalidDataException">
         /// <paramref name="feed"/> is in an invalid format.
         /// </exception>
         protected internal ApplicationCollection(Context context, AtomFeed feed)
@@ -84,14 +82,10 @@ namespace Splunk.Client
         /// <param name="ns">
         /// An object identifying a Splunk services namespace.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentException">
-        /// <paramref name="name"/> is <c>null</c> or empty.
-        /// </exception>
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="System.ArgumentNullException">
         /// <paramref name="context"/> or <paramref name="ns"/> are <c>null</c>.
         /// </exception>
-        /// ### <exception cref="ArgumentOutOfRangeException">
+        /// <exception cref="System.ArgumentOutOfRangeException">
         /// <paramref name="ns"/> is not specific.
         /// </exception>
         protected internal ApplicationCollection(Context context, Namespace ns)
@@ -104,9 +98,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use
-        /// <see cref= "Service.GetApplicationsAsync"/> to asynchronously retrieve a
-        /// collection of installed Splunk applications.
+        /// be used directly from your code.
         /// </remarks>
         public ApplicationCollection()
         { }
@@ -148,14 +140,14 @@ namespace Splunk.Client
                 arguments = arguments.Concat(attributes);
             }
 
-            var resourceEndpoint = await this.CreateAsync(arguments);
+            var resourceEndpoint = await this.CreateAsync(arguments).ConfigureAwait(false);
             return resourceEndpoint;
         }
 
         /// <inheritdoc/>
         public virtual async Task GetSliceAsync(Filter criteria)
         {
-            await this.GetSliceAsync(criteria.AsEnumerable());
+            await this.GetSliceAsync(criteria.AsEnumerable()).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -171,11 +163,11 @@ namespace Splunk.Client
                 Update = update
             };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                
-                var resourceEndpoint = await Entity<Resource>.CreateAsync<Application>(this.Context, response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).ConfigureAwait(false);
+
+                var resourceEndpoint = await Entity<Resource>.CreateAsync<Application>(this.Context, response).ConfigureAwait(false);
                 return resourceEndpoint;
             }
         }

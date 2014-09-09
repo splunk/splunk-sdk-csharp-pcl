@@ -758,7 +758,7 @@ namespace Splunk.Client
         /// New attributes for the current <see cref="Index"/> instance.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         Task<bool> UpdateAsync(IndexAttributes attributes);
 

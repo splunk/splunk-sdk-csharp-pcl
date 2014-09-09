@@ -109,7 +109,7 @@ namespace Splunk.Client
             Contract.Requires(message != null);
 
             var response = new Response(message);
-            response.Stream = await message.Content.ReadAsStreamAsync();
+            response.Stream = await message.Content.ReadAsStreamAsync().ConfigureAwait(false);
 
             return response;
         }
@@ -161,7 +161,7 @@ namespace Splunk.Client
                 return;
             }
 
-            await ThrowRequestExceptionAsync();
+            await ThrowRequestExceptionAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -177,10 +177,6 @@ namespace Splunk.Client
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        ///
-        /// ### <param name="expected0">
-        /// One expected <see cref="HttpStatusCode"/>.
-        /// </param>
         public async Task EnsureStatusCodeAsync(HttpStatusCode expected1, HttpStatusCode expected2)
         {
             var statusCode = this.Message.StatusCode;
@@ -190,7 +186,7 @@ namespace Splunk.Client
                 return;
             }
 
-            await ThrowRequestExceptionAsync();
+            await ThrowRequestExceptionAsync().ConfigureAwait(false);
         }
 
         #endregion
@@ -222,7 +218,7 @@ namespace Splunk.Client
         /// </returns>
         internal async Task ThrowRequestExceptionAsync()
         {
-            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader);
+            var details = await Splunk.Client.Message.ReadMessagesAsync(this.XmlReader).ConfigureAwait(false);
             RequestException requestException;
 
             switch (this.Message.StatusCode)

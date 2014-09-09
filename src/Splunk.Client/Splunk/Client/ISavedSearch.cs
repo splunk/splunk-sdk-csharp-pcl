@@ -357,7 +357,7 @@ namespace Splunk.Client
         /// New template arguments for the saved search to be updated.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         Task<bool> UpdateAsync(string search = null, SavedSearchAttributes attributes = null, 
             SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null);

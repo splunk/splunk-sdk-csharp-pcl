@@ -68,13 +68,6 @@ namespace Splunk.Client
         ///   file.
         ///   </description>
         /// </item>
-        /// <item>
-        ///   <term><see cref="ApplicationCollection.PackageApplicationAsync"/></term>
-        ///   <description>
-        ///   Asychronously packages the named Splunk application into an archive
-        ///   file.
-        ///   </description>
-        /// </item>
         /// </list>
         /// </remarks>
         public ApplicationArchiveInfo()

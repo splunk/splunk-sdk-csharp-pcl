@@ -40,7 +40,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Observer&lt;&gt'"/> 
+        /// Initializes a new instance of the <see cref="Observer&lt;T&gt;"/> 
         /// class.
         /// </summary>
         public Observer(Action<T> onNext, Action onCompleted = null, Action<Exception> onError = null)
@@ -54,16 +54,31 @@ namespace Splunk.Client
 
         #region Methods
 
+        /// <summary>
+        /// Executes the completed action.
+        /// </summary>
         public void OnCompleted()
         {
             this.onCompleted();
         }
 
+        /// <summary>
+        /// Executes the error action.
+        /// </summary>
+        /// <param name="error">
+        /// The error.
+        /// </param>
         public void OnError(Exception error)
         {
             this.onError(error);
         }
 
+        /// <summary>
+        /// Executes the next action.
+        /// </summary>
+        /// <param name="value">
+        /// The value.
+        /// </param>
         public void OnNext(T value)
         {
             this.onNext(value);

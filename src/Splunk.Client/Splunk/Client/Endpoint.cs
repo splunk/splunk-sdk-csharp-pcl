@@ -165,10 +165,6 @@ namespace Splunk.Client
         /// A signed number indicating the relative values of this instance and value.
         /// </returns>
         /// <seealso cref="M:System.IComparable.CompareTo(object)"/>
-        ///
-        /// ### <param name="obj">
-        /// An object to compare with this instance.
-        /// </param>
         public int CompareTo(object other)
         {
             return this.CompareTo(other as Endpoint);
@@ -214,10 +210,6 @@ namespace Splunk.Client
         /// <see cref="Endpoint"/>; otherwise, <c>false</c>.
         /// </returns>
         /// <seealso cref="M:System.Object.Equals(object)"/>
-        ///
-        /// ### <param name="obj">
-        /// The object to compare with the current object.
-        /// </param>
         public override bool Equals(object other)
         {
             return this.Equals(other as Endpoint);
@@ -267,7 +259,7 @@ namespace Splunk.Client
         /// <see cref= "Endpoint"/>.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="Endpoint"/>
+        /// This method may be called once to initialize a <see cref="Endpoint"/>
         /// instantiated by the default constructor.
         /// <note type="note">
         /// This method supports the Splunk client infrastructure and is not intended
@@ -345,7 +337,7 @@ namespace Splunk.Client
         /// <see cref= "Endpoint"/>.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a <see cref="Endpoint"/>
+        /// This method may be called once to initialize a <see cref="Endpoint"/>
         /// instantiated by the default constructor.
         /// <note type="note">
         /// This method supports the Splunk client infrastructure and is not intended

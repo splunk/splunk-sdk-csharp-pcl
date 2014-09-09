@@ -2,11 +2,10 @@ namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
     using Splunk.Client.Helpers;
-
     using System;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
-    
     using Xunit;
     
     public class ApplicationTest
@@ -14,8 +13,9 @@ namespace Splunk.Client.UnitTests
         [Trait("acceptance-test", "Splunk.Client.Application")]
         [MockContext]
         [Fact]
-        public async Task Test()
+        public async Task TestApplications()
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
             using (var service = await SdkHelper.CreateService())
             {
                 ApplicationCollection apps = service.Applications;

@@ -41,7 +41,7 @@ namespace Splunk.Client
         Task GetAsync();
 
         /// <summary>
-        /// Asynchronously removes the current <see cref="Entity"/> from Splunk.
+        /// Asynchronously removes the current entity from Splunk.
         /// </summary>
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
@@ -49,29 +49,29 @@ namespace Splunk.Client
         Task RemoveAsync();
 
         /// <summary>
-        /// Asynchronously updates the attributes of the current
-        /// <see cref= "Entity"/> on Splunk.
+        /// Asynchronously updates the attributes of the current entity on
+        /// Splunk.
         /// </summary>
         /// <remarks>
         /// Splunk usually returns an updated snapshot on completion of the
-        /// operation. When it does the <see cref="CurrentSnapshot"/> will also be
+        /// operation. When it does the current snapshot will also be
         /// updated.
         /// </remarks>
         /// <param name="arguments">
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         Task<bool> UpdateAsync(params Argument[] arguments);
 
         /// <summary>
-        /// Asynchronously updates the attributes of the current
-        /// <see cref= "Entity"/> on Splunk.
+        /// Asynchronously updates the attributes of the current entity on
+        /// on Splunk.
         /// </summary>
         /// <remarks>
         /// Splunk usually returns an updated snapshot on completion of the
-        /// operation. When it does the <see cref="CurrentSnapshot"/> will be updated
+        /// operation. When it does the current snapshot will be updated
         /// and returns <c>true</c>; otherwise, this method returns
         /// <c>false</c>.
         /// </remarks>
@@ -79,7 +79,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
     }

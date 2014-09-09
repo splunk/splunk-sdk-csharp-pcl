@@ -22,6 +22,7 @@ namespace Splunk.Client.Helpers
     using System.IO;
     using System.Net;
     using System.Threading.Tasks;
+    using Xunit;
 
     /// <summary>
     /// 
@@ -64,6 +65,7 @@ namespace Splunk.Client.Helpers
         /// </returns>
         public static async Task<Service> CreateService(Namespace ns = null)
         {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
             var context = new MockContext(Splunk.Scheme, Splunk.Host, Splunk.Port);
             var service = new Service(context, ns);
             
@@ -71,6 +73,30 @@ namespace Splunk.Client.Helpers
 
             return service;
         }
+
+        public static async Task ThrowsAsync<T>(Func<Task> testCode)
+        where T : Exception
+        {
+            Assert.NotNull(testCode);
+
+            try
+            {
+                await testCode();
+                return;
+            }
+            catch (T expectedException)
+            {
+                return;
+            }
+            catch (Exception unexpectedException)
+            {
+                Assert.True(false, string.Format("Expected {0}; found exception {1}: {2}", typeof(T).FullName, unexpectedException.GetType().FullName, unexpectedException.Message));
+            }
+            Assert.True(false, string.Format("Expected exception {0}, but not exception raised.", typeof(T)));
+        }
+
+
+
 
         #region Privates/internals
 

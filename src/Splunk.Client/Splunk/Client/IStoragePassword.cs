@@ -227,7 +227,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         public abstract Task<bool> UpdateAsync(params Argument[] arguments);
 
@@ -239,7 +239,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         public abstract Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
 

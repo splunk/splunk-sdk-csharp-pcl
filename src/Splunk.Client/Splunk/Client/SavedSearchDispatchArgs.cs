@@ -46,7 +46,7 @@ namespace Splunk.Client
         /// The default value is <c>false</c>.
         /// </remarks>
         /// <value>
-        /// <c>true</c>, if the <see cref="SaveSearch"/> job should be dispatched
+        /// <c>true</c>, if the <see cref="SavedSearch"/> job should be dispatched
         /// immediately; <c>false</c> otherwise.
         /// </value>
         [DataMember(Name = "dispatch.now", EmitDefaultValue = false)]
@@ -55,13 +55,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets the maximum number of timeline buckets for a search.
+        /// Gets or sets the maximum number of time line buckets for a search.
         /// </summary>
         /// <remarks>
         /// This default value is <c>0</c>.
         /// </remarks>
         /// <value>
-        /// The maximum number of timeline buckets for a search.
+        /// The maximum number of time line buckets for a search.
         /// </value>
         [DataMember(Name = "dispatch.buckets", EmitDefaultValue = false)]
         [DefaultValue(0)]
@@ -193,14 +193,14 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets a value specifying the time format Splunk should use to
-        /// parse <see cref="EarliestTime"/> and <see cref="LatestTime"/>.
+        /// parse <see cref="DispatchEarliestTime"/> and <see cref="DispatchLatestTime"/>.
         /// </summary>
         /// <remarks>
         /// The default value is <c>"%FT%T.%Q%:z"</c>.
         /// </remarks>
         /// <value>
         /// A value specifying the time format Splunk should use to parse
-        /// <see cref="EarliestTime"/> and <see cref="LatestTime"/>.
+        /// <see cref="DispatchEarliestTime"/> and <see cref="DispatchLatestTime"/>.
         /// </value>
         [DataMember(Name = "dispatch.time_format", EmitDefaultValue = false)]
         [DefaultValue("%FT%T.%Q%:z")]

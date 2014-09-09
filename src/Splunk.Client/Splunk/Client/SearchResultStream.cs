@@ -100,7 +100,7 @@ namespace Splunk.Client
         /// Asynchronously creates a new <see cref="SearchResultStream"/>
         /// using the specified <see cref="HttpResponseMessage"/>.
         /// </summary>
-        /// <param name="response">
+        /// <param name="message">
         /// An object from which search results are read.
         /// </param>
         /// <returns>
@@ -108,7 +108,7 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<SearchResultStream> CreateAsync(HttpResponseMessage message)
         {
-            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message));
+            return await CreateAsync(await Splunk.Client.Response.CreateAsync(message)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -125,11 +125,11 @@ namespace Splunk.Client
         {
             XmlReader reader = response.XmlReader;
 
-            await reader.MoveToDocumentElementAsync("results", "response");
+            await reader.MoveToDocumentElementAsync("results", "response").ConfigureAwait(false);
 
             if (reader.Name == "response")
             {
-                await response.ThrowRequestExceptionAsync();
+                await response.ThrowRequestExceptionAsync().ConfigureAwait(false);
             }
 
             var stream = new SearchResultStream(response);
@@ -155,8 +155,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through search result
-        /// <see cref="Result"/> objects asynchronously.
+        /// Returns an enumerator that iterates through search results.
         /// </summary>
         /// <remarks>
         /// You can use the <see cref="GetEnumerator"/> method to
@@ -165,8 +164,7 @@ namespace Splunk.Client
         ///   Perform LINQ to Objects queries to obtain a filtered set of search
         ///   result records.</description></item>
         /// <item><description>
-        ///   Append search results to an existing <see cref="Result"/>
-        ///   collection.</description></item>
+        ///   Append search results to an existing search result collection.</description></item>
         /// </list>
         /// </remarks>
         /// <returns>
@@ -255,7 +253,7 @@ namespace Splunk.Client
         {
             var metadata = new SearchResultMetadata();
 
-            await metadata.ReadXmlAsync(this.response.XmlReader);
+            await metadata.ReadXmlAsync(this.response.XmlReader).ConfigureAwait(false);
 
             return metadata;
         }
@@ -275,12 +273,12 @@ namespace Splunk.Client
             reader.EnsureMarkup(XmlNodeType.Element, "result");
 
             var result = new SearchResult(metadata);
-            await result.ReadXmlAsync(reader);
-            await reader.ReadAsync();
+            await result.ReadXmlAsync(reader).ConfigureAwait(false);
+            await reader.ReadAsync().ConfigureAwait(false);
 
             if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "results")
             {
-                await reader.ReadAsync();
+                await reader.ReadAsync().ConfigureAwait(false);
             }
             else
             {
@@ -320,13 +318,13 @@ namespace Splunk.Client
             /// </returns>
             protected override async Task ReadToEndAsync()
             {
-                var metadata = await this.Stream.ReadMetadataAsync();
+                var metadata = await this.Stream.ReadMetadataAsync().ConfigureAwait(false);
 
                 while (this.Stream.ReadState <= ReadState.Interactive)
                 {
                     while (this.Stream.ReadState <= ReadState.Interactive)
                     {
-                        SearchResult result = await this.Stream.ReadResultAsync(metadata);
+                        SearchResult result = await this.Stream.ReadResultAsync(metadata).ConfigureAwait(false);
 
                         if (result == null)
                         {
@@ -336,7 +334,7 @@ namespace Splunk.Client
                         this.Enqueue(result);
                     }
 
-                    metadata = await this.Stream.ReadMetadataAsync();
+                    metadata = await this.Stream.ReadMetadataAsync().ConfigureAwait(false);
                 }
             }
         }

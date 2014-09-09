@@ -190,7 +190,7 @@ namespace Splunk.Client
         /// Infrastructure. Initializes the current uninitialized resource.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a resource instantiated
+        /// This method may be called once to initialize a resource instantiated
         /// by the default constructor. Override this method to provide special
         /// initialization code. Call this base method before initialization
         /// is complete.
@@ -200,8 +200,8 @@ namespace Splunk.Client
         /// </note>
         /// </remarks>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/>, <paramref name="entry"/>, or
-        /// <paramref name="generatorVersion"/> are <c>null</c>.
+        /// <paramref name="entry"/>, or <paramref name="generatorVersion"/> 
+        /// are <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidOperationException">
         /// The current resource is already initialized.
@@ -219,7 +219,7 @@ namespace Splunk.Client
         /// Infrastructure. Initializes the current uninitialized resource.
         /// </summary>
         /// <remarks>
-        /// This method may be called once to intialize a resource instantiated
+        /// This method may be called once to initialize a resource instantiated
         /// by the default constructor. Override this method to provide special
         /// initialization code. Call this base method before initialization
         /// is complete.
@@ -229,7 +229,7 @@ namespace Splunk.Client
         /// </note>
         /// </remarks>
         /// <exception cref="ArgumentNullException">
-        /// <paramref name="context"/> or <paramref name="feed"/> are <c>null</c>.
+        /// <paramref name="feed"/> is <c>null</c>.
         /// </exception>
         /// <exception cref="InvalidOperationException">
         /// The current resource is already initialized.
@@ -407,7 +407,7 @@ namespace Splunk.Client
         {
             var feed = new AtomFeed();
 
-            await feed.ReadXmlAsync(response.XmlReader);
+            await feed.ReadXmlAsync(response.XmlReader).ConfigureAwait(false);
             var resource = new TResource();
             resource.Initialize(feed);
 

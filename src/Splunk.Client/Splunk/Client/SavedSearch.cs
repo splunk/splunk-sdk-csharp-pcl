@@ -96,32 +96,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
-        /// be used directly from your code. Use one of these methods to obtain a
-        /// <see cref="SavedSearch"/> instance:
-        /// <list type="table">
-        /// <listheader>
-        ///   <term>Method</term>
-        ///   <description>Description</description>
-        /// </listheader>
-        /// <item>
-        ///   <term><see cref="Service.CreateSavedSearchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously creates a new <see cref="SavedSearch"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.GetSavedSearchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously retrieves an existing <see cref="SavedSearch"/>.
-        ///   </description>
-        /// </item>
-        /// <item>
-        ///   <term><see cref="Service.UpdateSavedSearchAsync"/></term>
-        ///   <description>
-        ///   Asynchronously updates an existing <see cref="SavedSearch"/>.
-        ///   </description>
-        /// </item>
-        /// </list>
+        /// be used directly from your code.
         /// </remarks>
         public SavedSearch()
         { }
@@ -266,14 +241,14 @@ namespace Splunk.Client
             var resourceName = new ResourceName(this.ResourceName, "dispatch");
             string searchId;
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, dispatchArgs, templateArgs))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, dispatchArgs, templateArgs).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.Created);
-                searchId = await response.XmlReader.ReadResponseElementAsync("sid");
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).ConfigureAwait(false);
+                searchId = await response.XmlReader.ReadResponseElementAsync("sid").ConfigureAwait(false);
             }
 
             Job job = new Job(this.Context, this.Namespace, searchId);
-            await job.GetAsync();
+            await job.GetAsync().ConfigureAwait(false);
 
             return job;
         }
@@ -281,10 +256,10 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task GetAsync(Filter criteria)
         {
-            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, criteria))
+            using (var response = await this.Context.GetAsync(this.Namespace, this.ResourceName, criteria).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.ReconstructSnapshotAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
             }
         }
 
@@ -293,12 +268,12 @@ namespace Splunk.Client
         {
             var resourceName = new ResourceName(this.ResourceName, "history");
 
-            using (var response = await this.Context.GetAsync(this.Namespace, resourceName))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
 
                 var feed = new AtomFeed();
-                await feed.ReadXmlAsync(response.XmlReader);
+                await feed.ReadXmlAsync(response.XmlReader).ConfigureAwait(false);
                 var jobs = new JobCollection(this.Context, feed);
 
                 return jobs;
@@ -317,10 +292,10 @@ namespace Splunk.Client
                 new Argument("latest_time", latestTime)
             };
 
-            using (var response = await this.Context.GetAsync(this.Namespace, resourceName, args))
+            using (var response = await this.Context.GetAsync(this.Namespace, resourceName, args).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
-                await this.ReconstructSnapshotAsync(response);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
             }
 
             return this.ScheduledTimes;
@@ -336,9 +311,9 @@ namespace Splunk.Client
                 new Argument("schedule_time", scheduleTime.Value.ToString("u")) //string.Format("{0:s}Z", scheduleTime.Value.ToUniversalTime()))
             };
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args))
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName, args).ConfigureAwait(false))
             {
-                await response.EnsureStatusCodeAsync(HttpStatusCode.OK);
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
             }
         }
 
@@ -370,7 +345,7 @@ namespace Splunk.Client
                 arguments = arguments.Concat(templateArgs);
             }
 
-            return await this.UpdateAsync(arguments);
+            return await this.UpdateAsync(arguments).ConfigureAwait(false);
         }
 
         #endregion

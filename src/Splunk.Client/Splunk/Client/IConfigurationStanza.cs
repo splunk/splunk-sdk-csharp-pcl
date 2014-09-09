@@ -82,7 +82,7 @@ namespace Splunk.Client
         /// </returns>
         Task UpdateAsync(string keyName, object value);
 
-        /// <inheritdoc cref="IConfigurationStanza.UpdateAsync"/>
+        /// <inheritdoc/>
         Task UpdateAsync(string keyName, string value);
     }
 
@@ -147,7 +147,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         public abstract Task<bool> UpdateAsync(params Argument[] arguments);
 
@@ -197,7 +197,7 @@ namespace Splunk.Client
         /// The arguments.
         /// </param>
         /// <returns>
-        /// <c>true</c> if the <see cref="CurrentSnapshot"/> was also updated.
+        /// <c>true</c> if the current snapshot was also updated.
         /// </returns>
         public abstract Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
 
@@ -236,7 +236,7 @@ namespace Splunk.Client
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
         /// <seealso cref="M:Splunk.Client.IConfigurationStanza.UpdateAsync(string,string)"/>
-        /// <inheritdoc cref="IConfigurationStanza.UpdateAsync"/>
+        /// <inheritdoc cref="IConfigurationStanza.UpdateAsync(string,string)"/>
         public Task UpdateAsync(string keyName, string value)
         {
             Contract.Requires<ArgumentNullException>(keyName != null);

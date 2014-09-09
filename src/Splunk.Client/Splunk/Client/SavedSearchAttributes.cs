@@ -244,8 +244,8 @@ namespace Splunk.Client
         /// The default value is <c>false</c>.
         /// </remarks>
         /// <value>
-        /// <c>true</c>, if the report on an e-mail action for a
-        /// <see cref= "SaveSearch"/> should include the Splunk logo; otherwise
+        /// <c>true</c>, if the report on an e-mail action for a <see cref=
+        /// "SavedSearch"/> should include the Splunk logo; otherwise
         /// <c>false</c>.
         /// </value>
         [DataMember(Name = "action.email.reportIncludeSplunkLogo", EmitDefaultValue = false)]

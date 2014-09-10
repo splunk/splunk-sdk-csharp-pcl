@@ -113,12 +113,12 @@
     <DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'True' ">$(OutputPath)$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <Choose>
-    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " >
+    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
       <PropertyGroup>
         <DefineConstants>DEBUG;TRACE;__MonoCs__</DefineConstants>
       </PropertyGroup>
     </When>
-    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " >
+    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
       <PropertyGroup>
         <DefineConstants>TRACE;CODE_ANALYSIS;__MonoCs__</DefineConstants>
       </PropertyGroup>
@@ -128,6 +128,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Splunk\**\*" />
     <None Include="packages.config" />
+    <None Include="Splunk.Client.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -15,6 +15,7 @@
         <tags>Splunk</tags>
         <language>en-US</language>
         <dependencies>
+          <dependency id="Splunk.Client" version="$version$" />
         </dependencies>
     </metadata>
     <files>

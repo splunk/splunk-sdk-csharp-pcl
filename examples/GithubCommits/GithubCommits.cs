@@ -87,7 +87,7 @@ namespace GithubCommits
 
         public override bool Validate(Validation validation, out string errorMessage)
         {
-            errorMessage = "";
+            errorMessage = String.Empty;
             
             var client = new GitHubClient(new ProductHeaderValue("splunk-sdk-csharp-github-commits"));
             var owner = ((SingleValueParameter)validation.Parameters["Owner"]).ToString();
@@ -125,7 +125,7 @@ namespace GithubCommits
         {
             var owner = ((SingleValueParameter)inputDefinition.Parameters["Owner"]).ToString();
             var name = ((SingleValueParameter)inputDefinition.Parameters["Repository"]).ToString();
-            var checkpointFilePath = System.IO.Path.Combine(inputDefinition.CheckpointDirectory, owner + " " + name + ".txt");
+            var checkpointFilePath = Path.Combine(inputDefinition.CheckpointDirectory, owner + " " + name + ".txt");
             var client = new GitHubClient(new ProductHeaderValue("splunk-sdk-csharp-github-commits"));
 
             if (((SingleValueParameter)inputDefinition.Parameters["Token"]).Value != null)
@@ -134,16 +134,16 @@ namespace GithubCommits
                 client.Credentials = new Credentials(token);
             }
 
-            HashSet<string> sha_keys = new HashSet<string>();
+            var shaKeys = new HashSet<string>();
 
-            var commit_list = await client.Repository.Commits.GetAll(owner, name);
+            var commitList = await client.Repository.Commits.GetAll(owner, name);
             try
             {
-                System.IO.StreamReader file = new System.IO.StreamReader(checkpointFilePath);
+                var file = new StreamReader(checkpointFilePath);
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {
-                    sha_keys.Add(line);
+                    shaKeys.Add(line);
                 }
                 file.Close();
 
@@ -151,55 +151,55 @@ namespace GithubCommits
             catch
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(checkpointFilePath));
-                FileStream file = System.IO.File.Create(checkpointFilePath);
+                var file = File.Create(checkpointFilePath);
                 file.Close();
             }
 
-            string error_msg = "";
+            var errorMsg = String.Empty;
             try
             {
-                System.IO.StreamWriter file_writer = new System.IO.StreamWriter(checkpointFilePath, true);
-                for (var i = 0; i < commit_list.Count; i++)
+                var fileWriter = new StreamWriter(checkpointFilePath, true);
+                for (var i = 0; i < commitList.Count; i++)
                 {
-                    if (!sha_keys.Contains(commit_list[i].Sha))
+                    if (!shaKeys.Contains(commitList[i].Sha))
                     {
-                        sha_keys.Add(commit_list[i].Sha);
-                        file_writer.WriteLine(commit_list[i].Sha);
+                        shaKeys.Add(commitList[i].Sha);
+                        fileWriter.WriteLine(commitList[i].Sha);
 
-                        Event e = new Event();
+                        var e = new Event();
                         e.Stanza = name;
                         e.SourceType = "github_commits";
-                        e.Time = commit_list[i].Commit.Author.Date;
+                        e.Time = commitList[i].Commit.Author.Date;
 
-                        Dictionary<string, string> json = new Dictionary<string, string>();
-                        json.Add("sha", commit_list[i].Sha);
-                        json.Add("api_url", commit_list[i].Url);
-                        json.Add("url", commit_list[i].HtmlUrl);
+                        var json = new Dictionary<string, string>();
+                        json["sha"] = commitList[i].Sha;
+                        json["api_url"] = commitList[i].Url;
+                        json["url"] = commitList[i].HtmlUrl;
                         
                         
-                        json.Add("message", Regex.Replace(commit_list[i].Commit.Message, "\\r|\\n", " "));
-                        json.Add("author", commit_list[i].Commit.Author.Name);
-                        json.Add("date", commit_list[i].Commit.Author.Date.ToString());
+                        json["message"] = Regex.Replace(commitList[i].Commit.Message, "\\r|\\n", " ");
+                        json["author"] = commitList[i].Commit.Author.Name;
+                        json["date"] = commitList[i].Commit.Author.Date.ToString();
 
-                        var jsonifyied = json.Select(d =>
+                        var formattedJSON = json.Select(d =>
                             string.Format("\"{0}\": \"{1}\"", d.Key, d.Value));
 
-                        e.Data = ("{" + string.Join(",", jsonifyied) + "}");
+                        e.Data = ("{" + string.Join(",", formattedJSON) + "}");
 
                         await eventWriter.QueueEventForWriting(e);
-                        await eventWriter.LogAsync("INFO", name + " indexed a Github commit with sha: " + commit_list[i].Sha);
+                        await eventWriter.LogAsync("INFO", name + " indexed a Github commit with sha: " + commitList[i].Sha);
 
                     }
                 }
-                file_writer.Close();
+                fileWriter.Close();
             }
             catch (Exception e)
             {
-                error_msg = e.Message;
+                errorMsg = e.Message;
             }
-            if (error_msg != "")
+            if (!errorMsg.StringEmpty)
             {
-                await eventWriter.LogAsync("ERROR", error_msg);
+                await eventWriter.LogAsync("ERROR", errorMsg);
             }
         }
     }

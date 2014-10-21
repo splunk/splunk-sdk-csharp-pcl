@@ -141,14 +141,14 @@ namespace GithubCommits
             {
                 var file = new StreamReader(checkpointFilePath);
                 string line;
-                while ((line = file.ReadLine()) != null)
+                while ((line = file.ReadLineAsync()) != null)
                 {
                     shaKeys.Add(line);
                 }
                 file.Close();
 
             }
-            catch
+            catch (IOException e)
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(checkpointFilePath));
                 var file = File.Create(checkpointFilePath);
@@ -164,19 +164,17 @@ namespace GithubCommits
                     if (!shaKeys.Contains(commitList[i].Sha))
                     {
                         shaKeys.Add(commitList[i].Sha);
-                        fileWriter.WriteLine(commitList[i].Sha);
+                        fileWriter.WriteLineAsync(commitList[i].Sha);
 
-                        var e = new Event();
-                        e.Stanza = name;
-                        e.SourceType = "github_commits";
-                        e.Time = commitList[i].Commit.Author.Date;
+                        var commitEvent = new Event();
+                        commitEvent.Stanza = name;
+                        commitEvent.SourceType = "github_commits";
+                        commitEvent.Time = commitList[i].Commit.Author.Date;
 
                         var json = new Dictionary<string, string>();
                         json["sha"] = commitList[i].Sha;
                         json["api_url"] = commitList[i].Url;
                         json["url"] = commitList[i].HtmlUrl;
-                        
-                        
                         json["message"] = Regex.Replace(commitList[i].Commit.Message, "\\r|\\n", " ");
                         json["author"] = commitList[i].Commit.Author.Name;
                         json["date"] = commitList[i].Commit.Author.Date.ToString();
@@ -184,9 +182,9 @@ namespace GithubCommits
                         var formattedJSON = json.Select(d =>
                             string.Format("\"{0}\": \"{1}\"", d.Key, d.Value));
 
-                        e.Data = ("{" + string.Join(",", formattedJSON) + "}");
+                        commitEvent.Data = ("{" + string.Join(",", formattedJSON) + "}");
 
-                        await eventWriter.QueueEventForWriting(e);
+                        await eventWriter.QueueEventForWriting(commitEvent);
                         await eventWriter.LogAsync("INFO", name + " indexed a Github commit with sha: " + commitList[i].Sha);
 
                     }
@@ -197,6 +195,8 @@ namespace GithubCommits
             {
                 errorMsg = e.Message;
             }
+
+            // Can't use await inside a catch block, if we got an error log it
             if (!errorMsg.StringEmpty)
             {
                 await eventWriter.LogAsync("ERROR", errorMsg);

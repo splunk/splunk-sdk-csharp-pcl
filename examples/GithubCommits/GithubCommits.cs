@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using Octokit;
 using System.Text.RegularExpressions;
+using Octokit.Reactive;
+using Octokit.Internal;
 
 namespace GithubCommits
 {
@@ -88,12 +90,13 @@ namespace GithubCommits
         public override bool Validate(Validation validation, out string errorMessage)
         {
             errorMessage = String.Empty;
-            
+
             var client = new GitHubClient(new ProductHeaderValue("splunk-sdk-csharp-github-commits"));
             var owner = ((SingleValueParameter)validation.Parameters["Owner"]).ToString();
             var name = ((SingleValueParameter)validation.Parameters["Repository"]).ToString();
 
-            if(((SingleValueParameter)validation.Parameters["Token"]).Value != null){
+            if (!String.IsNullOrEmpty(((SingleValueParameter)validation.Parameters["Token"]).Value))
+            {
                 var token = ((SingleValueParameter)validation.Parameters["Token"]).ToString();
                 client.Credentials = new Credentials(token);
             }
@@ -110,6 +113,30 @@ namespace GithubCommits
             }
         }
 
+        // TODO: comment
+        public async Task StreamCommit(Commit c, EventWriter eventWriter)
+        {
+            var json = new Dictionary<string, string>()
+            {
+                {"sha", c.Sha},
+                {"url", c.Url},
+                {"message", Regex.Replace(c.Message, "\\r|\\n", "")},
+                {"author", c.Author.Name},
+                {"date", c.Author.Date.ToString()}
+            };
+
+            var formattedJSON = json.Select(d =>
+                string.Format("\"{0}\": \"{1}\"", d.Key, d.Value));
+
+            var commitEvent = new Event();
+            commitEvent.Stanza = c.Repository.Name;
+            commitEvent.SourceType = "github_commits";
+            commitEvent.Time = c.Author.Date;
+            commitEvent.Data = ("{" + string.Join(",", formattedJSON) + "}");
+
+            await eventWriter.QueueEventForWriting(commitEvent);
+        }
+
         /// <summary>
         /// Write events to Splunk from this modular input.
         /// </summary>
@@ -124,83 +151,55 @@ namespace GithubCommits
         public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
         {
             var owner = ((SingleValueParameter)inputDefinition.Parameters["Owner"]).ToString();
-            var name = ((SingleValueParameter)inputDefinition.Parameters["Repository"]).ToString();
-            var checkpointFilePath = Path.Combine(inputDefinition.CheckpointDirectory, owner + " " + name + ".txt");
-            var client = new GitHubClient(new ProductHeaderValue("splunk-sdk-csharp-github-commits"));
+            var repository = ((SingleValueParameter)inputDefinition.Parameters["Repository"]).ToString();
+            var token = ((SingleValueParameter)inputDefinition.Parameters["Token"]);
+            var checkpointFilePath = Path.Combine(inputDefinition.CheckpointDirectory, owner + " " + repository + ".txt");
+            
+            var productHeader = new ProductHeaderValue("splunk-sdk-csharp-github-commits");
+            ObservableGitHubClient client;
 
-            if (((SingleValueParameter)inputDefinition.Parameters["Token"]).Value != null)
+            if (token == null || String.IsNullOrWhiteSpace(token.ToString()))
             {
-                var token = ((SingleValueParameter)inputDefinition.Parameters["Token"]).ToString();
-                client.Credentials = new Credentials(token);
+                client = new ObservableGitHubClient(productHeader);
+            }
+            else
+            {
+                client = new ObservableGitHubClient(productHeader, new InMemoryCredentialStore(new Credentials(token.ToString())));
             }
 
             var shaKeys = new HashSet<string>();
 
-            var commitList = await client.Repository.Commits.GetAll(owner, name);
-            try
+            var fileReader = new StreamReader(File.Open(checkpointFilePath, System.IO.FileMode.OpenOrCreate));
+            string line;
+            while (!String.IsNullOrWhiteSpace(line = await fileReader.ReadLineAsync()))
             {
-                var file = new StreamReader(checkpointFilePath);
-                string line;
-                while ((line = file.ReadLineAsync()) != null)
+                shaKeys.Add(line);
+            }
+            fileReader.Close();
+
+            var fileWriter = new StreamWriter(checkpointFilePath);
+            client.Repository.Commits.GetAll(owner, repository).Subscribe(
+                async githubCommit => 
                 {
-                    shaKeys.Add(line);
-                }
-                file.Close();
-
-            }
-            catch (IOException e)
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(checkpointFilePath));
-                var file = File.Create(checkpointFilePath);
-                file.Close();
-            }
-
-            var errorMsg = String.Empty;
-            try
-            {
-                var fileWriter = new StreamWriter(checkpointFilePath, true);
-                for (var i = 0; i < commitList.Count; i++)
+                    //if (!shaKeys.Contains(githubCommit.Sha))
+                    //{
+                        await StreamCommit(githubCommit.Commit, eventWriter);
+                        await fileWriter.WriteLineAsync(githubCommit.Sha); // Write to the checkpoint file
+                        shaKeys.Add(githubCommit.Sha);
+                        await eventWriter.LogAsync("INFO", repository + " indexed a Github commit with sha: " + githubCommit.Sha);
+                    //}
+                },
+                async e =>
                 {
-                    if (!shaKeys.Contains(commitList[i].Sha))
-                    {
-                        shaKeys.Add(commitList[i].Sha);
-                        fileWriter.WriteLineAsync(commitList[i].Sha);
-
-                        var commitEvent = new Event();
-                        commitEvent.Stanza = name;
-                        commitEvent.SourceType = "github_commits";
-                        commitEvent.Time = commitList[i].Commit.Author.Date;
-
-                        var json = new Dictionary<string, string>();
-                        json["sha"] = commitList[i].Sha;
-                        json["api_url"] = commitList[i].Url;
-                        json["url"] = commitList[i].HtmlUrl;
-                        json["message"] = Regex.Replace(commitList[i].Commit.Message, "\\r|\\n", " ");
-                        json["author"] = commitList[i].Commit.Author.Name;
-                        json["date"] = commitList[i].Commit.Author.Date.ToString();
-
-                        var formattedJSON = json.Select(d =>
-                            string.Format("\"{0}\": \"{1}\"", d.Key, d.Value));
-
-                        commitEvent.Data = ("{" + string.Join(",", formattedJSON) + "}");
-
-                        await eventWriter.QueueEventForWriting(commitEvent);
-                        await eventWriter.LogAsync("INFO", name + " indexed a Github commit with sha: " + commitList[i].Sha);
-
-                    }
+                   //error handing goes here
+                    await eventWriter.LogAsync("ERROR", e.ToString());
+                },
+                () =>
+                {
+                    //completion handling goes here
+                    fileWriter.Close();
                 }
-                fileWriter.Close();
-            }
-            catch (Exception e)
-            {
-                errorMsg = e.Message;
-            }
-
-            // Can't use await inside a catch block, if we got an error log it
-            if (!errorMsg.StringEmpty)
-            {
-                await eventWriter.LogAsync("ERROR", errorMsg);
-            }
+            );
         }
     }
 }

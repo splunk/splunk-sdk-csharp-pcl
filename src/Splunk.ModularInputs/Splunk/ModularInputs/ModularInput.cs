@@ -28,6 +28,19 @@ namespace Splunk.ModularInputs
     using System.Xml;
     using System.Xml.Serialization;
 
+    /// <summary>
+    /// The <see cref="ModularInput"/> class represents the functionality of a
+    /// modular input script (that is, an executable).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// An application derives from this class to define a modular input. It
+    /// must override the <see cref="Scheme"/> and <see cref="StreamEvents"/>
+    /// methods. It can optionally override the <see cref="Validate"/> method.
+    /// </para>
+    /// </remarks>
+    ///
+
     public abstract class ModularInput
     {
         #region Properties

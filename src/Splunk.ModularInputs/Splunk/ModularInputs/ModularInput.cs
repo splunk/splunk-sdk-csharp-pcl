@@ -39,7 +39,6 @@ namespace Splunk.ModularInputs
     /// methods. It can optionally override the <see cref="Validate"/> method.
     /// </para>
     /// </remarks>
-    ///
 
     public abstract class ModularInput
     {

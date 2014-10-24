@@ -3,15 +3,11 @@ using System;
 namespace Splunk.ModularInputs
 {
     /// <summary>
-    /// The <see cref="ModularInput"/> class represents the functionality of a
-    /// modular input script (that is, an executable).
+    /// The <see cref="DebuggerAttachPoints"/> contains a list of points in the
+    /// modular input pipeline that one can can specify to have the input pause
+    /// until a debugger attaches
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// An application derives from this class to define a modular input. It
-    /// must override the <see cref="Scheme"/> and <see cref="StreamEvents"/>
-    /// methods. It can optionally override the <see cref="Validate"/> method.
-    /// </para>
     /// </remarks>
     /// 
 

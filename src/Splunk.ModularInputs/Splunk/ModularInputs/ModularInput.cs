@@ -48,6 +48,7 @@ namespace Splunk.ModularInputs
         {
             bool wait = false;
 
+            //check if the developer has specified they want to attach a debugger
             if (args.Length > 0)
             {
                 if (
@@ -65,8 +66,10 @@ namespace Splunk.ModularInputs
                 wait = true;
             }
 
+            //if a debugger is going to attach
             if (wait)
             {
+                //wait for the debugger
                 while (!Debugger.IsAttached)
                 {
                     Thread.Sleep(100);

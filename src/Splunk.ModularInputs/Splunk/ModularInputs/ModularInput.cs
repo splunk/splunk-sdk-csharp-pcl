@@ -14,15 +14,19 @@
  * under the License.
  */
 
+using System.Threading;
+
 namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
+    using Timer = System.Timers.Timer;
 
     /// <summary>
     /// The <see cref="ModularInput"/> class represents the functionality of a
@@ -35,7 +39,6 @@ namespace Splunk.ModularInputs
     /// methods. It can optionally override the <see cref="Validate"/> method.
     /// </para>
     /// </remarks>
-    /// 
 
     public abstract class ModularInput
     {
@@ -51,8 +54,23 @@ namespace Splunk.ModularInputs
                       
         #region Methods
 
+        static ModularInput()
+        {
+            _isAttached = () => Debugger.IsAttached;
+        }
+
         public static int Run<T>(string[] args) where T : ModularInput, new()
         {
+            return Run<T>(args, DebuggerAttachPoints.None,0);
+        }
+
+        public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints, uint timeout = 5) where T : ModularInput, new()
+        {
+            if (timeout == 0)
+            {
+                throw new ArgumentOutOfRangeException("timeout", timeout, "Timeout parameter must be greater than or equal to 1 second");
+            }
+
             T script = new T();
             Task<int> run = script.RunAsync(args);
             run.Wait();
@@ -60,6 +78,56 @@ namespace Splunk.ModularInputs
                 return run.Result;
             else
                 return -1;
+        }
+
+        internal static Func<bool> _isAttached;
+
+        internal static void WaitForAttach(uint timeout)
+        {
+            bool wait = true;
+
+            var start = DateTime.Now;
+
+            while (!_isAttached() && wait)
+            {
+                Thread.Sleep(1000);
+                if (_isAttached() || (DateTime.Now - start).TotalSeconds >= timeout)
+                {
+                    wait = false;
+                }
+            }
+        }
+
+        internal static bool ShouldWaitForDebuggerToAttach(string[] args, DebuggerAttachPoints attachPoints)
+        {
+            if ((attachPoints & DebuggerAttachPoints.None) == DebuggerAttachPoints.None)
+            {
+                return false;
+            }
+
+            if ((attachPoints & DebuggerAttachPoints.All) == DebuggerAttachPoints.All)
+            {
+                return true;
+            }
+
+            if (args.Length > 0)
+            {
+                if (
+                    (args[0].ToLower().Equals("--scheme") &&
+                     ((attachPoints & DebuggerAttachPoints.Scheme) == DebuggerAttachPoints.Scheme)) ||
+                    (args[0].ToLower().Equals("--validate-arguments") &&
+                     ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments))
+                    )
+                {
+                    return true;
+                }
+            }
+            else if ((attachPoints & DebuggerAttachPoints.StreamEvents) == DebuggerAttachPoints.StreamEvents)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -85,8 +153,20 @@ namespace Splunk.ModularInputs
             TextReader stdin = null,
             TextWriter stdout = null,
             TextWriter stderr = null,
-            IProgress<EventWrittenProgressReport> progress = null)
+            IProgress<EventWrittenProgressReport> progress = null,
+            DebuggerAttachPoints attachPoints = DebuggerAttachPoints.None,
+            uint timeout = 0
+            )
         {
+            //check if the developer has specified they want to attach a debugger
+            bool wait = ShouldWaitForDebuggerToAttach(args, attachPoints);
+
+            //if a debugger is going to attach
+            if (wait)
+            {
+                WaitForAttach(timeout);
+            }
+
             if (progress == null)            
                 progress = new Progress<EventWrittenProgressReport>();
             

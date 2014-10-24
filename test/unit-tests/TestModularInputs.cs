@@ -13,6 +13,8 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
+using System.Threading;
+
 namespace Splunk.ModularInputs.UnitTests
 {
     using System;
@@ -183,6 +185,11 @@ namespace Splunk.ModularInputs.UnitTests
 
         class TestInput : ModularInput
         {
+            public TestInput()
+            {
+                _isAttached = () => false;
+            }
+
             public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) {
                 await eventWriter.QueueEventForWriting(new Event
                 {
@@ -577,6 +584,6 @@ namespace Splunk.ModularInputs.UnitTests
                 Assert.False(stdout.ToString().Contains("xmlns:xsi"));
                 Assert.True(stdout.ToString().Contains("<data>Boris!</data>"));
             }
-        }         
+        }
     }
 }

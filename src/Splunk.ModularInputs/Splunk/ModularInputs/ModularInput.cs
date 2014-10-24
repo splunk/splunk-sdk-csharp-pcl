@@ -14,6 +14,10 @@
  * under the License.
  */
 
+using System.Diagnostics;
+using System.Threading;
+using Splunk.Client;
+
 namespace Splunk.ModularInputs
 {
     using System;
@@ -23,19 +27,6 @@ namespace Splunk.ModularInputs
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
-
-    /// <summary>
-    /// The <see cref="ModularInput"/> class represents the functionality of a
-    /// modular input script (that is, an executable).
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// An application derives from this class to define a modular input. It
-    /// must override the <see cref="Scheme"/> and <see cref="StreamEvents"/>
-    /// methods. It can optionally override the <see cref="Validate"/> method.
-    /// </para>
-    /// </remarks>
-    /// 
 
     public abstract class ModularInput
     {
@@ -51,8 +42,37 @@ namespace Splunk.ModularInputs
                       
         #region Methods
 
-        public static int Run<T>(string[] args) where T : ModularInput, new()
+        public static bool Attached = false;
+
+        public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints = DebuggerAttachPoints.None) where T : ModularInput, new()
         {
+            bool wait = false;
+
+            if (args.Length > 0)
+            {
+                if (
+                    (args[0].ToLower().Equals("--scheme") &&
+                     ((attachPoints & DebuggerAttachPoints.Scheme) == DebuggerAttachPoints.Scheme)) ||
+                    (args[0].ToLower().Equals("--validate-arguments") &&
+                     ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments))
+                )
+                {
+                    wait = true;
+                }
+            }
+            else if ((attachPoints & DebuggerAttachPoints.StreamEvents) == DebuggerAttachPoints.StreamEvents)
+            {
+                wait = true;
+            }
+
+            if (wait)
+            {
+                while (!Debugger.IsAttached)
+                {
+                    Thread.Sleep(100);
+                }
+            }
+ 
             T script = new T();
             Task<int> run = script.RunAsync(args);
             run.Wait();

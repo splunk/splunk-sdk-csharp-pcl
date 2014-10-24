@@ -73,6 +73,12 @@ namespace GithubCommits
             }
         }
 
+        // TODO: comment
+        public static async Task<Repository> GetRepository(GitHubClient client, String owner, String name)
+        {
+            return await client.Repository.Get(owner, name);
+        }
+
         /// <summary>
         /// Check that the values of arguments specified for a newly created or edited instance of
         /// this modular input are valid. If they are valid, set <tt>errorMessage</tt> to <tt>""</tt>
@@ -82,11 +88,6 @@ namespace GithubCommits
         /// <param name="validation">a Validation object specifying the new argument values.</param>
         /// <param name="errorMessage">an output parameter to pass back an error message.</param>
         /// <returns><tt>true</tt> if the arguments are valid and <tt>false</tt> otherwise.</returns>
-        public static async Task<Repository> GetRepository(GitHubClient client, String owner, String name)
-        {
-            return await client.Repository.Get(owner, name);
-        }
-
         public override bool Validate(Validation validation, out string errorMessage)
         {
             errorMessage = String.Empty;
@@ -114,24 +115,47 @@ namespace GithubCommits
         }
 
         // TODO: comment
-        public async Task StreamCommit(Commit c, EventWriter eventWriter)
+        public async Task StreamCommit(GitHubCommit githubCommit, EventWriter eventWriter)
         {
+            // TODO: cleanup extra logic that isn't necessary
+            string name = "";
+            bool timeFound = false;
+            DateTime date = DateTime.Now;
+            if (githubCommit.Author != null && githubCommit.Author.Login != null)
+                name = githubCommit.Author.Login;
+            if (githubCommit.Commit != null && githubCommit.Commit.Author != null && githubCommit.Commit.Author.Date != null) {
+                date = githubCommit.Commit.Author.Date;
+                timeFound = true;
+            }
+
+            string msg = "";
+            if (githubCommit.Commit != null && githubCommit.Commit.Message != null)
+                msg = Regex.Replace(githubCommit.Commit.Message, "\\r|\\n", " ");
             var json = new Dictionary<string, string>()
             {
-                {"sha", c.Sha},
-                {"url", c.Url},
-                {"message", Regex.Replace(c.Message, "\\r|\\n", "")},
-                {"author", c.Author.Name},
-                {"date", c.Author.Date.ToString()}
+                {"sha", githubCommit.Sha},
+                {"api_url", githubCommit.Url},
+                {"message", msg},
+                {"author", name}
             };
+
+            if (timeFound)
+                json["date"] = date.ToString();
+
 
             var formattedJSON = json.Select(d =>
                 string.Format("\"{0}\": \"{1}\"", d.Key, d.Value));
 
+            string repo = "";
+            if (githubCommit.Repository != null && githubCommit.Repository.Name != null)
+            {
+                repo = githubCommit.Repository.Name;
+            }
+
             var commitEvent = new Event();
-            commitEvent.Stanza = c.Repository.Name;
+            commitEvent.Stanza = repo;
             commitEvent.SourceType = "github_commits";
-            commitEvent.Time = c.Author.Date;
+            commitEvent.Time = date;
             commitEvent.Data = ("{" + string.Join(",", formattedJSON) + "}");
 
             await eventWriter.QueueEventForWriting(commitEvent);
@@ -154,7 +178,7 @@ namespace GithubCommits
             var repository = ((SingleValueParameter)inputDefinition.Parameters["Repository"]).ToString();
             var token = ((SingleValueParameter)inputDefinition.Parameters["Token"]);
             var checkpointFilePath = Path.Combine(inputDefinition.CheckpointDirectory, owner + " " + repository + ".txt");
-            
+
             var productHeader = new ProductHeaderValue("splunk-sdk-csharp-github-commits");
             ObservableGitHubClient client;
 
@@ -177,29 +201,38 @@ namespace GithubCommits
             }
             fileReader.Close();
 
+            bool done = false;
             var fileWriter = new StreamWriter(checkpointFilePath);
             client.Repository.Commits.GetAll(owner, repository).Subscribe(
-                async githubCommit => 
+                async githubCommit =>
                 {
-                    //if (!shaKeys.Contains(githubCommit.Sha))
-                    //{
-                        await StreamCommit(githubCommit.Commit, eventWriter);
+                    if (!shaKeys.Contains(githubCommit.Sha))
+                    {
+                        await StreamCommit(githubCommit, eventWriter);
                         await fileWriter.WriteLineAsync(githubCommit.Sha); // Write to the checkpoint file
                         shaKeys.Add(githubCommit.Sha);
                         await eventWriter.LogAsync("INFO", repository + " indexed a Github commit with sha: " + githubCommit.Sha);
-                    //}
+                    }
                 },
                 async e =>
                 {
-                   //error handing goes here
-                    await eventWriter.LogAsync("ERROR", e.ToString());
+                    //error handing goes here
+                    await eventWriter.LogAsync("ERROR", e.GetType() + " - " + e.StackTrace);
                 },
                 () =>
                 {
                     //completion handling goes here
                     fileWriter.Close();
+                    done = true;
                 }
             );
+
+            // Wait for Rx subscribe to finish above
+            while (!done)
+            {
+                await Task.Delay(100);
+            }
+
         }
     }
 }

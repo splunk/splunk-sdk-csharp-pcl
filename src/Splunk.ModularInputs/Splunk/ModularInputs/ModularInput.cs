@@ -54,8 +54,6 @@ namespace Splunk.ModularInputs
                       
         #region Methods
 
-        public static bool Attached = false;
-
         public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints = DebuggerAttachPoints.None) where T : ModularInput, new()
         {
             bool wait = false;

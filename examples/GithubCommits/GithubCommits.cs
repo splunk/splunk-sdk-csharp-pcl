@@ -115,45 +115,30 @@ namespace GithubCommits
         }
 
         // TODO: comment
-        public async Task StreamCommit(GitHubCommit githubCommit, EventWriter eventWriter)
+        public async Task StreamCommit(GitHubCommit githubCommit, EventWriter eventWriter, string owner, string repositoryName)
         {
-            // TODO: cleanup extra logic that isn't necessary
-            string name = "";
-            bool timeFound = false;
-            DateTime date = DateTime.Now;
-            if (githubCommit.Author != null && githubCommit.Author.Login != null)
-                name = githubCommit.Author.Login;
-            if (githubCommit.Commit != null && githubCommit.Commit.Author != null && githubCommit.Commit.Author.Date != null) {
-                date = githubCommit.Commit.Author.Date;
-                timeFound = true;
-            }
+            string authorName = githubCommit.Commit.Author.Name;
+            DateTime date = githubCommit.Commit.Author.Date;
 
-            string msg = "";
-            if (githubCommit.Commit != null && githubCommit.Commit.Message != null)
-                msg = Regex.Replace(githubCommit.Commit.Message, "\\r|\\n", " ");
+            // Replace any newlines with a space
+            string commitMessage = Regex.Replace(githubCommit.Commit.Message, "\\n|\\r", " ");
+            
             var json = new Dictionary<string, string>()
             {
                 {"sha", githubCommit.Sha},
                 {"api_url", githubCommit.Url},
-                {"message", msg},
-                {"author", name}
+                {"url", "http://github.com/" + owner + "/" + repositoryName + "/commit/" + githubCommit.Sha},
+                {"message", commitMessage},
+                {"author", authorName}
             };
 
-            if (timeFound)
-                json["date"] = date.ToString();
-
+            json["date"] = date.ToString();
 
             var formattedJSON = json.Select(d =>
                 string.Format("\"{0}\": \"{1}\"", d.Key, d.Value));
 
-            string repo = "";
-            if (githubCommit.Repository != null && githubCommit.Repository.Name != null)
-            {
-                repo = githubCommit.Repository.Name;
-            }
-
             var commitEvent = new Event();
-            commitEvent.Stanza = repo;
+            commitEvent.Stanza = repositoryName;
             commitEvent.SourceType = "github_commits";
             commitEvent.Time = date;
             commitEvent.Data = ("{" + string.Join(",", formattedJSON) + "}");
@@ -199,7 +184,7 @@ namespace GithubCommits
             {
                 shaKeys.Add(line);
             }
-            fileReader.Close();
+            fileReader.Close(); 
 
             bool done = false;
             var fileWriter = new StreamWriter(checkpointFilePath);
@@ -208,8 +193,8 @@ namespace GithubCommits
                 {
                     if (!shaKeys.Contains(githubCommit.Sha))
                     {
-                        await StreamCommit(githubCommit, eventWriter);
-                        await fileWriter.WriteLineAsync(githubCommit.Sha); // Write to the checkpoint file
+                        await StreamCommit(githubCommit, eventWriter, owner, repository);
+                        await fileWriter.WriteLineAsync(githubCommit.Sha);
                         shaKeys.Add(githubCommit.Sha);
                         await eventWriter.LogAsync("INFO", repository + " indexed a Github commit with sha: " + githubCommit.Sha);
                     }

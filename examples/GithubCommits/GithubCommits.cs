@@ -73,10 +73,15 @@ namespace GithubCommits
             }
         }
 
-        // TODO: comment
-        public static async Task<Repository> GetRepository(GitHubClient client, String owner, String name)
+        /// <summary>
+        /// Asynchronously gets the specified repository using the Octokit.net <tt>GithubClient</tt>.
+        /// </summary>
+        /// <param name="client">The Octokit.net GithubClient.</param>
+        /// <param name="owner">The GitHub repository owner's name.</param>
+        /// <param name="repositoryName">The GitHub repository's name.</param>
+        public static async Task<Repository> GetRepository(GitHubClient client, String owner, String repositoryName)
         {
-            return await client.Repository.Get(owner, name);
+            return await client.Repository.Get(owner, repositoryName);
         }
 
         /// <summary>
@@ -114,7 +119,13 @@ namespace GithubCommits
             }
         }
 
-        // TODO: comment
+        /// <summary>
+        /// Handles the creation of an Event object for a GitHub commit for streaming into Splunk.
+        /// </summary>
+        /// <param name="githubCommit">the individual GithubCommit object which holds the data for a commit.</param>
+        /// <param name="eventWriter">the EventWriter for streaming events to Splunk.</param>
+        /// <param name="owner">the GitHub repository owner's name.</param>
+        /// <param name="repositoryName">the GitHub repository's name.</param>
         public async Task StreamCommit(GitHubCommit githubCommit, EventWriter eventWriter, string owner, string repositoryName)
         {
             string authorName = githubCommit.Commit.Author.Name;
@@ -167,7 +178,7 @@ namespace GithubCommits
             var productHeader = new ProductHeaderValue("splunk-sdk-csharp-github-commits");
             ObservableGitHubClient client;
 
-            if (token == null || String.IsNullOrWhiteSpace(token.ToString()))
+            if (String.IsNullOrWhiteSpace(token.ToString()))
             {
                 client = new ObservableGitHubClient(productHeader);
             }
@@ -188,13 +199,14 @@ namespace GithubCommits
 
             bool done = false;
             var fileWriter = new StreamWriter(checkpointFilePath);
+            // Use Rx to stream an event for each commit as they come in
             client.Repository.Commits.GetAll(owner, repository).Subscribe(
                 async githubCommit =>
                 {
                     if (!shaKeys.Contains(githubCommit.Sha))
                     {
                         await StreamCommit(githubCommit, eventWriter, owner, repository);
-                        await fileWriter.WriteLineAsync(githubCommit.Sha);
+                        await fileWriter.WriteLineAsync(githubCommit.Sha); // Write to the checkpoint file
                         shaKeys.Add(githubCommit.Sha);
                         await eventWriter.LogAsync("INFO", repository + " indexed a Github commit with sha: " + githubCommit.Sha);
                     }

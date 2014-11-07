@@ -17,6 +17,7 @@
 using System.Diagnostics;
 using System.Threading;
 using Splunk.Client;
+using Timer = System.Timers.Timer;
 
 namespace Splunk.ModularInputs
 {
@@ -54,11 +55,60 @@ namespace Splunk.ModularInputs
                       
         #region Methods
 
-        public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints = DebuggerAttachPoints.None) where T : ModularInput, new()
+        public static int Run<T>(string[] args) where T : ModularInput, new()
+        {
+            return Run<T>(args, DebuggerAttachPoints.None,0);
+        }
+
+        public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints, int timeout) where T : ModularInput, new()
+        {
+            //check if the developer has specified they want to attach a debugger
+            bool wait = ShouldWaitForDebuggerToAttach(args, attachPoints);
+
+            //if a debugger is going to attach
+            if (wait)
+            {
+                WaitForAttach(timeout);
+            }
+
+            T script = new T();
+            Task<int> run = script.RunAsync(args);
+            run.Wait();
+            if (run.IsCompleted)
+                return run.Result;
+            else
+                return -1;
+        }
+
+        private static void WaitForAttach(int timeout)
+        {
+            bool wait = true;
+
+            //wait for the debugger
+            
+            var timer = new Timer();
+            timer.Interval = timeout;
+
+            timer.Elapsed += (s, e) =>
+            {
+                wait = false;
+                timer.Stop();
+                timer.Dispose();
+            };
+
+            timer.Start();
+
+            while (!Debugger.IsAttached && wait)
+            {
+                Thread.Sleep(100);
+            }
+        
+        }
+
+        private static bool ShouldWaitForDebuggerToAttach(string[] args, DebuggerAttachPoints attachPoints)
         {
             bool wait = false;
 
-            //check if the developer has specified they want to attach a debugger
             if (args.Length > 0)
             {
                 if (
@@ -66,7 +116,7 @@ namespace Splunk.ModularInputs
                      ((attachPoints & DebuggerAttachPoints.Scheme) == DebuggerAttachPoints.Scheme)) ||
                     (args[0].ToLower().Equals("--validate-arguments") &&
                      ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments))
-                )
+                    )
                 {
                     wait = true;
                 }
@@ -75,24 +125,7 @@ namespace Splunk.ModularInputs
             {
                 wait = true;
             }
-
-            //if a debugger is going to attach
-            if (wait)
-            {
-                //wait for the debugger
-                while (!Debugger.IsAttached)
-                {
-                    Thread.Sleep(100);
-                }
-            }
- 
-            T script = new T();
-            Task<int> run = script.RunAsync(args);
-            run.Wait();
-            if (run.IsCompleted)
-                return run.Result;
-            else
-                return -1;
+            return wait;
         }
 
         /// <summary>

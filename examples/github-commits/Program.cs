@@ -172,19 +172,18 @@ namespace github_commits
         {
             var owner = ((SingleValueParameter)inputDefinition.Parameters["Owner"]).ToString();
             var repository = ((SingleValueParameter)inputDefinition.Parameters["Repository"]).ToString();
-            var token = ((SingleValueParameter)inputDefinition.Parameters["Token"]);
             var checkpointFilePath = Path.Combine(inputDefinition.CheckpointDirectory, owner + " " + repository + ".txt");
 
             var productHeader = new ProductHeaderValue("splunk-sdk-csharp-github-commits");
             ObservableGitHubClient client;
 
-            if (String.IsNullOrWhiteSpace(token.ToString()))
+            if (!inputDefinition.Parameters.ContainsKey("Token") || String.IsNullOrWhiteSpace(((SingleValueParameter)inputDefinition.Parameters["Token"]).ToString()))
             {
                 client = new ObservableGitHubClient(productHeader);
             }
             else
             {
-                client = new ObservableGitHubClient(productHeader, new InMemoryCredentialStore(new Credentials(token.ToString())));
+                client = new ObservableGitHubClient(productHeader, new InMemoryCredentialStore(new Credentials(((SingleValueParameter)inputDefinition.Parameters["Token"]).ToString())));
             }
 
             var shaKeys = new HashSet<string>();

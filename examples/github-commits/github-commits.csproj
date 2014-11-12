@@ -57,8 +57,8 @@
     <ProjectGuid>{35B8F1F4-E7F6-4988-8737-5290BF787199}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GithubCommits</RootNamespace>
-    <AssemblyName>GithubCommits</AssemblyName>
+    <RootNamespace>github_commits</RootNamespace>
+    <AssemblyName>github-commits</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -113,8 +113,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GithubCommits.cs" />
-    <None Include="GithubCommits\**\*.*" />
+    <Compile Include="Program.cs" />
+    <None Include="github-commits\default\app.conf" />
+    <None Include="github-commits\README\inputs.conf.spec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -135,16 +136,16 @@
   <Target Name="AfterBuild">
     <!-- At this point, we have a directory AppSkeleton in the project directory that
          contains app.conf and inputs.conf.spec. -->
-    <MakeDir Directories="$(AppSkeletonPath);$(AppSkeletonPath)\GithubCommits" />
-    <MakeDir Directories="$(AppSkeletonPath)\GithubCommits\bin;$(AppSkeletonPath)\GithubCommits\default;$(AppSkeletonPath)\GithubCommits\README" />
-    <Copy SourceFiles="$(MSBuildProjectDirectory)\GithubCommits\default\app.conf" DestinationFolder="$(AppSkeletonPath)\GithubCommits\default" />
-    <Copy SourceFiles="$(MSBuildProjectDirectory)\GithubCommits\README\inputs.conf.spec" DestinationFolder="$(AppSkeletonPath)\GithubCommits\README" />
-    <Copy SourceFiles="$(OutputPath)\GithubCommits.exe" DestinationFolder="$(AppSkeletonPath)\GithubCommits\bin" />
+    <MakeDir Directories="$(AppSkeletonPath);$(AppSkeletonPath)\github-commits" />
+    <MakeDir Directories="$(AppSkeletonPath)\github-commits\bin;$(AppSkeletonPath)\github-commits\default;$(AppSkeletonPath)\github-commits\README" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\github-commits\default\app.conf" DestinationFolder="$(AppSkeletonPath)\github-commits\default" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\github-commits\README\inputs.conf.spec" DestinationFolder="$(AppSkeletonPath)\github-commits\README" />
+    <Copy SourceFiles="$(OutputPath)\github-commits.exe" DestinationFolder="$(AppSkeletonPath)\github-commits\bin" />
     <ItemGroup>
       <DLLsToInclude Include="$(OutputPath)\*.dll" />
     </ItemGroup>
-    <Copy SourceFiles="@(DLLsToInclude)" DestinationFolder="$(AppSkeletonPath)\GithubCommits\bin" />
-    <ZipFolder FolderToCompress="$(AppSkeletonPath)" OutputFileName="$(OutputPath)\GithubCommits.spl" OverwriteExistingFile="true" />
-    <Message Importance="high" Text="Finished building .spl file in $(OutputPath)GithubCommits.spl" />
+    <Copy SourceFiles="@(DLLsToInclude)" DestinationFolder="$(AppSkeletonPath)\github-commits\bin" />
+    <ZipFolder FolderToCompress="$(AppSkeletonPath)" OutputFileName="$(OutputPath)\github-commits.spl" OverwriteExistingFile="true" />
+    <Message Importance="high" Text="Finished building .spl file in $(OutputPath)github-commits.spl" />
   </Target>
 </Project>

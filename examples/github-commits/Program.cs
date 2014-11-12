@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using Octokit.Reactive;
 using Octokit.Internal;
 
-namespace GithubCommits
+namespace github_commits
 {
     public class Program : ModularInput
     {
@@ -32,7 +32,7 @@ namespace GithubCommits
         /// <remarks>
         /// You must define a Title, Description, and a list of Arguments. Each argument
         /// you list here must also be specified in
-        /// <tt>GithubCommits\README\inputs.conf.spec</tt>.
+        /// <tt>github-commits\README\inputs.conf.spec</tt>.
         /// </remarks>
         public override Scheme Scheme
         {
@@ -55,7 +55,7 @@ namespace GithubCommits
                             new Argument
                             {
                                 Name = "Repository",
-                                Description = "The name of the public repository. (Private repositories are allowed with specific token)",
+                                Description = "The name of the public repository. (Private repositories are allowed if a token is specified).",
                                 DataType = DataType.String,
                                 RequiredOnCreate = true,
                                 RequiredOnEdit = false
@@ -63,7 +63,7 @@ namespace GithubCommits
                             new Argument
                             {
                                 Name = "Token",
-                                Description = "(Optional) A Github API access token. Required for private repositories. More info found here https://github.com/blog/1509-personal-api-tokens",
+                                Description = "(Optional) A Github API access token, required for private repositories. More info can found here https://github.com/blog/1509-personal-api-tokens",
                                 DataType = DataType.String,
                                 RequiredOnCreate = false,
                                 RequiredOnEdit = false
@@ -143,7 +143,7 @@ namespace GithubCommits
                 {"author", authorName}
             };
 
-            json["date"] = date.ToString();
+            json.Add("date", date.ToString());
 
             var formattedJSON = json.Select(d =>
                 string.Format("\"{0}\": \"{1}\"", d.Key, d.Value));

@@ -18,7 +18,7 @@ namespace random_numbers
 
         public static int Main(string[] args)
         {
-            return Run<Program>(args);
+            return Run<Program>(args, DebuggerAttachPoints.StreamEvents, 2000);
         }
 
         public override Scheme Scheme

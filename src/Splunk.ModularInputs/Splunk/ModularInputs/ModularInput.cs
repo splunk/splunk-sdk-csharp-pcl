@@ -14,20 +14,19 @@
  * under the License.
  */
 
-using System.Diagnostics;
 using System.Threading;
-using Splunk.Client;
-using Timer = System.Timers.Timer;
 
 namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
+    using Timer = System.Timers.Timer;
 
     /// <summary>
     /// The <see cref="ModularInput"/> class represents the functionality of a
@@ -55,6 +54,11 @@ namespace Splunk.ModularInputs
                       
         #region Methods
 
+        static ModularInput()
+        {
+            _isAttached = () => Debugger.IsAttached;
+        }
+
         public static int Run<T>(string[] args) where T : ModularInput, new()
         {
             return Run<T>(args, DebuggerAttachPoints.None,0);
@@ -80,34 +84,35 @@ namespace Splunk.ModularInputs
                 return -1;
         }
 
-        private static void WaitForAttach(int timeout)
+        internal static Func<bool> _isAttached;
+
+        internal static void WaitForAttach(int timeout)
         {
             bool wait = true;
 
-            //wait for the debugger
-            
-            var timer = new Timer();
-            timer.Interval = timeout;
+            var start = DateTime.Now;
 
-            timer.Elapsed += (s, e) =>
-            {
-                wait = false;
-                timer.Stop();
-                timer.Dispose();
-            };
-
-            timer.Start();
-
-            while (!Debugger.IsAttached && wait)
+            while (!_isAttached() && wait)
             {
                 Thread.Sleep(100);
+                if (_isAttached() || (DateTime.Now - start).TotalMilliseconds >= timeout)
+                {
+                    wait = false;
+                }
             }
-        
         }
 
-        private static bool ShouldWaitForDebuggerToAttach(string[] args, DebuggerAttachPoints attachPoints)
+        internal static bool ShouldWaitForDebuggerToAttach(string[] args, DebuggerAttachPoints attachPoints)
         {
-            bool wait = false;
+            if ((attachPoints & DebuggerAttachPoints.None) == DebuggerAttachPoints.None)
+            {
+                return false;
+            }
+
+            if ((attachPoints & DebuggerAttachPoints.All) == DebuggerAttachPoints.All)
+            {
+                return true;
+            }
 
             if (args.Length > 0)
             {
@@ -118,14 +123,15 @@ namespace Splunk.ModularInputs
                      ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments))
                     )
                 {
-                    wait = true;
+                    return true;
                 }
             }
             else if ((attachPoints & DebuggerAttachPoints.StreamEvents) == DebuggerAttachPoints.StreamEvents)
             {
-                wait = true;
+                return true;
             }
-            return wait;
+
+            return false;
         }
 
         /// <summary>

@@ -21,6 +21,7 @@ namespace search_export
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using System.Reactive;
 
     class Program
     {
@@ -41,23 +42,15 @@ namespace search_export
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             //// Search : Export Previews
-
-            using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | head 100"))
-            {
-                int previewNumber = 0;
-
-                foreach (SearchPreview preview in stream)
+            var stream = await service.ExportSearchResultsAsync("search index=_internal error", new SearchExportArgs { EarliestTime="rt", LatestTime = "rt" });
+            
+            var observer = Observer.Create<dynamic>(
+                r =>
                 {
-                    int resultNumber = 0;
-
-                    Console.WriteLine("Preview {0:D8}: {1}", ++previewNumber, preview.IsFinal ? "final" : "partial");
-
-                    foreach (var result in preview.Results)
-                    {
-                        Console.WriteLine(string.Format("{0:D8}: {1}", ++resultNumber, result));
-                    }
+                    Console.WriteLine(r._raw);
                 }
-            }
+            );
+            stream.Subscribe(observer);
         }
     }
 }

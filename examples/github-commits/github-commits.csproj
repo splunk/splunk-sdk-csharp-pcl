@@ -68,6 +68,7 @@
     <None Include="github-commits\default\app.conf" />
     <None Include="github-commits\README\inputs.conf.spec" />
     <None Include="packages.config" />
+    <None Include="github-commits\github-commits.sh" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Splunk.Client\Splunk.Client.csproj">

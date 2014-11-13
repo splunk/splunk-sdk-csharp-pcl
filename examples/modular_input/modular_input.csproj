@@ -1,55 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <UsingTask TaskName="ZipFolder" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <FolderToCompress ParameterType="System.String" Required="true" />
-      <OutputFileName ParameterType="System.String" Required="true" />
-      <OverwriteExistingFile ParameterType="System.Boolean" Required="false" />
-    </ParameterGroup>
-    <Task>
-      <Reference Include="System.IO.Compression" />
-      <Using Namespace="System.IO.Compression" />
-      <Code Type="Fragment" Language="cs"><![CDATA[        
-            const int BufferSize = 64 * 1024;
-
-            var buffer = new byte[BufferSize];
-            var fileMode = OverwriteExistingFile ? FileMode.Create : FileMode.CreateNew;
-
-            Action<string, ZipArchive> addPathToZip = null;
-            addPathToZip = new Action<string, ZipArchive>((string path, ZipArchive zip) =>
-            {
-                 if ((File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory)
-                 {
-                     foreach (string p in Directory.GetFileSystemEntries(path))
-                     {
-                         addPathToZip(p, zip);
-                     }
-                 }
-                 else // It's not a directory
-                 {
-                     var archivePath = path.Substring(FolderToCompress.TrimEnd('\\', '/').Count() + 1);
-                     var archiveEntry = zip.CreateEntry(archivePath);
-                     using (var fs = new FileStream(path, FileMode.Open))
-                     using (var zipStream = archiveEntry.Open())
-                     {
-                         int bytesRead = -1;
-                         while ((bytesRead = fs.Read(buffer, 0, BufferSize)) > 0)
-                         {
-                             zipStream.Write(buffer, 0, bytesRead);
-                         }
-                     }
-                 };
-             });
-
-            using (var outputFileStream = new FileStream(OutputFileName, fileMode))
-            using (var archive = new ZipArchive(outputFileStream, ZipArchiveMode.Create))
-            {
-                addPathToZip(FolderToCompress, archive);
-            }    
-      ]]></Code>
-    </Task>
-  </UsingTask>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -159,7 +110,6 @@
       <DLLsToInclude Include="$(OutputPath)\*.dll" />
     </ItemGroup>
     <Copy SourceFiles="@(DLLsToInclude)" DestinationFolder="$(AppSkeletonPath)\modular_input\bin" />
-    <!--<ZipFolder FolderToCompress="$(AppSkeletonPath)" OutputFileName="$(OutputPath)\modular_input.spl" OverwriteExistingFile="true" /> -->
     <Message Importance="high" Text="Finished building .spl file in $(OutputPath)modular_input.spl" />
   </Target>
 </Project>

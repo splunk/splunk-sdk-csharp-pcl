@@ -75,7 +75,7 @@ namespace Splunk.ModularInputs.UnitTests
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public void ShouldThrowWhenInputIsRanAndTimeoutIsZero()
+        public void ShouldThrowWhenTimeoutIsZero()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {

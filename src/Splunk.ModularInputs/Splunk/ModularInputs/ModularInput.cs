@@ -14,8 +14,6 @@
  * under the License.
  */
 
-using System.Threading;
-
 namespace Splunk.ModularInputs
 {
     using System;
@@ -26,7 +24,7 @@ namespace Splunk.ModularInputs
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
-    using Timer = System.Timers.Timer;
+    using System.Threading;
 
     /// <summary>
     /// The <see cref="ModularInput"/> class represents the functionality of a
@@ -39,7 +37,6 @@ namespace Splunk.ModularInputs
     /// methods. It can optionally override the <see cref="Validate"/> method.
     /// </para>
     /// </remarks>
-
     public abstract class ModularInput
     {
         #region Properties
@@ -100,34 +97,56 @@ namespace Splunk.ModularInputs
 
         internal static bool ShouldWaitForDebuggerToAttach(string[] args, DebuggerAttachPoints attachPoints)
         {
-            if ((attachPoints & DebuggerAttachPoints.None) == DebuggerAttachPoints.None)
+            if (IsAttachPointNone(attachPoints))
             {
                 return false;
             }
 
-            if ((attachPoints & DebuggerAttachPoints.All) == DebuggerAttachPoints.All)
+            if (IsAttachPointAll(attachPoints))
             {
                 return true;
             }
 
             if (args.Length > 0)
             {
-                if (
-                    (args[0].ToLower().Equals("--scheme") &&
-                     ((attachPoints & DebuggerAttachPoints.Scheme) == DebuggerAttachPoints.Scheme)) ||
-                    (args[0].ToLower().Equals("--validate-arguments") &&
-                     ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments))
-                    )
+                if (IsScheme(args, attachPoints) || IsValidateArguments(args, attachPoints))
                 {
                     return true;
                 }
             }
-            else if ((attachPoints & DebuggerAttachPoints.StreamEvents) == DebuggerAttachPoints.StreamEvents)
+            else if (IsStreamEvents(attachPoints))
             {
                 return true;
             }
 
             return false;
+        }
+
+        private static bool IsAttachPointAll(DebuggerAttachPoints attachPoints)
+        {
+            return (attachPoints & DebuggerAttachPoints.All) == DebuggerAttachPoints.All;
+        }
+
+        private static bool IsAttachPointNone(DebuggerAttachPoints attachPoints)
+        {
+            return (attachPoints & DebuggerAttachPoints.None) == DebuggerAttachPoints.None;
+        }
+
+        private static bool IsStreamEvents(DebuggerAttachPoints attachPoints)
+        {
+            return (attachPoints & DebuggerAttachPoints.StreamEvents) == DebuggerAttachPoints.StreamEvents;
+        }
+
+        private static bool IsValidateArguments(string[] args, DebuggerAttachPoints attachPoints)
+        {
+            return (args[0].ToLower().Equals("--validate-arguments") &&
+                    ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments));
+        }
+
+        private static bool IsScheme(string[] args, DebuggerAttachPoints attachPoints)
+        {
+            return (args[0].ToLower().Equals("--scheme") &&
+                    ((attachPoints & DebuggerAttachPoints.Scheme) == DebuggerAttachPoints.Scheme));
         }
 
         /// <summary>
@@ -139,6 +158,24 @@ namespace Splunk.ModularInputs
         /// the main method of the program as the value of this parameter.
         /// </param>
         /// <returns>
+        /// <param name="stdin">
+        /// Reader to use for the stdin stream
+        /// </param>
+        /// <param name="stdout">
+        /// Writer to use for the stdout stream
+        /// </param>
+        /// <param name="stderr">
+        /// Writer to use for the stderr stream
+        /// </param>
+        /// <param name="progress">
+        /// Reports back progress as events are written to the <see cref="EventWriter"/>
+        /// </param>
+        /// <param name="attachPoints">
+        /// Defines the <see cref="DebuggerAttachPoints"/> for this input
+        /// </param>
+        /// <param name="timeout">
+        /// Number of seconds to wait for a debugger to attach before continuing processing.
+        /// </param>
         /// A value which should be used as the exit code from the modular
         /// input program. A value of <c>0</c> indicates success. A non-zero
         /// value indicates failure.
@@ -158,10 +195,10 @@ namespace Splunk.ModularInputs
             uint timeout = 0
             )
         {
-            //check if the developer has specified they want to attach a debugger
+            // Check if the developer has specified they want to attach a debugger
             bool wait = ShouldWaitForDebuggerToAttach(args, attachPoints);
 
-            //if a debugger is going to attach
+            // If a debugger is going to attach
             if (wait)
             {
                 WaitForAttach(timeout);

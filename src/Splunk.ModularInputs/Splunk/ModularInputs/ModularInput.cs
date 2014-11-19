@@ -58,7 +58,7 @@ namespace Splunk.ModularInputs
 
         public static int Run<T>(string[] args) where T : ModularInput, new()
         {
-            return Run<T>(args, DebuggerAttachPoints.None,0);
+            return Run<T>(args, DebuggerAttachPoints.None, 0);
         }
 
         public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints, uint timeout = 5) where T : ModularInput, new()

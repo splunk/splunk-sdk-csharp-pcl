@@ -513,7 +513,15 @@ namespace Splunk.Client
             return searchResults;
         }
 
-        // TODO: docs
+        /// <summary>
+        /// Gets search events asynchronous.
+        /// </summary>
+        /// <param name="count">
+        /// Optional search results count, defaults to 0 for all results.
+        /// </param>
+        /// <returns>
+        /// The search events asynchronous.
+        /// </returns>
         public virtual async Task<SearchResultStream> GetSearchResultsAsync(int count = 0)
         {
             var args = new SearchResultArgs(count = count);
@@ -528,7 +536,15 @@ namespace Splunk.Client
             return searchResults;
         }
 
-        // TODO: docs
+        /// <summary>
+        /// Gets search preview asynchronous.
+        /// </summary>
+        /// <param name="count">
+        /// Optional search events count, defaults to 0 for all events.
+        /// </param>
+        /// <returns>
+        /// The search preview asynchronous.
+        /// </returns>
         public virtual async Task<SearchResultStream> GetSearchEventsAsync(int count = 0)
         {
             var args = new SearchEventArgs(count = count);
@@ -543,7 +559,15 @@ namespace Splunk.Client
             return searchResults;
         }
 
-        // TODO: docs
+        /// <summary>
+        /// Gets search results asynchronous.
+        /// </summary>
+        /// <param name="count">
+        /// Optional search results count, defaults to 0 for all results.
+        /// </param>
+        /// <returns>
+        /// The search results asynchronous.
+        /// </returns>
         public virtual async Task<SearchResultStream> GetSearchPreviewAsync(int count = 0)
         {
             var args = new SearchResultArgs(count = count);

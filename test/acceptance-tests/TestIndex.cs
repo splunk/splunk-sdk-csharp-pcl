@@ -253,7 +253,7 @@ namespace Splunk.Client.AcceptanceTests
                     SourceType = SourceType,
                 };
 
-                Transmitter transmitter = service.Transmitter;
+                Transmitter transmitter = (Transmitter)service.Transmitter;
                 SearchResult result;
 
                 //// TODO: Check contentss
@@ -336,7 +336,7 @@ namespace Splunk.Client.AcceptanceTests
                 long currentEventCount = index.TotalEventCount;
                 Assert.NotNull(index);
 
-                Transmitter transmitter = service.Transmitter;
+                Transmitter transmitter = (Transmitter)service.Transmitter;
                 IndexAttributes indexAttributes = GetIndexAttributes(index);
                 Assert.NotNull(indexAttributes);
 

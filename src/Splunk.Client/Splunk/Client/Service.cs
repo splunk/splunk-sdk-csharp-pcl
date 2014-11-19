@@ -164,7 +164,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual Server Server
+        public virtual IServer Server
         {
             get { return this.server; }
         }
@@ -176,7 +176,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual Transmitter Transmitter
+        public virtual ITransmitter Transmitter
         {
             get { return this.transmitter; }
         }

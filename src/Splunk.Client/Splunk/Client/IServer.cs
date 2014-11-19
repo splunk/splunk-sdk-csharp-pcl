@@ -43,6 +43,9 @@ namespace Splunk.Client
         ServerMessageCollection Messages
         { get; }
 
+        // TODO: docs
+        Context Context { get; set; }
+
         #endregion
 
         #region Methods
@@ -128,6 +131,9 @@ namespace Splunk.Client
     [ContractClassFor(typeof(IServer))]
     abstract class IServerContract : IServer
     {
+        // TODO: docs
+        public Context Context { get; set; }
+
         /// <summary>
         /// Gets the server messages collection associated with the current
         /// <see cref="Server"/>.

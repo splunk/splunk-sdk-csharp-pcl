@@ -18,11 +18,13 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
+    using System.Threading;
 
     /// <summary>
     /// The <see cref="ModularInput"/> class represents the functionality of a
@@ -35,8 +37,6 @@ namespace Splunk.ModularInputs
     /// methods. It can optionally override the <see cref="Validate"/> method.
     /// </para>
     /// </remarks>
-    /// 
-
     public abstract class ModularInput
     {
         #region Properties
@@ -51,8 +51,23 @@ namespace Splunk.ModularInputs
                       
         #region Methods
 
+        static ModularInput()
+        {
+            _isAttached = () => Debugger.IsAttached;
+        }
+
         public static int Run<T>(string[] args) where T : ModularInput, new()
         {
+            return Run<T>(args, DebuggerAttachPoints.None, 0);
+        }
+
+        public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints, uint timeout = 5) where T : ModularInput, new()
+        {
+            if (timeout == 0)
+            {
+                throw new ArgumentOutOfRangeException("timeout", timeout, "Timeout parameter must be greater than or equal to 1 second");
+            }
+
             T script = new T();
             Task<int> run = script.RunAsync(args);
             run.Wait();
@@ -60,6 +75,78 @@ namespace Splunk.ModularInputs
                 return run.Result;
             else
                 return -1;
+        }
+
+        internal static Func<bool> _isAttached;
+
+        internal static void WaitForAttach(uint timeout)
+        {
+            bool wait = true;
+
+            var start = DateTime.Now;
+
+            while (!_isAttached() && wait)
+            {
+                Thread.Sleep(1000);
+                if (_isAttached() || (DateTime.Now - start).TotalSeconds >= timeout)
+                {
+                    wait = false;
+                }
+            }
+        }
+
+        internal static bool ShouldWaitForDebuggerToAttach(string[] args, DebuggerAttachPoints attachPoints)
+        {
+            if (IsAttachPointNone(attachPoints))
+            {
+                return false;
+            }
+
+            if (IsAttachPointAll(attachPoints))
+            {
+                return true;
+            }
+
+            if (args.Length > 0)
+            {
+                if (IsScheme(args, attachPoints) || IsValidateArguments(args, attachPoints))
+                {
+                    return true;
+                }
+            }
+            else if (IsStreamEvents(attachPoints))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsAttachPointAll(DebuggerAttachPoints attachPoints)
+        {
+            return (attachPoints & DebuggerAttachPoints.All) == DebuggerAttachPoints.All;
+        }
+
+        private static bool IsAttachPointNone(DebuggerAttachPoints attachPoints)
+        {
+            return (attachPoints & DebuggerAttachPoints.None) == DebuggerAttachPoints.None;
+        }
+
+        private static bool IsStreamEvents(DebuggerAttachPoints attachPoints)
+        {
+            return (attachPoints & DebuggerAttachPoints.StreamEvents) == DebuggerAttachPoints.StreamEvents;
+        }
+
+        private static bool IsValidateArguments(string[] args, DebuggerAttachPoints attachPoints)
+        {
+            return (args[0].ToLower().Equals("--validate-arguments") &&
+                    ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments));
+        }
+
+        private static bool IsScheme(string[] args, DebuggerAttachPoints attachPoints)
+        {
+            return (args[0].ToLower().Equals("--scheme") &&
+                    ((attachPoints & DebuggerAttachPoints.Scheme) == DebuggerAttachPoints.Scheme));
         }
 
         /// <summary>
@@ -71,6 +158,24 @@ namespace Splunk.ModularInputs
         /// the main method of the program as the value of this parameter.
         /// </param>
         /// <returns>
+        /// <param name="stdin">
+        /// Reader to use for the stdin stream
+        /// </param>
+        /// <param name="stdout">
+        /// Writer to use for the stdout stream
+        /// </param>
+        /// <param name="stderr">
+        /// Writer to use for the stderr stream
+        /// </param>
+        /// <param name="progress">
+        /// Reports back progress as events are written to the <see cref="EventWriter"/>
+        /// </param>
+        /// <param name="attachPoints">
+        /// Defines the <see cref="DebuggerAttachPoints"/> for this input
+        /// </param>
+        /// <param name="timeout">
+        /// Number of seconds to wait for a debugger to attach before continuing processing.
+        /// </param>
         /// A value which should be used as the exit code from the modular
         /// input program. A value of <c>0</c> indicates success. A non-zero
         /// value indicates failure.
@@ -85,8 +190,20 @@ namespace Splunk.ModularInputs
             TextReader stdin = null,
             TextWriter stdout = null,
             TextWriter stderr = null,
-            IProgress<EventWrittenProgressReport> progress = null)
+            IProgress<EventWrittenProgressReport> progress = null,
+            DebuggerAttachPoints attachPoints = DebuggerAttachPoints.None,
+            uint timeout = 0
+            )
         {
+            // Check if the developer has specified they want to attach a debugger
+            bool wait = ShouldWaitForDebuggerToAttach(args, attachPoints);
+
+            // If a debugger is going to attach
+            if (wait)
+            {
+                WaitForAttach(timeout);
+            }
+
             if (progress == null)            
                 progress = new Progress<EventWrittenProgressReport>();
             

@@ -24,10 +24,8 @@ namespace github_commits
         }
 
         /// <summary>
-        /// Define a Scheme instance that describes this modular input's behavior. The scheme
-        /// will be serialized to XML and printed to stdout when this program is invoked with
-        /// the sole argument <tt>--scheme</tt>, which Splunk does when starting up and each time
-        /// the app containing the modular input is enabled.
+        /// Define a Scheme for a GitHub repository. Here we have 3 arguments:
+        /// Owner, Repository, and Token (which is optional).
         /// </summary>
         /// <remarks>
         /// You must define a Title, Description, and a list of Arguments. Each argument
@@ -85,13 +83,11 @@ namespace github_commits
         }
 
         /// <summary>
-        /// Check that the values of arguments specified for a newly created or edited instance of
-        /// this modular input are valid. If they are valid, set <tt>errorMessage</tt> to <tt>""</tt>
-        /// and return <tt>true</tt>. Otherwise, set <tt>errorMessage</tt> to an informative explanation 
-        /// of what makes the arguments invalid and return <tt>false</tt>.
+        /// In this example, we make sure the GitHub repository exists and validate the access token
+        /// if it's set.
         /// </summary>
-        /// <param name="validation">a Validation object specifying the new argument values.</param>
-        /// <param name="errorMessage">an output parameter to pass back an error message.</param>
+        /// <param name="validation">A Validation object specifying the new argument values.</param>
+        /// <param name="errorMessage">An output parameter to pass back an error message.</param>
         /// <returns><tt>true</tt> if the arguments are valid and <tt>false</tt> otherwise.</returns>
         public override bool Validate(Validation validation, out string errorMessage)
         {
@@ -120,12 +116,12 @@ namespace github_commits
         }
 
         /// <summary>
-        /// Handles the creation of an Event object for a GitHub commit for streaming into Splunk.
+        /// Handles creating an Event object from a GitHub commit which will be streamed into Splunk.
         /// </summary>
-        /// <param name="githubCommit">the individual GithubCommit object which holds the data for a commit.</param>
-        /// <param name="eventWriter">the EventWriter for streaming events to Splunk.</param>
-        /// <param name="owner">the GitHub repository owner's name.</param>
-        /// <param name="repositoryName">the GitHub repository's name.</param>
+        /// <param name="githubCommit">The individual GithubCommit object which holds the data for a commit.</param>
+        /// <param name="eventWriter">The EventWriter for streaming events to Splunk.</param>
+        /// <param name="owner">The GitHub repository owner's name.</param>
+        /// <param name="repositoryName">The GitHub repository's name.</param>
         public async Task StreamCommit(GitHubCommit githubCommit, EventWriter eventWriter, string owner, string repositoryName)
         {
             string authorName = githubCommit.Commit.Author.Name;
@@ -158,7 +154,7 @@ namespace github_commits
         }
 
         /// <summary>
-        /// Write events to Splunk from this modular input.
+        /// Pulls down commit data from GitHub and creates events for each commit, which are then streamed to Splunk.
         /// </summary>
         /// <remarks>
         /// This function will be invoked once for each instance of the modular input, though that invocation
@@ -166,8 +162,8 @@ namespace github_commits
         /// extract the arguments it needs from <tt>inputDefinition</tt>, then write events to <tt>eventWriter</tt>
         /// (which is thread safe).
         /// </remarks>
-        /// <param name="inputDefinition">a specification of this instance of the modular input.</param>
-        /// <param name="eventWriter">an object that handles writing events to Splunk.</param>
+        /// <param name="inputDefinition">The definition for this instance of the GitHub input, representing a GitHub repository.</param>
+        /// <param name="eventWriter">An object that handles writing events to Splunk.</param>
         public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
         {
             var owner = ((SingleValueParameter)inputDefinition.Parameters["Owner"]).ToString();

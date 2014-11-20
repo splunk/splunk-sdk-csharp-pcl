@@ -86,6 +86,9 @@ namespace Splunk.Client
         /// <summary>
         /// Returns the raw HTTP response message for the job.
         /// </summary>
+        /// <value>
+        /// The HTTP response message.
+        /// </value>
         public HttpResponseMessage Response
         {
             get { return response.Message; }

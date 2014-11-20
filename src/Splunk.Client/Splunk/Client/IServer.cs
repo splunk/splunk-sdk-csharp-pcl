@@ -34,6 +34,15 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
+        /// Gets the <see cref="Context"/> instance for the current
+        /// <see cref= "Server"/>.
+        /// </summary>
+        /// <value>
+        /// The context.
+        /// </value>
+        Context Context { get; set; }
+
+        /// <summary>
         /// Gets the server messages collection associated with the current
         /// <see cref="Server"/>.
         /// </summary>
@@ -42,9 +51,6 @@ namespace Splunk.Client
         /// </value>
         ServerMessageCollection Messages
         { get; }
-
-        // TODO: docs
-        Context Context { get; set; }
 
         #endregion
 
@@ -131,7 +137,14 @@ namespace Splunk.Client
     [ContractClassFor(typeof(IServer))]
     abstract class IServerContract : IServer
     {
-        // TODO: docs
+        /// <summary>
+        /// Gets the <see cref="Context"/> instance for the current
+        /// <see cref= "Server"/>.
+        /// </summary>
+        /// <value>
+        /// The context.
+        /// </value>
+        /// <seealso cref="P:Splunk.Client.IServer.Context"/>
         public Context Context { get; set; }
 
         /// <summary>

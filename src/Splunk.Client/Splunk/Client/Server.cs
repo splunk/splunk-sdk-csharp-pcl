@@ -82,7 +82,7 @@ namespace Splunk.Client
             get { return this.messages; }
         }
 
-        // TODO: docs
+        /// <inheritdoc/>
         Context IServer.Context { get; set; }
         #endregion
 

@@ -253,7 +253,7 @@ namespace Splunk.Client.AcceptanceTests
                     SourceType = SourceType,
                 };
 
-                Transmitter transmitter = (Transmitter)service.Transmitter;
+                ITransmitter transmitter = service.Transmitter;
                 SearchResult result;
 
                 //// TODO: Check contentss

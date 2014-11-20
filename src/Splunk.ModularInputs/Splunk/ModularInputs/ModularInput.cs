@@ -61,7 +61,7 @@ namespace Splunk.ModularInputs
             return Run<T>(args, DebuggerAttachPoints.None, 0);
         }
 
-        public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints, uint timeout = 5) where T : ModularInput, new()
+        public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints, uint timeout = 30) where T : ModularInput, new()
         {
             if (timeout == 0)
             {
@@ -69,7 +69,7 @@ namespace Splunk.ModularInputs
             }
 
             T script = new T();
-            Task<int> run = script.RunAsync(args);
+            Task<int> run = script.RunAsync(args, attachPoints:attachPoints, timeout:timeout);
             run.Wait();
             if (run.IsCompleted)
                 return run.Result;
@@ -81,17 +81,15 @@ namespace Splunk.ModularInputs
 
         internal static void WaitForAttach(uint timeout)
         {
-            bool wait = true;
-
             var start = DateTime.Now;
 
-            while (!_isAttached() && wait)
+            while (true)
             {
-                Thread.Sleep(1000);
-                if (_isAttached() || (DateTime.Now - start).TotalSeconds >= timeout)
+                if (_isAttached() || ((DateTime.Now - start).Seconds >= timeout))
                 {
-                    wait = false;
+                    return;
                 }
+                Thread.Sleep(100);
             }
         }
 

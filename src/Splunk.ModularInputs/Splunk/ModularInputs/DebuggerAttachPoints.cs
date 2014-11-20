@@ -30,10 +30,10 @@ namespace Splunk.ModularInputs
     [Flags]
     public enum DebuggerAttachPoints
     {
-        None=1,
-        Scheme,
-        ValidateArguments,
-        StreamEvents,
-        All
+        None=0,
+        Scheme=2,
+        ValidateArguments=4,
+        StreamEvents=8,
+        All=16
     }
 }

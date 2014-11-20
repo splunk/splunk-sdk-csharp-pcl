@@ -83,12 +83,8 @@ namespace Splunk.ModularInputs
         {
             var start = DateTime.Now;
 
-            while (true)
+            while (!_isAttached() && ((DateTime.Now - start).Seconds < timeout))
             {
-                if (_isAttached() || ((DateTime.Now - start).Seconds >= timeout))
-                {
-                    return;
-                }
                 Thread.Sleep(100);
             }
         }

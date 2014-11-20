@@ -79,7 +79,7 @@ namespace Splunk.Examples.Submit
             {
                 await index.EnableAsync();
 
-                Transmitter transmitter = service.Transmitter;
+                ITransmitter transmitter = service.Transmitter;
                 SearchResult result;
 
                 result = await transmitter.SendAsync("Hello World.", indexName);

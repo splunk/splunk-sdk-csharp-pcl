@@ -113,7 +113,7 @@ namespace Splunk.Client
         /// <value>
         /// The server.
         /// </value>
-        Server Server
+        IServer Server
         { get; }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace Splunk.Client
         /// <value>
         /// The transmitter.
         /// </value>
-        Transmitter Transmitter 
+        ITransmitter Transmitter 
         { get; }
 
         #endregion
@@ -342,13 +342,13 @@ namespace Splunk.Client
         public abstract SavedSearchCollection SavedSearches
         { get; }
         
-        public abstract Server Server
+        public abstract IServer Server
         { get; }
 
         public abstract StoragePasswordCollection StoragePasswords
         { get; }
         
-        public abstract Transmitter Transmitter
+        public abstract ITransmitter Transmitter
         { get; }
 
         #endregion

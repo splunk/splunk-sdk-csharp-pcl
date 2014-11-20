@@ -702,7 +702,18 @@ namespace Splunk.Client
         /// <returns>
         /// The search events asynchronous.
         /// </returns>
-        Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args = null);
+        Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args);
+
+        /// <summary>
+        /// Gets search events asynchronous.
+        /// </summary>
+        /// <param name="count">
+        /// Optional search results count, defaults to 0 for all results.
+        /// </param>
+        /// <returns>
+        /// The search events asynchronous.
+        /// </returns>
+        Task<SearchResultStream> GetSearchEventsAsync(int count = 0);
 
         /// <summary>
         /// Gets search preview asynchronous.
@@ -713,7 +724,18 @@ namespace Splunk.Client
         /// <returns>
         /// The search preview asynchronous.
         /// </returns>
-        Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args = null);
+        Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args);
+
+        /// <summary>
+        /// Gets search preview asynchronous.
+        /// </summary>
+        /// <param name="count">
+        /// Optional search events count, defaults to 0 for all events.
+        /// </param>
+        /// <returns>
+        /// The search preview asynchronous.
+        /// </returns>
+        Task<SearchResultStream> GetSearchPreviewAsync(int count = 0);
 
         /// <summary>
         /// Gets search results asynchronous.
@@ -724,7 +746,18 @@ namespace Splunk.Client
         /// <returns>
         /// The search results asynchronous.
         /// </returns>
-        Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args = null);
+        Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args);
+
+        /// <summary>
+        /// Gets search results asynchronous.
+        /// </summary>
+        /// <param name="count">
+        /// Optional search results count, defaults to 0 for all results.
+        /// </param>
+        /// <returns>
+        /// The search results asynchronous.
+        /// </returns>
+        Task<SearchResultStream> GetSearchResultsAsync(int count = 0);
 
         #endregion
 
@@ -972,9 +1005,15 @@ namespace Splunk.Client
 
         public abstract Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args);
 
+        public abstract Task<SearchResultStream> GetSearchEventsAsync(int count = 0);
+
         public abstract Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args);
 
+        public abstract Task<SearchResultStream> GetSearchPreviewAsync(int count = 0);
+
         public abstract Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args);
+
+        public abstract Task<SearchResultStream> GetSearchResultsAsync(int count = 0);
 
         public abstract Task CancelAsync();
 

@@ -31,9 +31,9 @@ namespace Splunk.ModularInputs
     public enum DebuggerAttachPoints
     {
         None=0,
-        Scheme=2,
-        ValidateArguments=4,
-        StreamEvents=8,
-        All=16
+        Scheme=1,
+        ValidateArguments=2,
+        StreamEvents=4,
+        All=8
     }
 }

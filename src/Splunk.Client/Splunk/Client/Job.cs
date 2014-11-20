@@ -513,18 +513,11 @@ namespace Splunk.Client
             return searchResults;
         }
 
-        /// <summary>
-        /// Gets search events asynchronous.
-        /// </summary>
-        /// <param name="count">
-        /// Optional search results count, defaults to 0 for all results.
-        /// </param>
-        /// <returns>
-        /// The search events asynchronous.
-        /// </returns>
+        /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchResultsAsync(int count = 0)
         {
-            var args = new SearchResultArgs(count = count);
+            var args = new SearchResultArgs();
+            args.Count = count;
             var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args);
             return searchResults;
         }
@@ -536,18 +529,11 @@ namespace Splunk.Client
             return searchResults;
         }
 
-        /// <summary>
-        /// Gets search preview asynchronous.
-        /// </summary>
-        /// <param name="count">
-        /// Optional search events count, defaults to 0 for all events.
-        /// </param>
-        /// <returns>
-        /// The search preview asynchronous.
-        /// </returns>
+        /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchEventsAsync(int count = 0)
         {
-            var args = new SearchEventArgs(count = count);
+            var args = new SearchEventArgs();
+            args.Count = count;
             var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args);
             return searchResults;
         }
@@ -559,18 +545,11 @@ namespace Splunk.Client
             return searchResults;
         }
 
-        /// <summary>
-        /// Gets search results asynchronous.
-        /// </summary>
-        /// <param name="count">
-        /// Optional search results count, defaults to 0 for all results.
-        /// </param>
-        /// <returns>
-        /// The search results asynchronous.
-        /// </returns>
+        /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchPreviewAsync(int count = 0)
         {
-            var args = new SearchResultArgs(count = count);
+            var args = new SearchResultArgs();
+            args.Count = count;
             var searchResults = await this.GetSearchResultsAsync(DispatchState.Running, "results_preview", args);
             return searchResults;
         }

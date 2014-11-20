@@ -91,6 +91,40 @@ namespace Splunk.ModularInputs.UnitTests
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
+        public void ShouldWaitForDebuggerToAttachReturnsTrueWhenAllIsPassed()
+        {
+            var args = new string[] { "--scheme" };
+            var shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.All);
+            Assert.True(shouldWait);
+
+            args = new string[] { "--validate-arguments" };
+            shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.All);
+            Assert.True(shouldWait);
+            
+            args = new string[0];
+            shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.All);
+            Assert.True(shouldWait);
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public void ShouldWaitForDebuggerToAttachReturnsFalseWhenNoneIsPassed()
+        {
+            var args = new string[] { "--scheme" };
+            var shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.None);
+            Assert.False(shouldWait);
+
+            args = new string[] { "--validate-arguments" };
+            shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.None);
+            Assert.False(shouldWait);
+
+            args = new string[0];
+            shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.None);
+            Assert.False(shouldWait);
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
         public void ShouldThrowWhenTimeoutIsZero()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>

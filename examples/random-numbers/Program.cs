@@ -18,7 +18,10 @@ namespace random_numbers
 
         public static int Main(string[] args)
         {
-            return Run<Program>(args);
+            // Run in debug attach mode. This will force the input to pause when streaming, for the default timeout of 30 seconds, to wait for a debugger to attach. 
+            // If no debugger attaches, it will continue processing afer the timeout. 
+            // To change the timeout, pass a value for the 3rd parameter.
+            return Run<Program>(args, DebuggerAttachPoints.StreamEvents);
         }
 
         public override Scheme Scheme

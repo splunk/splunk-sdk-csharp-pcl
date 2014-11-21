@@ -63,7 +63,7 @@ namespace Splunk.ModularInputs
 
         public static int Run<T>(string[] args, DebuggerAttachPoints attachPoints, uint timeout = 30) where T : ModularInput, new()
         {
-            if (timeout == 0)
+            if (!IsAttachPointNone(attachPoints) && timeout == 0)
             {
                 throw new ArgumentOutOfRangeException("timeout", timeout, "Timeout parameter must be greater than or equal to 1 second");
             }

@@ -148,6 +148,78 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         /// <summary>
+        /// Test that Job.SearchEventsAsync() defaults to getting all search events
+        /// </summary>
+        [Trait("acceptance_test", "Splunk.Client.Job")]
+        [MockContext]
+        [Fact]
+        public async Task JobEventsDefaultsToAll()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                JobArgs jobArgs = new JobArgs();
+
+                var job = await service.Jobs.CreateAsync("search index=_* | head 101", args: jobArgs);
+
+                using (SearchResultStream stream = await job.GetSearchEventsAsync())
+                {
+                    // Is the event count greater than the default of 100?
+                    Assert.Equal(101, job.EventCount);
+                }
+
+                await job.CancelAsync();
+            }
+        }
+
+        /// <summary>
+        /// Test that Job.SearchResultsAsync() defaults to getting all search events
+        /// </summary>
+        [Trait("acceptance_test", "Splunk.Client.Job")]
+        [MockContext]
+        [Fact]
+        public async Task JobResultsDefaultsToAll()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                JobArgs jobArgs = new JobArgs();
+
+                var job = await service.Jobs.CreateAsync("search index=_* | head 101", args: jobArgs);
+
+                using (SearchResultStream stream = await job.GetSearchResultsAsync())
+                {
+                    // Is the result count greater than the default of 100?
+                    Assert.Equal(101, job.ResultCount);
+                }
+
+                await job.CancelAsync();
+            }
+        }
+
+        /// <summary>
+        /// Test that Job.GetSearchPreviewAsync() defaults to getting all search events
+        /// </summary>
+        [Trait("acceptance_test", "Splunk.Client.Job")]
+        [MockContext]
+        [Fact]
+        public async Task JobPreviewDefaultsToAll()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                JobArgs jobArgs = new JobArgs();
+                
+                var job = await service.Jobs.CreateAsync("search index=_* | head 101", args: jobArgs);
+
+                using (SearchResultStream stream = await job.GetSearchPreviewAsync())
+                {
+                    // Is the result preview count greater than the default of 100?
+                    Assert.Equal(101, job.ResultPreviewCount);
+                }
+
+                await job.CancelAsync();
+            }
+        }
+
+        /// <summary>
         /// Tests all search modes
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.Job")]

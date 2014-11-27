@@ -28,6 +28,31 @@ namespace Splunk.ModularInputs.UnitTests
 {
     public class TestModularInputsDebugging
     {
+
+        private TextReader _stdin;
+        private TextWriter _stdout;
+        private TextWriter _stderr;
+
+        public TestModularInputsDebugging()
+        {
+            _stdin = new StringReader(@"<?xml version=""1.0"" encoding=""utf-16""?>
+                <input xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+                    <server_host>tiny</server_host>
+                    <server_uri>https://127.0.0.1:8089</server_uri>
+                    <checkpoint_dir>/some/dir</checkpoint_dir>
+                    <session_key>123102983109283019283</session_key>
+                    <configuration>
+                        <stanza name=""random_numbers://aaa"">
+                            <param name=""min"">0</param>
+                            <param name=""max"">5</param>
+                        </stanza>
+                    </configuration>
+                </input>");
+            _stdout = new StringWriter();
+            _stderr = new StringWriter();
+        }
+
+
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public void ShouldWaitUntilTimeout()
@@ -125,7 +150,7 @@ namespace Splunk.ModularInputs.UnitTests
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public void ShouldThrowWhenTimeoutIsZero()
+        public void ShouldThrowWhenTimeoutIsZeroAndAttachPointsAreSet()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -144,30 +169,16 @@ namespace Splunk.ModularInputs.UnitTests
                 return checkedIsAttached;
             };
 
-            using (StringReader stdin = new StringReader(@"<?xml version=""1.0"" encoding=""utf-16""?>
-                <input xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-                    <server_host>tiny</server_host>
-                    <server_uri>https://127.0.0.1:8089</server_uri>
-                    <checkpoint_dir>/some/dir</checkpoint_dir>
-                    <session_key>123102983109283019283</session_key>
-                    <configuration>
-                        <stanza name=""random_numbers://aaa"">
-                            <param name=""min"">0</param>
-                            <param name=""max"">5</param>
-                        </stanza>
-                    </configuration>
-                </input>"))
-            using (StringWriter stdout = new StringWriter())
-            using (StringWriter stderr = new StringWriter())
-            {
+            var input = new TestDebugInput();
+            await input.RunAsync(new string[0], _stdin, _stdout, _stderr,
+                attachPoints: DebuggerAttachPoints.StreamEvents,
+                timeout: 1);
+            Assert.True(checkedIsAttached);
+        }
 
-                var input = new TestDebugInput();
-                await input.RunAsync(new string[0], stdin, stdout, stderr,
-                    attachPoints: DebuggerAttachPoints.StreamEvents,
-                    timeout: 1);
-                Assert.True(checkedIsAttached);
-            }
-
+        public async Task ShouldRunTheInput()
+        {
+            
         }
 
         public class TestDebugInput : ModularInput

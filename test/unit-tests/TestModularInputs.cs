@@ -478,7 +478,22 @@ namespace Splunk.ModularInputs.UnitTests
             Assert.False(doc.Element("event").HasAttributes);
         }
 
-       
+
+        [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
+        [Fact]
+        public async Task EventWriterConvertsSeverityEnumValueToName()
+        {
+            var stdout = new StringWriter();
+            var stderr = new StringWriter();
+            var writer = new EventWriter(stdout, stderr, null);
+            await writer.LogAsync(Severity.Info, "Test");
+            await writer.LogAsync(Severity.Warning, "Test");
+            await writer.LogAsync(Severity.Error, "Test");
+            var events = stderr.GetStringBuilder().ToString();
+            Assert.Contains("INFO Test", events);
+            Assert.Contains("WARNING Test", events);
+            Assert.Contains("ERROR Test", events);
+        }
 
         [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]

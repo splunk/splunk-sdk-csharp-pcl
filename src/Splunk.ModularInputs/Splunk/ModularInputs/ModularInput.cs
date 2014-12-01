@@ -14,6 +14,8 @@
  * under the License.
  */
 
+using Splunk.Client;
+
 namespace Splunk.ModularInputs
 {
     using System;
@@ -69,15 +71,18 @@ namespace Splunk.ModularInputs
             }
 
             T script = new T();
-            Task<int> run = script.RunAsync(args, attachPoints:attachPoints, timeout:timeout);
+            Task<int> run = script.RunAsync(args, _stdin, _stdout, _stderr, null, attachPoints, timeout);
             run.Wait();
             if (run.IsCompleted)
                 return run.Result;
-            else
-                return -1;
+            
+            return -1;
         }
 
         internal static Func<bool> _isAttached;
+        internal static TextReader _stdin;
+        internal static TextWriter _stdout;
+        internal static TextWriter _stderr;
 
         internal static void WaitForAttach(uint timeout)
         {
@@ -118,12 +123,12 @@ namespace Splunk.ModularInputs
 
         private static bool IsAttachPointAll(DebuggerAttachPoints attachPoints)
         {
-            return (attachPoints & DebuggerAttachPoints.All) == DebuggerAttachPoints.All;
+            return attachPoints == DebuggerAttachPoints.All;
         }
 
         private static bool IsAttachPointNone(DebuggerAttachPoints attachPoints)
         {
-            return (attachPoints & DebuggerAttachPoints.None) == DebuggerAttachPoints.None;
+            return attachPoints == DebuggerAttachPoints.None;
         }
 
         private static bool IsStreamEvents(DebuggerAttachPoints attachPoints)

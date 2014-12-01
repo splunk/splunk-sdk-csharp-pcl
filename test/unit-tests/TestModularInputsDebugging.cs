@@ -28,6 +28,34 @@ namespace Splunk.ModularInputs.UnitTests
 {
     public class TestModularInputsDebugging
     {
+
+        private TextReader _stdin;
+        private TextWriter _stdout;
+        private TextWriter _stderr;
+
+        public TestModularInputsDebugging()
+        {
+            _stdin = new StringReader(@"<?xml version=""1.0"" encoding=""utf-16""?>
+                <input xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+                    <server_host>tiny</server_host>
+                    <server_uri>https://127.0.0.1:8089</server_uri>
+                    <checkpoint_dir>/some/dir</checkpoint_dir>
+                    <session_key>123102983109283019283</session_key>
+                    <configuration>
+                        <stanza name=""random_numbers://aaa"">
+                            <param name=""min"">0</param>
+                            <param name=""max"">5</param>
+                        </stanza>
+                    </configuration>
+                </input>");
+            _stdout = new StringWriter();
+            _stderr = new StringWriter();
+            ModularInput._stdin = _stdin;
+            ModularInput._stdout = _stdout;
+            ModularInput._stderr = _stderr;
+        }
+
+
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
         public void ShouldWaitUntilTimeout()
@@ -125,7 +153,7 @@ namespace Splunk.ModularInputs.UnitTests
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public void ShouldThrowWhenTimeoutIsZero()
+        public void ShouldThrowWhenTimeoutIsZeroAndAttachPointsAreSet()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -144,34 +172,43 @@ namespace Splunk.ModularInputs.UnitTests
                 return checkedIsAttached;
             };
 
-            using (StringReader stdin = new StringReader(@"<?xml version=""1.0"" encoding=""utf-16""?>
-                <input xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
-                    <server_host>tiny</server_host>
-                    <server_uri>https://127.0.0.1:8089</server_uri>
-                    <checkpoint_dir>/some/dir</checkpoint_dir>
-                    <session_key>123102983109283019283</session_key>
-                    <configuration>
-                        <stanza name=""random_numbers://aaa"">
-                            <param name=""min"">0</param>
-                            <param name=""max"">5</param>
-                        </stanza>
-                    </configuration>
-                </input>"))
-            using (StringWriter stdout = new StringWriter())
-            using (StringWriter stderr = new StringWriter())
+            var input = new TestDebugInput();
+            await input.RunAsync(new string[0], _stdin, _stdout, _stderr,
+                attachPoints: DebuggerAttachPoints.StreamEvents,
+                timeout: 1);
+            Assert.True(checkedIsAttached);
+        }
+
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ShouldInvokeRunAsyncWhenRunIsCalled()
+        {
+            ModularInput.Run<TestDebugInput>(new string[0]);
+            Assert.True(TestDebugInput.Executed);
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ShouldThrowExceptionWhenRunIsCalledIfTimeIsZeroAndAttachPointsWereSet()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
+                ModularInput.Run<TestDebugInput>(new string[0], DebuggerAttachPoints.StreamEvents, 0);
+            });
+        }
 
-                var input = new TestDebugInput();
-                await input.RunAsync(new string[0], stdin, stdout, stderr,
-                    attachPoints: DebuggerAttachPoints.StreamEvents,
-                    timeout: 1);
-                Assert.True(checkedIsAttached);
-            }
-
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ShouldNotThrowExceptionWhenRunIsCalledIfTimeIsZeroAndAttachPointsWereNotSet()
+        {
+            ModularInput.Run<TestDebugInput>(new string[0], DebuggerAttachPoints.None, 0);
         }
 
         public class TestDebugInput : ModularInput
         {
+            public static bool Executed = false;
+
             public override Scheme Scheme
             {
                 get { throw new NotImplementedException(); }
@@ -179,6 +216,7 @@ namespace Splunk.ModularInputs.UnitTests
 
             public override Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
             {
+                Executed = true;
                 return Task.FromResult(false);
             }
         }

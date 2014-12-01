@@ -121,6 +121,8 @@ namespace Splunk.ModularInputs
             completed = true;
         }
 
+
+
         /// <summary>
         /// Log a message to stderr.
         /// </summary>
@@ -132,6 +134,17 @@ namespace Splunk.ModularInputs
         {
             if (completed) throw new ObjectDisposedException("EventWriter is already disposed.");
             await this.Stderr.WriteAsync(severity + " " + message + this.Stderr.NewLine);
+        }
+
+        /// <summary>
+        /// Log a message to stderr.
+        /// </summary>
+        /// <param name="severity">Specifies the error level</param>
+        /// <param name="message">The message to log.</param>
+        public async Task LogAsync(Severity severity, string message)
+        {
+            var name = Enum.GetName(typeof (Severity), severity).ToUpper();
+            await LogAsync(name, message);
         }
 
         protected void WriteEventsFromQueue()

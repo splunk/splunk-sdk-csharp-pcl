@@ -53,5 +53,17 @@ namespace Splunk.Client.UnitTests
             }
 
         }
+
+        [Trait("unit-test", "Splunk.Client.Service")]
+        [Fact]
+        public void ServiceCanBeConstructedWithAUri()
+        {
+            var uri = new Uri("https://localhost:8000");
+            var service = new Service(uri);
+            var context = service.Context;
+            Assert.Equal<string>("localhost", context.Host);
+            Assert.Equal<int>(8000, context.Port);
+            Assert.Equal<Scheme>(Scheme.Https, context.Scheme);
+        }
     }
 }

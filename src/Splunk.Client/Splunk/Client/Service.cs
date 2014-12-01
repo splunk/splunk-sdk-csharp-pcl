@@ -99,7 +99,6 @@ namespace Splunk.Client
             : this(new Context(scheme, host, port), ns)
         { }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Service"/> class.
         /// </summary>

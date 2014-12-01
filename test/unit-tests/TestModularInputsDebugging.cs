@@ -50,6 +50,9 @@ namespace Splunk.ModularInputs.UnitTests
                 </input>");
             _stdout = new StringWriter();
             _stderr = new StringWriter();
+            ModularInput._stdin = _stdin;
+            ModularInput._stdout = _stdout;
+            ModularInput._stderr = _stderr;
         }
 
 
@@ -176,13 +179,36 @@ namespace Splunk.ModularInputs.UnitTests
             Assert.True(checkedIsAttached);
         }
 
-        public async Task ShouldRunTheInput()
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ShouldInvokeRunAsyncWhenRunIsCalled()
         {
-            
+            ModularInput.Run<TestDebugInput>(new string[0]);
+            Assert.True(TestDebugInput.Executed);
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ShouldThrowExceptionWhenRunIsCalledIfTimeIsZeroAndAttachPointsWereSet()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                ModularInput.Run<TestDebugInput>(new string[0], DebuggerAttachPoints.StreamEvents, 0);
+            });
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ShouldNotThrowExceptionWhenRunIsCalledIfTimeIsZeroAndAttachPointsWereNotSet()
+        {
+            ModularInput.Run<TestDebugInput>(new string[0], DebuggerAttachPoints.None, 0);
         }
 
         public class TestDebugInput : ModularInput
         {
+            public static bool Executed = false;
+
             public override Scheme Scheme
             {
                 get { throw new NotImplementedException(); }
@@ -190,6 +216,7 @@ namespace Splunk.ModularInputs.UnitTests
 
             public override Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
             {
+                Executed = true;
                 return Task.FromResult(false);
             }
         }

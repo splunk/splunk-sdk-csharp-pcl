@@ -511,12 +511,12 @@ namespace Splunk.ModularInputs.UnitTests
 
             Task<EventWrittenProgressReport> t = progress.AwaitProgressAsync();
 
-#pragma warning disable 4014
+            #pragma warning disable 4014
             //// Because this call is not awaited, execution of the current 
             //// method continues before the call is completed. Consider 
             //// applying the 'await' operator to the result of the call.
             eventWriter.CompleteAsync();
-#pragma warning restore 4014
+            #pragma warning restore 4014
 
             EventWrittenProgressReport r = await t;
 

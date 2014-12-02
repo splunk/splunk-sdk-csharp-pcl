@@ -28,7 +28,6 @@ namespace Splunk.ModularInputs.UnitTests
 {
     public class TestModularInputsDebugging
     {
-
         private TextReader _stdin;
         private TextWriter _stdout;
         private TextWriter _stderr;

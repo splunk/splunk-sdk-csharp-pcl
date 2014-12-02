@@ -480,7 +480,6 @@ namespace Splunk.ModularInputs.UnitTests
             Assert.False(doc.Element("event").HasAttributes);
         }
 
-
         [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]
         public async Task EventWriterConvertsSeverityEnumValueToName()

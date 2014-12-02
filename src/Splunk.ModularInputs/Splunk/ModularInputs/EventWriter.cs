@@ -121,8 +121,6 @@ namespace Splunk.ModularInputs
             completed = true;
         }
 
-
-
         /// <summary>
         /// Log a message to stderr.
         /// </summary>

@@ -14,8 +14,6 @@
  * under the License.
  */
 
-using Splunk.Client;
-
 namespace Splunk.ModularInputs
 {
     using System;

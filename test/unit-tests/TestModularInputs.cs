@@ -164,12 +164,12 @@ namespace Splunk.ModularInputs.UnitTests
 
             values = new Collection<string> { "abc", "def" };
             parameter = new MultiValueParameter("some_name", values);
-            
+
             Assert.Equal(values, parameter.ToStringCollection());
 
             values = new Collection<string> { "true", "0" };
             parameter = new MultiValueParameter("some_name", values);
-            
+
             Assert.Equal(new Collection<bool> { true, false }, parameter.ToBooleanCollection());
 
             values = new Collection<string> { "52", "42" };
@@ -188,7 +188,8 @@ namespace Splunk.ModularInputs.UnitTests
                 _isAttached = () => false;
             }
 
-            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter) {
+            public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
+            {
                 await eventWriter.QueueEventForWriting(new Event
                 {
                     Data = "Boris!"
@@ -203,7 +204,7 @@ namespace Splunk.ModularInputs.UnitTests
                     {
                         Title = "Random numbers",
                         Description = "Generate random numbers in the specified range",
-                        
+
                         Arguments = new List<Argument>
                         {
                             new Argument
@@ -283,17 +284,17 @@ namespace Splunk.ModularInputs.UnitTests
         [Fact]
         public async Task GeneratesSchemeCorrectly()
         {
-            
+
             using (StringReader stdin = new StringReader(""))
             using (StringWriter stdout = new StringWriter())
             using (StringWriter stderr = new StringWriter())
             {
                 string[] args = { "--scheme" };
                 await new TestInput().RunAsync(args, stdin, stdout, stderr);
- 
+
                 XDocument doc = XDocument.Parse(stdout.ToString());
                 Assert.Equal("Random numbers", doc.Element("scheme").Element("title").Value);
-                Assert.Equal("Generate random numbers in the specified range", 
+                Assert.Equal("Generate random numbers in the specified range",
                     doc.Element("scheme").Element("description").Value);
                 Assert.NotNull(doc.Element("scheme").Element("endpoint").Element("args"));
                 Assert.Equal(String.Empty, stderr.ToString());
@@ -333,16 +334,16 @@ namespace Splunk.ModularInputs.UnitTests
         [Fact]
         public async Task ValidationFails()
         {
-             XDocument doc = new XDocument(
-                new XElement("items",
-                    new XElement("server_host", "tiny"),
-                    new XElement("server_uri", "https://127.0.0.1:8089"),
-                    new XElement("checkpoint_dir", "/somewhere"),
-                    new XElement("session_key", "abcd"),
-                    new XElement("item",
-                        new XAttribute("name", "aaa"),
-                        new XElement("param", new XAttribute("name", "min"), 48),
-                        new XElement("param", new XAttribute("name", "max"), 12))));
+            XDocument doc = new XDocument(
+               new XElement("items",
+                   new XElement("server_host", "tiny"),
+                   new XElement("server_uri", "https://127.0.0.1:8089"),
+                   new XElement("checkpoint_dir", "/somewhere"),
+                   new XElement("session_key", "abcd"),
+                   new XElement("item",
+                       new XAttribute("name", "aaa"),
+                       new XElement("param", new XAttribute("name", "min"), 48),
+                       new XElement("param", new XAttribute("name", "max"), 12))));
             using (StringReader stdin = new StringReader(doc.ToString()))
             using (StringWriter stdout = new StringWriter())
             using (StringWriter stderr = new StringWriter())
@@ -402,7 +403,7 @@ namespace Splunk.ModularInputs.UnitTests
                 string[] args = { "--validate-arguments" };
                 TestInput testInput = new TestInput();
                 int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
-  
+
                 Assert.NotEqual(0, exitCode);
                 Assert.NotEqual("", stderr.ToString());
                 Assert.Equal("", stdout.ToString());
@@ -414,7 +415,8 @@ namespace Splunk.ModularInputs.UnitTests
         public void SerializeEventWithoutDone()
         {
             DateTime timestamp = System.DateTime.Now;
-            Event e = new Event {
+            Event e = new Event
+            {
                 Time = timestamp,
                 Source = "hilda",
                 SourceType = "misc",
@@ -425,7 +427,7 @@ namespace Splunk.ModularInputs.UnitTests
                 Unbroken = true
             };
             string serialized;
-            using (StringWriter writer = new StringWriter()) 
+            using (StringWriter writer = new StringWriter())
             {
                 using (var xmlWriter = XmlWriter.Create(writer, new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment }))
                     e.ToXml(xmlWriter);
@@ -478,7 +480,21 @@ namespace Splunk.ModularInputs.UnitTests
             Assert.False(doc.Element("event").HasAttributes);
         }
 
-       
+        [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
+        [Fact]
+        public async Task EventWriterConvertsSeverityEnumValueToName()
+        {
+            var stdout = new StringWriter();
+            var stderr = new StringWriter();
+            var writer = new EventWriter(stdout, stderr, null);
+            await writer.LogAsync(Severity.Info, "Test");
+            await writer.LogAsync(Severity.Warning, "Test");
+            await writer.LogAsync(Severity.Error, "Test");
+            var events = stderr.GetStringBuilder().ToString();
+            Assert.Contains("INFO Test", events);
+            Assert.Contains("WARNING Test", events);
+            Assert.Contains("ERROR Test", events);
+        }
 
         [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]
@@ -509,7 +525,7 @@ namespace Splunk.ModularInputs.UnitTests
             Assert.Equal("", stdout.ToString());
         }
 
-        
+
         [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]
         public async Task EventWriterReportsOnWrite()
@@ -525,7 +541,7 @@ namespace Splunk.ModularInputs.UnitTests
 
             try
             {
-                
+
                 var writtenTask = progress.AwaitProgressAsync();
                 await eventWriter.QueueEventForWriting(new Event
                 {
@@ -533,12 +549,12 @@ namespace Splunk.ModularInputs.UnitTests
                     Data = "Boris the mad baboon"
                 });
                 var report = await writtenTask;
-                
+
                 Assert.Equal("Boris the mad baboon", report.WrittenEvent.Data);
                 Assert.True(stdout.ToString().Trim().Contains("<data>Boris the mad baboon</data>"));
                 Assert.True(stdout.ToString().Trim().Contains("<time>-11644502400</time>"));
                 Assert.Equal("", stderr.ToString());
-                
+
                 var completedTask = progress.AwaitProgressAsync();
                 await eventWriter.CompleteAsync();
                 report = await completedTask;
@@ -549,7 +565,7 @@ namespace Splunk.ModularInputs.UnitTests
             finally
             {
                 // EventWriter.CompleteAsync() is idempotent, so there is no problem if this is invoked twice.
-                eventWriter.CompleteAsync().Wait(); 
+                eventWriter.CompleteAsync().Wait();
             }
         }
 
@@ -573,7 +589,7 @@ namespace Splunk.ModularInputs.UnitTests
             using (StringWriter stdout = new StringWriter())
             using (StringWriter stderr = new StringWriter())
             {
-                string[] args = {};
+                string[] args = { };
                 TestInput testInput = new TestInput();
                 int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
 

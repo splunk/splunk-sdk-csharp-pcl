@@ -74,7 +74,7 @@ namespace Splunk.ModularInputs
         /// This is the easiest way to trigger behavior after events are actually
         /// written to Splunk. In production, it will usually be an instance
         /// of Progress&lt;EventWrittenProgressReport&gt;</param>
-        public EventWriter(TextWriter stdout, TextWriter stderr, 
+        public EventWriter(TextWriter stdout, TextWriter stderr,
             IProgress<EventWrittenProgressReport> progress)
         {
             this.Stdout = stdout;
@@ -132,6 +132,17 @@ namespace Splunk.ModularInputs
         {
             if (completed) throw new ObjectDisposedException("EventWriter is already disposed.");
             await this.Stderr.WriteAsync(severity + " " + message + this.Stderr.NewLine);
+        }
+
+        /// <summary>
+        /// Log a message to stderr.
+        /// </summary>
+        /// <param name="severity">Specifies the error level</param>
+        /// <param name="message">The message to log.</param>
+        public async Task LogAsync(Severity severity, string message)
+        {
+            var name = Enum.GetName(typeof(Severity), severity).ToUpper();
+            await LogAsync(name, message);
         }
 
         protected void WriteEventsFromQueue()

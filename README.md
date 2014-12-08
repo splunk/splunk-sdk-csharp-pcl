@@ -17,7 +17,7 @@ The Splunk developer platform enables developers to take advantage of the
 same technology used by the Splunk product to build exciting new applications
 that are enabled by Splunk's unique capabilities.
 
-## What's new in Version 2.0
+## What's new in Version 2.x
 
 Version 2.0 introduces new modern APIs that leverage the latest .NET platform advancements. 
 
@@ -53,11 +53,11 @@ foreach (var result in searchResults)
 
 ## Compatibility
 
-The Splunk SDK for C# version 2.0 is a rewrite of the existing SDK, and introduces completely new APIs. 
+The Splunk SDK for C# version 2.x is a rewrite of the existing SDK, and introduces completely new APIs. 
 
-__Important: Applications built with Splunk SDK for C# version 1.x will not recompile using Splunk SDK for C# version 2.0.__
+__Important: Applications built with Splunk SDK for C# version 1.x will not recompile using Splunk SDK for C# version 2.xf.__
 
-Splunk SDK for C# version 2.0 includes a subset of the capability in version 1.0 of the SDK, and focuses on the most common scenarios that we have seen customers using. The major focus areas are _search_, _search jobs_, _configuration_, and _modular inputs_.
+Splunk SDK for C# version 2.x includes a subset of the capability in version 1.0 of the SDK, and focuses on the most common scenarios that we have seen customers using. The major focus areas are _search_, _search jobs_, _configuration_, and _modular inputs_.
 
 Following is a breakdown of the areas covered:
 
@@ -74,7 +74,7 @@ Following is a breakdown of the areas covered:
 
 For detailed API coverage, see this [coverage matrix](https://docs.google.com/spreadsheets/d/1lTlJ_z4tBpn_xPnJNDapiAxwdtQWvFGH31G6WIkMYwU/edit#gid=0).
 
-We will publish guidance on how to migrate applications built using the Splunk SDK for C# 1.x to use the Splunk SDK for C# 2.0.
+We will publish guidance on how to migrate applications built using the Splunk SDK for C# 1.x to use the Splunk SDK for C# 2.x.
 
 ## Getting started with the Splunk SDK for C# 
 
@@ -88,7 +88,7 @@ future we plan to roll out more in-depth documentation.
 
 ### Requirements
 
-Here's what you need to get going with the Splunk SDK for C# version 2.0.
+Here's what you need to get going with the Splunk SDK for C# version 2.x.
 
 #### Splunk Enterprise
 

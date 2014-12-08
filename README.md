@@ -31,7 +31,7 @@ Below is an example of a simple One Shot Search:
 ```csharp
 using Splunk.Client;
 
-var service = new Service(Scheme.Https, "localhost", 8089));
+var service = new Service(new Uri("https://localhost:8089"));
 
 //login
 await service.LogOnAsync("admin", "changeme");

@@ -203,13 +203,13 @@ namespace github_commits
                         await StreamCommit(githubCommit, eventWriter, owner, repository);
                         await fileWriter.WriteLineAsync(githubCommit.Sha); // Write to the checkpoint file
                         shaKeys.Add(githubCommit.Sha);
-                        await eventWriter.LogAsync("INFO", repository + " indexed a Github commit with sha: " + githubCommit.Sha);
+                        await eventWriter.LogAsync(Severity.Info, repository + " indexed a Github commit with sha: " + githubCommit.Sha);
                     }
                 },
                 async e =>
                 {
                     //error handing goes here
-                    await eventWriter.LogAsync("ERROR", e.GetType() + " - " + e.StackTrace);
+                    await eventWriter.LogAsync(Severity.Error, e.GetType() + " - " + e.StackTrace);
                 },
                 () =>
                 {

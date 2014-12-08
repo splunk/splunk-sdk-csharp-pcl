@@ -100,6 +100,30 @@ namespace Splunk.Client
         { }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Service"/> class.
+        /// </summary>
+        /// <param name="uri">
+        /// Uri for the service <see cref="Service"/>.
+        /// </param>
+        /// <param name="ns">
+        /// The namespace for requests issue by the new <see cref="Service"/>.
+        /// </param>
+        ///
+        /// ### <exception name="ArgumentException">
+        /// <paramref name="port"/> is less than zero
+        /// or greater than <c>65535</c>.
+        /// </exception>
+        public Service(Uri uri, Namespace ns = null)
+            : this(new Context(GetScheme(uri.Scheme), uri.Host, uri.Port), ns)
+        { }
+
+        private static Scheme GetScheme(string schemeString)
+        {
+            var scheme = (Scheme) Enum.Parse(typeof(Scheme), schemeString, true);
+            return scheme;
+        }
+
+        /// <summary>
         /// Infrastructure. Initializes a new instance of the <see cref=
         /// "Service"/> class.
         /// </summary>
@@ -164,7 +188,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual Server Server
+        public virtual IServer Server
         {
             get { return this.server; }
         }
@@ -176,7 +200,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual Transmitter Transmitter
+        public virtual ITransmitter Transmitter
         {
             get { return this.transmitter; }
         }

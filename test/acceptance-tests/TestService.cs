@@ -1145,7 +1145,7 @@ namespace Splunk.Client.AcceptanceTests
                     await index.GetAsync();
                 }
 
-                Console.WriteLine("After send {0} strem events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
+                Console.WriteLine("After send {0} stream events, Current Index TotalEventCount = {1} ", sendEventCount, index.TotalEventCount);
                 Console.WriteLine("Sleep {0}s to wait index.TotalEventCount got updated", watch.Elapsed);
                 Assert.True(index.TotalEventCount == currentEventCount + sendEventCount);
             }

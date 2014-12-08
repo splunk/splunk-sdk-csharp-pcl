@@ -40,7 +40,7 @@
 
             var resultStream = SearchResultStream.CreateAsync(message);
 
-            job.Setup(j => j.GetSearchResultsAsync(It.IsAny<SearchResultArgs>())).Returns(resultStream);
+            job.Setup(j => j.GetSearchResultsAsync(It.IsAny<int>())).Returns(resultStream);
             Run(service.Object).Wait();
         }
 

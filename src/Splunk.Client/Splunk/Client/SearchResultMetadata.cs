@@ -105,14 +105,17 @@ namespace Splunk.Client
             await reader.ReadAsync().ConfigureAwait(false);
             reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");
 
-            await reader.ReadEachDescendantAsync("field", async (r) =>
+            if (!reader.IsEmptyElement)
             {
-                await r.ReadAsync().ConfigureAwait(false);
-                var fieldName = await r.ReadContentAsStringAsync().ConfigureAwait(false);
-                fieldNames.Add(fieldName);
-            }).ConfigureAwait(false);
+                await reader.ReadEachDescendantAsync("field", async (r) =>
+                {
+                    await r.ReadAsync().ConfigureAwait(false);
+                    var fieldName = await r.ReadContentAsStringAsync().ConfigureAwait(false);
+                    fieldNames.Add(fieldName);
+                }).ConfigureAwait(false);
 
-            await reader.ReadEndElementSequenceAsync("fieldOrder", "meta").ConfigureAwait(false);
+                await reader.ReadEndElementSequenceAsync("fieldOrder", "meta").ConfigureAwait(false);
+            }
 
             if (reader.NodeType == XmlNodeType.Element && reader.Name == "messages")
             {

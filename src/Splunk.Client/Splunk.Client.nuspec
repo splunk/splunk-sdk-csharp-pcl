@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>Splunk.Client</id>
-        <version>2.0.0</version>
+        <version>$version$</version>
         <title>Splunk PCL Client for .NET</title>
         <authors>Splunk, Inc.</authors>
         <owners>Splunk, Inc.</owners>
@@ -18,6 +18,6 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="bin\Release\Splunk.Client.dll" target="lib\portable-net45+win8+monotouch+monoandroid" />
+        <file src="bin\Release\Splunk.Client.dll" target="lib\portable-net45+win8+wp80+MonoTouch10+MonoAndroid10+xamarinmac20+xamarinios10" />
     </files>
 </package>

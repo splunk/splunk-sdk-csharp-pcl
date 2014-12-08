@@ -65,6 +65,7 @@
     <Compile Include="TestJobArgs.cs" />
     <Compile Include="TestJobCollection.cs" />
     <Compile Include="TestModularInputs.cs" />
+    <Compile Include="TestModularInputsDebugging.cs" />
     <Compile Include="TestRequestException.cs" />
     <Compile Include="TestResource.cs" />
     <Compile Include="TestEntity.cs" />

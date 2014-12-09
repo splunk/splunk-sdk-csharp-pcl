@@ -159,7 +159,7 @@ The solution is organized into `src`, `examples` and `tests` folders.
 * `Splunk.ModularInputs` - Functionality for building Modular Inputs.
 * `Splunk.Client.Helpers` - Helper utilities used by tests and samples.
 
-#### examples 
+##### examples 
 * `Windows8/Search` - Contains a Windows Store Search App.
 * `authenticate` - Connects to a Splunk Instance and retrieves Splunk's session token.
 * `list_apps` - Lists installed applications on a Splunk instance.
@@ -174,7 +174,7 @@ The solution is organized into `src`, `examples` and `tests` folders.
 * `search` - Performs a One Shot search.
 * `submit` - Creates an index and then sends events over HTTP to that index
 
-#### tests
+##### tests
 * unit-tests - Contains unit tests for all of the classes in the SDK. Does not require a Splunk instance.
 * acceptance-tests - Contains end to end tests using the SDK. These tests by default will go against a Splunk instance. Tests can also be run in playback mode by setting `MockContext.Mode` to `Playback` in `App.Config`. 
 

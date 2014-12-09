@@ -183,23 +183,39 @@ namespace Splunk.ModularInputs.UnitTests
 
         class TestInput : ModularInput
         {
-            public TestInput()
+            private readonly bool _throwOnScheme;
+
+            public TestInput(bool throwOnScheme = false)
             {
+                _throwOnScheme = throwOnScheme;
                 _isAttached = () => false;
             }
 
             public override async Task StreamEventsAsync(InputDefinition inputDefinition, EventWriter eventWriter)
             {
+                var min = ((SingleValueParameter)inputDefinition.Parameters["min"]).ToDouble();
+                if (min == 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 await eventWriter.QueueEventForWriting(new Event
                 {
                     Data = "Boris!"
                 });
             }
 
+            
+
             public override Scheme Scheme
             {
                 get
                 {
+                    if (_throwOnScheme)
+                    {
+                        throw new InvalidOperationException();
+                    }
+
                     return new Scheme
                     {
                         Title = "Random numbers",
@@ -265,6 +281,11 @@ namespace Splunk.ModularInputs.UnitTests
                 double min = ((SingleValueParameter)validationItems.Parameters["min"]).ToDouble();
                 double max = ((SingleValueParameter)validationItems.Parameters["max"]).ToDouble();
 
+                if (min == 1)
+                {
+                    throw new InvalidOperationException();
+                }
+
                 if (min >= max)
                 {
                     errorMessage = "Max must be greater than min.";
@@ -276,8 +297,6 @@ namespace Splunk.ModularInputs.UnitTests
                     return true;
                 }
             }
-
-
         }
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
@@ -326,13 +345,12 @@ namespace Splunk.ModularInputs.UnitTests
 
                 Assert.Equal(0, exitCode);
                 Assert.Equal("", stdout.ToString());
-                Assert.Equal("", stderr.ToString());
             }
         }
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public async Task ValidationFails()
+        public async Task ValidationFailureLogsErrror()
         {
             XDocument doc = new XDocument(
                new XElement("items",
@@ -357,7 +375,6 @@ namespace Splunk.ModularInputs.UnitTests
                     "<error><message>Max must be greater than min.</message></error>",
                     stdout.ToString().Trim()
                 );
-                Assert.Equal("", stderr.ToString());
             }
         }
 
@@ -388,7 +405,6 @@ namespace Splunk.ModularInputs.UnitTests
                     "<error><message>min should be a floating point number.</message></error>",
                     stdout.ToString().Trim()
                 );
-                Assert.Equal("", stderr.ToString());
             }
         }
 
@@ -406,7 +422,6 @@ namespace Splunk.ModularInputs.UnitTests
 
                 Assert.NotEqual(0, exitCode);
                 Assert.NotEqual("", stderr.ToString());
-                Assert.Equal("", stdout.ToString());
             }
         }
 
@@ -525,7 +540,6 @@ namespace Splunk.ModularInputs.UnitTests
             Assert.Equal("", stdout.ToString());
         }
 
-
         [Trait("unit-test", "Splunk.ModularInputs.EventWriter")]
         [Fact]
         public async Task EventWriterReportsOnWrite()
@@ -541,7 +555,6 @@ namespace Splunk.ModularInputs.UnitTests
 
             try
             {
-
                 var writtenTask = progress.AwaitProgressAsync();
                 await eventWriter.QueueEventForWriting(new Event
                 {
@@ -597,6 +610,156 @@ namespace Splunk.ModularInputs.UnitTests
                 Assert.Equal("", stderr.ToString());
                 Assert.False(stdout.ToString().Contains("xmlns:xsi"));
                 Assert.True(stdout.ToString().Contains("<data>Boris!</data>"));
+            }
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task StreamingLogsExceptions()
+        {
+            using (StringReader stdin = new StringReader(@"<?xml version=""1.0"" encoding=""utf-16""?>
+                <input xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+                    <server_host>tiny</server_host>
+                    <server_uri>https://127.0.0.1:8089</server_uri>
+                    <checkpoint_dir>/some/dir</checkpoint_dir>
+                    <session_key>123102983109283019283</session_key>
+                    <configuration>
+                        <stanza name=""random_numbers://aaa"">
+                            <param name=""min"">0</param>
+                            <param name=""max"">5</param>
+                        </stanza>
+                        <stanza name=""random_numbers://bbb"">
+                            <param name=""min"">1</param>
+                            <param name=""max"">5</param>
+                        </stanza>
+                        <stanza name=""random_numbers://ccc"">
+                            <param name=""min"">1</param>
+                            <param name=""max"">5</param>
+                        </stanza>
+                    </configuration>
+                </input>"))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { };
+                TestInput testInput = new TestInput();
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                Assert.Equal(0, exitCode);
+                var err = stderr.ToString();
+                Assert.DoesNotContain("FATAL Exception during streaming: name=random_numbers://aaa | System.InvalidOperationException: Operation is not valid due to the current state of the object.", err);
+                Assert.Contains("FATAL Exception during streaming: name=random_numbers://bbb | System.InvalidOperationException: Operation is not valid due to the current state of the object.", err);
+                Assert.Contains("FATAL Exception during streaming: name=random_numbers://ccc | System.InvalidOperationException: Operation is not valid due to the current state of the object.", err);
+            }
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ValidationLogsExceptions()
+        {
+            XDocument doc = new XDocument(
+               new XElement("items",
+                   new XElement("server_host", "tiny"),
+                   new XElement("server_uri", "https://127.0.0.1:8089"),
+                   new XElement("checkpoint_dir", "/somewhere"),
+                   new XElement("session_key", "abcd"),
+                   new XElement("item",
+                       new XAttribute("name", "random_numbers://aaa"),
+                       new XElement("param", new XAttribute("name", "min"), 1),
+                       new XElement("param", new XAttribute("name", "max"), 12))));
+            using (StringReader stdin = new StringReader(doc.ToString()))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = {"--validate-arguments"};
+                TestInput testInput = new TestInput();
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                Assert.NotEqual(0, exitCode);
+                var err = stderr.ToString();
+                Assert.Contains("FATAL Exception during validation: name=random_numbers://aaa | System.InvalidOperationException: Operation is not valid due to the current state of the object.", err);
+                Assert.Contains("<error><message>Operation is not valid due to the current state of the object.</message></error>", stdout.ToString());
+            }
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ValidationLogsInputDefinition()
+        {
+            XDocument doc = new XDocument(
+              new XElement("items",
+                  new XElement("server_host", "tiny"),
+                  new XElement("server_uri", "https://127.0.0.1:8089"),
+                  new XElement("checkpoint_dir", "/somewhere"),
+                  new XElement("session_key", "abcd"),
+                  new XElement("item",
+                      new XAttribute("name", "random_numbers://aaa"),
+                      new XElement("param", new XAttribute("name", "min"), 0),
+                      new XElement("param", new XAttribute("name", "max"), 12))));
+            using (StringReader stdin = new StringReader(doc.ToString()))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { "--validate-arguments" };
+                TestInput testInput = new TestInput();
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                var err = stderr.ToString();
+                Assert.Contains("DEBUG <items>\r\n  <server_host>tiny</server_host>\r\n  <server_uri>https://127.0.0.1:8089</server_uri>\r\n  <checkpoint_dir>/somewhere</checkpoint_dir>\r\n  <session_key>abcd</session_key>\r\n  <item name=\"random_numbers://aaa\">\r\n    <param name=\"min\">0</param>\r\n    <param name=\"max\">12</param>\r\n  </item>\r\n</items>\r\n", err);
+            }           
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task SchemeLogsExceptions()
+        {
+            using (StringReader stdin = new StringReader(""))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { "--scheme" };
+                TestInput testInput = new TestInput(true);
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                Assert.NotEqual(0, exitCode);
+                var err = stderr.ToString();
+                Assert.Contains("name=" + typeof(TestInput).FullName, err);
+            }
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task StreamingLogsSerializationException()
+        {
+            using (StringReader stdin = new StringReader("{{}}"))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { };
+                TestInput testInput = new TestInput(true);
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                Assert.NotEqual(0, exitCode);
+                var err = stderr.ToString();
+                Assert.Contains("FATAL Exception during streaming: name=Splunk.ModularInputs.UnitTests.TestModularInputs+TestInput | System.InvalidOperationException: There is an error in XML document (1, 1)",err);
+            }
+        }
+
+        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
+        [Fact]
+        public async Task ValidateLogsSerializationException()
+        {
+            using (StringReader stdin = new StringReader("{{}}"))
+            using (StringWriter stdout = new StringWriter())
+            using (StringWriter stderr = new StringWriter())
+            {
+                string[] args = { "--validate-arguments" };
+                TestInput testInput = new TestInput(true);
+                int exitCode = await testInput.RunAsync(args, stdin, stdout, stderr);
+
+                Assert.NotEqual(0, exitCode);
+                var err = stderr.ToString();
+                Assert.Contains("FATAL Exception during validation: name=Splunk.ModularInputs.UnitTests.TestModularInputs+TestInput | System.InvalidOperationException: There is an error in XML document (1, 1)", err);
             }
         }
     }

@@ -99,14 +99,9 @@ namespace Splunk.ModularInputs
                 return false;
             }
 
-            if (IsAttachPointAll(attachPoints))
-            {
-                return true;
-            }
-
             if (args.Length > 0)
             {
-                if (IsScheme(args, attachPoints) || IsValidateArguments(args, attachPoints))
+                if (IsValidateArguments(args, attachPoints))
                 {
                     return true;
                 }
@@ -117,11 +112,6 @@ namespace Splunk.ModularInputs
             }
 
             return false;
-        }
-
-        private static bool IsAttachPointAll(DebuggerAttachPoints attachPoints)
-        {
-            return attachPoints == DebuggerAttachPoints.All;
         }
 
         private static bool IsAttachPointNone(DebuggerAttachPoints attachPoints)
@@ -140,11 +130,6 @@ namespace Splunk.ModularInputs
                     ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments));
         }
 
-        private static bool IsScheme(string[] args, DebuggerAttachPoints attachPoints)
-        {
-            return (args[0].ToLower().Equals("--scheme") &&
-                    ((attachPoints & DebuggerAttachPoints.Scheme) == DebuggerAttachPoints.Scheme));
-        }
 
         /// <summary>
         /// Performs the action specified by the <paramref name="args"/> parameter.

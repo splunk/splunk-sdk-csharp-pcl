@@ -1,5 +1,10 @@
 # Splunk SDK for C# PCL
 
+## Version 2.1.1
+### Fixes
+* Removed `All` and `Scheme` attach points for debugging Modular Inputs.
+* Hardened logging for Modular Inputs, added more contextual information, and ensured all exceptions are captured and logged.
+
 ## Version 2.1.0
 
 ### New Features

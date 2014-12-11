@@ -91,15 +91,6 @@ namespace Splunk.ModularInputs.UnitTests
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public void ShouldWaitForAttachReturnsTrueWhenSchemeArgIsPassed()
-        {
-            var args = new[] { "--scheme" };
-            var shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.Scheme);
-            Assert.True(shouldWait);
-        }
-
-        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
-        [Fact]
         public void ShoulldWaitForAttachReturnsTrueWhenValidateArgumentsArgIsPassed()
         {
             var args = new[] { "--validate-arguments" };
@@ -113,23 +104,6 @@ namespace Splunk.ModularInputs.UnitTests
         {
             var args = new string[0];
             var shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.StreamEvents);
-            Assert.True(shouldWait);
-        }
-
-        [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
-        [Fact]
-        public void ShouldWaitForDebuggerToAttachReturnsTrueWhenAllIsPassed()
-        {
-            var args = new string[] { "--scheme" };
-            var shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.All);
-            Assert.True(shouldWait);
-
-            args = new string[] { "--validate-arguments" };
-            shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.All);
-            Assert.True(shouldWait);
-            
-            args = new string[0];
-            shouldWait = ModularInput.ShouldWaitForDebuggerToAttach(args, DebuggerAttachPoints.All);
             Assert.True(shouldWait);
         }
 
@@ -156,7 +130,7 @@ namespace Splunk.ModularInputs.UnitTests
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                ModularInput.Run<TestDebugInput>(new string[0], DebuggerAttachPoints.All, 0);
+                ModularInput.Run<TestDebugInput>(new string[0], DebuggerAttachPoints.StreamEvents, 0);
             });
         }
 

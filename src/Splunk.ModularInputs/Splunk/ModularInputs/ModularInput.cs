@@ -99,14 +99,9 @@ namespace Splunk.ModularInputs
                 return false;
             }
 
-            if (IsAttachPointAll(attachPoints))
-            {
-                return true;
-            }
-
             if (args.Length > 0)
             {
-                if (IsScheme(args, attachPoints) || IsValidateArguments(args, attachPoints))
+                if (IsValidateArguments(args, attachPoints))
                 {
                     return true;
                 }
@@ -117,11 +112,6 @@ namespace Splunk.ModularInputs
             }
 
             return false;
-        }
-
-        private static bool IsAttachPointAll(DebuggerAttachPoints attachPoints)
-        {
-            return attachPoints == DebuggerAttachPoints.All;
         }
 
         private static bool IsAttachPointNone(DebuggerAttachPoints attachPoints)
@@ -140,11 +130,6 @@ namespace Splunk.ModularInputs
                     ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments));
         }
 
-        private static bool IsScheme(string[] args, DebuggerAttachPoints attachPoints)
-        {
-            return (args[0].ToLower().Equals("--scheme") &&
-                    ((attachPoints & DebuggerAttachPoints.Scheme) == DebuggerAttachPoints.Scheme));
-        }
 
         /// <summary>
         /// Performs the action specified by the <paramref name="args"/> parameter.
@@ -192,80 +177,133 @@ namespace Splunk.ModularInputs
             uint timeout = 0
             )
         {
-            // Check if the developer has specified they want to attach a debugger
-            bool wait = ShouldWaitForDebuggerToAttach(args, attachPoints);
-
-            // If a debugger is going to attach
-            if (wait)
-            {
-                WaitForAttach(timeout);
-            }
-
-            if (progress == null)            
-                progress = new Progress<EventWrittenProgressReport>();
-            
-
-            /// Console default is OEM text encoding, which is not handled by Splunk,
-            //// resulting in loss of chars such as O with an umlaut (\u0150)
-            //// Splunk's default is UTF8.
-            if (stdin == null)
-            {
-                stdin = Console.In;
-                Console.InputEncoding = Encoding.UTF8;
-            }
-            if (stdout == null)
-            {
-                stdout = Console.Out;
-                Console.OutputEncoding = Encoding.UTF8;
-            }
-            if (stderr == null)
-            {
-                stderr = Console.Error;
-                Console.OutputEncoding = Encoding.UTF8;
-            }
-
-            EventWriter writer = new EventWriter(stdout, stderr, progress);
+            EventWriter writer = null;
+            string name = this.GetType().FullName;
             try
             {
+                /// Console default is OEM text encoding, which is not handled by Splunk,
+                //// resulting in loss of chars such as O with an umlaut (\u0150)
+                //// Splunk's default is UTF8.
+                if (stdin == null)
+                {
+                    stdin = Console.In;
+                    Console.InputEncoding = Encoding.UTF8;
+                }
+                if (stdout == null)
+                {
+                    stdout = Console.Out;
+                    Console.OutputEncoding = Encoding.UTF8;
+                }
+                if (stderr == null)
+                {
+                    stderr = Console.Error;
+                    Console.OutputEncoding = Encoding.UTF8;
+                }
+
+                if (progress == null)
+                    progress = new Progress<EventWrittenProgressReport>();
+
+                writer = new EventWriter(stdout, stderr, progress);
+
+                // Check if the developer has specified they want to attach a debugger
+                bool wait = ShouldWaitForDebuggerToAttach(args, attachPoints);
+
+                // If a debugger is going to attach
+                if (wait)
+                {
+                    WaitForAttach(timeout);
+                }
+
                 if (args.Length == 0)
                 {
-                    List<Task> instances = new List<Task>();
-
-                    InputDefinitionCollection inputDefinitions =
-                        (InputDefinitionCollection)new XmlSerializer(typeof(InputDefinitionCollection)).
-                        Deserialize(stdin);
-                    foreach (InputDefinition inputDefinition in inputDefinitions)
+                    try
                     {
-                        instances.Add(this.StreamEventsAsync(inputDefinition, writer));
+                        List<Task> instances = new List<Task>();
+                        InputDefinitionCollection inputDefinitions =
+                            (InputDefinitionCollection) new XmlSerializer(typeof (InputDefinitionCollection)).
+                                Deserialize(stdin);
+                        foreach (InputDefinition inputDefinition in inputDefinitions)
+                        {
+                            var inputTask = this.StreamEventsAsync(inputDefinition, writer);
+                            instances.Add(inputTask);
+                            var inputName = inputDefinition.Name;
+                            inputTask.ContinueWith(t =>
+                            {
+                                if (inputTask.Exception != null)
+                                {
+                                    var message = inputTask.Exception.InnerException.ToString()
+                                        .Replace(Environment.NewLine, " | ");
+                                    writer.LogAsync(Severity.Fatal,
+                                        string.Format("Exception during streaming: name={0} | {1}", inputName, message))
+                                        .Wait();
+                                }
+                            });
+                        }
+                        try
+                        {
+                            await Task.WhenAll(instances.ToArray());
+                        }
+                        catch
+                        {
+                        }
+                        await writer.CompleteAsync();
                     }
-
-                    await Task.WhenAll(instances.ToArray());
+                    catch (Exception e)
+                    {
+                        var message = e.ToString().Replace(Environment.NewLine, " | ");
+                        writer.LogAsync(Severity.Fatal,
+                            string.Format("Exception during streaming: name={0} | {1}", name, message))
+                            .Wait();
+                        return -1;
+                    }
                     return 0;
                 }
-                else if (args[0].ToLower().Equals("--scheme"))
+
+                if (args[0].ToLower().Equals("--scheme"))
                 {
-                    Scheme scheme = this.Scheme;
-                    if (scheme != null)
+                    Scheme scheme = null;
+                    try
                     {
-                        StringWriter stringWriter = new StringWriter();
-                        new XmlSerializer(typeof(Scheme)).Serialize(stringWriter, scheme);
-                        stdout.WriteLine(stringWriter.ToString());
-                        return 0;
-                    }
-                    else
-                    {
+                        scheme = this.Scheme;
+
+                        if (scheme != null)
+                        {
+                            StringWriter stringWriter = new StringWriter();
+                            new XmlSerializer(typeof (Scheme)).Serialize(stringWriter, scheme);
+                            stdout.WriteLine(stringWriter.ToString());
+                            return 0;
+                        }
                         throw new NullReferenceException("Scheme was null; could not serialize.");
                     }
+                    catch (Exception e)
+                    {
+                        var message = e.ToString().Replace(Environment.NewLine, " | ");
+                        writer.LogAsync(Severity.Fatal,
+                            string.Format("Exception getting scheme: name={0} | {1}", name, message))
+                            .Wait();
+                        return -1;
+                    }
+                    finally
+                    {
+                        writer.CompleteAsync().Wait();
+                    }
                 }
-                else if (args[0].ToLower().Equals("--validate-arguments"))
+
+                if (args[0].ToLower().Equals("--validate-arguments"))
                 {
                     string errorMessage = null;
-
-                    Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
-                        Deserialize(stdin);
+                    string inputDoc = null;
 
                     try
                     {
+                        inputDoc = await stdin.ReadToEndAsync();
+                        writer.LogAsync(Severity.Debug, inputDoc).Wait();
+
+                        Validation validation = (Validation) new XmlSerializer(typeof (Validation)).
+                            Deserialize(new StringReader(inputDoc));
+
+                        name = validation.Name;
+
                         bool validationSuccessful = true;
                         Scheme scheme = this.Scheme;
                         foreach (Argument arg in scheme.Arguments)
@@ -285,39 +323,56 @@ namespace Splunk.ModularInputs
                             return 0; // Validation succeeded
                         }
                     }
-                    catch (Exception) { }
-
-                    using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings
+                    catch (Exception e)
                     {
-                        Async = true,
-                        ConformanceLevel = ConformanceLevel.Fragment
-                    }))
-                    {
-                        await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
-                        await xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null, value: errorMessage);
-                        await xmlWriter.WriteEndElementAsync();
+                        var message = e.ToString().Replace(Environment.NewLine, " | ");
+                        errorMessage = e.Message;
+                        writer.LogAsync(Severity.Fatal,
+                            string.Format("Exception during validation: name={0} | {1}", name, message))
+                            .Wait();
                     }
-                    return -1;
-                }
-                else
-                {
-                    await writer.LogAsync("ERROR", "Invalid arguments to modular input.");
+                    finally
+                    {
+                        writer.CompleteAsync().Wait();
+                    }
+
+                    if (errorMessage != null)
+                    {
+                        using (var xmlWriter = XmlWriter.Create(stdout, new XmlWriterSettings
+                        {
+                            Async = true,
+                            ConformanceLevel = ConformanceLevel.Fragment
+                        }))
+                        {
+                            await xmlWriter.WriteStartElementAsync(prefix: null, localName: "error", ns: null);
+                            await
+                                xmlWriter.WriteElementStringAsync(prefix: null, localName: "message", ns: null,
+                                    value: errorMessage);
+                            await xmlWriter.WriteEndElementAsync();
+                        }
+                    }
+
                     return -1;
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                var full = e.ToString().Replace(Environment.NewLine, " | ");
-                writer.LogAsync(string.Format("Unhandled exception: {0}", full), "FATAL").Wait();
-                return -1;
+                if (writer != null)
+                {
+                    var message = e.ToString().Replace(Environment.NewLine, " | ");
+                    writer.LogAsync(Severity.Error, string.Format("Exception during execution: name={0} | {1}", name, message)).Wait();
+                }
             }
             finally
             {
-                writer.CompleteAsync().Wait();
+                if (writer != null)
+                {
+                    writer.CompleteAsync().Wait();
+                }
             }
+            await writer.LogAsync(Severity.Error, string.Format("Exception during execution: Invalid arguments: name={0}", name));
+            return -1;
         }
-
-
 
         /// <summary>
         /// Streams events to Splunk through the provided EventWriter.

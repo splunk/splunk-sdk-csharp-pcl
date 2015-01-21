@@ -47,9 +47,11 @@ namespace Splunk.Examples.Authenticate
         /// <param name="args">The arguments.</param>
         static void Main(string[] args)
         {
-            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port))
+            var ns = new Namespace(user: args[0], app: args[1]);
+
+            using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, ns))
             {
-                Console.WriteLine("Connected to {0}:{1} ", service.Context.Host, service.Context.Port);
+                Console.WriteLine("Connected to {0}", service);
                 Run(service).Wait();
             }
 
@@ -62,17 +64,8 @@ namespace Splunk.Examples.Authenticate
         /// </summary>
         /// <param name="service">The service.</param>
         /// <returns>a task</returns>
-        private static async Task Run(Service service)
+        static async Task Run(Service service)
         {
-            try
-            {
-                await service.Configurations.GetAllAsync();
-            }
-            catch (AuthenticationFailureException)
-            {
-                Console.WriteLine("Can't get service configuration without logging in.");
-            }
-
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             Console.WriteLine("List all configurations of the Splunk service:");

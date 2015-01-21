@@ -96,9 +96,6 @@ namespace Splunk.Client.Helpers
             Assert.True(false, string.Format("Expected exception {0}, but not exception raised.", typeof(T)));
         }
 
-
-
-
         #region Privates/internals
 
         static readonly SplunkRC splunk;
@@ -120,7 +117,15 @@ namespace Splunk.Client.Helpers
             /// </param>
             internal SplunkRC(string path)
             {
-                var reader = new StreamReader(path);
+                StreamReader reader = null;
+                try
+                {
+                    reader = new StreamReader(path);
+                }
+                catch (FileNotFoundException)
+                {
+                    return;
+                }
 
                 List<string> argList = new List<string>(4);
                 string line;

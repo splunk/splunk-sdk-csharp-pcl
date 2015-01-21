@@ -84,7 +84,7 @@ namespace Splunk.Client.Helpers
                 await testCode();
                 return;
             }
-            catch (T expectedException)
+            catch (T)
             {
                 return;
             }
@@ -92,6 +92,7 @@ namespace Splunk.Client.Helpers
             {
                 Assert.True(false, string.Format("Expected {0}; found exception {1}: {2}", typeof(T).FullName, unexpectedException.GetType().FullName, unexpectedException.Message));
             }
+
             Assert.True(false, string.Format("Expected exception {0}, but not exception raised.", typeof(T)));
         }
 

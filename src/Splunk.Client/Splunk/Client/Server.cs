@@ -204,11 +204,15 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        #pragma warning disable 1591
+
         protected internal static readonly ResourceName ClassResourceName = new ResourceName("server");
         protected internal static readonly ResourceName Info = new ResourceName("server", "info");
         protected internal static readonly ResourceName Restart = new ResourceName("server", "control", "restart");
         protected internal static readonly ResourceName Settings = new ResourceName("server", "settings", "settings");
-        
+
+        #pragma warning restore 1591
+
         ServerMessageCollection messages;
 
         #endregion

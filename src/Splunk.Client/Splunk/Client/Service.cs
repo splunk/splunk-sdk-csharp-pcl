@@ -108,18 +108,25 @@ namespace Splunk.Client
         /// <param name="ns">
         /// The namespace for requests issue by the new <see cref="Service"/>.
         /// </param>
-        ///
-        /// ### <exception name="ArgumentException">
-        /// <paramref name="port"/> is less than zero
-        /// or greater than <c>65535</c>.
+        /// <exception name="ArgumentNullException">
+        /// <paramref name="uri"/> is null.
+        /// </exception>
+        /// <exception name="ArgumentException">
+        /// The <paramref name="uri"/> scheme is not http or https or the <paramref name="uri"/> port number is less than
+        /// zero or greater than 65,535.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The <paramref name="uri"/> represents a relative URI, and this constructor can only be used with absolute URIs.
         /// </exception>
         public Service(Uri uri, Namespace ns = null)
             : this(new Context(GetScheme(uri.Scheme), uri.Host, uri.Port), ns)
-        { }
+        {
+            Contract.Requires<ArgumentNullException>(uri != null);
+        }
 
         private static Scheme GetScheme(string schemeString)
         {
-            var scheme = (Scheme) Enum.Parse(typeof(Scheme), schemeString, true);
+            var scheme = (Scheme)Enum.Parse(typeof(Scheme), schemeString, true);
             return scheme;
         }
 
@@ -331,8 +338,8 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<Job> SearchAsync(string search, int count = 100, 
-            ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null, 
+        public virtual async Task<Job> SearchAsync(string search, int count = 100,
+            ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null,
             CustomJobArgs customArgs = null)
         {
             var job = await this.Jobs.CreateAsync(search, count, mode, args, customArgs).ConfigureAwait(false);
@@ -340,8 +347,8 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<SearchResultStream> SearchOneShotAsync(string search, int count = 100, 
-            JobArgs args = null,  CustomJobArgs customArgs = null)
+        public virtual async Task<SearchResultStream> SearchOneShotAsync(string search, int count = 100,
+            JobArgs args = null, CustomJobArgs customArgs = null)
         {
             var resourceName = JobCollection.ClassResourceName;
 
@@ -454,7 +461,7 @@ namespace Splunk.Client
         static readonly ResourceName AuthenticationHttpAuthTokens = new ResourceName("authentication", "httpauth-tokens");
         static readonly ResourceName AuthorizationCapabilities = new ResourceName("authorization", "capabilities");
         static readonly ResourceName SearchJobsExport = new ResourceName("search", "jobs", "export");
-        
+
         readonly Context context;
         readonly Namespace ns;
 

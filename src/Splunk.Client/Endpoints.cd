@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="Splunk.Client.Endpoint" Collapsed="true">
+    <Position X="8.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AggAAAAAAhAAAQQkgACAAgQAAAAAIIAAAAAAAAAAByA=</HashCode>
+      <FileName>Splunk\Client\Endpoint.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.Server">
+    <Position X="3.75" Y="2.75" Width="5" />
+    <Members>
+      <Field Name="ClassResourceName" Hidden="true" />
+      <Field Name="Info" Hidden="true" />
+      <Field Name="messages" Hidden="true" />
+      <Field Name="Restart" Hidden="true" />
+      <Method Name="Server" Hidden="true" />
+      <Field Name="Settings" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>EAAQAAAAAQAAAAAAAAAAABAAAAAEAAABgAAAIUAAAAA=</HashCode>
+      <FileName>Splunk\Client\Server.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.Transmitter">
+    <Position X="9.5" Y="2.75" Width="6.75" />
+    <Members>
+      <Field Name="ClassResourceName" Hidden="true" />
+      <Field Name="SimpleReceiver" Hidden="true" />
+      <Field Name="StreamReceiver" Hidden="true" />
+      <Method Name="Transmitter" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Splunk\Client\Transmitter.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ServerInfo" Collapsed="true">
+    <Position X="3" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KAAAIAAAEIAAYACAAgAAgAYAQCAAhAQGCIACAAAAAEA=</HashCode>
+      <FileName>Splunk\Client\ServerInfo.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ServerMessageCollection" Collapsed="true">
+    <Position X="4.75" Y="5.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAIAAAAAAAAAAAIYAAAAA=</HashCode>
+      <FileName>Splunk\Client\ServerMessageCollection.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Splunk.Client.ServerSettings" Collapsed="true">
+    <Position X="7.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAQEQAAACCBAAkAAAAABAAACAAAAAAAABAAAgA=</HashCode>
+      <FileName>Splunk\Client\ServerSettings.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

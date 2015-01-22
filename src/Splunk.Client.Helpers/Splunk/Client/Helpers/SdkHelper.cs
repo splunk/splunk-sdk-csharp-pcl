@@ -34,6 +34,13 @@ namespace Splunk.Client.Helpers
         /// </summary>
         static SdkHelper()
         {
+            //// TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
+            //// 1. Instantiate a WebRequestHandler
+            //// 2. Set its ServerCertificateValidationCallback
+            //// 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
+
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;

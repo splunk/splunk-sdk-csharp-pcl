@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -286,13 +282,12 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(context != null);
             Contract.Requires<ArgumentNullException>(id != null);
-            //// TODO: Ensure that context can reach id (?)
 
             this.EnsureUninitialized();
 
-            // Compute namespace and resource name from id
+            //// Compute namespace and resource name from id
 
-            var path = id.AbsolutePath.Split('/');
+            var path = id.AbsolutePath.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
 
             if (path.Length < 3)
             {
@@ -307,23 +302,24 @@ namespace Splunk.Client
             Namespace ns;
             ResourceName name;
 
-            switch (path[1])
+            switch (path[0])
             {
                 case "services":
 
                     ns = Namespace.Default;
-                    name = new ResourceName(new ArraySegment<string>(path, 2, path.Length - 2));
+                    name = new ResourceName(new ArraySegment<string>(path, 1, path.Length - 1));
                     break;
 
                 case "servicesNS":
 
-                    if (path.Length < 5)
+                    if (path.Length < 4)
                     {
                         throw new InvalidDataException(); // TODO: Diagnostics : conversion error
                     }
 
-                    ns = new Namespace(user: path[2], app: path[3]);
-                    name = new ResourceName(new ArraySegment<string>(path, 4, path.Length - 4));
+                    var parts = new ArraySegment<string>(path, 3, path.Length - 3);
+                    ns = new Namespace(user: path[1], app: path[2]);
+                    name = new ResourceName(parts);
                     break;
 
                 default: throw new InvalidDataException(); // TODO: Diagnostics : conversion error

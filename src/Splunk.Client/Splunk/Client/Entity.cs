@@ -54,11 +54,10 @@ namespace Splunk.Client
         /// An object identifying a Splunk resource within
         /// <paramref name= "service"/>.<see cref="Namespace"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
-        protected internal Entity(Service service, ResourceName name)
+        public Entity(Service service, ResourceName name)
             : base(service.Context, service.Namespace, name)
         {
             Contract.Requires<ArgumentNullException>(service != null);

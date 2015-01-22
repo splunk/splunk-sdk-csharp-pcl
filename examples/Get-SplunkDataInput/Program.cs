@@ -19,7 +19,7 @@ namespace Splunk.Examples.Authenticate
     using Splunk.Client;
     using Splunk.Client.Helpers;
     using System;
-    using System.Net;
+    using System.Dynamic;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -28,21 +28,8 @@ namespace Splunk.Examples.Authenticate
     /// </summary>
     public class Program
     {
-        static Program()
-        {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
-            // 1. Instantiate a WebRequestHandler
-            // 2. Set its ServerCertificateValidationCallback
-            // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
-            {
-                return true;
-            };
-        }
-
         /// <summary>
-        /// Mains function
+        /// Main.
         /// </summary>
         /// <param name="args">The arguments.</param>
         static void Main(string[] args)
@@ -51,11 +38,12 @@ namespace Splunk.Examples.Authenticate
 
             using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, ns))
             {
-                Console.WriteLine("Connected to {0}", service);
+                Console.WriteLine("Splunk management port: {0}", service.Context);
+                Console.WriteLine("Namespace: {0}", service.Namespace);
                 Run(service).Wait();
             }
 
-            Console.Write("Press return to exit: ");
+            Console.Write("Press enter to exit: ");
             Console.ReadLine();
         }
 
@@ -68,15 +56,22 @@ namespace Splunk.Examples.Authenticate
         {
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
-            Console.WriteLine("List all configurations of the Splunk service:");
-            await service.Configurations.GetAllAsync();
+            Console.WriteLine("Data inputs:");
 
-            foreach (Configuration config in service.Configurations)
+            var collection = new EntityCollection<Entity<Resource>, Resource>(service, new ResourceName("data", "inputs", "all"));
+            int count = 0;
+            await collection.GetAllAsync();
+
+            foreach (var entity in collection)
             {
-                Console.WriteLine(config.Id);
+                Console.WriteLine("{0:D5}. {1}", ++count, entity.Id);
+                dynamic dataInput = entity.Dynamic.Content;
+
+                Console.WriteLine("       Disabled: {0}", dataInput.Disabled);
+                Console.WriteLine("          Index: {0}", dataInput.Index);
+                Console.WriteLine("           Type: {0}", dataInput.Eai.Type);
             }
 
-            Console.WriteLine("Log off");
             await service.LogOffAsync();
         }
     }

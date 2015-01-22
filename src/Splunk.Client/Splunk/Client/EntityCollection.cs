@@ -67,11 +67,10 @@ namespace Splunk.Client
         /// An object identifying a Splunk resource within
         /// <paramref name= "service"/>.<see cref="Namespace"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
-        protected internal EntityCollection(Service service, ResourceName name)
+        public EntityCollection(Service service, ResourceName name)
             : base(service, name)
         { }
 
@@ -361,7 +360,9 @@ namespace Splunk.Client
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {
-            return this.Snapshot.Resources.Select(resource => Create((TResource)resource)).GetEnumerator();
+            return this.Snapshot.Resources.Select(resource => {
+                return Create((TResource)resource);
+            }).GetEnumerator();
         }
 
         #endregion

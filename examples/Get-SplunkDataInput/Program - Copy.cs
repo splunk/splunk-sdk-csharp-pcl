@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Examples.GetSplunkDataInputs
+namespace Splunk.Examples.GetSplunkDataInputs.Not
 {
     using Splunk.Client;
     using Splunk.Client.Helpers;
@@ -23,7 +23,8 @@ namespace Splunk.Examples.GetSplunkDataInputs
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An example program to access the set of data inputs running on a Splunk instance.
+    /// An example program to authenticate to the server and print the received
+    /// token.
     /// </summary>
     public class Program
     {
@@ -31,14 +32,13 @@ namespace Splunk.Examples.GetSplunkDataInputs
         /// Main.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        static void Main(string[] args)
+        static void NotMain(string[] args)
         {
             var ns = new Namespace(user: args[0], app: args[1]);
 
             using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, ns))
             {
-                Console.WriteLine("Splunk management port: {0}", service.Context);
-                Console.WriteLine("Namespace: {0}", service.Namespace);
+                Console.WriteLine("Splunk service endpoint: {0}", service);
                 Run(service).Wait();
             }
 
@@ -54,38 +54,20 @@ namespace Splunk.Examples.GetSplunkDataInputs
         static async Task Run(Service service)
         {
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
-
             Console.WriteLine("Data inputs:");
 
             var collection = service.CreateEntityCollection("data", "inputs", "all");
             int count = 0;
             await collection.GetAllAsync();
 
-            //// TODO:
-            //// [X] 1. Make Entity<TResource>.Content public (It still must be assigned to a dynamic variable before use.)
-            //// [X] 2. Write a convenience method on the Service object for getting an EntityCollection on some path: service.CreateEntityCollection("data", "inputs", "all")
-            //// [X] 3. Write a convenience method on the Service object for getting an Entity on some path: something like service.CreateEntity("data", "inputs", "tcp", "ssl")
-            //// [X] 4. Add service.CreateEntityCollectionCollection for completeness.
-            //// [X] 5. Revert the access change to EntityCollection<Entity<TResource>, TResource>(service, new ResourceName("data", "inputs", "all")) because (2) makes it unnecessary.
-            //// [X] 6. Revert the access change to Entity<TResource>(service, new ResourceName("data", "inputs", "all")) because (3) makes it unnecessary.
-            //// [O] 7. Show a data input in action within this loop.
-            //// [ ] 8. Fill holes in IService (holes are unrelated to this exercise)
-
             foreach (var entity in collection)
             {
                 Console.WriteLine("{0:D5}. {1}", ++count, entity.Id);
-                dynamic dataInput = entity.Content;
+                dynamic dataInput = entity.Dynamic.Content;
 
                 Console.WriteLine("       Disabled: {0}", dataInput.Disabled);
                 Console.WriteLine("          Index: {0}", dataInput.Index);
                 Console.WriteLine("           Type: {0}", dataInput.Eai.Type);
-
-                if (dataInput.Eai.Type == "example_hydra_worker")
-                {
-                    // Restart...
-                    await entity.InvokeAsync("disable");
-                    await entity.InvokeAsync("enable");
-                }
             }
 
             await service.LogOffAsync();

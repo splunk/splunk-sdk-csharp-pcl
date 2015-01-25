@@ -151,7 +151,7 @@ namespace Splunk.Client
         /// <value>
         /// The content.
         /// </value>
-        protected ExpandoAdapter Content
+        public virtual ExpandoAdapter Content
         {
             get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
         }

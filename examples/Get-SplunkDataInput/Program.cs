@@ -14,7 +14,7 @@
  * under the License.
  */
 
-namespace Splunk.Examples.Authenticate
+namespace Splunk.Examples.GetSplunkDataInputs
 {
     using Splunk.Client;
     using Splunk.Client.Helpers;
@@ -23,8 +23,7 @@ namespace Splunk.Examples.Authenticate
     using System.Threading.Tasks;
 
     /// <summary>
-    /// An example program to authenticate to the server and print the received
-    /// token.
+    /// An example program to access the set of data inputs running on a Splunk instance.
     /// </summary>
     public class Program
     {
@@ -58,9 +57,21 @@ namespace Splunk.Examples.Authenticate
 
             Console.WriteLine("Data inputs:");
 
-            var collection = new EntityCollection<Entity<Resource>, Resource>(service, new ResourceName("data", "inputs", "all"));
+            var collection = service.CreateEntityCollection("data", "inputs", "all");
             int count = 0;
             await collection.GetAllAsync();
+
+            //// TODO:
+            //// [ ] 1. Make entity.Dynamic.Content a dynamic property, not a property of type ExpandoObject which must then be cast to a dynamic object.
+            ////        Issue: BaseResource.Content is used to fetch values by name all over the place AND the code
+            ////        Solution: AtomFeed code should store this value as a dynamic value, allowing BaseResource.Content to cast as it already currently does.
+            //// [X] 2. Write a convenience method on the Service object for getting an EntityCollection on some path: service.CreateEntityCollection("data", "inputs", "all")
+            //// [X] 3. Write a convenience method on the Service object for getting an Entity on some path: something like service.CreateEntity("data", "inputs", "tcp", "ssl")
+            //// [X] 4. Add service.CreateEntityCollectionCollection for completeness.
+            //// [X] 5. Revert the access change to EntityCollection<Entity<TResource>, TResource>(service, new ResourceName("data", "inputs", "all")) because (2) makes it unnecessary.
+            //// [X] 6. Revert the access change to Entity<TResource>(service, new ResourceName("data", "inputs", "all")) because (3) makes it unnecessary.
+            //// [O] 7. Show a data input in action within this loop.
+            //// [ ] 8. Fill holes in IService (holes are unrelated to this exercise)
 
             foreach (var entity in collection)
             {
@@ -70,6 +81,13 @@ namespace Splunk.Examples.Authenticate
                 Console.WriteLine("       Disabled: {0}", dataInput.Disabled);
                 Console.WriteLine("          Index: {0}", dataInput.Index);
                 Console.WriteLine("           Type: {0}", dataInput.Eai.Type);
+
+                if (dataInput.Eai.Type == "example_hydra_worker")
+                {
+                    // Restart...
+                    await entity.InvokeAsync("disable");
+                    await entity.InvokeAsync("enable");
+                }
             }
 
             await service.LogOffAsync();

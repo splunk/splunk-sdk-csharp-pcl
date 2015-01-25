@@ -34,7 +34,7 @@ namespace Splunk.Client
     using System.Threading.Tasks;
 
     /// <summary>
-    /// A service.
+    /// Provides access to the Splunk REST API offered on a Splunk management port.
     /// </summary>
     /// <seealso cref="T:System.IDisposable"/>
     /// <seealso cref="T:Splunk.Client.IService"/>
@@ -215,6 +215,47 @@ namespace Splunk.Client
         #endregion
 
         #region Methods
+
+        #region Methods for accessing entities and entity collections not specifically supported by Splunk.Client
+
+        /// <inheritdoc/>
+        public Entity<Resource> CreateEntity(params string[] resourceName)
+        {
+            return new Entity<Resource>(this, new ResourceName(resourceName));
+        }
+
+        /// <inheritdoc/>
+        public Entity<Resource> CreateEntity(IEnumerable<string> resourceName, string user, string app)
+        {
+            return new Entity<Resource>(this.Context, new Namespace(user, app), new ResourceName(resourceName));
+        }
+
+        /// <inheritdoc/>
+        public EntityCollection<Entity<Resource>, Resource> CreateEntityCollection(params string[] resourceName)
+        {
+            return new EntityCollection<Entity<Resource>, Resource>(this, new ResourceName(resourceName));
+        }
+
+        /// <inheritdoc/>
+        public EntityCollection<Entity<Resource>, Resource> CreateEntityCollection(IEnumerable<string> resourceName, string user, string app)
+        {
+            return new EntityCollection<Entity<Resource>, Resource>(this.Context, new Namespace(user, app), 
+                new ResourceName(resourceName));
+        }
+
+        /// <inheritdoc/>
+        public EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection> CreateEntityCollectionCollection(params string[] resourceName)
+        {
+            return new EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection>(this, new ResourceName(resourceName));
+        }
+
+        /// <inheritdoc/>
+        public EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection> CreateEntityCollectionCollection(IEnumerable<string> resourceName, string user, string app)
+        {
+            return new EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection>(this.Context, new Namespace(user, app), new ResourceName(resourceName));
+        }
+
+        #endregion
 
         #region Access control
 

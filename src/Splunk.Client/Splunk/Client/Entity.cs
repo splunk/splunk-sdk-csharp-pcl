@@ -57,7 +57,7 @@ namespace Splunk.Client
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
-        public Entity(Service service, ResourceName name)
+        protected internal Entity(Service service, ResourceName name)
             : base(service.Context, service.Namespace, name)
         {
             Contract.Requires<ArgumentNullException>(service != null);
@@ -82,8 +82,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/>
-        /// class.
+        /// Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -170,6 +169,27 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                 await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
+            }
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<bool> InvokeAsync(string action)
+        {
+            var resourceName = new ResourceName(this.ResourceName, action);
+
+            using (var response = await this.Context.PostAsync(this.Namespace, resourceName).ConfigureAwait(false))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                var reader = response.XmlReader;
+
+                await reader.MoveToDocumentElementAsync("feed", "entry", "response").ConfigureAwait(false);
+
+                if (reader.Name == "response")
+                {
+                    return false;
+                }
+
+                return await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
             }
         }
 

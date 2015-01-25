@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -39,6 +35,14 @@ namespace Splunk.Client
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
         Task GetAsync();
+
+        /// <summary>
+        /// Asynchronously invokes an action on the current entity from Splunk.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        Task<bool> InvokeAsync(string action);
 
         /// <summary>
         /// Asynchronously removes the current entity from Splunk.
@@ -92,6 +96,13 @@ namespace Splunk.Client
     abstract class IEntityContract : IEntity
     {
         public abstract Task GetAsync();
+
+        public Task<bool> InvokeAsync(string action)
+        {
+            Contract.Requires<ArgumentNullException>(action != null);
+            Contract.Requires<ArgumentException>(action.Length != 0);
+            return default(Task<bool>);
+        }
 
         public abstract Task RemoveAsync();
 

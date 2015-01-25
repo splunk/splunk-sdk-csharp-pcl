@@ -62,7 +62,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modular_input", "Modular_in
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "github-commits", "examples\github-commits\github-commits.csproj", "{35B8F1F4-E7F6-4988-8737-5290BF787199}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Get-SplunkDataInput", "examples\Get-SplunkDataInput\Get-SplunkDataInput.csproj", "{443CB5CF-1086-40E3-B60C-6B35D7DFCF90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "get-splunk-data-inputs", "examples\Get-SplunkDataInput\get-splunk-data-inputs.csproj", "{443CB5CF-1086-40E3-B60C-6B35D7DFCF90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

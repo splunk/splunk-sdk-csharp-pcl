@@ -417,6 +417,8 @@ namespace Splunk.Client
 
         public abstract Task GetAsync();
 
+        public abstract Task<bool> InvokeAsync(string action);
+
         public abstract Task RemoveAsync();
 
         public abstract Task<bool> UpdateAsync(params Argument[] arguments);

@@ -70,14 +70,12 @@ namespace Splunk.Client
         /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
-        public EntityCollection(Service service, ResourceName name)
+        protected internal EntityCollection(Service service, ResourceName name)
             : base(service, name)
         { }
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
-        /// class.
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -94,9 +92,7 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
-        /// class.
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -114,9 +110,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
-        /// class.
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -131,8 +125,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the
-        /// <see cref= "EntityCollection&lt;TEntity,TResource&gt;"/> class.
+        /// Infrastructure. Initializes a new instance of the <see cref= "EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to

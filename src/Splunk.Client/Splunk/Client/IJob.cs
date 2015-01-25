@@ -884,109 +884,57 @@ namespace Splunk.Client
         #region Properties
 
         public abstract bool CanSummarize { get; }
-
         public abstract DateTime CursorTime { get; }
-
         public abstract int DefaultSaveTtl { get; }
-
         public abstract int DefaultTtl { get; }
-
         public abstract long DiskUsage { get; }
-
         public abstract DispatchState DispatchState { get; }
-
         public abstract double DoneProgress { get; }
-
         public abstract long DropCount { get; }
-
         public abstract Eai Eai { get; }
-
         public abstract DateTime EarliestTime { get; }
-
         public abstract long EventAvailableCount { get; }
-
         public abstract long EventCount { get; }
-
         public abstract int EventFieldCount { get; }
-
         public abstract bool EventIsStreaming { get; }
-
         public abstract bool EventIsTruncated { get; }
-
         public abstract string EventSearch { get; }
-
         public abstract SortDirection EventSorting { get; }
-
         public abstract long IndexEarliestTime { get; }
-
         public abstract long IndexLatestTime { get; }
-
         public abstract bool IsBatchModeSearch { get; }
-
         public abstract bool IsDone { get; }
-
         public abstract bool IsFailed { get; }
-
         public abstract bool IsFinalized { get; }
-
         public abstract bool IsPaused { get; }
-
         public abstract bool IsPreviewEnabled { get; }
-
         public abstract bool IsRealTimeSearch { get; }
-
         public abstract bool IsRemoteTimeline { get; }
-
         public abstract bool IsSaved { get; }
-
         public abstract bool IsSavedSearch { get; }
-
         public abstract bool IsZombie { get; }
-
         public abstract string Keywords { get; }
-
         public abstract DateTime LatestTime { get; }
-
         public abstract string NormalizedSearch { get; }
-
         public abstract int NumPreviews { get; }
-
         public abstract dynamic Performance { get; }
-
         public abstract int Pid { get; }
-
         public abstract int Priority { get; }
-
         public abstract string RemoteSearch { get; }
-
         public abstract string ReportSearch { get; }
-
         public abstract dynamic Request { get; }
-
         public abstract long ResultCount { get; }
-
         public abstract bool ResultIsStreaming { get; }
-
         public abstract long ResultPreviewCount { get; }
-
         public abstract double RunDuration { get; }
-
         public abstract Job.RuntimeAdapter Runtime { get; }
-
         public abstract long ScanCount { get; }
-
         public abstract string Search { get; }
-
         public abstract DateTime SearchEarliestTime { get; }
-
         public abstract DateTime SearchLatestTime { get; }
-
         public abstract ReadOnlyCollection<string> SearchProviders { get; }
-
         public abstract string Sid { get; }
-
         public abstract int StatusBuckets { get; }
-
         public abstract long Ttl { get; }
 
         #endregion
@@ -1022,6 +970,8 @@ namespace Splunk.Client
         public abstract Task EnablePreviewAsync();
 
         public abstract Task FinalizeAsync();
+
+        public abstract Task<bool> InvokeAsync(string action);
 
         public abstract Task PauseAsync();
 

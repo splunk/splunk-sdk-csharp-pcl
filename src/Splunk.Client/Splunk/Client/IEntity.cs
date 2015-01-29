@@ -19,6 +19,7 @@ namespace Splunk.Client
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -42,7 +43,7 @@ namespace Splunk.Client
         /// <returns>
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
-        Task<bool> InvokeAsync(string action);
+        Task<bool> SendAsync(string action, HttpMethod method = null, params Argument[] arguments);
 
         /// <summary>
         /// Asynchronously removes the current entity from Splunk.
@@ -97,7 +98,7 @@ namespace Splunk.Client
     {
         public abstract Task GetAsync();
 
-        public Task<bool> InvokeAsync(string action)
+        public Task<bool> SendAsync(string action, HttpMethod method, params Argument[] arguments)
         {
             Contract.Requires<ArgumentNullException>(action != null);
             Contract.Requires<ArgumentException>(action.Length != 0);

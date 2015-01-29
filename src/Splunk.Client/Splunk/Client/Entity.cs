@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -27,6 +23,7 @@ namespace Splunk.Client
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -173,7 +170,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<bool> InvokeAsync(string action)
+        public virtual async Task<bool> SendAsync(string action, HttpMethod method = null, params Argument[] arguments)
         {
             var resourceName = new ResourceName(this.ResourceName, action);
 

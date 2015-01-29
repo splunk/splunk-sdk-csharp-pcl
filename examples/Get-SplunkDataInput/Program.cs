@@ -82,11 +82,18 @@ namespace Splunk.Examples.GetSplunkDataInputs
                     Console.WriteLine("          Index: {0}", dataInput.Index);
                     Console.WriteLine("           Type: {0}", dataInput.Eai.Type);
 
-                    if (dataInput.Eai.Type == "example_hydra_scheduler")
+                    if (dataInput.Disabled == "0")
                     {
-                        // Restart...
-                        await entity.InvokeAsync("disable");
-                        await entity.InvokeAsync("enable");
+                        try
+                        {
+                            // Restart...
+                            await entity.SendAsync("disable");
+                            await entity.SendAsync("enable");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Could not restart '{0}': {1}", entity.Id, e.Message);
+                        }
                     }
                 }
 

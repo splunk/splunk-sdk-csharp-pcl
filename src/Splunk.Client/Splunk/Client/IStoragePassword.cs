@@ -14,15 +14,12 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -156,6 +153,8 @@ namespace Splunk.Client
         public abstract Task<bool> InvokeAsync(string action);
 
         public abstract Task RemoveAsync();
+
+        public abstract Task<bool> SendAsync(string action, HttpMethod method, params Argument[] arguments);
 
         public abstract Task<bool> UpdateAsync(params Argument[] arguments);
 

@@ -170,11 +170,11 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<bool> SendAsync(string action, HttpMethod method = null, params Argument[] arguments)
+        public virtual async Task<bool> SendAsync(HttpMethod method, string action, params Argument[] arguments)
         {
             var resourceName = new ResourceName(this.ResourceName, action);
 
-            using (var response = await this.Context.PostAsync(this.Namespace, resourceName).ConfigureAwait(false))
+            using (var response = await this.Context.SendAsync(method, this.Namespace, resourceName, arguments).ConfigureAwait(false))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                 var reader = response.XmlReader;

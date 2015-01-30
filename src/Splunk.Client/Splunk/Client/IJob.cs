@@ -940,7 +940,7 @@ namespace Splunk.Client
 
         public abstract Task GetAsync(DispatchState dispatchState, int delay, int retryInterval);
 
-        public abstract Task<bool> SendAsync(string action, HttpMethod method, params Argument[] arguments);
+        public abstract Task<bool> SendAsync(HttpMethod method, string action, params Argument[] arguments);
 
         public abstract Task TransitionAsync(DispatchState dispatchState, int delay, int retryInterval);
 

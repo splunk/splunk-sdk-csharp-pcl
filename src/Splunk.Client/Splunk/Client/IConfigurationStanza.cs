@@ -123,7 +123,7 @@ namespace Splunk.Client
 
         public abstract Task RemoveAsync();
 
-        public abstract Task<bool> SendAsync(string action, HttpMethod method, params Argument[] arguments);
+        public abstract Task<bool> SendAsync(HttpMethod method, string action, params Argument[] arguments);
 
         public abstract Task<bool> UpdateAsync(IEnumerable<Argument> arguments);
 

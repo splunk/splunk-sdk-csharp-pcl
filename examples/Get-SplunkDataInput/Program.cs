@@ -20,6 +20,7 @@ namespace Splunk.Examples.GetSplunkDataInputs
     using Splunk.Client.Helpers;
     using System;
     using System.Dynamic;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -87,8 +88,8 @@ namespace Splunk.Examples.GetSplunkDataInputs
                         try
                         {
                             // Restart...
-                            await entity.SendAsync("disable");
-                            await entity.SendAsync("enable");
+                            await entity.SendAsync(HttpMethod.Post, "disable");
+                            await entity.SendAsync(HttpMethod.Post, "enable");
                         }
                         catch (Exception e)
                         {

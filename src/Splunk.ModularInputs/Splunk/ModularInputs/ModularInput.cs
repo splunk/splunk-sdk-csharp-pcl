@@ -297,7 +297,9 @@ namespace Splunk.ModularInputs
                     try
                     {
                         inputDoc = await stdin.ReadToEndAsync();
-                        writer.LogAsync(Severity.Debug, inputDoc).Wait();
+                        inputDoc = inputDoc.Replace(Environment.NewLine, " |");
+
+                        writer.LogAsync(Severity.Info, inputDoc).Wait();
 
                         Validation validation = (Validation) new XmlSerializer(typeof (Validation)).
                             Deserialize(new StringReader(inputDoc));

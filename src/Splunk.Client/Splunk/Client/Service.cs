@@ -331,7 +331,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<Job> SearchAsync(string search, int count = 100, 
+        public virtual async Task<Job> SearchAsync(string search, int count = 0, 
             ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null, 
             CustomJobArgs customArgs = null)
         {
@@ -340,7 +340,7 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual async Task<SearchResultStream> SearchOneShotAsync(string search, int count = 100, 
+        public virtual async Task<SearchResultStream> SearchOneShotAsync(string search, int count = 0, 
             JobArgs args = null,  CustomJobArgs customArgs = null)
         {
             var resourceName = JobCollection.ClassResourceName;

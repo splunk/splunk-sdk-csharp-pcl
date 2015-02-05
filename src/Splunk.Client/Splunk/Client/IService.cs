@@ -390,7 +390,7 @@ namespace Splunk.Client
             return default(Task<SearchResultStream>);
         }
         
-        public Task<Job> SearchAsync(string search, int count = 100, 
+        public Task<Job> SearchAsync(string search, int count = 0, 
             ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null,
             CustomJobArgs customArgs = null)
         {
@@ -398,7 +398,7 @@ namespace Splunk.Client
             return default(Task<Job>);
         }
         
-        public Task<SearchResultStream> SearchOneShotAsync(string search, int count = 100, JobArgs args = null, CustomJobArgs customArgs = null)
+        public Task<SearchResultStream> SearchOneShotAsync(string search, int count = 0, JobArgs args = null, CustomJobArgs customArgs = null)
         {
             Contract.Requires<ArgumentNullException>(search != null);
             return default(Task<SearchResultStream>);

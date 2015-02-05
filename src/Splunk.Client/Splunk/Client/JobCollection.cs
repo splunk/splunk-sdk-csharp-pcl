@@ -173,7 +173,7 @@ namespace Splunk.Client
         /// <returns>
         /// An object representing the search job that was created.
         /// </returns>
-        public virtual async Task<Job> CreateAsync(string search, int count = 100, 
+        public virtual async Task<Job> CreateAsync(string search, int count = 0, 
             ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null, 
             CustomJobArgs customArgs = null, 
             DispatchState requiredState = DispatchState.Running)

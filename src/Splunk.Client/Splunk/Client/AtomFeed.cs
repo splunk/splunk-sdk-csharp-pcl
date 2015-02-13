@@ -194,6 +194,7 @@ namespace Splunk.Client
             List<AtomEntry> entries = null;
             Dictionary<string, Uri> links = null;
             List<Message> messages = null;
+            
 
             await reader.ReadAsync().ConfigureAwait(false);
 
@@ -320,20 +321,23 @@ namespace Splunk.Client
             reader.EnsureMarkup(XmlNodeType.EndElement, documentElementName);
             await reader.ReadAsync().ConfigureAwait(false);
 
-            if (entries != null)
+            if (entries == null)
             {
-                this.Entries = new ReadOnlyCollection<AtomEntry>(entries);
+                entries = new List<AtomEntry>();
             }
+            this.Entries = new ReadOnlyCollection<AtomEntry>(entries);
 
-            if (links != null)
+            if (links == null)
             {
-                this.Links = new ReadOnlyDictionary<string, Uri>(links);
+                links = new Dictionary<string, Uri>();
             }
+            this.Links = new ReadOnlyDictionary<string, Uri>(links);
 
-            if (messages != null)
+            if (messages == null)
             {
-                this.Messages = new ReadOnlyCollection<Message>(messages);
+                messages = new List<Message>();
             }
+            this.Messages = new ReadOnlyCollection<Message>(messages);
         }
 
         /// <summary>

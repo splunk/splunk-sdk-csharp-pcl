@@ -268,12 +268,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void CreateSnapshot(AtomFeed feed)
         {
-            int count = feed.Entries.Count;
-
-            if (count == 0)
+            if (feed.Entries == null || feed.Entries.Count == 0)
             {
                 return;
             }
+
+            int count = feed.Entries.Count;
 
             if (count > 1)
             {

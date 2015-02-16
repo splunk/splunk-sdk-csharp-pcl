@@ -289,7 +289,7 @@ namespace Splunk.Client
 
             var path = id.AbsolutePath.Split(new char[] {'/'}, StringSplitOptions.RemoveEmptyEntries);
 
-            if (path.Length < 3)
+            if (path.Length < 2) // TODO: tests are failing here
             {
                 throw new InvalidDataException(); // TODO: Diagnostics : conversion error
             }

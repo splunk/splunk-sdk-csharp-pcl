@@ -49,8 +49,12 @@ namespace Splunk.Client.UnitTests
             {
                 await SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
                 {
-                    var response = await context.GetAsync(new Namespace("nobody", "search"), new ResourceName(new[] { "abc", "def", "ghi" }));
-                    await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.NotFound);
+                    using (var service = new Service(context))
+                    {
+                        await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+                        var response = await service.Context.GetAsync(new Namespace("admin", "search"), new ResourceName(new[] { "abc", "def", "ghi" }));
+                        await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.NotFound);
+                    }
                 });
             }
         }

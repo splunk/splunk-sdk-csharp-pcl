@@ -8,6 +8,8 @@ using Octokit;
 using System.Text.RegularExpressions;
 using Octokit.Reactive;
 using Octokit.Internal;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace github_commits
 {
@@ -129,26 +131,20 @@ namespace github_commits
 
             // Replace any newlines with a space
             string commitMessage = Regex.Replace(githubCommit.Commit.Message, "\\n|\\r", " ");
-            
-            var json = new Dictionary<string, string>()
-            {
-                {"sha", githubCommit.Sha},
-                {"api_url", githubCommit.Url},
-                {"url", "http://github.com/" + owner + "/" + repositoryName + "/commit/" + githubCommit.Sha},
-                {"message", commitMessage},
-                {"author", authorName}
-            };
-
-            json.Add("date", date.ToString());
-
-            var formattedJSON = json.Select(d =>
-                string.Format("\"{0}\": \"{1}\"", d.Key, d.Value));
+           
+            dynamic json = new JObject();
+            json.sha = githubCommit.Sha;
+            json.api_url = githubCommit.Url;
+            json.url = "http://github.com/" + owner + "/" + repositoryName + "/commit/" + githubCommit.Sha;
+            json.message = commitMessage;
+            json.author = authorName;
+            json.date = date.ToString();
 
             var commitEvent = new Event();
             commitEvent.Stanza = repositoryName;
             commitEvent.SourceType = "github_commits";
             commitEvent.Time = date;
-            commitEvent.Data = ("{" + string.Join(",", formattedJSON) + "}");
+            commitEvent.Data = json.ToString(Formatting.None);
 
             await eventWriter.QueueEventForWriting(commitEvent);
         }

@@ -62,11 +62,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modular_input", "Modular_in
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "github-commits", "examples\github-commits\github-commits.csproj", "{35B8F1F4-E7F6-4988-8737-5290BF787199}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{781E430E-2A32-4FCF-A8B1-D1D8FF6A79A3}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -44,8 +44,8 @@ namespace Splunk.Client.UnitTests
                 //// Static property checks
 
                 Assert.Equal("jobs", collection.Title);
-                Assert.Throws<RuntimeBinderException>(() => { var p = collection.Links; });
-                Assert.Throws<RuntimeBinderException>(() => { var p = collection.Messages; });
+                Assert.Empty(collection.Links);
+                Assert.Empty(collection.Messages);
 
                 Assert.DoesNotThrow(() =>
                 {

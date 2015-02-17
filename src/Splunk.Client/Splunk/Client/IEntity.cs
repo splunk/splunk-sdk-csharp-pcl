@@ -14,15 +14,12 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.Contracts;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -39,6 +36,90 @@ namespace Splunk.Client
         /// A <see cref="Task"/> representing the operation.
         /// </returns>
         Task GetAsync();
+
+        /// <summary>
+        /// Asynchronously invokes an action on the current entity from Splunk.
+        /// </summary>
+        /// <remarks>
+        /// Many entities support actions to access and change Splunk resources. The <see cref="!:http://goo.gl/2d0OGU">
+        /// REST API User Manual</see> describes and shows examples of invoking them.
+        /// </remarks>
+        /// <param name="method">
+        /// One of the following REST methods:
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Method</term>
+        ///         <description>Description</description>
+        ///     </listheader>
+        ///     <item>
+        ///         <term><see cref="HttpMethod"/>.Get</term>
+        ///         <description>
+        ///             Use this method to invoke an action that gets the current resource state as a list of key-value
+        ///             pairs.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="HttpMethod"/>.Post</term>
+        ///         <description>
+        ///             Use this method to invoke an action that creates or updates an existing resource.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="HttpMethod"/>.Delete</term>
+        ///         <description>
+        ///             Use this method to invoke an action that deletes a resource from the resource hierarchy.
+        ///         </description>
+        ///     </item>
+        /// </list>
+        /// </param>
+        /// <param name="action">
+        /// Common actions that may apply to an entity include:
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Action</term>
+        ///         <description>Description</description>
+        ///     </listheader>
+        ///     <item>
+        ///         <term>_reload</term>
+        ///         <description>GET operation to refresh a resource.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>create</term>
+        ///         <description>POST operation to create a resource.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>disable</term>
+        ///         <description>POST operation to disable a resource.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>edit</term>
+        ///         <description>POST operation to change a resource.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>enable</term>
+        ///         <description>POST operation to enable a resource.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>list</term>
+        ///         <description>GET operation to obtain</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>move</term>
+        ///         <description>GET operation to change the location of a resource.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>remove</term>
+        ///         <description>DELETE operation to remove a resource.</description>
+        ///     </item>
+        /// </list>
+        /// </param>
+        /// <param name="arguments">
+        /// Specifies the named parameter values required for executing <paramref name="action"/>.
+        /// </param>
+        /// <returns>
+        /// A <see cref="Task"/> representing the operation.
+        /// </returns>
+        Task<bool> SendAsync(HttpMethod method, string action, params Argument[] arguments);
 
         /// <summary>
         /// Asynchronously removes the current entity from Splunk.
@@ -92,6 +173,14 @@ namespace Splunk.Client
     abstract class IEntityContract : IEntity
     {
         public abstract Task GetAsync();
+
+        public Task<bool> SendAsync(HttpMethod method, string action, params Argument[] arguments)
+        {
+            Contract.Requires<ArgumentException>(method == HttpMethod.Post || method == HttpMethod.Get || method == HttpMethod.Delete);
+            Contract.Requires<ArgumentNullException>(action != null);
+            Contract.Requires<ArgumentException>(action.Length != 0);
+            return default(Task<bool>);
+        }
 
         public abstract Task RemoveAsync();
 

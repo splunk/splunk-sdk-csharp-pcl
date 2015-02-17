@@ -425,7 +425,7 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     await twitterApp.RemoveAsync();
 
-                    SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
+                    await SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
                     {
                         await twitterApp.GetAsync();
                     });
@@ -921,9 +921,9 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Delete
                 await index.RemoveAsync();
-                SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
+                await SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
                 {
-                    index.GetAsync();
+                    await index.GetAsync();
                 });
 
             }

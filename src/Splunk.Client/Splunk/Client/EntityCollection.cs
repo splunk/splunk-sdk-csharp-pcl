@@ -67,8 +67,7 @@ namespace Splunk.Client
         /// An object identifying a Splunk resource within
         /// <paramref name= "service"/>.<see cref="Namespace"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
         protected internal EntityCollection(Service service, ResourceName name)
@@ -76,9 +75,7 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
-        /// class.
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -95,9 +92,7 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
-        /// class.
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -115,9 +110,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the
-        /// <see cref="EntityCollection&lt;TEntity,TResource&gt;"/>
-        /// class.
+        /// Initializes a new instance of the <see cref="EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -132,8 +125,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Infrastructure. Initializes a new instance of the
-        /// <see cref= "EntityCollection&lt;TEntity,TResource&gt;"/> class.
+        /// Infrastructure. Initializes a new instance of the <see cref= "EntityCollection&lt;TEntity,TResource&gt;"/> class.
         /// </summary>
         /// <remarks>
         /// This API supports the Splunk client infrastructure and is not intended to
@@ -361,7 +353,9 @@ namespace Splunk.Client
         /// </returns>
         public IEnumerator<TEntity> GetEnumerator()
         {
-            return this.Snapshot.Resources.Select(resource => Create((TResource)resource)).GetEnumerator();
+            return this.Snapshot.Resources.Select(resource => {
+                return Create((TResource)resource);
+            }).GetEnumerator();
         }
 
         #endregion

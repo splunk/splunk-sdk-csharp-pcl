@@ -517,7 +517,7 @@ namespace Splunk.Client
         public virtual async Task<SearchResultStream> GetSearchResultsAsync(int count = 0)
         {
             var args = new SearchResultArgs {Count = count};
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args);
+            var searchResults = await this.GetSearchResultsAsync(args);
             return searchResults;
         }
 
@@ -531,8 +531,8 @@ namespace Splunk.Client
         /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchEventsAsync(int count = 0)
         {
-            var args = new SearchResultArgs { Count = count };
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args);
+            var args = new SearchEventArgs { Count = count };
+            var searchResults = await this.GetSearchEventsAsync(args);
             return searchResults;
         }
 
@@ -547,7 +547,7 @@ namespace Splunk.Client
         public virtual async Task<SearchResultStream> GetSearchPreviewAsync(int count = 0)
         {
             var args = new SearchResultArgs { Count = count };
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Running, "results_preview", args);
+            var searchResults = await this.GetSearchPreviewAsync(args);
             return searchResults;
         }
 

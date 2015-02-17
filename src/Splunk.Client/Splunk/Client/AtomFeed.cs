@@ -333,28 +333,6 @@ namespace Splunk.Client
             this.Entries = entries == null ? emptyAtomEntryCollection : new ReadOnlyCollection<AtomEntry>(entries);
             this.Links = links == null ? emptyLinksDictionary : new ReadOnlyDictionary<string, Uri>(links);
             this.Messages = messages == null ? emptyMessageCollection : new ReadOnlyCollection<Message>(messages);
-
-            //if (entries == null)
-            //{
-            //    entries = new List<AtomEntry>();
-            //    this.Entries = emptyAtomEntryCollection;
-            //}
-            //else
-            //{
-            //    this.Entries = new ReadOnlyCollection<AtomEntry>(entries);
-            //}
-
-            //if (links == null)
-            //{
-            //    links = new Dictionary<string, Uri>();
-            //}
-            //this.Links = new ReadOnlyDictionary<string, Uri>(links);
-
-            //if (messages == null)
-            //{
-            //    messages = new List<Message>();
-            //}
-            //this.Messages = new ReadOnlyCollection<Message>(messages);
         }
 
         /// <summary>

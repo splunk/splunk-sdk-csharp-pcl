@@ -1,5 +1,18 @@
 # Splunk SDK for C# PCL
 
+## Version 2.1.2
+
+## Bug fixes
+* Search and job operations now default to a count of 0, which represents all.
+
+## New examples
+* `Get-SplunkDataInputs`: shows how to access an unsupported REST API endpoint.
+
+## Minor changes
+* The GitHub commits example now uses the Json.NET library instead of a dictionary.
+* Modular input validation now logs exceptions as `INFO` instead of `DEBUG`.
+* Added xunit.runner to the `packages` directory.
+
 ## Version 2.1.1
 
 ### Fixes

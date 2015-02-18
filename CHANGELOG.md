@@ -6,7 +6,7 @@
 * Search and job operations now default to a count of 0, which represents all.
 
 ## New examples
-* `Get-SplunkDataInputs`: shows how to access an unsupported REST API endpoint.
+* `Get-SplunkDataInputs`: Shows how to access an unsupported REST API endpoint.
 
 ## Minor changes
 * The GitHub commits example now uses the Json.NET library instead of a dictionary.

@@ -34,6 +34,13 @@ namespace Splunk.Client.Helpers
         /// </summary>
         static SdkHelper()
         {
+            //// TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
+            //// 1. Instantiate a WebRequestHandler
+            //// 2. Set its ServerCertificateValidationCallback
+            //// 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
+
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;
@@ -84,7 +91,7 @@ namespace Splunk.Client.Helpers
                 await testCode();
                 return;
             }
-            catch (T expectedException)
+            catch (T)
             {
                 return;
             }
@@ -92,11 +99,9 @@ namespace Splunk.Client.Helpers
             {
                 Assert.True(false, string.Format("Expected {0}; found exception {1}: {2}", typeof(T).FullName, unexpectedException.GetType().FullName, unexpectedException.Message));
             }
+
             Assert.True(false, string.Format("Expected exception {0}, but not exception raised.", typeof(T)));
         }
-
-
-
 
         #region Privates/internals
 
@@ -119,7 +124,15 @@ namespace Splunk.Client.Helpers
             /// </param>
             internal SplunkRC(string path)
             {
-                var reader = new StreamReader(path);
+                StreamReader reader = null;
+                try
+                {
+                    reader = new StreamReader(path);
+                }
+                catch (FileNotFoundException)
+                {
+                    return;
+                }
 
                 List<string> argList = new List<string>(4);
                 string line;

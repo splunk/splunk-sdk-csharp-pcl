@@ -47,6 +47,15 @@ namespace Splunk.Client
     /// </remarks>
     public sealed class AtomFeed
     {
+
+        #region Privates/internals
+
+        static readonly ReadOnlyCollection<AtomEntry> emptyAtomEntryCollection = new ReadOnlyCollection<AtomEntry>(new List<AtomEntry>());
+        static readonly ReadOnlyDictionary<string, Uri> emptyLinksDictionary = new ReadOnlyDictionary<string, Uri>(new Dictionary<string, Uri>());
+        static readonly ReadOnlyCollection<Message> emptyMessageCollection = new ReadOnlyCollection<Message>(new List<Message>());
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -194,6 +203,7 @@ namespace Splunk.Client
             List<AtomEntry> entries = null;
             Dictionary<string, Uri> links = null;
             List<Message> messages = null;
+            
 
             await reader.ReadAsync().ConfigureAwait(false);
 
@@ -320,20 +330,9 @@ namespace Splunk.Client
             reader.EnsureMarkup(XmlNodeType.EndElement, documentElementName);
             await reader.ReadAsync().ConfigureAwait(false);
 
-            if (entries != null)
-            {
-                this.Entries = new ReadOnlyCollection<AtomEntry>(entries);
-            }
-
-            if (links != null)
-            {
-                this.Links = new ReadOnlyDictionary<string, Uri>(links);
-            }
-
-            if (messages != null)
-            {
-                this.Messages = new ReadOnlyCollection<Message>(messages);
-            }
+            this.Entries = entries == null ? emptyAtomEntryCollection : new ReadOnlyCollection<AtomEntry>(entries);
+            this.Links = links == null ? emptyLinksDictionary : new ReadOnlyDictionary<string, Uri>(links);
+            this.Messages = messages == null ? emptyMessageCollection : new ReadOnlyCollection<Message>(messages);
         }
 
         /// <summary>

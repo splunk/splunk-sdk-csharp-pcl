@@ -155,7 +155,7 @@ namespace Splunk.ModularInputs.UnitTests
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public async Task ShouldInvokeRunAsyncWhenRunIsCalled()
+        public void ShouldInvokeRunAsyncWhenRunIsCalled()
         {
             ModularInput.Run<TestDebugInput>(new string[0]);
             Assert.True(TestDebugInput.Executed);
@@ -163,7 +163,7 @@ namespace Splunk.ModularInputs.UnitTests
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public async Task ShouldThrowExceptionWhenRunIsCalledIfTimeIsZeroAndAttachPointsWereSet()
+        public void ShouldThrowExceptionWhenRunIsCalledIfTimeIsZeroAndAttachPointsWereSet()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
@@ -173,7 +173,7 @@ namespace Splunk.ModularInputs.UnitTests
 
         [Trait("unit-test", "Splunk.ModularInputs.ModularInput")]
         [Fact]
-        public async Task ShouldNotThrowExceptionWhenRunIsCalledIfTimeIsZeroAndAttachPointsWereNotSet()
+        public void ShouldNotThrowExceptionWhenRunIsCalledIfTimeIsZeroAndAttachPointsWereNotSet()
         {
             ModularInput.Run<TestDebugInput>(new string[0], DebuggerAttachPoints.None, 0);
         }

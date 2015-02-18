@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -27,6 +23,7 @@ namespace Splunk.Client
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -54,8 +51,7 @@ namespace Splunk.Client
         /// An object identifying a Splunk resource within
         /// <paramref name= "service"/>.<see cref="Namespace"/>.
         /// </param>
-        ///
-        /// ### <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException">
         /// <paramref name="service"/> or <paramref name="name"/> are <c>null</c>.
         /// </exception>
         protected internal Entity(Service service, ResourceName name)
@@ -83,8 +79,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/>
-        /// class.
+        /// Initializes a new instance of the <see cref="Entity&lt;TResource&gt;"/> class.
         /// </summary>
         /// <param name="context">
         /// An object representing a Splunk server session.
@@ -153,7 +148,7 @@ namespace Splunk.Client
         /// <value>
         /// The content.
         /// </value>
-        protected ExpandoAdapter Content
+        public virtual ExpandoAdapter Content
         {
             get { return this.GetValue("Content", ExpandoAdapter.Converter.Instance) ?? ExpandoAdapter.Empty; }
         }
@@ -171,6 +166,27 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                 await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
+            }
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<bool> SendAsync(HttpMethod method, string action, params Argument[] arguments)
+        {
+            var resourceName = new ResourceName(this.ResourceName, action);
+
+            using (var response = await this.Context.SendAsync(method, this.Namespace, resourceName, arguments).ConfigureAwait(false))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
+                var reader = response.XmlReader;
+
+                await reader.MoveToDocumentElementAsync("feed", "entry", "response").ConfigureAwait(false);
+
+                if (reader.Name == "response")
+                {
+                    return false;
+                }
+
+                return await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
             }
         }
 
@@ -252,12 +268,12 @@ namespace Splunk.Client
         /// <inheritdoc/>
         protected override void CreateSnapshot(AtomFeed feed)
         {
-            int count = feed.Entries.Count;
-
-            if (count == 0)
+            if (feed.Entries == null || feed.Entries.Count == 0)
             {
                 return;
             }
+
+            int count = feed.Entries.Count;
 
             if (count > 1)
             {

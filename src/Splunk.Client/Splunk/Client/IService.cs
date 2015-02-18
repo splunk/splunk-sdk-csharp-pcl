@@ -138,6 +138,77 @@ namespace Splunk.Client
 
         #region Methods
 
+        #region Methods for accessing entities and entity collections not specifically supported by Splunk.Client
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <returns>
+        /// An object representing the entity identified by <paramref name="resourceName"/> in the context of
+        /// the service namespace.
+        /// </returns>
+        Entity<Resource> CreateEntity(params string[] resourceName);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="user"></param>
+        /// <param name="app"></param>
+        /// <returns>
+        /// An object representing the entity identified by <paramref name="resourceName"/> in the context of
+        /// the namespace identified by <paramref name="user"/> and <paramref name="app"/>.
+        /// </returns>
+        Entity<Resource> CreateEntity(IEnumerable<string> resourceName, string user, string app);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <returns>
+        /// An object representing the entity collection identified by <paramref name="resourceName"/> in the context of
+        /// the service namespace.
+        /// </returns>
+        EntityCollection<Entity<Resource>, Resource> CreateEntityCollection(params string[] resourceName);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="user"></param>
+        /// <param name="app"></param>
+        /// <returns>
+        /// An object representing the entity identified by <paramref name="resourceName"/> in the context of
+        /// the namespace identified by <paramref name="user"/> and <paramref name="app"/>.
+        /// </returns>
+        EntityCollection<Entity<Resource>, Resource> CreateEntityCollection(IEnumerable<string> resourceName, string user, string app);
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <returns>
+        /// An object representing the entity collection identified by <paramref name="resourceName"/> in the context of
+        /// the service namespace.
+        /// </returns>
+        EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection> CreateEntityCollectionCollection(params string[] resourceName);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="user"></param>
+        /// <param name="app"></param>
+        /// <returns>
+        /// An object representing the entity identified by <paramref name="resourceName"/> in the context of
+        /// the namespace identified by <paramref name="user"/> and <paramref name="app"/>.
+        /// </returns>
+        EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection> CreateEntityCollectionCollection(IEnumerable<string> resourceName, string user, string app);
+
+        #endregion
+
         #region Access control
 
         /// <summary>
@@ -355,6 +426,54 @@ namespace Splunk.Client
 
         #region Methods
 
+        #region Methods for accessing entities and entity collections not specifically supported by Splunk.Client
+
+        public Entity<Resource> CreateEntity(params string[] resourceName)
+        {
+            Contract.Requires<ArgumentNullException>(resourceName != null);
+            return default(Entity<Resource>);
+        }
+
+        public Entity<Resource> CreateEntity(IEnumerable<string> resourceName, string user, string app)
+        {
+            Contract.Requires<ArgumentNullException>(resourceName != null);
+            Contract.Requires<ArgumentNullException>(user != null);
+            Contract.Requires<ArgumentNullException>(app != null);
+            return default(Entity<Resource>);
+        }
+
+        public EntityCollection<Entity<Resource>, Resource> CreateEntityCollection(params string[] resourceName)
+        {
+            Contract.Requires<ArgumentNullException>(resourceName != null);
+            return default(EntityCollection<Entity<Resource>, Resource>);
+        }
+
+        public EntityCollection<Entity<Resource>, Resource> CreateEntityCollection(IEnumerable<string> resourceName, string user, string app)
+        {
+            Contract.Requires<ArgumentNullException>(resourceName != null);
+            Contract.Requires<ArgumentNullException>(user != null);
+            Contract.Requires<ArgumentNullException>(app != null);
+            return default(EntityCollection<Entity<Resource>, Resource>);
+        }
+
+        /// <inheritdoc/>
+        public EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection> CreateEntityCollectionCollection(params string[] resourceName)
+        {
+            Contract.Requires<ArgumentNullException>(resourceName != null);
+            return default(EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection>);
+        }
+
+        /// <inheritdoc/>
+        public EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection> CreateEntityCollectionCollection(IEnumerable<string> resourceName, string user, string app)
+        {
+            Contract.Requires<ArgumentNullException>(resourceName != null);
+            Contract.Requires<ArgumentNullException>(user != null);
+            Contract.Requires<ArgumentNullException>(app != null);
+            return default(EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection>);
+        }
+
+        #endregion
+
         #region Access control
 
         public abstract Task<ReadOnlyCollection<string>> GetCapabilitiesAsync();
@@ -390,7 +509,7 @@ namespace Splunk.Client
             return default(Task<SearchResultStream>);
         }
         
-        public Task<Job> SearchAsync(string search, int count = 100, 
+        public Task<Job> SearchAsync(string search, int count = 0, 
             ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null,
             CustomJobArgs customArgs = null)
         {
@@ -398,7 +517,7 @@ namespace Splunk.Client
             return default(Task<Job>);
         }
         
-        public Task<SearchResultStream> SearchOneShotAsync(string search, int count = 100, JobArgs args = null, CustomJobArgs customArgs = null)
+        public Task<SearchResultStream> SearchOneShotAsync(string search, int count = 0, JobArgs args = null, CustomJobArgs customArgs = null)
         {
             Contract.Requires<ArgumentNullException>(search != null);
             return default(Task<SearchResultStream>);

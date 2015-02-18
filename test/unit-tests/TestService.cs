@@ -13,6 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,15 +26,16 @@ namespace Splunk.Client.UnitTests
 {
     public class TestService
     {
-       
+
         [Trait("unit-test", "Splunk.Client.Context")]
         [Fact]
         public async Task TestContextThrowsOnForbidden()
         {
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                SdkHelper.ThrowsAsync<AuthenticationFailureException>(async () => {
-                    var response = await context.GetAsync(new Namespace("nobody", "search"), new ResourceName(new []{"search", "jobs"}));
+                await SdkHelper.ThrowsAsync<AuthenticationFailureException>(async () =>
+                {
+                    var response = await context.GetAsync(new Namespace("nobody", "search"), new ResourceName(new[] { "search", "jobs" }));
                     await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.Forbidden);
                 });
             }
@@ -45,13 +47,16 @@ namespace Splunk.Client.UnitTests
         {
             using (var context = new Context(Scheme.Https, "localhost", 8089))
             {
-                SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
+                await SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
                 {
-                    var response = await context.GetAsync(new Namespace("nobody", "search"), new ResourceName(new[] { "abc", "def", "ghi" }));
-                    await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.NotFound);
+                    using (var service = new Service(context))
+                    {
+                        await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+                        var response = await service.Context.GetAsync(new Namespace("admin", "search"), new ResourceName(new[] { "abc", "def", "ghi" }));
+                        await response.EnsureStatusCodeAsync(System.Net.HttpStatusCode.NotFound);
+                    }
                 });
             }
-
         }
 
         [Trait("unit-test", "Splunk.Client.Service")]

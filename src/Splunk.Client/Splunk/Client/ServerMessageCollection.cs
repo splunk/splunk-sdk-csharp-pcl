@@ -148,7 +148,9 @@ namespace Splunk.Client
 
         #region Privates/internals
 
+        #pragma warning disable 1591
         protected internal static readonly ResourceName ClassResourceName = new ResourceName("messages");
+        #pragma warning restore 1591
 
         #endregion
 

@@ -63,7 +63,7 @@ namespace Splunk.Client
         /// <returns>
         /// The new asynchronous.
         /// </returns>
-        Task<TJob> CreateAsync(string search, int count = 100, ExecutionMode mode = ExecutionMode.Normal, 
+        Task<TJob> CreateAsync(string search, int count = 0, ExecutionMode mode = ExecutionMode.Normal, 
             JobArgs args = null, CustomJobArgs customArgs = null, 
             DispatchState requiredState = DispatchState.Running);
 
@@ -104,7 +104,7 @@ namespace Splunk.Client
 
         #region Methods
 
-        public Task<TJob> CreateAsync(string search, int count = 100, ExecutionMode mode = ExecutionMode.Normal,
+        public Task<TJob> CreateAsync(string search, int count = 0, ExecutionMode mode = ExecutionMode.Normal,
             JobArgs args = null, CustomJobArgs customArgs = null, 
             DispatchState requiredState = DispatchState.Running)
         {

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splunk.Client", "src\Splunk.Client\Splunk.Client.csproj", "{DE65F0D5-7753-483E-8933-E6DB22350F04}"
 EndProject
@@ -61,6 +61,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modular_input", "Modular_input", "{AE98AECD-D551-4DF7-84FA-A6C76B930639}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "github-commits", "examples\github-commits\github-commits.csproj", "{35B8F1F4-E7F6-4988-8737-5290BF787199}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "get-splunk-data-inputs", "examples\Get-SplunkDataInput\get-splunk-data-inputs.csproj", "{443CB5CF-1086-40E3-B60C-6B35D7DFCF90}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -150,6 +152,10 @@ Global
 		{35B8F1F4-E7F6-4988-8737-5290BF787199}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35B8F1F4-E7F6-4988-8737-5290BF787199}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35B8F1F4-E7F6-4988-8737-5290BF787199}.Release|Any CPU.Build.0 = Release|Any CPU
+		{443CB5CF-1086-40E3-B60C-6B35D7DFCF90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{443CB5CF-1086-40E3-B60C-6B35D7DFCF90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{443CB5CF-1086-40E3-B60C-6B35D7DFCF90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{443CB5CF-1086-40E3-B60C-6B35D7DFCF90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -176,6 +182,7 @@ Global
 		{F102F57B-D988-4B0A-82CF-F9420F0DFE39} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
 		{8992B3EF-E2E6-4E5D-B488-986F2A5FE713} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
 		{97C3A57B-8ED8-42A7-9FB3-8120BA265FCC} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
-		{35B8F1F4-E7F6-4988-8737-5290BF787199} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
+		{35B8F1F4-E7F6-4988-8737-5290BF787199} = {AE98AECD-D551-4DF7-84FA-A6C76B930639}
+		{443CB5CF-1086-40E3-B60C-6B35D7DFCF90} = {5A4BA6B9-305F-4E0D-A11A-35AE005C678A}
 	EndGlobalSection
 EndGlobal

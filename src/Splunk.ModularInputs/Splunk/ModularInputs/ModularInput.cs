@@ -130,6 +130,9 @@ namespace Splunk.ModularInputs
                     ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments));
         }
 
+        private static string RemoveNewLines(string message) {
+            return message.Replace(Environment.NewLine, " | ");
+        }
 
         /// <summary>
         /// Performs the action specified by the <paramref name="args"/> parameter.
@@ -231,8 +234,7 @@ namespace Splunk.ModularInputs
                             {
                                 if (inputTask.Exception != null)
                                 {
-                                    var message = inputTask.Exception.InnerException.ToString()
-                                        .Replace(Environment.NewLine, " | ");
+                                    var message = RemoveNewLines(inputTask.Exception.InnerException.ToString());
                                     writer.LogAsync(Severity.Fatal,
                                         string.Format("Exception during streaming: name={0} | {1}", inputName, message))
                                         .Wait();
@@ -250,7 +252,7 @@ namespace Splunk.ModularInputs
                     }
                     catch (Exception e)
                     {
-                        var message = e.ToString().Replace(Environment.NewLine, " | ");
+                        var message = RemoveNewLines(e.ToString());
                         writer.LogAsync(Severity.Fatal,
                             string.Format("Exception during streaming: name={0} | {1}", name, message))
                             .Wait();
@@ -277,7 +279,7 @@ namespace Splunk.ModularInputs
                     }
                     catch (Exception e)
                     {
-                        var message = e.ToString().Replace(Environment.NewLine, " | ");
+                        var message = RemoveNewLines(e.ToString());
                         writer.LogAsync(Severity.Fatal,
                             string.Format("Exception getting scheme: name={0} | {1}", name, message))
                             .Wait();
@@ -297,7 +299,9 @@ namespace Splunk.ModularInputs
                     try
                     {
                         inputDoc = await stdin.ReadToEndAsync();
-                        writer.LogAsync(Severity.Debug, inputDoc).Wait();
+                        inputDoc = RemoveNewLines(inputDoc);
+
+                        writer.LogAsync(Severity.Info, inputDoc).Wait();
 
                         Validation validation = (Validation) new XmlSerializer(typeof (Validation)).
                             Deserialize(new StringReader(inputDoc));
@@ -325,7 +329,7 @@ namespace Splunk.ModularInputs
                     }
                     catch (Exception e)
                     {
-                        var message = e.ToString().Replace(Environment.NewLine, " | ");
+                        var message = RemoveNewLines(e.ToString());
                         errorMessage = e.Message;
                         writer.LogAsync(Severity.Fatal,
                             string.Format("Exception during validation: name={0} | {1}", name, message))
@@ -359,7 +363,7 @@ namespace Splunk.ModularInputs
             {
                 if (writer != null)
                 {
-                    var message = e.ToString().Replace(Environment.NewLine, " | ");
+                    var message = RemoveNewLines(e.ToString());
                     writer.LogAsync(Severity.Error, string.Format("Exception during execution: name={0} | {1}", name, message)).Wait();
                 }
             }

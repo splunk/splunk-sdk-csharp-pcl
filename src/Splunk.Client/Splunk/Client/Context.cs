@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -308,7 +304,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var content = CreateStringContent(argumentSets);
-            return await PostAsync(ns, resource, content, null).ConfigureAwait(false);
+            return await this.PostAsync(ns, resource, content, null).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -334,6 +330,43 @@ namespace Splunk.Client
         {
             var token = CancellationToken.None;
             var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets).ConfigureAwait(false);
+            return response;
+        }
+
+        /// <summary>
+        /// Sends a GET, POST, or DELETE request as an asynchronous operation.
+        /// </summary>
+        /// <param name="method">
+        /// 
+        /// </param>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="resource">
+        /// 
+        /// </param>
+        /// <param name="argumentSets">
+        /// 
+        /// </param>
+        /// <returns>
+        /// The response to the GET, POST, or DELETE request.
+        /// </returns>
+        public virtual async Task<Response> SendAsync(HttpMethod method, Namespace ns, ResourceName resource,
+            params IEnumerable<Argument>[] argumentSets)
+        {
+            Contract.Requires<ArgumentNullException>(method != null);
+            Contract.Requires<ArgumentException>(method == HttpMethod.Delete || method == HttpMethod.Get || method == HttpMethod.Post);
+
+            var token = CancellationToken.None;
+            HttpContent content = null;
+
+            if (method == HttpMethod.Post)
+            {
+                content = CreateStringContent(argumentSets);
+                argumentSets = null;
+            }
+
+            var response = await this.SendAsync(method, ns, resource, content, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 

@@ -126,7 +126,11 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Splunk\**\*" />
+    <Compile Include="Splunk\Client\*.cs" />
+    <None Include="Endpoints.cd" />
+    <None Include="Search streams.cd" />
+    <None Include="Service class.cd" />
+    <None Include="Entities, entity collections, and resources.cd" />
     <None Include="packages.config" />
     <None Include="Splunk.Client.nuspec" />
   </ItemGroup>

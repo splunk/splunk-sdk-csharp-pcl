@@ -18,6 +18,7 @@ namespace Splunk.Client.UnitTests
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.IO;
     using System.Xml;
     using System.Xml.Linq;
@@ -71,6 +72,23 @@ namespace Splunk.Client.UnitTests
 
                 return feed;
             }
+        }
+
+        [Trait("unit-test", "Splunk.Client.AtomFeed")]
+        [Fact]
+        public static async Task DefaultCollections()
+        {
+            var path = Path.Combine(Directory, "AtomFeed.DefaultCollection.xml");
+            using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(reader);
+               
+                Assert.Equal(new ReadOnlyCollection<AtomEntry>(new List<AtomEntry>()), feed.Entries);
+                Assert.Equal(new ReadOnlyDictionary<string, Uri>(new Dictionary<string, Uri>()), feed.Links);
+                Assert.Equal(new ReadOnlyCollection<Message>(new List<Message>()), feed.Messages);
+            }   
         }
 
         #region Privates/internals

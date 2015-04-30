@@ -22,6 +22,7 @@ namespace Splunk.ModularInputs
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -98,8 +99,15 @@ namespace Splunk.ModularInputs
                 // Don't start the eventQueueMonitor up until we actually want to write
                 // events so we don't get empty <stream/> elements in cases where
                 // we don't actually queue anything.
-                eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
+                StartEventQueueMonitor();
             await Task.Run(() => eventQueue.Add(e));
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void StartEventQueueMonitor()
+        {
+            if (eventQueueMonitor == null)
+                eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
         }
 
         public async Task CompleteAsync()

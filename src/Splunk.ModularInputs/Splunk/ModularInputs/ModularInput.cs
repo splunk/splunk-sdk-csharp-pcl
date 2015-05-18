@@ -175,12 +175,11 @@ namespace Splunk.ModularInputs
             TextReader stdin = null,
             TextWriter stdout = null,
             TextWriter stderr = null,
-            IProgress<EventWrittenProgressReport> progress = null,
+            EventWriter writer = null,
             DebuggerAttachPoints attachPoints = DebuggerAttachPoints.None,
-            uint timeout = 0
-            )
+            uint timeout = 0,
+            ISplunkTerminationWatcher terminationWatcher = null)
         {
-            EventWriter writer = null;
             string name = this.GetType().FullName;
             try
             {
@@ -203,10 +202,15 @@ namespace Splunk.ModularInputs
                     Console.OutputEncoding = Encoding.UTF8;
                 }
 
-                if (progress == null)
-                    progress = new Progress<EventWrittenProgressReport>();
+                if (writer == null)
+                    writer = new EventWriter(stdout, stderr, new Progress<EventWrittenProgressReport>());
+                EventWriter = writer;
 
-                writer = new EventWriter(stdout, stderr, progress);
+                if (terminationWatcher == null)
+                    terminationWatcher = new SplunkTerminationWatcher(writer);
+                TerminationWatcher = terminationWatcher;
+
+                TerminationWatcher.ShutdownRequestedEvent += TerminationWatcher_ShutdownRequestedEvent;
 
                 // Check if the developer has specified they want to attach a debugger
                 bool wait = ShouldWaitForDebuggerToAttach(args, attachPoints);
@@ -410,6 +414,22 @@ namespace Splunk.ModularInputs
             errorMessage = null;
             return true;
         }
+
+        private void TerminationWatcher_ShutdownRequestedEvent(object sender, EventArgs e)
+        {
+            EventWriter.StopWritingEvents();
+        }
+
+        /// <summary>
+        /// Provides events and flags for tracking Splunk shutdown and termination
+        /// events so that a modular input can perform a graceful shutdown.
+        /// </summary>
+        protected ISplunkTerminationWatcher TerminationWatcher { get; private set; }
+
+        /// <summary>
+        /// An object encapsulating writing events and log messages to Splunk.
+        /// </summary>
+        protected EventWriter EventWriter { get; private set; }
 
         #endregion
         

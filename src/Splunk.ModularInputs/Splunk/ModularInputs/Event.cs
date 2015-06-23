@@ -69,7 +69,7 @@ namespace Splunk.ModularInputs
             {
                 double timestamp = (Time.Value.Ticks - ticksSinceEpoch) / TimeSpan.TicksPerSecond;
                 writer.WriteStartElement("time");
-                writer.WriteString(timestamp.ToString());
+                writer.WriteString(string.Format("{0}.{1}", timestamp.ToString(), Time.Value.Millisecond));
                 writer.WriteEndElement();
             }
 

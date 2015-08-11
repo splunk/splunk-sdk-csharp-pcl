@@ -26,7 +26,7 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-
+    using System.Diagnostics;
     /// <summary>
     /// Provides a class for sending HTTP requests and receiving HTTP responses
     /// from a Splunk server.
@@ -158,6 +158,10 @@ namespace Splunk.Client
         /// </value>
         public string SessionKey
         { get; set; }
+
+        private Uri globalUri = new Uri("https://splunk.host");
+
+        private CookieContainer CookieStore = new CookieContainer();
 
         #endregion
 
@@ -329,6 +333,7 @@ namespace Splunk.Client
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
+            Debug.WriteLine("In method PostAsync");
             var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets).ConfigureAwait(false);
             return response;
         }
@@ -356,7 +361,6 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(method != null);
             Contract.Requires<ArgumentException>(method == HttpMethod.Delete || method == HttpMethod.Get || method == HttpMethod.Post);
-
             var token = CancellationToken.None;
             HttpContent content = null;
 
@@ -466,7 +470,62 @@ namespace Splunk.Client
 
                 var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
                 var response = await Response.CreateAsync(message).ConfigureAwait(false);
+                
+                //Debug.WriteLine(response.Message.Headers);
+                if (response.Message.Headers.Contains("Set-Cookie"))
+                {
+                    int DEBUG = 1;
+                    string cookieHeader = response.Message.Headers.GetValues("Set-Cookie").First();
+                    Debug.WriteLine("");
+                    Debug.WriteLine("-------------------- Cookies --------------------");
+                    Debug.WriteLine("Set-Cookie Header:");
+                    Debug.WriteLine(cookieHeader);
 
+                    string[] cookieHeaderParts = cookieHeader.Split(';');
+                    switch (DEBUG)
+                    {
+                        // Put in the cookieHeader direct from reponse.Message.Headers Set-Cookie Header
+                        case 1:
+                            cookieHeader = cookieHeader;
+                            break;
+                        // Put in a simple cookie
+                        case 2:
+                            cookieHeader = "simple=cookie";
+                            break;
+                        case 3:
+                            cookieHeader = "simple=cookie;";
+                            break;
+                        // Use only splunkd_PORT=value
+                        case 4:
+                            cookieHeader  = cookieHeaderParts[0];
+                            break;
+                        case 5:
+                            cookieHeader = cookieHeaderParts[0] + ";" + cookieHeaderParts[1];
+                            break;
+                        case 6:
+                            cookieHeader = cookieHeaderParts[0] + ";" + cookieHeaderParts[1] + ";" + cookieHeaderParts[2];
+                            break;
+                        default:
+                            break;
+                    }
+
+                    CookieStore.SetCookies(globalUri, cookieHeader);
+                    Debug.WriteLine("");
+                    Debug.WriteLine("String put into CookieContainer");
+                    Debug.WriteLine(cookieHeader);
+                    Debug.WriteLine("");
+                    Debug.WriteLine("Cookie Header from CookieContainer:");
+                    Debug.WriteLine(CookieStore.GetCookieHeader(globalUri));
+                    Debug.WriteLine("");
+
+                    Debug.WriteLine("Each cookie from CookieContainer:");
+                    foreach (Cookie cookie in CookieStore.GetCookies(globalUri))
+                    {
+                        Debug.WriteLine("Cookie:");
+                        Debug.WriteLine(cookie.Name + "=" + cookie.Value);
+                    }
+                    Debug.WriteLine("");
+                }
                 return response;
             }
         }

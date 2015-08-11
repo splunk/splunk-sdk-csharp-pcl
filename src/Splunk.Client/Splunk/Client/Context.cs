@@ -463,6 +463,7 @@ namespace Splunk.Client
 
             using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
             {
+                // if (this.)
                 if (this.SessionKey != null)
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
@@ -509,17 +510,17 @@ namespace Splunk.Client
                             break;
                     }
 
-                    CookieStore.SetCookies(globalUri, cookieHeader);
+                    this.CookieStore.SetCookies(globalUri, cookieHeader);
                     Debug.WriteLine("");
                     Debug.WriteLine("String put into CookieContainer");
                     Debug.WriteLine(cookieHeader);
                     Debug.WriteLine("");
                     Debug.WriteLine("Cookie Header from CookieContainer:");
-                    Debug.WriteLine(CookieStore.GetCookieHeader(globalUri));
+                    Debug.WriteLine(this.CookieStore.GetCookieHeader(globalUri));
                     Debug.WriteLine("");
 
                     Debug.WriteLine("Each cookie from CookieContainer:");
-                    foreach (Cookie cookie in CookieStore.GetCookies(globalUri))
+                    foreach (Cookie cookie in this.CookieStore.GetCookies(globalUri))
                     {
                         Debug.WriteLine("Cookie:");
                         Debug.WriteLine(cookie.Name + "=" + cookie.Value);

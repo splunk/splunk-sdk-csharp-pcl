@@ -159,8 +159,14 @@ namespace Splunk.Client
         public string SessionKey
         { get; set; }
 
+        // CookieContainer requires a uri to store / parse cookies. 
+        // This is because usually cookies are mapped to one specific uri
+        // But in the case of search head clustering, the cookies may go to several uris
+        // This is a hack to get cookie parsing from CookieContainer by setting and getting all cookies
+        // by this globalUri
         private Uri globalUri = new Uri("https://splunk.host");
 
+        // CookieContainer to store authentication cookies. It parses cookies with .SetCookies(uri, cookieHeader)
         private CookieContainer CookieStore = new CookieContainer();
 
         #endregion
@@ -463,8 +469,13 @@ namespace Splunk.Client
 
             using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
             {
-                // if (this.)
-                if (this.SessionKey != null)
+                // If the CookieStore has cookies, include them in the Cookie header
+                // Otherwise if there is a SessionKey, include it in the Authorization header
+                if (this.CookieStore.Count > 0)
+                {
+                    request.Headers.Add("Cookie", this.CookieStore.GetCookieHeader(globalUri));
+                }
+                else if (this.SessionKey != null)
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
@@ -472,60 +483,13 @@ namespace Splunk.Client
                 var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
                 var response = await Response.CreateAsync(message).ConfigureAwait(false);
                 
-                //Debug.WriteLine(response.Message.Headers);
+                // If a Set-Cookie Header is received, parse it and add/update the cookie store
                 if (response.Message.Headers.Contains("Set-Cookie"))
                 {
-                    int DEBUG = 1;
-                    string cookieHeader = response.Message.Headers.GetValues("Set-Cookie").First();
-                    Debug.WriteLine("");
-                    Debug.WriteLine("-------------------- Cookies --------------------");
-                    Debug.WriteLine("Set-Cookie Header:");
-                    Debug.WriteLine(cookieHeader);
-
-                    string[] cookieHeaderParts = cookieHeader.Split(';');
-                    switch (DEBUG)
+                    foreach (string setCookieString in response.Message.Headers.GetValues("Set-Cookie"))
                     {
-                        // Put in the cookieHeader direct from reponse.Message.Headers Set-Cookie Header
-                        case 1:
-                            cookieHeader = cookieHeader;
-                            break;
-                        // Put in a simple cookie
-                        case 2:
-                            cookieHeader = "simple=cookie";
-                            break;
-                        case 3:
-                            cookieHeader = "simple=cookie;";
-                            break;
-                        // Use only splunkd_PORT=value
-                        case 4:
-                            cookieHeader  = cookieHeaderParts[0];
-                            break;
-                        case 5:
-                            cookieHeader = cookieHeaderParts[0] + ";" + cookieHeaderParts[1];
-                            break;
-                        case 6:
-                            cookieHeader = cookieHeaderParts[0] + ";" + cookieHeaderParts[1] + ";" + cookieHeaderParts[2];
-                            break;
-                        default:
-                            break;
+                        this.CookieStore.SetCookies(globalUri, setCookieString);
                     }
-
-                    this.CookieStore.SetCookies(globalUri, cookieHeader);
-                    Debug.WriteLine("");
-                    Debug.WriteLine("String put into CookieContainer");
-                    Debug.WriteLine(cookieHeader);
-                    Debug.WriteLine("");
-                    Debug.WriteLine("Cookie Header from CookieContainer:");
-                    Debug.WriteLine(this.CookieStore.GetCookieHeader(globalUri));
-                    Debug.WriteLine("");
-
-                    Debug.WriteLine("Each cookie from CookieContainer:");
-                    foreach (Cookie cookie in this.CookieStore.GetCookies(globalUri))
-                    {
-                        Debug.WriteLine("Cookie:");
-                        Debug.WriteLine(cookie.Name + "=" + cookie.Value);
-                    }
-                    Debug.WriteLine("");
                 }
                 return response;
             }

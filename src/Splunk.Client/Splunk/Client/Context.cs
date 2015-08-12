@@ -26,7 +26,6 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Diagnostics;
     /// <summary>
     /// Provides a class for sending HTTP requests and receiving HTTP responses
     /// from a Splunk server.
@@ -159,7 +158,7 @@ namespace Splunk.Client
         public string SessionKey
         { get; set; }
 
-        // CookieContainer to store authentication cookies. It parses cookies with .SetCookies(uri, cookieHeader)
+        // CookieStore to store authentication cookies. It parses cookies with .SetCookies(uri, cookieHeader)
         private CookieStore CookieStore = new CookieStore();
 
         #endregion
@@ -332,7 +331,6 @@ namespace Splunk.Client
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            Debug.WriteLine("In method PostAsync");
             var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets).ConfigureAwait(false);
             return response;
         }

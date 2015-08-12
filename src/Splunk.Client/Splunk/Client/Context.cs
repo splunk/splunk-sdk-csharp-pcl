@@ -159,15 +159,8 @@ namespace Splunk.Client
         public string SessionKey
         { get; set; }
 
-        // CookieContainer requires a uri to store / parse cookies. 
-        // This is because usually cookies are mapped to one specific uri
-        // But in the case of search head clustering, the cookies may go to several uris
-        // This is a hack to get cookie parsing from CookieContainer by setting and getting all cookies
-        // by this globalUri
-        private Uri globalUri = new Uri("https://splunk.host");
-
         // CookieContainer to store authentication cookies. It parses cookies with .SetCookies(uri, cookieHeader)
-        private CookieContainer CookieStore = new CookieContainer();
+        private CookieStore CookieStore = new CookieStore();
 
         #endregion
 
@@ -471,9 +464,9 @@ namespace Splunk.Client
             {
                 // If the CookieStore has cookies, include them in the Cookie header
                 // Otherwise if there is a SessionKey, include it in the Authorization header
-                if (this.CookieStore.Count > 0)
+                if (!this.CookieStore.isEmpty())
                 {
-                    request.Headers.Add("Cookie", this.CookieStore.GetCookieHeader(globalUri));
+                    request.Headers.Add("Cookie", this.CookieStore.GetCookieHeader());
                 }
                 else if (this.SessionKey != null)
                 {
@@ -488,7 +481,7 @@ namespace Splunk.Client
                 {
                     foreach (string setCookieString in response.Message.Headers.GetValues("Set-Cookie"))
                     {
-                        this.CookieStore.SetCookies(globalUri, setCookieString);
+                        this.CookieStore.SetCookies(setCookieString);
                     }
                 }
                 return response;

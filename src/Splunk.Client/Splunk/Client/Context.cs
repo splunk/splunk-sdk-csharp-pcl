@@ -26,6 +26,7 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Diagnostics;
     /// <summary>
     /// Provides a class for sending HTTP requests and receiving HTTP responses
     /// from a Splunk server.
@@ -159,7 +160,7 @@ namespace Splunk.Client
         { get; set; }
 
         // CookieStore to store authentication cookies. It parses cookies with .SetCookies(uri, cookieHeader)
-        private CookieStore CookieStore = new CookieStore();
+        private CookieStore CookieJar = new CookieStore();
 
         #endregion
 
@@ -430,6 +431,7 @@ namespace Splunk.Client
             }
 
             var uri = UriConverter.Instance.Convert(builder.ToString());
+            Debug.WriteLine(uri);
             return uri;
         }
 
@@ -462,9 +464,9 @@ namespace Splunk.Client
             {
                 // If the CookieStore has cookies, include them in the Cookie header
                 // Otherwise if there is a SessionKey, include it in the Authorization header
-                if (!this.CookieStore.isEmpty())
+                if (!this.CookieJar.isEmpty())
                 {
-                    request.Headers.Add("Cookie", this.CookieStore.GetCookieHeader());
+                    request.Headers.Add("Cookie", this.CookieJar.GetCookieHeader());
                 }
                 else if (this.SessionKey != null)
                 {
@@ -479,7 +481,7 @@ namespace Splunk.Client
                 {
                     foreach (string setCookieString in response.Message.Headers.GetValues("Set-Cookie"))
                     {
-                        this.CookieStore.SetCookies(setCookieString);
+                        this.CookieJar.SetCookies(setCookieString);
                     }
                 }
                 return response;

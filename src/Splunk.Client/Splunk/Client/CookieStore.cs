@@ -17,25 +17,21 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using System.Net;
-
+    /// <summary>
+    /// Provides a class for storing and parsing cookies
+    /// from a Splunk server.
+    /// </summary>
     class CookieStore
     {
         #region Constructors
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CookieStore"/> class.
+        /// </summary>
         public CookieStore()
         {
             this.CookieContainer = new CookieContainer();
-            // CookieContainer requires a uri to store / parse cookies. 
-            // This is because usually cookies are mapped to one specific uri
-            // But in the case of search head clustering, the cookies may go to several uris
-            // This is a hack to get cookie parsing from CookieContainer by setting and getting all cookies
-            // by this globalUri
-            this.globalUri = new Uri("https://splunk.local");
         }
 
         #endregion
@@ -44,27 +40,51 @@ namespace Splunk.Client
 
         private CookieContainer CookieContainer;
 
-        private Uri globalUri;
+        // CookieContainer requires a uri to store / parse cookies. 
+        // This is because usually cookies are mapped to one specific uri
+        // But in the case of search head clustering, the cookies may go to several uris
+        // This globalUri allows all cookies to be stored under one uri
+        private static Uri globalUri = new Uri("https://splunk.local");
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        /// Parses a cookie header and stores the cookie contained within the header. 
+        /// </summary>
+        /// <param name="cookieHeader">
+        /// The string value of a "Set-Cookie:" header in an http request.
         public void SetCookies(string cookieHeader)
         {
             this.CookieContainer.SetCookies(globalUri, cookieHeader);
         }
 
+        /// <summary>
+        /// Builds a string from stored cookies to create a string that can be put into a "Cookie:" header
+        /// </summary>
+        /// <returns>
+        /// A string to put into a "Cookie:" header representing the state of the <see cref="CookeiStore"/>
+        /// </returns>
         public string GetCookieHeader()
         {
             return this.CookieContainer.GetCookieHeader(globalUri);
         }
 
+        /// <summary>
+        /// Returns whether the <see cref="CookieStore"/> has no cookies.
+        /// </summary>
+        /// <returns>
+        /// A bool representing whether the <see cref="CookieStore"/> has no cookies.
+        /// </returns>
         public bool isEmpty()
         {
             return this.CookieContainer.Count == 0;
         }
 
+        /// <summary>
+        /// Removes all cookies from a <see cref="CookieStore"/> class.
+        /// </summary>
         public void clearCookies()
         {
             this.CookieContainer = new CookieContainer();

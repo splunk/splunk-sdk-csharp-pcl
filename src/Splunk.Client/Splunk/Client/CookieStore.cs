@@ -22,7 +22,7 @@ namespace Splunk.Client
     /// Provides a class for storing and parsing cookies
     /// from a Splunk server.
     /// </summary>
-    class CookieStore
+    public class CookieStore
     {
         #region Constructors
 

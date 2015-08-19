@@ -26,7 +26,7 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Diagnostics;
+
     /// <summary>
     /// Provides a class for sending HTTP requests and receiving HTTP responses
     /// from a Splunk server.
@@ -434,7 +434,6 @@ namespace Splunk.Client
             }
 
             var uri = UriConverter.Instance.Convert(builder.ToString());
-            Debug.WriteLine(uri);
             return uri;
         }
 

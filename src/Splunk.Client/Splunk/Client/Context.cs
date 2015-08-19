@@ -104,6 +104,7 @@ namespace Splunk.Client
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
             this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.0");
+            this.CookieJar = new CookieStore();
 
             if (timeout != default(TimeSpan))
             {
@@ -159,8 +160,10 @@ namespace Splunk.Client
         public string SessionKey
         { get; set; }
 
-        // CookieStore to store authentication cookies. It parses cookies with .SetCookies(uri, cookieHeader)
-        private CookieStore CookieJar = new CookieStore();
+        /// <summary>
+        /// CookieStore to store authentication cookies.
+        /// </summary>
+        public CookieStore CookieJar;
 
         #endregion
 

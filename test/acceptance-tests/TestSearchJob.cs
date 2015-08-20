@@ -16,17 +16,12 @@
 
 namespace Splunk.Client.AcceptanceTests
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using Splunk.Client;
     using Splunk.Client.Helpers;
-
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Threading;
-    using System.Threading.Tasks;
-    
     using Xunit;
 
     /// <summary>
@@ -172,6 +167,89 @@ namespace Splunk.Client.AcceptanceTests
         }
 
         /// <summary>
+        /// Test that Job.GetSearchPreviewAsync() defaults to getting all search events
+        /// </summary>
+        [Trait("acceptance_test", "Splunk.Client.Job")]
+        [MockContext]
+        [Fact]
+        public async Task JobPreviewDefaultsToAll()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                JobArgs jobArgs = new JobArgs();
+
+                var job = await service.Jobs.CreateAsync("search index=_* | head 101", args: jobArgs);
+
+                using (SearchResultStream stream = await job.GetSearchPreviewAsync())
+                {
+                    // Is the result preview count greater than the default of 100?
+                    Assert.Equal(101, job.ResultPreviewCount);
+                }
+
+                await job.CancelAsync();
+            }
+        }
+
+        /// <summary>
+        /// Test that Job.GetSearchResponseMessageAsync() defaults to getting all search events
+        /// </summary>
+        [Trait("acceptance_test", "Splunk.Client.Job")]
+        [MockContext]
+        [Fact]
+        public async Task JobResponseMessageDefaultsToAll()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                foreach (OutputMode outputMode in Enum.GetValues(typeof(OutputMode)))
+                {
+                    foreach (ExecutionMode executionMode in Enum.GetValues(typeof(ExecutionMode)))
+                    {
+                        var job = await service.Jobs.CreateAsync("search index=_* | head 101", mode: executionMode);
+
+                        using (HttpResponseMessage message = await job.GetSearchResponseMessageAsync(outputMode: outputMode))
+                        {
+                            // Is the result preview count greater than the default of 100?
+                            Assert.Equal(101, job.EventAvailableCount);
+                            Assert.Equal(101, job.EventCount);
+                            Assert.Equal(101, job.ResultPreviewCount);
+                            Assert.Equal(101, job.ResultCount);
+
+                            switch (outputMode)
+                            {
+                                case OutputMode.Default:
+                                    Assert.Equal("?count=0", message.RequestMessage.RequestUri.Query);
+                                    break;
+                                case OutputMode.Atom:
+                                    Assert.Equal("?count=0&output_mode=atom", message.RequestMessage.RequestUri.Query);
+                                    break;
+                                case OutputMode.Csv:
+                                    Assert.Equal("?count=0&output_mode=csv", message.RequestMessage.RequestUri.Query);
+                                    break;
+                                case OutputMode.Json:
+                                    Assert.Equal("?count=0&output_mode=json", message.RequestMessage.RequestUri.Query);
+                                    break;
+                                case OutputMode.JsonColumns:
+                                    Assert.Equal("?count=0&output_mode=json_cols", message.RequestMessage.RequestUri.Query);
+                                    break;
+                                case OutputMode.JsonRows:
+                                    Assert.Equal("?count=0&output_mode=json_rows", message.RequestMessage.RequestUri.Query);
+                                    break;
+                                case OutputMode.Raw:
+                                    Assert.Equal("?count=0&output_mode=raw", message.RequestMessage.RequestUri.Query);
+                                    break;
+                                case OutputMode.Xml:
+                                    Assert.Equal("?count=0&output_mode=xml", message.RequestMessage.RequestUri.Query);
+                                    break;
+                            }
+                        }
+
+                        await job.CancelAsync();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Test that Job.SearchResultsAsync() defaults to getting all search events
         /// </summary>
         [Trait("acceptance_test", "Splunk.Client.Job")]
@@ -189,30 +267,6 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     // Is the result count greater than the default of 100?
                     Assert.Equal(101, job.ResultCount);
-                }
-
-                await job.CancelAsync();
-            }
-        }
-
-        /// <summary>
-        /// Test that Job.GetSearchPreviewAsync() defaults to getting all search events
-        /// </summary>
-        [Trait("acceptance_test", "Splunk.Client.Job")]
-        [MockContext]
-        [Fact]
-        public async Task JobPreviewDefaultsToAll()
-        {
-            using (var service = await SdkHelper.CreateService())
-            {
-                JobArgs jobArgs = new JobArgs();
-                
-                var job = await service.Jobs.CreateAsync("search index=_* | head 101", args: jobArgs);
-
-                using (SearchResultStream stream = await job.GetSearchPreviewAsync())
-                {
-                    // Is the result preview count greater than the default of 100?
-                    Assert.Equal(101, job.ResultPreviewCount);
                 }
 
                 await job.CancelAsync();

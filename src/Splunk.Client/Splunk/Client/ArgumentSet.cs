@@ -35,8 +35,7 @@ namespace Splunk.Client
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentSet"/>
-        /// class.
+        /// Initializes a new empty instance of the <see cref="ArgumentSet"/> class.
         /// </summary>
         /// <param name="argumentPrefix">
         /// The argument prefix.
@@ -48,7 +47,8 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Initializes a new instance of the Splunk.Client.ArgumentSet class.
+        /// Initializes a new instance of the <see cref="ArgumentSet"/> class from a collection of <see cref=
+        /// "Argument"/> values.
         /// </summary>
         /// <param name="argumentPrefix">
         /// The argument prefix.
@@ -61,8 +61,8 @@ namespace Splunk.Client
         { }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ArgumentSet"/>
-        /// class from a collection of <see cref="Argument"/> values.
+        /// Initializes a new instance of the <see cref="ArgumentSet"/> class from a collection of <see cref=
+        /// "Argument"/> values.
         /// </summary>
         /// <param name="argumentPrefix">
         /// The argument prefix.

@@ -64,7 +64,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "github-commits", "examples\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "get-splunk-data-inputs", "examples\Get-SplunkDataInput\get-splunk-data-inputs.csproj", "{443CB5CF-1086-40E3-B60C-6B35D7DFCF90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "raw-search-stream", "raw-search-stream\raw-search-stream.csproj", "{6BE565DA-A2C6-4ADD-AC8D-F53D4CBD0F5E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "search-response-message-stream", "examples\search-response-message-stream\search-response-message-stream.csproj", "{6BE565DA-A2C6-4ADD-AC8D-F53D4CBD0F5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

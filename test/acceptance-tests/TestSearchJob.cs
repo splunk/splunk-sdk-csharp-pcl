@@ -17,9 +17,14 @@
 namespace Splunk.Client.AcceptanceTests
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Xml.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Microsoft.VisualBasic.FileIO;
+    using Newtonsoft.Json;
     using Splunk.Client;
     using Splunk.Client.Helpers;
     using Xunit;
@@ -214,31 +219,73 @@ namespace Splunk.Client.AcceptanceTests
                             Assert.Equal(101, job.ResultPreviewCount);
                             Assert.Equal(101, job.ResultCount);
 
+                            var streamReader = new StreamReader(await message.Content.ReadAsStreamAsync());
+
                             switch (outputMode)
                             {
                                 case OutputMode.Default:
                                     Assert.Equal("?count=0", message.RequestMessage.RequestUri.Query);
+                                    {
+                                        var result = XDocument.Load(streamReader);
+                                    }
                                     break;
                                 case OutputMode.Atom:
                                     Assert.Equal("?count=0&output_mode=atom", message.RequestMessage.RequestUri.Query);
+                                    {
+                                        var result = XDocument.Load(streamReader);
+                                    }
                                     break;
                                 case OutputMode.Csv:
                                     Assert.Equal("?count=0&output_mode=csv", message.RequestMessage.RequestUri.Query);
+                                    using (TextFieldParser parser = new TextFieldParser(streamReader))
+                                    {
+                                        parser.Delimiters = new string[] { "," };
+                                        parser.HasFieldsEnclosedInQuotes = true;
+                                        var fields = parser.ReadFields();
+                                        var values = new List<string[]>();
+                                        while (!parser.EndOfData)
+                                        {
+                                            values.Add(parser.ReadFields());
+                                        }
+                                        Assert.Equal(101, values.Count);
+                                    }
                                     break;
                                 case OutputMode.Json:
                                     Assert.Equal("?count=0&output_mode=json", message.RequestMessage.RequestUri.Query);
+                                    using (var reader = new JsonTextReader(streamReader))
+                                    {
+                                        var serializer = JsonSerializer.CreateDefault();
+                                        var result = serializer.Deserialize(reader);
+                                    }
                                     break;
                                 case OutputMode.JsonColumns:
                                     Assert.Equal("?count=0&output_mode=json_cols", message.RequestMessage.RequestUri.Query);
+                                    using (var reader = new JsonTextReader(streamReader))
+                                    {
+                                        var serializer = JsonSerializer.CreateDefault();
+                                        var result = serializer.Deserialize(reader);
+                                    }
                                     break;
                                 case OutputMode.JsonRows:
                                     Assert.Equal("?count=0&output_mode=json_rows", message.RequestMessage.RequestUri.Query);
+                                    using (var reader = new JsonTextReader(streamReader))
+                                    {
+                                        var serializer = JsonSerializer.CreateDefault();
+                                        var result = serializer.Deserialize(reader);
+                                    }
                                     break;
                                 case OutputMode.Raw:
                                     Assert.Equal("?count=0&output_mode=raw", message.RequestMessage.RequestUri.Query);
+                                    {
+                                        var result = streamReader.ReadToEnd();
+                                        string s = result;
+                                    }
                                     break;
                                 case OutputMode.Xml:
                                     Assert.Equal("?count=0&output_mode=xml", message.RequestMessage.RequestUri.Query);
+                                    {
+                                        var result = XDocument.Load(streamReader);
+                                    }
                                     break;
                             }
                         }

@@ -371,12 +371,13 @@ namespace Splunk.Client.AcceptanceTests
                 }
                 catch (Exception e)
                 {
-                    Assert.True(false, string.Format("Expected: No exception, Actual: {1}", e.GetType().FullName));
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
                 }
 
                 await service.LogOffAsync();
 
                 Assert.Null(service.SessionKey);
+                Assert.True(service.Context.CookieJar.isEmpty());
 
                 try
                 {
@@ -406,6 +407,107 @@ namespace Splunk.Client.AcceptanceTests
             }
         }
 
+        #endregion
+
+        #region Cookie Tests
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanGetCookieOnLogin()
+        {
+            using (var service = await SdkHelper.CreateService(Namespace.Default))
+            {
+                Assert.False(service.Context.CookieJar.isEmpty());
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanMakeAuthRequestWithCookie()
+        {
+            using (var service = await SdkHelper.CreateService(Namespace.Default))
+            {
+                Assert.False(service.Context.CookieJar.isEmpty());
+                try
+                {
+                    await service.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                }
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanMakeRequestWithOnlyCookie()
+        {
+            var DEBUG1 = false;
+            var DEBUG2 = true;
+            var DEBUG3 = true;
+
+            // Create a service
+            var service = await SdkHelper.CreateService(Namespace.Default);
+            // Get the cookie out of that valid service
+            string cookie = service.Context.CookieJar.GetCookieHeader();
+
+            if (DEBUG1)
+            {
+                try
+                {
+                    await service.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                }
+            }
+
+            // No SdkHelper
+            // ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+            var context2 = new MockContext(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port);
+            var service2 = new Service(context2, Namespace.Default);
+            service2.Context.CookieJar.SetCookies(cookie);
+
+            // var cookie2 = service2.Context.CookieJar.GetCookieHeader();
+
+            // await service2.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
+
+            if (DEBUG2)
+            {
+                try
+                {
+                    await service2.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                }
+     
+            }
+
+            // SdkHelper with login = false
+            var service3 = await SdkHelper.CreateService(Namespace.Default, false);
+            service3.Context.CookieJar.SetCookies(cookie);
+            if (DEBUG3)
+            {
+                try
+                {
+                    await service3.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                }
+     
+            }
+       }
+
+        
         #endregion
 
         #region Applications

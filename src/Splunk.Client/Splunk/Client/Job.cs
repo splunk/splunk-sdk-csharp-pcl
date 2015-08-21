@@ -14,20 +14,19 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
+    using System.Runtime.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -507,21 +506,6 @@ namespace Splunk.Client
         #region Retrieving search results
 
         /// <inheritdoc/>
-        public virtual async Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args)
-        {
-            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args).ConfigureAwait(false);
-            return searchResults;
-        }
-
-        /// <inheritdoc/>
-        public virtual async Task<SearchResultStream> GetSearchResultsAsync(int count = 0)
-        {
-            var args = new SearchResultArgs {Count = count};
-            var searchResults = await this.GetSearchResultsAsync(args);
-            return searchResults;
-        }
-
-        /// <inheritdoc/>
         public virtual async Task<SearchResultStream> GetSearchEventsAsync(SearchEventArgs args)
         {
             var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "events", args).ConfigureAwait(false);
@@ -548,6 +532,50 @@ namespace Splunk.Client
         {
             var args = new SearchResultArgs { Count = count };
             var searchResults = await this.GetSearchPreviewAsync(args);
+            return searchResults;
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<HttpResponseMessage> GetSearchResponseMessageAsync(SearchResultArgs args, OutputMode outputMode = OutputMode.Xml)
+        {
+            await this.TransitionAsync(DispatchState.Done).ConfigureAwait(false);
+
+            var resourceName = new ResourceName(this.ResourceName, "results");
+            var requestArgs = args.AsEnumerable().Concat(new SearchResponseMessageArgs { OutputMode = outputMode });
+            var message = await this.Context.GetHttpResponseMessageAsync(this.Namespace, resourceName, requestArgs).ConfigureAwait(false);
+
+            try
+            {
+                message.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                message.Dispose();
+                throw;
+            }
+
+            return message;
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<HttpResponseMessage> GetSearchResponseMessageAsync(int count = 0, OutputMode outputMode = OutputMode.Xml)
+        {
+            var args = new SearchResultArgs { Count = count };
+            return await this.GetSearchResponseMessageAsync(args, outputMode);
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args)
+        {
+            var searchResults = await this.GetSearchResultsAsync(DispatchState.Done, "results", args).ConfigureAwait(false);
+            return searchResults;
+        }
+
+        /// <inheritdoc/>
+        public virtual async Task<SearchResultStream> GetSearchResultsAsync(int count = 0)
+        {
+            var args = new SearchResultArgs { Count = count };
+            var searchResults = await this.GetSearchResultsAsync(args);
             return searchResults;
         }
 
@@ -741,10 +769,26 @@ namespace Splunk.Client
 
         #region Types
 
+        /// <summary>
+        /// Arguments for update.
+        /// </summary>
+        class SearchResponseMessageArgs : Args<SearchResponseMessageArgs>
+        {
+            /// <summary>
+            /// Gets or sets a value that indicates whether Splunk should check
+            /// Splunkbase for updates to an <see cref="Application"/>.
+            /// </summary>
+            /// <value>
+            /// <c>true</c> if check for updates, <c>false</c> if not.
+            /// </value>
+            [DataMember(Name = "output_mode", EmitDefaultValue = false)]
+            [DefaultValue(OutputMode.Default)]
+            public OutputMode OutputMode
+            { get; set; }
+        }
+
         /// <inheritdoc/>
-        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification =
-            "This is by design.")
-        ]
+        [SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "This is by design.")]
         public class RuntimeAdapter : ExpandoAdapter<RuntimeAdapter>
         {
             /// <inheritdoc/>

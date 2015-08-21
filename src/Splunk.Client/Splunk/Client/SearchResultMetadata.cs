@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System.Collections.Generic;

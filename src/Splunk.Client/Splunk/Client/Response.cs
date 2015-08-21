@@ -56,12 +56,10 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the <see cref="Stream"/> associated with the current
-        /// <see cref="Response.Message"/>.
+        /// Gets the <see cref="Stream"/> associated with the current <see cref="Response.Message"/>.
         /// </summary>
         /// <remarks>
-        /// This object is the one returned by
-        /// <see cref="HttpContent.ReadAsStreamAsync()"/>.
+        /// This object is the one returned by <see cref="HttpContent.ReadAsStreamAsync()"/>.
         /// </remarks>
         /// <value>
         /// The stream.

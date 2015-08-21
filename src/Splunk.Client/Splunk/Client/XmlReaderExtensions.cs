@@ -366,8 +366,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// An XmlReader extension method that reads response element
-        /// asynchronous.
+        /// An XmlReader extension method that reads a response element asynchronously.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
@@ -391,20 +390,19 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asynchronously advances the source <see cref="XmlReader"/> to the
-        /// next descendant element with the specified name.
+        /// Asynchronously advances the source <see cref="XmlReader"/> to the next descendant element with the specified
+        /// name.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
         /// </param>
         /// <param name="name">
-        /// Name of the descendant element you wish to move to.
+        /// Name of the descendant element to which you wish to move.
         /// </param>
         /// <returns>
-        /// <c>true</c> if a matching descendant element is found; otherwise 
-        /// <c>false</c>. If a matching child element is not found, the
-        /// <see cref="XmlReader"/> is positioned on the end tag (NodeType is 
-        /// XmlNodeType.EndElement) of the element.
+        /// <c>true</c> if a matching descendant element is found; otherwise <c>false</c>. If a matching element is not
+        /// found, the <see cref="XmlReader"/> is positioned on the end tag (NodeType is XmlNodeType.EndElement) of the
+        /// element.
         /// </returns>
         public static async Task<bool> ReadToDescendantAsync(this XmlReader reader, string name)
         {
@@ -440,8 +438,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Asyncrhonously reads until an element with the specified name is
-        /// found.
+        /// Asyncrhonously reads until an element with the specified name is found.
         /// </summary>
         /// <param name="reader">
         /// The source <see cref="XmlReader"/>.
@@ -450,8 +447,8 @@ namespace Splunk.Client
         /// Name of the element you wish to move to.
         /// </param>
         /// <returns>
-        /// <c>true</c> if a matching element is found; otherwise <c>false</c>
-        /// and the source <see cref="XmlReader"/> is in an end of file state.
+        /// <c>true</c> if a matching element is found; otherwise <c>false</c> and the source <see cref="XmlReader"/> is
+        /// in an end of file state.
         /// </returns>
         public static async Task<bool> ReadToFollowingAsync(this XmlReader reader, string name)
         {

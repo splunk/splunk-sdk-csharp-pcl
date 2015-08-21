@@ -724,15 +724,43 @@ namespace Splunk.Client
         Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args);
 
         /// <summary>
-        /// Gets search preview asynchronous.
+        /// Gets search preview result stream asynchronously.
         /// </summary>
         /// <param name="count">
         /// Optional search events count, defaults to 0 for all events.
         /// </param>
         /// <returns>
-        /// The search preview asynchronous.
+        /// The search preview result stream.
         /// </returns>
         Task<SearchResultStream> GetSearchPreviewAsync(int count = 0);
+
+        /// <summary>
+        /// Gets search response message asynchronously.
+        /// </summary>
+        /// <param name="args">
+        /// Optional search result arguments.
+        /// </param>
+        /// <param name="outputMode">
+        /// Format for the output from the search command, defaults to <c>OutputMode.Xml</c>.
+        /// </param>
+        /// <returns>
+        /// The search response message.
+        /// </returns>
+        Task<HttpResponseMessage> GetSearchResponseMessageAsync(SearchResultArgs args, OutputMode outputMode = OutputMode.Xml);
+
+        /// <summary>
+        /// Gets search response message asynchronously.
+        /// </summary>
+        /// <param name="count">
+        /// Optional search results count, defaults to <c>0</c> for all results.
+        /// </param>
+        /// <param name="outputMode">
+        /// Format for the output from the search command, defaults to <c>OutputMode.Xml</c>.
+        /// </param>
+        /// <returns>
+        /// The search response message.
+        /// </returns>
+        Task<HttpResponseMessage> GetSearchResponseMessageAsync(int count = 0, OutputMode outputMode = OutputMode.Xml);
 
         /// <summary>
         /// Gets search results asynchronous.
@@ -957,6 +985,10 @@ namespace Splunk.Client
         public abstract Task<SearchResultStream> GetSearchPreviewAsync(SearchResultArgs args);
 
         public abstract Task<SearchResultStream> GetSearchPreviewAsync(int count = 0);
+
+        public abstract Task<HttpResponseMessage> GetSearchResponseMessageAsync(SearchResultArgs args, OutputMode outputMode = OutputMode.Xml);
+
+        public abstract Task<HttpResponseMessage> GetSearchResponseMessageAsync(int count = 0, OutputMode outputMode = OutputMode.Xml);
 
         public abstract Task<SearchResultStream> GetSearchResultsAsync(SearchResultArgs args);
 

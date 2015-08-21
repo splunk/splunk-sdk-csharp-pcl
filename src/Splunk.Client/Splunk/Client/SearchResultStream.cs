@@ -25,7 +25,7 @@ namespace Splunk.Client
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
-    using System.Globalization;
+    using System.IO;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -93,7 +93,6 @@ namespace Splunk.Client
         {
             get { return response.Message; }
         }
-       
 
         #endregion
 

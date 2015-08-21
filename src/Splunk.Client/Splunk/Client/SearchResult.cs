@@ -53,8 +53,7 @@ namespace Splunk.Client
         }
 
         /// <summary>
-        /// Gets the read-only list of field names that may appear in a
-        /// <see cref="SearchResult"/>.
+        /// Gets the read-only list of field names that may appear in a <see cref="SearchResult"/>.
         /// </summary>
         /// <remarks>
         /// Be aware that any given result may contain a subset of these fields.

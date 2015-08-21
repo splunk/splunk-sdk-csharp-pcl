@@ -239,7 +239,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Delete, ns, resource, null, token, argumentSets).ConfigureAwait(false);
+            var response = await this.GetResponseAsync(HttpMethod.Delete, ns, resource, null, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -250,7 +250,7 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resource">
-        /// 
+        /// An object identifiying a Splunk resource in the context of <paramref name="ns"/>.
         /// </param>
         /// <param name="argumentSets">
         /// 
@@ -262,7 +262,7 @@ namespace Splunk.Client
             params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets).ConfigureAwait(false);
+            var response = await this.GetResponseAsync(HttpMethod.Get, ns, resource, null, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -273,7 +273,7 @@ namespace Splunk.Client
         /// An object identifying a Splunk services namespace.
         /// </param>
         /// <param name="resourceName">
-        /// 
+        /// An object identifiying a Splunk resource in the context of <paramref name="ns"/>.
         /// </param>
         /// <param name="token">
         /// 
@@ -287,8 +287,56 @@ namespace Splunk.Client
         public virtual async Task<Response> GetAsync(Namespace ns, ResourceName resourceName, CancellationToken token,
             params IEnumerable<Argument>[] argumentSets)
         {
-            var response = await this.SendAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets).ConfigureAwait(false);
+            var response = await this.GetResponseAsync(HttpMethod.Get, ns, resourceName, null, token, argumentSets).ConfigureAwait(false);
             return response;
+        }
+
+        /// <summary>
+        /// Sends a GET request as an asynchronous operation.
+        /// </summary>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="resource">
+        /// An object identifiying a Splunk resource in the context of <paramref name="ns"/>.
+        /// </param>
+        /// <param name="argumentSets">
+        /// 
+        /// </param>
+        /// <returns>
+        /// The response to the GET request.
+        /// </returns>
+        public virtual async Task<HttpResponseMessage> GetHttpResponseMessageAsync(Namespace ns, ResourceName resource,
+            params IEnumerable<Argument>[] argumentSets)
+        {
+            var token = CancellationToken.None;
+            var message = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets).ConfigureAwait(false);
+            return message;
+        }
+
+        /// <summary>
+        /// Sends a GET request as an asynchronous operation.
+        /// </summary>
+        /// <param name="ns">
+        /// An object identifying a Splunk services namespace.
+        /// </param>
+        /// <param name="resource">
+        /// An object identifiying a Splunk resource in the context of <paramref name="ns"/>.
+        /// </param>
+        /// <param name="token">
+        /// 
+        /// </param>
+        /// <param name="argumentSets">
+        /// 
+        /// </param>
+        /// <returns>
+        /// The response to the GET request.
+        /// </returns>
+        public virtual async Task<HttpResponseMessage> GetHttpResponseMessageAsync(Namespace ns, ResourceName resource, 
+            CancellationToken token, params IEnumerable<Argument>[] argumentSets)
+        {
+            var message = await this.SendAsync(HttpMethod.Get, ns, resource, null, token, argumentSets).ConfigureAwait(false);
+            return message;
         }
 
         /// <summary>
@@ -335,7 +383,7 @@ namespace Splunk.Client
             HttpContent content, params IEnumerable<Argument>[] argumentSets)
         {
             var token = CancellationToken.None;
-            var response = await this.SendAsync(HttpMethod.Post, ns, resource, content, token, argumentSets).ConfigureAwait(false);
+            var response = await this.GetResponseAsync(HttpMethod.Post, ns, resource, content, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -371,7 +419,7 @@ namespace Splunk.Client
                 argumentSets = null;
             }
 
-            var response = await this.SendAsync(method, ns, resource, content, token, argumentSets).ConfigureAwait(false);
+            var response = await this.GetResponseAsync(method, ns, resource, content, token, argumentSets).ConfigureAwait(false);
             return response;
         }
 
@@ -384,7 +432,7 @@ namespace Splunk.Client
         /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
-            var text = string.Concat(CultureInfo.InvariantCulture, SchemeStrings[(int)this.Scheme], "://", this.Host, 
+            var text = string.Concat(CultureInfo.InvariantCulture, SchemeStrings[(int)this.Scheme], "://", this.Host,
                 ":", this.Port.ToString(CultureInfo.InvariantCulture.NumberFormat));
             return text;
         }
@@ -454,8 +502,26 @@ namespace Splunk.Client
             return stringContent;
         }
 
-        async Task<Response> SendAsync(HttpMethod method, Namespace ns, ResourceName resource, HttpContent
-            content, CancellationToken cancellationToken, IEnumerable<Argument>[] argumentSets)
+        async Task<Response> GetResponseAsync(HttpMethod method, Namespace ns, ResourceName resource, HttpContent content,
+            CancellationToken cancellationToken, IEnumerable<Argument>[] argumentSets)
+        {
+            var message = await this.SendAsync(method, ns, resource, content, cancellationToken, argumentSets);
+            var response = await Response.CreateAsync(message).ConfigureAwait(false);
+
+            // If a Set-Cookie Header is received, parse it and add/update the cookie store
+            if (response.Message.Headers.Contains("Set-Cookie"))
+            {
+                foreach (string setCookieString in response.Message.Headers.GetValues("Set-Cookie"))
+                {
+                    this.CookieJar.SetCookies(setCookieString);
+                }
+            }
+
+            return response;
+        }
+
+        async Task<HttpResponseMessage> SendAsync(HttpMethod method, Namespace ns, ResourceName resource, HttpContent content, 
+            CancellationToken cancellationToken, IEnumerable<Argument>[] argumentSets)
         {
             Contract.Requires<ArgumentNullException>(ns != null);
             Contract.Requires<ArgumentNullException>(resource != null);
@@ -476,17 +542,7 @@ namespace Splunk.Client
                 }
 
                 var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                var response = await Response.CreateAsync(message).ConfigureAwait(false);
-                
-                // If a Set-Cookie Header is received, parse it and add/update the cookie store
-                if (response.Message.Headers.Contains("Set-Cookie"))
-                {
-                    foreach (string setCookieString in response.Message.Headers.GetValues("Set-Cookie"))
-                    {
-                        this.CookieJar.SetCookies(setCookieString);
-                    }
-                }
-                return response;
+                return message;
             }
         }
 

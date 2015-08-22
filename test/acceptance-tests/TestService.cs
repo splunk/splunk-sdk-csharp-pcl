@@ -455,7 +455,7 @@ namespace Splunk.Client.AcceptanceTests
             var service2 = await SdkHelper.CreateService(Namespace.Default, false);
             service2.Context.CookieJar.SetCookies(cookie);
 
-            // check that cookie is the same
+            // Check that cookie is the same
             var cookie2 = service2.Context.CookieJar.GetCookieHeader();
             Assert.Equal(cookie, cookie2);
 
@@ -469,7 +469,57 @@ namespace Splunk.Client.AcceptanceTests
             }
         }
 
-        
+        [Trait("accpetance-test", "Splunk.Clinet.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanNotMakeRequestWithOnlyBadCookie()
+        {
+            // SdkHelper with login = false
+            var service = await SdkHelper.CreateService(Namespace.Default, false);
+            // Put a bad cookie into the cookie jar
+            service.Context.CookieJar.SetCookies("bad=cookie");
+            try
+            {
+                await service.Applications.GetAllAsync();
+                Assert.True(false, "Expected AuthenticationFailureException");
+            }
+            catch (AuthenticationFailureException e)
+            {
+                Assert.Equal(HttpStatusCode.Unauthorized, e.StatusCode);
+            }
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanMakeRequestWithGoodCookieAndBadCookie()
+        {
+            // Create a service
+            var service = await SdkHelper.CreateService(Namespace.Default);
+            // Get the cookie out of that valid service
+            string cookie = service.Context.CookieJar.GetCookieHeader();
+
+            // SdkHelper with login = false
+            var service2 = await SdkHelper.CreateService(Namespace.Default, false);
+            service2.Context.CookieJar.SetCookies(cookie);
+
+            // Check that cookie is the same
+            var cookie2 = service2.Context.CookieJar.GetCookieHeader();
+            Assert.Equal(cookie, cookie2);
+
+            // Add an additional bad cookie
+            service2.Context.CookieJar.SetCookies("bad=cookie");
+
+            try
+            {
+                await service2.Applications.GetAllAsync();
+            }
+            catch (Exception e)
+            {
+                Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+            }
+        }
+       
         #endregion
 
         #region Applications

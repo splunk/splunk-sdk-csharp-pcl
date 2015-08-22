@@ -467,7 +467,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
             }
-      }
+        }
 
         
         #endregion

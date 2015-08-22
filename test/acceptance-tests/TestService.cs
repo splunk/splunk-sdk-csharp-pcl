@@ -446,66 +446,28 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanMakeRequestWithOnlyCookie()
         {
-            var DEBUG1 = false;
-            var DEBUG2 = true;
-            var DEBUG3 = true;
-
             // Create a service
             var service = await SdkHelper.CreateService(Namespace.Default);
             // Get the cookie out of that valid service
             string cookie = service.Context.CookieJar.GetCookieHeader();
 
-            if (DEBUG1)
-            {
-                try
-                {
-                    await service.Applications.GetAllAsync();
-                }
-                catch (Exception e)
-                {
-                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
-                }
-            }
-
-            // No SdkHelper
-            // ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
-            var context2 = new MockContext(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port);
-            var service2 = new Service(context2, Namespace.Default);
+            // SdkHelper with login = false
+            var service2 = await SdkHelper.CreateService(Namespace.Default, false);
             service2.Context.CookieJar.SetCookies(cookie);
 
-            // var cookie2 = service2.Context.CookieJar.GetCookieHeader();
+            // check that cookie is the same
+            var cookie2 = service2.Context.CookieJar.GetCookieHeader();
+            Assert.Equal(cookie, cookie2);
 
-            // await service2.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
-
-            if (DEBUG2)
+            try
             {
-                try
-                {
-                    await service2.Applications.GetAllAsync();
-                }
-                catch (Exception e)
-                {
-                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
-                }
-     
+                await service2.Applications.GetAllAsync();
             }
-
-            // SdkHelper with login = false
-            var service3 = await SdkHelper.CreateService(Namespace.Default, false);
-            service3.Context.CookieJar.SetCookies(cookie);
-            if (DEBUG3)
+            catch (Exception e)
             {
-                try
-                {
-                    await service3.Applications.GetAllAsync();
-                }
-                catch (Exception e)
-                {
-                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
-                }
-     
+                Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
             }
-       }
+      }
 
         
         #endregion

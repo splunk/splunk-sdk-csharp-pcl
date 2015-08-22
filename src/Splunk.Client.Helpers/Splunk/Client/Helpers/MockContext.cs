@@ -454,7 +454,7 @@ namespace Splunk.Client.Helpers
             #region Privates/internals
 
             static readonly byte[] crlf = new byte[] { 0x0D, 0x0A };
-            readonly HttpClient client = new HttpClient();
+            readonly HttpClient client = new HttpClient(new HttpClientHandler { UseCookies = false } );
 
             #endregion
         }

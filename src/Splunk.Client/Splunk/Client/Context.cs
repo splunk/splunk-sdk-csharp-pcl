@@ -102,7 +102,7 @@ namespace Splunk.Client
             this.Scheme = scheme;
             this.Host = host;
             this.Port = port;
-            this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
+            this.httpClient = handler == null ? new HttpClient(new HttpClientHandler { UseCookies = false }) : new HttpClient(handler, disposeHandler);
             this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.0");
             this.CookieJar = new CookieStore();
 
@@ -540,6 +540,7 @@ namespace Splunk.Client
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
+                string test = request.ToString();
 
                 var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
                 return message;

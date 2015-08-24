@@ -540,7 +540,6 @@ namespace Splunk.Client
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }
-                string test = request.ToString();
 
                 var message = await this.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
                 return message;

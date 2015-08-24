@@ -520,6 +520,34 @@ namespace Splunk.Client.AcceptanceTests
             }
         }
        
+        [Trait("acceptance-test", "Splunk.Client.Service")]
+        [MockContext]
+        [Fact]
+        public async Task CanMakeRequestWithBadCookieAndGoodCookie()
+        {
+            // Create a service
+            var service = await SdkHelper.CreateService(Namespace.Default);
+            // Get the cookie out of that valid service
+            string goodCookie = service.Context.CookieJar.GetCookieHeader();
+
+            // SdkHelper with login = false
+            var service2 = await SdkHelper.CreateService(Namespace.Default, false);
+
+            // Add a bad cookie
+            service2.Context.CookieJar.SetCookies("bad=cookie");
+
+            // Add the good cookie
+            service2.Context.CookieJar.SetCookies(goodCookie);
+
+            try
+            {
+                await service2.Applications.GetAllAsync();
+            }
+            catch (Exception e)
+            {
+                Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+            }
+        }
         #endregion
 
         #region Applications

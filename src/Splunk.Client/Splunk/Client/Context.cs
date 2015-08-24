@@ -513,7 +513,7 @@ namespace Splunk.Client
             {
                 foreach (string setCookieString in response.Message.Headers.GetValues("Set-Cookie"))
                 {
-                    this.CookieJar.SetCookies(setCookieString);
+                    this.CookieJar.AddCookie(setCookieString);
                 }
             }
 
@@ -532,7 +532,7 @@ namespace Splunk.Client
             {
                 // If the CookieStore has cookies, include them in the Cookie header
                 // Otherwise if there is a SessionKey, include it in the Authorization header
-                if (!this.CookieJar.isEmpty())
+                if (!this.CookieJar.IsEmpty())
                 {
                     request.Headers.Add("Cookie", this.CookieJar.GetCookieHeader());
                 }

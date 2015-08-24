@@ -305,7 +305,7 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                 this.SessionKey = null;
-                this.Context.CookieJar.clearCookies();
+                this.Context.CookieJar.ClearCookies();
             }
         }
 

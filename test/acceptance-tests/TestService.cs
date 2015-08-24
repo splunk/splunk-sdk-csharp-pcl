@@ -377,7 +377,7 @@ namespace Splunk.Client.AcceptanceTests
                 await service.LogOffAsync();
 
                 Assert.Null(service.SessionKey);
-                Assert.True(service.Context.CookieJar.isEmpty());
+                Assert.True(service.Context.CookieJar.IsEmpty());
 
                 try
                 {
@@ -418,7 +418,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService(Namespace.Default))
             {
-                Assert.False(service.Context.CookieJar.isEmpty());
+                Assert.False(service.Context.CookieJar.IsEmpty());
             }
         }
 
@@ -429,7 +429,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService(Namespace.Default))
             {
-                Assert.False(service.Context.CookieJar.isEmpty());
+                Assert.False(service.Context.CookieJar.IsEmpty());
                 try
                 {
                     await service.Applications.GetAllAsync();
@@ -453,7 +453,7 @@ namespace Splunk.Client.AcceptanceTests
 
             // SdkHelper with login = false
             var service2 = await SdkHelper.CreateService(Namespace.Default, false);
-            service2.Context.CookieJar.SetCookies(cookie);
+            service2.Context.CookieJar.AddCookie(cookie);
 
             // Check that cookie is the same
             var cookie2 = service2.Context.CookieJar.GetCookieHeader();
@@ -477,7 +477,7 @@ namespace Splunk.Client.AcceptanceTests
             // SdkHelper with login = false
             var service = await SdkHelper.CreateService(Namespace.Default, false);
             // Put a bad cookie into the cookie jar
-            service.Context.CookieJar.SetCookies("bad=cookie");
+            service.Context.CookieJar.AddCookie("bad=cookie");
             try
             {
                 await service.Applications.GetAllAsync();
@@ -501,14 +501,14 @@ namespace Splunk.Client.AcceptanceTests
 
             // SdkHelper with login = false
             var service2 = await SdkHelper.CreateService(Namespace.Default, false);
-            service2.Context.CookieJar.SetCookies(cookie);
+            service2.Context.CookieJar.AddCookie(cookie);
 
             // Check that cookie is the same
             var cookie2 = service2.Context.CookieJar.GetCookieHeader();
             Assert.Equal(cookie, cookie2);
 
             // Add an additional bad cookie
-            service2.Context.CookieJar.SetCookies("bad=cookie");
+            service2.Context.CookieJar.AddCookie("bad=cookie");
 
             try
             {
@@ -534,10 +534,10 @@ namespace Splunk.Client.AcceptanceTests
             var service2 = await SdkHelper.CreateService(Namespace.Default, false);
 
             // Add a bad cookie
-            service2.Context.CookieJar.SetCookies("bad=cookie");
+            service2.Context.CookieJar.AddCookie("bad=cookie");
 
             // Add the good cookie
-            service2.Context.CookieJar.SetCookies(goodCookie);
+            service2.Context.CookieJar.AddCookie(goodCookie);
 
             try
             {

@@ -52,10 +52,11 @@ namespace Splunk.Client
 
         /// <summary>
         /// Parses a cookie header and stores the cookie contained within the header. 
+        /// Note 
         /// </summary>
         /// <param name="cookieHeader">
         /// The string value of a "Set-Cookie:" header in an http request.
-        public void SetCookies(string cookieHeader)
+        public void AddCookie(string cookieHeader)
         {
             this.CookieContainer.SetCookies(globalUri, cookieHeader);
         }
@@ -77,7 +78,7 @@ namespace Splunk.Client
         /// <returns>
         /// A bool representing whether the <see cref="CookieStore"/> has no cookies.
         /// </returns>
-        public bool isEmpty()
+        public bool IsEmpty()
         {
             return this.CookieContainer.Count == 0;
         }
@@ -85,7 +86,7 @@ namespace Splunk.Client
         /// <summary>
         /// Removes all cookies from a <see cref="CookieStore"/> class.
         /// </summary>
-        public void clearCookies()
+        public void ClearCookies()
         {
             this.CookieContainer = new CookieContainer();
         }

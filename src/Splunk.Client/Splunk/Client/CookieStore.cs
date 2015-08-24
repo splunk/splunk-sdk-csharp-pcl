@@ -52,10 +52,10 @@ namespace Splunk.Client
 
         /// <summary>
         /// Parses a cookie header and stores the cookie contained within the header. 
-        /// Note 
         /// </summary>
         /// <param name="cookieHeader">
         /// The string value of a "Set-Cookie:" header in an http request.
+        /// </param>
         public void AddCookie(string cookieHeader)
         {
             this.CookieContainer.SetCookies(globalUri, cookieHeader);

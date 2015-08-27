@@ -1061,6 +1061,9 @@ namespace Splunk.Client.AcceptanceTests
                 await index.EnableAsync();
                 Assert.False(index.Disabled);
 
+                await service.Server.RestartAsync(2 * 60 * 1000);
+                await service.LogOnAsync();
+
                 //// Delete
                 await index.RemoveAsync();
                 await SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>

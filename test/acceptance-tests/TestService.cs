@@ -416,9 +416,12 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanGetCookieOnLogin()
         {
-            using (var service = await SdkHelper.CreateService(Namespace.Default))
+            if (await AreCookiesSupported())
             {
-                Assert.False(service.Context.CookieJar.IsEmpty());
+                using (var service = await SdkHelper.CreateService(Namespace.Default))
+                {
+                    Assert.False(service.Context.CookieJar.IsEmpty());
+                }
             }
         }
 
@@ -427,16 +430,19 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanMakeAuthRequestWithCookie()
         {
-            using (var service = await SdkHelper.CreateService(Namespace.Default))
+            if (await AreCookiesSupported())
             {
-                Assert.False(service.Context.CookieJar.IsEmpty());
-                try
+                using (var service = await SdkHelper.CreateService(Namespace.Default))
                 {
-                    await service.Applications.GetAllAsync();
-                }
-                catch (Exception e)
-                {
-                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                    Assert.False(service.Context.CookieJar.IsEmpty());
+                    try
+                    {
+                        await service.Applications.GetAllAsync();
+                    }
+                    catch (Exception e)
+                    {
+                        Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                    }
                 }
             }
         }
@@ -446,26 +452,29 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanMakeRequestWithOnlyCookie()
         {
-            // Create a service
-            var service = await SdkHelper.CreateService(Namespace.Default);
-            // Get the cookie out of that valid service
-            string cookie = service.Context.CookieJar.GetCookieHeader();
-
-            // SdkHelper with login = false
-            var service2 = await SdkHelper.CreateService(Namespace.Default, false);
-            service2.Context.CookieJar.AddCookie(cookie);
-
-            // Check that cookie is the same
-            var cookie2 = service2.Context.CookieJar.GetCookieHeader();
-            Assert.Equal(cookie, cookie2);
-
-            try
+            if (await AreCookiesSupported())
             {
-                await service2.Applications.GetAllAsync();
-            }
-            catch (Exception e)
-            {
-                Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                // Create a service
+                var service = await SdkHelper.CreateService(Namespace.Default);
+                // Get the cookie out of that valid service
+                string cookie = service.Context.CookieJar.GetCookieHeader();
+
+                // SdkHelper with login = false
+                var service2 = await SdkHelper.CreateService(Namespace.Default, false);
+                service2.Context.CookieJar.AddCookie(cookie);
+
+                // Check that cookie is the same
+                var cookie2 = service2.Context.CookieJar.GetCookieHeader();
+                Assert.Equal(cookie, cookie2);
+
+                try
+                {
+                    await service2.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                }
             }
         }
 
@@ -474,18 +483,21 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanNotMakeRequestWithOnlyBadCookie()
         {
-            // SdkHelper with login = false
-            var service = await SdkHelper.CreateService(Namespace.Default, false);
-            // Put a bad cookie into the cookie jar
-            service.Context.CookieJar.AddCookie("bad=cookie");
-            try
+            if (await AreCookiesSupported())
             {
-                await service.Applications.GetAllAsync();
-                Assert.True(false, "Expected AuthenticationFailureException");
-            }
-            catch (AuthenticationFailureException e)
-            {
-                Assert.Equal(HttpStatusCode.Unauthorized, e.StatusCode);
+                // SdkHelper with login = false
+                var service = await SdkHelper.CreateService(Namespace.Default, false);
+                // Put a bad cookie into the cookie jar
+                service.Context.CookieJar.AddCookie("bad=cookie");
+                try
+                {
+                    await service.Applications.GetAllAsync();
+                    Assert.True(false, "Expected AuthenticationFailureException");
+                }
+                catch (AuthenticationFailureException e)
+                {
+                    Assert.Equal(HttpStatusCode.Unauthorized, e.StatusCode);
+                }
             }
         }
 
@@ -494,29 +506,32 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanMakeRequestWithGoodCookieAndBadCookie()
         {
-            // Create a service
-            var service = await SdkHelper.CreateService(Namespace.Default);
-            // Get the cookie out of that valid service
-            string cookie = service.Context.CookieJar.GetCookieHeader();
-
-            // SdkHelper with login = false
-            var service2 = await SdkHelper.CreateService(Namespace.Default, false);
-            service2.Context.CookieJar.AddCookie(cookie);
-
-            // Check that cookie is the same
-            var cookie2 = service2.Context.CookieJar.GetCookieHeader();
-            Assert.Equal(cookie, cookie2);
-
-            // Add an additional bad cookie
-            service2.Context.CookieJar.AddCookie("bad=cookie");
-
-            try
+            if (await AreCookiesSupported())
             {
-                await service2.Applications.GetAllAsync();
-            }
-            catch (Exception e)
-            {
-                Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                // Create a service
+                var service = await SdkHelper.CreateService(Namespace.Default);
+                // Get the cookie out of that valid service
+                string cookie = service.Context.CookieJar.GetCookieHeader();
+
+                // SdkHelper with login = false
+                var service2 = await SdkHelper.CreateService(Namespace.Default, false);
+                service2.Context.CookieJar.AddCookie(cookie);
+
+                // Check that cookie is the same
+                var cookie2 = service2.Context.CookieJar.GetCookieHeader();
+                Assert.Equal(cookie, cookie2);
+
+                // Add an additional bad cookie
+                service2.Context.CookieJar.AddCookie("bad=cookie");
+
+                try
+                {
+                    await service2.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                }
             }
         }
        
@@ -525,27 +540,42 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanMakeRequestWithBadCookieAndGoodCookie()
         {
-            // Create a service
-            var service = await SdkHelper.CreateService(Namespace.Default);
-            // Get the cookie out of that valid service
-            string goodCookie = service.Context.CookieJar.GetCookieHeader();
-
-            // SdkHelper with login = false
-            var service2 = await SdkHelper.CreateService(Namespace.Default, false);
-
-            // Add a bad cookie
-            service2.Context.CookieJar.AddCookie("bad=cookie");
-
-            // Add the good cookie
-            service2.Context.CookieJar.AddCookie(goodCookie);
-
-            try
+            if (await AreCookiesSupported())
             {
-                await service2.Applications.GetAllAsync();
+                // Create a service
+                var service = await SdkHelper.CreateService(Namespace.Default);
+                // Get the cookie out of that valid service
+                string goodCookie = service.Context.CookieJar.GetCookieHeader();
+
+                // SdkHelper with login = false
+                var service2 = await SdkHelper.CreateService(Namespace.Default, false);
+
+                // Add a bad cookie
+                service2.Context.CookieJar.AddCookie("bad=cookie");
+
+                // Add the good cookie
+                service2.Context.CookieJar.AddCookie(goodCookie);
+
+                try
+                {
+                    await service2.Applications.GetAllAsync();
+                }
+                catch (Exception e)
+                {
+                    Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                }
+     
             }
-            catch (Exception e)
+       }
+
+        public async Task<bool> AreCookiesSupported()
+        {
+            using (var service = await SdkHelper.CreateService())
             {
-                Assert.True(false, string.Format("Expected: No exception, Actual: {0}", e.GetType().FullName));
+                var info = await service.Server.GetInfoAsync();
+                Version v = info.Version;
+
+                return (v.Major == 6 && v.Minor >= 2) || v.Major > 6;
             }
         }
         #endregion

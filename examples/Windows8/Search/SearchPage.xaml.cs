@@ -166,7 +166,9 @@ namespace SplunkSearch
             catch (Exception ex)
             {
                 Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(ex.ToString(), "Error in Search");
+#               pragma warning disable 4014
                 messageDialog.ShowAsync();
+#               pragma warning restore 4014
 
                 titleGrid.Visibility = Visibility.Collapsed;
                 this.PageContentReset();
@@ -478,7 +480,7 @@ namespace SplunkSearch
                     allResults.Add(new ResultData(++resultCount, results[0], results[1]));
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //the stream has some broken fields
                 // Enumeration ended prematurely : System.IO.InvalidDataException: Read <fieldOrder> where </fieldOrder> was expected.   
@@ -571,7 +573,9 @@ namespace SplunkSearch
             {
                 string msg = "Invalid input: value must be positive integer";
                 Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(msg, "Error in Input");
+#               pragma warning disable 4014
                 messageDialog.ShowAsync();
+#               pragma warning restore 4014
             }
 
             string unit = "s";
@@ -602,7 +606,9 @@ namespace SplunkSearch
             {
                 string msg = "Latest time must be greater than earlist time";
                 Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(msg, "Error in Input");
+#               pragma warning disable 4014
                 messageDialog.ShowAsync();
+#               pragma warning restore 4014
             }
         }
 
@@ -622,7 +628,9 @@ namespace SplunkSearch
             catch (Exception ex)
             {
                 Windows.UI.Popups.MessageDialog messageDialog = new Windows.UI.Popups.MessageDialog(ex.Message, "Error in Input");
+#               pragma warning disable 4014
                 messageDialog.ShowAsync();
+#               pragma warning restore 4014
             }
         }
 

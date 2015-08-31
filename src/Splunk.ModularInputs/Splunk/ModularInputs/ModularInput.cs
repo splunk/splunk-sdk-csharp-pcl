@@ -48,7 +48,7 @@ namespace Splunk.ModularInputs
         public abstract Scheme Scheme { get; }
 
         #endregion
-                      
+
         #region Methods
 
         static ModularInput()
@@ -73,7 +73,7 @@ namespace Splunk.ModularInputs
             run.Wait();
             if (run.IsCompleted)
                 return run.Result;
-            
+
             return -1;
         }
 
@@ -130,7 +130,8 @@ namespace Splunk.ModularInputs
                     ((attachPoints & DebuggerAttachPoints.ValidateArguments) == DebuggerAttachPoints.ValidateArguments));
         }
 
-        private static string RemoveNewLines(string message) {
+        private static string RemoveNewLines(string message)
+        {
             return message.Replace(Environment.NewLine, " | ");
         }
 
@@ -221,41 +222,42 @@ namespace Splunk.ModularInputs
                 {
                     try
                     {
-                        List<Task> instances = new List<Task>();
-                        InputDefinitionCollection inputDefinitions =
-                            (InputDefinitionCollection) new XmlSerializer(typeof (InputDefinitionCollection)).
-                                Deserialize(stdin);
+                        var serializer = new XmlSerializer(typeof(InputDefinitionCollection));
+                        var inputDefinitions = (InputDefinitionCollection)serializer.Deserialize(stdin);
+                        var instances = new List<Task>();
+
                         foreach (InputDefinition inputDefinition in inputDefinitions)
                         {
                             var inputTask = this.StreamEventsAsync(inputDefinition, writer);
                             instances.Add(inputTask);
-                            var inputName = inputDefinition.Name;
+
+#                           pragma warning disable 4014
+
                             inputTask.ContinueWith(t =>
                             {
                                 if (inputTask.Exception != null)
                                 {
                                     var message = RemoveNewLines(inputTask.Exception.InnerException.ToString());
-                                    writer.LogAsync(Severity.Fatal,
-                                        string.Format("Exception during streaming: name={0} | {1}", inputName, message))
-                                        .Wait();
+                                    writer.LogAsync(Severity.Fatal, string.Format("Exception during streaming: name={0} | {1}", inputDefinition.Name, message)).Wait();
                                 }
                             });
+
+#                           pragma warning restore 4014
                         }
                         try
                         {
                             await Task.WhenAll(instances.ToArray());
                         }
                         catch
-                        {
-                        }
+                        { }
+
                         await writer.CompleteAsync();
                     }
                     catch (Exception e)
                     {
                         var message = RemoveNewLines(e.ToString());
-                        writer.LogAsync(Severity.Fatal,
-                            string.Format("Exception during streaming: name={0} | {1}", name, message))
-                            .Wait();
+                        writer.LogAsync(Severity.Fatal, string.Format("Exception during streaming: name={0} | {1}", 
+                            name, message)).Wait();
                         return -1;
                     }
                     return 0;
@@ -271,7 +273,7 @@ namespace Splunk.ModularInputs
                         if (scheme != null)
                         {
                             StringWriter stringWriter = new StringWriter();
-                            new XmlSerializer(typeof (Scheme)).Serialize(stringWriter, scheme);
+                            new XmlSerializer(typeof(Scheme)).Serialize(stringWriter, scheme);
                             stdout.WriteLine(stringWriter.ToString());
                             return 0;
                         }
@@ -303,7 +305,7 @@ namespace Splunk.ModularInputs
 
                         writer.LogAsync(Severity.Info, inputDoc).Wait();
 
-                        Validation validation = (Validation) new XmlSerializer(typeof (Validation)).
+                        Validation validation = (Validation)new XmlSerializer(typeof(Validation)).
                             Deserialize(new StringReader(inputDoc));
 
                         name = validation.Name;
@@ -359,7 +361,7 @@ namespace Splunk.ModularInputs
                     return -1;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 if (writer != null)
                 {
@@ -412,6 +414,6 @@ namespace Splunk.ModularInputs
         }
 
         #endregion
-        
+
     }
 }

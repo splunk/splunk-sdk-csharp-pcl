@@ -344,7 +344,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                //// Reference: [Algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm
+                //// Reference: [Algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm)
 
                 var args = new JobArgs { SearchMode = SearchMode.RealTime };
 
@@ -354,7 +354,7 @@ namespace Splunk.Client.AcceptanceTests
                 var n = 0;
                 var mean = 0.0;
                 var variance = 0.0;
-                var sampleSize = 1; // increase to collect statistics that can be used to derive Assert.InRange values
+                var sampleSize = 1; // increase to compute statistics used to derive Assert.InRange values
 
                 for (n = 1; n <= sampleSize; ++n)
                 {

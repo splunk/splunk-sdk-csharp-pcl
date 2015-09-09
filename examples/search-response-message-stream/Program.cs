@@ -23,8 +23,7 @@ namespace Splunk.Examples.Authenticate
     using Splunk.Client.Helpers;
 
     /// <summary>
-    /// An example program to authenticate to the server and print the received
-    /// token.
+    /// An example program that gets an HttpResponseMessage for any ExecutionMode
     /// </summary>
     public class Program
     {
@@ -65,10 +64,10 @@ namespace Splunk.Examples.Authenticate
         static async Task Run(Service service)
         {
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
-            
+
             foreach (var mode in new ExecutionMode[] { ExecutionMode.Blocking, ExecutionMode.Normal, ExecutionMode.OneShot })
             {
-                var job = await service.Jobs.CreateAsync("search index=_internal | head 5", mode: ExecutionMode.OneShot);
+                var job = await service.Jobs.CreateAsync("search index=_internal | head 5", mode: mode);
 
                 using (var message = await job.GetSearchResponseMessageAsync(outputMode: OutputMode.Json))
                 {

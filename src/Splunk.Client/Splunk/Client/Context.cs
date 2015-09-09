@@ -102,8 +102,9 @@ namespace Splunk.Client
             this.Scheme = scheme;
             this.Host = host;
             this.Port = port;
-            this.httpClient = handler == null ? new HttpClient() : new HttpClient(handler, disposeHandler);
+            this.httpClient = handler == null ? new HttpClient(new HttpClientHandler { UseCookies = false }) : new HttpClient(handler, disposeHandler);
             this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.0");
+            this.CookieJar = new CookieStore();
 
             if (timeout != default(TimeSpan))
             {
@@ -158,6 +159,11 @@ namespace Splunk.Client
         /// </value>
         public string SessionKey
         { get; set; }
+
+        /// <summary>
+        /// CookieStore to store authentication cookies.
+        /// </summary>
+        public CookieStore CookieJar;
 
         #endregion
 
@@ -404,7 +410,6 @@ namespace Splunk.Client
         {
             Contract.Requires<ArgumentNullException>(method != null);
             Contract.Requires<ArgumentException>(method == HttpMethod.Delete || method == HttpMethod.Get || method == HttpMethod.Post);
-
             var token = CancellationToken.None;
             HttpContent content = null;
 
@@ -502,6 +507,16 @@ namespace Splunk.Client
         {
             var message = await this.SendAsync(method, ns, resource, content, cancellationToken, argumentSets);
             var response = await Response.CreateAsync(message).ConfigureAwait(false);
+
+            // If a Set-Cookie Header is received, parse it and add/update the cookie store
+            if (response.Message.Headers.Contains("Set-Cookie"))
+            {
+                foreach (string setCookieString in response.Message.Headers.GetValues("Set-Cookie"))
+                {
+                    this.CookieJar.AddCookie(setCookieString);
+                }
+            }
+
             return response;
         }
 
@@ -515,7 +530,13 @@ namespace Splunk.Client
 
             using (var request = new HttpRequestMessage(method, serviceUri) { Content = content })
             {
-                if (this.SessionKey != null)
+                // If the CookieStore has cookies, include them in the Cookie header
+                // Otherwise if there is a SessionKey, include it in the Authorization header
+                if (!this.CookieJar.IsEmpty())
+                {
+                    request.Headers.Add("Cookie", this.CookieJar.GetCookieHeader());
+                }
+                else if (this.SessionKey != null)
                 {
                     request.Headers.Add("Authorization", string.Concat("Splunk ", this.SessionKey));
                 }

@@ -1,5 +1,30 @@
 # Splunk SDK for C# PCL
 
+## Version 2.2.0
+
+### New features and APIs
+* Added support for cookie-based authentication, for Splunk 6.2+.
+
+### New examples
+* `search-response-message-stream`: Shows how to get an `HttpResponseMessage` for any `ExecutionMode`.
+
+### Minor Changes
+* Added `Job.GetSearchResponseMessage` which returns an `HttpResponseMessage` for a given `Job`.
+* Removed redundant StyleCop package. Pull Request #40.
+
+## Version 2.1.2
+
+## Bug fixes
+* Search and job operations now default to a count of 0, which represents all.
+
+## New examples
+* `Get-SplunkDataInputs`: Shows how to access an unsupported REST API endpoint.
+
+## Minor changes
+* The GitHub commits example now uses the Json.NET library instead of a dictionary.
+* Modular input validation now logs exceptions as `INFO` instead of `DEBUG`.
+* Added xunit.runner to the `packages` directory.
+
 ## Version 2.1.1
 
 ### Fixes

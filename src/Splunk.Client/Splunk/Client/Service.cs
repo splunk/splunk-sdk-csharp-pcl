@@ -287,7 +287,8 @@ namespace Splunk.Client
             using (var response = await this.Context.PostAsync(Namespace.Default, AuthLogin, new Argument[]
             {
                 new Argument("username", username),
-                new Argument("password", password)
+                new Argument("password", password),
+                new Argument("cookie", 1)
             }).ConfigureAwait(false))
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
@@ -304,6 +305,7 @@ namespace Splunk.Client
             {
                 await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                 this.SessionKey = null;
+                this.Context.CookieJar.ClearCookies();
             }
         }
 

@@ -70,13 +70,15 @@ namespace Splunk.Client.Helpers
         /// <returns>
         /// The service created.
         /// </returns>
-        public static async Task<Service> CreateService(Namespace ns = null)
+        public static async Task<Service> CreateService(Namespace ns = null, bool login = true)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
             var context = new MockContext(Splunk.Scheme, Splunk.Host, Splunk.Port);
             var service = new Service(context, ns);
-            
-            await service.LogOnAsync(Splunk.Username, Splunk.Password);
+            if (login)
+            {
+                await service.LogOnAsync(Splunk.Username, Splunk.Password);
+            }
 
             return service;
         }

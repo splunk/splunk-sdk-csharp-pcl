@@ -44,8 +44,8 @@ namespace Splunk.Client
         /// Gets or sets the maximum number of results to return.
         /// </summary>
         /// <remarks>
-        /// If the value of <c>Count</c> is <c>0</c>, then all available results are
-        /// returned. The default value is <c>100</c>.
+        /// If the value of <c>Count</c> is <c>0</c>, then all available results are returned. The default value is
+        /// <c>100</c>.
         /// </remarks>
         /// <value>
         /// The maximum number of results to return.
@@ -67,16 +67,13 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
-        /// Gets or sets an offset value specifying the first result inclusive from
-        /// which to begin returning entries.
+        /// Gets or sets an offset value specifying the first result inclusive from which to begin returning entries.
         /// </summary>
         /// <remarks>
-        /// The <c>Offset</c> property is zero-based and cannot be negative. The
-        /// default value is zero.
+        /// The <c>Offset</c> property is zero-based and cannot be negative. The default value is <c>0</c>.
         /// </remarks>
         /// <value>
-        /// An offset value specifying the first result inclusive from which to begin
-        /// returning entries.
+        /// An offset value specifying the first result inclusive from which to begin returning entries.
         /// </value>
         [DataMember(Name = "offset", EmitDefaultValue = false)]
         [DefaultValue(0)]

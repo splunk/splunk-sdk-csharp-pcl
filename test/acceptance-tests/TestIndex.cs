@@ -210,6 +210,9 @@ namespace Splunk.Client.AcceptanceTests
                 await testIndex.EnableAsync(); // Because the enable endpoint returns an updated snapshot
                 Assert.False(testIndex.Disabled);
 
+                await service.Server.RestartAsync(2 * 60 * 1000);
+                await service.LogOnAsync();
+
                 await testIndex.RemoveAsync();
 
                 await SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>

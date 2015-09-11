@@ -1,4 +1,4 @@
-# Splunk SDK for C#
+# Splunk SDK for C# 
 ## Version 2.2.0
 
 The Splunk Software Development Kit (SDK) for C# contains library code and

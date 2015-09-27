@@ -1,131 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>22a30ca1-e24f-4093-88ea-c0a4310fd3e1</ProjectGuid>
-    <SchemaVersion>2.0</SchemaVersion>
-    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
-
-    <!-- 
-    The configuration and platform are used to determine which assemblies to 
-    include from solution and project documentation sources.
-    -->
-
+    <!-- The configuration and platform will be used to determine which assemblies to include from solution and
+				 project documentation sources -->
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{061c669f-1450-4234-bf95-339ac9142f54}</ProjectGuid>
+    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
+    <AssemblyName>Documentation</AssemblyName>
+    <RootNamespace>Documentation</RootNamespace>
+    <Name>Documentation</Name>
     <!-- SHFB properties -->
-
+    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
+    <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>Splunk.Client.namespace</HtmlHelpName>
-    <FrameworkVersion>.NET Portable Library 4.5</FrameworkVersion>
     <Language>en-US</Language>
-    <OutputPath>Help\</OutputPath>
-
-    <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
-    <CleanIntermediates>True</CleanIntermediates>
-    <ContentPlacement>AboveNamespaces</ContentPlacement>
-    <CppCommentsFixup>False</CppCommentsFixup>
-    <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
+    <BuildAssemblerVerbosity>AllMessages</BuildAssemblerVerbosity>
     <HelpFileFormat>Website</HelpFileFormat>
-    <HelpTitle>A Sandcastle Documented Class Library</HelpTitle>
-    <IndentHtml>True</IndentHtml>
+    <IndentHtml>False</IndentHtml>
     <KeepLogFile>True</KeepLogFile>
+    <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
+    <CleanIntermediates>True</CleanIntermediates>
+    <HelpFileVersion>2.2.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
     <NamespaceGrouping>False</NamespaceGrouping>
-    <NamingMethod>Guid</NamingMethod>
-    <Preliminary>False</Preliminary>
-    <PresentationStyle>VS2013</PresentationStyle>
-    <RootNamespaceContainer>True</RootNamespaceContainer>
+    <SyntaxFilters>C#</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
-    <SyntaxFilters>C#, Visual Basic, Managed C++, F#, JavaScript, XAML Usage</SyntaxFilters>
-    <ComponentConfigurations>
-      <ComponentConfig id="API Token Resolution" enabled="True" xmlns="">
-        <component id="API Token Resolution">
-          {@TokenFiles}
-          <replace elements="/*//token" item="string(.)" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Code Block Component" enabled="True" xmlns="">
-        <component id="Code Block Component">
-          <basePath value="{@HtmlEncProjectFolder}" />
-          <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
-          <allowMissingSource value="false" />
-          <removeRegionMarkers value="false" />
-          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="4" numberLines="true" outlining="true" keepSeeTags="true" defaultTitle="true" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Comments Index Data (ESENT Cache)" enabled="True" xmlns="">
-        <component id="Comments Index Data (ESENT Cache)">
-          <index name="comments" value="/doc/members/member" key="@name" cache="30" localCacheSize="2500" frameworkCachePath="{@LocalDataFolder}Cache\CommentsIndexCache" projectCachePath="">
-            {@FrameworkCommentList}
-            {@CommentFileList}
-          </index>
-          <copy name="comments" source="*" target="/document/comments" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Reflection Index Data (ESENT Cache)" enabled="True" xmlns="">
-        <component id="Reflection Index Data (ESENT Cache)">
-          <index name="reflection" value="/reflection/apis/api" key="@id" cache="15" localCacheSize="2500" frameworkCachePath="{@LocalDataFolder}Cache\ReflectionIndexCache" projectCachePath="">
-            <data base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" duplicateWarning="false" groupId="ReflectionIndexCache">
-              {@ReferenceLinkNamespaceFiles}
-            </data>
-            <data files="reflection.xml" groupId="Project_Ref_{@UniqueID}" />
-          </index>
-          <copy name="reflection" source="*" target="/document/reference" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Resolve Reference Links (ESENT Cache)" enabled="True" xmlns="">
-        <component id="Resolve Reference Links (ESENT Cache)">
-          <locale value="{@Locale}" />
-          <linkTarget value="{@SdkLinkTarget}" />
-          <helpOutput format="HtmlHelp1">
-            <msdnContentIdCache path="{@LocalDataFolder}Cache\MsdnContentId.cache" cachePath="{@LocalDataFolder}Cache\ESentMsdnContentIdCache" localCacheSize="2500" />
-            <targets base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" type="{@HtmlSdkLinkType}" id="FrameworkTargets" cachePath="{@LocalDataFolder}Cache\ESentFrameworkTargetCache" localCacheSize="2500">
-              {@ReferenceLinkNamespaceFiles}
-            </targets>
-            <targets files="reflection.xml" type="Local" id="ProjectTargets" cachePath="" localCacheSize="2500" noReload="true" />
-          </helpOutput>
-          <helpOutput format="MSHelp2">
-            <msdnContentIdCache path="{@LocalDataFolder}Cache\MsdnContentId.cache" cachePath="{@LocalDataFolder}Cache\ESentMsdnContentIdCache" localCacheSize="2500" />
-            <targets base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelp2SdkLinkType}" id="FrameworkTargets" cachePath="{@LocalDataFolder}Cache\ESentFrameworkTargetCache" localCacheSize="2500">
-              {@ReferenceLinkNamespaceFiles}
-            </targets>
-            <targets files="reflection.xml" type="Index" id="ProjectTargets" cachePath="" localCacheSize="2500" noReload="true" />
-          </helpOutput>
-          <helpOutput format="MSHelpViewer">
-            <msdnContentIdCache path="{@LocalDataFolder}Cache\MsdnContentId.cache" cachePath="{@LocalDataFolder}Cache\ESentMsdnContentIdCache" localCacheSize="2500" />
-            <targets base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelpViewerSdkLinkType}" id="FrameworkTargets" cachePath="{@LocalDataFolder}Cache\ESentFrameworkTargetCache" localCacheSize="2500">
-              {@ReferenceLinkNamespaceFiles}
-            </targets>
-            <targets files="reflection.xml" type="Id" id="ProjectTargets" cachePath="" localCacheSize="2500" noReload="true" />
-          </helpOutput>
-          <helpOutput format="Website">
-            <msdnContentIdCache path="{@LocalDataFolder}Cache\MsdnContentId.cache" cachePath="{@LocalDataFolder}Cache\ESentMsdnContentIdCache" localCacheSize="2500" />
-            <targets base="{@SHFBFolder}Data\Reflection" recurse="true" files="*.xml" type="{@WebsiteSdkLinkType}" id="FrameworkTargets" cachePath="{@LocalDataFolder}Cache\ESentFrameworkTargetCache" localCacheSize="2500">
-              {@ReferenceLinkNamespaceFiles}
-            </targets>
-            <targets files="reflection.xml" type="Local" id="ProjectTargets" cachePath="" localCacheSize="2500" noReload="true" />
-          </helpOutput>
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Syntax Component" enabled="True" xmlns="">
-        <component id="Syntax Component">
-          <syntax input="/document/reference" output="/document/syntax" renderReferenceLinks="false" />
-          <generators>
-            {@SyntaxFilters}
-          </generators>
-        </component>
-      </ComponentConfig>
-    </ComponentConfigurations>
+    <RootNamespaceContainer>False</RootNamespaceContainer>
+    <PresentationStyle>VS2013</PresentationStyle>
+    <Preliminary>False</Preliminary>
+    <NamingMethod>Guid</NamingMethod>
+    <HelpTitle>Splunk.Client Namespace</HelpTitle>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\..\src\Splunk.Client\Splunk.Client.csproj" />
     </DocumentationSources>
+    <BuildLogFile>Splunk.Client.build.log</BuildLogFile>
   </PropertyGroup>
-  <!-- 
-  PropertyGroup elements that ensure Sandcastle projects load into Visual Studio 2013 
-  It is mysterious, but true that if you remove these property groups Sandcastle 
-  projects will fail to load into Visual Studio 2013 and—perhaps—other versions
-  of Visual Studio as well.
-  -->
+  <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
+			 the build.  The others are optional common platform types that may appear. -->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -142,7 +57,15 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
   </PropertyGroup>
-  
+  <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
-  
+  <!-- The pre-build and post-build event properties must appear *after* the targets file import in order to be
+			 evaluated correctly. -->
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
 </Project>

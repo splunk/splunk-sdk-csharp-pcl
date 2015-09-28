@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -107,7 +103,9 @@ namespace Splunk.Client
             await reader.ReadEachDescendantAsync("field", async (r) =>
             {
                 var key = r.GetRequiredAttribute("k");
-                var values = new List<string>();
+                var values = new List<object>();
+                HashSet<string> tags = null;
+
                 var fieldDepth = r.Depth;
 
                 while (await r.ReadAsync().ConfigureAwait(false))
@@ -122,12 +120,62 @@ namespace Splunk.Client
 
                     if (r.Name == "value")
                     {
-                        if (await r.ReadToDescendantAsync("text").ConfigureAwait(false))
+                        string value = null;
+
+                        while (await r.ReadAsync().ConfigureAwait(false))
                         {
-                            values.Add(await r.ReadElementContentAsStringAsync().ConfigureAwait(false));
+                            if (r.NodeType == XmlNodeType.EndElement)
+                            {
+                                r.EnsureMarkup(XmlNodeType.EndElement, "value");
+                                break;
+                            }
+
+                            r.EnsureMarkup(XmlNodeType.Element, "text", "tag");
+                            var isEmptyElement = r.IsEmptyElement;
+                            var elementName = r.Name;
+                            string content;
+
+                            if (isEmptyElement)
+                            {
+                                content = string.Empty;
+                            }
+                            else
+                            {
+                                await r.ReadAsync().ConfigureAwait(false);
+                                content = r.Value;
+                            }
+
+                            if (elementName == "tag")
+                            {
+                                if (tags == null)
+                                {
+                                    tags = new HashSet<string>();
+                                }
+                                tags.Add(content);
+                            }
+                            else
+                            {
+                                value = content;
+                            }
+
+                            if (!isEmptyElement)
+                            {
+                                await r.ReadAsync().ConfigureAwait(false);
+                                r.EnsureMarkup(XmlNodeType.EndElement, elementName);
+                            }
+                        }
+
+                        if (tags != null && tags.Count > 0)
+                        {
+                            values.Add(new TaggedFieldValue(value, tags));
+                            tags.Clear();
+                        }
+                        else
+                        {
+                            values.Add(value);
                         }
                     }
-                    else if (r.Name == "v")
+                    else
                     {
                         Debug.Assert(this.SegmentedRaw == null);
                         Debug.Assert(key == "_raw");
@@ -147,7 +195,7 @@ namespace Splunk.Client
                         dictionary.Add(key, values[0]);
                         break;
                     default:
-                        dictionary.Add(key, new ReadOnlyCollection<string>(values));
+                        dictionary.Add(key, new ReadOnlyCollection<object>(values));
                         break;
                 }
             }).ConfigureAwait(false);

@@ -18,6 +18,7 @@ namespace Splunk.Client
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Text;
 
     /// <summary>
     /// 
@@ -26,7 +27,7 @@ namespace Splunk.Client
     {
         internal TaggedFieldValue(string value, IEnumerable<string> tags)
         {
-            this.tags = tags.ToImmutableHashSet();
+            this.tags = tags.ToImmutableSortedSet();
             this.value = value;
         }
 
@@ -39,13 +40,40 @@ namespace Splunk.Client
         /// <summary>
         /// 
         /// </summary>
-        public ImmutableHashSet<string> Tags
+        public ImmutableSortedSet<string> Tags
         { get { return this.tags; } }
+
+        public override string ToString()
+        {
+            if (this.tags == null || this.tags.Count == 0)
+            {
+                return this.value ?? "\"\"";
+            }
+
+            var builder = new StringBuilder();
+
+            builder.Append('"');
+            builder.Append(this.value ?? string.Empty);
+            builder.Append('"');
+            builder.Append(" tagged ");
+
+            foreach (var tag in this.tags)
+            {
+                builder.Append('"');
+                builder.Append(tag);
+                builder.Append('"');
+                builder.Append(", ");
+            }
+
+            builder.Length = builder.Length - 2;
+
+            return builder.ToString();
+        }
 
         #region Privates
 
         readonly string value;
-        readonly ImmutableHashSet<string> tags;
+        readonly ImmutableSortedSet<string> tags;
 
         #endregion
     }

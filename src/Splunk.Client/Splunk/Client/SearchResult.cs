@@ -104,7 +104,7 @@ namespace Splunk.Client
             {
                 var key = r.GetRequiredAttribute("k");
                 var values = new List<object>();
-                HashSet<string> tags = null;
+                SortedSet<string> tags = null;
 
                 var fieldDepth = r.Depth;
 
@@ -149,7 +149,7 @@ namespace Splunk.Client
                             {
                                 if (tags == null)
                                 {
-                                    tags = new HashSet<string>();
+                                    tags = new SortedSet<string>();
                                 }
                                 tags.Add(content);
                             }
@@ -210,8 +210,15 @@ namespace Splunk.Client
         /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
-            var builder = new StringBuilder("Result(");
+            var dictionary = (IDictionary<string, object>)this.Object;
 
+            if (dictionary.Count == 0)
+            {
+                return "Result()";
+            }
+
+            var builder = new StringBuilder("Result(");
+            
             foreach (KeyValuePair<string, object> pair in (IDictionary<string, object>)this.Object)
             {
                 builder.Append(pair.Key);

@@ -18,10 +18,12 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
@@ -72,8 +74,16 @@ namespace Splunk.Client
         /// <value>
         /// The segmented raw.
         /// </value>
-        public XElement SegmentedRaw 
+        public XElement SegmentedRaw
         { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public dynamic Tags
+        {
+            get { return this.tagsObject; }
+        }
 
         #endregion
 
@@ -98,13 +108,17 @@ namespace Splunk.Client
             this.Object = new ExpandoObject();
             var dictionary = (IDictionary<string, object>)this.Object;
 
+            this.tagsObject = new ExpandoObject();
+            var tagsDictionary = (IDictionary<string, object>)this.tagsObject;
+
             this.SegmentedRaw = null;
 
             await reader.ReadEachDescendantAsync("field", async (r) =>
             {
+                ImmutableSortedSet<string>.Builder tags = null;
+
                 var key = r.GetRequiredAttribute("k");
                 var values = new List<object>();
-                SortedSet<string> tags = null;
 
                 var fieldDepth = r.Depth;
 
@@ -149,7 +163,7 @@ namespace Splunk.Client
                             {
                                 if (tags == null)
                                 {
-                                    tags = new SortedSet<string>();
+                                    tags = ImmutableSortedSet.CreateBuilder<string>();
                                 }
                                 tags.Add(content);
                             }
@@ -167,12 +181,12 @@ namespace Splunk.Client
 
                         if (tags != null && tags.Count > 0)
                         {
-                            values.Add(new TaggedFieldValue(value, tags));
+                            values.Add(new TaggedFieldValue(value ?? string.Empty, tags.ToImmutable()));
                             tags.Clear();
                         }
                         else
                         {
-                            values.Add(value);
+                            values.Add(value ?? string.Empty);
                         }
                     }
                     else
@@ -186,18 +200,28 @@ namespace Splunk.Client
                     }
                 }
 
-                switch (values.Count)
+                if (key.StartsWith("tag::"))
                 {
-                    case 0: 
-                        dictionary.Add(key, null);
-                        break;
-                    case 1:
-                        dictionary.Add(key, values[0]);
-                        break;
-                    default:
-                        dictionary.Add(key, new ReadOnlyCollection<object>(values));
-                        break;
+                    var valueSet = ImmutableSortedSet.ToImmutableSortedSet<string>(values.Cast<string>());
+                    tagsDictionary.Add(key.Substring("tag::".Length), valueSet);
+                    dictionary.Add(key, valueSet);
                 }
+                else
+                {
+                    switch (values.Count)
+                    {
+                        case 0:
+                            dictionary.Add(key, string.Empty);
+                            break;
+                        case 1:
+                            dictionary.Add(key, values[0]);
+                            break;
+                        default:
+                            dictionary.Add(key, new ReadOnlyCollection<object>(values));
+                            break;
+                    }
+                }
+
             }).ConfigureAwait(false);
         }
 
@@ -218,7 +242,7 @@ namespace Splunk.Client
             }
 
             var builder = new StringBuilder("Result(");
-            
+
             foreach (KeyValuePair<string, object> pair in (IDictionary<string, object>)this.Object)
             {
                 builder.Append(pair.Key);
@@ -238,6 +262,8 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly SearchResultMetadata metadata;
+
+        ExpandoObject tagsObject;
 
         /// <summary>
         /// Initializes a new instance of the Splunk.Client.SearchResult class.

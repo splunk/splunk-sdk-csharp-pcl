@@ -29,7 +29,7 @@ namespace Splunk.Examples.Authenticate
     {
         static Program()
         {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
+            // In production we recommend using WebRequestHandler.ServerCertificateValidationCallback instead. To do this:
             // 1. Instantiate a WebRequestHandler
             // 2. Set its ServerCertificateValidationCallback
             // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
@@ -41,9 +41,9 @@ namespace Splunk.Examples.Authenticate
         }
 
         /// <summary>
-        /// Mains function
+        /// Main function
         /// </summary>
-        /// <param name="args">The arguments.</param>
+        /// <param name="args">The arguments to main.</param>
         static void Main(string[] args)
         {
             using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port))
@@ -65,16 +65,35 @@ namespace Splunk.Examples.Authenticate
         {
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
-            foreach (var mode in new ExecutionMode[] { ExecutionMode.Blocking, ExecutionMode.Normal, ExecutionMode.OneShot })
-            {
-                var job = await service.Jobs.CreateAsync("search index=_internal | head 5", mode: mode);
+            var job = await service.Jobs.CreateAsync("search index=_internal | head 50000", mode: ExecutionMode.Normal);
 
-                using (var message = await job.GetSearchResponseMessageAsync(outputMode: OutputMode.Json))
+            //// This code shows how to execute a long-running search job.
+            ////
+            //// The default delay for running a search job is 30 seconds, but we set the value to 3 seconds in this 
+            //// example. This is to ensure our delay loop runs more than once.
+
+            int delay = 3000;
+
+            for (int count = 1; ; ++count)
+            {
+                try
                 {
-                    var content = await message.Content.ReadAsStringAsync();
-                    Console.WriteLine(string.Format("{0} search results:", mode));
-                    Console.WriteLine(content);
+                    await job.TransitionAsync(DispatchState.Done, delay);
+                    break;
                 }
+                catch (TaskCanceledException)
+                {
+                    // Consider logging the fact that the operation is taking a long time, around count * (delay / 1000) seconds so far
+                    // Also consider stopping the query, if it runs too long
+                }
+                // Consider increasing the delay on each iteration
+            }
+
+            using (var message = await job.GetSearchResponseMessageAsync(outputMode: OutputMode.Json))
+            {
+                var content = await message.Content.ReadAsStringAsync();
+                Console.WriteLine(string.Format("Search results:"));
+                Console.WriteLine(content);
             }
 
             await service.LogOffAsync();

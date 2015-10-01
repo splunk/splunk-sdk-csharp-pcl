@@ -455,12 +455,13 @@ namespace Splunk.ModularInputs.UnitTests
             Assert.Equal("misc", doc.Element("event").Element("sourcetype").Value);
             Assert.Equal("main", doc.Element("event").Element("index").Value);
             Assert.Equal("localhost", doc.Element("event").Element("host").Value);
-            Assert.Equal("This is a test of the emergency broadcast system.",
-                doc.Element("event").Element("data").Value);
+            Assert.Equal("This is a test of the emergency broadcast system.", doc.Element("event").Element("data").Value);
             Assert.Equal("1", doc.Element("event").Attribute("unbroken").Value);
-            long utcTimestamp = timestamp.Ticks - new DateTime(1970, 1, 1).Ticks;
-            utcTimestamp /= TimeSpan.TicksPerSecond;
-            Assert.Equal(utcTimestamp, long.Parse(doc.Element("event").Element("time").Value));
+
+            var ticksSinceEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
+            double utcTimestamp = (double)(timestamp.Ticks - ticksSinceEpoch) / TimeSpan.TicksPerSecond;
+
+            Assert.Equal(utcTimestamp, double.Parse(doc.Element("event").Element("time").Value));
         }
 
 

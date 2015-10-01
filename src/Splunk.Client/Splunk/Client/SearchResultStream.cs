@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -25,7 +21,6 @@ namespace Splunk.Client
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
-    using System.IO;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;

@@ -17,6 +17,7 @@
 namespace Splunk.Client
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Collections.ObjectModel;
@@ -238,16 +239,33 @@ namespace Splunk.Client
 
             if (dictionary.Count == 0)
             {
-                return "Result()";
+                return "SearchResult()";
             }
 
-            var builder = new StringBuilder("Result(");
+            var builder = new StringBuilder("SearchResult(");
 
             foreach (KeyValuePair<string, object> pair in (IDictionary<string, object>)this.Object)
             {
                 builder.Append(pair.Key);
                 builder.Append(": ");
-                builder.Append(pair.Value);
+
+                if (pair.Value is string || pair.Value is TaggedFieldValue)
+                {
+                    builder.Append(pair.Value);
+                }
+                else
+                {
+                    builder.Append('[');
+
+                    foreach (var item in (IEnumerable)pair.Value)
+                    {
+                        builder.Append(item);
+                        builder.Append(", ");
+                    }
+
+                    builder.Length = builder.Length - 2;
+                    builder.Append(']');
+                }
                 builder.Append(", ");
             }
 

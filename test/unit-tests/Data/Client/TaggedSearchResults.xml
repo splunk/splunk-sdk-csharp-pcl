@@ -1,0 +1,538 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<results preview='0'>
+<meta>
+<fieldOrder>
+<field>name</field>
+<field>host</field>
+<field>splunk_server</field>
+<field>tag</field>
+<field>tag::host</field>
+<field>tag::name</field>
+<field>tag::splunk_server</field>
+<field>_bkt</field>
+<field>_cd</field>
+<field>_indextime</field>
+<field>_kv</field>
+<field>_raw</field>
+<field>_serial</field>
+<field>_si</field>
+<field>_sourcetype</field>
+<field>_subsecond</field>
+<field>_time</field>
+</fieldOrder>
+</meta>
+	<result offset='0'>
+		<field k='name'>
+			<value><text>thruput</text><tag>Performance</tag></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>Performance</text></value>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::name'>
+			<value><text>Performance</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723662</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=thruput, name=thruput, instantaneous_kbps=0.973068, instantaneous_eps=3.645169, average_kbps=0.387645, total_k_processed=39932.000000, kb=30.165039, ev=113.000000</v></field>
+		<field k='_serial'>
+			<value><text>0</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='1'>
+		<field k='name'>
+			<value><text>syslog_output</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723654</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=thruput, name=syslog_output, instantaneous_kbps=0.000000, instantaneous_eps=0.000000, average_kbps=0.000000, total_k_processed=0.000000, kb=0.000000, ev=0.000000</v></field>
+		<field k='_serial'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='2'>
+		<field k='name'>
+			<value><text>index_thruput</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723645</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=thruput, name=index_thruput, instantaneous_kbps=0.973068, instantaneous_eps=3.129039, average_kbps=0.387703, total_k_processed=39938.000000, kb=30.165039, ev=97.000000</v></field>
+		<field k='_serial'>
+			<value><text>2</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='3'>
+		<field k='name'>
+			<value><text>winparsing</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723638</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=queue, name=winparsing, max_size_kb=500, current_size_kb=0, current_size=0, largest_size=0, smallest_size=0</v></field>
+		<field k='_serial'>
+			<value><text>3</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='4'>
+		<field k='name'>
+			<value><text>typingqueue</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723631</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=queue, name=typingqueue, max_size_kb=500, current_size_kb=0, current_size=0, largest_size=23, smallest_size=0</v></field>
+		<field k='_serial'>
+			<value><text>4</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='5'>
+		<field k='name'>
+			<value><text>tcpin_queue</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723624</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=queue, name=tcpin_queue, max_size_kb=500, current_size_kb=0, current_size=0, largest_size=0, smallest_size=0</v></field>
+		<field k='_serial'>
+			<value><text>5</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='6'>
+		<field k='name'>
+			<value><text>structuredparsingqueue</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723617</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=queue, name=structuredparsingqueue, max_size_kb=500, current_size_kb=0, current_size=0, largest_size=0, smallest_size=0</v></field>
+		<field k='_serial'>
+			<value><text>6</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='7'>
+		<field k='name'>
+			<value><text>stashparsing</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723610</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=queue, name=stashparsing, max_size_kb=500, current_size_kb=0, current_size=0, largest_size=0, smallest_size=0</v></field>
+		<field k='_serial'>
+			<value><text>7</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='8'>
+		<field k='name'>
+			<value><text>parsingqueue</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723603</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=queue, name=parsingqueue, max_size_kb=6144, current_size_kb=0, current_size=0, largest_size=2, smallest_size=0</v></field>
+		<field k='_serial'>
+			<value><text>8</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+	<result offset='9'>
+		<field k='name'>
+			<value><text>nullqueue</text></value>
+		</field>
+		<field k='host'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag><tag>splunk-server</tag></value>
+		</field>
+		<field k='splunk_server'>
+			<value><text>Dnoble-WIN10</text><tag>owned-by-dnoble</tag></value>
+		</field>
+		<field k='tag'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::host'>
+			<value><text>owned-by-dnoble</text></value>
+			<value><text>splunk-server</text></value>
+		</field>
+		<field k='tag::splunk_server'>
+			<value><text>owned-by-dnoble</text></value>
+		</field>
+		<field k='_bkt'>
+			<value><text>_internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C</text></value>
+		</field>
+		<field k='_cd'>
+			<value><text>129:723596</text></value>
+		</field>
+		<field k='_indextime'>
+			<value><text>1443653087</text></value>
+		</field>
+		<field k='_kv'>
+			<value><text>1</text></value>
+		</field>
+		<field k='_raw'><v xml:space='preserve' trunc='0'>09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=queue, name=nullqueue, max_size_kb=500, current_size_kb=0, current_size=0, largest_size=1, smallest_size=0</v></field>
+		<field k='_serial'>
+			<value><text>9</text></value>
+		</field>
+		<field k='_si'>
+			<value><text>Dnoble-WIN10</text></value>
+			<value><text>_internal</text></value>
+		</field>
+		<field k='_sourcetype'>
+			<value><text>splunkd</text></value>
+		</field>
+		<field k='_subsecond'>
+			<value><text>.076</text></value>
+		</field>
+		<field k='_time'>
+			<value><text>2015-09-30T15:44:47.076-07:00</text></value>
+		</field>
+	</result>
+</results>

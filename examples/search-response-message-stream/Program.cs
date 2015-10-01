@@ -65,38 +65,45 @@ namespace Splunk.Examples.Authenticate
         {
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
-            var job = await service.Jobs.CreateAsync("search index=_internal | head 50000", mode: ExecutionMode.Normal);
+            try {
+                var job = await service.Jobs.CreateAsync("search index=_internal | head 50000", mode: ExecutionMode.Normal);
 
-            //// This code shows how to execute a long-running search job.
-            ////
-            //// The default delay for running a search job is 30 seconds, but we set the value to 3 seconds in this 
-            //// example. This is to ensure our delay loop runs more than once.
+                //// This code shows how to execute a long-running search job.
+                ////
+                //// The default delay for running a search job is 30 seconds, but we set the value to 3 seconds in this 
+                //// example. This is to ensure our delay loop runs more than once.
 
-            int delay = 3000;
+                int delay = 3000;
 
-            for (int count = 1; ; ++count)
-            {
-                try
+                for (int count = 1; ; ++count)
                 {
-                    await job.TransitionAsync(DispatchState.Done, delay);
-                    break;
+                    try
+                    {
+                        await job.TransitionAsync(DispatchState.Done, delay);
+                        break;
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        // Consider logging the fact that the operation is taking a long time, around count * (delay / 1000) seconds so far
+                        // Also consider stopping the query, if it runs too long
+                    }
+                    // Consider increasing the delay on each iteration
                 }
-                catch (TaskCanceledException)
+
+                //// Now that the search job is done we can iterate over the results.
+                //// This example shows how to fetch raw search results in a specific OutputMode. Pick any OutputMode you like.
+
+                using (var message = await job.GetSearchResponseMessageAsync(outputMode: OutputMode.Json))
                 {
-                    // Consider logging the fact that the operation is taking a long time, around count * (delay / 1000) seconds so far
-                    // Also consider stopping the query, if it runs too long
+                    var content = await message.Content.ReadAsStringAsync();
+                    Console.WriteLine(string.Format("Search results:"));
+                    Console.WriteLine(content);
                 }
-                // Consider increasing the delay on each iteration
             }
-
-            using (var message = await job.GetSearchResponseMessageAsync(outputMode: OutputMode.Json))
+            finally
             {
-                var content = await message.Content.ReadAsStringAsync();
-                Console.WriteLine(string.Format("Search results:"));
-                Console.WriteLine(content);
+                await service.LogOffAsync();
             }
-
-            await service.LogOffAsync();
         }
     }
 }

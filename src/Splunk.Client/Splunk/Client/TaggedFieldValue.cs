@@ -136,7 +136,7 @@ namespace Splunk.Client
         /// </returns>
         public bool Equals(TaggedFieldValue other)
         {
-            if ((object)other == null)
+            if ((object)other == null)  // We cast so we that don't call TaggedFieldValue.operator==
             {
                 return false;
             }
@@ -171,26 +171,38 @@ namespace Splunk.Client
         /// <seealso cref="M:System.Object.GetHashCode()"/>
         public override string ToString()
         {
-            if (this.tags == null || this.tags.Count == 0)
+            if (this.formattedValue != null)
             {
-                return this.value ?? "\"\"";
+                return this.formattedValue;
             }
 
-            var builder = new StringBuilder();
-
-            builder.Append('"');
-            builder.Append(this.value ?? string.Empty);
-            builder.Append("\" tagged ");
-
-            foreach (var tag in this.tags)
+            lock (this.locker)
             {
-                builder.Append('"');
-                builder.Append(tag);
-                builder.Append("\", ");
-            }
+                if (this.formattedValue != null)
+                    return this.formattedValue;
 
-            builder.Length = builder.Length - 2;
-            return builder.ToString();
+                if (this.tags.Count == 0)
+                {
+                    return this.formattedValue = value;
+                }
+
+                var builder = new StringBuilder();
+
+                builder.Append("TaggedFieldValue(Value: ");
+                builder.Append(this.value);
+                builder.Append(", Tags: [");
+
+                foreach (var tag in this.tags)
+                {
+                    builder.Append(tag);
+                    builder.Append(", ");
+                }
+
+                builder.Length = builder.Length - 2;
+                builder.Append("])");
+
+                return this.formattedValue = builder.ToString();
+            }
         }
 
         #endregion
@@ -205,7 +217,9 @@ namespace Splunk.Client
         /// <returns></returns>
         public static bool operator ==(TaggedFieldValue a, TaggedFieldValue b)
         {
-            return a.Equals(b);
+            if (object.ReferenceEquals(a, b))
+                return true;
+            return a == null ? false : a.Equals(b);
         }
 
         /// <summary>
@@ -216,16 +230,22 @@ namespace Splunk.Client
         /// <returns></returns>
         public static bool operator !=(TaggedFieldValue a, TaggedFieldValue b)
         {
-            return !a.Equals(b);
+            if (object.ReferenceEquals(a, b))
+                return false;
+            return a == null ? true : a.Equals(b);
         }
 
         #endregion
 
         #region Privates
 
+        readonly object locker = new object();
+
         readonly int hashCode;
         readonly string value;
         readonly ImmutableSortedSet<string> tags;
+
+        string formattedValue = null;
 
         #endregion
     }

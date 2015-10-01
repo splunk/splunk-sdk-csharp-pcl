@@ -53,6 +53,7 @@ namespace Splunk.Client.UnitTests
                         try
                         {
                             expectedResult = await expectedResults.ReadLineAsync();
+                            continue;
                         }
                         catch (Exception e)
                         {

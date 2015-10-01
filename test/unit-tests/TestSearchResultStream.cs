@@ -22,6 +22,7 @@ namespace Splunk.Client.UnitTests
     using System.IO;
     using System.Net;
     using System.Net.Http;
+    using System.Text;
     using System.Threading.Tasks;
 
     using Xunit;
@@ -32,35 +33,39 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanEnumerate()
         {
-            var expected = new String[]
+            var baseFileName = Path.Combine(TestAtomFeed.Directory, "TaggedSearchResults");
+
+            using (var expectedResults = new StreamReader(baseFileName + ".expected.text", encoding: Encoding.UTF8))
             {
-                "SearchResult(name: \"thruput\" tagged \"Performance\", host: \"Dnoble-WIN10\" tagged \"owned-by-dnoble\", \"splunk-server\", " +
-                "splunk_server: \"Dnoble-WIN10\" tagged \"owned-by-dnoble\", tag: [Performance, owned-by-dnoble, splunk-server], " +
-                "tag::host: [owned-by-dnoble, splunk-server], tag::name: [Performance], tag::splunk_server: [owned-by-dnoble], " +
-                "_bkt: _internal~129~C78009F7-61C8-4AB9-8C95-259FBF9D0C0C, _cd: 129:723662, _indextime: 1443653087, _kv: 1, " +
-                "_raw: 09-30-2015 15:44:47.076 -0700 INFO  Metrics - group=thruput, name=thruput, instantaneous_kbps=0.973068, " +
-                "instantaneous_eps=3.645169, average_kbps=0.387645, total_k_processed=39932.000000, kb=30.165039, ev=113.000000, " +
-                "_si: [Dnoble-WIN10, _internal], _sourcetype: splunkd, _subsecond: .076, _time: 2015-09-30T15:44:47.076-07:00)",
+                var message = new HttpResponseMessage(HttpStatusCode.OK);
 
+                message.Content = new StreamContent(new FileStream(baseFileName + ".xml", FileMode.Open, FileAccess.Read));
 
-            };
-
-            var message = new HttpResponseMessage(HttpStatusCode.OK);
-            var path = Path.Combine(TestAtomFeed.Directory, "TaggedSearchResults.xml");
-
-            message.Content = new StreamContent(new FileStream(path, FileMode.Open, FileAccess.Read));
-
-            using (var stream = await SearchResultStream.CreateAsync(message))
-            {
-                int count = 0;
-
-                foreach (var result in stream)
+                using (var stream = await SearchResultStream.CreateAsync(message))
                 {
-                    Assert.Equal(expected[count], result.ToString());
-                    ++count;
-                }
+                    int count = 0;
 
-                Assert.Equal(count, stream.ReadCount);
+                    foreach (var observedResult in stream)
+                    {
+                        string expectedResult = null;
+                        ++count;
+
+                        try
+                        {
+                            expectedResult = await expectedResults.ReadLineAsync();
+                        }
+                        catch (Exception e)
+                        {
+                            Assert.False(true, string.Format("Error while reading expected results: {0}", e.Message));
+                        }
+
+                        Assert.NotNull(expectedResult);
+                        Assert.Equal(expectedResult, observedResult.ToString());
+                    }
+
+                    Assert.Null(expectedResults.ReadLine());
+                    Assert.Equal(count, stream.ReadCount);
+                }
             }
         }
     }

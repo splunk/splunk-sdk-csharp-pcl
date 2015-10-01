@@ -244,20 +244,29 @@ namespace Splunk.Client
 
             var builder = new StringBuilder("SearchResult(");
 
+            Action<object> quote = o =>
+            {
+                builder.Append('"');
+                builder.Append(o.ToString().Replace(@"""", @"\"""));
+                builder.Append('"');
+            };
+
             foreach (KeyValuePair<string, object> pair in (IDictionary<string, object>)this.Object)
             {
                 builder.Append(pair.Key);
                 builder.Append(": ");
 
-                if (pair.Value is string || pair.Value is TaggedFieldValue)
+                var value = pair.Value;
+
+                if (value is string || value is TaggedFieldValue)
                 {
-                    builder.Append(pair.Value);
+                    quote(value);
                 }
                 else
                 {
                     builder.Append('[');
 
-                    foreach (var item in (IEnumerable)pair.Value)
+                    foreach (var item in (IEnumerable)value)
                     {
                         builder.Append(item);
                         builder.Append(", ");
@@ -266,6 +275,7 @@ namespace Splunk.Client
                     builder.Length = builder.Length - 2;
                     builder.Append(']');
                 }
+
                 builder.Append(", ");
             }
 

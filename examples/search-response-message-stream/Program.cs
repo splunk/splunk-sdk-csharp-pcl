@@ -66,14 +66,12 @@ namespace Splunk.Examples.Authenticate
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
             try {
-                var job = await service.Jobs.CreateAsync("search index=_internal | head 50000", mode: ExecutionMode.Normal);
-
                 //// This code shows how to execute a long-running search job.
-                ////
-                //// The default delay for running a search job is 30 seconds, but we set the value to 3 seconds in this 
-                //// example. This is to ensure our delay loop runs more than once.
+                //// We query for the first 100,000 records from Splunk's _internal index and choose a 3 second
+                //// delay to improve the chances our retry loop runs more than once.
 
                 int delay = 3000;
+                var job = await service.Jobs.CreateAsync("search index=_internal | head 100000", mode: ExecutionMode.Normal);
 
                 for (int count = 1; ; ++count)
                 {
@@ -90,13 +88,14 @@ namespace Splunk.Examples.Authenticate
                     // Consider increasing the delay on each iteration
                 }
 
-                //// Now that the search job is done we can iterate over the results.
-                //// This example shows how to fetch raw search results in a specific OutputMode. Pick any OutputMode you like.
+                //// Now that the search job is done we can print the results.
+                //// This example shows how to fetch raw search results in a specific format: JSON. Select an alternative format by
+                //// by selecting the OutputMode you like.
 
                 using (var message = await job.GetSearchResponseMessageAsync(outputMode: OutputMode.Json))
                 {
+                    Console.Error.WriteLine("Search results (Press Control-C to cancel:");
                     var content = await message.Content.ReadAsStringAsync();
-                    Console.WriteLine(string.Format("Search results:"));
                     Console.WriteLine(content);
                 }
             }

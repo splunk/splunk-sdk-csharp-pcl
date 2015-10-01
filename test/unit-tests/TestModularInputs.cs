@@ -460,8 +460,7 @@ namespace Splunk.ModularInputs.UnitTests
 
             var ticksSinceEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
             double utcTimestamp = (double)(timestamp.Ticks - ticksSinceEpoch) / TimeSpan.TicksPerSecond;
-
-            Assert.Equal(utcTimestamp, double.Parse(doc.Element("event").Element("time").Value));
+            Assert.InRange(double.Parse(doc.Element("event").Element("time").Value), utcTimestamp - .0005, utcTimestamp + .0005);
         }
 
 

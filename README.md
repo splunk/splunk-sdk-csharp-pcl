@@ -1,5 +1,5 @@
 # Splunk SDK for C# 
-## Version 2.2.0
+## Version 2.2.1
 
 > **Note:** For the most up to date documentation for the Splunk SDK for C#, 
 > see http://dev.splunk.com/csharp.

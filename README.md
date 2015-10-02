@@ -174,6 +174,7 @@ The solution is organized into `src`, `examples` and `tests` folders.
 * `saved-searches` - Creates a new saved search and retrieves results.
 * `search-export` - Creates a search and usings splunk's Export endpoint to push back results.
 * `search-realtime` - Creates a realtime search.
+* `search-response-message-stream` - Demonstrates how to execute long-running search jobs and how to use `Job.GetSearchReponseMessageAsync`.
 * `search` - Performs a One Shot search.
 * `submit` - Creates an index and then sends events over HTTP to that index
 

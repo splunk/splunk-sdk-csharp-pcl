@@ -5,6 +5,8 @@
 ### New features and APIs
 
 * Implemented `SearchResult.Tags` property for search tags. GitHub issue #36.
+* Added the `Job.GetSearchResponseMessageAsync` which enables you to fetch raw search results in a specific format: JSON, CSV, or any of several flavors of XML.
+* Add the `search-response-message-stream` example which shows you how to execute long-running search jobs and how to use `Job.GetSearchReponseMessageAsync`.
 
 ### Bug Fixes
 

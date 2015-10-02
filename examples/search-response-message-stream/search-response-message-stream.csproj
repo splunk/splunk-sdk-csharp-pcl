@@ -7,8 +7,8 @@
     <ProjectGuid>{6BE565DA-A2C6-4ADD-AC8D-F53D4CBD0F5E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>raw_search_stream</RootNamespace>
-    <AssemblyName>raw-search-stream</AssemblyName>
+    <RootNamespace>search_response_message_stream</RootNamespace>
+    <AssemblyName>search-response-message-stream</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

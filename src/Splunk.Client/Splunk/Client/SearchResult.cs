@@ -14,18 +14,17 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.Contracts;
     using System.Dynamic;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
@@ -76,8 +75,16 @@ namespace Splunk.Client
         /// <value>
         /// The segmented raw.
         /// </value>
-        public XElement SegmentedRaw 
+        public XElement SegmentedRaw
         { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public dynamic Tags
+        {
+            get { return this.tagsObject; }
+        }
 
         #endregion
 
@@ -102,12 +109,18 @@ namespace Splunk.Client
             this.Object = new ExpandoObject();
             var dictionary = (IDictionary<string, object>)this.Object;
 
+            this.tagsObject = new ExpandoObject();
+            var tagsDictionary = (IDictionary<string, object>)this.tagsObject;
+
             this.SegmentedRaw = null;
 
             await reader.ReadEachDescendantAsync("field", async (r) =>
             {
+                ImmutableSortedSet<string>.Builder tags = null;
+
                 var key = r.GetRequiredAttribute("k");
-                var values = new List<string>();
+                var values = new List<object>();
+
                 var fieldDepth = r.Depth;
 
                 while (await r.ReadAsync().ConfigureAwait(false))
@@ -122,12 +135,62 @@ namespace Splunk.Client
 
                     if (r.Name == "value")
                     {
-                        if (await r.ReadToDescendantAsync("text").ConfigureAwait(false))
+                        string value = null;
+
+                        while (await r.ReadAsync().ConfigureAwait(false))
                         {
-                            values.Add(await r.ReadElementContentAsStringAsync().ConfigureAwait(false));
+                            if (r.NodeType == XmlNodeType.EndElement)
+                            {
+                                r.EnsureMarkup(XmlNodeType.EndElement, "value");
+                                break;
+                            }
+
+                            r.EnsureMarkup(XmlNodeType.Element, "text", "tag");
+                            var isEmptyElement = r.IsEmptyElement;
+                            var elementName = r.Name;
+                            string content;
+
+                            if (isEmptyElement)
+                            {
+                                content = string.Empty;
+                            }
+                            else
+                            {
+                                await r.ReadAsync().ConfigureAwait(false);
+                                content = r.Value;
+                            }
+
+                            if (elementName == "tag")
+                            {
+                                if (tags == null)
+                                {
+                                    tags = ImmutableSortedSet.CreateBuilder<string>();
+                                }
+                                tags.Add(content);
+                            }
+                            else
+                            {
+                                value = content;
+                            }
+
+                            if (!isEmptyElement)
+                            {
+                                await r.ReadAsync().ConfigureAwait(false);
+                                r.EnsureMarkup(XmlNodeType.EndElement, elementName);
+                            }
+                        }
+
+                        if (tags != null && tags.Count > 0)
+                        {
+                            values.Add(new TaggedFieldValue(value ?? string.Empty, tags.ToImmutable()));
+                            tags.Clear();
+                        }
+                        else
+                        {
+                            values.Add(value ?? string.Empty);
                         }
                     }
-                    else if (r.Name == "v")
+                    else
                     {
                         Debug.Assert(this.SegmentedRaw == null);
                         Debug.Assert(key == "_raw");
@@ -138,18 +201,28 @@ namespace Splunk.Client
                     }
                 }
 
-                switch (values.Count)
+                if (key.StartsWith("tag::"))
                 {
-                    case 0: 
-                        dictionary.Add(key, null);
-                        break;
-                    case 1:
-                        dictionary.Add(key, values[0]);
-                        break;
-                    default:
-                        dictionary.Add(key, new ReadOnlyCollection<string>(values));
-                        break;
+                    var valueSet = ImmutableSortedSet.ToImmutableSortedSet<string>(values.Cast<string>());
+                    tagsDictionary.Add(key.Substring("tag::".Length), valueSet);
+                    dictionary.Add(key, valueSet);
                 }
+                else
+                {
+                    switch (values.Count)
+                    {
+                        case 0:
+                            dictionary.Add(key, string.Empty);
+                            break;
+                        case 1:
+                            dictionary.Add(key, values[0]);
+                            break;
+                        default:
+                            dictionary.Add(key, new ReadOnlyCollection<object>(values));
+                            break;
+                    }
+                }
+
             }).ConfigureAwait(false);
         }
 
@@ -162,13 +235,47 @@ namespace Splunk.Client
         /// <seealso cref="M:System.Object.ToString()"/>
         public override string ToString()
         {
-            var builder = new StringBuilder("Result(");
+            var dictionary = (IDictionary<string, object>)this.Object;
+
+            if (dictionary.Count == 0)
+            {
+                return "SearchResult()";
+            }
+
+            var builder = new StringBuilder("SearchResult(");
+
+            Action<object> quote = o =>
+            {
+                builder.Append('"');
+                builder.Append(o.ToString().Replace(@"""", @"\"""));
+                builder.Append('"');
+            };
 
             foreach (KeyValuePair<string, object> pair in (IDictionary<string, object>)this.Object)
             {
                 builder.Append(pair.Key);
                 builder.Append(": ");
-                builder.Append(pair.Value);
+
+                var value = pair.Value;
+
+                if (value is string || value is TaggedFieldValue)
+                {
+                    quote(value);
+                }
+                else
+                {
+                    builder.Append('[');
+
+                    foreach (var item in (IEnumerable)value)
+                    {
+                        builder.Append(item);
+                        builder.Append(", ");
+                    }
+
+                    builder.Length = builder.Length - 2;
+                    builder.Append(']');
+                }
+
                 builder.Append(", ");
             }
 
@@ -183,6 +290,8 @@ namespace Splunk.Client
         #region Privates/internals
 
         readonly SearchResultMetadata metadata;
+
+        ExpandoObject tagsObject;
 
         /// <summary>
         /// Initializes a new instance of the Splunk.Client.SearchResult class.

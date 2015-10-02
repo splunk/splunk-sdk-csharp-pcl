@@ -29,7 +29,7 @@ namespace Splunk.Examples.Authenticate
     {
         static Program()
         {
-            // TODO: Use WebRequestHandler.ServerCertificateValidationCallback instead
+            // In production we recommend using WebRequestHandler.ServerCertificateValidationCallback instead. To do this:
             // 1. Instantiate a WebRequestHandler
             // 2. Set its ServerCertificateValidationCallback
             // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
@@ -41,9 +41,9 @@ namespace Splunk.Examples.Authenticate
         }
 
         /// <summary>
-        /// Mains function
+        /// Main function
         /// </summary>
-        /// <param name="args">The arguments.</param>
+        /// <param name="args">The arguments to main.</param>
         static void Main(string[] args)
         {
             using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port))
@@ -65,19 +65,44 @@ namespace Splunk.Examples.Authenticate
         {
             await service.LogOnAsync(SdkHelper.Splunk.Username, SdkHelper.Splunk.Password);
 
-            foreach (var mode in new ExecutionMode[] { ExecutionMode.Blocking, ExecutionMode.Normal, ExecutionMode.OneShot })
-            {
-                var job = await service.Jobs.CreateAsync("search index=_internal | head 5", mode: mode);
+            try {
+                //// This code shows how to execute a long-running search job.
+                //// We query for the first 100,000 records from Splunk's _internal index and choose a 3 second
+                //// delay to improve the chances our retry loop runs more than once.
+
+                int delay = 3000;
+                var job = await service.Jobs.CreateAsync("search index=_internal | head 100000", mode: ExecutionMode.Normal);
+
+                for (int count = 1; ; ++count)
+                {
+                    try
+                    {
+                        await job.TransitionAsync(DispatchState.Done, delay);
+                        break;
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        // Consider logging the fact that the operation is taking a long time, around count * (delay / 1000) seconds so far
+                        // Also consider stopping the query, if it runs too long
+                    }
+                    // Consider increasing the delay on each iteration
+                }
+
+                //// Now that the search job is done we can print the results.
+                //// This example shows how to fetch raw search results in a specific format: JSON. Select an alternative format by
+                //// by selecting the OutputMode you like.
 
                 using (var message = await job.GetSearchResponseMessageAsync(outputMode: OutputMode.Json))
                 {
+                    Console.Error.WriteLine("Search results (Press Control-C to cancel:");
                     var content = await message.Content.ReadAsStringAsync();
-                    Console.WriteLine(string.Format("{0} search results:", mode));
                     Console.WriteLine(content);
                 }
             }
-
-            await service.LogOffAsync();
+            finally
+            {
+                service.LogOffAsync().Wait();
+            }
         }
     }
 }

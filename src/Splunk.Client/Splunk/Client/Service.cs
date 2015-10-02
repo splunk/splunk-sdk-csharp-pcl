@@ -15,8 +15,6 @@
  */
 
 //// TODO:
-//// [O] Contracts
-//// [O] Documentation (check all links!)
 //// [ ] Consider schema validation from schemas stored as resources.
 ////     See [XmlReaderSettings.Schemas Property](http://goo.gl/Syvj4V)
 

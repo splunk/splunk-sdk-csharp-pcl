@@ -17,8 +17,8 @@
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Xml;
-    using System.Xml.Serialization;
 
     /// <summary>
     /// The <see cref="Event"/> struct represents an event element
@@ -55,11 +55,13 @@ namespace Splunk.ModularInputs
         // in this one method. It turns out to be simpler to understand, too.
         public void ToXml(XmlWriter writer)
         {
+            Contract.Requires(writer != null);
+
             writer.WriteStartElement("event");
             if (Stanza != null) writer.WriteAttributeString("stanza", Stanza);
             if (Unbroken) writer.WriteAttributeString("unbroken", "1");
 
-            if (Data != null)   WriteTextElement(writer, "data", Data);
+            if (Data != null) WriteTextElement(writer, "data", Data);
             if (Source != null) WriteTextElement(writer, "source", Source);
             if (SourceType != null) WriteTextElement(writer, "sourcetype", SourceType);
             if (Index != null) WriteTextElement(writer, "index", Index);
@@ -67,7 +69,7 @@ namespace Splunk.ModularInputs
 
             if (Time.HasValue)
             {
-                double timestamp = (Time.Value.Ticks - ticksSinceEpoch) / TimeSpan.TicksPerSecond;
+                double timestamp = (double)(Time.Value.Ticks - ticksSinceEpoch) / TimeSpan.TicksPerSecond;
                 writer.WriteStartElement("time");
                 writer.WriteString(timestamp.ToString());
                 writer.WriteEndElement();

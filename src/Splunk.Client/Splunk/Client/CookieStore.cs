@@ -65,7 +65,7 @@ namespace Splunk.Client
         /// Builds a string from stored cookies to create a string that can be put into a "Cookie:" header
         /// </summary>
         /// <returns>
-        /// A string to put into a "Cookie:" header representing the state of the <see cref="CookeiStore"/>
+        /// A string to put into a "Cookie:" header representing the state of the <see cref="CookieStore"/>
         /// </returns>
         public string GetCookieHeader()
         {

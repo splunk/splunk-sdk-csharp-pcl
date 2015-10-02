@@ -1071,8 +1071,6 @@ namespace Splunk.Client.AcceptanceTests
 
                 //// Update
 
-                Exception updateException = null;
-
                 var attributes = new IndexAttributes()
                 {
                     EnableOnlineBucketRepair = false

@@ -337,6 +337,86 @@ namespace Splunk.Client.AcceptanceTests
                 });
         }
 
+        [Trait("acceptance-test", "Splunk.Client.Job")]
+        [MockContext]
+        [Fact]
+        public async Task JobTransitionDelay()
+        {
+            using (var service = await SdkHelper.CreateService())
+            {
+                //// Reference: [Algorithms for calculating variance](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Online_algorithm)
+
+                var args = new JobArgs { SearchMode = SearchMode.RealTime };
+
+                var min = double.PositiveInfinity;
+                var max = double.NegativeInfinity;
+
+                var n = 0;
+                var mean = 0.0;
+                var variance = 0.0;
+                var sampleSize = 1; // increase to compute statistics used to derive Assert.InRange values
+
+                for (n = 1; n <= sampleSize; ++n)
+                {
+                    Job job = await service.Jobs.CreateAsync("search index=_internal", args: args);
+                    DateTime start = DateTime.Now;
+                    int totalDelay = 0;
+
+                    for (int delay = 1000; delay < 5000; delay += 1000)
+                    {
+                        try
+                        {
+                            await job.TransitionAsync(DispatchState.Done, delay);
+                            break;
+                        }
+                        catch (TaskCanceledException)
+                        { }
+
+                        totalDelay += delay;
+                    }
+
+                    var duration = DateTime.Now - start;
+
+                    try
+                    {
+                        await job.CancelAsync();
+                    }
+                    catch (TaskCanceledException)
+                    { }
+
+                    var x = duration.TotalMilliseconds - totalDelay;
+
+                    if (x < min)
+                        min = x;
+
+                    if (x > max)
+                        max = x;
+
+                    var delta = x - mean;
+                    mean += delta / n;
+                    variance += delta * (x - mean);
+
+                    // Statistically derived by repeated tests with sampleSize = 100; no failures in a test with sampleSize = 10,000
+                    // This range is outside three standard deviations. Adjust as required to support your test environment.
+                    Assert.InRange(x, 1000, 4000);
+                }
+
+                double sd;
+
+                if (--n < 2)
+                {
+                    sd = variance = double.NaN;
+                }
+                else
+                {
+                    variance /= n - 1;
+                    sd = Math.Sqrt(variance);
+                }
+                
+                Console.WriteLine("\n  Mean: {0}\n  SD: {1}\n  Range: [{3}, {4}]\n  N: {2}", mean, sd, min, max, n); // swallowed by Xunit version [1.0, 2.0)
+            }
+        }
+
         /// <summary>
         /// Tests all search modes for export
         /// </summary>
@@ -393,6 +473,8 @@ namespace Splunk.Client.AcceptanceTests
                 await job.CancelAsync();
             }
         }
+
+        #region Helpers
 
         /// <summary>
         /// Touches the job after it is queryable.
@@ -516,5 +598,7 @@ namespace Splunk.Client.AcceptanceTests
                 await action(@enum);
             }
         }
+
+        #endregion
     }
 }

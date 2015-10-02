@@ -1,5 +1,17 @@
 # Splunk SDK for C# PCL
 
+## Version 2.2.1
+
+### New features and APIs
+
+* Implemented `SearchResult.Tags` property for search tags. GitHub issue #36.
+
+### Bug Fixes
+
+* Fixed code contracts runtime errors. GitHub issue #42.
+* Fixed missing millisecond component when writing modular input timestamps. GitHub pull request #41.
+* Restored compatibility for some examples with .Net v4.5.0.
+
 ## Version 2.2.0
 
 ### New features and APIs

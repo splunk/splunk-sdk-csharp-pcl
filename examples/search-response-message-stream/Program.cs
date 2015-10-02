@@ -101,7 +101,7 @@ namespace Splunk.Examples.Authenticate
             }
             finally
             {
-                await service.LogOffAsync();
+                service.LogOffAsync().Wait();
             }
         }
     }

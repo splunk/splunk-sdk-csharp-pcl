@@ -14,8 +14,6 @@
     <ErrorReport>prompt</ErrorReport>
     <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
@@ -110,12 +108,12 @@
     <DocumentationFile Condition=" '$(GenerateDocumentationFile)' == 'True' ">$(OutputPath)$(AssemblyName).XML</DocumentationFile>
   </PropertyGroup>
   <Choose>
-    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " >
       <PropertyGroup>
         <DefineConstants>DEBUG;TRACE;__MonoCs__</DefineConstants>
       </PropertyGroup>
     </When>
-    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <When Condition=" '$(UseHostCompilerIfAvailable)' == 'False' And '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " >
       <PropertyGroup>
         <DefineConstants>TRACE;CODE_ANALYSIS;__MonoCs__</DefineConstants>
       </PropertyGroup>
@@ -149,13 +147,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\packages\CodeContracts.MSBuild.1.7.11202.1001\build\CodeContracts.MSBuild.targets" Condition="Exists('..\..\packages\CodeContracts.MSBuild.1.7.11202.1001\build\CodeContracts.MSBuild.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\CodeContracts.MSBuild.1.7.11202.1001\build\CodeContracts.MSBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\CodeContracts.MSBuild.1.7.11202.1001\build\CodeContracts.MSBuild.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -1,5 +1,11 @@
 # Splunk SDK for C# PCL
 
+## Version 2.2.2
+
+### Bug Fixes
+
+* Fixed code contracts runtime errors caused by MyGet during the previous 2 releases. See GitHub issue #42.
+
 ## Version 2.2.1
 
 ### New features and APIs

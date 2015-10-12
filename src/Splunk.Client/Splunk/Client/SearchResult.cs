@@ -133,52 +133,39 @@ namespace Splunk.Client
                     Debug.Assert(r.Depth > fieldDepth, "This loop should have exited earlier.");
                     r.EnsureMarkup(XmlNodeType.Element, "value", "v");
 
+                    if (r.IsEmptyElement)
+                    {
+                        continue;
+                    }
+
                     if (r.Name == "value")
                     {
+                        await r.ReadAsync().ConfigureAwait(false);
                         string value = null;
 
-                        while (await r.ReadAsync().ConfigureAwait(false))
+                        while (r.NodeType == XmlNodeType.Element)
                         {
-                            if (r.NodeType == XmlNodeType.EndElement)
-                            {
-                                r.EnsureMarkup(XmlNodeType.EndElement, "value");
-                                break;
-                            }
-
                             r.EnsureMarkup(XmlNodeType.Element, "text", "tag");
-                            var isEmptyElement = r.IsEmptyElement;
                             var elementName = r.Name;
-                            string content;
 
-                            if (isEmptyElement)
-                            {
-                                content = string.Empty;
-                            }
-                            else
-                            {
-                                await r.ReadAsync().ConfigureAwait(false);
-                                content = r.Value;
-                            }
+                            string content = await r.ReadElementContentAsStringAsync().ConfigureAwait(false);
 
-                            if (elementName == "tag")
+                            switch (elementName)
                             {
-                                if (tags == null)
-                                {
-                                    tags = ImmutableSortedSet.CreateBuilder<string>();
-                                }
-                                tags.Add(content);
-                            }
-                            else
-                            {
-                                value = content;
-                            }
-
-                            if (!isEmptyElement)
-                            {
-                                await r.ReadAsync().ConfigureAwait(false);
-                                r.EnsureMarkup(XmlNodeType.EndElement, elementName);
+                                case "text":
+                                    value = content;
+                                    break;
+                                case "tag":
+                                    if (tags == null)
+                                    {
+                                        tags = ImmutableSortedSet.CreateBuilder<string>();
+                                    }
+                                    tags.Add(content);
+                                    break;
                             }
                         }
+
+                        r.EnsureMarkup(XmlNodeType.EndElement, "value");
 
                         if (tags != null && tags.Count > 0)
                         {

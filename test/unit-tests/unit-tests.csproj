@@ -69,6 +69,7 @@
     <Compile Include="TestIndexAttributes.cs" />
     <Compile Include="TestIndexCollection.cs" />
     <Compile Include="TestJobArgs.cs" />
+    <Compile Include="TestSearchPreviewStream.cs" />
     <Compile Include="TestSearchResultStream.cs" />
     <Compile Include="TestJobCollection.cs" />
     <Compile Include="TestModularInputs.cs" />

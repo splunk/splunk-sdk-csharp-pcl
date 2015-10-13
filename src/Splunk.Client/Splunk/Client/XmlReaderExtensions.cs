@@ -191,16 +191,12 @@ namespace Splunk.Client
                     catch (XmlException)
                     {
                         //// WORKAROUND:
-                        //// Issue: Some searches return no results and in 
-                        //// these cases Splunk writes nothing but an XML 
-                        //// Declaration. When nothing follows the declaration 
-                        //// the XmlReader fails to detect EOF, does not update
-                        //// the current XmlNode, and then throws an XmlException
-                        //// because it thinks the XmlNode appears on a line
-                        //// other than the first.
+                        //// Issue: Some searches return no results and in these cases Splunk writes nothing but an XML
+                        //// Declaration. When nothing follows the declaration the XmlReader fails to detect EOF, does
+                        //// not update the current XmlNode, and then throws an XmlException because it thinks the
+                        //// XmlNode appears on a line other than the first.
                         ////
-                        //// We catch the issue here, dispose the reader to 
-                        //// ensure that EOF is true, and then return.
+                        //// We catch the issue here, dispose the reader to ensure that EOF is true, and then return.
                         ////
                         //// Verified against Microsoft .NET 4.5 and Splunk
                         //// 5.0.4, 6.0.3, and 6.1.1.

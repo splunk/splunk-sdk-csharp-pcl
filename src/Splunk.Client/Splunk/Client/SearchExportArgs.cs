@@ -244,6 +244,20 @@ namespace Splunk.Client
         { get; set; }
 
         /// <summary>
+        /// Gets or sets the number of events that can be accessible in any given status bucket.
+        /// </summary>
+        /// <remarks>
+        /// In transforming mode this value also specifies the maximum number of results to store. The default value is
+        /// <c>10000</c>.
+        /// </remarks>
+        /// <value>
+        /// The number of events that can be accessible in any given status bucket.
+        /// </value>
+        [DataMember(Name = "max_count", EmitDefaultValue = false)]
+        public int? MaxCount
+        { get; set; }
+
+        /// <summary>
         /// Gets or sets the maximum lines that any single event's <c>_raw</c>
         /// field should contain.
         /// </summary>

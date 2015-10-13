@@ -118,7 +118,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         async Task CanHandleInFlightErrorsReportedBySplunk()
         {
-            var path = Path.Combine(TestAtomFeed.Directory, "FailedExport.xml");
+            var path = Path.Combine(TestAtomFeed.Directory, "Service.ExportSearchResults-failure.xml");
             var message = new HttpResponseMessage(HttpStatusCode.OK);
 
             message.Content = new StreamContent(new FileStream(path, FileMode.Open, FileAccess.Read));

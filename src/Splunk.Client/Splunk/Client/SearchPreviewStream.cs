@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 //// References:
 //// 1. [Async, await, and yield return](http://goo.gl/RLVDK5)
 //// 2. [CLR via C# (4th Edition)](http://goo.gl/SmpI3W)
@@ -27,7 +23,6 @@ namespace Splunk.Client
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
@@ -224,7 +219,13 @@ namespace Splunk.Client
         {
             XmlReader reader = this.response.XmlReader;
 
-            reader.Requires(await reader.MoveToDocumentElementAsync("results").ConfigureAwait(false));
+            reader.Requires(await reader.MoveToDocumentElementAsync("results", "response").ConfigureAwait(false));
+
+            if (reader.Name == "response")
+            {
+                await response.ThrowRequestExceptionAsync().ConfigureAwait(false);
+            }
+
             var preview = new SearchPreview();
             await preview.ReadXmlAsync(reader).ConfigureAwait(false);
             await reader.ReadAsync().ConfigureAwait(false);

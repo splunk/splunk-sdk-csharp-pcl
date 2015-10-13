@@ -1657,7 +1657,7 @@ namespace Splunk.Client.AcceptanceTests
             using (var service = await SdkHelper.CreateService())
             {
                 const string search = "search index=_internal | stats count by method";
-                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-7d", MaxCount=5000 };
+                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-1d", MaxCount=5000 };
 
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
@@ -1701,8 +1701,8 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                const string search = "search index=_internal | sort time | head 5000 | stats count by method";
-                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h" };
+                const string search = "search index=_internal | stats count by method";
+                var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h", MaxCount = 5000 };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {

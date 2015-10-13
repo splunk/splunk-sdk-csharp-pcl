@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -54,7 +50,7 @@ namespace Splunk.Client
         /// <value>
         /// The build.
         /// </value>
-        int Build
+        long Build
         { get; }
 
         /// <summary>

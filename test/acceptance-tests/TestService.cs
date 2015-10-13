@@ -2034,7 +2034,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 EaiAcl acl = info.Eai.Acl;
                 Permissions permissions = acl.Permissions;
-                int build = info.Build;
+                long build = info.Build;
                 string cpuArchitecture = info.CpuArchitecture;
                 Guid guid = info.Guid;
                 bool isFree = info.IsFree;

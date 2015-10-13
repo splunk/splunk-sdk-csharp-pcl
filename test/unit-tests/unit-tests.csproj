@@ -87,12 +87,6 @@
     <Content Include="Data\Client\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Client\BlankAndEmptySearchResults.xml" />
-    <Content Include="Data\ModularInputs\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Client\TaggedSearchResults.xml" />
-    <None Include="Data\Client\TaggedSearchResults.expected.text" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

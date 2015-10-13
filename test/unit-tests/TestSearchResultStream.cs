@@ -114,5 +114,39 @@ namespace Splunk.Client.UnitTests
             }
         }
 
+        [Trait("unit-test", "Splunk.Client.SearchResultStream")]
+        [Fact]
+        async Task CanHandleInFlightErrorsReportedBySplunk()
+        {
+            var path = Path.Combine(TestAtomFeed.Directory, "FailedExport.xml");
+            var message = new HttpResponseMessage(HttpStatusCode.OK);
+
+            message.Content = new StreamContent(new FileStream(path, FileMode.Open, FileAccess.Read));
+            SearchResultStream stream = null;
+
+            try
+            {
+                stream = await SearchResultStream.CreateAsync(message);
+                int count = 0;
+
+                foreach (var result in stream)
+                {
+                    ++count;
+                }
+
+                Assert.False(true, "Expected RequestException");
+            }
+            catch (RequestException e)
+            {
+                Assert.Equal(e.Message, "Fatal: JournalSliceDirectory: Cannot seek to 0");
+            }
+            finally
+            {
+                if (stream != null)
+                {
+                    stream.Dispose();
+                }
+            }
+        }
     }
 }

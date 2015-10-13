@@ -100,6 +100,21 @@ namespace Splunk.Client
         {
             StringBuilder builder = new StringBuilder(1024);
 
+            if (message.IsSuccessStatusCode)
+            {
+                if (details != null)
+                {
+                    foreach (var detail in details)
+                    {
+                        builder.Append(detail);
+                        builder.Append('\n');
+                    }
+                    builder.Length = builder.Length - 1;
+                }
+
+                return builder.ToString();
+            }
+
             builder.Append((int)message.StatusCode);
             builder.Append(": ");
             builder.Append(message.ReasonPhrase);

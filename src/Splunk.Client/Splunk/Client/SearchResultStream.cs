@@ -267,7 +267,12 @@ namespace Splunk.Client
             Debug.Assert(reader.ReadState <= ReadState.Interactive, string.Concat("ReadState: ", reader.ReadState));
             reader.MoveToElement();
 
-            reader.EnsureMarkup(XmlNodeType.Element, "result");
+            reader.EnsureMarkup(XmlNodeType.Element, "result", "response");
+
+            if (reader.Name == "response")
+            {
+                await this.response.ThrowRequestExceptionAsync().ConfigureAwait(false);
+            }
 
             var result = new SearchResult(metadata);
             await result.ReadXmlAsync(reader).ConfigureAwait(false);

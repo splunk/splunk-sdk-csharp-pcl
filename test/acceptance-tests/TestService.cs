@@ -1656,11 +1656,12 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                const string search = "search index=_internal | sort time |head 5000 | stats count by method";
+                const string search = "search index=_internal | sort time | head 5000 | stats count by method";
                 var args = new SearchExportArgs() { Count = 0, EarliestTime = "-7d" };
 
                 Stopwatch watch = new Stopwatch();
                 watch.Start();
+
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
@@ -1679,9 +1680,12 @@ namespace Splunk.Client.AcceptanceTests
                             results.AddRange(preview.Results);
                         }
                     }
+
                     watch.Stop();
+
                     Console.WriteLine("spent {0} to read all stream", watch.Elapsed.TotalSeconds);
                     Console.WriteLine("stream.ReadCount={0}", stream.ReadCount);
+
                     Assert.True(stream.ReadCount >= 1);
                     Assert.NotEmpty(results);
                 }
@@ -1697,7 +1701,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                const string search = "search index=_internal | sort time |head 5000 | stats count by method";
+                const string search = "search index=_internal | sort time | head 5000 | stats count by method";
                 var args = new SearchExportArgs() { Count = 0, EarliestTime = "-24h" };
 
                 using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync(search, args))
@@ -1750,7 +1754,7 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                const string search = "search index=_internal | tail 100";
+                const string search = "search index=_internal | head 100";
                 var args = new SearchExportArgs { Count = 0 };
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
@@ -1776,7 +1780,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 var args = new SearchExportArgs { Count = 0 };
 
-                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | tail 100", args))
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | head 100", args))
                 {
                     var manualResetEvent = new ManualResetEvent(true);
                     var results = new List<SearchResult>();

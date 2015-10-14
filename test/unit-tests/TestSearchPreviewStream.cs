@@ -64,5 +64,27 @@ namespace Splunk.Client.UnitTests
                 }
             }
         }
+
+        [Trait("unit-test", "Splunk.Client.SearchPreviewStream")]
+        [Fact]
+        async Task CanSkipEmptyPreviews()
+        {
+            var baseFileName = Path.Combine(TestAtomFeed.Directory, "DVPL-5873");
+            var message = new HttpResponseMessage(HttpStatusCode.OK);
+
+            message.Content = new StreamContent(new FileStream(baseFileName + ".xml", FileMode.Open, FileAccess.Read));
+
+            using (var stream = await SearchPreviewStream.CreateAsync(message))
+            {
+                int count = 0;
+
+                foreach (var observedResult in stream)
+                {
+                    ++count;
+                }
+
+                Assert.Equal(count, stream.ReadCount);
+            }
+        }
     }
 }

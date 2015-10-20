@@ -25,9 +25,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Splunk.Client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Splunk, Inc.")]
+[assembly: AssemblyCompany("Splunk, Inc. - GitHub custom build")]
 [assembly: AssemblyCopyright("Copyright © 2015")]
-[assembly: AssemblyTrademark("Splunk®")]
+[assembly: AssemblyTrademark("Splunk® - GitHub custom build")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US")]
 
@@ -41,5 +41,4 @@ using System.Runtime.InteropServices;
 
 //// Version information
 
-[assembly: AssemblyVersion("2.2.2.0")]
-[assembly: AssemblyFileVersion("2.2.2.0")]
+[assembly: AssemblyVersion("2.2.2.*")]

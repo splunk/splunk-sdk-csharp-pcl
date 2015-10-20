@@ -23,6 +23,7 @@ namespace Splunk.Client
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
+	using System.Text;
 
     /// <summary>
     /// Represents a Splunk service response.
@@ -63,6 +64,14 @@ namespace Splunk.Client
         public Stream Stream
         { get; private set; }
 
+		/// <summary>
+		/// Override the encoding used to parse the Reponse to prevent parsing exception.
+		/// This is useful if the response contains illegal characters that do not comply with the Xml Prolog.
+		/// For example the response contains unicode, whereas xml Prolog is <?xml version='1.0' encoding='UTF-8'?>
+		/// Leave null to use xml Prolog encoding.
+		/// </summary>
+		public static Encoding StreamResultEncodingOverride { get; set; }
+
         /// <summary>
         /// Gets the <see cref="XmlReader"/> for reading HTTP body data from the
         /// current <see cref="Response.Stream"/>.
@@ -73,13 +82,21 @@ namespace Splunk.Client
         public XmlReader XmlReader
         { 
             get 
-            { 
-                if (this.reader == null)
-                {
-                    this.reader = XmlReader.Create(this.Stream, XmlReaderSettings);
-                }
+            {
+				if (this.reader == null)
+				{
+					if (StreamResultEncodingOverride != null)
+					{
+						this.reader = XmlReader.Create(new StreamReader(this.Stream, Response.StreamResultEncodingOverride), XmlReaderSettings);
+					}
+					else
+					{
+						this.reader = XmlReader.Create(this.Stream, XmlReaderSettings);
+					}
 
-                return this.reader;
+				}
+
+				return this.reader;
             }
         }
 

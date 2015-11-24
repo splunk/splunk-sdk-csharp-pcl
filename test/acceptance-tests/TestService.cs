@@ -102,7 +102,7 @@ namespace Splunk.Client.AcceptanceTests
                     //// Create and change the password for 50 StoragePassword instances
 
                     var surname = MockContext.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
-                    var realms = new string[] { null, "splunk.com", "splunk:com" };
+                    var realms = new string[] { null, "splunk.com" };
 
                     for (int i = 0; i < realms.Length; i++)
                     {
@@ -319,7 +319,7 @@ namespace Splunk.Client.AcceptanceTests
                         //// Ensure we've got 50 passwords to enumerate
 
                         var surname = MockContext.GetOrElse(string.Format("delete-me-{0}-", Guid.NewGuid().ToString("N")));
-                        var realms = new string[] { null, "splunk.com", "splunk:com" };
+                        var realms = new string[] { null, "splunk.com" };
 
                         for (int i = 0; i < 50 - sps.Count; i++)
                         {
@@ -1118,8 +1118,6 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.Equal(entity.ToString(), entity.Id.ToString());
 
                     Assert.DoesNotThrow(() => { bool value = entity.AssureUTF8; });
-                    Assert.DoesNotThrow(() => { string value = entity.BlockSignatureDatabase; });
-                    Assert.DoesNotThrow(() => { int value = entity.BlockSignSize; });
                     Assert.DoesNotThrow(() => { int value = entity.BloomFilterTotalSizeKB; });
                     Assert.DoesNotThrow(() => { string value = entity.BucketRebuildMemoryHint; });
                     Assert.DoesNotThrow(() => { string value = entity.ColdPath; });
@@ -1185,8 +1183,6 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.Equal(entity.ResourceName, sameEntity.ResourceName);
 
                     Assert.Equal(entity.AssureUTF8, sameEntity.AssureUTF8);
-                    Assert.Equal(entity.BlockSignatureDatabase, sameEntity.BlockSignatureDatabase);
-                    Assert.Equal(entity.BlockSignSize, sameEntity.BlockSignSize);
                     Assert.Equal(entity.BloomFilterTotalSizeKB, sameEntity.BloomFilterTotalSizeKB);
                     Assert.Equal(entity.BucketRebuildMemoryHint, sameEntity.BucketRebuildMemoryHint);
                     Assert.Equal(entity.ColdPath, sameEntity.ColdPath);
@@ -1243,7 +1239,6 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.Equal(entity.ThawedPath, sameEntity.ThawedPath);
                     Assert.Equal(entity.ThawedPathExpanded, sameEntity.ThawedPathExpanded);
                     Assert.Equal(entity.ThrottleCheckPeriod, sameEntity.ThrottleCheckPeriod);
-                    Assert.Equal(entity.TotalEventCount, sameEntity.TotalEventCount);
                     Assert.Equal(entity.TStatsHomePath, sameEntity.TStatsHomePath);
                     Assert.Equal(entity.TStatsHomePathExpanded, sameEntity.TStatsHomePathExpanded);
                 }
@@ -1761,6 +1756,8 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     var results = new List<SearchResult>();
 
+                    await Task.Delay(2000);
+
                     foreach (SearchResult result in stream)
                     {
                         results.Add(result);
@@ -2034,7 +2031,7 @@ namespace Splunk.Client.AcceptanceTests
 
                 EaiAcl acl = info.Eai.Acl;
                 Permissions permissions = acl.Permissions;
-                long build = info.Build;
+                string build = info.Build;
                 string cpuArchitecture = info.CpuArchitecture;
                 Guid guid = info.Guid;
                 bool isFree = info.IsFree;

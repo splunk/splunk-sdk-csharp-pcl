@@ -47,14 +47,14 @@ namespace Splunk.Client.UnitTests
                 Assert.Equal(details, requestException.Details.AsEnumerable());
             }
 
-            requestException = new RequestException(new HttpResponseMessage(HttpStatusCode.NoContent), null);
-            Assert.Equal("204: No Content", requestException.Message);
+            requestException = new RequestException(new HttpResponseMessage(HttpStatusCode.NotFound), null);
+            Assert.Equal("404: Not Found", requestException.Message);
             Assert.Equal(0, requestException.Details.Count);
-            Assert.Equal(HttpStatusCode.NoContent, requestException.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, requestException.StatusCode);
 
             for (int i = 2; i < 10; ++i)
             {
-                var message = new StringBuilder("204: No Content");
+                var message = new StringBuilder("404: Not Found");
                 var details = new Message[i];
 
                 for (int j = 0; j < i; ++j)
@@ -65,9 +65,9 @@ namespace Splunk.Client.UnitTests
                 }
 
                 requestException = new RequestException(
-                    new HttpResponseMessage(HttpStatusCode.NoContent), new ReadOnlyCollection<Message>(details));
+                    new HttpResponseMessage(HttpStatusCode.NotFound), new ReadOnlyCollection<Message>(details));
 
-                Assert.Equal(HttpStatusCode.NoContent, requestException.StatusCode);
+                Assert.Equal(HttpStatusCode.NotFound, requestException.StatusCode);
                 Assert.Equal(message.ToString(), requestException.Message);
                 Assert.Equal(i, requestException.Details.Count);
                 Assert.Equal(details, requestException.Details.AsEnumerable());

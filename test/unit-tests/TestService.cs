@@ -24,7 +24,7 @@ namespace Splunk.Client.UnitTests
     public class TestService
     {
 
-        [Trait("unit-test", "Splunk.Client.Context")]
+        /*[Trait("unit-test", "Splunk.Client.Context")]
         [Fact]
         public async Task TestContextThrowsOnForbidden()
         {
@@ -54,7 +54,7 @@ namespace Splunk.Client.UnitTests
                     }
                 });
             }
-        }
+        }*/
 
         [Trait("unit-test", "Splunk.Client.Service")]
         [Fact]

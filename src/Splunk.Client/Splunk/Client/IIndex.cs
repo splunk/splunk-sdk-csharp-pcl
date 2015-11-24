@@ -45,33 +45,6 @@ namespace Splunk.Client
         { get; }
 
         /// <summary>
-        /// Gets the number of events that make up a block for block signatures on an
-        /// index.
-        /// </summary>
-        /// <remarks>
-        /// The default value is zero (0) indicating that block signatures are
-        /// disabled. If your index requires block signatures, a value is 100 is
-        /// recommended.
-        /// </remarks>
-        /// <value>
-        /// The size of the block sign.
-        /// </value>
-        int BlockSignSize
-        { get; }
-
-        /// <summary>
-        /// Gets the name of the index that stores block signatures of events.
-        /// </summary>
-        /// <remarks>
-        /// This is a global setting, not a per-index setting.
-        /// </remarks>
-        /// <value>
-        /// The block signature database.
-        /// </value>
-        string BlockSignatureDatabase
-        { get; }
-
-        /// <summary>
         /// Gets the bloom filter total size kilobytes.
         /// </summary>
         /// <value>

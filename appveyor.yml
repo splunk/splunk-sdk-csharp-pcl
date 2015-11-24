@@ -1,0 +1,45 @@
+version: "{build}"
+
+# Make sure we always have RDP details
+init:
+- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+# Build 6.2 and 6.3
+environment:
+  matrix:
+  - SPLUNK_VERSION: 6.2.6
+    SPLUNK_BUILD: 274160
+    SDK_APP_VERSION: 1.0.0
+  - SPLUNK_VERSION: 6.3.1
+    SPLUNK_BUILD: f3e41e4b37b2
+    SDK_APP_VERSION: 1.0.0
+
+install:
+# Download Splunk and the SDK App
+- cmd: appveyor DownloadFile https://download.splunk.com/products/splunk/releases/%SPLUNK_VERSION%/splunk/windows/splunk-%SPLUNK_VERSION%-%SPLUNK_BUILD%-windows-64.zip -FileName C:\splunk.zip
+- cmd: appveyor DownloadFile https://github.com/splunk/sdk-app-collection/archive/%SDK_APP_VERSION%.zip -FileName C:\sdkapp.zip
+# Unzip It
+- cmd: 7z x C:\splunk.zip -oc:\splunk > NUL
+- cmd: 7z x C:\sdkapp.zip -oc:\splunk\splunk\etc\apps > NUL
+# Unzip it, rename it, and make sure it's installed
+- cmd: rename c:\splunk\splunk\etc\apps\sdk-app-collection-%SDK_APP_VERSION% sdk-app-collection
+- cmd: dir c:\splunk\splunk\etc\apps
+# Install the Splunk service and start it
+- cmd: cmd /C "set PATH=C:\splunk\splunk && C:\splunk\splunk\bin\splunk.exe enable boot-start"
+- cmd: cmd /C "set PATH=C:\splunk\splunk && C:\splunk\splunk\bin\splunk.exe start --accept-license --answer-yes --no-prompt"
+
+before_build:
+# Restore our nuget packages
+- cmd: nuget restore
+# Set our timezone correctly
+- cmd: time /t
+- cmd: tzutil /s "Pacific Standard Time"
+- cmd: time /t
+
+build:
+  verbosity: minimal
+
+test_script:
+# Run the unit tests and acceptance tests
+- ps: xunit.console.clr4.x86 test\unit-tests\bin\Debug\unit-tests.dll /appveyor
+- ps: xunit.console.clr4.x86 test\acceptance-tests\bin\Debug\acceptance-tests.dll /appveyor

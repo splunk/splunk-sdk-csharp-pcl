@@ -50,7 +50,7 @@ namespace Splunk.Client
         /// <value>
         /// The build.
         /// </value>
-        long Build
+        string Build
         { get; }
 
         /// <summary>

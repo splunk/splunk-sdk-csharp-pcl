@@ -184,6 +184,17 @@ namespace Splunk.Client.AcceptanceTests
                 JobArgs jobArgs = new JobArgs();
 
                 var job = await service.Jobs.CreateAsync("search index=_* | head 101", args: jobArgs);
+                
+                for (int delay = 1000; delay < 5000; delay += 1000)
+                {
+                    try
+                    {
+                        await job.TransitionAsync(DispatchState.Done, delay);
+                        break;
+                    }
+                    catch (TaskCanceledException)
+                    { }
+                }
 
                 using (SearchResultStream stream = await job.GetSearchPreviewAsync())
                 {
@@ -398,7 +409,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     // Statistically derived by repeated tests with sampleSize = 100; no failures in a test with sampleSize = 10,000
                     // This range is outside three standard deviations. Adjust as required to support your test environment.
-                    Assert.InRange(x, 1000, 4000);
+                    Assert.InRange(x, 1000, 5000);
                 }
 
                 double sd;
@@ -456,7 +467,7 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanRefreshJob()
         {
-            const string search = "search index=_internal * | head 100000";
+            const string search = "search index=_internal * | head 1 | debug cmd=sleep param1=5";
             
             using (var service = await SdkHelper.CreateService())
             {

@@ -127,18 +127,6 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public int BlockSignSize
-        {
-            get { return this.Content.GetValue("BlockSignSize", Int32Converter.Instance); }
-        }
-
-        /// <inheritdoc/>
-        public string BlockSignatureDatabase
-        {
-            get { return this.Content.GetValue("BlockSignatureDatabase", StringConverter.Instance); }
-        }
-
-        /// <inheritdoc/>
         public int BloomFilterTotalSizeKB
         {
             get { return this.Content.GetValue("BloomfilterTotalSizeKB", Int32Converter.Instance); }

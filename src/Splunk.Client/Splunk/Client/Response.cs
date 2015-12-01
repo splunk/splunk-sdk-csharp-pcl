@@ -80,14 +80,16 @@ namespace Splunk.Client
         /// The XML reader.
         /// </value>
         public XmlReader XmlReader
-        { 
-            get 
-            { 
+        {
+            get
+			{
                 if (this.reader == null)
                 {
-                    this.reader = XmlReader.Create(this.Stream, XmlReaderSettings);
+                    if (StreamResultEncoding != null)
+                        this.reader = XmlReader.Create(new StreamReader(this.Stream, Response.StreamResultEncoding), XmlReaderSettings);
+                    else
+                        this.reader = XmlReader.Create(this.Stream, XmlReaderSettings);
                 }
-
                 return this.reader;
             }
         }

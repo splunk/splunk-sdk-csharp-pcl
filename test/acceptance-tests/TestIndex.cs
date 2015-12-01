@@ -62,8 +62,6 @@ namespace Splunk.Client.AcceptanceTests
                     bool dummyBool;
                     DateTime dummyTime;
                     dummyBool = index.AssureUTF8;
-                    dummyString = index.BlockSignatureDatabase;
-                    dummyInt = index.BlockSignSize;
                     dummyInt = index.BloomFilterTotalSizeKB;
                     dummyString = index.ColdPath;
                     dummyString = index.ColdPathExpanded;
@@ -122,8 +120,6 @@ namespace Splunk.Client.AcceptanceTests
                     bool dummyBool;
                     DateTime dummyTime;
                     dummyBool = index.AssureUTF8;
-                    dummyString = index.BlockSignatureDatabase;
-                    dummyInt = index.BlockSignSize;
                     dummyInt = index.BloomFilterTotalSizeKB;
                     dummyString = index.ColdPath;
                     dummyString = index.ColdPathExpanded;
@@ -175,7 +171,6 @@ namespace Splunk.Client.AcceptanceTests
 
                 var attributes = GetIndexAttributes(testIndex);
 
-                attributes.BlockSignSize = testIndex.BlockSignSize + 1;
                 attributes.EnableOnlineBucketRepair = !testIndex.EnableOnlineBucketRepair;
                 attributes.MaxBloomBackfillBucketAge = "20d";
                 attributes.FrozenTimePeriodInSecs = testIndex.FrozenTimePeriodInSecs + 1;
@@ -215,6 +210,8 @@ namespace Splunk.Client.AcceptanceTests
 
                 await testIndex.RemoveAsync();
 
+                await Task.Delay(5000);
+                
                 await SdkHelper.ThrowsAsync<ResourceNotFoundException>(async () =>
                 {
                     await testIndex.GetAsync();
@@ -383,7 +380,6 @@ namespace Splunk.Client.AcceptanceTests
         {
             IndexAttributes indexAttributes = new IndexAttributes();
 
-            indexAttributes.BlockSignSize = index.BlockSignSize;
             indexAttributes.FrozenTimePeriodInSecs = index.FrozenTimePeriodInSecs;
             indexAttributes.MaxConcurrentOptimizes = index.MaxConcurrentOptimizes;
             indexAttributes.MaxDataSize = index.MaxDataSize;

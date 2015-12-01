@@ -82,9 +82,9 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual long Build
+        public virtual string Build
         {
-            get { return this.Content.GetValue("Build", BuildNumberConverter.Instance); }
+            get { return this.Content.GetValue("Build", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>

@@ -349,6 +349,7 @@ namespace Splunk.Client
                             case "action.rss":
                             case "action.script":
                             case "action.summary_index":
+                            case "action.webhook":
                             case "alert.suppress":
                             case "auto_summarize":
                                 name += ".IsEnabled";
@@ -370,6 +371,9 @@ namespace Splunk.Client
                                 break;
                             case "display.visualizations.charting.chart":
                                 name += ".Type";
+                                break;
+                            case "display.visualizations.charting.layout.splitSeries.allowIndependentYRanges":
+                                name = "display.visualizations.charting.layout.splitSeries_allowIndependentYRanges";
                                 break;
                             case "homePath.maxDataSizeMB":
                                 name = "homePath_maxDataSizeMB";
@@ -393,7 +397,7 @@ namespace Splunk.Client
                         {
                             if (!(propertyValue is ExpandoObject))
                             {
-                                throw new InvalidDataException(); // TODO: Diagnostics : conversion error
+                                throw new InvalidDataException(name); // TODO: Diagnostics : conversion error
                             }
                         }
                         else

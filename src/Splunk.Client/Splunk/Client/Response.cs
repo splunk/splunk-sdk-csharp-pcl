@@ -23,7 +23,7 @@ namespace Splunk.Client
     using System.Net.Http;
     using System.Threading.Tasks;
     using System.Xml;
-	using System.Text;
+    using System.Text;
 
     /// <summary>
     /// Represents a Splunk service response.

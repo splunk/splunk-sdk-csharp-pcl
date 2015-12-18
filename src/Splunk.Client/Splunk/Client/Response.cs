@@ -82,7 +82,7 @@ namespace Splunk.Client
         public XmlReader XmlReader
         {
             get
-			{
+            {
                 if (this.reader == null)
                 {
                     if (StreamResultEncoding != null)
@@ -93,7 +93,7 @@ namespace Splunk.Client
                 return this.reader;
             }
         }
-
+        
         #endregion
 
         #region Methods

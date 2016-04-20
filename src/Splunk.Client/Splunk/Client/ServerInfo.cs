@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 namespace Splunk.Client
 {
     using System;
@@ -86,9 +82,9 @@ namespace Splunk.Client
         }
 
         /// <inheritdoc/>
-        public virtual int Build
+        public virtual string Build
         {
-            get { return this.Content.GetValue("Build", Int32Converter.Instance); }
+            get { return this.Content.GetValue("Build", StringConverter.Instance); }
         }
 
         /// <inheritdoc/>

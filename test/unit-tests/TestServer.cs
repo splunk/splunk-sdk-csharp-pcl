@@ -16,18 +16,9 @@
 
 namespace Splunk.Client.UnitTests
 {
-    using Microsoft.CSharp.RuntimeBinder;
-
     using Splunk.Client;
-
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Dynamic;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
-    using System.Xml;
 
     using Xunit;
 

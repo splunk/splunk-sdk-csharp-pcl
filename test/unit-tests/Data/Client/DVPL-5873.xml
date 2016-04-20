@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+  <messages>
+    <msg type="DEBUG">Configuration initialization took 27ms for /Applications/Splunk/etc</msg>
+    <msg type="DEBUG">base lispy: [ AND github ]</msg>
+    <msg type="DEBUG">search context: user="admin", app="search", bs-pathname="/Applications/Splunk/etc"</msg>
+  </messages>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder />
+  </meta>
+</results>
+<results preview='0'>
+  <meta>
+    <fieldOrder>
+      <field>_bkt</field>
+      <field>_cd</field>
+      <field>_indextime</field>
+      <field>_raw</field>
+      <field>_serial</field>
+      <field>_si</field>
+      <field>_sourcetype</field>
+      <field>_subsecond</field>
+      <field>_time</field>
+      <field>host</field>
+      <field>index</field>
+      <field>linecount</field>
+      <field>source</field>
+      <field>sourcetype</field>
+      <field>splunk_server</field>
+    </fieldOrder>
+  </meta>
+  <result offset='0'>
+    <field k='_bkt'>
+      <value>
+        <text>main~12~12727763-372C-46EC-9583-8F873D79317E</text>
+      </value>
+    </field>
+    <field k='_cd'>
+      <value>
+        <text>12:3166</text>
+      </value>
+    </field>
+    <field k='_indextime'>
+      <value>
+        <text>1406027524</text>
+      </value>
+    </field>
+    <field k='_raw'>
+      <v xml:space='preserve' trunc='0'>{&quot;sha&quot;:&quot;6ceb54daec2dc230ab6fe55b367d3837e262c1db&quot;,&quot;api_url&quot;:&quot;https://api.<sg h='1'>github</sg>.com/repos/NancyFx/Nancy/commits/6ceb54daec2dc230ab6fe55b367d3837e262c1db&quot;,&quot;url&quot;:&quot;https://<sg h='1'>github</sg>.com/nancyfx/nancy/commit/6ceb54daec2dc230ab6fe55b367d3837e262c1db&quot;,&quot;message&quot;:&quot;Merge pull request #1572 from xt0rted/viewbag-enums Add enum support to DynamicDictionaryValue&quot;,&quot;author&quot;:&quot;Kristian Hellang&quot;,&quot;rawdate&quot;:&quot;2014-07-18T11:07:51Z&quot;,&quot;displaydate&quot;:&quot;Jul 18, 2014 - 04:07 AM&quot;}</v>
+    </field>
+    <field k='_serial'>
+      <value>
+        <text>0</text>
+      </value>
+    </field>
+    <field k='_si'>
+      <value>
+        <text>Glenns-MacBook-Pro.local</text>
+      </value>
+      <value>
+        <text>main</text>
+      </value>
+    </field>
+    <field k='_sourcetype'>
+      <value>
+        <text>github_commits</text>
+      </value>
+    </field>
+    <field k='_subsecond'>
+      <value>
+        <text>.000</text>
+      </value>
+    </field>
+    <field k='_time'>
+      <value>
+        <text>2014-07-18 04:07:51.000 PDT</text>
+      </value>
+    </field>
+    <field k='host'>
+      <value>
+        <text>Glenns-MacBook-Pro.local</text>
+      </value>
+    </field>
+    <field k='index'>
+      <value>
+        <text>main</text>
+      </value>
+    </field>
+    <field k='linecount'>
+      <value>
+        <text>1</text>
+      </value>
+    </field>
+    <field k='source'>
+      <value>
+        <text>github_commits://nancy</text>
+      </value>
+    </field>
+    <field k='sourcetype'>
+      <value>
+        <text>github_commits</text>
+      </value>
+    </field>
+    <field k='splunk_server'>
+      <value>
+        <text>Glenns-MacBook-Pro.local</text>
+      </value>
+    </field>
+  </result>
+</results>

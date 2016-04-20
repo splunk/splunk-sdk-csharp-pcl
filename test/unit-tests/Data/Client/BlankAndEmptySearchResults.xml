@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<results preview='0'>
+  <meta>
+    <fieldOrder>
+      <field>_raw</field>
+      <field>blank_tagged_text_element</field>
+      <field>blank_text_element</field>
+      <field>blank_value_element</field>
+      <field>empty_tagged_text_element</field>
+      <field>empty_text_element</field>
+      <field>empty_value_element</field>
+      <field>tagged_blank_text_element</field>
+      <field>tagged_empty_text_element</field>    </fieldOrder>
+  </meta>
+  <result offset='0'>
+    <field k='_raw'>
+      <v/>
+    </field>
+    <field k='blank_tagged_text_element'>
+      <value>
+        <text>text</text>
+        <tag></tag>
+      </value>
+    </field>
+    <field k='blank_text_element'>
+      <value>
+        <text></text>
+      </value>
+    </field>
+    <field k='empty_tagged_text_element'>
+      <value>
+        <text>text</text>
+        <tag/>
+      </value>
+    </field>
+    <field k='empty_text_element'>
+      <value>
+        <text/>
+      </value>
+    </field>
+    <field k='blank_value_element'>
+      <value></value>
+    </field>
+    <field k='empty_value_element'>
+      <value/>
+    </field>
+    <field k='tagged_blank_text_element'>
+      <value>
+        <text></text>
+        <tag>tag</tag>
+      </value>
+    </field>
+    <field k='tagged_empty_text_element'>
+      <value>
+        <text/>
+        <tag>tag</tag>
+      </value>
+    </field>
+  </result>
+</results>

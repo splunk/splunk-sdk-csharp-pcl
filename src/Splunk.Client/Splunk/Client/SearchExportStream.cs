@@ -14,10 +14,6 @@
  * under the License.
  */
 
-//// TODO:
-//// [O] Contracts
-//// [O] Documentation
-
 //// References:
 //// 1. [Async, await, and yield return](http://goo.gl/RLVDK5)
 

@@ -27,7 +27,7 @@ namespace Splunk.Examples.saved_searches
     {
         static void Main(string[] args)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             using (var service = new Service(SdkHelper.Splunk.Scheme, SdkHelper.Splunk.Host, SdkHelper.Splunk.Port, new Namespace(user: "nobody", app: "search")))
             {
                 Run(service).Wait();

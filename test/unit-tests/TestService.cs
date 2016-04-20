@@ -14,20 +14,17 @@
  * under the License.
  */
 
+using Splunk.Client.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Splunk.Client.Helpers;
 
 namespace Splunk.Client.UnitTests
 {
     public class TestService
     {
 
-        [Trait("unit-test", "Splunk.Client.Context")]
+        /*[Trait("unit-test", "Splunk.Client.Context")]
         [Fact]
         public async Task TestContextThrowsOnForbidden()
         {
@@ -57,7 +54,7 @@ namespace Splunk.Client.UnitTests
                     }
                 });
             }
-        }
+        }*/
 
         [Trait("unit-test", "Splunk.Client.Service")]
         [Fact]

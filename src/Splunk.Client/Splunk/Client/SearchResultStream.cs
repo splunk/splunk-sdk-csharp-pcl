@@ -249,8 +249,20 @@ namespace Splunk.Client
         async Task<SearchResultMetadata> ReadMetadataAsync()
         {
             var metadata = new SearchResultMetadata();
+            var reader = this.response.XmlReader;
 
-            await metadata.ReadXmlAsync(this.response.XmlReader).ConfigureAwait(false);
+            for (;;)
+            {
+                await metadata.ReadXmlAsync(reader).ConfigureAwait(false);
+
+                if (metadata.FieldNames.Count > 0)
+                {
+                    break;
+                }
+
+                Debug.Assert(reader.NodeType == XmlNodeType.EndElement && reader.Name == "results", "Expected: </results>");
+                await reader.ReadAsync().ConfigureAwait(false);
+            }
 
             return metadata;
         }
@@ -267,7 +279,12 @@ namespace Splunk.Client
             Debug.Assert(reader.ReadState <= ReadState.Interactive, string.Concat("ReadState: ", reader.ReadState));
             reader.MoveToElement();
 
-            reader.EnsureMarkup(XmlNodeType.Element, "result");
+            reader.EnsureMarkup(XmlNodeType.Element, "result", "response");
+
+            if (reader.Name == "response")
+            {
+                await this.response.ThrowRequestExceptionAsync().ConfigureAwait(false);
+            }
 
             var result = new SearchResult(metadata);
             await result.ReadXmlAsync(reader).ConfigureAwait(false);
@@ -315,11 +332,13 @@ namespace Splunk.Client
             /// </returns>
             protected override async Task ReadToEndAsync()
             {
-                var metadata = await this.Stream.ReadMetadataAsync().ConfigureAwait(false);
+                var stream = this.Stream;
 
-                while (this.Stream.ReadState <= ReadState.Interactive)
+                while (stream.ReadState <= ReadState.Interactive)
                 {
-                    while (this.Stream.ReadState <= ReadState.Interactive)
+                    var metadata = await stream.ReadMetadataAsync().ConfigureAwait(false);
+
+                    while (stream.ReadState <= ReadState.Interactive)
                     {
                         SearchResult result = await this.Stream.ReadResultAsync(metadata).ConfigureAwait(false);
 
@@ -330,8 +349,6 @@ namespace Splunk.Client
 
                         this.Enqueue(result);
                     }
-
-                    metadata = await this.Stream.ReadMetadataAsync().ConfigureAwait(false);
                 }
             }
         }

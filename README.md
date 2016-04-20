@@ -1,5 +1,5 @@
 # Splunk SDK for C# 
-## Version 2.2.2
+## Version 2.2.3
 
 > **Note:** For the most up to date documentation for the Splunk SDK for C#, 
 > see http://dev.splunk.com/csharp.
@@ -79,7 +79,7 @@ For detailed API coverage, see this [coverage matrix](https://docs.google.com/sp
 
 We will publish guidance on how to migrate applications built using the Splunk SDK for C# 1.x to use the Splunk SDK for C# 2.x.
 
-## Getting started with the Splunk SDK for C#
+## Getting started with the Splunk SDK for C# 
 
 The Splunk SDK for C# contains library code and examples that show how to
 programmatically interact with Splunk for a variety of scenarios including
@@ -119,7 +119,7 @@ The Splunk SDK for C# support development in Xamarin Studio and Mono Develop. Yo
 
 To run the unit tests you will need to [download](https://github.com/xunit/xunit/releases) the latest release of xUnit and run using the command line tools or GUI runner.
 
-### Splunk SDK for C#
+### Splunk SDK for C# 
 
 #### MyGet feed
 

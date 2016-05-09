@@ -191,6 +191,7 @@ namespace Splunk.Client.UnitTests
                     ++count;
                 }
 
+                Assert.Equal(0, count);
                 Assert.Equal(count, stream.ReadCount);
             }
         }
@@ -213,6 +214,7 @@ namespace Splunk.Client.UnitTests
                     ++count;
                 }
 
+                Assert.Equal(0, count);
                 Assert.Equal(count, stream.ReadCount);
             }
         }

@@ -14,6 +14,8 @@
  * under the License.
  */
 
+using System.Linq;
+
 namespace Splunk.Client.UnitTests
 {
     using Splunk.Client;
@@ -154,6 +156,50 @@ namespace Splunk.Client.UnitTests
         async Task CanSkipEmptyResults()
         {
             var baseFileName = Path.Combine(TestAtomFeed.Directory, "DVPL-5873");
+            var message = new HttpResponseMessage(HttpStatusCode.OK);
+
+            message.Content = new StreamContent(new FileStream(baseFileName + ".xml", FileMode.Open, FileAccess.Read));
+
+            using (var stream = await SearchResultStream.CreateAsync(message))
+            {
+                int count = 0;
+
+                foreach (var observedResult in stream)
+                {
+                    ++count;
+                }
+
+                Assert.Equal(count, stream.ReadCount);
+            }
+        }
+
+        [Trait("unit-test", "Splunk.Client.SearchResultStream")]
+        [Fact]
+        async Task CanHandleSelfClosingEmptySearchResults()
+        {
+            var baseFileName = Path.Combine(TestAtomFeed.Directory, "SelfClosingEmptySearchResults");
+            var message = new HttpResponseMessage(HttpStatusCode.OK);
+
+            message.Content = new StreamContent(new FileStream(baseFileName + ".xml", FileMode.Open, FileAccess.Read));
+
+            using (var stream = await SearchResultStream.CreateAsync(message))
+            {
+                int count = 0;
+
+                foreach (var observedResult in stream)
+                {
+                    ++count;
+                }
+
+                Assert.Equal(count, stream.ReadCount);
+            }
+        }
+
+        [Trait("unit-test", "Splunk.Client.SearchResultStream")]
+        [Fact]
+        async Task CanHandleEmptySearchResults()
+        {
+            var baseFileName = Path.Combine(TestAtomFeed.Directory, "EmptySearchResults");
             var message = new HttpResponseMessage(HttpStatusCode.OK);
 
             message.Content = new StreamContent(new FileStream(baseFileName + ".xml", FileMode.Open, FileAccess.Read));

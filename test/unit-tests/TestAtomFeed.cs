@@ -97,9 +97,13 @@ namespace Splunk.Client.UnitTests
         {
             var NormalizePropertyName = typeof(AtomEntry).GetMethod("NormalizePropertyName", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
-            var good = new object[] { "valid-name" };
+            var good = new object[] { "validname" };
             string goodName = NormalizePropertyName.Invoke(null, good).ToString();
-            Assert.Equal(goodName, "valid-name");
+            Assert.Equal(goodName, "validname");
+
+            var camelCase = new object[] { "valid-name" };
+            string camelCaseName = NormalizePropertyName.Invoke(null, camelCase).ToString();
+            Assert.Equal(goodName, "ValidName");
 
             var empty = new object[] { string.Empty };
             string emptyName = NormalizePropertyName.Invoke(null, empty).ToString();

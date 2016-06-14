@@ -103,7 +103,7 @@ namespace Splunk.Client.UnitTests
 
             var camelCase = new object[] { "valid-name" };
             string camelCaseName = NormalizePropertyName.Invoke(null, camelCase).ToString();
-            Assert.Equal(goodName, "ValidName");
+            Assert.Equal(goodName, "Validname");
 
             var empty = new object[] { string.Empty };
             string emptyName = NormalizePropertyName.Invoke(null, empty).ToString();

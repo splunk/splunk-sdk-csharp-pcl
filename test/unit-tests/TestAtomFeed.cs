@@ -99,7 +99,7 @@ namespace Splunk.Client.UnitTests
 
             var good = new object[] { "validname" };
             string goodName = NormalizePropertyName.Invoke(null, good).ToString();
-            Assert.Equal(goodName, "validname");
+            Assert.Equal(goodName, "Validname");
 
             var camelCase = new object[] { "valid-name" };
             string camelCaseName = NormalizePropertyName.Invoke(null, camelCase).ToString();

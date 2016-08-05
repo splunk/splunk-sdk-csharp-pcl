@@ -92,6 +92,11 @@ namespace Splunk.Client
             string preview = reader.GetRequiredAttribute("preview");
             this.IsFinal = !BooleanConverter.Instance.Convert(preview);
 
+            if (reader.IsEmptyElement)
+            {
+                return;
+            }
+
             if (!await reader.ReadAsync().ConfigureAwait(false))
             {
                 return;

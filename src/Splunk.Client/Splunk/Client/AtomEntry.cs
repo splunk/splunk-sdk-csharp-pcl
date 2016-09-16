@@ -389,6 +389,21 @@ namespace Splunk.Client
                     string propertyName;
                     dynamic propertyValue;
 
+                    // There are cases where the server sends us bad values for "s:key", namely
+                    // the empty string. This happens for example when we get back the metadata for
+                    // a search job which contains an "eval". In these cases, we simply replace the
+                    // empty string with a literal string called "empty", so that we know where it came
+                    // from.
+                    //
+                    // The risk with this fix is that we will have multiple empty keys at the same 
+                    // level, and thus using "empty" would clash. However, this would be an even more
+                    // serious error on the part of the API, as it would mean we have no way to disambiguate
+                    // those two entries. As such, we feel it is safe.
+                    if (names[names.Length - 1] == "")
+                    {
+                        names[names.Length - 1] = "empty";
+                    }
+
                     for (int i = 0; i < names.Length - 1; i++)
                     {
                         propertyName = NormalizePropertyName(names[i]);

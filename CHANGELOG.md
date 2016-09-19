@@ -1,5 +1,11 @@
 # Splunk SDK for C# PCL
 
+## Version 2.2.4
+
+### Bug Fixes
+
+* Handle empty strings in Atom entry responses from the REST API. GitHub pull request #60.
+
 ## Version 2.2.3
 
 ### New features and APIs

@@ -97,6 +97,11 @@ namespace Splunk.Client
                 return;
             }
 
+            if (reader.Name == "results" && reader.NodeType == XmlNodeType.EndElement)
+            {
+                return;
+            }
+
             reader.EnsureMarkup(XmlNodeType.Element, "meta");
             await reader.ReadAsync().ConfigureAwait(false);
             reader.EnsureMarkup(XmlNodeType.Element, "fieldOrder");

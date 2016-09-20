@@ -260,6 +260,11 @@ namespace Splunk.Client
                     break;
                 }
 
+                if (reader.EOF)
+                {
+                    break;
+                }
+
                 Debug.Assert(reader.NodeType == XmlNodeType.EndElement && reader.Name == "results", "Expected: </results>");
                 await reader.ReadAsync().ConfigureAwait(false);
             }

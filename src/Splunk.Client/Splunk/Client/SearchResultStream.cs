@@ -260,8 +260,17 @@ namespace Splunk.Client
                     break;
                 }
 
-                Debug.Assert(reader.NodeType == XmlNodeType.EndElement && reader.Name == "results", "Expected: </results>");
+                Debug.Assert(reader.Name == "results" && (reader.IsEmptyElement || 
+                    reader.NodeType == XmlNodeType.EndElement),
+                    "Expected: <results/> or </results>");
+
+                var isEmptyElement = reader.IsEmptyElement;
                 await reader.ReadAsync().ConfigureAwait(false);
+
+                if (isEmptyElement)
+                {
+                    break;
+                }
             }
 
             return metadata;

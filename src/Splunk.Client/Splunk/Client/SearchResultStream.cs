@@ -263,11 +263,12 @@ namespace Splunk.Client
                 Debug.Assert(reader.Name == "results" && (reader.IsEmptyElement || 
                     reader.NodeType == XmlNodeType.EndElement),
                     "Expected: <results/> or </results>");
-
+                    
                 var isEmptyElement = reader.IsEmptyElement;
+                var readerNodeType = reader.NodeType;
                 await reader.ReadAsync().ConfigureAwait(false);
 
-                if (isEmptyElement)
+                if (isEmptyElement || readerNodeType == XmlNodeType.EndElement)
                 {
                     break;
                 }

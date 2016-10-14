@@ -91,6 +91,31 @@ namespace Splunk.Client.UnitTests
             }   
         }
 
+        [Trait("unit-test", "Splunk.Client.AtomFeed")]
+        [Fact]
+        public static async Task ParseDictionaryAsync()
+        {
+            // Test to verify GitHub PR #57 - handling empty key name to "Empty" for <s:key name="">
+            var path = Path.Combine(Directory, "AtomFeed.EmptyDictionaryKeyName.xml");
+            using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
+                var feed = new AtomFeed();
+                await feed.ReadXmlAsync(reader);
+                
+                Assert.Equal(1, feed.Entries.Count);
+                AtomEntry entry = feed.Entries[0];
+                dynamic content = entry.Content;
+                Assert.NotNull(content);
+                Assert.NotNull(content.Key);
+                Assert.NotNull(content.Key.Empty);
+                Assert.Equal(1, ((IDictionary<string, object>)content.Key.Empty).Count);
+                Assert.Equal("num", content.Key.Empty.Type);
+                Assert.Equal(new ReadOnlyDictionary<string, Uri>(new Dictionary<string, Uri>()), feed.Links);
+                Assert.Equal(new ReadOnlyCollection<Message>(new List<Message>()), feed.Messages);
+            }
+        }
+
         #region Privates/internals
 
         static readonly XmlReaderSettings XmlReaderSettings = new XmlReaderSettings()

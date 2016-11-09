@@ -93,10 +93,10 @@ namespace Splunk.Client.UnitTests
 
         [Trait("unit-test", "Splunk.Client.AtomFeed")]
         [Fact]
-        public static async Task ParseDictionaryAsync()
+        public static async Task ParseDictionaryAsyncAtomFeed()
         {
             // Test to verify GitHub PR #57 - handling empty key name to "Empty" for <s:key name="">
-            var path = Path.Combine(Directory, "AtomFeed.EmptyDictionaryKeyName.xml");
+            var path = Path.Combine(Directory, "AtomFeed.EmptyDictionaryKeyNameAtomFeed.xml");
             using(var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
@@ -113,6 +113,28 @@ namespace Splunk.Client.UnitTests
                 Assert.Equal("num", content.Key.Empty.Type);
                 Assert.Equal(new ReadOnlyDictionary<string, Uri>(new Dictionary<string, Uri>()), feed.Links);
                 Assert.Equal(new ReadOnlyCollection<Message>(new List<Message>()), feed.Messages);
+            }
+        }
+
+        [Trait("unit-test", "Splunk.Client.AtomFeed")]
+        [Fact]
+        public static async Task ParseDictionaryAsyncAtomEntry()
+            {
+            // Another Test to verify GitHub PR #57 - handling empty key name to "Empty" for <s:key name="">
+            var path = Path.Combine(Directory, "AtomFeed.EmptyDictionaryKeyNameAtomEntry.xml");
+            using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                var reader = XmlReader.Create(stream, TestAtomFeed.XmlReaderSettings);
+                var entry = new AtomEntry();
+                await entry.ReadXmlAsync(reader);
+                
+                dynamic content = entry.Content;
+                Assert.NotNull(content);
+                Assert.NotNull(content.FieldMetadataEvents);
+                Assert.NotNull(content.FieldMetadataEvents.Empty);
+                Assert.Equal(1, ((IDictionary<string, object>)content.FieldMetadataEvents.Empty).Count);
+                Assert.Equal("str", content.FieldMetadataEvents.Empty.Type);
+                Assert.NotEqual(new ReadOnlyDictionary<string, Uri>(new Dictionary<string, Uri>()), entry.Links);
             }
         }
 

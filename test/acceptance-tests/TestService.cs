@@ -1749,7 +1749,8 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                const string search = "search index=_internal | head 100";
+                // Changed to 10, we aren't guaranteed to have 100 events yet, especially when running in CI
+                const string search = "search index=_internal | head 10";
                 var args = new SearchExportArgs { Count = 0 };
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))

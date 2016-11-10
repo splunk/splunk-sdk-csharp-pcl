@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This is to override browser formatting; see server.conf[httpServer] to disable. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .-->
+<?xml-stylesheet type="text/xml" href="/static/atom.xsl"?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:s="http://dev.splunk.com/ns/rest">
+    <title>search index=_internal | head 10</title>
+    <id>http://localhost:8089/servicesNS/nobody/search/search/jobs/1474403860.123</id>
+    <updated>2016-09-20T13:37:40.375-07:00</updated>
+    <link href="/servicesNS/nobody/search/search/jobs/1474403860.123" rel="alternate"/>
+    <published>2016-09-20T13:37:40.000-07:00</published>
+    <link href="/servicesNS/nobody/search/search/jobs/1474403860.123/search.log" rel="search.log"/>
+    <link href="/servicesNS/nobody/search/search/jobs/1474403860.123/events" rel="events"/>
+    <link href="/servicesNS/nobody/search/search/jobs/1474403860.123/results" rel="results"/>
+    <link href="/servicesNS/nobody/search/search/jobs/1474403860.123/results_preview" rel="results_preview"/>
+    <link href="/servicesNS/nobody/search/search/jobs/1474403860.123/timeline" rel="timeline"/>
+    <link href="/servicesNS/nobody/search/search/jobs/1474403860.123/summary" rel="summary"/>
+    <link href="/servicesNS/nobody/search/search/jobs/1474403860.123/control" rel="control"/>
+    <author>
+        <name>admin</name>
+    </author>
+    <content type="text/xml">
+        <s:dict>
+            <s:key name="canSummarize">0</s:key>
+            <s:key name="cursorTime">1969-12-31T16:00:00.000-08:00</s:key>
+            <s:key name="defaultSaveTTL">604800</s:key>
+            <s:key name="defaultTTL">600</s:key>
+            <s:key name="delegate"/>
+            <s:key name="diskUsage">196608</s:key>
+            <s:key name="dispatchState">DONE</s:key>
+            <s:key name="doneProgress">1.00000</s:key>
+            <s:key name="dropCount">0</s:key>
+            <s:key name="earliestTime">2000-11-17T00:36:11.000-08:00</s:key>
+            <s:key name="eventAvailableCount">0</s:key>
+            <s:key name="eventCount">0</s:key>
+            <s:key name="eventFieldCount">0</s:key>
+            <s:key name="eventIsStreaming">1</s:key>
+            <s:key name="eventIsTruncated">1</s:key>
+            <s:key name="eventSearch">search index=_internal | head 10</s:key>
+            <s:key name="eventSorting">desc</s:key>
+            <s:key name="isBatchModeSearch">0</s:key>
+            <s:key name="isDone">1</s:key>
+            <s:key name="isFailed">0</s:key>
+            <s:key name="isFinalized">0</s:key>
+            <s:key name="isPaused">0</s:key>
+            <s:key name="isPreviewEnabled">0</s:key>
+            <s:key name="isRealTimeSearch">0</s:key>
+            <s:key name="isRemoteTimeline">0</s:key>
+            <s:key name="isSaved">0</s:key>
+            <s:key name="isSavedSearch">0</s:key>
+            <s:key name="isTimeCursored">1</s:key>
+            <s:key name="isZombie">0</s:key>
+            <s:key name="keywords">eventid::123 source::wineventlog:security username::admin</s:key>
+            <s:key name="label"/>
+            <s:key name="normalizedSearch">search index=_internal | head 0</s:key>
+            <s:key name="numPreviews">0</s:key>
+            <s:key name="pid">32111</s:key>
+            <s:key name="priority">5</s:key>
+            <s:key name="remoteSearch">search index=_internal | head 10</s:key>
+            <s:key name="reportSearch">table  _time,summary,HostName,clientip,location</s:key>
+            <s:key name="resultCount">0</s:key>
+            <s:key name="resultIsStreaming">0</s:key>
+            <s:key name="resultPreviewCount">0</s:key>
+            <s:key name="runDuration">0.291000</s:key>
+            <s:key name="sampleRatio">1</s:key>
+            <s:key name="sampleSeed">0</s:key>
+            <s:key name="scanCount">0</s:key>
+            <s:key name="searchCanBeEventType">0</s:key>
+            <s:key name="searchTotalBucketsCount">6</s:key>
+            <s:key name="searchTotalEliminatedBucketsCount">5</s:key>
+            <s:key name="sid">1474403860.123</s:key>
+            <s:key name="statusBuckets">0</s:key>
+            <s:key name="ttl">600</s:key>
+            <s:key name="performance">
+                <s:dict>
+                    <s:key name="command.dedup">
+                        <s:dict>
+                            <s:key name="duration_secs">0.008000</s:key>
+                            <s:key name="invocations">8</s:key>
+                            <s:key name="input_count">0</s:key>
+                            <s:key name="output_count">0</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="command.eval">
+                        <s:dict>
+                            <s:key name="duration_secs">0.008000</s:key>
+                            <s:key name="invocations">8</s:key>
+                            <s:key name="input_count">0</s:key>
+                            <s:key name="output_count">0</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="command.fields">
+                        <s:dict>
+                            <s:key name="duration_secs">0.005000</s:key>
+                            <s:key name="invocations">7</s:key>
+                            <s:key name="input_count">0</s:key>
+                            <s:key name="output_count">0</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="command.lookup">
+                        <s:dict>
+                            <s:key name="duration_secs">0.008000</s:key>
+                            <s:key name="invocations">8</s:key>
+                            <s:key name="input_count">0</s:key>
+                            <s:key name="output_count">0</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="command.prededup">
+                        <s:dict>
+                            <s:key name="duration_secs">0.007000</s:key>
+                            <s:key name="invocations">7</s:key>
+                            <s:key name="input_count">0</s:key>
+                            <s:key name="output_count">0</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="command.search">
+                        <s:dict>
+                            <s:key name="duration_secs">0.007000</s:key>
+                            <s:key name="invocations">7</s:key>
+                            <s:key name="input_count">0</s:key>
+                            <s:key name="output_count">0</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="command.search.index">
+                        <s:dict>
+                            <s:key name="duration_secs">0.009000</s:key>
+                            <s:key name="invocations">9</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="command.search.summary">
+                        <s:dict>
+                            <s:key name="duration_secs">0.004000</s:key>
+                            <s:key name="invocations">7</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="command.table">
+                        <s:dict>
+                            <s:key name="duration_secs">0.001000</s:key>
+                            <s:key name="invocations">1</s:key>
+                            <s:key name="input_count">0</s:key>
+                            <s:key name="output_count">0</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.check_disk_usage">
+                        <s:dict>
+                            <s:key name="duration_secs">0.001000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.createdSearchResultInfrastructure">
+                        <s:dict>
+                            <s:key name="duration_secs">0.001000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.evaluate">
+                        <s:dict>
+                            <s:key name="duration_secs">0.127000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.evaluate.dedup">
+                        <s:dict>
+                            <s:key name="duration_secs">0.001000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.evaluate.eval">
+                        <s:dict>
+                            <s:key name="duration_secs">0.001000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.evaluate.lookup">
+                        <s:dict>
+                            <s:key name="duration_secs">0.003000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.evaluate.search">
+                        <s:dict>
+                            <s:key name="duration_secs">0.124000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.evaluate.table">
+                        <s:dict>
+                            <s:key name="duration_secs">0.001000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.fetch">
+                        <s:dict>
+                            <s:key name="duration_secs">0.121000</s:key>
+                            <s:key name="invocations">8</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.localSearch">
+                        <s:dict>
+                            <s:key name="duration_secs">0.002000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.results_combiner">
+                        <s:dict>
+                            <s:key name="duration_secs">0.008000</s:key>
+                            <s:key name="invocations">8</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.stream.local">
+                        <s:dict>
+                            <s:key name="duration_secs">0.007000</s:key>
+                            <s:key name="invocations">7</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="dispatch.writeStatus">
+                        <s:dict>
+                            <s:key name="duration_secs">0.009000</s:key>
+                            <s:key name="invocations">5</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="startup.configuration">
+                        <s:dict>
+                            <s:key name="duration_secs">0.022000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="startup.handoff">
+                        <s:dict>
+                            <s:key name="duration_secs">0.051000</s:key>
+                            <s:key name="invocations">1</s:key>
+                        </s:dict>
+                    </s:key>
+                </s:dict>
+            </s:key>
+            <s:key name="fieldMetadataEvents">
+                <s:dict>
+                    <s:key name="">
+                        <s:dict>
+                            <s:key name="type">str</s:key>
+                        </s:dict>
+                    </s:key>
+                </s:dict>
+            </s:key>
+            <s:key name="messages">
+                <s:dict>
+                    <s:key name="info">
+                        <s:list>
+                            <s:item>No matching fields exist</s:item>
+                        </s:list>
+                    </s:key>
+                </s:dict>
+            </s:key>
+            <s:key name="request">
+                <s:dict>
+                    <s:key name="count">0</s:key>
+                    <s:key name="search">search index=_internal | head 10</s:key>
+                </s:dict>
+            </s:key>
+            <s:key name="runtime">
+                <s:dict>
+                    <s:key name="auto_cancel">0</s:key>
+                    <s:key name="auto_pause">0</s:key>
+                </s:dict>
+            </s:key>
+            <s:key name="eai:acl">
+                <s:dict>
+                    <s:key name="perms">
+                        <s:dict>
+                            <s:key name="read">
+                                <s:list>
+                                    <s:item>admin</s:item>
+                                </s:list>
+                            </s:key>
+                            <s:key name="write">
+                                <s:list>
+                                    <s:item>admin</s:item>
+                                </s:list>
+                            </s:key>
+                        </s:dict>
+                    </s:key>
+                    <s:key name="owner">admin</s:key>
+                    <s:key name="modifiable">1</s:key>
+                    <s:key name="sharing">global</s:key>
+                    <s:key name="app">search</s:key>
+                    <s:key name="can_write">1</s:key>
+                    <s:key name="ttl">600</s:key>
+                </s:dict>
+            </s:key>
+            <s:key name="searchProviders">
+                <s:list>
+                    <s:item>localhost</s:item>
+                </s:list>
+            </s:key>
+        </s:dict>
+    </content>
+</entry>

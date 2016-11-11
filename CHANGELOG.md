@@ -1,5 +1,11 @@
 # Splunk SDK for C# PCL
 
+## Version 2.2.5
+
+### Bug Fixes
+
+* Fix a bug with hanging oneshot searches (GitHub Issue [#54](https://github.com/splunk/splunk-sdk-csharp-pcl/issues/54)).
+
 ## Version 2.2.4
 
 ### Bug Fixes

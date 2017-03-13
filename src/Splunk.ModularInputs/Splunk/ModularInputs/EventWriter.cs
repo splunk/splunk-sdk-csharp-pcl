@@ -94,11 +94,17 @@ namespace Splunk.ModularInputs
         {
             if (completed)
                 throw new ObjectDisposedException("EventWriter already disposed.");
+
+            // Don't start the eventQueueMonitor up until we actually want to write
+            // events so we don't get empty <stream/> elements in cases where
+            // we don't actually queue anything.
             if (eventQueueMonitor == null)
-                // Don't start the eventQueueMonitor up until we actually want to write
-                // events so we don't get empty <stream/> elements in cases where
-                // we don't actually queue anything.
-                eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
+                lock (synchronizationObject)
+                {
+                    if (eventQueueMonitor == null)
+                        eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
+                }
+
             await Task.Run(() => eventQueue.Add(e));
         }
 

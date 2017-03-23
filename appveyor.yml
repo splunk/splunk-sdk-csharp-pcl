@@ -4,17 +4,17 @@ version: "{build}"
 init:
 - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
-# Build 6.2 and 6.3
+# Splunk version matrix
 environment:
   matrix:
-  - SPLUNK_VERSION: 6.2.6
-    SPLUNK_BUILD: 274160
-    SDK_APP_VERSION: 1.0.0
   - SPLUNK_VERSION: 6.3.1
     SPLUNK_BUILD: f3e41e4b37b2
     SDK_APP_VERSION: 1.0.0
-  - SPLUNK_VERSION: 6.3.3
-    SPLUNK_BUILD: f44afce176d0
+  - SPLUNK_VERSION: 6.4.1
+    SPLUNK_BUILD: debde650d26e
+    SDK_APP_VERSION: 1.0.0
+  - SPLUNK_VERSION: 6.5.1
+    SPLUNK_BUILD: f74036626f0c
     SDK_APP_VERSION: 1.0.0
 
 

@@ -46,8 +46,8 @@ namespace Splunk.Client
         /// </param>
         public Namespace(string user, string app)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(user), "user");
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(app), "app");
+            Contract.Requires(!string.IsNullOrEmpty(user), "user");
+            Contract.Requires(!string.IsNullOrEmpty(app), "app");
 
             this.User = user;
             this.App = app;

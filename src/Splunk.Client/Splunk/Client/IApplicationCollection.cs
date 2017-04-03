@@ -157,8 +157,8 @@ namespace Splunk.Client
 
         public Task<TApplication> CreateAsync(string name, string template, ApplicationAttributes attributes)
         {
-            Contract.Requires<ArgumentNullException>(template != null);
-            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires(template != null);
+            Contract.Requires(name != null);
             return default(Task<TApplication>);
         }
 
@@ -182,13 +182,13 @@ namespace Splunk.Client
 
         public Task GetSliceAsync(ApplicationCollection.Filter criteria)
         {
-            Contract.Requires<ArgumentNullException>(criteria != null);
+            Contract.Requires(criteria != null);
             return default(Task);
         }
 
         public Task<TApplication> InstallAsync(string path, string name = null, bool update = false)
         {
-            Contract.Requires<ArgumentNullException>(path != null);
+            Contract.Requires(path != null);
             return default(Task<TApplication>);
         }
 

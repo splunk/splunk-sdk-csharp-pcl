@@ -95,9 +95,9 @@ namespace Splunk.Client
         /// </exception>
         public Context(Scheme scheme, string host, int port, TimeSpan timeout, HttpMessageHandler handler, bool disposeHandler = true)
         {
-            Contract.Requires<ArgumentException>(scheme == Scheme.Http || scheme == Scheme.Https);
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(host));
-            Contract.Requires<ArgumentException>(0 <= port && port <= 65535);
+            Contract.Requires(scheme == Scheme.Http || scheme == Scheme.Https);
+            Contract.Requires(!string.IsNullOrEmpty(host));
+            Contract.Requires(0 <= port && port <= 65535);
 
             this.Scheme = scheme;
             this.Host = host;
@@ -408,8 +408,8 @@ namespace Splunk.Client
         public virtual async Task<Response> SendAsync(HttpMethod method, Namespace ns, ResourceName resource,
             params IEnumerable<Argument>[] argumentSets)
         {
-            Contract.Requires<ArgumentNullException>(method != null);
-            Contract.Requires<ArgumentException>(method == HttpMethod.Delete || method == HttpMethod.Get || method == HttpMethod.Post);
+            Contract.Requires(method != null);
+            Contract.Requires(method == HttpMethod.Delete || method == HttpMethod.Get || method == HttpMethod.Post);
             var token = CancellationToken.None;
             HttpContent content = null;
 
@@ -523,8 +523,8 @@ namespace Splunk.Client
         async Task<HttpResponseMessage> SendAsync(HttpMethod method, Namespace ns, ResourceName resource, HttpContent content, 
             CancellationToken cancellationToken, IEnumerable<Argument>[] argumentSets)
         {
-            Contract.Requires<ArgumentNullException>(ns != null);
-            Contract.Requires<ArgumentNullException>(resource != null);
+            Contract.Requires(ns != null);
+            Contract.Requires(resource != null);
 
             var serviceUri = this.CreateServiceUri(ns, resource, argumentSets);
 

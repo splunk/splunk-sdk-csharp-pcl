@@ -57,7 +57,7 @@ namespace Splunk.Client
         /// </exception>
         public Service(Context context, Namespace ns = null)
         {
-            Contract.Requires<ArgumentNullException>(context != null, "context");
+            Contract.Requires(context != null, "context");
 
             this.context = context;
             this.ns = ns ?? Namespace.Default;
@@ -119,7 +119,7 @@ namespace Splunk.Client
         public Service(Uri uri, Namespace ns = null)
             : this(new Context(GetScheme(uri.Scheme), uri.Host, uri.Port), ns)
         {
-            Contract.Requires<ArgumentNullException>(uri != null);
+            Contract.Requires(uri != null);
         }
 
         private static Scheme GetScheme(string schemeString)

@@ -52,7 +52,7 @@ namespace Splunk.Client
         internal ResourceNotFoundException(HttpResponseMessage message, ReadOnlyCollection<Message> details)
             : base(message, details)
         {
-            Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.NotFound);
+            Contract.Requires(message.StatusCode == HttpStatusCode.NotFound);
         }
     }
 }

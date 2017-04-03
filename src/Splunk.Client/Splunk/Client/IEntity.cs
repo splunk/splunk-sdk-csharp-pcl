@@ -176,9 +176,9 @@ namespace Splunk.Client
 
         public Task<bool> SendAsync(HttpMethod method, string action, params Argument[] arguments)
         {
-            Contract.Requires<ArgumentException>(method == HttpMethod.Post || method == HttpMethod.Get || method == HttpMethod.Delete);
-            Contract.Requires<ArgumentNullException>(action != null);
-            Contract.Requires<ArgumentException>(action.Length != 0);
+            Contract.Requires(method == HttpMethod.Post || method == HttpMethod.Get || method == HttpMethod.Delete);
+            Contract.Requires(action != null);
+            Contract.Requires(action.Length != 0);
             return default(Task<bool>);
         }
 
@@ -186,13 +186,13 @@ namespace Splunk.Client
 
         public Task<bool> UpdateAsync(params Argument[] arguments)
         {
-            Contract.Requires<ArgumentNullException>(arguments != null);
+            Contract.Requires(arguments != null);
             return default(Task<bool>);
         }
 
         public Task<bool> UpdateAsync(IEnumerable<Argument> arguments)
         {
-            Contract.Requires<ArgumentNullException>(arguments != null);
+            Contract.Requires(arguments != null);
             return default(Task<bool>);
         }
     }

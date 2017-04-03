@@ -115,7 +115,7 @@ namespace Splunk.Client
     {
         public override TValue Convert(object value)
         {
-            Contract.Requires<ArgumentNullException>(value != null);
+            Contract.Requires(value != null);
             return default(TValue);
         }
     }

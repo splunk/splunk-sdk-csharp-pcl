@@ -108,7 +108,7 @@ namespace Splunk.Client
             JobArgs args = null, CustomJobArgs customArgs = null, 
             DispatchState requiredState = DispatchState.Running)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
+            Contract.Requires(search != null);
             return default(Task<TJob>);
         }
 
@@ -129,7 +129,7 @@ namespace Splunk.Client
 
         public Task GetSliceAsync(JobCollection.Filter criteria)
         {
-            Contract.Requires<ArgumentNullException>(criteria != null);
+            Contract.Requires(criteria != null);
             return default(Task);
         }
 

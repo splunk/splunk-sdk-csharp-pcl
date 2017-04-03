@@ -169,7 +169,7 @@ namespace Splunk.Client
         /// </returns>
         public Task<TConfigurationStanza> CreateAsync(IEnumerable<Argument> arguments)
         {
-            Contract.Requires<ArgumentNullException>(arguments != null);
+            Contract.Requires(arguments != null);
             return default(Task<TConfigurationStanza>);
         }
 
@@ -184,7 +184,7 @@ namespace Splunk.Client
         /// </returns>
         public Task<TConfigurationStanza> CreateAsync(string stanzaName)
         {
-            Contract.Requires<ArgumentNullException>(stanzaName != null);
+            Contract.Requires(stanzaName != null);
             return default(Task<TConfigurationStanza>);
         }
 
@@ -234,8 +234,8 @@ namespace Splunk.Client
         /// </returns>
         public Task<string> GetSettingAsync(string stanzaName, string keyName)
         {
-            Contract.Requires<ArgumentNullException>(stanzaName != null);
-            Contract.Requires<ArgumentNullException>(keyName != null);
+            Contract.Requires(stanzaName != null);
+            Contract.Requires(keyName != null);
             return default(Task<string>);
         }
 
@@ -280,7 +280,7 @@ namespace Splunk.Client
         /// </returns>
         public Task RemoveAsync(string stanzaName)
         {
-            Contract.Requires<ArgumentNullException>(stanzaName != null);
+            Contract.Requires(stanzaName != null);
             return default(Task);
         }
 
@@ -298,7 +298,7 @@ namespace Splunk.Client
         /// </returns>
         public Task<TConfigurationStanza> UpdateAsync(string stanzaName, params Argument[] settings)
         {
-            Contract.Requires<ArgumentNullException>(stanzaName != null);
+            Contract.Requires(stanzaName != null);
             return default(Task<TConfigurationStanza>);
         }
 
@@ -319,9 +319,9 @@ namespace Splunk.Client
         /// </returns>
         public Task UpdateSettingAsync(string stanzaName, string keyName, object value)
         {
-            Contract.Requires<ArgumentNullException>(stanzaName != null);
-            Contract.Requires<ArgumentNullException>(keyName != null);
-            Contract.Requires<ArgumentNullException>(value != null);
+            Contract.Requires(stanzaName != null);
+            Contract.Requires(keyName != null);
+            Contract.Requires(value != null);
             return default(Task<string>);
         }
 
@@ -342,9 +342,9 @@ namespace Splunk.Client
         /// </returns>
         public Task UpdateSettingAsync(string stanzaName, string keyName, string value)
         {
-            Contract.Requires<ArgumentNullException>(stanzaName != null);
-            Contract.Requires<ArgumentNullException>(keyName != null);
-            Contract.Requires<ArgumentNullException>(value != null);
+            Contract.Requires(stanzaName != null);
+            Contract.Requires(keyName != null);
+            Contract.Requires(value != null);
             return default(Task<string>);
         }
     }

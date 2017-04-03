@@ -54,7 +54,7 @@ namespace Splunk.Client
         internal AuthenticationFailureException(HttpResponseMessage message, ReadOnlyCollection<Message> details)
             : base(message, details)
         {
-            Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.Unauthorized);
+            Contract.Requires(message.StatusCode == HttpStatusCode.Unauthorized);
         }
     }
 }

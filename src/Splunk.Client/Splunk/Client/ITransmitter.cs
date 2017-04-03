@@ -101,7 +101,7 @@ namespace Splunk.Client
         /// <seealso cref="M:Splunk.Client.ITransmitter.SendAsync(Stream,string,TransmitterArgs)"/>
         public Task SendAsync(Stream eventStream, string indexName = null, TransmitterArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(eventStream != null);
+            Contract.Requires(eventStream != null);
             return default(Task);
         }
 
@@ -123,7 +123,7 @@ namespace Splunk.Client
         /// <seealso cref="M:Splunk.Client.ITransmitter.SendAsync(string,string,TransmitterArgs)"/>
         public Task<SearchResult> SendAsync(string eventText, string indexName = null, TransmitterArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(eventText != null);
+            Contract.Requires(eventText != null);
             return default(Task<SearchResult>);
         }
     }

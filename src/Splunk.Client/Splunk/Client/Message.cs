@@ -48,8 +48,8 @@ namespace Splunk.Client
         /// </param>
         internal Message(MessageType type, string text)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(MessageType.Debug <= type && type <= MessageType.Fatal, "type");
-            Contract.Requires<ArgumentNullException>(text != null, "text");
+            Contract.Requires(MessageType.Debug <= type && type <= MessageType.Fatal, "type");
+            Contract.Requires(text != null, "text");
             this.MessageType = type;
             this.Text = text;
         }

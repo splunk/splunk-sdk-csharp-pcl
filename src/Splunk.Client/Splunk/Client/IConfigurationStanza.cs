@@ -110,7 +110,7 @@ namespace Splunk.Client
 
         public Task<string> GetAsync(string keyName)
         {
-            Contract.Requires<ArgumentNullException>(keyName != null);
+            Contract.Requires(keyName != null);
             return default(Task<string>);
         }
 
@@ -129,15 +129,15 @@ namespace Splunk.Client
 
         public Task UpdateAsync(string keyName, object value)
         {
-            Contract.Requires<ArgumentNullException>(keyName != null);
-            Contract.Requires<ArgumentNullException>(value != null);
+            Contract.Requires(keyName != null);
+            Contract.Requires(value != null);
             return default(Task);
         }
 
         public Task UpdateAsync(string keyName, string value)
         {
-            Contract.Requires<ArgumentNullException>(keyName != null);
-            Contract.Requires<ArgumentNullException>(value != null);
+            Contract.Requires(keyName != null);
+            Contract.Requires(value != null);
             return default(Task);
         }
 

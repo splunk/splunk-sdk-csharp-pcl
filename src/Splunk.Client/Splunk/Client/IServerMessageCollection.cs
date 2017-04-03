@@ -111,8 +111,8 @@ namespace Splunk.Client
 
         public Task<TServerMessage> CreateAsync(string name, ServerMessageSeverity type, string text)
         {
-            Contract.Requires<ArgumentNullException>(name != null);
-            Contract.Requires<ArgumentNullException>(text != null);
+            Contract.Requires(name != null);
+            Contract.Requires(text != null);
             return default(Task<TServerMessage>);
         }
 
@@ -136,7 +136,7 @@ namespace Splunk.Client
 
         public Task GetSliceAsync(ServerMessageCollection.Filter criteria)
         {
-            Contract.Requires<ArgumentNullException>(criteria != null);
+            Contract.Requires(criteria != null);
             return default(Task);
         }
 

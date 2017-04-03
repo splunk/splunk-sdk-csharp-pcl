@@ -163,8 +163,8 @@ namespace Splunk.Client
         public Task<TSavedSearch> CreateAsync(string name, string search, SavedSearchAttributes attributes,
             SavedSearchDispatchArgs dispatchArgs, SavedSearchTemplateArgs templateArgs)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
-            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires(search != null);
+            Contract.Requires(name != null);
             return default(Task<TSavedSearch>);
         }
 
@@ -179,7 +179,7 @@ namespace Splunk.Client
         /// </returns>
         public Task GetSliceAsync(SavedSearchCollection.Filter criteria)
         {
-            Contract.Requires<ArgumentNullException>(criteria != null);
+            Contract.Requires(criteria != null);
             return default(Task);
         }
 

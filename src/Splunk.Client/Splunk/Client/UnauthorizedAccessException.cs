@@ -53,7 +53,7 @@ namespace Splunk.Client
         internal UnauthorizedAccessException(HttpResponseMessage message, ReadOnlyCollection<Message> details)
             : base(message, details)
         {
-            Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.Forbidden);
+            Contract.Requires(message.StatusCode == HttpStatusCode.Forbidden);
         }
     }
 }

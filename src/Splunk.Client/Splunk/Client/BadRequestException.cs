@@ -52,7 +52,7 @@ namespace Splunk.Client
         internal BadRequestException(HttpResponseMessage message, ReadOnlyCollection<Message> details)
             : base(message, details)
         {
-            Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.BadRequest);
+            Contract.Requires(message.StatusCode == HttpStatusCode.BadRequest);
         }
     }
 }

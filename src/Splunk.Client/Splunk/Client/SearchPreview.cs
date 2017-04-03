@@ -90,7 +90,7 @@ namespace Splunk.Client
         /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
-            Contract.Requires<ArgumentNullException>(reader != null);
+            Contract.Requires(reader != null);
 
             //// Intitialize data members
             

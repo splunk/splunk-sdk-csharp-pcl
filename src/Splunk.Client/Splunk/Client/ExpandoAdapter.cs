@@ -41,7 +41,7 @@ namespace Splunk.Client
         /// </param>
         protected ExpandoAdapter(ExpandoObject expandoObject)
         {
-            Contract.Requires<InvalidOperationException>(expandoObject != null);
+            Contract.Requires(expandoObject != null);
             this.expandoObject = expandoObject;
         }
 
@@ -91,7 +91,7 @@ namespace Splunk.Client
         /// </returns>
         public dynamic GetValue(string name)
         {
-            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires(name != null);
 
             var dictionary = (IDictionary<string, object>)this.Object;
             object value;
@@ -123,8 +123,8 @@ namespace Splunk.Client
         /// </returns>
         public TValue GetValue<TValue>(string name, ValueConverter<TValue> valueConverter)
         {
-            Contract.Requires<ArgumentNullException>(name != null);
-            Contract.Requires<ArgumentNullException>(valueConverter != null);
+            Contract.Requires(name != null);
+            Contract.Requires(valueConverter != null);
 
             var dictionary = (IDictionary<string, object>)this.Object;
             object value;

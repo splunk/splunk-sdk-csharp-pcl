@@ -62,7 +62,7 @@ namespace Splunk.Client
         protected internal ConfigurationStanza(Service service, string fileName, string stanzaName)
             : this(service.Context, service.Namespace, fileName, stanzaName)
         {
-            Contract.Requires<ArgumentNullException>(service != null);
+            Contract.Requires(service != null);
         }
 
         /// <summary>

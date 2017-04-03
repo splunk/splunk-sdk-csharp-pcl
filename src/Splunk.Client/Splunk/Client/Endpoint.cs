@@ -47,7 +47,7 @@ namespace Splunk.Client
         public Endpoint(Service service, ResourceName name)
             : this(service.Context, service.Namespace, name)
         {
-            Contract.Requires<ArgumentNullException>(service != null);
+            Contract.Requires(service != null);
         }
 
         /// <summary>
@@ -280,8 +280,8 @@ namespace Splunk.Client
         /// </exception>
         protected internal void Initialize(Context context, Uri id)
         {
-            Contract.Requires<ArgumentNullException>(context != null);
-            Contract.Requires<ArgumentNullException>(id != null);
+            Contract.Requires(context != null);
+            Contract.Requires(id != null);
 
             this.EnsureUninitialized();
 
@@ -359,10 +359,10 @@ namespace Splunk.Client
         /// </exception>
         protected internal void Initialize(Context context, Namespace ns, ResourceName name)
         {
-            Contract.Requires<ArgumentException>(name != null);
-            Contract.Requires<ArgumentNullException>(ns != null);
-            Contract.Requires<ArgumentNullException>(context != null);
-            Contract.Requires<ArgumentOutOfRangeException>(ns.IsSpecific);
+            Contract.Requires(name != null);
+            Contract.Requires(ns != null);
+            Contract.Requires(context != null);
+            Contract.Requires(ns.IsSpecific);
 
             this.EnsureUninitialized();
 

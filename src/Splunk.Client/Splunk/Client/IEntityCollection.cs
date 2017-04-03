@@ -146,7 +146,7 @@ namespace Splunk.Client
 
         public Task<TEntity> GetAsync(string name)
         {
-            Contract.Requires<ArgumentNullException>(name != null);
+            Contract.Requires(name != null);
             return default(Task<TEntity>);
         }
 
@@ -161,13 +161,13 @@ namespace Splunk.Client
 
         public Task GetSliceAsync(params Argument[] arguments)
         {
-            Contract.Requires<ArgumentNullException>(arguments != null);
+            Contract.Requires(arguments != null);
             return default(Task);
         }
 
         public Task GetSliceAsync(IEnumerable<Argument> arguments)
         {
-            Contract.Requires<ArgumentNullException>(arguments != null);
+            Contract.Requires(arguments != null);
             return default(Task);
         }
 

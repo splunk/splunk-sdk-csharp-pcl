@@ -54,7 +54,7 @@ namespace Splunk.Client
         internal InternalServerErrorException(HttpResponseMessage message, ReadOnlyCollection<Message> details)
             : base(message, details)
         {
-            Contract.Requires<ArgumentException>(message.StatusCode == HttpStatusCode.InternalServerError);
+            Contract.Requires(message.StatusCode == HttpStatusCode.InternalServerError);
         }
     }
 }

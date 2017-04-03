@@ -397,7 +397,7 @@ namespace Splunk.Client
 
         public Task GetAsync(SavedSearch.Filter criteria)
         {
-            Contract.Requires<ArgumentNullException>(criteria != null);
+            Contract.Requires(criteria != null);
             return default(Task);
         }
 
@@ -405,8 +405,8 @@ namespace Splunk.Client
 
         public Task<ReadOnlyCollection<DateTime>> GetScheduledTimesAsync(string earliestTime, string latestTime) 
         {
-            Contract.Requires<ArgumentNullException>(earliestTime != null);
-            Contract.Requires<ArgumentNullException>(latestTime != null);
+            Contract.Requires(earliestTime != null);
+            Contract.Requires(latestTime != null);
             return default(Task<ReadOnlyCollection<DateTime>>);
         }
 
@@ -427,7 +427,7 @@ namespace Splunk.Client
         public Task<bool> UpdateAsync(string search = null, SavedSearchAttributes attributes = null, 
             SavedSearchDispatchArgs dispatchArgs = null, SavedSearchTemplateArgs templateArgs = null)
         {
-            Contract.Requires<ArgumentException>(!(search == null && attributes == null && dispatchArgs == null && templateArgs == null));
+            Contract.Requires(!(search == null && attributes == null && dispatchArgs == null && templateArgs == null));
             return default(Task<bool>);
         }
 

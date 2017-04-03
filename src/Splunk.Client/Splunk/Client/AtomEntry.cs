@@ -168,7 +168,7 @@ namespace Splunk.Client
         /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
-            Contract.Requires<ArgumentNullException>(reader != null, "reader");
+            Contract.Requires(reader != null, "reader");
 
             this.Author = null;
             this.Content = null;
@@ -269,7 +269,7 @@ namespace Splunk.Client
 
         static string NormalizePropertyName(string name)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
+            Contract.Requires(!string.IsNullOrEmpty(name));
             var builder = new StringBuilder(name.Length);
             int index = 0;
 

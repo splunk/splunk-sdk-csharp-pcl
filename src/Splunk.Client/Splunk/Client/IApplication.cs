@@ -325,7 +325,7 @@ namespace Splunk.Client
 
         public Task<bool> UpdateAsync(ApplicationAttributes attributes, bool checkForUpdates)
         {
-            Contract.Requires<ArgumentNullException>(attributes != null);
+            Contract.Requires(attributes != null);
             return default(Task<bool>);
         }
 

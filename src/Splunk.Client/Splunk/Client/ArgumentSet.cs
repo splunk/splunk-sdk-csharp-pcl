@@ -72,7 +72,7 @@ namespace Splunk.Client
         /// </param>
         public ArgumentSet(string argumentPrefix, IEnumerable<Argument> arguments)
         {
-            Contract.Requires<ArgumentNullException>(arguments != null);
+            Contract.Requires(arguments != null);
             
             this.argumentPrefix = string.IsNullOrEmpty(argumentPrefix) ? null : argumentPrefix;
             this.set = new HashSet<Argument>(arguments);

@@ -139,8 +139,8 @@ namespace Splunk.Client
 
         public Task<TStoragePassword> CreateAsync(string password, string username, string realm)
         {
-            Contract.Requires<ArgumentException>(password != null);
-            Contract.Requires<ArgumentException>(username != null);
+            Contract.Requires(password != null);
+            Contract.Requires(username != null);
             return default(Task<TStoragePassword>);
         }
 
@@ -150,7 +150,7 @@ namespace Splunk.Client
 
         public Task<TStoragePassword> GetAsync(string username, string realm)
         {
-            Contract.Requires<ArgumentNullException>(username != null);
+            Contract.Requires(username != null);
             return default(Task<TStoragePassword>);
         }
 
@@ -163,7 +163,7 @@ namespace Splunk.Client
 
         public Task<TStoragePassword> GetOrNullAsync(string username, string realm)
         {
-            Contract.Requires<ArgumentNullException>(username != null);
+            Contract.Requires(username != null);
             return default(Task<TStoragePassword>);
         }
 
@@ -173,7 +173,7 @@ namespace Splunk.Client
 
         public Task GetSliceAsync(StoragePasswordCollection.Filter criteria)
         {
-            Contract.Requires<ArgumentException>(criteria != null);
+            Contract.Requires(criteria != null);
             return default(Task);
         }
 

@@ -49,7 +49,7 @@ namespace Splunk.Client
         protected internal Transmitter(Service service)
             : this(service.Context)
         {
-            Contract.Requires<ArgumentNullException>(service != null);
+            Contract.Requires(service != null);
         }
 
         /// <summary>

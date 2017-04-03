@@ -185,7 +185,7 @@ namespace Splunk.Client
         /// </returns>
         public async Task ReadXmlAsync(XmlReader reader)
         {
-            Contract.Requires<ArgumentNullException>(reader != null, "reader");
+            Contract.Requires(reader != null, "reader");
 
             this.Author = null;
             this.Entries = null;

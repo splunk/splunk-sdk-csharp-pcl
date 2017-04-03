@@ -99,7 +99,7 @@ namespace Splunk.Client
         protected internal Configuration(Service service, string fileName)
             : this(service.Context, service.Namespace, fileName)
         {
-            Contract.Requires<ArgumentNullException>(service != null);
+            Contract.Requires(service != null);
         }
 
         /// <summary>

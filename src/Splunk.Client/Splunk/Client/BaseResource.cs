@@ -274,8 +274,8 @@ namespace Splunk.Client
             Version generatorVersion)
             where TResource : BaseResource, new()
         {
-            Contract.Requires<ArgumentNullException>(entry != null);
-            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+            Contract.Requires(entry != null);
+            Contract.Requires(generatorVersion != null);
 
             resource.EnsureUninitialized();
 
@@ -338,7 +338,7 @@ namespace Splunk.Client
             where TCollection : BaseResource, new()
             where TResource : BaseResource, new()
         {
-            Contract.Requires<ArgumentNullException>(feed != null);
+            Contract.Requires(feed != null);
             collection.EnsureUninitialized();
 
             dynamic expando = new ExpandoObject();
@@ -416,7 +416,7 @@ namespace Splunk.Client
 
         internal void Initialize(ExpandoObject @object)
         {
-            Contract.Requires<ArgumentNullException>(@object != null);
+            Contract.Requires(@object != null);
 
             this.EnsureUninitialized();
             this.Object = @object;
@@ -439,13 +439,13 @@ namespace Splunk.Client
     {
         protected internal override void Initialize(AtomEntry entry, Version generatorVersion)
         {
-            Contract.Requires<ArgumentNullException>(entry != null);
-            Contract.Requires<ArgumentNullException>(generatorVersion != null);
+            Contract.Requires(entry != null);
+            Contract.Requires(generatorVersion != null);
         }
 
         protected internal override void Initialize(AtomFeed feed)
         {
-            Contract.Requires<ArgumentNullException>(feed != null);
+            Contract.Requires(feed != null);
         }
     }
 }

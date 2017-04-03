@@ -48,7 +48,7 @@ namespace Splunk.Client
         protected internal Server(Service service)
             : this(service.Context, service.Namespace)
         {
-            Contract.Requires<ArgumentNullException>(service != null);
+            Contract.Requires(service != null);
         }
 
         /// <summary>

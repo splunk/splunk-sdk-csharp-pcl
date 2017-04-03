@@ -62,7 +62,7 @@ namespace Splunk.Client
         protected internal Index(Service service, string name)
             : this(service.Context, service.Namespace, name)
         {
-            Contract.Requires<ArgumentNullException>(service != null);
+            Contract.Requires(service != null);
         }
 
         /// <summary>

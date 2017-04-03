@@ -52,8 +52,8 @@ namespace Splunk.Client
         public ResourceName(ResourceName resourceName, params string[] parts)
             : this(resourceName.Concat(parts))
         {
-            Contract.Requires<ArgumentNullException>(resourceName != null);
-            Contract.Requires<ArgumentNullException>(parts != null);
+            Contract.Requires(resourceName != null);
+            Contract.Requires(parts != null);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Splunk.Client
         public ResourceName(params string[] parts)
             : base(parts)
         {
-            Contract.Requires<ArgumentNullException>(parts != null);
+            Contract.Requires(parts != null);
 
             foreach (var part in this)
             {

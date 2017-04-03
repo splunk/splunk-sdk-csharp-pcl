@@ -44,9 +44,9 @@ namespace Splunk.Client
         /// </param>
         public Pagination(int itemsPerPage, int startIndex, int totalResults)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(itemsPerPage >= 0, "itemsPerPage < 0");
-            Contract.Requires<ArgumentOutOfRangeException>(startIndex >= 0, "startIndex < 0");
-            Contract.Requires<ArgumentOutOfRangeException>(totalResults >= 0, "totalResults < 0");
+            Contract.Requires(itemsPerPage >= 0, "itemsPerPage < 0");
+            Contract.Requires(startIndex >= 0, "startIndex < 0");
+            Contract.Requires(totalResults >= 0, "totalResults < 0");
 
             this.itemsPerPage = itemsPerPage;
             this.startIndex = startIndex;

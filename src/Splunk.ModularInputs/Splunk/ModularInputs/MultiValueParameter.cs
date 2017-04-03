@@ -47,8 +47,8 @@ namespace Splunk.ModularInputs
 
         public MultiValueParameter(string name, IEnumerable<string> values)
         {
-            Contract.Requires<ArgumentNullException>(name != null);
-            Contract.Requires<ArgumentNullException>(values != null);
+            Contract.Requires(name != null);
+            Contract.Requires(values != null);
 
             this.Values = new Collection<string>();
 

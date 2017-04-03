@@ -32,8 +32,8 @@ namespace Splunk.ModularInputs
 
         public SingleValueParameter(string name, string value)
         {
-            Contract.Requires<ArgumentNullException>(name != null);
-            Contract.Requires<ArgumentNullException>(value != null);
+            Contract.Requires(name != null);
+            Contract.Requires(value != null);
 
             this.Name = name;
             this.Value = value;

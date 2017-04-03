@@ -430,45 +430,45 @@ namespace Splunk.Client
 
         public Entity<Resource> CreateEntity(params string[] resourceName)
         {
-            Contract.Requires<ArgumentNullException>(resourceName != null);
+            Contract.Requires(resourceName != null);
             return default(Entity<Resource>);
         }
 
         public Entity<Resource> CreateEntity(IEnumerable<string> resourceName, string user, string app)
         {
-            Contract.Requires<ArgumentNullException>(resourceName != null);
-            Contract.Requires<ArgumentNullException>(user != null);
-            Contract.Requires<ArgumentNullException>(app != null);
+            Contract.Requires(resourceName != null);
+            Contract.Requires(user != null);
+            Contract.Requires(app != null);
             return default(Entity<Resource>);
         }
 
         public EntityCollection<Entity<Resource>, Resource> CreateEntityCollection(params string[] resourceName)
         {
-            Contract.Requires<ArgumentNullException>(resourceName != null);
+            Contract.Requires(resourceName != null);
             return default(EntityCollection<Entity<Resource>, Resource>);
         }
 
         public EntityCollection<Entity<Resource>, Resource> CreateEntityCollection(IEnumerable<string> resourceName, string user, string app)
         {
-            Contract.Requires<ArgumentNullException>(resourceName != null);
-            Contract.Requires<ArgumentNullException>(user != null);
-            Contract.Requires<ArgumentNullException>(app != null);
+            Contract.Requires(resourceName != null);
+            Contract.Requires(user != null);
+            Contract.Requires(app != null);
             return default(EntityCollection<Entity<Resource>, Resource>);
         }
 
         /// <inheritdoc/>
         public EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection> CreateEntityCollectionCollection(params string[] resourceName)
         {
-            Contract.Requires<ArgumentNullException>(resourceName != null);
+            Contract.Requires(resourceName != null);
             return default(EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection>);
         }
 
         /// <inheritdoc/>
         public EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection> CreateEntityCollectionCollection(IEnumerable<string> resourceName, string user, string app)
         {
-            Contract.Requires<ArgumentNullException>(resourceName != null);
-            Contract.Requires<ArgumentNullException>(user != null);
-            Contract.Requires<ArgumentNullException>(app != null);
+            Contract.Requires(resourceName != null);
+            Contract.Requires(user != null);
+            Contract.Requires(app != null);
             return default(EntityCollection<EntityCollection<Entity<ResourceCollection>, ResourceCollection>, ResourceCollection>);
         }
 
@@ -480,14 +480,14 @@ namespace Splunk.Client
         
         public Task LogOnAsync(string username, string password)
         {
-            Contract.Requires<ArgumentNullException>(username != null);
-            Contract.Requires<ArgumentNullException>(password != null);
+            Contract.Requires(username != null);
+            Contract.Requires(password != null);
             return default(Task);
         }
         
         public Task LogOffAsync()
         {
-            Contract.Requires<InvalidOperationException>(this.SessionKey != null);
+            Contract.Requires(this.SessionKey != null);
             return default(Task);
         }
 
@@ -499,13 +499,13 @@ namespace Splunk.Client
         
         public Task<SearchPreviewStream> ExportSearchPreviewsAsync(string search, SearchExportArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
+            Contract.Requires(search != null);
             return default(Task<SearchPreviewStream>);
         }
 
         public Task<SearchResultStream> ExportSearchResultsAsync(string search, SearchExportArgs args = null)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
+            Contract.Requires(search != null);
             return default(Task<SearchResultStream>);
         }
         
@@ -513,13 +513,13 @@ namespace Splunk.Client
             ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null,
             CustomJobArgs customArgs = null)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
+            Contract.Requires(search != null);
             return default(Task<Job>);
         }
         
         public Task<SearchResultStream> SearchOneShotAsync(string search, int count = 0, JobArgs args = null, CustomJobArgs customArgs = null)
         {
-            Contract.Requires<ArgumentNullException>(search != null);
+            Contract.Requires(search != null);
             return default(Task<SearchResultStream>);
         }
 

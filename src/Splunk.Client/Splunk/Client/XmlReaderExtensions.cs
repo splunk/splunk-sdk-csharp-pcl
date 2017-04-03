@@ -59,7 +59,7 @@ namespace Splunk.Client
         /// </exception>
         public static void EnsureMarkup(this XmlReader reader, XmlNodeType nodeType, params string[] names)
         {
-            Contract.Requires<ArgumentNullException>(reader != null);
+            Contract.Requires(reader != null);
 
             if (reader.NodeType == nodeType)
             {
@@ -130,9 +130,9 @@ namespace Splunk.Client
         /// </exception>
         public static string GetRequiredAttribute(this XmlReader reader, string name)
         {
-            Contract.Requires<ArgumentNullException>(reader != null);
-            Contract.Requires<ArgumentNullException>(name != null);
-            Contract.Requires<ArgumentException>(reader.NodeType == XmlNodeType.Element);
+            Contract.Requires(reader != null);
+            Contract.Requires(name != null);
+            Contract.Requires(reader.NodeType == XmlNodeType.Element);
 
             string value = reader[name];
 
@@ -176,7 +176,7 @@ namespace Splunk.Client
         /// </exception>
         public static async Task<bool> MoveToDocumentElementAsync(this XmlReader reader, params string[] names)
         {
-            Contract.Requires<ArgumentNullException>(reader != null);
+            Contract.Requires(reader != null);
 
             if (reader.ReadState == ReadState.Initial)
             {
@@ -244,9 +244,9 @@ namespace Splunk.Client
         /// </returns>
         public static async Task ReadEachDescendantAsync(this XmlReader reader, string name, Func<XmlReader, Task> task)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
-            Contract.Requires<ArgumentNullException>(task != null, "action");
-            Contract.Requires<ArgumentNullException>(reader != null, "reader");
+            Contract.Requires(!string.IsNullOrEmpty(name), "name");
+            Contract.Requires(task != null, "action");
+            Contract.Requires(reader != null, "reader");
 
             if (await reader.ReadToDescendantAsync(name).ConfigureAwait(false))
             {
@@ -308,8 +308,8 @@ namespace Splunk.Client
         /// </exception>
         public static async Task ReadElementSequenceAsync(this XmlReader reader, params string[] names)
         {
-            Contract.Requires<ArgumentNullException>(reader != null);
-            Contract.Requires<ArgumentNullException>(names != null);
+            Contract.Requires(reader != null);
+            Contract.Requires(names != null);
 
             foreach (var name in names)
             {
@@ -347,8 +347,8 @@ namespace Splunk.Client
         /// </exception>
         public static async Task ReadEndElementSequenceAsync(this XmlReader reader, params string[] names)
         {
-            Contract.Requires<ArgumentNullException>(reader != null);
-            Contract.Requires<ArgumentNullException>(names != null);
+            Contract.Requires(reader != null);
+            Contract.Requires(names != null);
 
             foreach (var name in names)
             {
@@ -371,8 +371,8 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<string> ReadResponseElementAsync(this XmlReader reader, string name)
         {
-            Contract.Requires<ArgumentNullException>(reader != null);
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
+            Contract.Requires(reader != null);
+            Contract.Requires(!string.IsNullOrEmpty(name));
 
             reader.Requires(await reader.MoveToDocumentElementAsync("response").ConfigureAwait(false));
             await reader.ReadElementSequenceAsync(name).ConfigureAwait(false);
@@ -398,8 +398,8 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<bool> ReadToDescendantAsync(this XmlReader reader, string name)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
-            Contract.Requires<ArgumentNullException>(reader != null, "reader");
+            Contract.Requires(!string.IsNullOrEmpty(name), "name");
+            Contract.Requires(reader != null, "reader");
 
             int depth = reader.Depth;
 
@@ -444,8 +444,8 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<bool> ReadToFollowingAsync(this XmlReader reader, string name)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
-            Contract.Requires<ArgumentNullException>(reader != null, "reader");
+            Contract.Requires(!string.IsNullOrEmpty(name), "name");
+            Contract.Requires(reader != null, "reader");
 
             name = reader.NameTable.Add(name);
 
@@ -478,8 +478,8 @@ namespace Splunk.Client
         /// </returns>
         public static async Task<bool> ReadToNextSiblingAsync(this XmlReader reader, string name)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name), "name");
-            Contract.Requires<ArgumentNullException>(reader != null, "reader");
+            Contract.Requires(!string.IsNullOrEmpty(name), "name");
+            Contract.Requires(reader != null, "reader");
 
             name = reader.NameTable.Add(name);
             XmlNodeType nodeType;

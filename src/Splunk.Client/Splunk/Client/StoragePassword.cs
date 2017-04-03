@@ -72,8 +72,8 @@ namespace Splunk.Client
         protected internal StoragePassword(Service service, string username, string realm = null)
             : this(service.Context, service.Namespace, username, realm)
         {
-            Contract.Requires<ArgumentNullException>(service != null);
-            Contract.Requires<ArgumentNullException>(username != null);
+            Contract.Requires(service != null);
+            Contract.Requires(username != null);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Splunk.Client
         internal StoragePassword(Context context, Namespace ns, string username, string realm = null)
             : base(context, ns, CreateResourceNameFromRealmAndUsername(realm ?? "", username))
         {
-            Contract.Requires<ArgumentNullException>(username != null);
+            Contract.Requires(username != null);
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace Splunk.Client
         /// </returns>
         internal static string CreateNameFromRealmAndUsername(string realm, string username)
         {
-            Contract.Requires<ArgumentNullException>(username != null);
+            Contract.Requires(username != null);
 
             var parts = new string[] { realm ?? "", username };
             var builder = new StringBuilder();

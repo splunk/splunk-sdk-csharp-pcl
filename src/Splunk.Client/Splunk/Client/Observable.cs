@@ -187,8 +187,8 @@ namespace Splunk.Client
         {
             public Subscription(Observable<T> observable, LinkedListNode<IObserver<T>> node)
             {
-                Contract.Requires<ArgumentNullException>(observable != null, "observable");
-                Contract.Requires<ArgumentNullException>(node != null, "node");
+                Contract.Requires(observable != null, "observable");
+                Contract.Requires(node != null, "node");
                 
                 this.node = node;
                 this.observable = observable;

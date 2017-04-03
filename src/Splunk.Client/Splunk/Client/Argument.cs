@@ -184,7 +184,7 @@ namespace Splunk.Client
         /// </param>
         public Argument(string name, string value)
         {
-            Contract.Requires<ArgumentNullException>(name != null, "name");
+            Contract.Requires(name != null, "name");
             this.Name = name;
             this.Value = value;
         }

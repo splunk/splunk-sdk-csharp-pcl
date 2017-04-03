@@ -57,7 +57,7 @@ namespace Splunk.Client
         protected internal Entity(Service service, ResourceName name)
             : base(service.Context, service.Namespace, name)
         {
-            Contract.Requires<ArgumentNullException>(service != null);
+            Contract.Requires(service != null);
         }
 
         /// <summary>

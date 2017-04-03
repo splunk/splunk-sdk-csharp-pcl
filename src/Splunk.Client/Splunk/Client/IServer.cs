@@ -222,7 +222,7 @@ namespace Splunk.Client
         /// </exception>
         public Task RestartAsync(int millisecondsDelay = 60000, int retryInterval = 250)
         {
-            Contract.Requires<ArgumentOutOfRangeException>(millisecondsDelay >= -1);
+            Contract.Requires(millisecondsDelay >= -1);
             return null;
         }
 

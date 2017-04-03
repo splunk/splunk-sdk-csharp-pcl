@@ -56,7 +56,7 @@ namespace Splunk.Client
         protected internal RequestException(HttpResponseMessage message, ReadOnlyCollection<Message> details)
             : base(FormatMessageText(message, details))
         {
-            Contract.Requires<ArgumentNullException>(message != null);
+            Contract.Requires(message != null);
 
             this.StatusCode = message.StatusCode;
             this.Details = details ?? NoDetails;

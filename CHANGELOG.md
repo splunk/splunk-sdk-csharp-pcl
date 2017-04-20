@@ -2,6 +2,13 @@
 
 ## Version 2.2.5
 
+### Minor Changes
+
+* Update `System.Collections.Immutable` dependency version.
+* Tests now use TLS by default.
+
+## Version 2.2.5
+
 ### Bug Fixes
 
 * Fix a bug with hanging oneshot searches (GitHub Issue [#54](https://github.com/splunk/splunk-sdk-csharp-pcl/issues/54)).

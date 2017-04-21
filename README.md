@@ -4,6 +4,9 @@
 > **Note:** For the most up to date documentation for the Splunk SDK for C#, 
 > see http://dev.splunk.com/csharp.
 
+> **Note:** For the most up to date documentation for the Splunk SDK for C#, 
+> see http://dev.splunk.com/csharp.
+
 The Splunk Software Development Kit (SDK) for C# contains library code and
 examples designed to enable developers to build applications using Splunk.
 

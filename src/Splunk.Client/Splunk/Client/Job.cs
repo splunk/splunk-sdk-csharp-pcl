@@ -703,12 +703,12 @@ namespace Splunk.Client
 
         static readonly Argument[] DisablePreview = new Argument[] 
         { 
-            new Argument("action", "disable_preview") 
+            new Argument("action", "disablepreview") 
         };
 
         static readonly Argument[] EnablePreview = new Argument[] 
         { 
-            new Argument("action", "enable_preview") 
+            new Argument("action", "enablepreview") 
         };
 
         static readonly Argument[] Finalize = new Argument[] 

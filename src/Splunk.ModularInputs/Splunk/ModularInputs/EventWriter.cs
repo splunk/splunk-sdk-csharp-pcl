@@ -22,6 +22,7 @@ namespace Splunk.ModularInputs
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -50,6 +51,8 @@ namespace Splunk.ModularInputs
         private Task eventQueueMonitor = null;
         private object synchronizationObject = new object();
         private bool completed;
+        private bool stopWritingEvents = false;
+        private CancellationTokenSource cancelEventWriting = new CancellationTokenSource();
         #endregion
 
         #region Properties
@@ -74,12 +77,18 @@ namespace Splunk.ModularInputs
         /// This is the easiest way to trigger behavior after events are actually
         /// written to Splunk. In production, it will usually be an instance
         /// of Progress&lt;EventWrittenProgressReport&gt;</param>
+        /// <param name="boundedCapacity">The maximum size for the event queue.
+        /// When the queue size reaches this capacity, the QueueEventForWriting
+        /// method task will block until space in the queue becomes available
+        /// to add the event.</param>
         public EventWriter(TextWriter stdout, TextWriter stderr,
-            IProgress<EventWrittenProgressReport> progress)
+            IProgress<EventWrittenProgressReport> progress, int boundedCapacity = 0)
         {
             this.Stdout = stdout;
             this.Stderr = stderr;
             this.Progress = progress;
+            if (boundedCapacity > 0)
+                this.eventQueue = new BlockingCollection<Event>(boundedCapacity);
         }
 
         #endregion
@@ -98,8 +107,42 @@ namespace Splunk.ModularInputs
                 // Don't start the eventQueueMonitor up until we actually want to write
                 // events so we don't get empty <stream/> elements in cases where
                 // we don't actually queue anything.
+                StartEventQueueMonitor();
+            await Task.Run(() => QueueEvent(e));
+        }
+
+        private void QueueEvent(Event e)
+        {
+            try
+            {
+                if (cancelEventWriting.IsCancellationRequested)
+                    return;
+
+                eventQueue.Add(e, cancelEventWriting.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                //suppress
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void StartEventQueueMonitor()
+        {
+            if (eventQueueMonitor == null)
                 eventQueueMonitor = Task.Run(() => WriteEventsFromQueue());
-            await Task.Run(() => eventQueue.Add(e));
+        }
+
+        /// <summary>
+        /// Causes the event writer to stop writing queued events to Splunk.
+        /// This is intended for use when Splunk shutdown has been detected,
+        /// and it's no longer certain that Splunk is reading events from the modular
+        /// input. Events can still be added to the queue, they'll just never be
+        /// sent to Splunk and never reach the progress reporter.
+        /// </summary>
+        public void StopWritingEvents()
+        {
+            cancelEventWriting.Cancel();
         }
 
         public async Task CompleteAsync()
@@ -165,20 +208,27 @@ namespace Splunk.ModularInputs
             // method.
             Stdout.WriteLine("<stream>");
 
-            foreach (Event eventToWrite in eventQueue.GetConsumingEnumerable())
+            try
             {
-                var buffer = new StringWriter();
-                using (var writer = XmlWriter.Create(buffer, new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment }))
+                foreach (Event eventToWrite in eventQueue.GetConsumingEnumerable(cancelEventWriting.Token))
                 {
-                    eventToWrite.ToXml(writer);
+                    var buffer = new StringWriter();
+                    using (var writer = XmlWriter.Create(buffer, new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment }))
+                    {
+                        eventToWrite.ToXml(writer);
+                    }
+                    Stdout.WriteLine(buffer.ToString());
+                    Stdout.Flush();
+                    this.Progress.Report(new EventWrittenProgressReport
+                    {
+                        Timestamp = DateTime.Now,
+                        WrittenEvent = eventToWrite
+                    });
                 }
-                Stdout.WriteLine(buffer.ToString());
-                Stdout.Flush();
-                this.Progress.Report(new EventWrittenProgressReport
-                {
-                    Timestamp = DateTime.Now,
-                    WrittenEvent = eventToWrite
-                });
+            }
+            catch (OperationCanceledException)
+            {
+                //suppress
             }
 
             Stdout.WriteLine("</stream>");

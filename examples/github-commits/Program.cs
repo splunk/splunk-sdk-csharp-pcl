@@ -127,7 +127,7 @@ namespace github_commits
         public async Task StreamCommit(GitHubCommit githubCommit, EventWriter eventWriter, string owner, string repositoryName)
         {
             string authorName = githubCommit.Commit.Author.Name;
-            DateTime date = githubCommit.Commit.Author.Date;
+            DateTime date = githubCommit.Commit.Author.Date.DateTime;
 
             // Replace any newlines with a space
             string commitMessage = Regex.Replace(githubCommit.Commit.Message, "\\n|\\r", " ");
@@ -191,7 +191,7 @@ namespace github_commits
             bool done = false;
             var fileWriter = new StreamWriter(checkpointFilePath);
             // Use Rx to stream an event for each commit as they come in
-            client.Repository.Commits.GetAll(owner, repository).Subscribe(
+            client.Repository.Commit.GetAll(owner, repository).Subscribe(
                 async githubCommit =>
                 {
                     if (!shaKeys.Contains(githubCommit.Sha))

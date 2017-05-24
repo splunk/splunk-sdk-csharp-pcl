@@ -1,6 +1,6 @@
 # Splunk SDK for C# PCL
 
-## Version 2.2.5
+## Version 2.2.6
 
 ### Minor Changes
 

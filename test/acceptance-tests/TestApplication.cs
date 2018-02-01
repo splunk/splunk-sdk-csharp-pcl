@@ -164,7 +164,7 @@ namespace Splunk.Client.AcceptanceTests
             } 
             catch (InternalServerErrorException e) 
             {
-                Assert.Contains("Setup configuration file does not exist", e.Message);
+                Assert.Contains("Internal Server Error", e.Message);
             }
 
             ApplicationArchiveInfo archiveInfo = await app.PackageAsync();

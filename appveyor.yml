@@ -27,18 +27,7 @@ install:
 - cmd: dir c:\splunk\splunk\etc\apps
 
 # temp workaround to resolve tsl1.2 not supported by .net, downgrade splunk to use tsl1.0
-cmd:
-@echo off
-setlocal
->>server.conf (
-    for %%I in (
- "[sslConfig]"
- "sslVersions = tls1.0" 
- "sslVersionsForClient = tls1.0"
- "cipherSuite =ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDH-ECDSA-AES256-GCM-SHA384:ECDH-ECDSA-AES128-GCM-SHA256:ECDH-ECDSA-AES128-SHA256:AES256-GCM-SHA384:AES128-GCM-SHA256:AES128-SHA256:AES256-SHA"
-  )do echo %%~I
-)
-type server.conf
+cmd: type server_ssl.conf >> C:\splunk\splunk\etc\system\local\server.conf
  
 # Install the Splunk service and start it
 - cmd: cmd /C "set PATH=C:\splunk\splunk && C:\splunk\splunk\bin\splunk.exe enable boot-start"

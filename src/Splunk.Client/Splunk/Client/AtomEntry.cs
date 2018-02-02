@@ -33,7 +33,7 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
-
+   
     /// <summary>
     /// Provides an object representation of an individual entry in a Splunk Atom
     /// Feed response.
@@ -412,7 +412,8 @@ namespace Splunk.Client
                         {
                             if (!(propertyValue is ExpandoObject))
                             {
-                                throw new InvalidDataException(name); // TODO: Diagnostics : conversion error
+                                //throw new InvalidDataException(name); // TODO: Diagnostics : conversion error
+                                continue;
                             }
                         }
                         else

@@ -48,7 +48,7 @@ namespace Splunk.Client.UnitTests
             } 
             catch (InternalServerErrorException e) 
             {
-                Assert.Contains("Setup configuration file does not exist", e.Message);
+                Assert.Contains("Application is disabled", e.Message);
             }
 
             ApplicationArchiveInfo archiveInfo = await app.PackageAsync();

@@ -205,9 +205,9 @@ namespace Splunk.Client.AcceptanceTests
                             "edit_user",                    // 20
                             "edit_view_html",               // 21
                             "edit_web_settings",            // 22
-                            "edit_win_admon",               // 23
+                            //"edit_win_admon",               // 23
                             "edit_win_eventlogs",           // 24
-                            "edit_win_perfmon",             // 25
+                            //"edit_win_perfmon",             // 25
                             "edit_win_regmon",              // 26
                             "edit_win_wmiconf",             // 27
                             "get_diag",                     // 28
@@ -240,7 +240,7 @@ namespace Splunk.Client.AcceptanceTests
                             "write_pdfserver"               // 55
                         })
                     {
-                        Assert.True(capabilities.Contains(s));
+                        Assert.True(capabilities.Contains(s), String.Format("{0} is not in capabilities",s ));
                     }
                 }
                 else

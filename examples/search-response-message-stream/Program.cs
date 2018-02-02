@@ -33,7 +33,7 @@ namespace Splunk.Examples.Authenticate
             // 1. Instantiate a WebRequestHandler
             // 2. Set its ServerCertificateValidationCallback
             // 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
                 return true;

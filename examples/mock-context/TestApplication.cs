@@ -48,7 +48,7 @@ namespace Splunk.Client.UnitTests
             } 
             catch (InternalServerErrorException e) 
             {
-                Assert.Contains("Application is disabled", e.Message);
+                Assert.Contains("Internal Server Error", e.Message);
             }
 
             ApplicationArchiveInfo archiveInfo = await app.PackageAsync();

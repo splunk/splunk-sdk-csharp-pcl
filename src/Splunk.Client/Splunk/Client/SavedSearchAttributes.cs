@@ -1237,6 +1237,7 @@ namespace Splunk.Client
         [DataMember(Name = "action.summary_index.ttl", EmitDefaultValue = false)]
         public string ActionSummaryIndexTtl
         { get; set; }
+
         /// <summary>
         /// Gets or sets the search command which is responsible for executing the
         /// webhook action for a <see cref="SavedSearch"/>.

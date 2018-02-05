@@ -57,33 +57,33 @@ namespace Splunk.Client.UnitTests
                 "action.email.ttl=null; " +
                 "action.email.use_ssl=null; " +
                 "action.email.use_tls=null; " +
-                "action.logevent.command = null; " +
-                "action.logevent.description = null; " +
-                "action.logevent.hostname = null; " +
-                "action.logevent.icon_path = null; " +
-                "action.logevent.is_custom = null; " +
-                "action.logevent.label = null; " +
-                "action.logevent.maxresults = null; " +
-                "action.logevent.maxtime = null; " +
-                "action.logevent.param.host = null; " +
-                "action.logevent.param.index = null; " +
-                "action.logevent.param.source = null; " +
-                "action.logevent.param.sourcetype = null; " +
-                "action.logevent.payload_format = null; " +
-                "action.logevent.track_alert = null; " +
-                "action.logevent.ttl = null; " +
-                "action.lookup.append = null; " +
-                "action.lookup.command = null; " +
-                "action.lookup.description = null; " +
-                "action.lookup.filename = null; " +
-                "action.lookup.hostname = null; " +
-                "action.lookup.icon_path = null; " +
-                "action.lookup.label = null; " +
-                "action.lookup.maxresults = null; " +
-                "action.lookup.maxtime = null; " +
-                "action.lookup.track_alert = null; " +
-                "action.lookup.ttl = null; " +
                 "action.email.width_sort_columns=null; " +
+                "action.logevent.command=null; " +
+                "action.logevent.description=null; " +
+                "action.logevent.hostname=null; " +
+                "action.logevent.icon_path=null; " +
+                "action.logevent.is_custom=null; " +
+                "action.logevent.label=null; " +
+                "action.logevent.maxresults=null; " +
+                "action.logevent.maxtime=null; " +
+                "action.logevent.param.host=null; " +
+                "action.logevent.param.index=null; " +
+                "action.logevent.param.source=null; " +
+                "action.logevent.param.sourcetype=null; " +
+                "action.logevent.payload_format=null; " +
+                "action.logevent.track_alert=null; " +
+                "action.logevent.ttl=null; " +
+                "action.lookup.append=null; " +
+                "action.lookup.command=null; " +
+                "action.lookup.description=null; " +
+                "action.lookup.filename=null; " +
+                "action.lookup.hostname=null; " +
+                "action.lookup.icon_path=null; " +
+                "action.lookup.label=null; " +
+                "action.lookup.maxresults=null; " +
+                "action.lookup.maxtime=null; " +
+                "action.lookup.track_alert=null; " +
+                "action.lookup.ttl=null; " +
                 "action.populate_lookup.command=null; " +
                 "action.populate_lookup.dest=null; " +
                 "action.populate_lookup.hostname=null; " +
@@ -110,18 +110,18 @@ namespace Splunk.Client.UnitTests
                 "action.summary_index.name=null; " +
                 "action.summary_index.track_alert=null; " +
                 "action.summary_index.ttl=null; " +
-                "action.webhook.description = null; " +
-                "action.webhook.hostname = null; " +
-                "action.webhook.icon_path = null; " +
-                "action.webhook.is_custom = null; " +
-                "action.webhook.label = null; " +
-                "action.webhook.maxresults = null; " +
-                "action.webhook.maxtime = null; " +
-                "action.webhook.param.user_agent = null; " +
-                "action.webhook.payload_format = null; " +
-                "action.webhook.track_alert = null; " +
-                "action.webhook.ttl = null; " + 
-                "action.webook.command = null; " +
+                "action.webhook.description=null; " +
+                "action.webhook.hostname=null; " +
+                "action.webhook.icon_path=null; " +
+                "action.webhook.is_custom=null; " +
+                "action.webhook.label=null; " +
+                "action.webhook.maxresults=null; " +
+                "action.webhook.maxtime=null; " +
+                "action.webhook.param.user_agent=null; " +
+                "action.webhook.payload_format=null; " +
+                "action.webhook.track_alert=null; " +
+                "action.webhook.ttl=null; " +
+                "action.webook.command=null; " +
                 "actions=null; " +
                 "alert.digest_mode=null; " +
                 "alert.expires=null; " +
@@ -383,8 +383,6 @@ namespace Splunk.Client.UnitTests
                 "action.summary_index.name=some-unchecked-string; " +
                 "action.summary_index.track_alert=1; " +
                 "action.summary_index.ttl=some-unchecked-string; " +
-                "actions=some-unchecked-string; " +
-                "action.webook.command=some-unchecked-string; " +
                 "action.webhook.description=some-unchecked-string; " +
                 "action.webhook.hostname=some-unchecked-string; " +
                 "action.webhook.icon_path=some-unchecked-string; " +
@@ -396,6 +394,8 @@ namespace Splunk.Client.UnitTests
                 "action.webhook.payload_format=some-unchecked-string; " +
                 "action.webhook.track_alert=1; " +
                 "action.webhook.ttl=some-unchecked-string; " +
+                "action.webook.command=some-unchecked-string; " +
+                "actions=some-unchecked-string; " +
                 "alert.digest_mode=1; " +
                 "alert.expires=some-unchecked-string; " +
                 "alert.severity=3; " +
@@ -464,6 +464,32 @@ namespace Splunk.Client.UnitTests
                     new Argument("action.email.use_ssl", 1),
                     new Argument("action.email.use_tls", 1),
                     new Argument("action.email.width_sort_columns", 1),
+                    new Argument("action.logevent.command", "some-unchecked-string"),
+                    new Argument("action.logevent.description", "some-unchecked-string"),
+                    new Argument("action.logevent.hostname", "some-unchecked-string"),
+                    new Argument("action.logevent.icon_path", "some-unchecked-string"),
+                    new Argument("action.logevent.is_custom", 1),
+                    new Argument("action.logevent.label", "some-unchecked-string"),
+                    new Argument("action.logevent.maxresults", 99),
+                    new Argument("action.logevent.maxtime", "some-unchecked-string"),
+                    new Argument("action.logevent.param.host", "some-unchecked-string"),
+                    new Argument("action.logevent.param.index", "some-unchecked-string"),
+                    new Argument("action.logevent.param.source", "some-unchecked-string"),
+                    new Argument("action.logevent.param.sourcetype", "some-unchecked-string"),
+                    new Argument("action.logevent.payload_format", "some-unchecked-string"),
+                    new Argument("action.logevent.track_alert", 1),
+                    new Argument("action.logevent.ttl", "some-unchecked-string"),
+                    new Argument("action.lookup.append", 1),
+                    new Argument("action.lookup.command", "some-unchecked-string"),
+                    new Argument("action.lookup.description", "some-unchecked-string"),
+                    new Argument("action.lookup.filename", "some-unchecked-string"),
+                    new Argument("action.lookup.hostname", "some-unchecked-string"),
+                    new Argument("action.lookup.icon_path", "some-unchecked-string"),
+                    new Argument("action.lookup.label", "some-unchecked-string"),
+                    new Argument("action.lookup.maxresults", 99),
+                    new Argument("action.lookup.maxtime", "some-unchecked-string"),
+                    new Argument("action.lookup.track_alert", 1),
+                    new Argument("action.lookup.ttl", "some-unchecked-string"),
                     new Argument("action.populate_lookup.command", "some-unchecked-string"),
                     new Argument("action.populate_lookup.dest", "some-unchecked-string"),
                     new Argument("action.populate_lookup.hostname", "some-unchecked-string"),
@@ -490,6 +516,18 @@ namespace Splunk.Client.UnitTests
                     new Argument("action.summary_index.name", "some-unchecked-string"),
                     new Argument("action.summary_index.track_alert", 1),
                     new Argument("action.summary_index.ttl", "some-unchecked-string"),
+                    new Argument("action.webhook.description", "some-unchecked-string"),
+                    new Argument("action.webhook.hostname", "some-unchecked-string"),
+                    new Argument("action.webhook.icon_path", "some-unchecked-string"),
+                    new Argument("action.webhook.is_custom", 1),
+                    new Argument("action.webhook.label", "some-unchecked-string"),
+                    new Argument("action.webhook.maxresults", 99),
+                    new Argument("action.webhook.maxtime", "some-unchecked-string"),
+                    new Argument("action.webhook.param.user_agent", "some-unchecked-string"),
+                    new Argument("action.webhook.payload_format", "some-unchecked-string"),
+                    new Argument("action.webhook.track_alert", 1),
+                    new Argument("action.webhook.ttl", "some-unchecked-string"),
+                    new Argument("action.webook.command", "some-unchecked-string"),
                     new Argument("actions", "some-unchecked-string"),
                     new Argument("alert.digest_mode", 1),
                     new Argument("alert.expires", "some-unchecked-string"),

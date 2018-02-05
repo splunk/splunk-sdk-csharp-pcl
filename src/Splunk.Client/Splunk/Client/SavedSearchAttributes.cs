@@ -437,6 +437,380 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets or sets the search command which is responsible for executing the
+        /// logevent action for a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Generally the command is a template search pipeline which is realized
+        /// with values from the <see cref="SavedSearch"/>. Reference template
+        /// arguments by enclosing their names in dollar signs ($). For example, to
+        /// reference <see cref="SavedSearch"/>.Name use
+        /// <c>$name$</c>. To reference <see cref="SavedSearch"/>.Search use
+        /// <c>$search$</c>.
+        /// </remarks>
+        /// <value>
+        /// The search command which is responsible for executing the logevent
+        /// action for a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.command", EmitDefaultValue = false)]
+        public string ActionLogEventCommand
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the human-readable description of a logevent action
+        /// <see cref= "SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// The default value is an empty string.
+        /// </remarks>
+        /// <value>
+        /// The human-readable description of a logevent action <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.description", EmitDefaultValue = false)]
+        public string ActionLogEventDescription
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hostname used in the web link (URI) that is sent in the
+        /// logevent action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
+        /// </remarks>
+        /// <value>
+        /// The hostname used in the web link (URI) that is sent in the logevent 
+        /// action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.hostname", EmitDefaultValue = false)]
+        public string ActionLogEventHostName
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the icon path used in the UI for the logevent 
+        /// action of a <see cref="SavedSearch"/>.
+        /// </summary>>
+        /// <value>
+        /// The name of the logevent action icon path to display in the UI
+        /// of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.icon_path", EmitDefaultValue = false)]
+        public string ActionLogEventIconPath
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether  whether the alert action is based 
+        /// on the custom alert actions framework and is supposed to be listed in 
+        /// the search UI
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        /// <value>
+        /// <c>true</c>, if the logevent action is custom of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.is_custom", EmitDefaultValue = false)]
+        public bool? ActionLogEventIsCustom
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the label of the logevent action <see cref="SavedSearch"/>.
+        /// </summary>>
+        /// <value>
+        /// The name label of the logevent <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.label", EmitDefaultValue = false)]
+        public string ActionLogEventLabel
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the global maximum number of search results to send when the
+        /// logevent action for a <see cref="SavedSearch"/> is enabled.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>100</c>.
+        /// </remarks>
+        /// <value>
+        /// The global maximum number of search results to send when the logevent
+        /// action for a <see cref="SavedSearch"/> is enabled.
+        /// </value>
+        [DataMember(Name = "action.logevent.maxresults", EmitDefaultValue = false)]
+        public int? ActionLogEventMaxResults
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum period of time the logevent action for a
+        /// <see cref="SavedSearch"/> may execute before it is aborted.
+        /// </summary>
+        /// <remarks>
+        /// Express this value as a string of the form <c>&lt;![CDATA[ &lt;integer&gt;
+        /// ("s"|"m"|"h"|"d")]]&gt;</c>. The default is <c>"5m"</c>.
+        /// </remarks>
+        /// <value>
+        /// The maximum period of time the logevent action for a
+        /// <see cref="SavedSearch"/> may execute before it is aborted.
+        /// </value>
+        [DataMember(Name = "action.logevent.maxtime", EmitDefaultValue = false)]
+        public string ActionLogEventMaxTime
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the host parameter that is used in the event
+        /// of a logevent action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <value>
+        /// The host set in the logevent action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.param.host", EmitDefaultValue = false)]
+        public string ActionLogEventParamHost
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index parameter that is used in the event
+        /// of a logevent action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <value>
+        /// The index set in the logevent action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.param.index", EmitDefaultValue = false)]
+        public string ActionLogEventParamIndex
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the source parameter that is used in the event
+        /// of a logevent action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <value>
+        /// The source set in the logevent action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.param.source", EmitDefaultValue = false)]
+        public string ActionLogEventParamSource
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sourcetype parameter that is used in the event
+        /// of a logevent action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <value>
+        /// The sourcetype set in the logevent action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.param.sourcetype", EmitDefaultValue = false)]
+        public string ActionLogEventParamSourcetype
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the payload format that is used in the logevent action of 
+        /// a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>"json"</c> and <c>"xml"</c>, defaults to <c>"xml"</c>.
+        /// </remarks>
+        /// <value>
+        /// The payload format set in the logevent action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.payload_format", EmitDefaultValue = false)]
+        public string ActionLogEventPayloadFormat
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the execution of this action signifies 
+        /// a trackable alert.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        /// <value>
+        /// <c>true</c>, if the logevent action is trackable of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.track_alert", EmitDefaultValue = false)]
+        public bool? ActionLogEventTrackAlert
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum time-to-live for artifacts of the logevent
+        /// action for a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Express this value as a string of the form <c>&lt;![CDATA[ &lt;integer&gt;
+        /// ["p"] ]]&gt;</c>. If <c>p</c> follows &lt;![CDATA[&lt;integer&gt;]]&gt;,
+        /// the unit of time is the number of scheduled periods. Otherwise, the unit
+        /// of time is seconds. The default is 86,400 seconds; equivalent to 24 hours.
+        /// </remarks>
+        /// <value>
+        /// The minimum time-to-live for artifacts of the logeventp action for
+        /// a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.logevent.ttl", EmitDefaultValue = false)]
+        public string ActionLogEventTtl
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to append results to the lookup 
+        /// file defined for the filename attribute.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        /// <value>
+        /// <c>true</c>, if the action is to append to the filename in the alert 
+        /// <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.lookup.append", EmitDefaultValue = false)]
+        public bool? ActionLookupAppend
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the search command which is responsible for executing the
+        /// lookup action for a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Generally the command is a template search pipeline which is realized
+        /// with values from the <see cref="SavedSearch"/>. Reference template
+        /// arguments by enclosing their names in dollar signs ($). For example, to
+        /// reference <see cref="SavedSearch"/>.Name use
+        /// <c>$name$</c>. To reference <see cref="SavedSearch"/>.Search use
+        /// <c>$search$</c>.
+        /// </remarks>
+        /// <value>
+        /// The search command which is responsible for executing the lookup
+        /// action for a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.lookup.command", EmitDefaultValue = false)]
+        public string ActionLookupCommand
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the human-readable description of a lookup action
+        /// <see cref= "SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// The default value is an empty string.
+        /// </remarks>
+        /// <value>
+        /// The human-readable description of a lookup action <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.lookup.description", EmitDefaultValue = false)]
+        public string ActionLookupDescription
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the file name, with no path, of the CSV lookup file.
+        /// </summary>
+        /// <remarks>
+        /// Filename must end with ".csv". If this file does not yet exist, the Splunk 
+        /// software creates it on the next scheduled run of the search. 
+        /// If the file currently exists, it is overwritten on each run of the search 
+        /// unless append=1 <see cref="SavedSearch"/>.
+        /// </remarks>
+        /// <value>
+        /// the file name, with no path, of the CSV lookup file <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.lookup.filename", EmitDefaultValue = false)]
+        public string ActionLookupFileName
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hostname used in the web link (URI) that is sent in the
+        /// lookup action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
+        /// </remarks>
+        /// <value>
+        /// The hostname used in the web link (URI) that is sent in the 
+        /// lookup action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.lookup.hostname", EmitDefaultValue = false)]
+        public string ActionLookupHostName
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the icon path used in the UI for the lookup 
+        /// action of a <see cref="SavedSearch"/>.
+        /// </summary>>
+        /// <value>
+        /// The name of the lookup action icon path to display in the UI
+        /// of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.lookup.icon_path", EmitDefaultValue = false)]
+        public string ActionLookupIconPath
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the label of the lookup action <see cref="SavedSearch"/>.
+        /// </summary>>
+        /// <value>
+        /// The name label of the lookup <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.lookup.label", EmitDefaultValue = false)]
+        public string ActionLookupLabel
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the global maximum number of search results to send when the
+        /// lookup action for a <see cref="SavedSearch"/> is enabled.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>100</c>.
+        /// </remarks>
+        /// <value>
+        /// The global maximum number of search results to send when the
+        /// lookup action for a <see cref="SavedSearch"/> is enabled.
+        /// </value>
+        [DataMember(Name = "action.lookup.maxresults", EmitDefaultValue = false)]
+        public int? ActionLookupMaxResults
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum period of time the lookup action for a
+        /// <see cref="SavedSearch"/> may execute before it is aborted.
+        /// </summary>
+        /// <remarks>
+        /// Express this value as a string of the form <c>&lt;![CDATA[ &lt;integer&gt;
+        /// ("s"|"m"|"h"|"d")]]&gt;</c>. The default is <c>"5m"</c>.
+        /// </remarks>
+        /// <value>
+        /// The maximum period of time the lookup action for a
+        /// <see cref="SavedSearch"/> may execute before it is aborted.
+        /// </value>
+        [DataMember(Name = "action.lookup.maxtime", EmitDefaultValue = false)]
+        public string ActionLookupMaxTime
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether the lookup action
+        /// for a <see cref="SavedSearch"/> signifies a trackable alert.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        /// <value>
+        /// <c>true</c>, if the lookup action for a
+        /// <see cref= "SavedSearch"/> signifies a trackable alert; <c>false</c>
+        /// otherwise.
+        /// </value>
+        [DataMember(Name = "action.lookup.track_alert", EmitDefaultValue = false)]
+        public bool? ActionLookupTrackAlert
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum time-to-live for artifacts of the
+        /// lookup action for a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Express this value as a string of the form <c>&lt;![CDATA[ &lt;integer&gt;
+        /// ["p"] ]]&gt;</c>. If <c>p</c> follows &lt;![CDATA[&lt;integer&gt;]]&gt;,
+        /// the unit of time is the number of scheduled periods. Otherwise, the unit
+        /// of time is seconds. The default is 86,400 seconds; equivalent to 24 hours.
+        /// </remarks>
+        /// <value>
+        /// The minimum time-to-live for artifacts of the lookup action for
+        /// a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.lookup.ttl", EmitDefaultValue = false)]
+        public string ActionLookupTtl
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the search command which is responsible for executing the
         /// populate lookup action for a <see cref="SavedSearch"/>.
         /// </summary>
         /// <remarks>
@@ -1507,6 +1881,182 @@ namespace Splunk.Client
         /// </value>
         [DataMember(Name = "run_on_startup", EmitDefaultValue = false)]
         public bool? RunOnStartup
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the search command which is responsible for executing the
+        /// webhook action for a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Generally the command is a template search pipeline which is realized
+        /// with values from the <see cref="SavedSearch"/>. Reference template
+        /// arguments by enclosing their names in dollar signs ($). For example, to
+        /// reference <see cref="SavedSearch"/>.Name use
+        /// <c>$name$</c>. To reference <see cref="SavedSearch"/>.Search use
+        /// <c>$search$</c>.
+        /// </remarks>
+        /// <value>
+        /// The search command which is responsible for executing the webhook action
+        /// for a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.webook.command", EmitDefaultValue = false)]
+        public string ActionWebHookCommand
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the human-readable description of a webhook action
+        /// <see cref= "SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// The default value is an empty string.
+        /// </remarks>
+        /// <value>
+        /// The human-readable description of a webhook action <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.webhook.description", EmitDefaultValue = false)]
+        public string ActionWebHookDescription
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hostname used in the web link (URI) that is sent in the
+        /// webhook action of a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Valid forms are <c>"hostname"</c> and <c>"protocol://hostname:port"</c>.
+        /// </remarks>
+        /// <value>
+        /// The hostname used in the web link (URI) that is sent in the webhook 
+        /// action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.webhook.hostname", EmitDefaultValue = false)]
+        public string ActionWebHookHostName
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the icon path used in the UI for the webhook 
+        /// action of a <see cref="SavedSearch"/>.
+        /// </summary>>
+        /// <value>
+        /// The name of the webhook action icon path to display in the UI
+        /// of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.webhook.icon_path", EmitDefaultValue = false)]
+        public string ActionWebHookIconPath
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether  whether the alert action is based 
+        /// on the custom alert actions framework and is supposed to be listed in 
+        /// the search UI
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        /// <value>
+        /// <c>true</c>, if the webhook action is custom of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.webhook.is_custom", EmitDefaultValue = false)]
+        public bool? ActionWebHookIsCustom
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the label of the webhook action <see cref="SavedSearch"/>.
+        /// </summary>>
+        /// <value>
+        /// The name label of the webhook <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.webhook.label", EmitDefaultValue = false)]
+        public string ActionWebHookLabel
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the global maximum number of search results to send when the
+        /// webhook for a <see cref="SavedSearch"/> is enabled.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>100</c>.
+        /// </remarks>
+        /// <value>
+        /// The global maximum number of search results to send when the webhook for a
+        /// <see cref="SavedSearch"/> is enabled.
+        /// </value>
+        [DataMember(Name = "action.webhook.maxresults", EmitDefaultValue = false)]
+        public int? ActionWebHookMaxResults
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum period of time the webhook action for a
+        /// <see cref="SavedSearch"/> may execute before it is aborted.
+        /// </summary>
+        /// <remarks>
+        /// Express this value as a string of the form <c>&lt;![CDATA[ &lt;integer&gt;
+        /// ("s"|"m"|"h"|"d")]]&gt;</c>. The default is <c>"5m"</c>.
+        /// </remarks>
+        /// <value>
+        /// The maximum period of time the webhook action for a
+        /// <see cref= "SavedSearch"/> may execute before it is aborted.
+        /// </value>
+        [DataMember(Name = "action.webhook.maxtime", EmitDefaultValue = false)]
+        public string ActionWebHookMaxTime
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of the User-Agent header sent to the webhook
+        /// receiver in a <see cref= "SavedSearch"/>
+        /// </summary>
+        /// <value>
+        /// The value of the User-Agent header sent to the webhook
+        /// receiver in a <see cref= "SavedSearch"/>
+        /// </value>
+        [DataMember(Name = "action.webhook.param.user_agent", EmitDefaultValue = false)]
+        public string ActionWebHookParamUserAgent
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the payload format that is used in the webhook action of 
+        /// a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Valid values are <c>"json"</c> and <c>"xml"</c>, defaults to <c>"xml"</c>.
+        /// </remarks>
+        /// <value>
+        /// The payload format set in the webhook action of a <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.webhook.payload_format", EmitDefaultValue = false)]
+        public string ActionWebHookPayloadFormat
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether the webhook action of a
+        /// <see cref="SavedSearch"/> signifies a trackable alert.
+        /// </summary>
+        /// <remarks>
+        /// The default value is <c>false</c>.
+        /// </remarks>
+        /// <value>
+        /// <c>true</c>, if the webhook action of a <see cref="SavedSearch"/>
+        /// signifies a trackable alert; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember(Name = "action.webhook.track_alert", EmitDefaultValue = false)]
+        public bool? ActionWebHookTrackAlert
+        { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum time-to-live for artifacts of the webhook action
+        /// for a <see cref="SavedSearch"/>.
+        /// </summary>
+        /// <remarks>
+        /// Express this value as a string of the form <c>&lt;![CDATA[ &lt;integer&gt;
+        /// ["p"] ]]&gt;</c>. If <c>p</c> follows &lt;![CDATA[&lt;integer&gt;]]&gt;,
+        /// the unit of time is the number of scheduled periods. Otherwise, the unit
+        /// of time is seconds. The default is 86,400 seconds; equivalent to 24 hours.
+        /// </remarks>
+        /// <value>
+        /// The minimum time-to-live for artifacts of the webhook action for a
+        /// <see cref="SavedSearch"/>.
+        /// </value>
+        [DataMember(Name = "action.webhook.ttl", EmitDefaultValue = false)]
+        public string ActionWebHookTtl
         { get; set; }
     }
 }

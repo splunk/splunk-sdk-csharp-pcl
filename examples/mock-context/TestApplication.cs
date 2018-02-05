@@ -15,7 +15,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task TestApplications()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             using (var service = await SdkHelper.CreateService())
             {
                 ApplicationCollection apps = service.Applications;

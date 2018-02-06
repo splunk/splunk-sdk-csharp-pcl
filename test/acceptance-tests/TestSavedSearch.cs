@@ -146,7 +146,7 @@ namespace Splunk.Client.AcceptanceTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [MockContext]
-        [Fact(Skip = "dev code issue")]
+        [Fact]
         public async Task SavedSearchesProperties()
         {
             using (var service = await SdkHelper.CreateService())
@@ -383,7 +383,7 @@ namespace Splunk.Client.AcceptanceTests
         /// </summary>
         [Trait("acceptance-test", "Splunk.Client.SavedSearch")]
         [MockContext]
-        [Fact(Skip = "dev code issue")]
+        [Fact]
         public async Task SavedSearchesUpdateProperties()
         {
             using (var service = await SdkHelper.CreateService())

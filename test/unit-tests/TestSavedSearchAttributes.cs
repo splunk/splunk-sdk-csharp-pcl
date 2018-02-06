@@ -33,8 +33,6 @@ namespace Splunk.Client.UnitTests
         {
             var attributes = new SavedSearchAttributes();
 
-
-            Assert.Equal(attributes.ToString().Length, 2642);
             Assert.Equal("action.email.auth_password=null; " +
                 "action.email.auth_username=null; " +
                 "action.email.bcc=null; " +

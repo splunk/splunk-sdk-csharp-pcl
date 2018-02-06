@@ -1064,13 +1064,13 @@ namespace Splunk.Client.AcceptanceTests
 
                 index = await service.Indexes.CreateAsync(indexName);
                 Assert.Equal(true, index.EnableOnlineBucketRepair);
+                Assert.Equal(false, index.Disabled);
 
                 //// Read
 
                 index = await service.Indexes.GetAsync(indexName);
 
                 //// Update
-
                 var attributes = new IndexAttributes()
                 {
                     EnableOnlineBucketRepair = false
@@ -1078,16 +1078,16 @@ namespace Splunk.Client.AcceptanceTests
 
                 await index.UpdateAsync(attributes);
                 Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
-                Assert.False(index.Disabled);
 
+                Assert.Equal(false, index.Disabled);
                 await index.DisableAsync();
-                Assert.True(index.Disabled);
+                Assert.Equal(true, index.Disabled);
 
                 await service.Server.RestartAsync(2 * 60 * 1000);
                 await service.LogOnAsync();
 
                 await index.EnableAsync();
-                Assert.False(index.Disabled);
+                Assert.Equal(false, index.Disabled);
 
                 await service.Server.RestartAsync(2 * 60 * 1000);
                 await service.LogOnAsync();

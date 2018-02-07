@@ -1061,13 +1061,10 @@ namespace Splunk.Client.AcceptanceTests
                 Index index;
 
                 //// Create
-
                 index = await service.Indexes.CreateAsync(indexName);
                 Assert.Equal(true, index.EnableOnlineBucketRepair);
-                Assert.Equal(false, index.Disabled);
-
+                
                 //// Read
-
                 index = await service.Indexes.GetAsync(indexName);
 
                 //// Update
@@ -1098,7 +1095,6 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     await index.GetAsync();
                 });
-
             }
         }
 

@@ -42,7 +42,7 @@ before_build:
 - cmd: time /t
 
 build:
-  verbosity: detailed
+  verbosity: normal
 
 # Avoid test failures from debug assertions by building in release mode
 configuration:

@@ -1074,17 +1074,16 @@ namespace Splunk.Client.AcceptanceTests
                 };
 
                 await index.UpdateAsync(attributes);
-                Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
+                Assert.AreEqual(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair,"attributes.EnableOnlineBucketRepair");
 
-                Assert.Equal(false, index.Disabled);
                 await index.DisableAsync();
-                Assert.Equal(true, index.Disabled);
+                Assert.AreEqual(true, index.Disabled, "index.Disable");
 
                 await service.Server.RestartAsync(2 * 60 * 1000);
                 await service.LogOnAsync();
 
                 await index.EnableAsync();
-                Assert.Equal(false, index.Disabled);
+                Assert.AreEqual(false, index.Disabled, "index.Disable");
 
                 await service.Server.RestartAsync(2 * 60 * 1000);
                 await service.LogOnAsync();

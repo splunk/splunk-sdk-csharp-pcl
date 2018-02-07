@@ -33,7 +33,7 @@ namespace Splunk.Client
     using System.Text;
     using System.Threading.Tasks;
     using System.Xml;
-
+   
     /// <summary>
     /// Provides an object representation of an individual entry in a Splunk Atom
     /// Feed response.
@@ -334,6 +334,11 @@ namespace Splunk.Client
 
                     // TODO: Include a domain-specific name translation capability (?)
 
+                    // The reason why some fields are extruded or transmogrified is that
+                    // these fields are both a value and a dictionary. For example 
+                    // action.logevent = <0|1> (e.g enabled or disabled), but it also 
+                    // contains a dictionary of fields such as 
+                    // action.logevent.command = <something>
                     if (level == 0)
                     {
                         switch (name)
@@ -352,6 +357,8 @@ namespace Splunk.Client
                             case "action.webhook":
                             case "alert.suppress":
                             case "auto_summarize":
+                            case "action.logevent":
+                            case "action.lookup":
                                 name += ".IsEnabled";
                                 break;
                             case "alert_comparator":
@@ -412,7 +419,8 @@ namespace Splunk.Client
                         {
                             if (!(propertyValue is Dictionary<string, object>))
                             {
-                                throw new InvalidDataException(name); // TODO: Diagnostics : conversion error
+                                //throw new InvalidDataException(name); // TODO: Diagnostics : conversion error
+                                continue;
                             }
                         }
                         else

@@ -42,7 +42,7 @@ namespace search_export
 
             //// Search : Export Previews
 
-            using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal | head 100"))
+            using (SearchPreviewStream stream = await service.ExportSearchPreviewsAsync("search index=_internal"))
             {
                 int previewNumber = 0;
 

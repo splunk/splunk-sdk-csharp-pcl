@@ -322,7 +322,7 @@ namespace Splunk.Client
 
         static async Task<dynamic> ParseDictionaryAsync(XmlReader reader, int level)
         {
-            var value = (IDictionary<string, dynamic>)new ExpandoObject();
+            var value = new Dictionary<string, object>();
 
             if (!reader.IsEmptyElement)
             {
@@ -410,18 +410,18 @@ namespace Splunk.Client
 
                         if (dictionary.TryGetValue(propertyName, out propertyValue))
                         {
-                            if (!(propertyValue is ExpandoObject))
+                            if (!(propertyValue is Dictionary<string, object>))
                             {
                                 throw new InvalidDataException(name); // TODO: Diagnostics : conversion error
                             }
                         }
                         else
                         {
-                            propertyValue = new ExpandoObject();
+                            propertyValue = new Dictionary<string, object>();
                             dictionary.Add(propertyName, propertyValue);
                         }
 
-                        dictionary = (IDictionary<string, object>)propertyValue;
+                        dictionary = propertyValue;
                     }
 
                     propertyName = NormalizePropertyName(names[names.Length - 1]);

@@ -39,7 +39,7 @@ namespace Splunk.Client
         /// <param name="expandoObject">
         /// An object backing the current <see cref="ExpandoAdapter"/>.
         /// </param>
-        protected ExpandoAdapter(ExpandoObject expandoObject)
+        protected ExpandoAdapter(Dictionary<string, object> expandoObject)
         {
             Contract.Requires<InvalidOperationException>(expandoObject != null);
             this.expandoObject = expandoObject;
@@ -60,7 +60,7 @@ namespace Splunk.Client
         /// <summary>
         /// The empty.
         /// </summary>
-        public static readonly ExpandoAdapter Empty = new ExpandoAdapter(new ExpandoObject());
+        public static readonly ExpandoAdapter Empty = new ExpandoAdapter(new Dictionary<string, object>());
 
         #endregion
 
@@ -215,7 +215,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        ExpandoObject expandoObject;
+        Dictionary<string, object> expandoObject;
         object gate = new object();
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace Splunk.Client
         /// <value>
         /// The object.
         /// </value>
-        internal ExpandoObject Object
+        internal Dictionary<string, object> Object
         { 
             get
             {
@@ -331,7 +331,7 @@ namespace Splunk.Client
                     return value;
                 }
 
-                var expandoObject = input as ExpandoObject;
+                var expandoObject = input as Dictionary<string, object>;
 
                 if (expandoObject != null)
                 {
@@ -416,7 +416,7 @@ namespace Splunk.Client
                     return value;
                 }
 
-                var expandoObject = input as ExpandoObject;
+                var expandoObject = input as Dictionary<string, object>;
 
                 if (expandoObject != null)
                 {

@@ -29,7 +29,6 @@ namespace Splunk.Client.AcceptanceTests
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Security;
-
     using Xunit;
 
     public class TestService
@@ -1074,16 +1073,16 @@ namespace Splunk.Client.AcceptanceTests
                 };
 
                 await index.UpdateAsync(attributes);
-                Assert.AreEqual(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair,"attributes.EnableOnlineBucketRepair");
+                Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
 
                 await index.DisableAsync();
-                Assert.AreEqual(true, index.Disabled, "index.Disable");
+                Assert.Equal(true, index.Disabled);
 
                 await service.Server.RestartAsync(2 * 60 * 1000);
                 await service.LogOnAsync();
 
                 await index.EnableAsync();
-                Assert.AreEqual(false, index.Disabled, "index.Disable");
+                Assert.Equal(false, index.Disabled);
 
                 await service.Server.RestartAsync(2 * 60 * 1000);
                 await service.LogOnAsync();

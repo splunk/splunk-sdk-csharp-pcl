@@ -1742,15 +1742,26 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                // Changed to 10, we aren't guaranteed to have 100 events yet, especially when running in CI
-                const string search = "search index=_internal | head 10";
+                const string search = "search index=_internal| head 3";
                 var args = new SearchExportArgs { Count = 0 };
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
 
-                    await Task.Delay(2000);
+                    //wait till result are ready
+                    Stopwatch sw = Stopwatch.StartNew();
+                    while (sw.Elapsed.TotalSeconds < 30)
+                    {
+                        if (stream.Count() < 3)
+                        {
+                            await Task.Delay(2000);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
 
                     foreach (SearchResult result in stream)
                     {

@@ -1016,7 +1016,6 @@ namespace Splunk.Client.AcceptanceTests
 
                     }
                     
-
                     stopwatch.Stop();
                     Console.WriteLine("take {0}m to add/compare all configurations.", stopwatch.Elapsed.TotalMinutes);
 

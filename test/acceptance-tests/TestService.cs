@@ -29,7 +29,6 @@ namespace Splunk.Client.AcceptanceTests
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Security;
-
     using Xunit;
 
     public class TestService
@@ -205,9 +204,9 @@ namespace Splunk.Client.AcceptanceTests
                             "edit_user",                    // 20
                             "edit_view_html",               // 21
                             "edit_web_settings",            // 22
-                            "edit_win_admon",               // 23
+                            //"edit_win_admon",               // 23
                             "edit_win_eventlogs",           // 24
-                            "edit_win_perfmon",             // 25
+                            //"edit_win_perfmon",             // 25
                             "edit_win_regmon",              // 26
                             "edit_win_wmiconf",             // 27
                             "get_diag",                     // 28
@@ -240,7 +239,7 @@ namespace Splunk.Client.AcceptanceTests
                             "write_pdfserver"               // 55
                         })
                     {
-                        Assert.True(capabilities.Contains(s));
+                        Assert.True(capabilities.Contains(s), String.Format("{0} is not in capabilities",s ));
                     }
                 }
                 else
@@ -1017,7 +1016,6 @@ namespace Splunk.Client.AcceptanceTests
 
                     }
                     
-
                     stopwatch.Stop();
                     Console.WriteLine("take {0}m to add/compare all configurations.", stopwatch.Elapsed.TotalMinutes);
 
@@ -1061,16 +1059,13 @@ namespace Splunk.Client.AcceptanceTests
                 Index index;
 
                 //// Create
-
                 index = await service.Indexes.CreateAsync(indexName);
                 Assert.Equal(true, index.EnableOnlineBucketRepair);
-
+                
                 //// Read
-
                 index = await service.Indexes.GetAsync(indexName);
 
                 //// Update
-
                 var attributes = new IndexAttributes()
                 {
                     EnableOnlineBucketRepair = false
@@ -1078,16 +1073,15 @@ namespace Splunk.Client.AcceptanceTests
 
                 await index.UpdateAsync(attributes);
                 Assert.Equal(attributes.EnableOnlineBucketRepair, index.EnableOnlineBucketRepair);
-                Assert.False(index.Disabled);
 
                 await index.DisableAsync();
-                Assert.True(index.Disabled);
+                Assert.Equal(true, index.Disabled);
 
                 await service.Server.RestartAsync(2 * 60 * 1000);
                 await service.LogOnAsync();
 
                 await index.EnableAsync();
-                Assert.False(index.Disabled);
+                Assert.Equal(false, index.Disabled);
 
                 await service.Server.RestartAsync(2 * 60 * 1000);
                 await service.LogOnAsync();
@@ -1098,7 +1092,6 @@ namespace Splunk.Client.AcceptanceTests
                 {
                     await index.GetAsync();
                 });
-
             }
         }
 

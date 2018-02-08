@@ -124,13 +124,10 @@ namespace Splunk.Client.UnitTests
             CheckCommonProperties(entry.Title, password);
             CheckEai(password);
 
-            Assert.Equal(entry.Content.ClearPassword, password.ClearPassword);
-            Assert.Equal(entry.Content.EncrPassword, password.EncryptedPassword);
-            Assert.Equal(entry.Content.Password, password.Password);
-            Assert.Equal(entry.Content.Username, password.Username);
-
-            //// ExpandoObject hides null values so...
-
+            Assert.Equal(entry.Content["ClearPassword"], password.ClearPassword);
+            Assert.Equal(entry.Content["EncrPassword"], password.EncryptedPassword);
+            Assert.Equal(entry.Content["Password"], password.Password);
+            Assert.Equal(entry.Content["Username"], password.Username);
             var dictionary = (IDictionary<string, object>)entry.Content;
             Assert.Equal(dictionary["Realm"], password.Realm);
         }

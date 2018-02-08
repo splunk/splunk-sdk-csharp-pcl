@@ -945,7 +945,6 @@ namespace Splunk.Client.AcceptanceTests
                         }
                     }
 
-
                     stopwatch.Stop();
                     Console.WriteLine("    take {0}m to enumerate inputsConfiguration.",
                         stopwatch.Elapsed.TotalMinutes);

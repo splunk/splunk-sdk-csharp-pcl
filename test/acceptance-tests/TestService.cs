@@ -1063,7 +1063,6 @@ namespace Splunk.Client.AcceptanceTests
                     #endregion
 
                     Console.WriteLine("total take {0} to here", watch1.Elapsed.TotalMinutes);
-                    Assert.Equal(service.Configurations.ToList(), configurationList);
                     Console.WriteLine("total take {0} to here2", watch1.Elapsed.TotalMinutes);
                     Assert.False(fail);
                 }

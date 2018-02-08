@@ -910,15 +910,19 @@ namespace Splunk.Client.AcceptanceTests
             Stopwatch watch1 = new Stopwatch();
             watch1.Start();
             Stopwatch stopwatch = new Stopwatch();
+            bool fail = false;
             foreach (Namespace ns in TestNamespaces)
             {
                 Console.WriteLine("namespace=" + ns);
                 using (var service = await SdkHelper.CreateService())
                 {
+                    #region MyRegion stanzaOfInputConfigurations
+
                     var inputsConfiguration = await service.Configurations.GetAsync("inputs");
 
                     stopwatch.Start();
-                    foreach (var stanza in inputsConfiguration)  // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
+                    // check stanza
+                    foreach (var stanza in inputsConfiguration) // TODO: FAILS BECAUSE OF MONO URI IMPLEMENTATION!
                     {
                         try
                         {
@@ -926,32 +930,41 @@ namespace Splunk.Client.AcceptanceTests
                             await stanza.GetAsync();
                             Console.WriteLine("        stanza={0}", stanza.Name);
                             Console.WriteLine("        currentStopwatch={0}.", stopwatch.Elapsed.TotalMinutes);
-                            if (stopwatch.Elapsed.TotalMinutes > 10) { Console.WriteLine("!!!execute more than 10 minutes!!!!"); break; }
+                            if (stopwatch.Elapsed.TotalMinutes > 5)
+                            {
+                                fail = true;
+                                Console.WriteLine(
+                                    "!!!execute more than 10 minutes, fail on stanz in inputConfigurations!!!!");
+                                break;
+                            }
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}: {1}===", stanza.Name, e);
+                            Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}: {1}===",
+                                stanza.Name, e);
                         }
                     }
-                    
 
                     stopwatch.Stop();
-                    Console.WriteLine("    take {0}m to enumerate inputsConfiguration.", stopwatch.Elapsed.TotalMinutes);
+                    Console.WriteLine("    take {0}m to enumerate inputsConfiguration.",
+                        stopwatch.Elapsed.TotalMinutes);
+
+                    #endregion
+
+                    #region MyRegion serviceConfigurations
 
                     await service.Configurations.GetAllAsync();
 
                     Console.WriteLine("    # of service.Configurations={0}.", service.Configurations.Count);
                     stopwatch.Start();
 
-                    Configuration temp = null;
-                    Console.WriteLine("=======================all config=============================");
+                    Console.WriteLine("=======================2. all config=============================");
                     foreach (Configuration configuration in service.Configurations)
                     {
-                        temp = configuration;
                         try
                         {
                             await configuration.GetAllAsync();
-                            Console.WriteLine("       configuration={0}", configuration.Name);
+                            Console.WriteLine("       2.configuration={0}", configuration.Name);
                             foreach (ConfigurationStanza stanza in configuration)
                             {
                                 try
@@ -961,38 +974,56 @@ namespace Splunk.Client.AcceptanceTests
                                 }
                                 catch (Exception e)
                                 {
-                                    Console.WriteLine("======2.1====== exception on stanza={0}: {1}=========", stanza.Name, e);
+                                    Console.WriteLine("======2.1====== exception on stanza={0}: {1}=========",
+                                        stanza.Name, e);
                                 }
 
                             }
+
                             Console.WriteLine("        currentStopwatch={0}.", stopwatch.Elapsed.TotalMinutes);
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("======2====== exception on config- {0}: {1}=========", configuration.Name, e);
+                            Console.WriteLine("======2====== exception on config- {0}: {1}=========",
+                                configuration.Name, e);
                         }
 
-                        if (stopwatch.Elapsed.TotalMinutes > 10) { Console.WriteLine("!!!execute more than 10 minutes!!!!"); break; }
+                        if (stopwatch.Elapsed.TotalMinutes > 5)
+                        {
+                            fail = true;
+                            Console.WriteLine(
+                                "!!!execute more than 10 minutes, fail on enumerate serviceConfigurations !!!!");
+                            break;
+                        }
                     }
-                    
+
                     stopwatch.Stop();
 
-                    Console.WriteLine("    take {0}m to enumerate service.Configurations.", stopwatch.Elapsed.TotalMinutes);
-                    Console.WriteLine("total take {0} to here3", watch1.Elapsed.TotalMinutes);
+                    Console.WriteLine("    take {0}m to enumerate service.Configurations.",
+                        stopwatch.Elapsed.TotalMinutes);
+                    Console.WriteLine("total take {0} to here2", watch1.Elapsed.TotalMinutes);
+
+                    #endregion
+
+                    #region MyRegion serviceConfigAndStanza
+
+                    Console.WriteLine("================ 3. serviceConfigAndStanza=====================");
 
                     var configurationList = new List<Configuration>(service.Configurations.Count);
 
                     stopwatch.Start();
 
+                    int myconut = service.Configurations.Count;
                     for (int i = 0; i < service.Configurations.Count; i++)
                     {
                         Configuration configuration = service.Configurations[i];
-
+                        Console.WriteLine("3.configuration={0}", configuration.Name);
 
                         configurationList.Add(configuration);
 
                         await configuration.GetAllAsync();
-                        Console.WriteLine("        2.configuration={0},count=", configuration.Name, configuration.Count);
+                        Console.WriteLine("        3.configuration={0},count={1}", configuration.Name,
+                            configuration.Count);
                         var stanzaList = new List<ConfigurationStanza>(configuration.Count);
 
                         for (int j = 0; j < configuration.Count; j++)
@@ -1010,18 +1041,30 @@ namespace Splunk.Client.AcceptanceTests
                             }
                         }
 
-                        if (stopwatch.Elapsed.TotalMinutes > 10) { Console.WriteLine("!!!execute more than 10 minutes!!!!"); break; }
-                        Assert.Equal(configuration.ToList(), stanzaList);
-                        Console.WriteLine("        2.currentStopwatch={0}.", stopwatch.Elapsed.TotalMinutes);
+                        if (!string.Join(",", configuration.ToList()).Equals(string.Join(",", stanzaList)))
+                        {
+                            fail = true;
+                            Console.WriteLine(" configurationToList={0} ", string.Join(",", configuration.ToList()));
+                            Console.WriteLine(" stanzaList={0} ", string.Join(",", stanzaList));
+                        }
 
+                        if (stopwatch.Elapsed.TotalMinutes > 5)
+                        {
+                            fail = true;
+                            Console.WriteLine("!!!execute more than 10 minutes, fail on compare {0}!!!!",
+                                configuration.Name);
+                            break;
+                        }
                     }
-                    
+
                     stopwatch.Stop();
                     Console.WriteLine("take {0}m to add/compare all configurations.", stopwatch.Elapsed.TotalMinutes);
 
+                    #endregion
+
                     Console.WriteLine("total take {0} to here", watch1.Elapsed.TotalMinutes);
-                    Assert.Equal(service.Configurations.ToList(), configurationList);
                     Console.WriteLine("total take {0} to here2", watch1.Elapsed.TotalMinutes);
+                    Assert.False(fail);
                 }
             }
 
@@ -1742,15 +1785,26 @@ namespace Splunk.Client.AcceptanceTests
         {
             using (var service = await SdkHelper.CreateService())
             {
-                // Changed to 10, we aren't guaranteed to have 100 events yet, especially when running in CI
-                const string search = "search index=_internal | head 10";
+                const string search = "search index=_internal| head 3";
                 var args = new SearchExportArgs { Count = 0 };
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
                 {
                     var results = new List<SearchResult>();
 
-                    await Task.Delay(2000);
+                    //wait till results are ready
+                    Stopwatch sw = Stopwatch.StartNew();
+                    while (sw.Elapsed.TotalSeconds < 30)
+                    {
+                        if (stream.Count() < 3)
+                        {
+                            await Task.Delay(2000);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
 
                     foreach (SearchResult result in stream)
                     {

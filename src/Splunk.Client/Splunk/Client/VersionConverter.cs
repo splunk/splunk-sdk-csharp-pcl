@@ -67,8 +67,8 @@ namespace Splunk.Client
             if (DateTime.TryParseExact(input.ToString(),
                 "yyyyMMdd",
                 System.Globalization.CultureInfo.InvariantCulture,
-                           System.Globalization.DateTimeStyles.None,
-                           out date))
+                System.Globalization.DateTimeStyles.None,
+                out date))
             {
                 Version.TryParse("7.0.0", result: out value);
                 return value;

@@ -274,7 +274,7 @@ namespace Splunk.Client
 
                 var entry = feed.Entries[0];
 
-                ReadOnlyCollection<dynamic> capabilities = entry.Content.Capabilities;
+                ReadOnlyCollection<dynamic> capabilities = entry.Content["Capabilities"];
                 return new ReadOnlyCollection<string>(capabilities.Cast<string>().ToList());
             }
         }

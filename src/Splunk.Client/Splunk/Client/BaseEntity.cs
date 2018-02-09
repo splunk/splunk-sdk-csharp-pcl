@@ -14,6 +14,8 @@
  * under the License.
  */
 
+using System.Collections.Generic;
+
 namespace Splunk.Client
 {
     using System;
@@ -401,7 +403,7 @@ namespace Splunk.Client
         static TResource CreateMissingResource()
         {
             var resource = new TResource();
-            resource.Initialize(new ExpandoObject());
+            resource.Initialize(new Dictionary<string, object>());
             return resource;
         }
 

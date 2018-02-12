@@ -106,10 +106,10 @@ namespace Splunk.Client
             reader.MoveToElement();
             reader.EnsureMarkup(XmlNodeType.Element, "result");
 
-            this.Object = new ExpandoObject();
+            this.Object = new Dictionary<string, object>();
             var dictionary = (IDictionary<string, object>)this.Object;
 
-            this.tagsObject = new ExpandoObject();
+            this.tagsObject = new Dictionary<string, object>();
             var tagsDictionary = (IDictionary<string, object>)this.tagsObject;
 
             this.SegmentedRaw = null;
@@ -278,7 +278,7 @@ namespace Splunk.Client
 
         readonly SearchResultMetadata metadata;
 
-        ExpandoObject tagsObject;
+        Dictionary<string, object> tagsObject;
 
         /// <summary>
         /// Initializes a new instance of the Splunk.Client.SearchResult class.

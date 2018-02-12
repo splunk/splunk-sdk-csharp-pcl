@@ -18,6 +18,8 @@
 //// [O] Contracts
 //// [O] Documentation
 
+using System.Collections.Generic;
+
 namespace Splunk.Client
 {
     using System;
@@ -63,7 +65,7 @@ namespace Splunk.Client
         /// An object containing the dynamic members of the newly created
         /// <see cref="ResourceCollection"/>.
         /// </param>
-        protected ResourceCollection(ExpandoObject expandObject)
+        protected ResourceCollection(Dictionary<string, object> expandObject)
             : base(expandObject)
         { }
 

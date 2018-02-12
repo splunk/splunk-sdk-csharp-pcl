@@ -24,8 +24,8 @@ namespace Splunk.Client
     using System.Dynamic;
 
     /// <summary>
-    /// Provides a base class for implementing strong types backed by
-    /// <see cref="System.Dynamic.ExpandoObject"/> instances.
+    /// Provides a base class for implementing 
+    /// <see cref="Dictionary{TKey,TValue}"/> instances.
     /// </summary>
     /// <seealso cref="T:System.Dynamic.DynamicObject"/>
     public class ExpandoAdapter : DynamicObject
@@ -36,13 +36,13 @@ namespace Splunk.Client
         /// Intializes a new instance of the <see cref="ExpandoAdapter"/>
         /// class.
         /// </summary>
-        /// <param name="expandoObject">
+        /// <param name="myObject">
         /// An object backing the current <see cref="ExpandoAdapter"/>.
         /// </param>
-        protected ExpandoAdapter(ExpandoObject expandoObject)
+        protected ExpandoAdapter(Dictionary<string, object> myObject)
         {
-            Contract.Requires<InvalidOperationException>(expandoObject != null);
-            this.expandoObject = expandoObject;
+            Contract.Requires<InvalidOperationException>(myObject != null);
+            this.myObject = myObject;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Splunk.Client
         /// <summary>
         /// The empty.
         /// </summary>
-        public static readonly ExpandoAdapter Empty = new ExpandoAdapter(new ExpandoObject());
+        public static readonly ExpandoAdapter Empty = new ExpandoAdapter(new Dictionary<string, object>());
 
         #endregion
 
@@ -80,7 +80,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Gets a named item from the
-        /// <see cref="System.Dynamic.ExpandoObject"/>"/&gt;
+        /// <see cref="Dictionary{TKey,TValue}"/>"/&gt;
         /// backing the current <see cref="ExpandoAdapter"/>.
         /// </summary>
         /// <param name="name">
@@ -106,7 +106,7 @@ namespace Splunk.Client
         /// </summary>
         /// <remarks>
         /// The value returned by this method is stored into the backing
-        /// <see cref="System.Dynamic.ExpandoObject"/> to reduce conversion overhead.
+        /// <see cref="Dictionary{TKey,TValue}"/> to reduce conversion overhead.
         /// </remarks>
         /// <typeparam name="TValue">
         /// Type of the value.
@@ -215,7 +215,7 @@ namespace Splunk.Client
 
         #region Privates/internals
 
-        ExpandoObject expandoObject;
+        Dictionary<string, object> myObject;
         object gate = new object();
 
         /// <summary>
@@ -227,23 +227,23 @@ namespace Splunk.Client
         /// <value>
         /// The object.
         /// </value>
-        internal ExpandoObject Object
+        internal Dictionary<string, object> Object
         { 
             get
             {
-                return this.expandoObject;
+                return this.myObject;
             }
 
             set
             {
                 Debug.Assert(this.Object == null, "Object is not null");
 
-                if (this.expandoObject != null)
+                if (this.myObject != null)
                 {
                     throw new InvalidOperationException("ExpandoAdapter.Object is already initialized."); // TODO: diagnostics
                 }
 
-                this.expandoObject = value;
+                this.myObject = value;
             }
         }
 
@@ -288,7 +288,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Provides a converter to create <see cref="ExpandoAdapter"/>
-        /// instances from <see cref="System.Dynamic.ExpandoObject"/>
+        /// instances from <see cref="Dictionary{TKey,TValue}"/>
         /// instances.
         /// </summary>
         /// <seealso cref="T:Splunk.Client.ValueConverter{Splunk.Client.ExpandoAdapter}"/>
@@ -331,11 +331,11 @@ namespace Splunk.Client
                     return value;
                 }
 
-                var expandoObject = input as ExpandoObject;
+                var myObject = input as Dictionary<string, object>;
 
-                if (expandoObject != null)
+                if (myObject != null)
                 {
-                    return new ExpandoAdapter(expandoObject);
+                    return new ExpandoAdapter(myObject);
                 }
 
                 throw NewInvalidDataException(input);
@@ -349,7 +349,7 @@ namespace Splunk.Client
 
     /// <summary>
     /// Provides a generic base class for implementing strong types backed by
-    /// <see cref="System.Dynamic.ExpandoObject"/> instances.
+    /// <see cref="Dictionary{TKey,TValue}"/> instances.
     /// </summary>
     /// <typeparam name="TExpandoAdapter">
     /// Type of the adapter.
@@ -374,7 +374,7 @@ namespace Splunk.Client
 
         /// <summary>
         /// Provides a converter to create <see cref="ExpandoAdapter"/>
-        /// instances from <see cref="System.Dynamic.ExpandoObject"/>
+        /// instances from <see cref="Dictionary{TKey,TValue}"/>
         /// instances.
         /// </summary>
         /// <seealso cref="T:Splunk.Client.ValueConverter{TExpandoAdapter}"/>
@@ -416,11 +416,11 @@ namespace Splunk.Client
                     return value;
                 }
 
-                var expandoObject = input as ExpandoObject;
+                var myObject = input as Dictionary<string, object>;
 
-                if (expandoObject != null)
+                if (myObject != null)
                 {
-                    return new TExpandoAdapter() { Object = expandoObject };
+                    return new TExpandoAdapter() { Object = myObject };
                 }
 
                 throw NewInvalidDataException(input);

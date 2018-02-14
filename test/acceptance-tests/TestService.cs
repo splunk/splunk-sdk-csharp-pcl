@@ -1825,7 +1825,7 @@ namespace Splunk.Client.AcceptanceTests
             {
                 var args = new SearchExportArgs { Count = 0 };
 
-                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | head 100", args))
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | head 3", args))
                 {
                     var manualResetEvent = new ManualResetEvent(true);
                     var results = new List<SearchResult>();
@@ -1861,7 +1861,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     Assert.Null(exception);
                     Assert.True(stream.IsFinal);
-                    Assert.Equal(100, results.Count);
+                    Assert.Equal(3, results.Count);
                     Assert.Equal(stream.ReadCount, readCount);
                 }
 

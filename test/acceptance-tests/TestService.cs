@@ -1786,6 +1786,11 @@ namespace Splunk.Client.AcceptanceTests
             using (var service = await SdkHelper.CreateService())
             {
                 const string search = "search index=_internal| head 3";
+                // do some trivial search to make sure _internal have some records
+                await service.SearchOneShotAsync(search);
+                await service.SearchOneShotAsync(search);
+                await service.SearchOneShotAsync(search);
+
                 var args = new SearchExportArgs { Count = 0 };
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
@@ -1824,8 +1829,13 @@ namespace Splunk.Client.AcceptanceTests
             using (var service = await SdkHelper.CreateService())
             {
                 var args = new SearchExportArgs { Count = 0 };
+                const string search = "search index=_internal| head 3";
+                // do some trivial search to make sure _internal have some records
+                await service.SearchOneShotAsync(search);
+                await service.SearchOneShotAsync(search);
+                await service.SearchOneShotAsync(search);
 
-                using (SearchResultStream stream = await service.ExportSearchResultsAsync("search index=_internal | head 3", args))
+                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
                 {
                     var manualResetEvent = new ManualResetEvent(true);
                     var results = new List<SearchResult>();

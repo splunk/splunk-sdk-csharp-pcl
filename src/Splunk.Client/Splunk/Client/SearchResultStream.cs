@@ -122,7 +122,7 @@ namespace Splunk.Client
         {
             XmlReader reader = response.XmlReader;
 
-            await reader.MoveToDocumentElementAsync("results", "response").ConfigureAwait(false);
+            await reader.MoveToDocumentElementAsync("/results", "results", "response").ConfigureAwait(false);
 
             if (reader.Name == "response")
             {

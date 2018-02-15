@@ -94,8 +94,9 @@ namespace Splunk.Client
                 
                 default: throw new InvalidOperationException(); // TODO: Diagnostics
             }
-
-            throw new InvalidDataException(message);
+            
+            //throw new InvalidDataException(message);
+            return;
         }
 
         /// <summary>

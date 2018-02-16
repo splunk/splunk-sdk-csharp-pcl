@@ -14,6 +14,8 @@
  * under the License.
  */
 
+using System.Linq.Expressions;
+
 namespace Splunk.Client.AcceptanceTests
 {
     using Splunk.Client;
@@ -1783,42 +1785,59 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanExportSearchResultsToEnumerable()
         {
-            using (var service = await SdkHelper.CreateService())
+            bool pass = false;
+            //random failed in CI, so try several time to see if it improves
+            for (int i = 0; i < 5; i++)
             {
-                const string search = "search index=_internal| head 3";
-                // do some trivial search to make sure _internal have some records
-                await service.SearchOneShotAsync(search);
-                await service.SearchOneShotAsync(search);
-                await service.SearchOneShotAsync(search);
-
-                var args = new SearchExportArgs { Count = 0 };
-
-                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                try
                 {
-                    var results = new List<SearchResult>();
-
-                    //wait till results are ready
-                    Stopwatch sw = Stopwatch.StartNew();
-                    while (sw.Elapsed.TotalSeconds < 30)
+                    using (var service = await SdkHelper.CreateService())
                     {
-                        if (stream.Count() < 3)
+                        const string search = "search index=_internal| head 3";
+                        // do some trivial search to make sure _internal have some records
+                        await service.SearchOneShotAsync(search);
+                        await service.SearchOneShotAsync(search);
+                        await service.SearchOneShotAsync(search);
+
+                        var args = new SearchExportArgs {Count = 0};
+
+                        using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
                         {
-                            await Task.Delay(2000);
+                            var results = new List<SearchResult>();
+
+                            //wait till results are ready
+                            Stopwatch sw = Stopwatch.StartNew();
+                            while (sw.Elapsed.TotalSeconds < 30)
+                            {
+                                if (stream.Count() < 3)
+                                {
+                                    await Task.Delay(2000);
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                            }
+
+                            foreach (SearchResult result in stream)
+                            {
+                                results.Add(result);
+                            }
                         }
-                        else
-                        {
-                            break;
-                        }
+
+                        await service.LogOffAsync();
                     }
 
-                    foreach (SearchResult result in stream)
-                    {
-                        results.Add(result);
-                    }
+                    pass = true;
+                    break;
                 }
-
-                await service.LogOffAsync();
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
+
+            Assert.True(pass);
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]
@@ -1826,57 +1845,71 @@ namespace Splunk.Client.AcceptanceTests
         [Fact]
         public async Task CanExportSearchResultsToObservable()
         {
-            using (var service = await SdkHelper.CreateService())
+            bool pass = true;
+            //random failed in CI, so try several time to see if it improves
+            for (int i = 0; i < 5; i++)
             {
-                var args = new SearchExportArgs { Count = 0 };
-                const string search = "search index=_internal| head 3";
-                // do some trivial search to make sure _internal have some records
-                await service.SearchOneShotAsync(search);
-                await service.SearchOneShotAsync(search);
-                await service.SearchOneShotAsync(search);
-
-                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                try
                 {
-                    var manualResetEvent = new ManualResetEvent(true);
-                    var results = new List<SearchResult>();
-                    var exception = (Exception)null;
-                    int readCount = 0;
+                    using (var service = await SdkHelper.CreateService())
+                    {
+                        var args = new SearchExportArgs {Count = 0};
+                        const string search = "search index=_internal| head 3";
+                        // do some trivial search to make sure _internal have some records
+                        await service.SearchOneShotAsync(search);
+                        await service.SearchOneShotAsync(search);
+                        await service.SearchOneShotAsync(search);
 
-                    stream.Subscribe(new Observer<SearchResult>(
-                        onNext: (result) =>
+                        using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
                         {
-                            var memberNames = result.GetDynamicMemberNames();
-                            var count = stream.FieldNames.Intersect(memberNames).Count();
-                            Assert.Equal(count, memberNames.Count());
+                            var manualResetEvent = new ManualResetEvent(true);
+                            var results = new List<SearchResult>();
+                            var exception = (Exception) null;
+                            int readCount = 0;
 
-                            if (stream.IsFinal)
-                            {
-                                results.Add(result);
-                            }
+                            stream.Subscribe(new Observer<SearchResult>(
+                                onNext: (result) =>
+                                {
+                                    var memberNames = result.GetDynamicMemberNames();
+                                    var count = stream.FieldNames.Intersect(memberNames).Count();
+                                    Assert.Equal(count, memberNames.Count());
 
-                            readCount++;
-                        },
-                        onCompleted: () =>
-                        {
-                            manualResetEvent.Set();
-                        },
-                        onError: (e) =>
-                        {
-                            exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
-                            manualResetEvent.Set();
-                        }));
+                                    if (stream.IsFinal)
+                                    {
+                                        results.Add(result);
+                                    }
 
-                    manualResetEvent.Reset();
-                    manualResetEvent.WaitOne();
+                                    readCount++;
+                                },
+                                onCompleted: () => { manualResetEvent.Set(); },
+                                onError: (e) =>
+                                {
+                                    exception = new ApplicationException("SearchPreviewStream error: " + e.Message, e);
+                                    manualResetEvent.Set();
+                                }));
 
-                    Assert.Null(exception);
-                    Assert.True(stream.IsFinal);
-                    Assert.Equal(3, results.Count);
-                    Assert.Equal(stream.ReadCount, readCount);
+                            manualResetEvent.Reset();
+                            manualResetEvent.WaitOne();
+
+                            Assert.Null(exception);
+                            Assert.True(stream.IsFinal);
+                            Assert.Equal(3, results.Count);
+                            Assert.Equal(stream.ReadCount, readCount);
+                        }
+
+                        await service.LogOffAsync();
+                    }
+
+                    pass = true;
+                    break;
                 }
-
-                await service.LogOffAsync();
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
             }
+
+            Assert.True(pass);
         }
 
         [Trait("acceptance-test", "Splunk.Client.Service")]

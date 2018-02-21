@@ -1794,20 +1794,23 @@ namespace Splunk.Client.AcceptanceTests
                 await service.SearchOneShotAsync(search);
                 await service.SearchOneShotAsync(search);
                 await service.SearchOneShotAsync(search);
-                await Task.Delay(2000);
+                await Task.Delay(3000);
 
                 var args = new SearchExportArgs {Count = 0};
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
                 {
+                    await Task.Delay(3000);
+
                     var results = new List<SearchResult>();
 
+                    //wait till results are ready
+                    foreach (SearchResult result in stream)
+                    {
+                        results.Add(result);
+                    }
+
                     Assert.True(results.Count == 3, string.Format("get result count ={0}", results.Count));
-                    ////wait till results are ready
-                    //foreach (SearchResult result in stream)
-                    //{
-                    //    results.Add(result);
-                    //}
 
                 }
 

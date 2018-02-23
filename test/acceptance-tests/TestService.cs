@@ -1796,6 +1796,15 @@ namespace Splunk.Client.AcceptanceTests
                 await service.SearchOneShotAsync(search);
                 await Task.Delay(3000);
 
+                using (SearchResultStream stream = await service.SearchOneShotAsync(search))
+                {
+                    foreach (SearchResult result in stream)
+                    {
+                        Console.WriteLine(result);
+                    }
+                    Assert.Equal(3, stream.ReadCount);
+                }
+
                 var args = new SearchExportArgs {Count = 0};
 
                 using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
@@ -1835,7 +1844,29 @@ namespace Splunk.Client.AcceptanceTests
                 await service.SearchOneShotAsync(search);
                 await Task.Delay(2000);
 
-                using (SearchResultStream stream = await service.ExportSearchResultsAsync(search, args))
+                using (SearchResultStream stream = await service.SearchOneShotAsync(search))
+                {
+                    foreach (SearchResult result in stream)
+                    {
+                       Console.WriteLine(result);
+                    }
+                    Assert.Equal(3,stream.ReadCount);
+                }
+
+                Task<SearchResultStream> task = service.ExportSearchResultsAsync(search, args);
+                var source = new CancellationTokenSource(); 
+                source.CancelAfter(TimeSpan.FromSeconds(60));
+                var completionSource = new TaskCompletionSource<object>(); //New code
+                source.Token.Register(() => completionSource.TrySetCanceled()); //New code
+                await Task.WhenAny(task, completionSource.Task);
+
+                if (!task.IsCompleted)
+                {
+                    Console.WriteLine("timeout !!!!{0}",task.Status);
+                    Assert.True(false,"test failed due to timeout");
+                }
+
+                using (SearchResultStream stream = task.Result)
                 {
                     var manualResetEvent = new ManualResetEvent(true);
                     var results = new List<SearchResult>();
@@ -1863,8 +1894,8 @@ namespace Splunk.Client.AcceptanceTests
                             manualResetEvent.Set();
                         }));
 
-                    manualResetEvent.Reset();
-                    manualResetEvent.WaitOne();
+                    //manualResetEvent.Reset();
+                    //manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
                     Assert.True(stream.IsFinal);

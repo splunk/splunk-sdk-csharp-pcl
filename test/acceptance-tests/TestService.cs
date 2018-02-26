@@ -1836,7 +1836,7 @@ namespace Splunk.Client.AcceptanceTests
 
             using (var service = await SdkHelper.CreateService())
             {
-                var args = new SearchExportArgs {Count = 0};
+                var args = new SearchExportArgs();
                 const string search = "search index=_internal| head 3";
                 // do some trivial search to make sure _internal have some records
                 await service.SearchOneShotAsync(search);
@@ -1854,10 +1854,12 @@ namespace Splunk.Client.AcceptanceTests
                 }
 
                 Task<SearchResultStream> task = service.ExportSearchResultsAsync(search, args);
+
+                //set a timeout task to prevent the test running too long
                 var source = new CancellationTokenSource(); 
                 source.CancelAfter(TimeSpan.FromSeconds(60));
-                var completionSource = new TaskCompletionSource<object>(); //New code
-                source.Token.Register(() => completionSource.TrySetCanceled()); //New code
+                var completionSource = new TaskCompletionSource<object>(); 
+                source.Token.Register(() => completionSource.TrySetCanceled());
                 await Task.WhenAny(task, completionSource.Task);
 
                 if (!task.IsCompleted)
@@ -1866,6 +1868,7 @@ namespace Splunk.Client.AcceptanceTests
                     Assert.True(false,"test failed due to timeout");
                 }
 
+                await Task.Delay(2000);
                 using (SearchResultStream stream = task.Result)
                 {
                     var manualResetEvent = new ManualResetEvent(true);
@@ -1894,11 +1897,11 @@ namespace Splunk.Client.AcceptanceTests
                             manualResetEvent.Set();
                         }));
 
-                    //manualResetEvent.Reset();
+                    manualResetEvent.Reset();
                     //manualResetEvent.WaitOne();
 
                     Assert.Null(exception);
-                    //Assert.True(stream.IsFinal);
+                    Assert.True(stream.IsFinal);
                     Assert.Equal(3, results.Count);
                     Assert.Equal(stream.ReadCount, readCount);
                 }

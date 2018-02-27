@@ -943,7 +943,7 @@ namespace Splunk.Client.AcceptanceTests
                         catch (Exception e)
                         {
                             Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}:{1}===",
-                                stanza.Name,e.Message.Substring(0,100));
+                                stanza.Name, e.Message.Substring(0, Math.Min(100, e.Message.Length)));
                         }
                     }
 

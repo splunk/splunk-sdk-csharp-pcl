@@ -942,12 +942,11 @@ namespace Splunk.Client.AcceptanceTests
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}: {1}===",
-                                stanza.Name, e);
+                            Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}:{1}===",
+                                stanza.Name,e.Message.Substring(0,100));
                         }
                     }
 
-                    stopwatch.Stop();
                     Console.WriteLine("    take {0}m to enumerate inputsConfiguration.",
                         stopwatch.Elapsed.TotalMinutes);
 
@@ -958,8 +957,7 @@ namespace Splunk.Client.AcceptanceTests
                     await service.Configurations.GetAllAsync();
 
                     Console.WriteLine("    # of service.Configurations={0}.", service.Configurations.Count);
-                    stopwatch.Start();
-
+    
                     Console.WriteLine("=======================2. all config=============================");
                     foreach (Configuration configuration in service.Configurations)
                     {
@@ -999,7 +997,6 @@ namespace Splunk.Client.AcceptanceTests
                         }
                     }
 
-                    stopwatch.Stop();
 
                     Console.WriteLine("    take {0}m to enumerate service.Configurations.",
                         stopwatch.Elapsed.TotalMinutes);
@@ -1013,7 +1010,6 @@ namespace Splunk.Client.AcceptanceTests
 
                     var configurationList = new List<Configuration>(service.Configurations.Count);
 
-                    stopwatch.Start();
 
                     int myconut = service.Configurations.Count;
                     for (int i = 0; i < service.Configurations.Count; i++)

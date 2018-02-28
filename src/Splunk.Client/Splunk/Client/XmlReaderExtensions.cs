@@ -93,7 +93,8 @@ namespace Splunk.Client
                     break;
                 
                 default: throw new InvalidOperationException(); // TODO: Diagnostics
-            }           
+            }
+                       
             throw new InvalidDataException(message);
         }
 

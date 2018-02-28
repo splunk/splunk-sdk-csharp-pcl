@@ -940,7 +940,7 @@ namespace Splunk.Client.AcceptanceTests
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}:{1}===",
+                            Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}: {1}===",
                                 stanza.Name, e);
                         }
                     }

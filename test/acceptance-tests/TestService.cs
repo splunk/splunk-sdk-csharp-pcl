@@ -14,8 +14,6 @@
  * under the License.
  */
 
-using System.Linq.Expressions;
-
 namespace Splunk.Client.AcceptanceTests
 {
     using Splunk.Client;
@@ -943,7 +941,7 @@ namespace Splunk.Client.AcceptanceTests
                         catch (Exception e)
                         {
                             Console.WriteLine("=====1======= exception on inputsConfiguration stanza: {0}:{1}===",
-                                stanza.Name, e.Message.Substring(0, Math.Min(100, e.Message.Length)));
+                                stanza.Name, e);
                         }
                     }
 

@@ -1,5 +1,12 @@
 # Splunk SDK for C# PCL
 
+## Version 2.2.7
+
+### Bug Fixes
+
+* Fixed an issue where C# application generates exception "action.logevent.command" when trying to retrieve data from SavedReport     (GitHub pull request https://github.com/splunk/splunk-sdk-csharp-pcl/pull/74)
+* Fixed Memory leak in SearchResult (GitHub Issue [#67](https://github.com/splunk/splunk-sdk-csharp-pcl/issues/67)) (GitHub pull request https://github.com/splunk/splunk-sdk-csharp-pcl/pull/76).
+
 ## Version 2.2.6
 
 ### Minor Changes

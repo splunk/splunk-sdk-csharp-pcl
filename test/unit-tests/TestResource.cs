@@ -75,8 +75,8 @@ namespace Splunk.Client.UnitTests
                     Assert.IsType(typeof(Uri), resource.Id);
                     Assert.Equal("https://localhost:8089/services/search/jobs/scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Id.ToString());
 
-                    Assert.IsType(typeof(string), resource.Content.Sid);
-                    Assert.Equal("scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Content.Sid);
+                    Assert.IsType(typeof(string), resource.Content["Sid"]);
+                    Assert.Equal("scheduler__admin__search__RMD50aa4c13eb03d1730_at_1401390000_866", resource.Content["Sid"]);
 
                     Assert.IsType(typeof(string), resource.Title);
                     Assert.Equal("search search index=_internal | head 1000", resource.Title);
@@ -110,43 +110,43 @@ namespace Splunk.Client.UnitTests
 
         internal static void CheckExistenceOfApplicationProperties(dynamic entity)
         {
-            Assert.DoesNotThrow(() => { var p = entity.Content.CheckForUpdates; });
-            Assert.DoesNotThrow(() => { var p = entity.Content.Configured; });
-            Assert.DoesNotThrow(() => { var p = entity.Content.Disabled; });
-            Assert.DoesNotThrow(() => { var p = entity.Content.Eai; });
-            Assert.DoesNotThrow(() => { var p = entity.Content.Label; });
-            Assert.DoesNotThrow(() => { var p = entity.Content.StateChangeRequiresRestart; });
-            Assert.DoesNotThrow(() => { var p = entity.Content.Visible; });
+            Assert.DoesNotThrow(() => { var p = entity.Content["CheckForUpdates"]; });
+            Assert.DoesNotThrow(() => { var p = entity.Content["Configured"]; });
+            Assert.DoesNotThrow(() => { var p = entity.Content["Disabled"]; });
+            Assert.DoesNotThrow(() => { var p = entity.Content["Eai"]; });
+            Assert.DoesNotThrow(() => { var p = entity.Content["Label"]; });
+            Assert.DoesNotThrow(() => { var p = entity.Content["StateChangeRequiresRestart"]; });
+            Assert.DoesNotThrow(() => { var p = entity.Content["Visible"]; });
         }
 
         internal static void CheckExistenceOfJobProperties(dynamic job)
         {
             Assert.DoesNotThrow(() => { var p = job.Published; });
-            Assert.DoesNotThrow(() => { var p = job.Content.CanSummarize; });
-            Assert.DoesNotThrow(() => { var p = job.Content.CursorTime; });
-            Assert.DoesNotThrow(() => { var p = job.Content.DefaultSaveTTL; });
-            Assert.DoesNotThrow(() => { var p = job.Content.DefaultTTL; });
-            Assert.DoesNotThrow(() => { var p = job.Content.DiskUsage; });
-            Assert.DoesNotThrow(() => { var p = job.Content.DispatchState; });
-            Assert.DoesNotThrow(() => { var p = job.Content.DoneProgress; });
-            Assert.DoesNotThrow(() => { var p = job.Content.DropCount; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.App; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.CanWrite; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.Modifiable; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.Owner; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.Perms; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.Perms.Read; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.Perms.Write; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.Sharing; });
-            Assert.DoesNotThrow(() => { var p = job.Content.Eai.Acl.Ttl; });
-            Assert.DoesNotThrow(() => { var p = job.Content.EarliestTime; });
-            Assert.DoesNotThrow(() => { var p = job.Content.EventAvailableCount; });
-            Assert.DoesNotThrow(() => { var p = job.Content.EventCount; });
+            Assert.DoesNotThrow(() => { var p = job.Content["CanSummarize"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["CursorTime"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["DefaultSaveTTL"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["DefaultTTL"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["DiskUsage"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["DispatchState"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["DoneProgress"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["DropCount"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["App"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["CanWrite"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["Modifiable"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["Owner"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["Perms"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["Perms"]["Read"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["Perms"]["Write"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["Sharing"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Eai"]["Acl"]["Ttl"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["EarliestTime"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["EventAvailableCount"]; });
+            Assert.DoesNotThrow(() => { var p = job.Content["EventCount"]; });
 
             //// More...
 
-            Assert.DoesNotThrow(() => { var p = job.Content.Messages; });
+            Assert.DoesNotThrow(() => { var p = job.Content["Messages"]; });
 
             //// More...
         }

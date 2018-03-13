@@ -71,7 +71,7 @@ namespace Splunk.Client
         /// An object containing the dynamic members of the newly created
         /// <see cref="BaseResource"/>.
         /// </param>
-        protected BaseResource(ExpandoObject expandObject)
+        protected BaseResource(Dictionary<string, object> expandObject)
             : base(expandObject)
         { }
 
@@ -279,40 +279,40 @@ namespace Splunk.Client
 
             resource.EnsureUninitialized();
 
-            dynamic expando = new ExpandoObject();
+            dynamic expando = new Dictionary<string, object>();
 
             if (entry.Content != null)
             {
-                var content = entry.Content as ExpandoObject;
+                var content = entry.Content as Dictionary<string, object>;
 
                 if (content == null)
                 {
-                    expando.Value = entry.Content;
+                    expando["Value"] = entry.Content;
                 }
                 else
                 {
-                    expando.Content = entry.Content;
+                    expando["Content"] = entry.Content;
                 }
             }
 
-            expando.GeneratorVersion = generatorVersion;
-            expando.Id = entry.Id;
-            expando.Title = entry.Title;
-            expando.Updated = entry.Updated;
+            expando["GeneratorVersion"] = generatorVersion;
+            expando["Id"] = entry.Id;
+            expando["Title"] = entry.Title;
+            expando["Updated"] = entry.Updated;
 
             if (entry.Author != null)
             {
-                expando.Author = entry.Author;
+                expando["Author"] = entry.Author;
             }
 
             if (entry.Links.Count > 0)
             {
-                expando.Links = entry.Links;
+                expando["Links"] = entry.Links;
             }
 
             if (entry.Published != DateTime.MinValue)
             {
-                expando.Published = entry.Published;
+                expando["Published"] = entry.Published;
             }
 
             resource.Object = expando;
@@ -341,28 +341,28 @@ namespace Splunk.Client
             Contract.Requires<ArgumentNullException>(feed != null);
             collection.EnsureUninitialized();
 
-            dynamic expando = new ExpandoObject();
+            dynamic expando = new Dictionary<string, object>();
 
-            expando.GeneratorVersion = feed.GeneratorVersion;
-            expando.Id = feed.Id;
-            expando.Title = feed.Title;
-            expando.Updated = feed.Updated;
+            expando["GeneratorVersion"] = feed.GeneratorVersion;
+            expando["Id"] = feed.Id;
+            expando["Title"] = feed.Title;
+            expando["Updated"] = feed.Updated;
 
-            expando.Author = feed.Author;
+            expando["Author"] = feed.Author;
 
             if (feed.Links != null)
             {
-                expando.Links = feed.Links;
+                expando["Links"] = feed.Links;
             }
 
             if (feed.Messages != null)
             {
-                expando.Messages = feed.Messages;
+                expando["Messages"] = feed.Messages;
             }
 
             if (!feed.Pagination.Equals(Pagination.None))
             {
-                expando.Pagination = feed.Pagination;
+                expando["Pagination"] = feed.Pagination;
             }
 
             if (feed.Entries != null)
@@ -377,7 +377,7 @@ namespace Splunk.Client
                     resources.Add(resource);
                 }
 
-                expando.Resources = new ReadOnlyCollection<TResource>(resources);
+                expando["Resources"] = new ReadOnlyCollection<TResource>(resources);
             }
 
             collection.Object = expando;
@@ -414,7 +414,7 @@ namespace Splunk.Client
             return resource;
         }
 
-        internal void Initialize(ExpandoObject @object)
+        internal void Initialize(Dictionary<string, object> @object)
         {
             Contract.Requires<ArgumentNullException>(@object != null);
 

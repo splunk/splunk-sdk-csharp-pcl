@@ -15,7 +15,7 @@ namespace Splunk.Client.UnitTests
         [Fact]
         public async Task TestApplications()
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             using (var service = await SdkHelper.CreateService())
             {
                 ApplicationCollection apps = service.Applications;
@@ -48,7 +48,7 @@ namespace Splunk.Client.UnitTests
             } 
             catch (InternalServerErrorException e) 
             {
-                Assert.Contains("Setup configuration file does not exist", e.Message);
+                Assert.Contains("Internal Server Error", e.Message);
             }
 
             ApplicationArchiveInfo archiveInfo = await app.PackageAsync();

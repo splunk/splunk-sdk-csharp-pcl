@@ -84,6 +84,7 @@ namespace Splunk.Client
 
         /// <inheritdoc/>
         Context IServer.Context { get; set; }
+
         #endregion
 
         #region Methods
@@ -152,8 +153,13 @@ namespace Splunk.Client
                             return;
                         }
                     }
-                    catch (RequestException)
+                    catch (RequestException re)
                     {
+                        if (re.StatusCode == HttpStatusCode.Unauthorized)
+                        {
+                            return;
+                        }
+
                         //// Because the server may return a failure code on the way up or down
                     }
                     catch (WebException e) 
@@ -170,9 +176,7 @@ namespace Splunk.Client
                     {
                         //// Because Microsoft's HttpClient code always throws an HttpRequestException
 
-                        var innerException = e.InnerException as WebException;
-
-                        if (innerException == null || innerException.Status != WebExceptionStatus.ConnectFailure)
+                        if (!e.InnerException.Message.Contains("Unable to connect to the remote server"))
                         {
                             throw;
                         }
@@ -181,7 +185,7 @@ namespace Splunk.Client
                     await Task.Delay(millisecondsDelay: retryInterval).ConfigureAwait(false);
                 }
 
-                throw new OperationCanceledException();
+                throw new OperationCanceledException("restart splunk failed");
             }
         }
 

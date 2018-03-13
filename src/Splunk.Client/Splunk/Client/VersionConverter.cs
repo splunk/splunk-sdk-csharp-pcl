@@ -59,6 +59,21 @@ namespace Splunk.Client
                 return value;
             }
 
+            // if an internal development build, the version is not in (up to) a.b.c.d form. Also note
+            // that sustaining might produce a version that is a.b.c.d.e -- which isn't covered either.
+            // check if it looks like a YYYYMMDD, and accept it anyway and return 7.0.0.
+
+            DateTime date;
+            if (DateTime.TryParseExact(input.ToString(),
+                "yyyyMMdd",
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None,
+                out date))
+            {
+                Version.TryParse("7.0.0", result: out value);
+                return value;
+            }
+
             throw NewInvalidDataException(input);
         }
     }

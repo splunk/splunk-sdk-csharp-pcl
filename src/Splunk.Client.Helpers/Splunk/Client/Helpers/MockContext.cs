@@ -107,7 +107,7 @@ namespace Splunk.Client.Helpers
 
         public static void Begin(string callerId)
         {
-            Contract.Requires<ArgumentNullException>(callerId != null);
+            Client.Contract.Requires<ArgumentNullException>(callerId != null);
             
             RecordingFilename = Path.Combine(recordingDirectoryName, string.Join(".", callerId, "json", "gz"));
 
@@ -353,8 +353,8 @@ namespace Splunk.Client.Helpers
 
             protected static async Task<Tuple<string, long>> ComputeChecksum(HttpRequestMessage request, MemoryStream stream)
             {
-                Contract.Requires<ArgumentNullException>(request != null);
-                Contract.Requires<ArgumentNullException>(stream != null);
+                Splunk.Client.Contract.Requires<ArgumentNullException>(request != null);
+                Splunk.Client.Contract.Requires<ArgumentNullException>(stream != null);
 
                 string text;
                 byte[] bytes;
@@ -403,7 +403,7 @@ namespace Splunk.Client.Helpers
             protected static async Task<Tuple<string, HttpRequestMessage>> DuplicateAndComputeChecksum(
                 HttpRequestMessage request)
             {
-                Contract.Requires<ArgumentNullException>(request != null);
+                Splunk.Client.Contract.Requires<ArgumentNullException>(request != null);
                 var stream = new MemoryStream();
 
                 try
@@ -596,9 +596,9 @@ namespace Splunk.Client.Helpers
 
             Recording(HttpResponseMessage response, byte[] content, string checksum)
             {
-                Contract.Requires<ArgumentNullException>(response != null);
-                Contract.Requires<ArgumentNullException>(content != null);
-                Contract.Requires<ArgumentNullException>(checksum != null);
+                Client.Contract.Requires<ArgumentNullException>(response != null);
+                Client.Contract.Requires<ArgumentNullException>(content != null);
+                Client.Contract.Requires<ArgumentNullException>(checksum != null);
 
                 this.checksum = checksum;
                 this.content = Convert.ToBase64String(content);

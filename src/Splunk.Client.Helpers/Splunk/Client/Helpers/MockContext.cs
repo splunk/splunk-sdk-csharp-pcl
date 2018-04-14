@@ -22,7 +22,6 @@ namespace Splunk.Client.Helpers
     using System.Collections.Generic;
     using System.Configuration;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.IO.Compression;
     using System.Linq;

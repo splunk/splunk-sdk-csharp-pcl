@@ -23,7 +23,6 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Threading.Tasks;
 
     /// <summary>

@@ -21,7 +21,6 @@ namespace Splunk.Client
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Diagnostics.Contracts;
-    using System.Dynamic;
     using System.Threading.Tasks;
 
     /// <summary>

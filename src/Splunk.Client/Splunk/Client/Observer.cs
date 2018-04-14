@@ -16,21 +16,7 @@
 
 namespace Splunk.Client
 {
-    using Splunk.Client;
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Runtime.Serialization;
-    using System.Runtime.Serialization.Json;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides a class for faking git requests and responses from a Splunk server.

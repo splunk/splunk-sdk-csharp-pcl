@@ -22,7 +22,6 @@ namespace Splunk.Client
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
-    using System.Diagnostics.Contracts;
 
     /// <summary>
     /// Specifies the user/app context for a resource.

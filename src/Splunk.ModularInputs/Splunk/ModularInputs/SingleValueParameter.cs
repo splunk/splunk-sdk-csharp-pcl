@@ -17,7 +17,6 @@
 namespace Splunk.ModularInputs
 {
     using System;
-    using System.Collections.ObjectModel;
     using System.Diagnostics.Contracts;
     using System.Xml.Serialization;
 

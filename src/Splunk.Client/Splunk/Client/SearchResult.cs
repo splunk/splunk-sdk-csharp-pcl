@@ -22,8 +22,6 @@ namespace Splunk.Client
     using System.Collections.Immutable;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
-    using System.Diagnostics.Contracts;
-    using System.Dynamic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;

@@ -118,3 +118,5 @@ UpgradeLog*.XML
 # png files in root dir
 /*.png
 
+# Omit built sandcastle docs
+docs/*/Help

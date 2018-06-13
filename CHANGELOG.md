@@ -1,5 +1,11 @@
 # Splunk SDK for C# PCL
 
+## Version 2.2.8
+
+### Bug Fixes
+
+* Fix so that CCRewrite / Code Contracts are no longer required (GitHub pull request https://github.com/splunk/splunk-sdk-csharp-pcl/pull/79) (GitHub Issue [#42](https://github.com/splunk/splunk-sdk-csharp-pcl/issues/42))
+
 ## Version 2.2.7
 
 ### Bug Fixes

@@ -21,7 +21,6 @@
 namespace Splunk.Client
 {
     using System;
-    using System.Diagnostics.Contracts;
     using System.IO;
     using System.Linq;
     using System.Net;

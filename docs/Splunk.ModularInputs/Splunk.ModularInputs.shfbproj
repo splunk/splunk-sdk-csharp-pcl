@@ -38,6 +38,9 @@
     <HelpTitle>Splunk.ModularInputs Namespace</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <BuildLogFile>Splunk.ModularInputs.build.log</BuildLogFile>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="Splunk.ModularInputs" isDocumented="True" xmlns="">This package contains a library for creating Modular Inputs for Splunk.</NamespaceSummaryItem>
+    </NamespaceSummaries>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->

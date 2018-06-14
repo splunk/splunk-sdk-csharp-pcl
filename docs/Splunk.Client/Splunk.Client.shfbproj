@@ -38,6 +38,9 @@
       <DocumentationSource sourceFile="..\..\src\Splunk.Client\Splunk.Client.csproj" />
     </DocumentationSources>
     <BuildLogFile>Splunk.Client.build.log</BuildLogFile>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="Splunk.Client" isDocumented="True" xmlns="">This package contains the Splunk Portable Client for consuming Splunk's API.</NamespaceSummaryItem>
+    </NamespaceSummaries>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->

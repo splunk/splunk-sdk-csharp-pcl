@@ -25,8 +25,6 @@ namespace Splunk.Client
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Diagnostics.CodeAnalysis;
-    using System.Diagnostics.Contracts;
-    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Runtime.Serialization;

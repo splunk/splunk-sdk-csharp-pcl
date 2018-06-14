@@ -14,23 +14,57 @@
  * under the License.
  */
 
+using System;
+
 namespace Splunk.Client
 {
-    #if __MonoCS__
-
-    //// This doesn't seem like it should not be necessary according to 
-    //// Mono 2.8 notes: http://www.mono-project.com/Release_Notes_Mono_2.8
-    //// as it states if the CONTRACTS_FULL compiler directive is not set, the
-    //// calls to Contract should be removed by the compiler. However when
-    //// testing in Xamarin Studio, this does not appear to be the case.
-    public static class Contract
+    /// <summary>
+    /// This class is an implementation of the System.Diagnostics.Contracts class to get around
+    /// <see href="https://github.com/Microsoft/CodeContracts/issues/476">issues with CCRewrite on newer versions of
+    /// Visual Studio.</see>
+    /// Contains static methods for representing program contracts.
+    /// </summary>
+    internal static class Contract
     {
-        public static void Requires (bool check, string name="") 
-        { }
+        /// <summary>
+        /// Ensure that a certain condition is met and throws an exception if it is not.
+        /// </summary>
+        /// <param name="condition">Condition to be met.</param>
+        /// <exception cref="System.ArgumentException">If condition is false.</exception>
+        internal static void Requires(bool condition)
+        {
+            if (!condition)
+            {
+                throw new ArgumentException();
+            }
+        }
 
-        public static void Requires<T> (bool check, string name="")
-        { }
+        /// <summary>
+        /// Ensure that a certain condition is met and throw an exception of <typeparamref name="T"/> if it is not.
+        /// </summary>
+        /// <typeparam name="T">Type of exception to throw.</typeparam>
+        /// <param name="condition">Condition to be met.</param>
+        /// <param name="message">Message in the exception to throw if condition is not met.</param>
+        /// <exception cref="System.Exception">If condition is false.</exception>
+        internal static void Requires<T>(bool condition, string message) where T : Exception
+        {
+            if (!condition)
+            {
+                throw (T)Activator.CreateInstance(typeof(T), message);
+            }
+        }
+
+        /// <summary>
+        /// Ensure that a certain condition is met and throw an exception of <typeparamref name="T"/> if it is not.
+        /// </summary>
+        /// <typeparam name="T">Type of exception to throw.</typeparam>
+        /// <param name="condition">Condition to be met.</param>
+        internal static void Requires<T>(bool condition) where T : Exception, new()
+        {
+            if (!condition)
+            {
+                throw new T();
+            }
+        }
     }
-
-    #endif
 }

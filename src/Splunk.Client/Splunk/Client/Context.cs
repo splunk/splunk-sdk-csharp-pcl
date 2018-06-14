@@ -18,11 +18,9 @@ namespace Splunk.Client
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.Contracts;
     using System.Globalization;
     using System.Linq;
     using System.Net.Http;
-    using System.Net;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -103,7 +101,7 @@ namespace Splunk.Client
             this.Host = host;
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient(new HttpClientHandler { UseCookies = false }) : new HttpClient(handler, disposeHandler);
-            this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.2.7");
+            this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.2.8");
             this.CookieJar = new CookieStore();
 
             if (timeout != default(TimeSpan))

@@ -7,11 +7,11 @@ init:
 # Build 6.2 and 6.3
 environment:
   matrix:
-  - SPLUNK_VERSION: 6.6.5
-    SPLUNK_BUILD: b119a2a8b0ad 
-    SDK_APP_VERSION: 1.0.0
   - SPLUNK_VERSION: 7.0.1
     SPLUNK_BUILD: 2b5b15c4ee89
+    SDK_APP_VERSION: 1.0.0
+  - SPLUNK_VERSION: 7.2.0
+    SPLUNK_BUILD: 8c86330ac18
     SDK_APP_VERSION: 1.0.0
 
 

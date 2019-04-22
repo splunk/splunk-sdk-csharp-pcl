@@ -260,8 +260,6 @@ page for more information.
    <ul>
    <li><a href='http://splunk-base.splunk.com/answers/'>Splunk Answers</a> (use
     the <b>sdk</b> and <b>csharp</b> tags to identify your questions)</li>
-   <li><a href='http://groups.google.com/group/splunkdev'>Splunkdev Google
-    Group</a></li>
    </ul>
 3. Splunk will NOT provide support for the extension if the core library (the code in the
    '1. src' directory) has been modified.

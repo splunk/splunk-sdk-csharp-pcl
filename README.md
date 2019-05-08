@@ -98,7 +98,7 @@ Here's what you need to get going with the Splunk SDK for C# version 2.x.
 If you haven't already installed Splunk Enterprise, download it at
 <http://www.splunk.com/download>. For more information about installing and
 running Splunk Enterprise and system requirements, see the
-[Splunk Installation Manual](http://docs.splunk.com/Documentation/Splunk/latest/Installation).
+[Splunk Installation Manual](http://docs.splunk.com/Documentation/Splunk/latest/Installation). The Splunk SDK for .NET has been tested with Splunk Enterprise 7.0 and 7.2.
 
 #### Developer environments
 

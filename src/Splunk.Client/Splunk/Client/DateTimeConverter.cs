@@ -58,9 +58,13 @@ namespace Splunk.Client
                 return x.Value;
             }
 
-            DateTime value;
+            var dateString = input.ToString();
+            if (dateString.Trim().Equals(""))
+            {
+                return DateTime.MinValue;
+            }
 
-            if (DateTime.TryParse(input.ToString(), result: out value))
+            if (DateTime.TryParse(dateString, result: out var value))
             {
                 return value;
             }

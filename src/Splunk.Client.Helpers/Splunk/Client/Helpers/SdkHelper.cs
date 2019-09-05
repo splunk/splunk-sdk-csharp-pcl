@@ -29,6 +29,17 @@ namespace Splunk.Client.Helpers
     /// </summary>
     public static class SdkHelper
     {
+        static SecurityProtocolType GetSSLVersion()
+        {
+            if (System.Environment.GetEnvironmentVariable("CI").Equals("True"))
+            {
+                return SecurityProtocolType.Tls;
+            } else
+            {
+                return SecurityProtocolType.Tls12;
+            }
+        }
+
         /// <summary>
         /// Initializes the <see cref="SdkHelper" /> class.
         /// </summary>
@@ -39,7 +50,7 @@ namespace Splunk.Client.Helpers
             //// 2. Set its ServerCertificateValidationCallback
             //// 3. Instantiate a Splunk.Client.Context with the WebRequestHandler
 
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = GetSSLVersion();
 
             ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) =>
             {
@@ -72,7 +83,7 @@ namespace Splunk.Client.Helpers
         /// </returns>
         public static async Task<Service> CreateService(Namespace ns = null, bool login = true)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = GetSSLVersion();
             var context = new MockContext(Splunk.Scheme, Splunk.Host, Splunk.Port);
             var service = new Service(context, ns);
             if (login)

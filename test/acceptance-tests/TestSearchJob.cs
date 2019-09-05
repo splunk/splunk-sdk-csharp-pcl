@@ -485,10 +485,10 @@ namespace Splunk.Client.AcceptanceTests
             }
         }
 
-        [Trait("acceptance-test", "Splunk.Client.QueuedSearch")]
+        [Trait("acceptance-test", "Splunk.Client.QueuedSearchCreate")]
         [MockContext]
         [Fact]
-        public async Task QueuedSearch()
+        public async Task QueuedSearchCreate()
         {
             const string searchPrefix = "search index=_internal ";
             int i = 0;
@@ -504,6 +504,7 @@ namespace Splunk.Client.AcceptanceTests
 
                     try
                     {
+                        // Jobs should eventually be queued w/o waiting for them to get to running state
                         job = await service.Jobs.Create(searchPrefix + i.ToString(), args: jobArgs);
                         jobs.Add(job);
                         i++;
@@ -527,10 +528,10 @@ namespace Splunk.Client.AcceptanceTests
             Assert.True(i > 0);
         }
 
-        [Trait("acceptance-test", "Splunk.Client.QueuedSearchExpected")]
+        [Trait("acceptance-test", "Splunk.Client.QueuedSearchCreateAsync")]
         [MockContext]
         [Fact]
-        public async Task QueuedSearchExpected()
+        public async Task QueuedSearchCreateAsync()
         {
             const string searchPrefix = "search index=_internal ";
             int i = 0;
@@ -546,8 +547,8 @@ namespace Splunk.Client.AcceptanceTests
 
                     try
                     {
-                        // Allow for jobs to be queued w/o waiting for them to get to running state
-                        job = await service.Jobs.CreateAsync(searchPrefix + i.ToString(), args: jobArgs, requiredState: DispatchState.Queued);
+                        // Jobs should eventually be queued w/o waiting for them to get to running state
+                        job = await service.Jobs.CreateAsync(searchPrefix + i.ToString(), args: jobArgs);
                         jobs.Add(job);
                         i++;
                     }

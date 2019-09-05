@@ -471,7 +471,8 @@ namespace Splunk.Client
                             await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                             await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
 
-                            if (this.DispatchState >= dispatchState)
+                            // None or Parsing are the only states to continue checking status for
+                            if (this.DispatchState >= dispatchState || this.DispatchState == DispatchState.Queued)
                             {
                                 break;
                             }

@@ -6,6 +6,7 @@ init:
 
 # Run against 2 recent versions of Splunk
 environment:
+  SPLUNK_PASSWORD: Chang3d!
   matrix:
   - SPLUNK_VERSION: 7.3.0
     SPLUNK_BUILD: 657388c7a488
@@ -27,7 +28,9 @@ install:
 - cmd: dir c:\splunk\splunk\etc\apps
 
 # temp workaround to resolve tsl1.2 not supported by .net, downgrade splunk to use tsl1.0
-- cmd: type server_ssl.conf >> C:\splunk\splunk\etc\system\local\server.conf
+- cmd: type ci\server_ssl.conf >> C:\splunk\splunk\etc\system\local\server.conf
+# create .splunkrc file
+- cmd: type ci\.splunkrc >> %HOME%\.splunkrc
  
 # Install the Splunk service and start it
 - cmd: cmd /C "set PATH=C:\splunk\splunk && C:\splunk\splunk\bin\splunk.exe enable boot-start"

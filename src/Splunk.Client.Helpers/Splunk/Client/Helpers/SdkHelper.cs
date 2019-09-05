@@ -1,18 +1,18 @@
-﻿ /*
- * Copyright 2014 Splunk, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"): you may
- * not use this file except in compliance with the License. You may obtain
- * a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- */
+﻿/*
+* Copyright 2014 Splunk, Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License"): you may
+* not use this file except in compliance with the License. You may obtain
+* a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+* WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+* License for the specific language governing permissions and limitations
+* under the License.
+*/
 
 namespace Splunk.Client.Helpers
 {
@@ -34,7 +34,8 @@ namespace Splunk.Client.Helpers
             if (System.Environment.GetEnvironmentVariable("CI").Equals("True"))
             {
                 return SecurityProtocolType.Tls;
-            } else
+            }
+            else
             {
                 return SecurityProtocolType.Tls12;
             }
@@ -173,20 +174,20 @@ namespace Splunk.Client.Helpers
 
                     switch (pair[0].ToLower().Trim())
                     {
-                        case "scheme": 
-                            this.Scheme = pair[1].Trim() == "https" ? Scheme.Https : Scheme.Http; 
+                        case "scheme":
+                            this.Scheme = pair[1].Trim() == "https" ? Scheme.Https : Scheme.Http;
                             break;
-                        case "host": 
-                            this.Host = pair[1].Trim(); 
+                        case "host":
+                            this.Host = pair[1].Trim();
                             break;
-                        case "port": 
-                            this.Port = int.Parse(pair[1].Trim()); 
+                        case "port":
+                            this.Port = int.Parse(pair[1].Trim());
                             break;
-                        case "username": 
-                            this.Username = pair[1].Trim(); 
+                        case "username":
+                            this.Username = pair[1].Trim();
                             break;
-                        case "password": 
-                            this.Password = pair[1].Trim(); 
+                        case "password":
+                            this.Password = pair[1].Trim();
                             break;
                     }
                 }
@@ -211,7 +212,7 @@ namespace Splunk.Client.Helpers
             /// The username
             /// </summary>
             public string Username = "admin";
-            
+
             /// <summary>
             /// The password
             /// </summary>

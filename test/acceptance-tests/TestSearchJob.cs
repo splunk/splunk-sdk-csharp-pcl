@@ -485,6 +485,91 @@ namespace Splunk.Client.AcceptanceTests
             }
         }
 
+        [Trait("acceptance-test", "Splunk.Client.QueuedSearch")]
+        [MockContext]
+        [Fact]
+        public async Task QueuedSearch()
+        {
+            const string searchPrefix = "search index=_internal ";
+            int i = 0;
+
+            using (var service = await SdkHelper.CreateService())
+            {
+                List<Job> jobs = new List<Job>();
+                Job job = null;
+                do
+                {
+                    JobArgs jobArgs = new JobArgs();
+                    jobArgs.SearchMode = SearchMode.RealTime;
+
+                    try
+                    {
+                        job = await service.Jobs.Create(searchPrefix + i.ToString(), args: jobArgs);
+                        jobs.Add(job);
+                        i++;
+                    } catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.GetBaseException().ToString());
+                        break;
+                    }
+
+                } while (job.DispatchState != DispatchState.Queued);
+
+                Assert.NotNull(job);
+                Assert.Equal(DispatchState.Queued, job.DispatchState);
+
+                // Cleanup
+                foreach (Job j in jobs)
+                {
+                    await j.CancelAsync();
+                }
+            }
+            Assert.True(i > 0);
+        }
+
+        [Trait("acceptance-test", "Splunk.Client.QueuedSearchExpected")]
+        [MockContext]
+        [Fact]
+        public async Task QueuedSearchExpected()
+        {
+            const string searchPrefix = "search index=_internal ";
+            int i = 0;
+
+            using (var service = await SdkHelper.CreateService())
+            {
+                List<Job> jobs = new List<Job>();
+                Job job = null;
+                do
+                {
+                    JobArgs jobArgs = new JobArgs();
+                    jobArgs.SearchMode = SearchMode.RealTime;
+
+                    try
+                    {
+                        // Allow for jobs to be queued w/o waiting for them to get to running state
+                        job = await service.Jobs.CreateAsync(searchPrefix + i.ToString(), args: jobArgs, requiredState: DispatchState.Queued);
+                        jobs.Add(job);
+                        i++;
+                    }
+                    catch (Exception ex)
+                    {
+                        break;
+                    }
+
+                } while (job.DispatchState != DispatchState.Queued);
+
+                Assert.NotNull(job);
+                Assert.Equal(DispatchState.Queued, job.DispatchState);
+
+                // Cleanup
+                foreach (Job j in jobs)
+                {
+                    await j.CancelAsync();
+                }
+            }
+            Assert.True(i > 0);
+        }
+
         #region Helpers
 
         /// <summary>

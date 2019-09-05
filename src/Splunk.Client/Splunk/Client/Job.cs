@@ -458,6 +458,7 @@ namespace Splunk.Client
         {
             using (var cancellationTokenSource = new CancellationTokenSource())
             {
+                // Timeout if Job is never at least the requiredState
                 cancellationTokenSource.CancelAfter(delay);
                 var token = cancellationTokenSource.Token;
 

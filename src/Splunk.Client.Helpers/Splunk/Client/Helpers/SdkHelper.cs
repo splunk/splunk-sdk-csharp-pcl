@@ -31,7 +31,7 @@ namespace Splunk.Client.Helpers
     {
         static SecurityProtocolType GetSSLVersion()
         {
-            if (System.Environment.GetEnvironmentVariable("CI").Equals("True"))
+            if (System.Environment.GetEnvironmentVariable("CI") != null)
             {
                 return SecurityProtocolType.Tls;
             }

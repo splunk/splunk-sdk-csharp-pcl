@@ -458,6 +458,7 @@ namespace Splunk.Client
         {
             using (var cancellationTokenSource = new CancellationTokenSource())
             {
+                // Timeout if Job is never at least the requiredState
                 cancellationTokenSource.CancelAfter(delay);
                 var token = cancellationTokenSource.Token;
 
@@ -470,7 +471,8 @@ namespace Splunk.Client
                             await response.EnsureStatusCodeAsync(HttpStatusCode.OK).ConfigureAwait(false);
                             await this.ReconstructSnapshotAsync(response).ConfigureAwait(false);
 
-                            if (this.DispatchState >= dispatchState)
+                            // None or Parsing are the only states to continue checking status for
+                            if (this.DispatchState >= dispatchState || this.DispatchState == DispatchState.Queued)
                             {
                                 break;
                             }

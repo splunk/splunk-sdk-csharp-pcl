@@ -506,6 +506,8 @@ namespace Splunk.Client.AcceptanceTests
                     {
                         // Jobs should eventually be queued w/o waiting for them to get to running state
                         job = await service.Jobs.Create(searchPrefix + i.ToString(), args: jobArgs);
+                        Assert.Equal(DispatchState.None, job.DispatchState);
+                        await job.GetAsync();
                         jobs.Add(job);
                         i++;
                     } catch (Exception ex)

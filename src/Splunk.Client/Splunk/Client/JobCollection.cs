@@ -195,6 +195,31 @@ namespace Splunk.Client
             return job;
         }
 
+        public virtual async Task<Job> Create(string search, int count = 0, // This version doesn't wait
+            ExecutionMode mode = ExecutionMode.Normal, JobArgs args = null,
+            CustomJobArgs customArgs = null)
+        {
+            var arguments = new Argument[]
+            {
+               new Argument("search", search),
+               new Argument("count", count)
+            }
+            .AsEnumerable();
+
+            if (args != null)
+            {
+                arguments = arguments.Concat(args);
+            }
+
+            if (customArgs != null)
+            {
+                arguments = arguments.Concat(customArgs);
+            }
+
+            var job = await this.Create(arguments).ConfigureAwait(false);
+            return job;
+        }
+
         /// <summary>
         /// Asynchronously retrieves a filtered collection of all running search jobs.
         /// </summary>
@@ -234,8 +259,23 @@ namespace Splunk.Client
 
             Job job = new Job(this.Context, this.Namespace, name: searchId);
 
-            await job.GetAsync().ConfigureAwait(false);
+            await job.GetAsync(requiredState).ConfigureAwait(false);
             await job.TransitionAsync(requiredState).ConfigureAwait(false);
+
+            return job;
+        }
+
+       async Task<Job> Create(IEnumerable<Argument> arguments) // this version doesn't wait
+        {
+            string searchId;
+
+            using (var response = await this.Context.PostAsync(this.Namespace, ClassResourceName, arguments).ConfigureAwait(false))
+            {
+                await response.EnsureStatusCodeAsync(HttpStatusCode.Created).ConfigureAwait(false);
+                searchId = await response.XmlReader.ReadResponseElementAsync("sid").ConfigureAwait(false);
+            }
+
+            Job job = new Job(this.Context, this.Namespace, name: searchId);
 
             return job;
         }

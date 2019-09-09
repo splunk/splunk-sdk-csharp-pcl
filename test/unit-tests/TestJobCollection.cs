@@ -135,7 +135,21 @@ namespace Splunk.Client.UnitTests
                 },
                 filter);
         }
-        
+
+        [Trait("unit-test", "TestJobCollection.DateTimeConverterTest")]
+        [Fact]
+        void DateTimeConverterTest()
+        {
+            object[] expected = { DateTime.MinValue, DateTime.MinValue, DateTime.MinValue };
+            object[] actual = {"", "   ", "\t"};
+            Assert.Equal(expected.Length, actual.Length);
+
+            for (var i = 0; i < expected.Length; i++)
+            {
+                Assert.Equal(expected[i], DateTimeConverter.Instance.Convert(actual[i]));
+            }
+        }
+
         void CheckCommonProperties<TResource>(string expectedName, BaseEntity<TResource> entity) where TResource : BaseResource, new()
         {
             Assert.Equal(expectedName, entity.Title);

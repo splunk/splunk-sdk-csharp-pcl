@@ -101,7 +101,7 @@ namespace Splunk.Client
             this.Host = host;
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient(new HttpClientHandler { UseCookies = false }) : new HttpClient(handler, disposeHandler);
-            this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.2.8");
+            this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.2.9");
             this.CookieJar = new CookieStore();
 
             if (timeout != default(TimeSpan))

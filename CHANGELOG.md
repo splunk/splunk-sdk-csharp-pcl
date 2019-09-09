@@ -5,6 +5,7 @@
 ### Bug Fixes
 
 * Allow search jobs to be created if going into a queued state (GitHub pull request https://github.com/splunk/splunk-sdk-csharp-pcl/pull/91)
+* Fix to preview action enums (GitHub pull request https://github.com/splunk/splunk-sdk-csharp-pcl/pull/53)
 
 ## Version 2.2.8
 

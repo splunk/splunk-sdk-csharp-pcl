@@ -32,15 +32,6 @@ namespace Splunk.Client
         #region Properties
 
         /// <summary>
-        /// Gets the plain text version of the current <see cref= "StoragePassword"/>.
-        /// </summary>
-        /// <value>
-        /// The clear password.
-        /// </value>
-        string ClearPassword
-        { get; }
-
-        /// <summary>
         /// Gets the extensible administration interface properties for the current
         /// <see cref= "StoragePassword"/>.
         /// </summary>
@@ -137,7 +128,6 @@ namespace Splunk.Client
     {
         #region Properties
 
-        public abstract string ClearPassword { get; }
         public abstract Eai Eai { get; }
         public abstract string EncryptedPassword { get; }
         public abstract string Password { get; }

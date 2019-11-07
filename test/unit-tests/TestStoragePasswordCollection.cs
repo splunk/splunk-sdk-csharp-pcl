@@ -124,7 +124,6 @@ namespace Splunk.Client.UnitTests
             CheckCommonProperties(entry.Title, password);
             CheckEai(password);
 
-            Assert.Equal(entry.Content["ClearPassword"], password.ClearPassword);
             Assert.Equal(entry.Content["EncrPassword"], password.EncryptedPassword);
             Assert.Equal(entry.Content["Password"], password.Password);
             Assert.Equal(entry.Content["Username"], password.Username);

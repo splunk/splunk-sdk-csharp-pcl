@@ -144,12 +144,6 @@ namespace Splunk.Client
         #region Properties
 
         /// <inheritdoc/>
-        public virtual string ClearPassword
-        {
-            get { return this.Content.GetValue("ClearPassword", StringConverter.Instance); }
-        }
-
-        /// <inheritdoc/>
         public virtual Eai Eai
         {
             get { return this.Content.GetValue("Eai", Eai.Converter.Instance); }

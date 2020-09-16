@@ -1,7 +1,7 @@
-# Splunk SDK for C# 
+# Splunk Enterprise SDK for C# 
 ## Version 2.2.9
 
-The Splunk Software Development Kit (SDK) for C# contains library code and examples designed to enable developers to build applications using the Splunk platform.
+The Splunk Enterprise Software Development Kit (SDK) for C# contains library code and examples designed to enable developers to build applications using the Splunk platform.
 
 The Splunk platform is a search engine and analytic environment that uses a distributed map-reduce architecture to efficiently index, search, and process large time-varying data sets.
 
@@ -47,11 +47,11 @@ This SDK supports .NET 4.5/Mono 3.4, PCL (Windows 8.1, Windows Phone 8.1, iOS (v
 
 ## Compatibility
 
-The Splunk SDK for C# version 2.x is a rewrite of the 1.x SDK, and introduces completely new APIs.
+The Splunk Enterprise SDK for C# version 2.x is a rewrite of the 1.x SDK, and introduces completely new APIs.
 
->**Important**: Applications built with Splunk SDK for C# version 1.x will not recompile using Splunk SDK for C# version 2.xf.__
+>**Important**: Applications built with Splunk Enterprise SDK for C# version 1.x will not recompile using Splunk Enterprise SDK for C# version 2.xf.__
 
-Splunk SDK for C# version 2.x includes a subset of the capability in version 1.0 of the SDK, and focuses on the most common customer scenarios. The major focus areas are _search_, _search jobs_, _configuration_, and _modular inputs_.
+Splunk Enterprise SDK for C# version 2.x includes a subset of the capability in version 1.0 of the SDK, and focuses on the most common customer scenarios. The major focus areas are _search_, _search jobs_, _configuration_, and _modular inputs_.
 
 The areas that are covered are:
 * Login
@@ -67,28 +67,26 @@ The areas that are covered are:
 
 See the [Splunk REST API Coverage](https://docs.google.com/spreadsheets/d/1lTlJ_z4tBpn_xPnJNDapiAxwdtQWvFGH31G6WIkMYwU/edit#gid=0) for details.
 
-## Getting started with the Splunk SDK for C# 
+## Getting started with the Splunk Enterprise SDK for C# 
 
-The Splunk SDK for C# contains library code and examples that show how to programmatically interact with the Splunk platform for a variety of scenarios including
-searching, saved searches, data inputs, and many more, along with building complete applications.
+The Splunk Enterprise SDK for C# contains library code and examples that show how to programmatically interact with the Splunk platform for a variety of scenarios including searching, saved searches, data inputs, and many more, along with building complete applications.
 
 ### Requirements
 
-Here's what you need to get going with the Splunk SDK for C# version 2.x.
+Here's what you need to get going with the Splunk Enterprise SDK for C# version 2.x.
 
-#### Splunk Enterprise
+*  Splunk Enterprise
+    
+    If you haven't already installed Splunk Enterprise, download it [here](http://www.splunk.com/download). For more information, see the Splunk Enterprise [Installation Manual](https://docs.splunk.com/Documentation/Splunk/latest/Installation).
 
-If you haven't already installed Splunk, download it [here](http://www.splunk.com/download). 
-For more information, see the Splunk Enterprise [Installation Manual](https://docs.splunk.com/Documentation/Splunk/latest/Installation).
-
-The Splunk SDK for C# has been tested with Splunk Enterprise 7.0 and 7.2.
+*  The Splunk Enterprise SDK for C# has been tested with Splunk Enterprise 7.0 and 7.2.
 
 #### Developer environments
 
-The Splunk SDK for C# supports development in the following environments:
+The Splunk Enterprise SDK for C# supports development in the following environments:
 
 *  Visual Studio
-  The Splunk SDK for C# supports development in [Microsoft Visual Studio](http://www.microsoft.com/visualstudio/downloads) 2012 and later
+  The Splunk Enterprise SDK for C# supports development in [Microsoft Visual Studio](http://www.microsoft.com/visualstudio/downloads) 2012 and later
 
   You must also install [Code Contracts for .NET](http://visualstudiogallery.msdn.microsoft.com/1ec7db13-3363-46c9-851f-1ce455f66970). 
   >**Note**: Close Visual Studio first. Otherwise, the installation will not work, despite appearing to.
@@ -96,11 +94,11 @@ The Splunk SDK for C# supports development in the following environments:
   To run the unit tests, install an [xUnit](https://github.com/xunit/xunit) runner. If you use resharper, install its [xUnit.net Test Support](https://resharper-plugins.jetbrains.com/packages/xunitcontrib/1.6.2). Otherwise, install the [xUnit.net runner for Visual Studio 2012 and 2013](http://visualstudiogallery.msdn.microsoft.com/463c5987-f82b-46c8-a97e-b1cde42b9099).
 
 *  Xamarin Studio/Mono Develop
-  The Splunk SDK for C# support development in Xamarin Studio and Mono Develop. You will need to set the __MonoCS__ compilation constant in the project settings for Splunk.Client.csproj and Splunk.ModularInputs.csproj.
+  The Splunk Enterprise SDK for C# support development in Xamarin Studio and Mono Develop. You will need to set the __MonoCS__ compilation constant in the project settings for Splunk.Client.csproj and Splunk.ModularInputs.csproj.
 
   To run the unit tests, download the latest release of [xUnit](https://github.com/xunit/xunit/releases) and run it using the command-line tools or GUI runner.
 
-### Splunk SDK for C# 
+### Splunk Enterprise SDK for C# 
 
 #### MyGet feed
 
@@ -115,9 +113,9 @@ The following packages are in that feed:
 
 #### Get the source
 
-[Get the Splunk SDK for C#](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip). Download the ZIP file and extract its contents.
+[Get the Splunk Enterprise SDK for C#](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip). Download the ZIP file and extract its contents.
 
-If you are want to contribute to the Splunk SDK for C#, clone the repository from [GitHub](https://github.com/splunk/splunk-sdk-csharp).
+If you are want to contribute to the Splunk Enterprise SDK for C#, clone the repository from [GitHub](https://github.com/splunk/splunk-sdk-csharp).
 
 #### Build the SDK
 
@@ -128,7 +126,7 @@ To build the SDK, the examples, and the unit tests after extracting or cloning t
 
 #### Examples and unit tests
 
-The Splunk SDK for C# includes full unit tests which run using [xunit](https://github.com/xunit/xunit) as well as several examples.
+The Splunk Enterprise SDK for C# includes full unit tests which run using [xunit](https://github.com/xunit/xunit) as well as several examples.
 
 #### Solution layout
 
@@ -160,7 +158,7 @@ The Splunk SDK for C# includes full unit tests which run using [xunit](https://g
 
 ### Changelog
 
-The CHANGELOG.md file in the root of this repository contains a description of changes for each version of the SDK. For the latest version, see the [CHANGELOG.md](https://github.com/splunk/splunk-sdk-csharp-pcl/blob/master/CHANGELOG.md) on GitHub.
+The [CHANGELOG](CHANGELOG.md) contains a description of changes for each version of the SDK. For the latest version, see the [CHANGELOG.md](https://github.com/splunk/splunk-sdk-csharp-pcl/blob/master/CHANGELOG.md) on GitHub.
 
 ### Branches
 
@@ -173,7 +171,7 @@ To learn about our branching model, see [Branching Model](https://github.com/spl
 |:----------------------- |:----------- |
 | [Splunk Developer Portal](http://dev.splunk.com) | General developer documentation, tools, and examples |
 | [Integrate the Splunk platform using development tools for .NET](https://dev.splunk.com/enterprise/docs/devtools/csharp)| Documentation for .NET development |
-| [Splunk SDK for C# Reference](https://docs.splunk.com/Documentation/CshrpSDK) | SDK API reference documentation |
+| [Splunk Enterprise SDK for C# Reference](https://docs.splunk.com/Documentation/CshrpSDK) | SDK API reference documentation |
 | [REST API Reference Manual](https://docs.splunk.com/Documentation/Splunk/latest/RESTREF/RESTprolog) | Splunk REST API reference documentation |
 | [Splunk>Docs](https://docs.splunk.com/Documentation) | General documentation for the Splunk platform |
 | [GitHub Wiki](https://github.com/splunk/splunk-sdk-csharp-pcl/wiki/) | Documentation for this SDK's repository on GitHub |
@@ -196,7 +194,7 @@ If you would like to contribute to the SDK, see [Contributions to Splunk](https:
 
 ### Support
 
-*  You will be granted support if you or your company are already covered under an existing maintenance/support agreement. Submit a new case in the [Support Portal](https://www.splunk.com/en_us/support-and-services.html)) and include "Splunk SDK for C# PCL" in the subject line.
+*  You will be granted support if you or your company are already covered under an existing maintenance/support agreement. Submit a new case in the [Support Portal](https://www.splunk.com/en_us/support-and-services.html) and include "Splunk Enterprise SDK for C# PCL" in the subject line.
 
    If you are not covered under an existing maintenance/support agreement, you can find help through the broader community at [Splunk Answers](https://community.splunk.com/t5/Splunk-Development/ct-p/developer-tools).
 
@@ -212,4 +210,4 @@ You can reach the Splunk Developer Platform team at _devinfo@splunk.com_.
 
 ## License
 
-The Splunk Software Development Kit for C# is licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.
+The Splunk Enterprise Software Development Kit for C# is licensed under the Apache License 2.0. See [LICENSE](LICENSE) for details.

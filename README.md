@@ -131,14 +131,14 @@ The Splunk Enterprise SDK for C# includes full unit tests that run using [xunit]
 
 #### Solution layout
 
-| Directory                               | Description                                 |
-|:--------------------------------------- |:------------------------------------------- |
-| /src                                    |                                             |
-| &nbsp;&nbsp;&nbsp;Splunk.Client         | Client for the Splunk Enterprise REST API.  |
-| &nbsp;&nbsp;&nbsp;Splunk.ModularInputs  | Functionality for building modular inputs.  |
-| &nbsp;&nbsp;&nbsp;Splunk.Client.Helpers | Helper utilities used by tests and samples. |
-| /examples                               |                                             |
-| &nbsp;&nbsp;&nbsp;Windows8/Search       | Contains a Windows Store Search App. |
+| Directory                               | Description                                        |
+|:--------------------------------------- |:-------------------------------------------------- |
+| /src                                    |                                                    |
+| &nbsp;&nbsp;&nbsp;Splunk.Client         | Client for the Splunk Enterprise REST API.         |
+| &nbsp;&nbsp;&nbsp;Splunk.ModularInputs  | Functionality for building modular inputs.         |
+| &nbsp;&nbsp;&nbsp;Splunk.Client.Helpers | Helper utilities used by tests and samples.        |
+| /examples                               |                                                    |
+| &nbsp;&nbsp;&nbsp;Windows8/Search       | Contains a Windows Store Search App.               |
 | &nbsp;&nbsp;&nbsp;authenticate          | Connects to a Splunk Enterprise instance and retrieves a session token. |
 | &nbsp;&nbsp;&nbsp;list_apps             | Lists installed applications on a Splunk Enterprise instance. |
 | &nbsp;&nbsp;&nbsp;mock-context          | Demonstrates how to use the included HTTP record/play framework for unit tests. |
@@ -151,10 +151,10 @@ The Splunk Enterprise SDK for C# includes full unit tests that run using [xunit]
 | &nbsp;&nbsp;&nbsp;search-realtime       | Creates a real-time search.                         |
 | &nbsp;&nbsp;&nbsp;search-response-message-stream | Demonstrates how to run long-running search jobs and use **Job.GetSearchReponseMessageAsync**. |
 | &nbsp;&nbsp;&nbsp;search                | Performs a oneshot search.                          |
-| &nbsp;&nbsp;&nbsp;submit                | Creates an index, then sends events over HTTP to it |
+| &nbsp;&nbsp;&nbsp;submit                | Creates an index, then sends events to it over HTTP.|
 | /tests                                  |                                                     |
 | &nbsp;&nbsp;&nbsp;unit-tests            | Contains unit tests for all of the classes in the SDK. Does not require a Splunk Enterprise instance. |
-| &nbsp;&nbsp;&nbsp;acceptance-tests      | Contains end-to-end tests using the SDK. By default, these tests run against a Splunk Enterprise instance. You can also run tests in playback mode by setting **MockContext.Mode** to "Playback" in **App.Config**. |
+| &nbsp;&nbsp;&nbsp;acceptance-tests      | Contains end-to-end tests using the SDK. By default, these tests run against a Splunk Enterprise instance. You can also run tests in playback mode by setting **MockContext.Mode** to "Playback" in **App.Config**.|
 
 ### Changelog
 

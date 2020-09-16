@@ -15,10 +15,10 @@ For more information, see [Splunk Enterprise SDK for C#](https://dev.splunk.com/
 
 Version 2.0 introduces new modern APIs that leverage the latest .NET platform advancements.
 
-* Async:  All APIs are 100% asynchronous supporting the new [async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) features.
+* Async. All APIs are 100% asynchronous supporting the new [async/await](http://msdn.microsoft.com/en-us/library/hh191443.aspx) features.
 * All APIs follow .NET guidelines and abide by FxCop and StyleCop rules.
-* Reactive Extensions: Splunk Enterprise query results implement [IObservable<T>](http://msdn.microsoft.com/library/dd990377), allowing usage with the [.NET Reactive Extensions](http://msdn.microsoft.com/data/gg577610).
-* Support for cross-platform development: The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx) supporting .NET development on multiple platforms.
+* Reactive Extensions. Splunk Enterprise query results implement [IObservable<T>](http://msdn.microsoft.com/library/dd990377), allowing usage with the [.NET Reactive Extensions](http://msdn.microsoft.com/data/gg577610).
+* Support for cross-platform development. The Splunk API client (Splunk.Client.dll) in the new version is a [Portable Class Library](http://msdn.microsoft.com/library/vstudio/gg597391.aspx) supporting .NET development on multiple platforms.
 
 Below is an example of a simple one shot search:
 
@@ -49,9 +49,9 @@ This SDK supports .NET 4.5/Mono 3.4, PCL (Windows 8.1, Windows Phone 8.1, iOS (v
 
 The Splunk Enterprise SDK for C# version 2.x is a rewrite of the 1.x SDK, and introduces completely new APIs.
 
->**Important**: Applications built with Splunk Enterprise SDK for C# version 1.x will not recompile using Splunk Enterprise SDK for C# version 2.xf.__
+>**Important**: Applications built with Splunk Enterprise SDK for C# version 1.x will not recompile using Splunk Enterprise SDK for C# version 2.xf.
 
-Splunk Enterprise SDK for C# version 2.x includes a subset of the capability in version 1.0 of the SDK, and focuses on the most common customer scenarios. The major focus areas are _search_, _search jobs_, _configuration_, and _modular inputs_.
+Splunk Enterprise SDK for C# version 2.x includes a subset of the capability in version 1.0 of the SDK, and focuses on the most common customer scenarios. The major focus areas are search, search jobs, configuration, and modular inputs.
 
 The areas that are covered are:
 * Login
@@ -76,12 +76,29 @@ The Splunk Enterprise SDK for C# contains library code and examples that show ho
 Here's what you need to get going with the Splunk Enterprise SDK for C# version 2.x.
 
 *  Splunk Enterprise
-    
-    If you haven't already installed Splunk Enterprise, download it [here](http://www.splunk.com/download). For more information, see the Splunk Enterprise [Installation Manual](https://docs.splunk.com/Documentation/Splunk/latest/Installation).
 
-*  The Splunk Enterprise SDK for C# has been tested with Splunk Enterprise 7.0 and 7.2.
+  If you haven't already installed Splunk Enterprise, download it [here](http://www.splunk.com/download). For more information, see the Splunk Enterprise [Installation Manual](https://docs.splunk.com/Documentation/Splunk/latest/Installation).
 
-#### Developer environments
+  The Splunk Enterprise SDK for C# has been tested with Splunk Enterprise 7.0 and 7.2.
+
+*  Splunk Enterprise SDK for C# 
+
+  *  Use the MyGet feed
+
+    Download the Splunk SDK C# NuGet packages from [MyGet](http://www.myget.org). Add the following feed to your package sources in Visual Studio:
+    `https://splunk.myget.org/F/splunk-sdk-csharp-pcl/`
+
+    The following packages are in that feed:
+    * Splunk.Client: Client for Splunk's REST API. This is a portable library.
+    * Splunk.ModularInputs: Functionality for building Modular Inputs.
+
+    >**Note**: Both packages are published to NuGet when the SDK is released.
+
+  *  Get the source
+
+    Download the [Splunk Enterprise SDK for C# ZIP file](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip) from GitHub and extract the contents. If you are want to contribute to the Splunk Enterprise SDK for C#, clone the repository from [GitHub](https://github.com/splunk/splunk-sdk-csharp).
+
+### Developer environments
 
 The Splunk Enterprise SDK for C# supports development in the following environments:
 
@@ -96,27 +113,6 @@ The Splunk Enterprise SDK for C# supports development in the following environme
 *  Xamarin Studio/Mono Develop
   The Splunk Enterprise SDK for C# support development in Xamarin Studio and Mono Develop. You will need to set the __MonoCS__ compilation constant in the project settings for Splunk.Client.csproj and Splunk.ModularInputs.csproj.
 
-  To run the unit tests, download the latest release of [xUnit](https://github.com/xunit/xunit/releases) and run it using the command-line tools or GUI runner.
-
-### Splunk Enterprise SDK for C# 
-
-#### MyGet feed
-
-Download the Splunk SDK C# NuGet packages from [MyGet](http://www.myget.org). Add the following feed to your package sources in Visual Studio: 
-    https://splunk.myget.org/F/splunk-sdk-csharp-pcl/
-
-The following packages are in that feed:
-* Splunk.Client: Client for Splunk's REST API. This is a portable library.
-* Splunk.ModularInputs: Functionality for building Modular Inputs.
-
-**Note**: Both packages are published to NuGet when the SDK is released.
-
-#### Get the source
-
-[Get the Splunk Enterprise SDK for C#](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip). Download the ZIP file and extract its contents.
-
-If you are want to contribute to the Splunk Enterprise SDK for C#, clone the repository from [GitHub](https://github.com/splunk/splunk-sdk-csharp).
-
 #### Build the SDK
 
 To build the SDK, the examples, and the unit tests after extracting or cloning the SDK:
@@ -128,8 +124,8 @@ To build the SDK, the examples, and the unit tests after extracting or cloning t
 
 The Splunk Enterprise SDK for C# includes full unit tests which run using [xunit](https://github.com/xunit/xunit) as well as several examples.
 
-#### Solution layout
 
+#### Solution layout
 
 | Directory      | Description                                                                  |
 |:-------------- |:---------------------------------------------------------------------------- |

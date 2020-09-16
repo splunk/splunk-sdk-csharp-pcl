@@ -91,7 +91,7 @@ Here's what you need to get going with the Splunk Enterprise SDK for C# version 
         The following packages are in that feed:
         * **Splunk.Client**: Client for the Splunk Enterprise REST API. This library is portable.
         * **Splunk.ModularInputs**: Functionality for building modular inputs.
-
+        
         >**Note**: Both packages are published to NuGet when the SDK is released.
 
     *  Get the source
@@ -107,7 +107,7 @@ The Splunk Enterprise SDK for C# supports development in the following environme
     You must also install [Code Contracts for .NET](http://visualstudiogallery.msdn.microsoft.com/1ec7db13-3363-46c9-851f-1ce455f66970). 
     
     >**Note**: Close Visual Studio before installing Code Contracts. Otherwise, the installation will not work, despite appearing to.
-
+    
     To run the unit tests, install an [xUnit](https://github.com/xunit/xunit) runner. If you use resharper, install its [xUnit.net Test Support](https://resharper-plugins.jetbrains.com/packages/xunitcontrib/1.6.2). Otherwise, install the [xUnit.net runner for Visual Studio 2012 and 2013](http://visualstudiogallery.msdn.microsoft.com/463c5987-f82b-46c8-a97e-b1cde42b9099).
 
 *  Xamarin Studio and Mono Develop
@@ -131,13 +131,13 @@ The Splunk Enterprise SDK for C# includes full unit tests that run using [xunit]
 
 #### Solution layout
 
-| Directory      | Description                                                                  ||
-|:-------------- |:---------------------------------------------------------------------------- ||
-| /src ||
-|   Splunk.Client | Client for Splunk's REST API.                       |
-|| Splunk.ModularInputs  | Functionality for building Modular Inputs.   |
+| Directory      | Description                                                                  |
+|:-------------- |:---------------------------------------------------------------------------- |
+| /src           |        |
+|   Splunk.Client         | Client for Splunk's REST API.                       |
+|| Splunk.ModularInputs   | Functionality for building Modular Inputs.   |
 || Splunk.Client.Helpers  | Helper utilities used by tests and samples. |
-| /examples ||
+| /examples      |        |
 || Windows8/Search  | Contains a Windows Store Search App. |
 || authenticate  | Connects to a Splunk Instance and retrieves Splunk's session token. |
 || list_apps  | Lists installed applications on a Splunk instance. |
@@ -152,7 +152,7 @@ The Splunk Enterprise SDK for C# includes full unit tests that run using [xunit]
 || search-response-message-stream  | Demonstrates how to execute long-running search jobs and how to use `Job.GetSearchReponseMessageAsync`. |
 || search  | Performs a One Shot search. |
 || submit  | Creates an index and then sends events over HTTP to that index.  |
-| /tests ||
+| /tests        |        |
 || unit-tests - Contains unit tests for all of the classes in the SDK. Does not require a Splunk instance. |
 || acceptance-tests - Contains end to end tests using the SDK. These tests by default will go against a Splunk instance. Tests can also be run in playback mode by setting `MockContext.Mode` to `Playback` in `App.Config`. |
 

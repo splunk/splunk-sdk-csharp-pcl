@@ -131,30 +131,30 @@ The Splunk Enterprise SDK for C# includes full unit tests that run using [xunit]
 
 #### Solution layout
 
-| Directory      | Description                                                                  |
-|:-------------- |:---------------------------------------------------------------------------- |
-| /src           |        |
-|   Splunk.Client         | Client for Splunk's REST API.                       |
-|| Splunk.ModularInputs   | Functionality for building Modular Inputs.   |
-|| Splunk.Client.Helpers  | Helper utilities used by tests and samples. |
-| /examples      |        |
-|| Windows8/Search  | Contains a Windows Store Search App. |
-|| authenticate  | Connects to a Splunk Instance and retrieves Splunk's session token. |
-|| list_apps  | Lists installed applications on a Splunk instance. |
-|| mock-context  | Demonstrates how to use the included HTTP record/play framework for unit tests. |
-|| mock-interface  | Demonstrates how to mock the functional interface for Splunk entities. |
-|| mock-object  | Demontrates how to mock concrete SDK objects and fake out HTTP responses for unit tests. |
-|| normal-search  | Performs a normal search against a Splunk instance and retrieves results using both enumeration and with Rx. |
-|| random-numbers  | Sample modular input which returns a randoml generated numbers. |
-|| saved-searches  | Creates a new saved search and retrieves results. |
-|| search-export  | Creates a search and usings splunk's Export endpoint to push back results. |
-|| search-realtime  | Creates a realtime search. |
-|| search-response-message-stream  | Demonstrates how to execute long-running search jobs and how to use `Job.GetSearchReponseMessageAsync`. |
-|| search  | Performs a One Shot search. |
-|| submit  | Creates an index and then sends events over HTTP to that index.  |
-| /tests        |        |
-|| unit-tests - Contains unit tests for all of the classes in the SDK. Does not require a Splunk instance. |
-|| acceptance-tests - Contains end to end tests using the SDK. These tests by default will go against a Splunk instance. Tests can also be run in playback mode by setting `MockContext.Mode` to `Playback` in `App.Config`. |
+| Directory                        | Description                                                                  |
+|:-------------------------------- |:---------------------------------------------------------------------------- |
+| /src                             |                                             |
+| ..Splunk.Client                  | Client for the Splunk Enterprise REST API.  |
+| ..Splunk.ModularInputs           | Functionality for building modular inputs.  |
+| ..Splunk.Client.Helpers          | Helper utilities used by tests and samples. |
+| /examples                        |                                             |
+| ..Windows8/Search                | Contains a Windows Store Search App. |
+| ..authenticate                   | Connects to a Splunk Enterprise instance and retrieves a session token. |
+| ..list_apps                      | Lists installed applications on a Splunk Enterprise instance. |
+| ..mock-context                   | Demonstrates how to use the included HTTP record/play framework for unit tests. |
+| ..mock-interface                 | Demonstrates how to mock the functional interface for Splunk Enterprise entities. |
+| ..mock-object                    | Demontrates how to mock concrete SDK objects and create fake HTTP responses for unit tests. |
+| ..normal-search                  | Performs a normal search against a Splunk Enterprise instance and retrieves results using enumeration and Rx. |
+| ..random-numbers                 | Sample modular input that returns randomly-generated numbers. |
+| ..saved-searches                 | Creates a saved search and retrieves results.       |
+| ..search-export                  | Creates a search and uses the Export endpoint to return results. |
+| ..search-realtime                | Creates a real-time search.                         |
+| ..search-response-message-stream | Demonstrates how to run long-running search jobs and use **Job.GetSearchReponseMessageAsync**. |
+| ..search                         | Performs a oneshot search.                          |
+| ..submit                         | Creates an index, then sends events over HTTP to it |
+| /tests                           |                                                     |
+| ..unit-tests                     | Contains unit tests for all of the classes in the SDK. Does not require a Splunk Enterprise instance. |
+| ..acceptance-tests               | Contains end-to-end tests using the SDK. By default, these tests run against a Splunk Enterprise instance. You can also run tests in playback mode by setting **MockContext.Mode** to "Playback" in **App.Config**. |
 
 ### Changelog
 

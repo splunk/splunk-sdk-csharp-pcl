@@ -131,12 +131,12 @@ The Splunk Enterprise SDK for C# includes full unit tests that run using [xunit]
 
 #### Solution layout
 
-| Directory                        | Description                                                                  |
-|:-------------------------------- |:---------------------------------------------------------------------------- |
+| Directory                        | Description                                 |
+|:-------------------------------- |:------------------------------------------- |
 | /src                             |                                             |
-|       ..Splunk.Client                  | Client for the Splunk Enterprise REST API.  |
-|       ..Splunk.ModularInputs           | Functionality for building modular inputs.  |
-    |       ..Splunk.Client.Helpers          | Helper utilities used by tests and samples. |
+| &nbsp;&nbsp;&nbsp;Splunk.Client  | Client for the Splunk Enterprise REST API.  |
+| ..Splunk.ModularInputs           | Functionality for building modular inputs.  |
+| ..Splunk.Client.Helpers          | Helper utilities used by tests and samples. |
 | /examples                        |                                             |
 | ..Windows8/Search                | Contains a Windows Store Search App. |
 | ..authenticate                   | Connects to a Splunk Enterprise instance and retrieves a session token. |

@@ -76,14 +76,14 @@ The Splunk Enterprise SDK for C# contains library code and examples that show ho
 Here's what you need to get going with the Splunk Enterprise SDK for C# version 2.x.
 
 *  Splunk Enterprise
-
-  If you haven't already installed Splunk Enterprise, download it [here](http://www.splunk.com/download). For more information, see the Splunk Enterprise [Installation Manual](https://docs.splunk.com/Documentation/Splunk/latest/Installation).
-
-  The Splunk Enterprise SDK for C# has been tested with Splunk Enterprise 7.0 and 7.2.
+   
+   If you haven't already installed Splunk Enterprise, download it [here](http://www.splunk.com/download). For more information, see the Splunk Enterprise [Installation Manual](https://docs.splunk.com/Documentation/Splunk/latest/Installation).
+   
+   The Splunk Enterprise SDK for C# has been tested with Splunk Enterprise 7.0 and 7.2.
 
 *  Splunk Enterprise SDK for C# 
-
-  *  Use the MyGet feed
+   
+    *  Use the MyGet feed
 
     Download the Splunk SDK C# NuGet packages from [MyGet](http://www.myget.org). Add the following feed to your package sources in Visual Studio:
     `https://splunk.myget.org/F/splunk-sdk-csharp-pcl/`
@@ -93,8 +93,8 @@ Here's what you need to get going with the Splunk Enterprise SDK for C# version 
     * Splunk.ModularInputs: Functionality for building Modular Inputs.
 
     >**Note**: Both packages are published to NuGet when the SDK is released.
-
-  *  Get the source
+    
+    *  Get the source
 
     Download the [Splunk Enterprise SDK for C# ZIP file](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip) from GitHub and extract the contents. If you are want to contribute to the Splunk Enterprise SDK for C#, clone the repository from [GitHub](https://github.com/splunk/splunk-sdk-csharp).
 

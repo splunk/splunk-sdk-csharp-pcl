@@ -89,14 +89,14 @@ Here's what you need to get going with the Splunk Enterprise SDK for C# version 
         `https://splunk.myget.org/F/splunk-sdk-csharp-pcl/`
 
         The following packages are in that feed:
-        * Splunk.Client: Client for Splunk's REST API. This is a portable library.
-        * Splunk.ModularInputs: Functionality for building Modular Inputs.
+        * **Splunk.Client**: Client for the Splunk Enterprise REST API. This library is portable.
+        * **Splunk.ModularInputs**: Functionality for building modular inputs.
 
         >**Note**: Both packages are published to NuGet when the SDK is released.
 
     *  Get the source
 
-    Download the [Splunk Enterprise SDK for C# ZIP file](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip) from GitHub and extract the contents. If you are want to contribute to the Splunk Enterprise SDK for C#, clone the repository from [GitHub](https://github.com/splunk/splunk-sdk-csharp).
+        Download the [Splunk Enterprise SDK for C# ZIP file](https://github.com/splunk/splunk-sdk-csharp-pcl/archive/master.zip) from GitHub and extract the contents. If you are want to contribute to the Splunk Enterprise SDK for C#, clone the repository from [GitHub](https://github.com/splunk/splunk-sdk-csharp).
 
 ### Developer environments
 

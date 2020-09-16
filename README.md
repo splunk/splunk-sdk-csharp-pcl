@@ -9,6 +9,8 @@ The Splunk platform is popular with system administrators for aggregation and mo
 
 The Splunk developer platform enables developers to take advantage of the same technology used by the Splunk platform to build exciting new applications.
 
+For more information, see [Splunk Enterprise SDK for C#](https://dev.splunk.com/enterprise/docs/devtools/csharp/sdk-csharp/) on the Splunk Developer Portal.
+
 ## What's new in Version 2.x
 
 Version 2.0 introduces new modern APIs that leverage the latest .NET platform advancements.

@@ -43,7 +43,7 @@ foreach (var result in searchResults)
 
 ## Supported platforms
 
-This SDK supports .NET 4.5/Mono 3.4, PCL (Windows 8.1, Windows Phone 8.1, iOS (via Xamarin.iOS), and Android (via Xamarin.Android) platforms.
+This SDK supports .NET 4.5/Mono 3.4, PCL (Windows 8.1, iOS (via Xamarin.iOS), and Android (via Xamarin.Android) platforms.
 
 ## Compatibility
 

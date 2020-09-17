@@ -91,8 +91,8 @@ Here's what you need to get going with the Splunk Enterprise SDK for C# version 
         The following packages are in that feed:
         * **Splunk.Client**: Client for the Splunk Enterprise REST API. This library is portable.
         * **Splunk.ModularInputs**: Functionality for building modular inputs.
-        
-        >**Note**: Both packages are published to NuGet when the SDK is released.
+         
+            >**Note**: Both packages are published to NuGet when the SDK is released.
         
     *  Get the source
 

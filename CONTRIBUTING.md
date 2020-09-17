@@ -11,7 +11,7 @@ If you're seeing some unexpected behavior with this project, please create an [i
 1. Version of this project you're using (ex: 2.1.2)
 2. Platform version (ex: Windows Server 2012)
 3. Framework version (ex: .Net 4.5, Visual Studio 2013)
-4. Splunk Enterprise version (ex: 8.0)
+4. Splunk Enterprise version (ex: 7.2)
 5. Other relevant information (ex: local/remote environment, Splunk network configuration, standalone or distributed deployment, are load balancers used)
 
 Alternatively, if you have a Splunk question please ask on [Splunk Answers](https://community.splunk.com/t5/Splunk-Development/ct-p/developer-tools).

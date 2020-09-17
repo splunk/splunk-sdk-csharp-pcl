@@ -1,4 +1,4 @@
-# Splunk SDK for C# PCL
+# Splunk Enterprise SDK for C# PCL
 
 ## Version 2.2.9
 

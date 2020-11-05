@@ -113,7 +113,6 @@ namespace Splunk.Client.AcceptanceTests
 
                         StoragePassword sp = await sps.CreateAsync(password, username, realm);
 
-                        Assert.Equal(password, sp.ClearPassword);
                         Assert.Equal(username, sp.Username);
                         Assert.Equal(realm, sp.Realm);
 
@@ -136,7 +135,6 @@ namespace Splunk.Client.AcceptanceTests
                         password = MockContext.GetOrElse(Membership.GeneratePassword(15, 2));
                         await sp.UpdateAsync(password);
 
-                        Assert.Equal(password, sp.ClearPassword);
                         Assert.Equal(username, sp.Username);
                         Assert.Equal(realm, sp.Realm);
 
@@ -328,7 +326,6 @@ namespace Splunk.Client.AcceptanceTests
 
                             StoragePassword sp = await service.StoragePasswords.CreateAsync(password, username, realm);
 
-                            Assert.Equal(password, sp.ClearPassword);
                             Assert.Equal(username, sp.Username);
                             Assert.Equal(realm, sp.Realm);
                         }

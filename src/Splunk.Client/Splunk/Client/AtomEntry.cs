@@ -267,6 +267,10 @@ namespace Splunk.Client
 
         static string NormalizePropertyName(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return "";
+            }
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
             var builder = new StringBuilder(name.Length);
             int index = 0;

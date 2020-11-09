@@ -92,6 +92,44 @@ namespace Splunk.Client
         /// or greater than <c>65535</c>.
         /// </exception>
         public Context(Scheme scheme, string host, int port, TimeSpan timeout, HttpMessageHandler handler, bool disposeHandler = true)
+         : this(scheme, host, port, timeout, null, null)
+        {
+            //NOTE: This constructor is for logon by an user account, not by a token.
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Context"/> class with a
+        /// protocol, host, port number, and optional message handler.
+        /// </summary>
+        /// <param name="scheme">
+        /// The <see cref="Scheme"/> used to communicate with <see cref="Host"/>.
+        /// </param>
+        /// <param name="host">
+        /// The DNS name of a Splunk server instance.
+        /// </param>
+        /// <param name="port">
+        /// The port number used to communicate with <see cref="Host"/>.
+        /// </param>
+        /// <param name="timeout">
+        /// The timeout.
+        /// </param>
+        /// <param name="handler">
+        /// The <see cref="HttpMessageHandler"/> responsible for processing the HTTP
+        /// response messages.
+        /// </param>
+        /// <param name="bearerAuthToken">
+        /// The bearer token used for authorization.
+        /// </param>
+        /// <param name="disposeHandler">
+        /// <c>true</c> if the inner handler should be disposed of by Dispose,
+        /// <c>false</c> if you intend to reuse the inner handler.
+        /// </param>
+        /// <exception name="ArgumentException">
+        /// <paramref name="scheme"/> is invalid, <paramref name="host"/> is
+        /// <c>null</c> or empty, or <paramref name="port"/> is less than zero
+        /// or greater than <c>65535</c>.
+        /// </exception>
+        public Context(Scheme scheme, string host, int port, TimeSpan timeout, HttpMessageHandler handler, string bearerAuthToken, bool disposeHandler = true)
         {
             Contract.Requires<ArgumentException>(scheme == Scheme.Http || scheme == Scheme.Https);
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(host));
@@ -101,6 +139,14 @@ namespace Splunk.Client
             this.Host = host;
             this.Port = port;
             this.httpClient = handler == null ? new HttpClient(new HttpClientHandler { UseCookies = false }) : new HttpClient(handler, disposeHandler);
+
+            this.httpClient.DefaultRequestHeaders.Accept.Clear();
+
+            if (!string.IsNullOrEmpty(bearerAuthToken))
+            {
+                this.httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerAuthToken);
+            }
+
             this.httpClient.DefaultRequestHeaders.Add("User-Agent", "splunk-sdk-csharp/2.2.9");
             this.CookieJar = new CookieStore();
 

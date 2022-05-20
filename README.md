@@ -1,6 +1,27 @@
 # Splunk Enterprise SDK for C# 
 ## Version 2.2.9
 
+> ### Deprecation Notice
+> Please note that the [Splunk Enterprise SDK for C# v2.x](https://github.com/splunk/splunk-sdk-csharp-pcl) is deprecated.
+
+> #### What deprecation means
+> * Splunk will no longer provide any feature enhancements, bug fixes and support to the Splunk Enterprise SDK for C# v2.x.
+> * The resources relating to the Splunk Enterprise SDK for C# v2.x will soon be removed from [dev.splunk.com](https://dev.splunk.com/) and will only be available in the GitHub repository.
+> * Apps that use the Splunk Enterprise SDK for C# v2.x will continue to work as they do now.
+> * The Splunk Enterprise SDK for C# v2.x project will continue to be available as an archived repo on GitHub, should developers want to clone or fork the project. 
+
+> #### Recommendation for new app development and app updates
+> Splunk is no longer investing in the Splunk Enterprise SDK for C# v2.x. We recommend that any app development be done using these other approaches:
+> * Using one of the supported SDKs:
+>   * Python ([splunk-sdk-python](https://github.com/splunk/splunk-sdk-python) | [Splunk Enterprise SDK for Python](http://dev.splunk.com/view/python-sdk/SP-CAAAEBB))
+>   * Java ([splunk-sdk-java](https://github.com/splunk/splunk-sdk-java) | [Splunk Enterprise SDK for Java](http://dev.splunk.com/view/java-sdk/SP-CAAAECN))
+>   * JavaScript ([splunk-sdk-javascript](https://github.com/splunk/splunk-sdk-javascript) | [Splunk Enterprise SDK for JavaScript](http://dev.splunk.com/view/javascript-sdk/SP-CAAAECM))
+
+> * Directly using the Splunk REST API in the language of their choice.
+
+> For existing apps that use the Splunk Enterprise SDK for C# v2.x, we request that developers update their apps to use one of the above approaches. We encourage you to post your feedback and questions regarding this to [Splunk Answers](https://community.splunk.com/t5/Splunk-Development/ct-p/developer-tools) in the "Splunk Development" community with the tag **splunk-csharp-sdk**.
+
+
 The Splunk Enterprise Software Development Kit (SDK) for C# contains library code and examples designed to enable developers to build applications using the Splunk platform.
 
 The Splunk platform is a search engine and analytic environment that uses a distributed map-reduce architecture to efficiently index, search, and process large time-varying data sets.
